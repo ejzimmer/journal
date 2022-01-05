@@ -1,11 +1,8 @@
-import { IconButton } from "@chakra-ui/button"
 import { Checkbox } from "@chakra-ui/checkbox"
 import { Td, Th, Tr } from "@chakra-ui/table"
 import { format, isSameDay } from "date-fns"
 import { HabitRecord } from "./types"
-import { DeleteIcon } from "@chakra-ui/icons"
-import { ConfirmDelete } from "./ConfirmDelete"
-import { useState } from "react"
+import { DeleteButton } from "../../shared/DeleteButton"
 
 interface Props {
   habit: HabitRecord
@@ -15,8 +12,6 @@ interface Props {
 }
 
 export function Habit({ habit, days, onChange, onDelete }: Props) {
-  const [showConfirmation, setShowConfirmation] = useState(false)
-
   const updateDays = (day: Date) => {
     if (listIncludesDay(habit.days, day)) {
       const days = habit.days.filter((d) => !isSameDay(day, d))
@@ -25,13 +20,6 @@ export function Habit({ habit, days, onChange, onDelete }: Props) {
       const days = [...habit.days, day].sort()
       onChange({ ...habit, days })
     }
-  }
-
-  const confirmDelete = () => setShowConfirmation(true)
-  const closeConfirmation = () => setShowConfirmation(false)
-  const deleteHabit = () => {
-    onDelete(habit)
-    closeConfirmation()
   }
 
   return (
@@ -47,20 +35,9 @@ export function Habit({ habit, days, onChange, onDelete }: Props) {
         </Td>
       ))}
       <Td>
-        <IconButton
-          variant="ghost"
-          color="gray.200"
-          _hover={{
-            color: "red.500",
-          }}
-          icon={<DeleteIcon />}
-          aria-label={`delete ${habit.name}`}
-          onClick={confirmDelete}
-        />
-        <ConfirmDelete
-          isOpen={showConfirmation}
-          onClose={closeConfirmation}
-          onDelete={deleteHabit}
+        <DeleteButton
+          label={`delete ${habit.name}`}
+          onDelete={() => onDelete(habit)}
         />
       </Td>
     </Tr>

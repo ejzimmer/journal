@@ -1,10 +1,10 @@
 import { HStack, Input, Select } from "@chakra-ui/react"
 import styled from "@emotion/styled"
 import { ChangeEvent, FormEvent, useState } from "react"
-import { Item } from "./types"
+import { ItemRecord } from "./types"
 
 interface Props {
-  addItem: (item: Item) => void
+  addItem: (item: ItemRecord) => void
 }
 
 export function NewItem({ addItem }: Props) {

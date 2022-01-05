@@ -2,10 +2,9 @@ import { Button } from "@chakra-ui/button"
 import { HStack } from "@chakra-ui/layout"
 import {
   AlertDialog,
-  AlertDialogBody,
   AlertDialogContent,
   AlertDialogFooter,
-  AlertDialogHeader,
+  AlertDialogBody,
   AlertDialogOverlay,
 } from "@chakra-ui/modal"
 import { useRef } from "react"
@@ -26,12 +25,8 @@ export function ConfirmDelete({ isOpen, onClose, onDelete }: Props) {
       onClose={onClose}
     >
       <AlertDialogOverlay>
-        <AlertDialogContent>
-          <AlertDialogHeader>Delete Habit</AlertDialogHeader>
-
-          <AlertDialogBody>
-            Are you sure you want to delete this habit?
-          </AlertDialogBody>
+        <AlertDialogContent width="max-content">
+          <AlertDialogBody mt="4">Are you sure?</AlertDialogBody>
 
           <AlertDialogFooter>
             <HStack spacing={2}>

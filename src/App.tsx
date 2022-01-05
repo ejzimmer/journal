@@ -1,6 +1,6 @@
 import { Tab, TabList, TabPanel, TabPanels, Tabs } from "@chakra-ui/tabs"
-import { Habits } from "./Tabs/Habits"
-import { Todo } from "./Tabs/Todo"
+import { Habits } from "./tabs/Habits"
+import { Todo } from "./tabs/Todo"
 
 export function App() {
   return (

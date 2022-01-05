@@ -1,4 +1,4 @@
-export interface Item {
+export interface ItemRecord {
   description: string
   type: string
 }
