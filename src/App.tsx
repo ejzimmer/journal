@@ -1,21 +1,23 @@
 import { Tab, TabList, TabPanel, TabPanels, Tabs } from "@chakra-ui/tabs"
 import React from "react"
+import { Habits } from "./Tabs/Habits"
 
 export function App() {
   return (
     <Tabs>
       <TabList>
-        <Tab>Habits</Tab>
-        <Tab isDisabled>Todo Today</Tab>
-        <Tab isDisabled>Todo</Tab>
-        <Tab isDisabled>Meetings</Tab>
-        <Tab isDisabled>Work hours</Tab>
-        <Tab isDisabled>Period</Tab>
+        <Tab>habits</Tab>
+        <Tab isDisabled>today</Tab>
+        <Tab isDisabled>todo</Tab>
+        <Tab isDisabled>meetings</Tab>
+        <Tab isDisabled>work hours</Tab>
+        <Tab isDisabled>period</Tab>
+        <Tab isDisabled>reading list</Tab>
       </TabList>
 
       <TabPanels>
         <TabPanel>
-          <p>one!</p>
+          <Habits />
         </TabPanel>
       </TabPanels>
     </Tabs>
