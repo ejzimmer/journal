@@ -8,7 +8,7 @@ import {
   Draggable,
   DropResult,
 } from "react-beautiful-dnd"
-import { List, ListItem } from "@chakra-ui/react"
+import { List, ListItem, VStack } from "@chakra-ui/react"
 
 const LOCAL_STORAGE_KEY = "todo"
 
@@ -56,12 +56,13 @@ export function Todo() {
   }
 
   return (
-    <>
+    <VStack spacing="4">
       <DragDropContext onDragEnd={onDragEnd}>
         <Droppable droppableId="todo">
           {(provided) => (
             <List
               listStyleType="none"
+              width="100%"
               maxWidth="400px"
               {...provided.droppableProps}
               ref={provided.innerRef}
@@ -92,7 +93,7 @@ export function Todo() {
         </Droppable>
       </DragDropContext>
       <NewItem addItem={addItem} />
-    </>
+    </VStack>
   )
 }
 

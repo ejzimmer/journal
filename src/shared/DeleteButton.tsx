@@ -1,5 +1,5 @@
 import { IconButton } from "@chakra-ui/button"
-import { DeleteIcon } from "@chakra-ui/icons"
+import { CloseIcon } from "@chakra-ui/icons"
 import { useState } from "react"
 import { ConfirmDelete } from "./ConfirmDelete"
 
@@ -22,11 +22,11 @@ export function DeleteButton({ label, onDelete }: Props) {
     <>
       <IconButton
         variant="ghost"
-        color="gray.200"
+        color="gray.400"
         _hover={{
           color: "red.500",
         }}
-        icon={<DeleteIcon />}
+        icon={<CloseIcon />}
         aria-label={label}
         onClick={confirmDelete}
       />
