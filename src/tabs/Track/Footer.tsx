@@ -6,7 +6,7 @@ interface Props {
   addHabit: (habitName: string) => void
 }
 
-export function AddHabitFooter({ addHabit }: Props) {
+export function Footer({ addHabit }: Props) {
   const newHabit = useRef<HTMLInputElement>(null)
 
   const onSubmit = (event: FormEvent<HTMLFormElement>) => {

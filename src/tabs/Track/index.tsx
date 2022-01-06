@@ -1,14 +1,14 @@
 import { Table, Tbody } from "@chakra-ui/react"
 import { eachDayOfInterval, endOfISOWeek, startOfISOWeek } from "date-fns"
 import { useEffect, useState } from "react"
-import { AddHabitFooter } from "./Footer"
-import { Habit } from "./Habit"
+import { Footer } from "./Footer"
+import { Habit } from "./Track"
 import { Header } from "./Header"
 import { HabitRecord } from "./types"
 
 const LOCAL_STORAGE_KEY = "habits"
 
-export function Habits() {
+export function Track() {
   const [habits, setHabits] = useState<HabitRecord[]>([])
 
   useEffect(() => {
@@ -67,7 +67,7 @@ export function Habits() {
               />
             ))}
         </Tbody>
-        <AddHabitFooter addHabit={addHabit} />
+        <Footer addHabit={addHabit} />
       </Table>
     </>
   )

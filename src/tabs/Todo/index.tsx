@@ -8,6 +8,7 @@ import {
   Draggable,
   DropResult,
 } from "react-beautiful-dnd"
+import { List, ListItem } from "@chakra-ui/react"
 
 const LOCAL_STORAGE_KEY = "todo"
 
@@ -38,6 +39,18 @@ export function Todo() {
     setItems((items) => reorder(items, source.index, destination.index))
   }
 
+  const onChange = (item: ItemRecord) => {
+    setItems((items) => {
+      const index = items.findIndex((i) => item.description === i.description)
+      const startOfList = items.slice(0, index)
+      const endOfList = items.slice(index + 1)
+
+      return [...startOfList, item, ...endOfList].sort((a, b) =>
+        a.checked === b.checked ? 0 : a.checked ? 1 : -1
+      )
+    })
+  }
+
   const onDelete = ({ description }: ItemRecord) => {
     setItems((items) => items.filter((i) => i.description !== description))
   }
@@ -47,7 +60,12 @@ export function Todo() {
       <DragDropContext onDragEnd={onDragEnd}>
         <Droppable droppableId="todo">
           {(provided) => (
-            <ul {...provided.droppableProps} ref={provided.innerRef}>
+            <List
+              listStyleType="none"
+              maxWidth="400px"
+              {...provided.droppableProps}
+              ref={provided.innerRef}
+            >
               {items.map((item, index) => (
                 <Draggable
                   key={item.description}
@@ -55,17 +73,21 @@ export function Todo() {
                   index={index}
                 >
                   {(provided) => (
-                    <li
+                    <ListItem
                       ref={provided.innerRef}
                       {...provided.draggableProps}
                       {...provided.dragHandleProps}
                     >
-                      <Item item={item} onDelete={onDelete} />
-                    </li>
+                      <Item
+                        item={item}
+                        onChange={onChange}
+                        onDelete={onDelete}
+                      />
+                    </ListItem>
                   )}
                 </Draggable>
               ))}
-            </ul>
+            </List>
           )}
         </Droppable>
       </DragDropContext>

@@ -1,23 +1,25 @@
 import { Tab, TabList, TabPanel, TabPanels, Tabs } from "@chakra-ui/tabs"
-import { Habits } from "./tabs/Habits"
+import { Track } from "./tabs/Track"
 import { Todo } from "./tabs/Todo"
 
 export function App() {
   return (
     <Tabs>
       <TabList>
-        <Tab>habits</Tab>
+        <Tab>track</Tab>
         <Tab>todo</Tab>
         <Tab isDisabled>today</Tab>
         <Tab isDisabled>meetings</Tab>
         <Tab isDisabled>work hours</Tab>
         <Tab isDisabled>period</Tab>
         <Tab isDisabled>reading list</Tab>
+        <Tab isDisabled>body measurements</Tab>
+        <Tab isDisabled>stretching timers</Tab>
       </TabList>
 
       <TabPanels>
         <TabPanel>
-          <Habits />
+          <Track />
         </TabPanel>
         <TabPanel>
           <Todo />
