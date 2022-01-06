@@ -1,10 +1,10 @@
 import { HStack, Input, Select } from "@chakra-ui/react"
 import styled from "@emotion/styled"
 import { ChangeEvent, FormEvent, useState } from "react"
-import { ItemRecord } from "./types"
+import { TodoItem } from "../../shared/TodoList/types"
 
 interface Props {
-  addItem: (item: ItemRecord) => void
+  addItem: (item: TodoItem) => void
 }
 
 export function NewItem({ addItem }: Props) {
@@ -20,7 +20,7 @@ export function NewItem({ addItem }: Props) {
 
   const submitForm = (event: FormEvent) => {
     event.preventDefault()
-    addItem({ description, type })
+    addItem({ description, type, done: false })
     setDescription("")
     setType("🧹")
   }

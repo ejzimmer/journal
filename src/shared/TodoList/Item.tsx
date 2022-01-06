@@ -1,9 +1,8 @@
 import { Checkbox, Box } from "@chakra-ui/react"
 import { ChangeEvent } from "react"
 import { DeleteButton } from "../../shared/DeleteButton"
-import { ItemRecord } from "./types"
 import styled from "@emotion/styled"
-import { TodoItem } from "../../shared/TodoList/types"
+import { TodoItem } from "./types"
 
 interface Props {
   item: TodoItem

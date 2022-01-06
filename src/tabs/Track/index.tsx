@@ -1,31 +1,26 @@
 import { Table, Tbody } from "@chakra-ui/react"
 import { eachDayOfInterval, endOfISOWeek, startOfISOWeek } from "date-fns"
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import { Footer } from "./Footer"
 import { Habit } from "./Track"
 import { Header } from "./Header"
 import { HabitRecord } from "./types"
+import { useLocalStorage } from "../../shared/useLocalStorage"
 
 const LOCAL_STORAGE_KEY = "habits"
 
 export function Track() {
   const [habits, setHabits] = useState<HabitRecord[]>([])
 
-  useEffect(() => {
-    const habits = localStorage.getItem(LOCAL_STORAGE_KEY)
-    if (habits) {
-      setHabits(
-        JSON.parse(habits).map((habit: HabitRecord) => ({
-          ...habit,
-          days: habit.days.map((day) => new Date(day)),
-        }))
-      )
-    }
-  }, [])
+  const updateHabits = (habits: HabitRecord[]) => {
+    const mappedHabits = habits.map((habit: HabitRecord) => ({
+      ...habit,
+      days: habit.days.map((day) => new Date(day)),
+    }))
+    setHabits(mappedHabits)
+  }
 
-  useEffect(() => {
-    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(habits))
-  }, [habits])
+  useLocalStorage(LOCAL_STORAGE_KEY, updateHabits, habits)
 
   const startDate = startOfISOWeek(new Date())
   const endOfWeek = endOfISOWeek(startDate)
