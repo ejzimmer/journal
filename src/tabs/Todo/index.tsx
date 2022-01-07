@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { NewItem } from "./NewItem"
+import { NewItem } from "../../shared/TodoList/NewItem"
 import { VStack } from "@chakra-ui/react"
 import { TodoList } from "../../shared/TodoList/TodoList"
 import { TodoItem } from "../../shared/TodoList/types"

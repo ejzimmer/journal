@@ -1,56 +1,51 @@
-import { isSameDay, isWeekend } from "date-fns"
-import { useEffect, useState } from "react"
+import { VStack } from "@chakra-ui/layout"
+import { isWeekend } from "date-fns"
+import { useState } from "react"
+import { NewItem } from "../../shared/TodoList/NewItem"
 import { TodoList } from "../../shared/TodoList/TodoList"
 import { TodoItem } from "../../shared/TodoList/types"
+import { useLocalStorage } from "../../shared/useLocalStorage"
 
 const everydayThings: string[] = ["laundry", "kitchen"]
 const weekdayThings: string[] = ["timesheets"]
 
 const STORAGE_KEY = "everyday"
 
-interface EverydayThing {
-  description: string
-  lastDone: string
-}
-
 export function Today() {
-  const data = localStorage.getItem(STORAGE_KEY) || "[]"
-  const storedItems = JSON.parse(data) as EverydayThing[]
-
+  const [everydayItems, setEverydayItems] = useState<TodoItem[]>([])
   const [todayItems, setTodayItems] = useState<TodoItem[]>([])
 
-  useEffect(() => {
-    const todayThings = everydayThings
-    if (!isWeekend(new Date())) todayThings.push(...weekdayThings)
+  useLocalStorage("today", setTodayItems, todayItems)
+  useLocalStorage("everyday", setEverydayItems, everydayItems)
 
-    const items = everydayThings.map((thing) => {
-      const storedThing = storedItems.find((s) => s.description === thing)
-      const done = !!(
-        storedThing &&
-        storedThing.lastDone &&
-        isSameDay(new Date(storedThing.lastDone), new Date())
-      )
+  const todayThings = everydayThings
+  if (!isWeekend(new Date())) {
+    todayThings.push(...weekdayThings)
+  }
+  const everydayItemsForToday = everydayThings.map((thing) => {
+    const item = everydayItems.find((i) => i.description === thing)
 
-      return {
-        description: thing,
-        type: "毎日",
-        done,
-      }
-    })
+    return item || { description: thing, type: "毎日" }
+  })
 
-    setTodayItems(items)
-  }, [])
+  const items = [...everydayItemsForToday, ...todayItems]
 
   const onChange = (items: TodoItem[]) => {
-    const todayItems = items.map((item) => ({
-      description: item.description,
-      lastDone: item.done ? new Date() : undefined,
-    }))
+    const everydayItems = items.filter((item) => item.type === "毎日")
+    setEverydayItems(everydayItems)
 
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(todayItems))
-
-    setTodayItems(items)
+    const todayItems = items.filter((item) => item.type !== "毎日")
+    setTodayItems(todayItems)
   }
 
-  return <TodoList id="today" items={todayItems} onChange={onChange} />
+  const addItem = (item: TodoItem) => {
+    setTodayItems((items) => [...items, item])
+  }
+
+  return (
+    <VStack spacing="4">
+      <TodoList id="today" items={items} onChange={onChange} />{" "}
+      <NewItem addItem={addItem} />
+    </VStack>
+  )
 }

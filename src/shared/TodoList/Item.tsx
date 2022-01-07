@@ -12,13 +12,20 @@ interface Props {
 
 export function Item({ item, onChange, onDelete }: Props) {
   const handleCheck = (event: ChangeEvent<HTMLInputElement>) => {
-    item.done = event.target.checked
+    if (event.target.checked) {
+      item.done = new Date()
+    } else {
+      item.done = undefined
+    }
+
     onChange(item)
   }
 
+  const isDone = !!item.done
+
   return (
     <Wrapper
-      checked={item.done}
+      checked={isDone}
       type={item.type as keyof typeof COLOURS}
       display="flex"
     >
@@ -33,7 +40,7 @@ export function Item({ item, onChange, onDelete }: Props) {
       >
         <Checkbox
           borderColor="gray.500"
-          isChecked={item.done}
+          isChecked={isDone}
           onChange={handleCheck}
         />
         {item.type} {item.description}
