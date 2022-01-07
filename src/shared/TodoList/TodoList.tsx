@@ -14,6 +14,9 @@ interface Props {
   onChange: (items: TodoItem[]) => void
 }
 
+const sortByDone = (a: TodoItem, b: TodoItem) =>
+  a.done === b.done ? 0 : a.done ? 1 : -1
+
 export function TodoList({ id, items, onChange }: Props) {
   const onDragEnd = ({ source, destination }: DropResult) => {
     // dropped outside the list
@@ -33,9 +36,7 @@ export function TodoList({ id, items, onChange }: Props) {
     const startOfList = items.slice(0, index)
     const endOfList = items.slice(index + 1)
 
-    const updatedItems = [...startOfList, item, ...endOfList].sort((a, b) =>
-      a.done === b.done ? 0 : a.done ? 1 : -1
-    )
+    const updatedItems = [...startOfList, item, ...endOfList].sort(sortByDone)
 
     onChange(updatedItems)
   }
@@ -56,7 +57,7 @@ export function TodoList({ id, items, onChange }: Props) {
             {...provided.droppableProps}
             ref={provided.innerRef}
           >
-            {items.map((item, index) => (
+            {items.sort(sortByDone).map((item, index) => (
               <Draggable
                 key={item.description}
                 draggableId={item.description}
