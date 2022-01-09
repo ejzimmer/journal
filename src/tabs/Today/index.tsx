@@ -4,7 +4,7 @@ import { useState } from "react"
 import { NewItem } from "../../shared/TodoList/NewItem"
 import { TodoList } from "../../shared/TodoList/TodoList"
 import { TodoItem } from "../../shared/TodoList/types"
-import { useLocalStorage } from "../../shared/useLocalStorage"
+import { useStorage } from "../../shared/useLocalStorage"
 
 const everydayThings: string[] = ["laundry", "kitchen"]
 const weekdayThings: string[] = ["timesheets"]
@@ -15,8 +15,8 @@ export function Today() {
   const [everydayItems, setEverydayItems] = useState<TodoItem[]>([])
   const [todayItems, setTodayItems] = useState<TodoItem[]>([])
 
-  useLocalStorage("today", setTodayItems, todayItems)
-  useLocalStorage("everyday", setEverydayItems, everydayItems)
+  useStorage("today", setTodayItems, todayItems)
+  useStorage("everyday", setEverydayItems, everydayItems)
 
   const todayThings = everydayThings
   if (!isWeekend(new Date())) {

@@ -5,7 +5,7 @@ import { Footer } from "./Footer"
 import { Habit } from "./Track"
 import { Header } from "./Header"
 import { HabitRecord } from "./types"
-import { useLocalStorage } from "../../shared/useLocalStorage"
+import { useStorage } from "../../shared/useLocalStorage"
 
 const LOCAL_STORAGE_KEY = "habits"
 
@@ -20,7 +20,7 @@ export function Track() {
     setHabits(mappedHabits)
   }
 
-  useLocalStorage(LOCAL_STORAGE_KEY, updateHabits, habits)
+  useStorage(LOCAL_STORAGE_KEY, updateHabits, habits)
 
   const startDate = startOfISOWeek(new Date())
   const endOfWeek = endOfISOWeek(startDate)
