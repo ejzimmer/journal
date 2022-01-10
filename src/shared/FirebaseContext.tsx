@@ -1,10 +1,4 @@
-import {
-  Auth,
-  GoogleAuthProvider,
-  signInWithPopup,
-  User,
-  UserCredential,
-} from "@firebase/auth"
+import { Auth, GoogleAuthProvider, signInWithPopup, User } from "@firebase/auth"
 import { ref, set, onValue, Database } from "firebase/database"
 import { createContext } from "react"
 

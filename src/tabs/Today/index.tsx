@@ -1,6 +1,6 @@
 import { VStack } from "@chakra-ui/layout"
 import { isWeekend } from "date-fns"
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import { NewItem } from "../../shared/TodoList/NewItem"
 import { TodoList } from "../../shared/TodoList/TodoList"
 import { TodoItem } from "../../shared/TodoList/types"

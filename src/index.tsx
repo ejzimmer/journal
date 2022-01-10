@@ -7,7 +7,7 @@ import { App } from "./App"
 
 import { initializeApp } from "firebase/app"
 import { getDatabase } from "firebase/database"
-import { getAuth, onAuthStateChanged } from "firebase/auth"
+import { getAuth } from "firebase/auth"
 import {
   createFirebaseContext,
   FirebaseContext,
