@@ -14,10 +14,10 @@ export function useStorage<T>(
       setData(JSON.parse(data))
     }
     read(key, setData)
-  }, [])
+  }, []) //eslint-ignore react-hooks/exhaustive-deps
 
   useEffect(() => {
     localStorage.setItem(key, JSON.stringify(data))
     write(key, data)
-  }, [data])
+  }, [data, key])
 }
