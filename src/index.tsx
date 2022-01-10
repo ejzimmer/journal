@@ -7,6 +7,7 @@ import { App } from "./App"
 
 import { initializeApp } from "firebase/app"
 import { getDatabase } from "firebase/database"
+import { getAuth, onAuthStateChanged } from "firebase/auth"
 import {
   createFirebaseContext,
   FirebaseContext,
@@ -25,11 +26,14 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig)
 const database = getDatabase(app)
+const auth = getAuth(app)
+
+const contextValue = createFirebaseContext(database, auth)
 
 ReactDOM.render(
   <React.StrictMode>
     <ChakraProvider>
-      <FirebaseContext.Provider value={createFirebaseContext(database)}>
+      <FirebaseContext.Provider value={contextValue}>
         <App />
       </FirebaseContext.Provider>
     </ChakraProvider>
