@@ -3,6 +3,7 @@ import { ChangeEvent } from "react"
 import { DeleteButton } from "../../shared/DeleteButton"
 import styled from "@emotion/styled"
 import { TodoItem } from "./types"
+import { isToday } from "date-fns"
 
 interface Props {
   item: TodoItem
@@ -19,6 +20,10 @@ export function Item({ item, onChange, onDelete }: Props) {
     }
 
     onChange(item)
+  }
+
+  if (item.done && !isToday(new Date(item.done))) {
+    delete item.done
   }
 
   const isDone = !!item.done
