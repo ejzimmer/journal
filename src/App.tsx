@@ -42,12 +42,9 @@ export function App() {
         <Tab>today</Tab>
         <Tab>track</Tab>
         <Tab>todo</Tab>
-        <Tab isDisabled>meetings</Tab>
-        <Tab isDisabled>work hours</Tab>
-        <Tab isDisabled>period</Tab>
+        <Tab isDisabled>work</Tab>
+        <Tab isDisabled>health</Tab>
         <Tab isDisabled>reading list</Tab>
-        <Tab isDisabled>body measurements</Tab>
-        <Tab isDisabled>stretching timers</Tab>
       </TabList>
 
       <TabPanels>
@@ -60,6 +57,8 @@ export function App() {
         <TabPanel>
           <Todo />
         </TabPanel>
+        <TabPanel>show meetings work hours work todos</TabPanel>
+        <TabPanel>body measurements stretching timers period tracking</TabPanel>
       </TabPanels>
     </Tabs>
   )
