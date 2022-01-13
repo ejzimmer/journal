@@ -33,7 +33,7 @@ export function Today() {
   if (!isWeekend(new Date())) {
     todayThings.push(...weekdayThings)
   }
-  const everydayItemsForToday = everydayThings.map((thing) => {
+  const everydayItemsForToday = todayThings.map((thing) => {
     const item = everydayItems.find((i) => i.description === thing)
 
     return item || { description: thing, type: "毎日" }
