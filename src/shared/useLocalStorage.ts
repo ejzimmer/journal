@@ -1,5 +1,6 @@
 import { useContext, useEffect } from "react"
 import { FirebaseContext } from "./FirebaseContext"
+import { getAuth } from "firebase/auth"
 
 export function useStorage<T>(
   key: string,
@@ -7,14 +8,20 @@ export function useStorage<T>(
   data: T
 ) {
   const { read, write } = useContext(FirebaseContext)
+  const auth = getAuth()
 
   useEffect(() => {
     const data = localStorage.getItem(key)
     if (data) {
       setData(JSON.parse(data))
     }
-    read(key, setData)
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
+
+  useEffect(() => {
+    if (auth.currentUser) {
+      read(key, setData)
+    }
+  }, [auth])
 
   useEffect(() => {
     localStorage.setItem(key, JSON.stringify(data))
