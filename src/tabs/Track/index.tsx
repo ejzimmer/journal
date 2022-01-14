@@ -33,8 +33,9 @@ export function Track() {
   }
 
   const deleteHabit = ({ name }: HabitRecord) => {
-    write(TRACK_KEY, (habits: HabitRecord[]) =>
-      habits.filter((habit) => habit.name !== name)
+    write(
+      TRACK_KEY,
+      habits.filter((habit: HabitRecord) => habit.name !== name)
     )
   }
 
