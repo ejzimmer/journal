@@ -1,22 +1,24 @@
-import { useState } from "react"
+import { useContext, useState } from "react"
 import { NewItem } from "../../shared/TodoList/NewItem"
 import { VStack } from "@chakra-ui/react"
 import { TodoList } from "../../shared/TodoList/TodoList"
 import { TodoItem } from "../../shared/TodoList/types"
-import { useStorage } from "../../shared/useLocalStorage"
+import { FirebaseContext } from "../../shared/FirebaseContext"
 
-const LOCAL_STORAGE_KEY = "todo"
+const TODO_KEY = "todo"
 
 export function Todo() {
-  const [items, setItems] = useState<TodoItem[]>([])
+  const { useValue, write } = useContext(FirebaseContext)
 
-  useStorage(LOCAL_STORAGE_KEY, setItems, items)
+  const { value: items } = useValue(TODO_KEY)
 
   const addItem = (item: TodoItem) => {
-    setItems((items) => [...items, item])
+    write(TODO_KEY, [...items, item])
   }
 
-  const onChange = (items: TodoItem[]) => setItems(items)
+  const onChange = (items: TodoItem[]) => write(TODO_KEY, items)
+
+  if (!items) return <div>loading..</div>
 
   return (
     <VStack spacing="4">

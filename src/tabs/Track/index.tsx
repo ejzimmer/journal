@@ -1,26 +1,18 @@
 import { Table, Tbody } from "@chakra-ui/react"
 import { eachDayOfInterval, endOfISOWeek, startOfISOWeek } from "date-fns"
-import { useState } from "react"
+import { useContext } from "react"
 import { Footer } from "./Footer"
 import { Habit } from "./Track"
 import { Header } from "./Header"
 import { HabitRecord } from "./types"
-import { useStorage } from "../../shared/useLocalStorage"
+import { FirebaseContext } from "../../shared/FirebaseContext"
 
-const LOCAL_STORAGE_KEY = "habits"
+const TRACK_KEY = "track"
 
 export function Track() {
-  const [habits, setHabits] = useState<HabitRecord[]>([])
+  const { useValue, write } = useContext(FirebaseContext)
 
-  const updateHabits = (habits: HabitRecord[]) => {
-    const mappedHabits = habits.map((habit: HabitRecord) => ({
-      ...habit,
-      days: habit.days.map((day) => new Date(day)),
-    }))
-    setHabits(mappedHabits)
-  }
-
-  useStorage(LOCAL_STORAGE_KEY, updateHabits, habits)
+  const { value: habits } = useValue(TRACK_KEY)
 
   const startDate = startOfISOWeek(new Date())
   const endOfWeek = endOfISOWeek(startDate)
@@ -28,22 +20,22 @@ export function Track() {
 
   const addHabit = (habitName: string) => {
     if (habitName) {
-      setHabits((habits) => [...habits, { name: habitName, days: [] }])
+      write(TRACK_KEY, [...habits, { name: habitName, days: [] }])
     }
   }
 
   const updateHabit = (habit: HabitRecord) => {
-    setHabits((habits) => {
-      const index = habits.findIndex((h) => h.name === habit.name)
-      const startOfList = habits.slice(0, index)
-      const endOfList = habits.slice(index + 1)
+    const index = habits.findIndex((h: HabitRecord) => h.name === habit.name)
+    const startOfList = habits.slice(0, index)
+    const endOfList = habits.slice(index + 1)
 
-      return [...startOfList, habit, ...endOfList]
-    })
+    write(TRACK_KEY, [...startOfList, habit, ...endOfList])
   }
 
   const deleteHabit = ({ name }: HabitRecord) => {
-    setHabits((habits) => habits.filter((habit) => habit.name !== name))
+    write(TRACK_KEY, (habits: HabitRecord[]) =>
+      habits.filter((habit) => habit.name !== name)
+    )
   }
 
   return (
@@ -52,7 +44,7 @@ export function Track() {
         <Header days={days} />
         <Tbody>
           {habits &&
-            habits.map((habit) => (
+            habits.map((habit: HabitRecord) => (
               <Habit
                 key={habit.name}
                 habit={habit}
