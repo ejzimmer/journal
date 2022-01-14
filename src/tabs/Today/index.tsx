@@ -1,6 +1,6 @@
 import { VStack } from "@chakra-ui/layout"
 import { isSameDay, isWeekend } from "date-fns"
-import { useContext, useEffect, useState } from "react"
+import { useContext, useEffect } from "react"
 import { FirebaseContext } from "../../shared/FirebaseContext"
 import { NewItem } from "../../shared/TodoList/NewItem"
 import { TodoList } from "../../shared/TodoList/TodoList"
@@ -25,13 +25,14 @@ const TODAY_KEY = "today"
 // add things automatically so there's one of each type from todo in today
 
 export function Today() {
-  const TODAY = new Date()
   const { useValue, write } = useContext(FirebaseContext)
 
-  const { value: storedItems } = useValue(TODAY_KEY)
+  const { value: storedItems, loading } = useValue(TODAY_KEY)
 
   useEffect(() => {
-    if (!storedItems) return
+    if (loading) return
+
+    const TODAY = new Date()
 
     const forToday = [...everydayThings]
     if (!isWeekend(TODAY)) {
@@ -39,27 +40,30 @@ export function Today() {
     }
 
     const everydayItemsForToday = forToday.map((thing) => {
-      const item: TodoItem = storedItems.find(
-        (i: TodoItem) => i.description === thing
-      )
+      const item: TodoItem =
+        storedItems &&
+        storedItems.find((i: TodoItem) => i.description === thing)
 
-      if (item && item.done && !isSameDay(TODAY, item.done)) {
-        item.done = undefined
+      if (item && item.done && !isSameDay(TODAY, new Date(item.done))) {
+        delete item.done
       }
 
       return item || { description: thing, type: "毎日" }
     })
 
-    const otherItemsForToday = storedItems.filter((item: TodoItem) => {
-      if (item.type === "毎日") return false
-      if (item.done && !isSameDay(TODAY, item.done)) return false
+    const otherItemsForToday = storedItems
+      ? storedItems.filter((item: TodoItem) => {
+          if (item.type === "毎日") return false
+          if (item.done && !isSameDay(TODAY, item.done)) return false
 
-      return true
-    })
+          return true
+        })
+      : []
 
     const itemsForToday = [...everydayItemsForToday, ...otherItemsForToday]
 
     function shouldUpdate(itemsForToday: TodoItem[], storedItems: TodoItem[]) {
+      if (!storedItems) return true
       if (itemsForToday.length !== storedItems.length) return true
 
       return itemsForToday.some((item, index) => {
@@ -75,22 +79,12 @@ export function Today() {
     if (shouldUpdate(itemsForToday, storedItems)) {
       write(TODAY_KEY, itemsForToday)
     }
-  }, [storedItems])
+  }, [storedItems, loading, write])
 
-  const onChange = (items: TodoItem[]) => console.log("changed items", items)
-  const addItem = (item: TodoItem) => console.log("add item", item)
-
-  // const onChange = (items: TodoItem[]) => {
-  //   const everydayItems = items.filter((item) => item.type === "毎日")
-  //   setEverydayItems(everydayItems)
-
-  //   const todayItems = items.filter((item) => item.type !== "毎日")
-  //   setTodayItems(todayItems)
-  // }
-
-  // const addItem = (item: TodoItem) => {
-  //   setTodayItems((items) => [...items, item])
-  // }
+  const onChange = (items: TodoItem[]) => {
+    write(TODAY_KEY, items)
+  }
+  const addItem = (item: TodoItem) => write(TODAY_KEY, [...storedItems, item])
 
   if (!storedItems) return <div>loading...</div>
 

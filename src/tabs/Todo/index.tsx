@@ -1,4 +1,4 @@
-import { useContext, useState } from "react"
+import { useContext } from "react"
 import { NewItem } from "../../shared/TodoList/NewItem"
 import { VStack } from "@chakra-ui/react"
 import { TodoList } from "../../shared/TodoList/TodoList"

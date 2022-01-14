@@ -14,9 +14,9 @@ interface Props {
 export function Item({ item, onChange, onDelete }: Props) {
   const handleCheck = (event: ChangeEvent<HTMLInputElement>) => {
     if (event.target.checked) {
-      item.done = new Date()
+      item.done = new Date().getTime()
     } else {
-      item.done = undefined
+      delete item.done
     }
 
     onChange(item)
