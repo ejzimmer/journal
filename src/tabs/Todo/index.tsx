@@ -10,19 +10,19 @@ const TODO_KEY = "todo"
 export function Todo() {
   const { useValue, write } = useContext(FirebaseContext)
 
-  const { value: items } = useValue(TODO_KEY)
+  const { value: items, loading } = useValue(TODO_KEY)
 
   const addItem = (item: TodoItem) => {
-    write(TODO_KEY, [...items, item])
+    write(TODO_KEY, [...(items || []), item])
   }
 
   const onChange = (items: TodoItem[]) => write(TODO_KEY, items)
 
-  if (!items) return <div>loading..</div>
+  if (loading) return <div>loading..</div>
 
   return (
     <VStack spacing="4">
-      <TodoList id="all-todos" items={items} onChange={onChange} />
+      <TodoList id="all-todos" items={items || []} onChange={onChange} />
       <NewItem addItem={addItem} />
     </VStack>
   )
