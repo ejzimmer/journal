@@ -22,8 +22,9 @@ export function Item({ item, onChange, onDelete }: Props) {
     onChange(item)
   }
 
-  if (item.done && !isToday(new Date(item.done))) {
+  if (item.done && item.type === "毎日" && !isToday(new Date(item.done))) {
     delete item.done
+    onChange(item)
   }
 
   const isDone = !!item.done
