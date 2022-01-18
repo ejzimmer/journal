@@ -27,6 +27,7 @@ export function Todo() {
         items={items || []}
         onReorder={onChange}
         onChangeItem={() => {}}
+        onDeleteItem={() => {}}
       />
       <NewItem list={TODO_KEY} />
     </VStack>

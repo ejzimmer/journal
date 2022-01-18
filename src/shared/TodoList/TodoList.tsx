@@ -12,13 +12,20 @@ interface Props {
   id: string
   items: TodoItem[]
   onChangeItem: (item: TodoItem) => void
+  onDeleteItem: (item: TodoItem) => void
   onReorder: (items: TodoItem[]) => void
 }
 
 const sortByDone = (a: TodoItem, b: TodoItem) =>
   a.done === b.done ? 0 : a.done ? 1 : -1
 
-export function TodoList({ id, items, onChangeItem, onReorder }: Props) {
+export function TodoList({
+  id,
+  items,
+  onChangeItem,
+  onDeleteItem,
+  onReorder,
+}: Props) {
   const onDragEnd = ({ source, destination }: DropResult) => {
     // dropped outside the list
     if (!destination) {
@@ -32,11 +39,6 @@ export function TodoList({ id, items, onChangeItem, onReorder }: Props) {
     const listEnd = list.slice(destination.index)
 
     onReorder([...listStart, removed, ...listEnd])
-  }
-
-  const onDeleteItem = ({ description }: TodoItem) => {
-    const updatedItems = items.filter((i) => i.description !== description)
-    // onChange(updatedItems)
   }
 
   return (

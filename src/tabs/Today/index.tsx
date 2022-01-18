@@ -33,7 +33,7 @@ const TODAY_KEY = "today"
 
 export function Today() {
   const [items, setItems] = useState<TodoItem[]>([])
-  const { subscribeToList, updateItemInList, updateList } =
+  const { subscribeToList, updateItemInList, deleteItemFromList, updateList } =
     useContext(FirebaseContext)
 
   if (items.length === 0) {
@@ -52,6 +52,7 @@ export function Today() {
     subscribeToList(TODAY_KEY, {
       onAdd: onNewItem,
       onChange: onChangeItem,
+      onDelete: onDeleteItem,
       replaceList: setItems,
     })
   }, [])
@@ -83,6 +84,13 @@ export function Today() {
       })
     },
     [items, setItems]
+  )
+
+  const onDeleteItem = useCallback(
+    (item: TodoItem) => {
+      setItems((items) => items.filter((i) => i.id === item.id))
+    },
+    [setItems]
   )
 
   // const [storedItems, setStoredItems] = useState([])
@@ -155,6 +163,7 @@ export function Today() {
         id="today"
         items={items}
         onChangeItem={(item) => updateItemInList(TODAY_KEY, item)}
+        onDeleteItem={(item) => deleteItemFromList(TODAY_KEY, item)}
         onReorder={(list) => updateList(TODAY_KEY, list)}
       />
       <NewItem list={TODAY_KEY} />
