@@ -76,7 +76,6 @@ export function Today() {
     [items, setItems]
   )
 
-  console.log(items)
   // const [storedItems, setStoredItems] = useState([])
   // const { useList, write } = useContext(FirebaseContext)
 
