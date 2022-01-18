@@ -32,7 +32,7 @@ const TODAY_KEY = "today"
 
 export function Today() {
   const [items, setItems] = useState<TodoItem[]>([])
-  const { subscribeToList } = useContext(FirebaseContext)
+  const { subscribeToList, updateItemInList } = useContext(FirebaseContext)
 
   if (items.length === 0) {
     const TODAY = new Date()
@@ -47,7 +47,7 @@ export function Today() {
   }
 
   useEffect(() => {
-    subscribeToList(TODAY_KEY, { onAdd: onNewItem })
+    subscribeToList(TODAY_KEY, { onAdd: onNewItem, onChange: onChangeItem })
   }, [])
 
   const onNewItem = useCallback(
@@ -72,6 +72,21 @@ export function Today() {
       } else {
         setItems((items) => [...items, item])
       }
+    },
+    [items, setItems]
+  )
+
+  const onChangeItem = useCallback(
+    (item: TodoItem) => {
+      setItems((items) => {
+        const index = items.findIndex((i) => i.id === item.id)
+        if (index > -1) {
+          items[index] = item
+          return [...items]
+        }
+
+        return items
+      })
     },
     [items, setItems]
   )
@@ -142,7 +157,12 @@ export function Today() {
 
   return (
     <VStack spacing="4">
-      <TodoList id="today" items={items} onChange={() => {}} />
+      <TodoList
+        id="today"
+        items={items}
+        onChangeItem={(item) => updateItemInList(TODAY_KEY, item)}
+        onChange={() => {}}
+      />
       <NewItem list={TODAY_KEY} />
     </VStack>
   )

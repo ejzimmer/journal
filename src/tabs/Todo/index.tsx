@@ -22,7 +22,12 @@ export function Todo() {
 
   return (
     <VStack spacing="4">
-      <TodoList id="all-todos" items={items || []} onChange={onChange} />
+      <TodoList
+        id="all-todos"
+        items={items || []}
+        onChange={onChange}
+        onChangeItem={() => {}}
+      />
       <NewItem list={TODO_KEY} />
     </VStack>
   )

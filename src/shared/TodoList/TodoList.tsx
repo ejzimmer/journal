@@ -11,13 +11,14 @@ import { TodoItem } from "./types"
 interface Props {
   id: string
   items: TodoItem[]
+  onChangeItem: (item: TodoItem) => void
   onChange: (items: TodoItem[]) => void
 }
 
 const sortByDone = (a: TodoItem, b: TodoItem) =>
   a.done === b.done ? 0 : a.done ? 1 : -1
 
-export function TodoList({ id, items, onChange }: Props) {
+export function TodoList({ id, items, onChangeItem, onChange }: Props) {
   const onDragEnd = ({ source, destination }: DropResult) => {
     // dropped outside the list
     if (!destination) {
@@ -29,16 +30,6 @@ export function TodoList({ id, items, onChange }: Props) {
     const listEnd = items.slice(destination.index)
 
     onChange([...listStart, removed, ...listEnd])
-  }
-
-  const onChangeItem = (item: TodoItem) => {
-    const index = items.findIndex((i) => item.description === i.description)
-    const startOfList = items.slice(0, index)
-    const endOfList = items.slice(index + 1)
-
-    const updatedItems = [...startOfList, item, ...endOfList].sort(sortByDone)
-
-    onChange(updatedItems)
   }
 
   const onDeleteItem = ({ description }: TodoItem) => {
