@@ -33,7 +33,8 @@ const TODAY_KEY = "today"
 
 export function Today() {
   const [items, setItems] = useState<TodoItem[]>([])
-  const { subscribeToList, updateItemInList } = useContext(FirebaseContext)
+  const { subscribeToList, updateItemInList, updateList } =
+    useContext(FirebaseContext)
 
   if (items.length === 0) {
     const TODAY = new Date()
@@ -56,7 +57,7 @@ export function Today() {
       if (item.type === "毎日") {
         setItems((items) => {
           const index = items.findIndex((i) =>
-            typeof i.id === undefined
+            typeof i.id === "undefined"
               ? i.description === item.description
               : i.id === item.id
           )
@@ -150,7 +151,7 @@ export function Today() {
         id="today"
         items={items}
         onChangeItem={(item) => updateItemInList(TODAY_KEY, item)}
-        onChange={() => {}}
+        onReorder={(list) => updateList(TODAY_KEY, list)}
       />
       <NewItem list={TODAY_KEY} />
     </VStack>
