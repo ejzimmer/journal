@@ -1,13 +1,14 @@
 import { HStack, Input, Select } from "@chakra-ui/react"
 import styled from "@emotion/styled"
-import { ChangeEvent, FormEvent, useState } from "react"
-import { TodoItem } from "./types"
+import { ChangeEvent, FormEvent, useContext, useState } from "react"
+import { FirebaseContext } from "../FirebaseContext"
 
 interface Props {
-  addItem: (item: TodoItem) => void
+  list: string
 }
 
-export function NewItem({ addItem }: Props) {
+export function NewItem({ list }: Props) {
+  const { addItemToList } = useContext(FirebaseContext)
   const [description, setDescription] = useState("")
   const [type, setType] = useState("🧹")
 
@@ -20,9 +21,8 @@ export function NewItem({ addItem }: Props) {
 
   const submitForm = (event: FormEvent) => {
     event.preventDefault()
-    addItem({ description, type })
+    addItemToList(list, { description, type })
     setDescription("")
-    setType("🧹")
   }
 
   return (

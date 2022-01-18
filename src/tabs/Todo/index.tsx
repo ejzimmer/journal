@@ -23,7 +23,7 @@ export function Todo() {
   return (
     <VStack spacing="4">
       <TodoList id="all-todos" items={items || []} onChange={onChange} />
-      <NewItem addItem={addItem} />
+      <NewItem list={TODO_KEY} />
     </VStack>
   )
 }

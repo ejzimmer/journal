@@ -59,8 +59,8 @@ export function TodoList({ id, items, onChange }: Props) {
           >
             {items.sort(sortByDone).map((item, index) => (
               <Draggable
-                key={item.description}
-                draggableId={item.description}
+                key={item.id || item.description}
+                draggableId={item.id || item.description}
                 index={index}
               >
                 {(provided) => (
