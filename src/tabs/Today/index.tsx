@@ -5,6 +5,7 @@ import { FirebaseContext } from "../../shared/FirebaseContext"
 import { NewItem } from "../../shared/TodoList/NewItem"
 import { TodoList } from "../../shared/TodoList/TodoList"
 import { TodoItem } from "../../shared/TodoList/types"
+import { updateInPlace } from "../../shared/utils"
 
 const everydayThings: string[] = [
   "personal hygiene",
@@ -54,20 +55,13 @@ export function Today() {
     (item: TodoItem) => {
       if (item.type === "毎日") {
         setItems((items) => {
-          const index = items.findIndex((i) => {
-            if (typeof i.id !== "undefined") {
-              return item.id === i.id
-            } else {
-              return i.description === item.description
-            }
-          })
+          const index = items.findIndex((i) =>
+            typeof i.id === undefined
+              ? i.description === item.description
+              : i.id === item.id
+          )
 
-          if (index > -1) {
-            items[index] = item
-            return [...items]
-          } else {
-            return items
-          }
+          return updateInPlace(items, index, item)
         })
       } else {
         setItems((items) => [...items, item])
@@ -80,12 +74,7 @@ export function Today() {
     (item: TodoItem) => {
       setItems((items) => {
         const index = items.findIndex((i) => i.id === item.id)
-        if (index > -1) {
-          items[index] = item
-          return [...items]
-        }
-
-        return items
+        return updateInPlace(items, index, item)
       })
     },
     [items, setItems]
