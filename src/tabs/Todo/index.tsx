@@ -25,7 +25,7 @@ export function Todo() {
       <TodoList
         id="all-todos"
         items={items || []}
-        onChange={onChange}
+        onReorder={onChange}
         onChangeItem={() => {}}
       />
       <NewItem list={TODO_KEY} />

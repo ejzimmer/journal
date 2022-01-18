@@ -12,29 +12,31 @@ interface Props {
   id: string
   items: TodoItem[]
   onChangeItem: (item: TodoItem) => void
-  onChange: (items: TodoItem[]) => void
+  onReorder: (items: TodoItem[]) => void
 }
 
 const sortByDone = (a: TodoItem, b: TodoItem) =>
   a.done === b.done ? 0 : a.done ? 1 : -1
 
-export function TodoList({ id, items, onChangeItem, onChange }: Props) {
+export function TodoList({ id, items, onChangeItem, onReorder }: Props) {
   const onDragEnd = ({ source, destination }: DropResult) => {
     // dropped outside the list
     if (!destination) {
       return
     }
 
-    const [removed] = items.splice(source.index, 1)
-    const listStart = items.slice(0, destination.index)
-    const listEnd = items.slice(destination.index)
+    const list = [...items]
 
-    onChange([...listStart, removed, ...listEnd])
+    const [removed] = list.splice(source.index, 1)
+    const listStart = list.slice(0, destination.index)
+    const listEnd = list.slice(destination.index)
+
+    onReorder([...listStart, removed, ...listEnd])
   }
 
   const onDeleteItem = ({ description }: TodoItem) => {
     const updatedItems = items.filter((i) => i.description !== description)
-    onChange(updatedItems)
+    // onChange(updatedItems)
   }
 
   return (
@@ -69,6 +71,7 @@ export function TodoList({ id, items, onChangeItem, onChange }: Props) {
                 )}
               </Draggable>
             ))}
+            {provided.placeholder}
           </List>
         )}
       </Droppable>

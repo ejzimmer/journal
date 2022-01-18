@@ -49,7 +49,11 @@ export function Today() {
   }
 
   useEffect(() => {
-    subscribeToList(TODAY_KEY, { onAdd: onNewItem, onChange: onChangeItem })
+    subscribeToList(TODAY_KEY, {
+      onAdd: onNewItem,
+      onChange: onChangeItem,
+      replaceList: setItems,
+    })
   }, [])
 
   const onNewItem = useCallback(
