@@ -6,7 +6,6 @@ import {
   push,
   onChildAdded,
   onChildChanged,
-  onChildMoved,
   onChildRemoved,
   remove,
 } from "firebase/database"
@@ -14,6 +13,8 @@ import { createContext, useEffect, useState } from "react"
 import { TodoItem } from "./TodoList/types"
 
 type CrudFunction = (item: TodoItem) => void
+type ListCrudFunction = (listName: string, item: TodoItem) => void
+
 interface CrudFunctions {
   onAdd: CrudFunction
   onChange: CrudFunction
@@ -26,9 +27,9 @@ interface ContextType {
     listName: string,
     { onAdd, onChange }: CrudFunctions
   ) => void
-  addItemToList: (listName: string, item: TodoItem) => void
-  updateItemInList: (listName: string, item: TodoItem) => void
-  deleteItemFromList: (listName: string, item: TodoItem) => void
+  addItemToList: ListCrudFunction
+  updateItemInList: ListCrudFunction
+  deleteItemFromList: ListCrudFunction
   updateList: (listName: string, list: TodoItem[]) => void
   write: (key: string, data: any) => void
   useValue: (key: string) => { value?: any; loading: boolean }
@@ -74,7 +75,6 @@ export function createFirebaseContext(database: Database): ContextType {
       }
     },
     deleteItemFromList: (listName, item) => {
-      console.log("i am delete you ", item.id)
       const reference = ref(database, `${listName}/${item.id}`)
       remove(reference)
     },
