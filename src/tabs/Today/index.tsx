@@ -42,15 +42,6 @@ export function Today() {
     setItems(items)
   }
 
-  useEffect(() => {
-    subscribeToList(TODAY_KEY, {
-      onAdd: onNewItem,
-      onChange: onChangeItem,
-      onDelete: onDeleteItem,
-      replaceList: setItems,
-    })
-  }, [])
-
   const onNewItem = useCallback(
     (item: TodoItem) => {
       if (item.type === "毎日") {
@@ -72,7 +63,7 @@ export function Today() {
           setItems((items) => [...items, item])
       }
     },
-    [items, setItems]
+    [setItems]
   )
 
   const onChangeItem = useCallback(
@@ -82,7 +73,7 @@ export function Today() {
         return updateInPlace(items, index, item)
       })
     },
-    [items, setItems]
+    [setItems]
   )
 
   const onDeleteItem = useCallback(
@@ -91,6 +82,15 @@ export function Today() {
     },
     [setItems]
   )
+
+  useEffect(() => {
+    subscribeToList(TODAY_KEY, {
+      onAdd: onNewItem,
+      onChange: onChangeItem,
+      onDelete: onDeleteItem,
+      replaceList: setItems,
+    })
+  }, [onNewItem, onChangeItem, onDeleteItem, setItems, subscribeToList])
 
   return (
     <VStack spacing="4">

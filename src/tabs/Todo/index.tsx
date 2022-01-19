@@ -1,5 +1,5 @@
 import { VStack } from "@chakra-ui/layout"
-import { isSameDay, isWeekend } from "date-fns"
+import { isSameDay } from "date-fns"
 import { useCallback, useContext, useEffect, useState } from "react"
 import { FirebaseContext } from "../../shared/FirebaseContext"
 import { NewItem } from "../../shared/TodoList/NewItem"
@@ -16,22 +16,13 @@ export function Todo() {
   const { subscribeToList, updateItemInList, deleteItemFromList, updateList } =
     useContext(FirebaseContext)
 
-  useEffect(() => {
-    subscribeToList(TODO_KEY, {
-      onAdd: onNewItem,
-      onChange: onChangeItem,
-      onDelete: onDeleteItem,
-      replaceList: setItems,
-    })
-  }, [])
-
   const onNewItem = useCallback(
     (item: TodoItem) => {
       if (!item.done || isSameDay(item.done, TODAY)) {
         setItems((items) => [...items, item])
       }
     },
-    [items, setItems]
+    [setItems]
   )
 
   const onChangeItem = useCallback(
@@ -41,7 +32,7 @@ export function Todo() {
         return updateInPlace(items, index, item)
       })
     },
-    [items, setItems]
+    [setItems]
   )
 
   const onDeleteItem = useCallback(
@@ -50,6 +41,15 @@ export function Todo() {
     },
     [setItems]
   )
+
+  useEffect(() => {
+    subscribeToList(TODO_KEY, {
+      onAdd: onNewItem,
+      onChange: onChangeItem,
+      onDelete: onDeleteItem,
+      replaceList: setItems,
+    })
+  }, [onNewItem, onChangeItem, onDeleteItem, setItems, subscribeToList])
 
   return (
     <VStack spacing="4">
