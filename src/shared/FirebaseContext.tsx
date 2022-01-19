@@ -59,9 +59,18 @@ export function createFirebaseContext(database: Database): ContextType {
       )
       onChildChanged(reference, (snapshot) => onChange(snapshot.val()))
       onChildRemoved(reference, (snapshot) => onDelete(snapshot.val()))
-      onValue(reference, (snapshot) =>
-        updateValue(Object.values(snapshot.val()))
-      )
+      onValue(reference, (snapshot) => {
+        const value: Record<string, TodoItem> = snapshot.val()
+        if (value && value[0] && !value[0].id) {
+          const valueWithIds = Object.entries(value).map(([key, value]) => ({
+            ...value,
+            id: key,
+          }))
+          updateValue(valueWithIds)
+        } else {
+          updateValue(Object.values(snapshot.val()))
+        }
+      })
     },
     addItemToList: (listName, item) => {
       const reference = ref(database, listName)
