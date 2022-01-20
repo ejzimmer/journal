@@ -47,7 +47,6 @@ export function Todo() {
       onAdd: onNewItem,
       onChange: onChangeItem,
       onDelete: onDeleteItem,
-      replaceList: setItems,
     })
   }, [onNewItem, onChangeItem, onDeleteItem, setItems, subscribeToList])
 

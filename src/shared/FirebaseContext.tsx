@@ -13,13 +13,12 @@ import { createContext, useEffect, useState } from "react"
 import { TodoItem } from "./TodoList/types"
 
 type CrudFunction = (item: TodoItem) => void
-type ListCrudFunction = (listName: string, item: TodoItem) => void
+type ListCrudFunction = (listName: string, item: Partial<TodoItem>) => void
 
 interface CrudFunctions {
   onAdd: CrudFunction
   onChange: CrudFunction
   onDelete: CrudFunction
-  replaceList: (list: TodoItem[]) => void
 }
 
 interface ContextType {
@@ -49,28 +48,13 @@ export const FirebaseContext = createContext(defaultContext)
 
 export function createFirebaseContext(database: Database): ContextType {
   return {
-    subscribeToList: (
-      listName,
-      { onAdd, onChange, onDelete, replaceList: updateValue }
-    ) => {
+    subscribeToList: (listName, { onAdd, onChange, onDelete }) => {
       const reference = ref(database, listName)
-      onChildAdded(reference, (snapshot) =>
+      onChildAdded(reference, (snapshot) => {
         onAdd({ id: snapshot.key, ...snapshot.val() })
-      )
+      })
       onChildChanged(reference, (snapshot) => onChange(snapshot.val()))
       onChildRemoved(reference, (snapshot) => onDelete(snapshot.val()))
-      onValue(reference, (snapshot) => {
-        const value: Record<string, TodoItem> = snapshot.val()
-        if (value && value[0] && !value[0].id) {
-          const valueWithIds = Object.entries(value).map(([key, value]) => ({
-            ...value,
-            id: key,
-          }))
-          updateValue(valueWithIds)
-        } else {
-          updateValue(Object.values(snapshot.val()))
-        }
-      })
     },
     addItemToList: (listName, item) => {
       const reference = ref(database, listName)
@@ -88,7 +72,11 @@ export function createFirebaseContext(database: Database): ContextType {
       remove(reference)
     },
     updateList: (listName, list) => {
-      set(ref(database, listName), list)
+      const map = list.reduce((items, item) => {
+        items[item.id || item.description] = item
+        return items
+      }, {} as Record<string, TodoItem>)
+      set(ref(database, listName), map)
     },
     write: (key: string, data: any) => {
       set(ref(database, key), data)

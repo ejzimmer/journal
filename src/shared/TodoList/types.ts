@@ -1,6 +1,7 @@
 export interface TodoItem {
-  id?: string
+  id: string
   description: string
   type: string
-  done?: number
+  done?: number | false
+  position?: number
 }

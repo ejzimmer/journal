@@ -5,7 +5,6 @@ import { FirebaseContext } from "../../shared/FirebaseContext"
 import { NewItem } from "../../shared/TodoList/NewItem"
 import { TodoList } from "../../shared/TodoList/TodoList"
 import { TodoItem } from "../../shared/TodoList/types"
-import { updateInPlace } from "../../shared/utils"
 
 const everydayThings: string[] = [
   "personal hygiene",
@@ -28,39 +27,61 @@ const TODAY_KEY = "today"
 const TODAY = new Date()
 
 export function Today() {
-  const [items, setItems] = useState<TodoItem[]>([])
+  const [items, setItems] = useState<Record<string, TodoItem>>({})
   const { subscribeToList, updateItemInList, deleteItemFromList, updateList } =
     useContext(FirebaseContext)
 
-  if (items.length === 0) {
+  if (Object.keys(items).length === 0) {
     const forToday = [...everydayThings]
     if (!isWeekend(TODAY)) {
       forToday.push(...weekdayThings)
     }
 
-    const items = forToday.map((item) => ({ description: item, type: "毎日" }))
-    setItems(items)
+    setItems(
+      forToday.reduce((items, item, index) => {
+        return {
+          ...items,
+          [item]: {
+            description: item,
+            type: "毎日",
+            position: index,
+          },
+        }
+      }, {})
+    )
   }
 
   const onNewItem = useCallback(
     (item: TodoItem) => {
       if (item.type === "毎日") {
         setItems((items) => {
-          const index = items.findIndex((i) =>
-            typeof i.id === "undefined"
-              ? i.description === item.description
-              : i.id === item.id
-          )
+          const existingItem = items[item.description]
+          if (existingItem) {
+            items[item.id] = {
+              ...existingItem,
+              ...item,
+            }
+
+            delete items[item.description]
+          }
 
           if (item.done && !isSameDay(item.done, TODAY)) {
             delete item.done
           }
 
-          return updateInPlace(items, index, item)
+          return items
         })
-      } else {
-        if (!item.done || isSameDay(item.done, TODAY))
-          setItems((items) => [...items, item])
+      } else if (!item.done || isSameDay(item.done, TODAY)) {
+        setItems((items) => {
+          if (!item.position) {
+            item.position = Object.keys(items).length
+          }
+
+          return {
+            ...items,
+            [item.id]: item,
+          }
+        })
       }
     },
     [setItems]
@@ -68,17 +89,21 @@ export function Today() {
 
   const onChangeItem = useCallback(
     (item: TodoItem) => {
-      setItems((items) => {
-        const index = items.findIndex((i) => i.id === item.id)
-        return updateInPlace(items, index, item)
-      })
+      setItems((items) => ({
+        ...items,
+        [item.id]: item,
+      }))
     },
     [setItems]
   )
 
   const onDeleteItem = useCallback(
     (item: TodoItem) => {
-      setItems((items) => items.filter((i) => i.id === item.id))
+      setItems((items) => {
+        const copy = { ...items }
+        delete copy[item.id]
+        return copy
+      })
     },
     [setItems]
   )
@@ -88,7 +113,6 @@ export function Today() {
       onAdd: onNewItem,
       onChange: onChangeItem,
       onDelete: onDeleteItem,
-      replaceList: setItems,
     })
   }, [onNewItem, onChangeItem, onDeleteItem, setItems, subscribeToList])
 
@@ -96,7 +120,7 @@ export function Today() {
     <VStack spacing="4">
       <TodoList
         id="today"
-        items={items}
+        items={Object.values(items)}
         onChangeItem={(item) => updateItemInList(TODAY_KEY, item)}
         onDeleteItem={(item) => deleteItemFromList(TODAY_KEY, item)}
         onReorder={(list) => updateList(TODAY_KEY, list)}

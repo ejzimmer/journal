@@ -1,6 +1,4 @@
 import { Tab, TabList, TabPanel, TabPanels, Tabs } from "@chakra-ui/tabs"
-import { Track } from "./tabs/Track"
-import { Todo } from "./tabs/Todo"
 import { Today } from "./tabs/Today"
 import { Button } from "@chakra-ui/button"
 import { Grid } from "@chakra-ui/layout"
@@ -12,6 +10,8 @@ import {
   signInWithRedirect,
 } from "firebase/auth"
 import { useState } from "react"
+import { Track } from "./tabs/Track"
+import { Todo } from "./tabs/Todo"
 
 export function App() {
   const [isLoggedIn, setLoggedIn] = useState(false)
@@ -54,9 +54,7 @@ export function App() {
         <TabPanel>
           <Track />
         </TabPanel>
-        <TabPanel>
-          <Todo />
-        </TabPanel>
+        <TabPanel>{/* <Todo /> */}</TabPanel>
         <TabPanel>show meetings work hours work todos</TabPanel>
         <TabPanel>body measurements stretching timers period tracking</TabPanel>
       </TabPanels>
