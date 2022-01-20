@@ -5,21 +5,28 @@ import { FirebaseContext } from "../../shared/FirebaseContext"
 import { NewItem } from "../../shared/TodoList/NewItem"
 import { TodoList } from "../../shared/TodoList/TodoList"
 import { TodoItem } from "../../shared/TodoList/types"
-import { updateInPlace } from "../../shared/utils"
 
 const TODO_KEY = "todo"
 
 const TODAY = new Date()
 
 export function Todo() {
-  const [items, setItems] = useState<TodoItem[]>([])
+  const [items, setItems] = useState<Record<string, TodoItem>>({})
   const { subscribeToList, updateItemInList, deleteItemFromList, updateList } =
     useContext(FirebaseContext)
 
   const onNewItem = useCallback(
-    (item: TodoItem) => {
-      if (!item.done || isSameDay(item.done, TODAY)) {
-        setItems((items) => [...items, item])
+    (item: any) => {
+      if (item.done && isSameDay(item.done, TODAY)) {
+        deleteItemFromList(TODO_KEY, item)
+      } else {
+        setItems((items) => {
+          if (typeof item.position === "undefined") {
+            item.position = Object.keys(items).length
+            updateItemInList(TODO_KEY, item)
+          }
+          return { ...items, [item.id]: item }
+        })
       }
     },
     [setItems]
@@ -27,17 +34,36 @@ export function Todo() {
 
   const onChangeItem = useCallback(
     (item: TodoItem) => {
-      setItems((items) => {
-        const index = items.findIndex((i) => i.id === item.id)
-        return updateInPlace(items, index, item)
-      })
+      setItems((items) => ({
+        ...items,
+        [item.id]: item,
+      }))
     },
     [setItems]
   )
 
   const onDeleteItem = useCallback(
     (item: TodoItem) => {
-      setItems((items) => items.filter((i) => i.id === item.id))
+      setItems((items) => {
+        delete items[item.id]
+        return items
+      })
+    },
+    [setItems]
+  )
+
+  const onReorder = useCallback(
+    (list: TodoItem[]) => {
+      setItems(
+        list.reduce(
+          (items, item) => ({
+            ...items,
+            [item.id]: item,
+          }),
+          {}
+        )
+      )
+      list.forEach((item) => updateItemInList(TODO_KEY, item))
     },
     [setItems]
   )
@@ -54,10 +80,10 @@ export function Todo() {
     <VStack spacing="4">
       <TodoList
         id="today"
-        items={items}
+        items={Object.values(items)}
         onChangeItem={(item) => updateItemInList(TODO_KEY, item)}
         onDeleteItem={(item) => deleteItemFromList(TODO_KEY, item)}
-        onReorder={(list) => updateList(TODO_KEY, list)}
+        onReorder={onReorder}
       />
       <NewItem list={TODO_KEY} />
     </VStack>

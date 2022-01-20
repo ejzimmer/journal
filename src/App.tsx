@@ -54,7 +54,9 @@ export function App() {
         <TabPanel>
           <Track />
         </TabPanel>
-        <TabPanel>{/* <Todo /> */}</TabPanel>
+        <TabPanel>
+          <Todo />
+        </TabPanel>
         <TabPanel>show meetings work hours work todos</TabPanel>
         <TabPanel>body measurements stretching timers period tracking</TabPanel>
       </TabPanels>
