@@ -12,7 +12,7 @@ const TODAY = new Date()
 
 export function Todo() {
   const [items, setItems] = useState<Record<string, TodoItem>>({})
-  const { subscribeToList, updateItemInList, deleteItemFromList, updateList } =
+  const { subscribeToList, updateItemInList, deleteItemFromList } =
     useContext(FirebaseContext)
 
   const onNewItem = useCallback(
@@ -29,7 +29,7 @@ export function Todo() {
         })
       }
     },
-    [setItems]
+    [setItems, deleteItemFromList, updateItemInList]
   )
 
   const onChangeItem = useCallback(
@@ -65,7 +65,7 @@ export function Todo() {
       )
       list.forEach((item) => updateItemInList(TODO_KEY, item))
     },
-    [setItems]
+    [setItems, updateItemInList]
   )
 
   useEffect(() => {

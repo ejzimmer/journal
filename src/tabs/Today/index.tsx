@@ -121,7 +121,7 @@ export function Today() {
       )
       list.forEach((item) => updateItemInList(TODAY_KEY, item))
     },
-    [setItems]
+    [setItems, updateItemInList]
   )
 
   useEffect(() => {
