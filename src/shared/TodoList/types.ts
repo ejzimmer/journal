@@ -3,5 +3,5 @@ export interface TodoItem {
   description: string
   type: string
   done?: number | false
-  position?: number
+  position: number
 }

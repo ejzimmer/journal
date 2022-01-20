@@ -16,8 +16,11 @@ interface Props {
   onReorder: (items: TodoItem[]) => void
 }
 
-const sortByDone = (a: TodoItem, b: TodoItem) =>
-  a.done === b.done ? 0 : a.done ? 1 : -1
+const sortItems = (a: TodoItem, b: TodoItem) => {
+  if (a.done === b.done) return a.position - b.position
+  if (a.done) return -1
+  return 1
+}
 
 export function TodoList({
   id,
@@ -32,13 +35,17 @@ export function TodoList({
       return
     }
 
-    const list = [...items]
+    const movedItem = items[source.index]
+    const listWithoutItem = items.filter((_, index) => index !== source.index)
 
-    const [removed] = list.splice(source.index, 1)
-    const listStart = list.slice(0, destination.index)
-    const listEnd = list.slice(destination.index)
+    const listStart = listWithoutItem.slice(0, destination.index)
+    const listEnd = listWithoutItem.slice(destination.index)
 
-    onReorder([...listStart, removed, ...listEnd])
+    const reshuffledList = [...listStart, movedItem, ...listEnd].map(
+      (item, index) => ({ ...item, position: index })
+    )
+
+    onReorder(reshuffledList)
   }
 
   return (
@@ -52,7 +59,7 @@ export function TodoList({
             {...provided.droppableProps}
             ref={provided.innerRef}
           >
-            {items.sort(sortByDone).map((item, index) => (
+            {items.sort(sortItems).map((item, index) => (
               <Draggable
                 key={item.id || item.description}
                 draggableId={item.id || item.description}

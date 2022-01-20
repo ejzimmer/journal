@@ -28,7 +28,7 @@ const TODAY = new Date()
 
 export function Today() {
   const [items, setItems] = useState<Record<string, TodoItem>>({})
-  const { subscribeToList, updateItemInList, deleteItemFromList, updateList } =
+  const { subscribeToList, updateItemInList, deleteItemFromList } =
     useContext(FirebaseContext)
 
   if (Object.keys(items).length === 0) {
@@ -108,6 +108,22 @@ export function Today() {
     [setItems]
   )
 
+  const onReorder = useCallback(
+    (list: TodoItem[]) => {
+      setItems(
+        list.reduce(
+          (items, item) => ({
+            ...items,
+            [item.id]: item,
+          }),
+          {}
+        )
+      )
+      list.forEach((item) => updateItemInList(TODAY_KEY, item))
+    },
+    [setItems]
+  )
+
   useEffect(() => {
     subscribeToList(TODAY_KEY, {
       onAdd: onNewItem,
@@ -123,7 +139,7 @@ export function Today() {
         items={Object.values(items)}
         onChangeItem={(item) => updateItemInList(TODAY_KEY, item)}
         onDeleteItem={(item) => deleteItemFromList(TODAY_KEY, item)}
-        onReorder={(list) => updateList(TODAY_KEY, list)}
+        onReorder={onReorder}
       />
       <NewItem list={TODAY_KEY} />
     </VStack>

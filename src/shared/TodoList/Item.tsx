@@ -12,7 +12,6 @@ interface Props {
 }
 
 export function Item({ item, onChange, onDelete }: Props) {
-  console.log(item)
   const handleCheck = (event: ChangeEvent<HTMLInputElement>) => {
     if (event.target.checked) {
       item.done = new Date().getTime()
