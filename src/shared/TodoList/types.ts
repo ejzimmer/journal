@@ -4,4 +4,5 @@ export interface TodoItem {
   type: string
   done?: number | false
   position: number
+  frequency?: string
 }

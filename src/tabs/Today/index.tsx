@@ -5,18 +5,7 @@ import { FirebaseContext } from "../../shared/FirebaseContext"
 import { NewItem } from "../../shared/TodoList/NewItem"
 import { TodoList } from "../../shared/TodoList/TodoList"
 import { TodoItem } from "../../shared/TodoList/types"
-
-const everydayThings: string[] = [
-  "personal hygiene",
-  "laundry",
-  "kitchen",
-  "tidy house",
-  "Duolingo",
-  "Anki",
-  "Bunpro",
-  "Wanikani",
-]
-const weekdayThings: string[] = ["work", "timesheets", "stand-up @ 0930"]
+import { isDailyTask } from "../../shared/utilities"
 
 const TODAY_KEY = "today"
 
@@ -31,58 +20,37 @@ export function Today() {
   const { subscribeToList, updateItemInList, deleteItemFromList } =
     useContext(FirebaseContext)
 
-  if (Object.keys(items).length === 0) {
-    const forToday = [...everydayThings]
-    if (!isWeekend(TODAY)) {
-      forToday.push(...weekdayThings)
-    }
-
-    setItems(
-      forToday.reduce((items, item, index) => {
-        return {
-          ...items,
-          [item]: {
-            description: item,
-            type: "毎日",
-            position: index,
-          },
-        }
-      }, {})
-    )
-  }
-
   const onNewItem = useCallback(
     (item: TodoItem) => {
-      if (item.type === "毎日") {
-        setItems((items) => {
-          const existingItem = items[item.description]
-          if (existingItem) {
-            items[item.id] = {
-              ...existingItem,
-              ...item,
-            }
-
-            delete items[item.description]
-          }
-
-          if (item.done && !isSameDay(item.done, TODAY)) {
-            delete item.done
-          }
-
-          return items
-        })
-      } else if (!item.done || isSameDay(item.done, TODAY)) {
-        setItems((items) => {
-          if (!item.position) {
-            item.position = Object.keys(items).length
-          }
-
-          return {
-            ...items,
-            [item.id]: item,
-          }
-        })
+      if (
+        (item.frequency === "平日" || item.type === "⚒️") &&
+        isWeekend(TODAY)
+      ) {
+        return
       }
+
+      if (!isDailyTask(item) && !!item.done && !isSameDay(item.done, TODAY)) {
+        console.log("removing", item.description)
+        deleteItemFromList(TODAY_KEY, item)
+        return
+      }
+
+      if (isDailyTask(item) && item.done && !isSameDay(item.done, TODAY)) {
+        delete item.done
+        updateItemInList(TODAY_KEY, item)
+      }
+
+      setItems((items) => {
+        if (typeof item.position !== "number") {
+          item.position = Object.keys(items).length
+          updateItemInList(TODAY_KEY, item)
+        }
+
+        return {
+          ...items,
+          [item.id]: item,
+        }
+      })
     },
     [setItems]
   )
@@ -141,7 +109,7 @@ export function Today() {
         onDeleteItem={(item) => deleteItemFromList(TODAY_KEY, item)}
         onReorder={onReorder}
       />
-      <NewItem list={TODAY_KEY} />
+      <NewItem list={TODAY_KEY} showFrequency={true} />
     </VStack>
   )
 }

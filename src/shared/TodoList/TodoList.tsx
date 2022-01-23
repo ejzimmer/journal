@@ -16,10 +16,20 @@ interface Props {
   onReorder: (items: TodoItem[]) => void
 }
 
+const A_IS_FIRST = -1
+const B_IS_FIRST = 1
+
 const sortItems = (a: TodoItem, b: TodoItem) => {
-  if (a.done === b.done) return a.position - b.position
-  if (a.done) return 1
-  return -1
+  if (a.done && b.done) return a.position - b.position
+  if (a.done) return B_IS_FIRST
+  if (b.done) return A_IS_FIRST
+
+  const aIsEveryDay = a.frequency && a.frequency.endsWith("日")
+  const bIsEveryDay = b.frequency && b.frequency.endsWith("日")
+  if (aIsEveryDay === bIsEveryDay) return a.position - b.position
+  if (aIsEveryDay) return A_IS_FIRST
+
+  return B_IS_FIRST
 }
 
 export function TodoList({
