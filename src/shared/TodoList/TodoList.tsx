@@ -18,8 +18,8 @@ interface Props {
 
 const sortItems = (a: TodoItem, b: TodoItem) => {
   if (a.done === b.done) return a.position - b.position
-  if (a.done) return -1
-  return 1
+  if (a.done) return 1
+  return -1
 }
 
 export function TodoList({
