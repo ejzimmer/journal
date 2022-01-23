@@ -52,7 +52,7 @@ export function Today() {
         }
       })
     },
-    [setItems]
+    [setItems, deleteItemFromList, updateItemInList]
   )
 
   const onChangeItem = useCallback(
