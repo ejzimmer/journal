@@ -17,7 +17,7 @@ const TODAY = new Date()
 
 export function Today() {
   const [items, setItems] = useState<Record<string, TodoItem>>({})
-  const { subscribeToList, updateItemInList, deleteItemFromList } =
+  const { subscribeToList, updateItemInList, deleteItemFromList, updateList } =
     useContext(FirebaseContext)
 
   const onNewItem = useCallback(
@@ -30,7 +30,6 @@ export function Today() {
       }
 
       if (!isDailyTask(item) && !!item.done && !isSameDay(item.done, TODAY)) {
-        console.log("removing", item.description)
         deleteItemFromList(TODAY_KEY, item)
         return
       }
@@ -78,16 +77,7 @@ export function Today() {
 
   const onReorder = useCallback(
     (list: TodoItem[]) => {
-      setItems(
-        list.reduce(
-          (items, item) => ({
-            ...items,
-            [item.id]: item,
-          }),
-          {}
-        )
-      )
-      list.forEach((item) => updateItemInList(TODAY_KEY, item))
+      updateList(TODAY_KEY, list)
     },
     [setItems, updateItemInList]
   )

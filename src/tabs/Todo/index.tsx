@@ -79,7 +79,7 @@ export function Todo() {
   return (
     <VStack spacing="4">
       <TodoList
-        id="today"
+        id="todo"
         items={Object.values(items)}
         onChangeItem={(item) => updateItemInList(TODO_KEY, item)}
         onDeleteItem={(item) => deleteItemFromList(TODO_KEY, item)}

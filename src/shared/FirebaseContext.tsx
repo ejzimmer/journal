@@ -73,7 +73,7 @@ export function createFirebaseContext(database: Database): ContextType {
     },
     updateList: (listName, list) => {
       const map = list.reduce((items, item) => {
-        items[item.id || item.description] = item
+        items[item.id] = item
         return items
       }, {} as Record<string, TodoItem>)
       set(ref(database, listName), map)

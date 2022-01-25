@@ -39,14 +39,18 @@ export function TodoList({
   onDeleteItem,
   onReorder,
 }: Props) {
+  const sortedItems = [...items].sort(sortItems)
+
   const onDragEnd = ({ source, destination }: DropResult) => {
     // dropped outside the list
     if (!destination) {
       return
     }
 
-    const movedItem = items[source.index]
-    const listWithoutItem = items.filter((_, index) => index !== source.index)
+    const movedItem = sortedItems[source.index]
+    const listWithoutItem = sortedItems.filter(
+      (_, index) => index !== source.index
+    )
 
     const listStart = listWithoutItem.slice(0, destination.index)
     const listEnd = listWithoutItem.slice(destination.index)
@@ -69,7 +73,7 @@ export function TodoList({
             {...provided.droppableProps}
             ref={provided.innerRef}
           >
-            {items.sort(sortItems).map((item, index) => (
+            {sortedItems.map((item, index) => (
               <Draggable
                 key={item.id || item.description}
                 draggableId={item.id || item.description}
@@ -86,7 +90,6 @@ export function TodoList({
                       onChange={onChangeItem}
                       onDelete={onDeleteItem}
                     />
-                    {item.position}
                   </ListItem>
                 )}
               </Draggable>
