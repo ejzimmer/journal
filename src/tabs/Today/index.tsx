@@ -79,7 +79,7 @@ export function Today() {
     (list: TodoItem[]) => {
       updateList(TODAY_KEY, list)
     },
-    [setItems, updateItemInList]
+    [updateList]
   )
 
   useEffect(() => {
