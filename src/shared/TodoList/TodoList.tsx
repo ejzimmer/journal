@@ -86,6 +86,7 @@ export function TodoList({
                       onChange={onChangeItem}
                       onDelete={onDeleteItem}
                     />
+                    {item.position}
                   </ListItem>
                 )}
               </Draggable>
