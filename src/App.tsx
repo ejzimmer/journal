@@ -38,7 +38,7 @@ export function App() {
 
   return (
     <Tabs>
-      <TabList>
+      <TabList position="sticky" top="0" background="white" zIndex="1">
         <Tab>today</Tab>
         <Tab>track</Tab>
         <Tab>todo</Tab>
