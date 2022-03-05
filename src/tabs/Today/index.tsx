@@ -17,6 +17,7 @@ const TODAY = new Date()
 
 export function Today() {
   const [items, setItems] = useState<Record<string, TodoItem>>({})
+  const [hiddenItems, setHiddenItems] = useState<TodoItem[]>([])
   const { subscribeToList, updateItemInList, deleteItemFromList, updateList } =
     useContext(FirebaseContext)
 
@@ -26,6 +27,7 @@ export function Today() {
         (item.frequency === "平日" || item.type === "⚒️") &&
         isWeekend(TODAY)
       ) {
+        setHiddenItems((items) => [...items, item])
         return
       }
 
@@ -77,7 +79,7 @@ export function Today() {
 
   const onReorder = useCallback(
     (list: TodoItem[]) => {
-      updateList(TODAY_KEY, list)
+      updateList(TODAY_KEY, [...list, ...hiddenItems])
     },
     [updateList]
   )
