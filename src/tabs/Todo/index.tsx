@@ -45,8 +45,9 @@ export function Todo() {
   const onDeleteItem = useCallback(
     (item: TodoItem) => {
       setItems((items) => {
-        delete items[item.id]
-        return items
+        const copy = { ...items }
+        delete copy[item.id]
+        return copy
       })
     },
     [setItems]
