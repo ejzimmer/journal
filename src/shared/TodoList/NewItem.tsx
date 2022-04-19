@@ -33,7 +33,7 @@ export function NewItem({ list, showFrequency }: Props) {
   return (
     <form action="#" onSubmit={submitForm}>
       <HStack spacing="4" maxWidth="600px">
-        <Select width="max-content" onChange={updateType} value={type}>
+        <Select width="200px" onChange={updateType} value={type}>
           <Option value="🧹">chore 🧹</Option>
           <Option value="⚒️">work ⚒️</Option>
           <Option value="💰">finance 💰</Option>
@@ -51,11 +51,7 @@ export function NewItem({ list, showFrequency }: Props) {
           value={description}
         />
         {showFrequency && (
-          <Select
-            width="max-content"
-            onChange={updateFrequency}
-            value={frequency}
-          >
+          <Select width="150px" onChange={updateFrequency} value={frequency}>
             <Option value="一回">一回</Option>
             <Option value="毎日">毎日</Option>
             <Option value="平日">平日</Option>
