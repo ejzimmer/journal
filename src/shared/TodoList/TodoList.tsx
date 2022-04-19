@@ -1,4 +1,4 @@
-import { List, ListItem } from "@chakra-ui/layout"
+import { Box, List, ListItem } from "@chakra-ui/layout"
 import {
   DragDropContext,
   Draggable,
@@ -73,6 +73,7 @@ export function TodoList({
             {...provided.droppableProps}
             ref={provided.innerRef}
           >
+            <Total items={items} />
             {sortedItems.map((item, index) => (
               <Draggable
                 key={item.id || item.description}
@@ -99,5 +100,26 @@ export function TodoList({
         )}
       </Droppable>
     </DragDropContext>
+  )
+}
+
+function Total({ items }: { items: TodoItem[] }) {
+  return (
+    <Box
+      width="40px"
+      height="40px"
+      margin="auto"
+      transform="translateY(50%)"
+      border="2px solid"
+      borderRadius="50%"
+      display="flex"
+      alignItems="center"
+      justifyContent="center"
+      background="hsl(250, 30%, 80%)"
+      color="hsl(25 0, 30%, 40%)"
+      boxShadow="2px 2px 3px hsla(200 30% 40% / .4)"
+    >
+      {items.filter((item) => !item.done).length}
+    </Box>
   )
 }

@@ -8,11 +8,6 @@ import { TodoItem } from "../../shared/TodoList/types"
 import { isDailyTask } from "../../shared/utilities"
 
 const TODAY_KEY = "today"
-
-// move items between todo and today
-// have recurring items that aren't every day
-// add things automatically so there's one of each type from todo in today
-
 const TODAY = new Date()
 
 export function Today() {
