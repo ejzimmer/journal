@@ -76,7 +76,7 @@ export function Today() {
     (list: TodoItem[]) => {
       updateList(TODAY_KEY, [...list, ...hiddenItems])
     },
-    [updateList]
+    [updateList, hiddenItems]
   )
 
   useEffect(() => {
