@@ -1,18 +1,34 @@
-import { Table, Tbody } from "@chakra-ui/react"
+import { Table, Tbody, Tr } from "@chakra-ui/react"
 import { eachDayOfInterval, endOfISOWeek, startOfISOWeek } from "date-fns"
-import { useContext } from "react"
+import { useCallback, useContext, useEffect } from "react"
 import { Footer } from "./Footer"
 import { Habit } from "./Track"
 import { Header } from "./Header"
 import { HabitRecord } from "./types"
 import { FirebaseContext } from "../../shared/FirebaseContext"
+import {
+  DragDropContext,
+  Draggable,
+  Droppable,
+  DropResult,
+} from "react-beautiful-dnd"
+import { resortList } from "../../shared/utilities"
 
 const TRACK_KEY = "track"
 
 export function Track() {
-  const { useValue, write } = useContext(FirebaseContext)
+  const {
+    addItemToList,
+    updateItemInList,
+    deleteItemFromList,
+    updateList,
+    useValue,
+  } = useContext(FirebaseContext)
 
-  const { value: habits } = useValue(TRACK_KEY)
+  const { value } = useValue(TRACK_KEY)
+  const habits =
+    value &&
+    value.sort((a: HabitRecord, b: HabitRecord) => a.position - b.position)
 
   const startDate = startOfISOWeek(new Date())
   const endOfWeek = endOfISOWeek(startDate)
@@ -20,43 +36,66 @@ export function Track() {
 
   const addHabit = (habitName: string) => {
     if (habitName) {
-      write(TRACK_KEY, [...habits, { name: habitName, days: [] }])
+      addItemToList(TRACK_KEY, { name: habitName, days: [] })
     }
   }
 
   const updateHabit = (habit: HabitRecord) => {
-    const index = habits.findIndex((h: HabitRecord) => h.name === habit.name)
-    const startOfList = habits.slice(0, index)
-    const endOfList = habits.slice(index + 1)
-
-    write(TRACK_KEY, [...startOfList, habit, ...endOfList])
+    updateItemInList(TRACK_KEY, habit)
   }
 
-  const deleteHabit = ({ name }: HabitRecord) => {
-    write(
-      TRACK_KEY,
-      habits.filter((habit: HabitRecord) => habit.name !== name)
-    )
+  const deleteHabit = (habit: HabitRecord) => {
+    deleteItemFromList(TRACK_KEY, habit)
+  }
+
+  const onReorder = useCallback(
+    (list: HabitRecord[]) => {
+      updateList(TRACK_KEY, list)
+    },
+    [updateList]
+  )
+
+  const onDragEnd = (dropResult: DropResult) => {
+    resortList(dropResult, habits, onReorder)
   }
 
   return (
-    <>
-      <Table size="sm" width="max-content">
-        <Header days={days} />
-        <Tbody>
-          {habits &&
-            habits.map((habit: HabitRecord) => (
-              <Habit
-                key={habit.name}
-                habit={habit}
-                days={days}
-                onChange={updateHabit}
-                onDelete={deleteHabit}
-              />
-            ))}
-        </Tbody>
-        <Footer addHabit={addHabit} />
-      </Table>
-    </>
+    <Table size="sm" width="max-content">
+      <Header days={days} />
+      {habits && (
+        <DragDropContext onDragEnd={onDragEnd}>
+          <Droppable droppableId="track">
+            {(provided) => (
+              <Tbody {...provided.droppableProps} ref={provided.innerRef}>
+                {habits.map((habit: HabitRecord, index: number) => (
+                  <Draggable
+                    key={habit.id}
+                    draggableId={habit.id}
+                    index={index}
+                  >
+                    {(provided) => (
+                      <Tr
+                        ref={provided.innerRef}
+                        {...provided.draggableProps}
+                        {...provided.dragHandleProps}
+                      >
+                        <Habit
+                          habit={habit}
+                          days={days}
+                          onChange={updateHabit}
+                          onDelete={deleteHabit}
+                        />
+                      </Tr>
+                    )}
+                  </Draggable>
+                ))}
+                {provided.placeholder}
+              </Tbody>
+            )}
+          </Droppable>
+        </DragDropContext>
+      )}
+      <Footer addHabit={addHabit} />
+    </Table>
   )
 }

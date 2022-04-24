@@ -5,6 +5,7 @@ import {
   Droppable,
   DropResult,
 } from "react-beautiful-dnd"
+import { resortList } from "../utilities"
 import { Item } from "./Item"
 import { TodoItem } from "./types"
 
@@ -41,25 +42,8 @@ export function TodoList({
 }: Props) {
   const sortedItems = [...items].sort(sortItems)
 
-  const onDragEnd = ({ source, destination }: DropResult) => {
-    // dropped outside the list
-    if (!destination) {
-      return
-    }
-
-    const movedItem = sortedItems[source.index]
-    const listWithoutItem = sortedItems.filter(
-      (_, index) => index !== source.index
-    )
-
-    const listStart = listWithoutItem.slice(0, destination.index)
-    const listEnd = listWithoutItem.slice(destination.index)
-
-    const reshuffledList = [...listStart, movedItem, ...listEnd].map(
-      (item, index) => ({ ...item, position: index })
-    )
-
-    onReorder(reshuffledList)
+  const onDragEnd = (dropResult: DropResult) => {
+    resortList(dropResult, sortedItems, onReorder)
   }
 
   return (

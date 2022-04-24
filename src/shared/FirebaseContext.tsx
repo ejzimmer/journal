@@ -10,10 +10,14 @@ import {
   remove,
 } from "firebase/database"
 import { createContext, useEffect, useState } from "react"
+import { HabitRecord } from "../tabs/Track/types"
 import { TodoItem } from "./TodoList/types"
 
 type CrudFunction = (item: TodoItem) => void
-type ListCrudFunction = (listName: string, item: Partial<TodoItem>) => void
+type ListCrudFunction = (
+  listName: string,
+  item: Partial<TodoItem | HabitRecord>
+) => void
 
 interface CrudFunctions {
   onAdd: CrudFunction
@@ -29,7 +33,7 @@ interface ContextType {
   addItemToList: ListCrudFunction
   updateItemInList: ListCrudFunction
   deleteItemFromList: ListCrudFunction
-  updateList: (listName: string, list: TodoItem[]) => void
+  updateList: <T extends { id: string }>(listName: string, list: T[]) => void
   write: (key: string, data: any) => void
   useValue: (key: string) => { value?: any; loading: boolean }
 }
@@ -71,11 +75,11 @@ export function createFirebaseContext(database: Database): ContextType {
       const reference = ref(database, `${listName}/${item.id}`)
       remove(reference)
     },
-    updateList: (listName, list) => {
+    updateList: <T extends { id: string }>(listName: string, list: T[]) => {
       const map = list.reduce((items, item) => {
         items[item.id] = item
         return items
-      }, {} as Record<string, TodoItem>)
+      }, {} as Record<string, T>)
       set(ref(database, listName), map)
     },
     write: (key: string, data: any) => {

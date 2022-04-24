@@ -1,5 +1,5 @@
 import { Checkbox } from "@chakra-ui/checkbox"
-import { Td, Th, Tr } from "@chakra-ui/table"
+import { Td, Th } from "@chakra-ui/table"
 import { format, isSameDay } from "date-fns"
 import { HabitRecord } from "./types"
 import { DeleteButton } from "../../shared/DeleteButton"
@@ -26,7 +26,7 @@ export function Habit({ habit, days, onChange, onDelete }: Props) {
   }
 
   return (
-    <Tr>
+    <>
       <Th>{habit.name}</Th>
       {days.map((day) => (
         <Td key={formatDate(day)} textAlign="center" p="0">
@@ -44,7 +44,7 @@ export function Habit({ habit, days, onChange, onDelete }: Props) {
           onDelete={() => onDelete(habit)}
         />
       </Td>
-    </Tr>
+    </>
   )
 }
 
