@@ -1,5 +1,4 @@
 import { DropResult } from "react-beautiful-dnd"
-import { HabitRecord } from "../tabs/Track/types"
 import { TodoItem } from "./TodoList/types"
 
 export function isDailyTask(task: TodoItem) {
