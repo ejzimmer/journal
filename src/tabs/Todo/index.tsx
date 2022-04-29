@@ -17,7 +17,7 @@ export function Todo() {
 
   const onNewItem = useCallback(
     (item: any) => {
-      if (item.done && isSameDay(item.done, TODAY)) {
+      if (item.done && !isSameDay(item.done, TODAY)) {
         deleteItemFromList(TODO_KEY, item)
       } else {
         setItems((items) => {
