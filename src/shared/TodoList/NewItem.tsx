@@ -33,17 +33,17 @@ export function NewItem({ list, showFrequency }: Props) {
   return (
     <form action="#" onSubmit={submitForm}>
       <HStack spacing="4" maxWidth="600px">
-        <Select width="200px" onChange={updateType} value={type}>
-          <Option value="🧹">chore 🧹</Option>
-          <Option value="⚒️">work ⚒️</Option>
-          <Option value="💰">finance 💰</Option>
-          <Option value="🪡">sewing 🪡</Option>
-          <Option value="🧶">yarn 🧶</Option>
-          <Option value="🖌️">art 🖌️</Option>
-          <Option value="📓">learning 📓</Option>
-          <Option value="👾">games 👾</Option>
-          <Option value="🖋️">writing 🖋️</Option>
-          <Option value="👩‍💻">coding 👩‍💻</Option>
+        <Select width="120px" onChange={updateType} value={type}>
+          <Option value="🧹" />
+          <Option value="⚒️" />
+          <Option value="💰" />
+          <Option value="🪡" />
+          <Option value="🧶" />
+          <Option value="🖌️" />
+          <Option value="📓" />
+          <Option value="👾" />
+          <Option value="🖋️" />
+          <Option value="👩‍💻" />
         </Select>
         <Input
           variant="flushed"
@@ -51,10 +51,10 @@ export function NewItem({ list, showFrequency }: Props) {
           value={description}
         />
         {showFrequency && (
-          <Select width="150px" onChange={updateFrequency} value={frequency}>
-            <Option value="一回">一回</Option>
-            <Option value="毎日">毎日</Option>
-            <Option value="平日">平日</Option>
+          <Select width="140px" onChange={updateFrequency} value={frequency}>
+            <Option value="一回" />
+            <Option value="毎日" />
+            <Option value="平日" />
           </Select>
         )}
       </HStack>
@@ -62,6 +62,10 @@ export function NewItem({ list, showFrequency }: Props) {
   )
 }
 
-const Option = styled.option`
-  padding-right: 70px;
-`
+function Option({ value }: { value: string }) {
+  return (
+    <option style={{ paddingRight: "70px" }} value={value}>
+      {value}
+    </option>
+  )
+}
