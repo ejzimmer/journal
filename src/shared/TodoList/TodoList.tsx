@@ -1,4 +1,6 @@
-import { Box, List, ListItem } from "@chakra-ui/layout"
+import { Box, Flex, List, ListItem } from "@chakra-ui/layout"
+import { FormLabel, Input } from "@chakra-ui/react"
+import { useState } from "react"
 import {
   DragDropContext,
   Draggable,
@@ -41,49 +43,53 @@ export function TodoList({
   onReorder,
 }: Props) {
   const sortedItems = [...items].sort(sortItems)
+  const [filteredItems, setFilteredItems] = useState(items)
 
   const onDragEnd = (dropResult: DropResult) => {
     resortList(dropResult, sortedItems, onReorder)
   }
 
   return (
-    <DragDropContext onDragEnd={onDragEnd}>
-      <Droppable droppableId={id}>
-        {(provided) => (
-          <List
-            listStyleType="none"
-            width="100%"
-            maxWidth="400px"
-            {...provided.droppableProps}
-            ref={provided.innerRef}
-          >
-            <Total items={items} />
-            {sortedItems.map((item, index) => (
-              <Draggable
-                key={item.id || item.description}
-                draggableId={item.id || item.description}
-                index={index}
-              >
-                {(provided) => (
-                  <ListItem
-                    ref={provided.innerRef}
-                    {...provided.draggableProps}
-                    {...provided.dragHandleProps}
-                  >
-                    <Item
-                      item={item}
-                      onChange={onChangeItem}
-                      onDelete={onDeleteItem}
-                    />
-                  </ListItem>
-                )}
-              </Draggable>
-            ))}
-            {provided.placeholder}
-          </List>
-        )}
-      </Droppable>
-    </DragDropContext>
+    <>
+      <Total items={items} />
+      <FilterByCategory items={items} setItems={setFilteredItems} />
+      <DragDropContext onDragEnd={onDragEnd}>
+        <Droppable droppableId={id}>
+          {(provided) => (
+            <List
+              listStyleType="none"
+              width="100%"
+              maxWidth="400px"
+              {...provided.droppableProps}
+              ref={provided.innerRef}
+            >
+              {sortedItems.map((item, index) => (
+                <Draggable
+                  key={item.id || item.description}
+                  draggableId={item.id || item.description}
+                  index={index}
+                >
+                  {(provided) => (
+                    <ListItem
+                      ref={provided.innerRef}
+                      {...provided.draggableProps}
+                      {...provided.dragHandleProps}
+                    >
+                      <Item
+                        item={item}
+                        onChange={onChangeItem}
+                        onDelete={onDeleteItem}
+                      />
+                    </ListItem>
+                  )}
+                </Draggable>
+              ))}
+              {provided.placeholder}
+            </List>
+          )}
+        </Droppable>
+      </DragDropContext>
+    </>
   )
 }
 
@@ -104,5 +110,35 @@ function Total({ items }: { items: TodoItem[] }) {
     >
       {items.filter((item) => !item.done).length}
     </Box>
+  )
+}
+
+type FilterProps = {
+  items: TodoItem[]
+  setItems: (items: TodoItem[]) => void
+}
+
+function FilterByCategory({ items, setItems }: FilterProps) {
+  return (
+    <Flex
+      sx={{ 'input[type="checkbox"]:checked + label': { background: "green" } }}
+      alignItems="center"
+    >
+      {CATEGORIES.map((category) => (
+        <>
+          <Input
+            type="checkbox"
+            value={category}
+            id={category}
+            width="0"
+            opacity="0"
+            padding="0"
+          />
+          <FormLabel htmlFor={category} cursor="pointer" margin="0" padding="2">
+            {category}
+          </FormLabel>
+        </>
+      ))}
+    </Flex>
   )
 }
