@@ -1,7 +1,7 @@
 import { HStack, Input, Select } from "@chakra-ui/react"
 import { ChangeEvent, FormEvent, useContext, useState } from "react"
 import { FirebaseContext } from "../FirebaseContext"
-import { CATEGORIES } from "./types"
+import { Category, COLOURS } from "./types"
 
 interface Props {
   list: string
@@ -34,8 +34,8 @@ export function NewItem({ list, showFrequency }: Props) {
     <form action="#" onSubmit={submitForm}>
       <HStack spacing="4" maxWidth="600px">
         <Select width="120px" onChange={updateType} value={type}>
-          {CATEGORIES.map((category) => (
-            <Option value={category} />
+          {Object.keys(COLOURS).map((category) => (
+            <Option value={category} key={category} />
           ))}
         </Select>
         <Input

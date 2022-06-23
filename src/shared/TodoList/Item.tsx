@@ -2,7 +2,7 @@ import { Checkbox, Box } from "@chakra-ui/react"
 import { ChangeEvent } from "react"
 import { DeleteButton } from "../../shared/DeleteButton"
 import styled from "@emotion/styled"
-import { TodoItem } from "./types"
+import { Category, COLOURS, TodoItem } from "./types"
 import { isToday } from "date-fns"
 
 interface Props {
@@ -59,22 +59,9 @@ export function Item({ item, onChange, onDelete }: Props) {
   )
 }
 
-const COLOURS = {
-  "🧹": "hsl(180 20% 90%)",
-  "⚒️": "hsl(340 90% 90%)",
-  "💰": "hsl(120 70% 85%)",
-  "🪡": "hsl(250 50% 90%)",
-  "🧶": "hsl(80 50% 90%)",
-  "🖌️": "hsl(30 50% 90%)",
-  "📓": "hsl(60 50% 90%)",
-  "👾": "hsl(300 50% 90%)",
-  "🖋️": "hsl(50 50% 90%)",
-  "👩‍💻": "hsl(160 50% 90%)",
-}
-
 interface WrapperProps {
   checked?: boolean
-  type: keyof typeof COLOURS
+  type: Category
 }
 
 const Wrapper = styled(Box)`

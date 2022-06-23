@@ -1,6 +1,6 @@
 import { Box, Flex, List, ListItem } from "@chakra-ui/layout"
-import { FormLabel, Input } from "@chakra-ui/react"
-import { useState } from "react"
+import { Checkbox, FormLabel, Input } from "@chakra-ui/react"
+import { Fragment, useEffect, useState } from "react"
 import {
   DragDropContext,
   Draggable,
@@ -9,7 +9,7 @@ import {
 } from "react-beautiful-dnd"
 import { resortList } from "../utilities"
 import { Item } from "./Item"
-import { TodoItem, CATEGORIES } from "./types"
+import { TodoItem, Category, COLOURS } from "./types"
 
 interface Props {
   id: string
@@ -42,24 +42,32 @@ export function TodoList({
   onDeleteItem,
   onReorder,
 }: Props) {
-  const sortedItems = [...items].sort(sortItems)
   const [filteredItems, setFilteredItems] = useState(items)
+  const sortedItems = [...filteredItems].sort(sortItems)
 
   const onDragEnd = (dropResult: DropResult) => {
     resortList(dropResult, sortedItems, onReorder)
   }
 
   return (
-    <>
-      <Total items={items} />
-      <FilterByCategory items={items} setItems={setFilteredItems} />
+    <Box>
+      <Flex
+        width="100%"
+        border="2px solid hsl(0 0% 85%)"
+        borderRadius="lg"
+        alignItems="center"
+        justifyContent="space-around"
+      >
+        <Total items={items} />
+        <FilterByCategory items={items} setItems={setFilteredItems} />
+      </Flex>
       <DragDropContext onDragEnd={onDragEnd}>
         <Droppable droppableId={id}>
           {(provided) => (
             <List
               listStyleType="none"
               width="100%"
-              maxWidth="400px"
+              minWidth="400px"
               {...provided.droppableProps}
               ref={provided.innerRef}
             >
@@ -89,24 +97,19 @@ export function TodoList({
           )}
         </Droppable>
       </DragDropContext>
-    </>
+    </Box>
   )
 }
 
 function Total({ items }: { items: TodoItem[] }) {
   return (
     <Box
-      width="40px"
-      height="40px"
-      margin="auto"
-      border="2px solid"
-      borderRadius="50%"
-      display="flex"
-      alignItems="center"
-      justifyContent="center"
-      background="hsl(250, 30%, 80%)"
-      color="hsl(25 0, 30%, 40%)"
-      boxShadow="2px 2px 3px hsla(200 30% 40% / .4)"
+      flexGrow="1"
+      flexBasis="1.5em"
+      flexShrink="0"
+      textAlign="center"
+      fontWeight="bold"
+      color="#666"
     >
       {items.filter((item) => !item.done).length}
     </Box>
@@ -117,27 +120,81 @@ type FilterProps = {
   items: TodoItem[]
   setItems: (items: TodoItem[]) => void
 }
+type Filter = Record<Category, boolean>
 
 function FilterByCategory({ items, setItems }: FilterProps) {
+  const [filters, setFilters] = useState<Filter>(
+    Object.keys(COLOURS).reduce(
+      (filters, category) => ({ ...filters, [category]: false }),
+      {}
+    ) as Filter
+  )
+
+  const updateFilters = (category: string, turnOn: boolean) => {
+    setFilters((filters) => ({ ...filters, [category]: turnOn }))
+  }
+
+  useEffect(() => {
+    const filterList = Object.entries(filters)
+      .filter(([_, isOn]) => isOn)
+      .map(([category]) => category)
+
+    if (filterList.length > 0) {
+      const filteredItems = [...items].filter((item) =>
+        filterList.includes(item.type)
+      )
+
+      setItems(filteredItems)
+    } else {
+      setItems(items)
+    }
+  }, [filters, items, setItems])
+
   return (
     <Flex
-      sx={{ 'input[type="checkbox"]:checked + label': { background: "green" } }}
+      sx={{
+        'input[type="checkbox"]:checked + label': {
+          background: "currentColor",
+        },
+      }}
       alignItems="center"
+      justifyContent="space-between"
+      flexGrow="1"
     >
-      {CATEGORIES.map((category) => (
-        <>
-          <Input
+      {Object.entries(COLOURS).map(([category, colour]) => (
+        <Fragment key={category}>
+          <input
             type="checkbox"
-            value={category}
             id={category}
-            width="0"
-            opacity="0"
-            padding="0"
+            style={{
+              width: 0,
+              opacity: 0,
+              padding: 0,
+              position: "fixed",
+              top: "-100%",
+            }}
+            checked={filters[category as Category]}
+            onChange={(event) =>
+              updateFilters(
+                category,
+                (event.target as HTMLInputElement).checked
+              )
+            }
           />
-          <FormLabel htmlFor={category} cursor="pointer" margin="0" padding="2">
+          <FormLabel
+            htmlFor={category}
+            cursor="pointer"
+            margin="0"
+            padding="2"
+            color={colour}
+            _hover={{
+              background: "currentColor",
+            }}
+            flexGrow="1"
+          >
             {category}
           </FormLabel>
-        </>
+        </Fragment>
       ))}
     </Flex>
   )
