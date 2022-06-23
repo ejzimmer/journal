@@ -1,6 +1,6 @@
 import { Box, Flex, List, ListItem } from "@chakra-ui/layout"
-import { Checkbox, FormLabel, Input } from "@chakra-ui/react"
-import { Fragment, useEffect, useState } from "react"
+import { FormLabel } from "@chakra-ui/react"
+import { Fragment, useEffect, useMemo, useState } from "react"
 import {
   DragDropContext,
   Draggable,
@@ -43,7 +43,10 @@ export function TodoList({
   onReorder,
 }: Props) {
   const [filteredItems, setFilteredItems] = useState(items)
-  const sortedItems = [...filteredItems].sort(sortItems)
+  const sortedItems = useMemo(
+    () => [...filteredItems].sort(sortItems),
+    [filteredItems]
+  )
 
   const onDragEnd = (dropResult: DropResult) => {
     resortList(dropResult, sortedItems, onReorder)
@@ -59,7 +62,7 @@ export function TodoList({
         justifyContent="space-around"
       >
         <Total items={items} />
-        <FilterByCategory items={items} setItems={setFilteredItems} />
+        <FilterByCategory id={id} items={items} setItems={setFilteredItems} />
       </Flex>
       <DragDropContext onDragEnd={onDragEnd}>
         <Droppable droppableId={id}>
@@ -119,10 +122,11 @@ function Total({ items }: { items: TodoItem[] }) {
 type FilterProps = {
   items: TodoItem[]
   setItems: (items: TodoItem[]) => void
+  id: string
 }
 type Filter = Record<Category, boolean>
 
-function FilterByCategory({ items, setItems }: FilterProps) {
+function FilterByCategory({ items, setItems, id }: FilterProps) {
   const [filters, setFilters] = useState<Filter>(
     Object.keys(COLOURS).reduce(
       (filters, category) => ({ ...filters, [category]: false }),
@@ -148,7 +152,7 @@ function FilterByCategory({ items, setItems }: FilterProps) {
     } else {
       setItems(items)
     }
-  }, [filters, items, setItems])
+  }, [filters, setItems, items])
 
   return (
     <Flex
@@ -161,11 +165,11 @@ function FilterByCategory({ items, setItems }: FilterProps) {
       justifyContent="space-between"
       flexGrow="1"
     >
-      {Object.entries(COLOURS).map(([category, colour]) => (
+      {[...Object.entries(COLOURS)].map(([category, colour]) => (
         <Fragment key={category}>
           <input
             type="checkbox"
-            id={category}
+            id={`${id}-${category}`}
             style={{
               width: 0,
               opacity: 0,
@@ -182,7 +186,7 @@ function FilterByCategory({ items, setItems }: FilterProps) {
             }
           />
           <FormLabel
-            htmlFor={category}
+            htmlFor={`${id}-${category}`}
             cursor="pointer"
             margin="0"
             padding="2"
@@ -191,6 +195,7 @@ function FilterByCategory({ items, setItems }: FilterProps) {
               background: "currentColor",
             }}
             flexGrow="1"
+            textAlign="center"
           >
             {category}
           </FormLabel>
