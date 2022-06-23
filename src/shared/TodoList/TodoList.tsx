@@ -7,7 +7,7 @@ import {
 } from "react-beautiful-dnd"
 import { resortList } from "../utilities"
 import { Item } from "./Item"
-import { TodoItem } from "./types"
+import { TodoItem, CATEGORIES } from "./types"
 
 interface Props {
   id: string
@@ -93,7 +93,6 @@ function Total({ items }: { items: TodoItem[] }) {
       width="40px"
       height="40px"
       margin="auto"
-      transform="translateY(50%)"
       border="2px solid"
       borderRadius="50%"
       display="flex"

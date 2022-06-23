@@ -6,3 +6,16 @@ export interface TodoItem {
   position: number
   frequency?: string
 }
+
+export const CATEGORIES = [
+  "🧹",
+  "⚒️",
+  "💰",
+  "🪡",
+  "🧶",
+  "🖌️",
+  "📓",
+  "👾",
+  "🖋️",
+  "👩‍💻",
+]
