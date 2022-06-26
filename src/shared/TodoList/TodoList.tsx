@@ -57,7 +57,7 @@ export function TodoList({
       <Flex
         width="100%"
         border="2px solid hsl(0 0% 85%)"
-        borderRadius="lg"
+        borderTopRadius="lg"
         alignItems="center"
         justifyContent="space-around"
       >
