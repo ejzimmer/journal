@@ -73,7 +73,7 @@ export function Item({ item, otherLists = [], onChange, onDelete }: Props) {
           <MenuList>
             <DeleteMenuItem onDelete={() => onDelete(item)} />
             {otherLists.map((list) => (
-              <MoveToMenuItem key={list} target={list} />
+              <MoveToMenuItem key={list} target={list} item={item} />
             ))}
           </MenuList>
         </Menu>
