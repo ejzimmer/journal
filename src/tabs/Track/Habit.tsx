@@ -2,15 +2,21 @@ import { Checkbox } from "@chakra-ui/checkbox"
 import { Td, Th } from "@chakra-ui/table"
 import { format, isSameDay } from "date-fns"
 import { HabitRecord } from "./types"
-import { ChangeEvent } from "react"
+import { ChangeEvent, useState } from "react"
+import { CloseIcon } from "@chakra-ui/icons"
+import { IconButton } from "@chakra-ui/react"
+import { ConfirmDelete } from "../../shared/ConfirmDelete"
 
 interface Props {
   habit: HabitRecord
   days: Date[]
   onChange: (habit: HabitRecord) => void
+  onDelete: (habit: HabitRecord) => void
 }
 
-export function Habit({ habit, days, onChange }: Props) {
+export function Habit({ habit, days, onChange, onDelete }: Props) {
+  const [showConfirmation, setShowConfirmation] = useState(false)
+
   const updateDays = (event: ChangeEvent<HTMLInputElement>) => {
     const { checked: isChecked, value } = event.target
     const day = Number.parseInt(value)
@@ -36,6 +42,23 @@ export function Habit({ habit, days, onChange }: Props) {
           />
         </Td>
       ))}
+      <Td>
+        <IconButton
+          variant="ghost"
+          color="gray.400"
+          _hover={{
+            color: "red.500",
+          }}
+          icon={<CloseIcon />}
+          aria-label="delete habit"
+          onClick={() => setShowConfirmation(true)}
+        />
+        <ConfirmDelete
+          isOpen={showConfirmation}
+          onClose={() => setShowConfirmation(false)}
+          onDelete={() => onDelete(habit)}
+        />{" "}
+      </Td>
     </>
   )
 }

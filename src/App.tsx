@@ -14,7 +14,6 @@ import { Track } from "./tabs/Track"
 import { Todo } from "./tabs/Todo"
 
 // Move items between lists
-// onclick of "move to ..." remove from current list via firebase context
 // fix delete button in track
 
 export function App() {

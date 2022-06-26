@@ -2,7 +2,7 @@ import { Table, Tbody, Tr } from "@chakra-ui/react"
 import { eachDayOfInterval, endOfISOWeek, startOfISOWeek } from "date-fns"
 import { useCallback, useContext } from "react"
 import { Footer } from "./Footer"
-import { Habit } from "./Track"
+import { Habit } from "./Habit"
 import { Header } from "./Header"
 import { HabitRecord } from "./types"
 import { FirebaseContext } from "../../shared/FirebaseContext"
@@ -83,6 +83,7 @@ export function Track() {
                           habit={habit}
                           days={days}
                           onChange={updateHabit}
+                          onDelete={deleteHabit}
                         />
                       </Tr>
                     )}
