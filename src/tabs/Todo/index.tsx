@@ -85,6 +85,7 @@ export function Todo() {
         onChangeItem={(item) => updateItemInList(TODO_KEY, item)}
         onDeleteItem={(item) => deleteItemFromList(TODO_KEY, item)}
         onReorder={onReorder}
+        otherLists={["today"]}
       />
       <NewItem list={TODO_KEY} />
     </VStack>

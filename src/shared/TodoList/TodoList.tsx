@@ -17,6 +17,7 @@ interface Props {
   onChangeItem: (item: TodoItem) => void
   onDeleteItem: (item: TodoItem) => void
   onReorder: (items: TodoItem[]) => void
+  otherLists?: string[]
 }
 
 const A_IS_FIRST = -1
@@ -41,6 +42,7 @@ export function TodoList({
   onChangeItem,
   onDeleteItem,
   onReorder,
+  otherLists,
 }: Props) {
   const [filteredItems, setFilteredItems] = useState(items)
   const sortedItems = useMemo(
@@ -88,6 +90,7 @@ export function TodoList({
                     >
                       <Item
                         item={item}
+                        otherLists={otherLists}
                         onChange={onChangeItem}
                         onDelete={onDeleteItem}
                       />

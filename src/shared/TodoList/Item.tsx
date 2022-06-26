@@ -12,14 +12,16 @@ import styled from "@emotion/styled"
 import { Category, COLOURS, TodoItem } from "./types"
 import { isToday } from "date-fns"
 import { ChevronDownIcon } from "@chakra-ui/icons"
+import { MoveToMenuItem } from "./MoveToMenuItem"
 
 interface Props {
   item: TodoItem
+  otherLists?: string[]
   onChange: (item: TodoItem) => void
   onDelete: (item: TodoItem) => void
 }
 
-export function Item({ item, onChange, onDelete }: Props) {
+export function Item({ item, otherLists = [], onChange, onDelete }: Props) {
   const handleCheck = (event: ChangeEvent<HTMLInputElement>) => {
     if (event.target.checked) {
       item.done = new Date().getTime()
@@ -70,6 +72,9 @@ export function Item({ item, onChange, onDelete }: Props) {
           />
           <MenuList>
             <DeleteMenuItem onDelete={() => onDelete(item)} />
+            {otherLists.map((list) => (
+              <MoveToMenuItem key={list} target={list} />
+            ))}
           </MenuList>
         </Menu>
       )}
