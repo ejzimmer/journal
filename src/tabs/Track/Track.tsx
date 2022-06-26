@@ -2,17 +2,15 @@ import { Checkbox } from "@chakra-ui/checkbox"
 import { Td, Th } from "@chakra-ui/table"
 import { format, isSameDay } from "date-fns"
 import { HabitRecord } from "./types"
-import { DeleteButton } from "../../shared/DeleteButton"
 import { ChangeEvent } from "react"
 
 interface Props {
   habit: HabitRecord
   days: Date[]
   onChange: (habit: HabitRecord) => void
-  onDelete: (habit: HabitRecord) => void
 }
 
-export function Habit({ habit, days, onChange, onDelete }: Props) {
+export function Habit({ habit, days, onChange }: Props) {
   const updateDays = (event: ChangeEvent<HTMLInputElement>) => {
     const { checked: isChecked, value } = event.target
     const day = Number.parseInt(value)
@@ -38,12 +36,6 @@ export function Habit({ habit, days, onChange, onDelete }: Props) {
           />
         </Td>
       ))}
-      <Td>
-        <DeleteButton
-          label={`delete ${habit.name}`}
-          onDelete={() => onDelete(habit)}
-        />
-      </Td>
     </>
   )
 }

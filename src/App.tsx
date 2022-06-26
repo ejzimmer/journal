@@ -13,6 +13,13 @@ import { useState } from "react"
 import { Track } from "./tabs/Track"
 import { Todo } from "./tabs/Todo"
 
+// Move items between lists
+// convert delete button to dropdown menu
+// show "move to ..." in drop down list
+// onclick of "move to ..." add to new list via firebase context
+// onclick of "move to ..." remove from current list via firebase context
+// fix delete button in track
+
 export function App() {
   const [isLoggedIn, setLoggedIn] = useState(false)
   const auth = getAuth()

@@ -83,7 +83,6 @@ export function Track() {
                           habit={habit}
                           days={days}
                           onChange={updateHabit}
-                          onDelete={deleteHabit}
                         />
                       </Tr>
                     )}

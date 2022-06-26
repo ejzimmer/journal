@@ -1,9 +1,17 @@
-import { Checkbox, Box } from "@chakra-ui/react"
+import {
+  Checkbox,
+  Box,
+  Button,
+  Menu,
+  MenuButton,
+  MenuList,
+} from "@chakra-ui/react"
 import { ChangeEvent } from "react"
-import { DeleteButton } from "../../shared/DeleteButton"
+import { DeleteMenuItem } from "../DeleteMenuItem"
 import styled from "@emotion/styled"
 import { Category, COLOURS, TodoItem } from "./types"
 import { isToday } from "date-fns"
+import { ChevronDownIcon } from "@chakra-ui/icons"
 
 interface Props {
   item: TodoItem
@@ -51,10 +59,20 @@ export function Item({ item, onChange, onDelete }: Props) {
         />
         {item.type} {item.description}
       </label>
-      <DeleteButton
-        label={`delete ${item.description}`}
-        onDelete={() => onDelete(item)}
-      />
+      {!isDone && (
+        <Menu>
+          <MenuButton
+            as={Button}
+            variant="ghost"
+            borderRadius="0"
+            aria-label="actions"
+            rightIcon={<ChevronDownIcon />}
+          />
+          <MenuList>
+            <DeleteMenuItem onDelete={() => onDelete(item)} />
+          </MenuList>
+        </Menu>
+      )}
     </Wrapper>
   )
 }
