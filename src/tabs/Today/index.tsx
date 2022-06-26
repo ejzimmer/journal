@@ -95,6 +95,7 @@ export function Today() {
         onChangeItem={(item) => updateItemInList(TODAY_KEY, item)}
         onDeleteItem={(item) => deleteItemFromList(TODAY_KEY, item)}
         onReorder={onReorder}
+        currentList="today"
         otherLists={["todo"]}
       />
       <NewItem list={TODAY_KEY} showFrequency={true} />

@@ -17,6 +17,7 @@ interface Props {
   onChangeItem: (item: TodoItem) => void
   onDeleteItem: (item: TodoItem) => void
   onReorder: (items: TodoItem[]) => void
+  currentList?: string
   otherLists?: string[]
 }
 
@@ -42,6 +43,7 @@ export function TodoList({
   onChangeItem,
   onDeleteItem,
   onReorder,
+  currentList,
   otherLists,
 }: Props) {
   const [filteredItems, setFilteredItems] = useState(items)
@@ -90,6 +92,7 @@ export function TodoList({
                     >
                       <Item
                         item={item}
+                        currentList={currentList}
                         otherLists={otherLists}
                         onChange={onChangeItem}
                         onDelete={onDeleteItem}

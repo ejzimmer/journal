@@ -16,12 +16,19 @@ import { MoveToMenuItem } from "./MoveToMenuItem"
 
 interface Props {
   item: TodoItem
+  currentList?: string
   otherLists?: string[]
   onChange: (item: TodoItem) => void
   onDelete: (item: TodoItem) => void
 }
 
-export function Item({ item, otherLists = [], onChange, onDelete }: Props) {
+export function Item({
+  item,
+  otherLists = [],
+  currentList,
+  onChange,
+  onDelete,
+}: Props) {
   const handleCheck = (event: ChangeEvent<HTMLInputElement>) => {
     if (event.target.checked) {
       item.done = new Date().getTime()
@@ -72,9 +79,15 @@ export function Item({ item, otherLists = [], onChange, onDelete }: Props) {
           />
           <MenuList>
             <DeleteMenuItem onDelete={() => onDelete(item)} />
-            {otherLists.map((list) => (
-              <MoveToMenuItem key={list} target={list} item={item} />
-            ))}
+            {currentList &&
+              otherLists.map((list) => (
+                <MoveToMenuItem
+                  key={list}
+                  source={currentList}
+                  target={list}
+                  item={item}
+                />
+              ))}
           </MenuList>
         </Menu>
       )}
