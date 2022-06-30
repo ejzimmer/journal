@@ -46,11 +46,8 @@ export function TodoList({
   currentList,
   otherLists,
 }: Props) {
-  const [filteredItems, setFilteredItems] = useState(items)
-  const sortedItems = useMemo(
-    () => [...filteredItems].sort(sortItems),
-    [filteredItems]
-  )
+  const sortedItems = useMemo(() => [...items].sort(sortItems), [items])
+  const [filteredItems, setFilteredItems] = useState(sortedItems)
 
   const onDragEnd = (dropResult: DropResult) => {
     resortList(dropResult, sortedItems, onReorder)
@@ -66,7 +63,11 @@ export function TodoList({
         justifyContent="space-around"
       >
         <Total items={items} />
-        <FilterByCategory id={id} items={items} setItems={setFilteredItems} />
+        <FilterByCategory
+          id={id}
+          items={sortedItems}
+          setItems={setFilteredItems}
+        />
       </Flex>
       <DragDropContext onDragEnd={onDragEnd}>
         <Droppable droppableId={id}>
@@ -78,7 +79,7 @@ export function TodoList({
               {...provided.droppableProps}
               ref={provided.innerRef}
             >
-              {sortedItems.map((item, index) => (
+              {filteredItems.map((item, index) => (
                 <Draggable
                   key={item.id || item.description}
                   draggableId={item.id || item.description}

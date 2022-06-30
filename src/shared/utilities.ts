@@ -12,8 +12,9 @@ export function resortList<T>(
 ) {
   // dropped outside the list
   if (!destination) {
-    return
+    return items
   }
+  console.log("re-sorting items")
 
   const movedItem = items[source.index]
   const listWithoutItem = items.filter((_, index) => index !== source.index)
@@ -21,10 +22,10 @@ export function resortList<T>(
   const listStart = listWithoutItem.slice(0, destination.index)
   const listEnd = listWithoutItem.slice(destination.index)
 
-  onReorder(
-    [...listStart, movedItem, ...listEnd].map((item, index) => ({
-      ...item,
-      position: index,
-    }))
-  )
+  const newList = [...listStart, movedItem, ...listEnd].map((item, index) => ({
+    ...item,
+    position: index,
+  }))
+
+  onReorder(newList)
 }
