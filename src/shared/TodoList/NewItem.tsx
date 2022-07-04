@@ -1,7 +1,7 @@
 import { HStack, Input, Select } from "@chakra-ui/react"
 import { ChangeEvent, FormEvent, useContext, useState } from "react"
 import { FirebaseContext } from "../FirebaseContext"
-import { COLOURS } from "./types"
+import { Category, COLOURS } from "./types"
 
 interface Props {
   list: string
@@ -11,14 +11,14 @@ interface Props {
 export function NewItem({ list, showFrequency }: Props) {
   const { addItemToList } = useContext(FirebaseContext)
   const [description, setDescription] = useState("")
-  const [type, setType] = useState("🧹")
+  const [type, setType] = useState<Category>("🧹")
   const [frequency, setFrequency] = useState("一回")
 
   const updateDescription = (event: ChangeEvent<HTMLInputElement>) => {
     setDescription(event.target.value)
   }
   const updateType = (event: ChangeEvent<HTMLSelectElement>) => {
-    setType(event.target.value)
+    setType(event.target.value as Category)
   }
   const updateFrequency = (event: ChangeEvent<HTMLSelectElement>) => {
     setFrequency(event.target.value)

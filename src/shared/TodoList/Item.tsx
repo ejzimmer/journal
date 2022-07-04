@@ -42,7 +42,7 @@ export function Item({
     onChange(item)
   }
 
-  if (item.done && item.type === "毎日" && !isToday(new Date(item.done))) {
+  if (item.done && item.frequency === "毎日" && !isToday(new Date(item.done))) {
     delete item.done
     onChange(item)
   }

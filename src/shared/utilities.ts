@@ -38,15 +38,28 @@ export function resortList<T>(
 const A_IS_FIRST = -1
 const B_IS_FIRST = 1
 
+const sortByPositionInCategory = (
+  a: TodoItem,
+  b: TodoItem,
+  inCategory: (a: TodoItem) => boolean = () => true
+) => {
+  if (inCategory(a) && inCategory(b)) return a.position - b.position
+  if (inCategory(a)) return A_IS_FIRST
+  if (inCategory(b)) return B_IS_FIRST
+
+  return 0
+}
+
 export const sortItems = (a: TodoItem, b: TodoItem) => {
-  if (a.done && b.done) return a.position - b.position
-  if (a.done) return B_IS_FIRST
-  if (b.done) return A_IS_FIRST
-
-  const aIsEveryDay = a.frequency && a.frequency.endsWith("日")
-  const bIsEveryDay = b.frequency && b.frequency.endsWith("日")
-  if (aIsEveryDay === bIsEveryDay) return a.position - b.position
-  if (aIsEveryDay) return A_IS_FIRST
-
-  return B_IS_FIRST
+  return (
+    sortByPositionInCategory(a, b, (item) => !!item.done) * -1 ||
+    sortByPositionInCategory(
+      a,
+      b,
+      (item) => !!(item.frequency && item.frequency.endsWith("日"))
+    ) ||
+    sortByPositionInCategory(a, b, (item) => item.type === "⚒️") ||
+    sortByPositionInCategory(a, b, (item) => item.type === "🚴‍♀️") ||
+    sortByPositionInCategory(a, b)
+  )
 }

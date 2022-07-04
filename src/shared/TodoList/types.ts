@@ -1,7 +1,7 @@
 export interface TodoItem {
   id: string
   description: string
-  type: string
+  type: Category
   done?: number | false
   position: number
   frequency?: string
