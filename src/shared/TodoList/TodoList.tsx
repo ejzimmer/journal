@@ -7,7 +7,7 @@ import {
   Droppable,
   DropResult,
 } from "react-beautiful-dnd"
-import { resortList } from "../utilities"
+import { resortList, sortItems } from "../utilities"
 import { Item } from "./Item"
 import { TodoItem, Category, COLOURS } from "./types"
 
@@ -19,22 +19,6 @@ interface Props {
   onReorder: (items: TodoItem[]) => void
   currentList?: string
   otherLists?: string[]
-}
-
-const A_IS_FIRST = -1
-const B_IS_FIRST = 1
-
-const sortItems = (a: TodoItem, b: TodoItem) => {
-  if (a.done && b.done) return a.position - b.position
-  if (a.done) return B_IS_FIRST
-  if (b.done) return A_IS_FIRST
-
-  const aIsEveryDay = a.frequency && a.frequency.endsWith("日")
-  const bIsEveryDay = b.frequency && b.frequency.endsWith("日")
-  if (aIsEveryDay === bIsEveryDay) return a.position - b.position
-  if (aIsEveryDay) return A_IS_FIRST
-
-  return B_IS_FIRST
 }
 
 export function TodoList({
@@ -51,6 +35,18 @@ export function TodoList({
 
   const onDragEnd = (dropResult: DropResult) => {
     resortList(dropResult, sortedItems, onReorder)
+  }
+
+  const onMoveToTop = (sourceIndex: number) => {
+    const opts = {
+      source: {
+        index: sourceIndex,
+      },
+      destination: {
+        index: 0,
+      },
+    }
+    resortList(opts, items, onReorder)
   }
 
   return (
@@ -97,6 +93,7 @@ export function TodoList({
                         otherLists={otherLists}
                         onChange={onChangeItem}
                         onDelete={onDeleteItem}
+                        onMoveToTop={() => onMoveToTop(index)}
                       />
                     </ListItem>
                   )}

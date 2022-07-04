@@ -21,6 +21,7 @@ interface Props {
   otherLists?: string[]
   onChange: (item: TodoItem) => void
   onDelete: (item: TodoItem) => void
+  onMoveToTop: () => void
 }
 
 export function Item({
@@ -29,6 +30,7 @@ export function Item({
   currentList,
   onChange,
   onDelete,
+  onMoveToTop,
 }: Props) {
   const handleCheck = (event: ChangeEvent<HTMLInputElement>) => {
     if (event.target.checked) {
@@ -79,7 +81,7 @@ export function Item({
             rightIcon={<ChevronDownIcon />}
           />
           <MenuList>
-            <DeleteMenuItem onDelete={() => onDelete(item)} />
+            <MenuItem onClick={onMoveToTop}>⏫ Move to top</MenuItem>
             {currentList &&
               otherLists.map((list) => (
                 <MoveToMenuItem
@@ -89,6 +91,7 @@ export function Item({
                   item={item}
                 />
               ))}
+            <DeleteMenuItem onDelete={() => onDelete(item)} />
           </MenuList>
         </Menu>
       )}
