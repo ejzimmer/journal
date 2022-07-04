@@ -46,7 +46,7 @@ export function TodoList({
         index: 0,
       },
     }
-    resortList(opts, items, onReorder)
+    resortList(opts, sortedItems, onReorder)
   }
 
   return (

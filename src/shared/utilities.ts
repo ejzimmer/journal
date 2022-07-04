@@ -20,7 +20,6 @@ export function resortList<T>(
   }
 
   const movedItem = items[source.index]
-  console.log(source.index, movedItem)
   const listWithoutItem = items.filter((_, index) => index !== source.index)
 
   const listStart = listWithoutItem.slice(0, destination.index)
