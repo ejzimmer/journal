@@ -11,7 +11,7 @@ export function DeleteMenuItem({ onDelete }: { onDelete: () => void }) {
 
   return (
     <MenuItem onClick={() => setShowConfirmation(true)}>
-      <Box>Delete</Box>
+      <Box>🗑️ Delete</Box>
       <ConfirmDelete
         isOpen={showConfirmation}
         onClose={() => setShowConfirmation(false)}

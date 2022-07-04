@@ -17,5 +17,5 @@ export function MoveToMenuItem({ source, target, item }: Props) {
     deleteItemFromList(source, item)
   }
 
-  return <MenuItem onClick={onClick}>Move to {target}</MenuItem>
+  return <MenuItem onClick={onClick}>↔️ Move to {target}</MenuItem>
 }

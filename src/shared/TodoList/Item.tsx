@@ -5,6 +5,7 @@ import {
   Menu,
   MenuButton,
   MenuList,
+  MenuItem,
 } from "@chakra-ui/react"
 import { ChangeEvent } from "react"
 import { DeleteMenuItem } from "../DeleteMenuItem"
