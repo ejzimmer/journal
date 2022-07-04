@@ -15,7 +15,7 @@ export function DeleteMenuItem({ onDelete }: { onDelete: () => void }) {
       <ConfirmDelete
         isOpen={showConfirmation}
         onClose={() => setShowConfirmation(false)}
-        onDelete={() => handleDelete()}
+        onDelete={handleDelete}
       />
     </MenuItem>
   )

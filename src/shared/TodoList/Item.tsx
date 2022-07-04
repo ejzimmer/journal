@@ -54,6 +54,10 @@ export function Item({
       checked={isDone}
       type={item.type as keyof typeof COLOURS}
       display="flex"
+      cursor="pointer"
+      _hover={{
+        outline: "1px solid #999",
+      }}
     >
       <label
         style={{
@@ -62,6 +66,7 @@ export function Item({
           gap: "1em",
           flexGrow: "1",
           paddingLeft: "1em",
+          cursor: "pointer",
         }}
       >
         <Checkbox
