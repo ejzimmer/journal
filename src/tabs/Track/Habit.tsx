@@ -40,7 +40,7 @@ export function Habit({ habit, days, onChange, onDelete }: Props) {
             data-aria-label={`${habit.name} ${formatDate(day)}`}
             isChecked={listIncludesDay(habit.days, day)}
           /> */}
-          <MultiStateCheckbox name={`${habit.name}-${day.getTime()}`} />
+          <MultiStateCheckboxGroup name={`${habit.name}-${day.getTime()}`} />
         </Td>
       ))}
       <Td>
@@ -68,7 +68,7 @@ const formatDate = (date: Date) => format(date, "yyyy-MM-dd")
 const listIncludesDay = (list: number[] = [], day: Date) =>
   list.some((d) => isSameDay(d, day))
 
-function MultiStateCheckbox({ name }: { name: string }) {
+function MultiStateCheckboxGroup({ name }: { name: string }) {
   const [state, setState] = useState("off")
 
   const handleClick: ChangeEventHandler<HTMLInputElement> = (event) => {
@@ -84,35 +84,62 @@ function MultiStateCheckbox({ name }: { name: string }) {
         input: { display: "none" },
       }}
     >
-      <input
-        id={`${name}-yes`}
-        type="radio"
+      <MultiStateCheckbox
+        htmlFor="no"
+        isChecked={state === "yes"}
+        label="✅"
         name={name}
+        onChange={handleClick}
         value="yes"
-        checked={state === "yes"}
-        onChange={handleClick}
       />
-      <label htmlFor={`${name}-no`}>✅</label>
 
-      <input
-        id={`${name}-no`}
-        type="radio"
+      <MultiStateCheckbox
+        htmlFor="off"
+        isChecked={state === "no"}
+        label="❌"
         name={name}
+        onChange={handleClick}
         value="no"
-        checked={state === "no"}
-        onChange={handleClick}
       />
-      <label htmlFor={`${name}-off`}>❌</label>
 
+      <MultiStateCheckbox
+        htmlFor="yes"
+        isChecked={state === "off"}
+        label="⬜"
+        name={name}
+        onChange={handleClick}
+        value="off"
+      />
+    </Box>
+  )
+}
+
+function MultiStateCheckbox({
+  name,
+  value,
+  isChecked,
+  onChange,
+  label,
+  htmlFor,
+}: {
+  name: string
+  value: string
+  isChecked: boolean
+  onChange: ChangeEventHandler<HTMLInputElement>
+  label: string
+  htmlFor: string
+}) {
+  return (
+    <>
       <input
         type="radio"
-        id={`${name}-off`}
+        id={`${name}-${value}`}
         name={name}
-        value="off"
-        checked={state === "off"}
-        onChange={handleClick}
+        value={value}
+        checked={isChecked}
+        onChange={onChange}
       />
-      <label htmlFor={`${name}-yes`}>⬜</label>
-    </Box>
+      <label htmlFor={`${name}-${htmlFor}`}>{label}</label>
+    </>
   )
 }
