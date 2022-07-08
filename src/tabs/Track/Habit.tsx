@@ -68,8 +68,9 @@ const formatDate = (date: Date) => format(date, "yyyy-MM-dd")
 const listIncludesDay = (list: number[] = [], day: Date) =>
   list.some((d) => isSameDay(d, day))
 
+const CHECKBOX_STATES = ["⬜", "✅", "❌"]
 function MultiStateCheckboxGroup({ name }: { name: string }) {
-  const [state, setState] = useState("⬜")
+  const [state, setState] = useState(CHECKBOX_STATES[0])
 
   const handleClick: ChangeEventHandler<HTMLInputElement> = (event) => {
     setState(event.target.value)
@@ -84,29 +85,15 @@ function MultiStateCheckboxGroup({ name }: { name: string }) {
         input: { display: "none" },
       }}
     >
-      <MultiStateCheckbox
-        htmlFor="❌"
-        isChecked={state === "✅"}
-        name={name}
-        onChange={handleClick}
-        value="✅"
-      />
-
-      <MultiStateCheckbox
-        htmlFor="⬜"
-        isChecked={state === "❌"}
-        name={name}
-        onChange={handleClick}
-        value="❌"
-      />
-
-      <MultiStateCheckbox
-        htmlFor="✅"
-        isChecked={state === "⬜"}
-        name={name}
-        onChange={handleClick}
-        value="⬜"
-      />
+      {CHECKBOX_STATES.map((value, index) => (
+        <MultiStateCheckbox
+          htmlFor={CHECKBOX_STATES[(index + 1) % CHECKBOX_STATES.length]}
+          isChecked={state === value}
+          name={name}
+          onChange={handleClick}
+          value={value}
+        />
+      ))}
     </Box>
   )
 }
