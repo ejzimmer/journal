@@ -36,7 +36,6 @@ export function Habit({ habit, days, onChange, onDelete }: Props) {
           {/* <Checkbox
             value={day.getTime()}
             onChange={updateDays}
-            data-aria-label={`${habit.name} ${formatDate(day)}`}
             isChecked={listIncludesDay(habit.days, day)}
           /> */}
           <MultiStateCheckboxGroup
@@ -88,7 +87,7 @@ function MultiStateCheckboxGroup({
       as="fieldset"
       __css={{
         label: { display: "none" },
-        "input:checked + label": { display: "initial" },
+        "input:checked + label": { display: "revert" },
       }}
     >
       {states.map((value, index) => (
