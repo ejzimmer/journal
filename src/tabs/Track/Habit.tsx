@@ -69,7 +69,7 @@ const listIncludesDay = (list: number[] = [], day: Date) =>
   list.some((d) => isSameDay(d, day))
 
 function MultiStateCheckboxGroup({ name }: { name: string }) {
-  const [state, setState] = useState("off")
+  const [state, setState] = useState("⬜")
 
   const handleClick: ChangeEventHandler<HTMLInputElement> = (event) => {
     setState(event.target.value)
@@ -85,30 +85,27 @@ function MultiStateCheckboxGroup({ name }: { name: string }) {
       }}
     >
       <MultiStateCheckbox
-        htmlFor="no"
-        isChecked={state === "yes"}
-        label="✅"
+        htmlFor="❌"
+        isChecked={state === "✅"}
         name={name}
         onChange={handleClick}
-        value="yes"
+        value="✅"
       />
 
       <MultiStateCheckbox
-        htmlFor="off"
-        isChecked={state === "no"}
-        label="❌"
+        htmlFor="⬜"
+        isChecked={state === "❌"}
         name={name}
         onChange={handleClick}
-        value="no"
+        value="❌"
       />
 
       <MultiStateCheckbox
-        htmlFor="yes"
-        isChecked={state === "off"}
-        label="⬜"
+        htmlFor="✅"
+        isChecked={state === "⬜"}
         name={name}
         onChange={handleClick}
-        value="off"
+        value="⬜"
       />
     </Box>
   )
@@ -119,14 +116,12 @@ function MultiStateCheckbox({
   value,
   isChecked,
   onChange,
-  label,
   htmlFor,
 }: {
   name: string
   value: string
   isChecked: boolean
   onChange: ChangeEventHandler<HTMLInputElement>
-  label: string
   htmlFor: string
 }) {
   return (
@@ -139,7 +134,7 @@ function MultiStateCheckbox({
         checked={isChecked}
         onChange={onChange}
       />
-      <label htmlFor={`${name}-${htmlFor}`}>{label}</label>
+      <label htmlFor={`${name}-${htmlFor}`}>{value}</label>
     </>
   )
 }
