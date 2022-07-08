@@ -1,10 +1,9 @@
-import { Checkbox } from "@chakra-ui/checkbox"
 import { Td, Th } from "@chakra-ui/table"
 import { format, isSameDay } from "date-fns"
 import { HabitRecord } from "./types"
 import { ChangeEvent, ChangeEventHandler, useEffect, useState } from "react"
 import { CloseIcon } from "@chakra-ui/icons"
-import { Box, IconButton } from "@chakra-ui/react"
+import { Box, IconButton, VisuallyHidden } from "@chakra-ui/react"
 import { ConfirmDelete } from "../../shared/ConfirmDelete"
 
 interface Props {
@@ -82,7 +81,6 @@ function MultiStateCheckboxGroup({ name }: { name: string }) {
       __css={{
         label: { cursor: "pointer", fontSize: "30px", display: "none" },
         "input:checked + label": { display: "initial" },
-        input: { display: "none" },
       }}
     >
       {CHECKBOX_STATES.map((value, index) => (
@@ -113,7 +111,8 @@ function MultiStateCheckbox({
 }) {
   return (
     <>
-      <input
+      <VisuallyHidden
+        as="input"
         type="radio"
         id={`${name}-${value}`}
         name={name}
