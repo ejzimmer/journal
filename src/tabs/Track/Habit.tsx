@@ -39,7 +39,10 @@ export function Habit({ habit, days, onChange, onDelete }: Props) {
             data-aria-label={`${habit.name} ${formatDate(day)}`}
             isChecked={listIncludesDay(habit.days, day)}
           /> */}
-          <MultiStateCheckboxGroup name={`${habit.name}-${day.getTime()}`} />
+          <MultiStateCheckboxGroup
+            name={`${habit.name}-${day.getTime()}`}
+            states={["⬜", "✅", "❌"]}
+          />
         </Td>
       ))}
       <Td>
@@ -67,9 +70,14 @@ const formatDate = (date: Date) => format(date, "yyyy-MM-dd")
 const listIncludesDay = (list: number[] = [], day: Date) =>
   list.some((d) => isSameDay(d, day))
 
-const CHECKBOX_STATES = ["⬜", "✅", "❌"]
-function MultiStateCheckboxGroup({ name }: { name: string }) {
-  const [state, setState] = useState(CHECKBOX_STATES[0])
+function MultiStateCheckboxGroup({
+  name,
+  states,
+}: {
+  name: string
+  states: string[]
+}) {
+  const [state, setState] = useState(states[0])
 
   const handleClick: ChangeEventHandler<HTMLInputElement> = (event) => {
     setState(event.target.value)
@@ -83,9 +91,9 @@ function MultiStateCheckboxGroup({ name }: { name: string }) {
         "input:checked + label": { display: "initial" },
       }}
     >
-      {CHECKBOX_STATES.map((value, index) => (
+      {states.map((value, index) => (
         <MultiStateCheckbox
-          htmlFor={CHECKBOX_STATES[(index + 1) % CHECKBOX_STATES.length]}
+          htmlFor={states[(index + 1) % states.length]}
           isChecked={state === value}
           name={name}
           onChange={handleClick}
