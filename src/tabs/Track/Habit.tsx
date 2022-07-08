@@ -3,7 +3,7 @@ import { format, isSameDay } from "date-fns"
 import { HabitRecord } from "./types"
 import { ChangeEvent, ChangeEventHandler, useEffect, useState } from "react"
 import { CloseIcon } from "@chakra-ui/icons"
-import { Box, IconButton, VisuallyHidden } from "@chakra-ui/react"
+import { Box, FormLabel, IconButton, VisuallyHidden } from "@chakra-ui/react"
 import { ConfirmDelete } from "../../shared/ConfirmDelete"
 
 interface Props {
@@ -79,7 +79,7 @@ function MultiStateCheckboxGroup({ name }: { name: string }) {
     <Box
       as="fieldset"
       __css={{
-        label: { cursor: "pointer", fontSize: "30px", display: "none" },
+        label: { display: "none" },
         "input:checked + label": { display: "initial" },
       }}
     >
@@ -120,7 +120,9 @@ function MultiStateCheckbox({
         checked={isChecked}
         onChange={onChange}
       />
-      <label htmlFor={`${name}-${htmlFor}`}>{value}</label>
+      <FormLabel cursor="pointer" htmlFor={`${name}-${htmlFor}`}>
+        {value}
+      </FormLabel>
     </>
   )
 }
