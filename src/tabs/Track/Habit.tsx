@@ -31,7 +31,7 @@ export function Habit({ habit, days, onChange, onDelete }: Props) {
   return (
     <>
       <Th>{habit.name}</Th>
-      {[days[0]].map((day) => (
+      {days.map((day) => (
         <Td key={formatDate(day)} textAlign="center" p="0">
           {/* <Checkbox
             value={day.getTime()}
