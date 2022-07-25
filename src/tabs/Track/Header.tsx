@@ -2,7 +2,7 @@ import { Th, Thead, Tr } from "@chakra-ui/table"
 import { format } from "date-fns"
 
 const formatDate = (date: Date) => format(date, "dd/MM")
-const getDay = (date: Date) => format(date, "EEEE")
+const getDay = (date: Date) => format(date, "EEE")
 
 interface Props {
   days: Date[]
