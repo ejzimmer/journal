@@ -19,7 +19,7 @@ export function BooleanTracker({
   })
 
   return (
-    <chakra.label px={3} py={1} cursor="pointer" {...htmlProps}>
+    <chakra.label cursor="pointer" {...htmlProps}>
       <input {...getInputProps()} hidden />
       <Box {...getLabelProps()} opacity={state.isChecked ? 1 : 0.4}>
         {children}

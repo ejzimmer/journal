@@ -1,6 +1,6 @@
 import { useState } from "react"
 import { BooleanTracker } from "./BooleanTracker"
-import { MultistateTracker } from "./MutlistateTracker"
+import { MultistateTracker } from "./MultistateTracker"
 
 type TrackerBoolean = {
   id: string

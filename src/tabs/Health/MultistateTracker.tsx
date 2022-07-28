@@ -1,5 +1,5 @@
 import { Box, VisuallyHidden, FormLabel } from "@chakra-ui/react"
-import { ChangeEventHandler, useState } from "react"
+import { ChangeEventHandler } from "react"
 
 type Props = {
   name: string
