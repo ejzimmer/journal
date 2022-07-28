@@ -57,7 +57,11 @@ function MultiStateCheckbox({
         checked={isChecked}
         onChange={onChange}
       />
-      <FormLabel cursor="pointer" htmlFor={`${name}-${htmlFor}`}>
+      <FormLabel
+        fontSize="inherit"
+        cursor="pointer"
+        htmlFor={`${name}-${htmlFor}`}
+      >
         {value}
       </FormLabel>
     </>
