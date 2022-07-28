@@ -1,4 +1,4 @@
-import { Flex, Heading } from "@chakra-ui/react"
+import { BoxProps, Flex, Heading } from "@chakra-ui/react"
 import { format } from "date-fns"
 import { useState } from "react"
 import { BooleanTracker } from "./BooleanTracker"
@@ -27,10 +27,10 @@ const TRACKERS: Trackers = {
 
 type UpdateTracker = (tracker: Tracker, key: string, value: any) => void
 
-type Props = {
+interface Props extends BoxProps {
   date: Date
 }
-export function Day({ date }: Props) {
+export function Day({ date, ...rest }: Props) {
   const [state, setState] = useState(TRACKERS)
 
   const updateTracker: UpdateTracker = (tracker, key, value) => {
@@ -43,7 +43,8 @@ export function Day({ date }: Props) {
     }))
   }
 
-  const trackers = mapTrackers(state, updateTracker)
+  const day = format(date, "d")
+  const trackers = mapTrackers(day, state, updateTracker)
 
   return (
     <Flex
@@ -56,6 +57,8 @@ export function Day({ date }: Props) {
       fontSize="24px"
       padding="8px"
       position="relative"
+      flexShrink="0"
+      {...rest}
     >
       <Heading
         as="h3"
@@ -69,7 +72,7 @@ export function Day({ date }: Props) {
         py="0"
         color="gray.600"
       >
-        {format(date, "d")}
+        {day}
       </Heading>
       <Flex>{trackers.slice(0, 2)}</Flex>
       <Flex>{trackers.slice(2, 5)}</Flex>
@@ -78,7 +81,11 @@ export function Day({ date }: Props) {
   )
 }
 
-function mapTrackers(trackers: Trackers, updateTracker: UpdateTracker) {
+function mapTrackers(
+  day: string,
+  trackers: Trackers,
+  updateTracker: UpdateTracker
+) {
   return Object.values(trackers).map((tracker) => {
     switch (tracker.type) {
       case "boolean":
@@ -97,7 +104,7 @@ function mapTrackers(trackers: Trackers, updateTracker: UpdateTracker) {
         return (
           <MultistateTracker
             key={tracker.id}
-            name={tracker.id}
+            name={tracker.id + day}
             options={tracker.options}
             value={tracker.value}
             onChange={(value) => updateTracker(tracker, "value", value)}
