@@ -1,6 +1,5 @@
 import { BoxProps, Flex, Heading } from "@chakra-ui/react"
-import { format } from "date-fns"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { BooleanTracker } from "./BooleanTracker"
 import { InputTracker } from "./InputTracker"
 import { MultistateTracker } from "./MultistateTracker"
@@ -22,15 +21,16 @@ const TRACKERS: Trackers = {
     options: ["⚪", "🐞", "🔴"],
     value: "⚪",
   },
-  waist: { type: "input", id: "waist", value: "86" },
+  waist: { type: "input", id: "waist", value: "" },
 }
 
 type UpdateTracker = (tracker: Tracker, key: string, value: any) => void
 
-interface Props extends BoxProps {
-  date: Date
+interface Props extends Omit<BoxProps, "onChange"> {
+  day: string
+  onChange: (trackers: Trackers, day: string) => void
 }
-export function Day({ date, ...rest }: Props) {
+export function Day({ day, onChange, ...rest }: Props) {
   const [state, setState] = useState(TRACKERS)
 
   const updateTracker: UpdateTracker = (tracker, key, value) => {
@@ -43,7 +43,10 @@ export function Day({ date, ...rest }: Props) {
     }))
   }
 
-  const day = format(date, "d")
+  useEffect(() => {
+    onChange(state, day)
+  }, [state, onChange, day])
+
   const trackers = mapTrackers(day, state, updateTracker)
 
   return (

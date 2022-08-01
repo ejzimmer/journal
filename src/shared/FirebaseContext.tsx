@@ -35,6 +35,7 @@ interface ContextType {
   deleteItemFromList: ListCrudFunction
   updateList: <T extends { id: string }>(listName: string, list: T[]) => void
   write: (key: string, data: any) => void
+  read: (key: string, onChange: (value: any) => void) => void
   useValue: (key: string) => { value?: any; loading: boolean }
 }
 
@@ -46,6 +47,7 @@ const defaultContext: ContextType = {
   updateList: (_listName, _list) => {},
   useValue: (_key) => ({ loading: true }),
   write: (_key, _value) => {},
+  read: (_key, _onChange) => undefined,
 }
 
 export const FirebaseContext = createContext(defaultContext)
@@ -84,6 +86,12 @@ export function createFirebaseContext(database: Database): ContextType {
     },
     write: (key: string, data: any) => {
       set(ref(database, key), data)
+    },
+    read: (key: string, onChange: (value: any) => void) => {
+      const reference = ref(database, key)
+      onValue(reference, (snapshot) => {
+        onChange(snapshot.val())
+      })
     },
     useValue: (key: string) => {
       const [result, setResult] = useState<any>({ loading: true })
