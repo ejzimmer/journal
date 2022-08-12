@@ -45,6 +45,9 @@ export function Health() {
     [write, date]
   )
 
+  const startDay = format(date, "i")
+  console.log(startDay)
+
   return (
     <>
       <Heading>{format(date, "MMMM")}</Heading>
@@ -66,15 +69,16 @@ export function Health() {
         ))}
         {Object.entries(days)
           .sort(([a], [b]) => Number.parseInt(a) - Number.parseInt(b))
-          .map(([day, trackers]) => (
-            <Day
-              key={day}
-              day={day}
-              trackers={trackers}
-              mx="2px"
-              my="8px"
-              onChange={onChange}
-            />
+          .map(([day, trackers], index) => (
+            <GridItem key={day} gridColumn={index === 0 ? startDay : ""}>
+              <Day
+                day={day}
+                trackers={trackers}
+                mx="2px"
+                my="8px"
+                onChange={onChange}
+              />
+            </GridItem>
           ))}
       </Grid>
     </>
