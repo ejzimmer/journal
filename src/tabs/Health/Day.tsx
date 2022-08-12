@@ -1,53 +1,32 @@
 import { BoxProps, Flex, Heading } from "@chakra-ui/react"
-import { useEffect, useState } from "react"
 import { BooleanTracker } from "./BooleanTracker"
 import { InputTracker } from "./InputTracker"
 import { MultistateTracker } from "./MultistateTracker"
 import { Trackers, Tracker } from "./types"
 
-const TRACKERS: Trackers = {
-  stretch: { type: "boolean", id: "stretch", label: "🧘🏽", isChecked: false },
-  calories: { type: "boolean", id: "calories", label: "⚖️", isChecked: false },
-  teeth: { type: "boolean", id: "teeth", label: "🦷", isChecked: false },
-  drinks: {
-    type: "multistate",
-    id: "drinks",
-    options: ["🫖", "🍺", "🍻"],
-    value: "🫖",
-  },
-  period: {
-    type: "multistate",
-    id: "period",
-    options: ["⚪", "🐞", "🔴"],
-    value: "⚪",
-  },
-  waist: { type: "input", id: "waist", value: "" },
-}
-
 type UpdateTracker = (tracker: Tracker, key: string, value: any) => void
 
 interface Props extends Omit<BoxProps, "onChange"> {
   day: string
+  trackers: Trackers
   onChange: (trackers: Trackers, day: string) => void
 }
-export function Day({ day, onChange, ...rest }: Props) {
-  const [state, setState] = useState(TRACKERS)
-
+export function Day({ day, trackers, onChange, ...rest }: Props) {
   const updateTracker: UpdateTracker = (tracker, key, value) => {
-    setState((state) => ({
-      ...state,
-      [tracker.id]: {
-        ...tracker,
-        [key]: value,
+    onChange(
+      {
+        ...trackers,
+        [tracker.id]: {
+          ...tracker,
+          [key]: value,
+        },
       },
-    }))
+      day
+    )
   }
 
-  useEffect(() => {
-    onChange(state, day)
-  }, [state, onChange, day])
-
-  const trackers = mapTrackers(day, state, updateTracker)
+  const mapTracker = (tracker: Tracker) =>
+    getTracker(day, tracker, updateTracker)
 
   return (
     <Flex
@@ -77,52 +56,55 @@ export function Day({ day, onChange, ...rest }: Props) {
       >
         {day}
       </Heading>
-      <Flex>{trackers.slice(0, 2)}</Flex>
-      <Flex>{trackers.slice(2, 5)}</Flex>
-      <Flex>{trackers.slice(5)}</Flex>
+      <Flex>
+        {mapTracker(trackers.stretch)} {mapTracker(trackers.calories)}
+      </Flex>
+      <Flex>
+        {mapTracker(trackers.teeth)} {mapTracker(trackers.drinks)}{" "}
+        {mapTracker(trackers.period)}
+      </Flex>
+      <Flex>{mapTracker(trackers.waist)}</Flex>
     </Flex>
   )
 }
 
-function mapTrackers(
+function getTracker(
   day: string,
-  trackers: Trackers,
+  tracker: Tracker,
   updateTracker: UpdateTracker
 ) {
-  return Object.values(trackers).map((tracker) => {
-    switch (tracker.type) {
-      case "boolean":
-        return (
-          <BooleanTracker
-            key={tracker.id}
-            isChecked={tracker.isChecked}
-            onChange={(isChecked) =>
-              updateTracker(tracker, "isChecked", isChecked)
-            }
-          >
-            {tracker.label}
-          </BooleanTracker>
-        )
-      case "multistate":
-        return (
-          <MultistateTracker
-            key={tracker.id}
-            name={tracker.id + day}
-            options={tracker.options}
-            value={tracker.value}
-            onChange={(value) => updateTracker(tracker, "value", value)}
-          />
-        )
-      case "input":
-        return (
-          <InputTracker
-            key={tracker.id}
-            value={tracker.value}
-            onChange={(value) => updateTracker(tracker, "value", value)}
-          />
-        )
-      default:
-        return null
-    }
-  })
+  switch (tracker.type) {
+    case "boolean":
+      return (
+        <BooleanTracker
+          key={tracker.id}
+          isChecked={tracker.isChecked}
+          onChange={(isChecked) =>
+            updateTracker(tracker, "isChecked", isChecked)
+          }
+        >
+          {tracker.label}
+        </BooleanTracker>
+      )
+    case "multistate":
+      return (
+        <MultistateTracker
+          key={tracker.id}
+          name={tracker.id + day}
+          options={tracker.options}
+          value={tracker.value}
+          onChange={(value) => updateTracker(tracker, "value", value)}
+        />
+      )
+    case "input":
+      return (
+        <InputTracker
+          key={tracker.id}
+          value={tracker.value}
+          onChange={(value) => updateTracker(tracker, "value", value)}
+        />
+      )
+    default:
+      return null
+  }
 }

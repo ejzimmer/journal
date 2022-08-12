@@ -1,21 +1,22 @@
 // <-> firebase
+// show days of week
 // navigate between months
 // show streaks
 
-import { Flex } from "@chakra-ui/react"
+import { Grid } from "@chakra-ui/react"
 import { format, getDaysInMonth } from "date-fns"
 import { useCallback, useContext, useEffect, useMemo, useState } from "react"
 import { FirebaseContext } from "../../shared/FirebaseContext"
 import { Day } from "./Day"
-import { Trackers } from "./types"
+import { initialiseDay, Trackers } from "./types"
 
-const getEmptyMonth = (date: Date) =>
-  Object.fromEntries(
-    Array.from({ length: getDaysInMonth(date) }).map((_, index) => [
-      index + 1,
-      {},
-    ])
-  )
+const getEmptyMonth = (date: Date): Record<string, Trackers> => {
+  const month: [string, Trackers][] = Array.from({
+    length: getDaysInMonth(date),
+  }).map((_, index) => [`${index + 1}`.padStart(2, "0"), initialiseDay()])
+
+  return Object.fromEntries(month)
+}
 
 export function Health() {
   const { read, write } = useContext(FirebaseContext)
@@ -25,7 +26,7 @@ export function Health() {
 
   useEffect(() => {
     read(`health/${format(today, "yyyy/MM")}`, (value) => {
-      setDays(value)
+      setDays((days) => ({ ...days, ...value }))
     })
   }, [read, today])
 
@@ -37,10 +38,19 @@ export function Health() {
   )
 
   return (
-    <Flex wrap="wrap">
-      {Object.keys(days).map((day) => (
-        <Day key={day} day={day} mx="2px" my="8px" onChange={onChange} />
-      ))}
-    </Flex>
+    <Grid gridTemplateColumns="repeat(7, min-content)" justifyContent="center">
+      {Object.entries(days)
+        .sort(([a], [b]) => Number.parseInt(a) - Number.parseInt(b))
+        .map(([day, trackers]) => (
+          <Day
+            key={day}
+            day={day}
+            trackers={trackers}
+            mx="2px"
+            my="8px"
+            onChange={onChange}
+          />
+        ))}
+    </Grid>
   )
 }
