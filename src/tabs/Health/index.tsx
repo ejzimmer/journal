@@ -1,12 +1,12 @@
-// <-> firebase
 // show days of week
-// navigate between months
+// navigate between months & make start day right
 // show streaks
 
-import { Grid } from "@chakra-ui/react"
+import { Grid, GridItem } from "@chakra-ui/react"
 import { format, getDaysInMonth } from "date-fns"
 import { useCallback, useContext, useEffect, useMemo, useState } from "react"
 import { FirebaseContext } from "../../shared/FirebaseContext"
+import { getWeekdays } from "../../shared/utilities"
 import { Day } from "./Day"
 import { initialiseDay, Trackers } from "./types"
 
@@ -24,6 +24,8 @@ export function Health() {
   const today = useMemo(() => new Date(), [])
   const [days, setDays] = useState(getEmptyMonth(today))
 
+  const weekdays = getWeekdays(today)
+
   useEffect(() => {
     read(`health/${format(today, "yyyy/MM")}`, (value) => {
       setDays((days) => ({ ...days, ...value }))
@@ -38,7 +40,16 @@ export function Health() {
   )
 
   return (
-    <Grid gridTemplateColumns="repeat(7, min-content)" justifyContent="center">
+    <Grid
+      gridTemplateColumns="repeat(7, min-content)"
+      justifyContent="center"
+      justifyItems="center"
+    >
+      {weekdays.map((day) => (
+        <GridItem textTransform="uppercase" color="gray.400" mb="2">
+          {format(day, "EEE")}
+        </GridItem>
+      ))}
       {Object.entries(days)
         .sort(([a], [b]) => Number.parseInt(a) - Number.parseInt(b))
         .map(([day, trackers]) => (

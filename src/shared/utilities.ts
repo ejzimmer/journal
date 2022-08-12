@@ -1,3 +1,4 @@
+import { startOfISOWeek, endOfISOWeek, eachDayOfInterval } from "date-fns"
 import { TodoItem } from "./TodoList/types"
 
 export function isDailyTask(task: TodoItem) {
@@ -62,4 +63,10 @@ export const sortItems = (a: TodoItem, b: TodoItem) => {
     sortByPositionInCategory(a, b, (item) => item.type === "🚴‍♀️") ||
     sortByPositionInCategory(a, b)
   )
+}
+
+export const getWeekdays = (date: Date) => {
+  const startDate = startOfISOWeek(date)
+  const endOfWeek = endOfISOWeek(startDate)
+  return eachDayOfInterval({ start: startDate, end: endOfWeek })
 }
