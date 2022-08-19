@@ -1,4 +1,5 @@
 import { BoxProps, Flex, Heading } from "@chakra-ui/react"
+import { countCompleted, NO_COMPLETABLE_TRACKERS } from "../../shared/utilities"
 import { BooleanTracker } from "./BooleanTracker"
 import { InputTracker } from "./InputTracker"
 import { MultistateTracker } from "./MultistateTracker"
@@ -28,10 +29,12 @@ export function Day({ day, trackers, onChange, ...rest }: Props) {
   const mapTracker = (tracker: Tracker) =>
     getTracker(day, tracker, updateTracker)
 
+  const isCompleted = countCompleted(trackers) === NO_COMPLETABLE_TRACKERS
+
   return (
     <Flex
       border="2px solid"
-      borderColor="gray.300"
+      borderColor={isCompleted ? "black" : "gray.300"}
       borderRadius="50%"
       width="min-content"
       direction="column"
@@ -49,7 +52,7 @@ export function Day({ day, trackers, onChange, ...rest }: Props) {
         top="0"
         transform="translateY(-40%)"
         fontWeight="medium"
-        background="linear-gradient(transparent, white, transparent)"
+        background="white"
         px="4px"
         py="0"
         color="gray.600"

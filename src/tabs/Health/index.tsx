@@ -1,4 +1,3 @@
-// navigate between months & make start day right
 // show streaks
 
 import { ChevronLeftIcon, ChevronRightIcon } from "@chakra-ui/icons"
@@ -6,9 +5,9 @@ import { Grid, GridItem, Heading, IconButton } from "@chakra-ui/react"
 import { addMonths, format, getDaysInMonth, startOfMonth } from "date-fns"
 import { useCallback, useContext, useEffect, useState } from "react"
 import { FirebaseContext } from "../../shared/FirebaseContext"
-import { getWeekdays } from "../../shared/utilities"
+import { getWeekdays, initialiseDay } from "../../shared/utilities"
 import { Day } from "./Day"
-import { initialiseDay, Trackers } from "./types"
+import { Trackers } from "./types"
 
 const getEmptyMonth = (date: Date): Record<string, Trackers> => {
   const month: [string, Trackers][] = Array.from({
