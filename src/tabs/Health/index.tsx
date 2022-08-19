@@ -1,15 +1,9 @@
-// show days of week
 // navigate between months & make start day right
 // show streaks
 
-import { Button, Grid, GridItem, Heading } from "@chakra-ui/react"
-import {
-  addMonths,
-  format,
-  getDaysInMonth,
-  startOfMonth,
-  subMonths,
-} from "date-fns"
+import { ChevronLeftIcon, ChevronRightIcon } from "@chakra-ui/icons"
+import { Grid, GridItem, Heading, IconButton } from "@chakra-ui/react"
+import { addMonths, format, getDaysInMonth, startOfMonth } from "date-fns"
 import { useCallback, useContext, useEffect, useState } from "react"
 import { FirebaseContext } from "../../shared/FirebaseContext"
 import { getWeekdays } from "../../shared/utilities"
@@ -46,17 +40,25 @@ export function Health() {
   )
 
   const startDay = format(date, "i")
-  console.log(startDay)
 
   return (
     <>
-      <Heading>{format(date, "MMMM")}</Heading>
-      <Button onClick={() => setDate((date) => subMonths(date, 1))}>
-        Back
-      </Button>
-      <Button onClick={() => setDate((date) => addMonths(date, 1))}>
-        Forward
-      </Button>
+      <Grid
+        margin="auto"
+        alignItems="center"
+        gridTemplateColumns="1fr max-content 1fr"
+        width="300px"
+        mb="2em"
+      >
+        <GridItem justifySelf="start">
+          <NavButton direction={-1} setDate={setDate} />
+        </GridItem>
+        <Heading color="gray.700">{format(date, "MMMM")}</Heading>
+        <GridItem justifySelf="end">
+          <NavButton direction={1} setDate={setDate} />
+        </GridItem>
+      </Grid>
+
       <Grid
         gridTemplateColumns="repeat(7, min-content)"
         justifyContent="center"
@@ -82,5 +84,25 @@ export function Health() {
           ))}
       </Grid>
     </>
+  )
+}
+
+type NavButtonProps = {
+  direction: 1 | -1
+  setDate: (setter: (date: Date) => Date) => void
+}
+
+function NavButton({ direction, setDate }: NavButtonProps) {
+  return (
+    <IconButton
+      display="inline-flex"
+      color="gray.300"
+      _hover={{ color: "blue.500" }}
+      aria-label={`${direction === 1 ? "next" : "previous"} month`}
+      icon={direction === 1 ? <ChevronRightIcon /> : <ChevronLeftIcon />}
+      onClick={() => setDate((date) => addMonths(date, direction))}
+      variant="unstyled"
+      fontSize="40px"
+    />
   )
 }
