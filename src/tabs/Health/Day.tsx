@@ -11,8 +11,9 @@ interface Props extends Omit<BoxProps, "onChange"> {
   day: string
   trackers: Trackers
   onChange: (trackers: Trackers, day: string) => void
+  hue?: number
 }
-export function Day({ day, trackers, onChange, ...rest }: Props) {
+export function Day({ day, trackers, onChange, hue, ...rest }: Props) {
   const updateTracker: UpdateTracker = (tracker, key, value) => {
     onChange(
       {
@@ -30,11 +31,14 @@ export function Day({ day, trackers, onChange, ...rest }: Props) {
     getTracker(day, tracker, updateTracker)
 
   const isCompleted = countCompleted(trackers) === NO_COMPLETABLE_TRACKERS
+  const borderColour = `hsl(${hue} ${isCompleted ? "50%" : "0%"} 50% / ${
+    isCompleted ? "1" : "0.3"
+  })`
 
   return (
     <Flex
       border="2px solid"
-      borderColor={isCompleted ? "black" : "gray.300"}
+      borderColor={borderColour}
       borderRadius="50%"
       width="min-content"
       direction="column"

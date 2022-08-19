@@ -40,6 +40,8 @@ export function Health() {
 
   const startDay = format(date, "i")
 
+  const hueIncrement = 360 / Object.values(days).length
+
   return (
     <>
       <Grid
@@ -78,6 +80,7 @@ export function Health() {
                 mx="2px"
                 my="8px"
                 onChange={onChange}
+                hue={hueIncrement * Number.parseInt(day, 10)}
               />
             </GridItem>
           ))}
