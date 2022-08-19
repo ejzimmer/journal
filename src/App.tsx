@@ -12,9 +12,7 @@ import {
 import { useState } from "react"
 import { Track } from "./tabs/Track"
 import { Todo } from "./tabs/Todo"
-
-// Move items between lists
-// fix delete button in track
+import { Health } from "./tabs/Health"
 
 export function App() {
   const [isLoggedIn, setLoggedIn] = useState(false)
@@ -45,8 +43,8 @@ export function App() {
         <Tab>today</Tab>
         <Tab>track</Tab>
         <Tab>todo</Tab>
+        <Tab>health</Tab>
         <Tab isDisabled>work</Tab>
-        <Tab isDisabled>health</Tab>
         <Tab isDisabled>reading list</Tab>
       </TabList>
 
@@ -60,8 +58,10 @@ export function App() {
         <TabPanel>
           <Todo />
         </TabPanel>
+        <TabPanel>
+          <Health />
+        </TabPanel>
         <TabPanel>show meetings work hours work todos</TabPanel>
-        <TabPanel>body measurements stretching timers period tracking</TabPanel>
       </TabPanels>
     </Tabs>
   )

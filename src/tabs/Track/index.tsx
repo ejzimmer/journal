@@ -12,7 +12,7 @@ import {
   Droppable,
   DropResult,
 } from "react-beautiful-dnd"
-import { resortList } from "../../shared/utilities"
+import { getWeekdays, resortList } from "../../shared/utilities"
 
 const TRACK_KEY = "track"
 
@@ -30,9 +30,7 @@ export function Track() {
     value &&
     value.sort((a: HabitRecord, b: HabitRecord) => a.position - b.position)
 
-  const startDate = startOfISOWeek(new Date())
-  const endOfWeek = endOfISOWeek(startDate)
-  const days = eachDayOfInterval({ start: startDate, end: endOfWeek })
+  const days = getWeekdays(new Date())
 
   const addHabit = (habitName: string) => {
     if (habitName) {

@@ -1,3 +1,10 @@
+import { startOfISOWeek, endOfISOWeek, eachDayOfInterval } from "date-fns"
+import {
+  Tracker,
+  TrackerBoolean,
+  TrackerInput,
+  Trackers,
+} from "../tabs/Health/types"
 import { TodoItem } from "./TodoList/types"
 
 export function isDailyTask(task: TodoItem) {
@@ -63,3 +70,38 @@ export const sortItems = (a: TodoItem, b: TodoItem) => {
     sortByPositionInCategory(a, b)
   )
 }
+
+export const getWeekdays = (date: Date) => {
+  const startDate = startOfISOWeek(date)
+  const endOfWeek = endOfISOWeek(startDate)
+  return eachDayOfInterval({ start: startDate, end: endOfWeek })
+}
+
+export const initialiseDay = (): Trackers => ({
+  stretch: { type: "boolean", id: "stretch", label: "🧘🏽", isChecked: false },
+  calories: { type: "boolean", id: "calories", label: "⚖️", isChecked: false },
+  teeth: { type: "boolean", id: "teeth", label: "🦷", isChecked: false },
+  drinks: {
+    type: "multistate",
+    id: "drinks",
+    options: ["🫖", "🍺", "🍻"],
+    value: "🫖",
+  },
+  period: {
+    type: "multistate",
+    id: "period",
+    options: ["⚫", "🟤", "🔴"],
+    value: "⚫",
+  },
+  waist: { type: "input", id: "waist", value: "" },
+})
+
+export const isCompletable = ({ type }: Tracker) => type === "boolean"
+export const NO_COMPLETABLE_TRACKERS = Object.values(initialiseDay()).filter(
+  isCompletable
+).length
+
+export const countCompleted = (trackers: Trackers) =>
+  Object.values(trackers)
+    .filter(isCompletable)
+    .filter((tracker) => (tracker as TrackerBoolean).isChecked).length
