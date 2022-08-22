@@ -1,5 +1,4 @@
 import { Table, Tbody, Tr } from "@chakra-ui/react"
-import { eachDayOfInterval, endOfISOWeek, startOfISOWeek } from "date-fns"
 import { useCallback, useContext } from "react"
 import { Footer } from "./Footer"
 import { Habit } from "./Habit"
