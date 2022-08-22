@@ -1,5 +1,3 @@
-// show streaks
-
 import { ChevronLeftIcon, ChevronRightIcon } from "@chakra-ui/icons"
 import { Grid, GridItem, Heading, IconButton } from "@chakra-ui/react"
 import { addMonths, format, getDaysInMonth, startOfMonth } from "date-fns"

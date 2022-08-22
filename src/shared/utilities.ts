@@ -1,10 +1,5 @@
 import { startOfISOWeek, endOfISOWeek, eachDayOfInterval } from "date-fns"
-import {
-  Tracker,
-  TrackerBoolean,
-  TrackerInput,
-  Trackers,
-} from "../tabs/Health/types"
+import { Tracker, TrackerBoolean, Trackers } from "../tabs/Health/types"
 import { TodoItem } from "./TodoList/types"
 
 export function isDailyTask(task: TodoItem) {
