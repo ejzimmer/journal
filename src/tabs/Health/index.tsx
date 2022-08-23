@@ -1,5 +1,3 @@
-// show streaks
-
 import { ChevronLeftIcon, ChevronRightIcon } from "@chakra-ui/icons"
 import { Grid, GridItem, Heading, IconButton } from "@chakra-ui/react"
 import { addMonths, format, getDaysInMonth, startOfMonth } from "date-fns"
@@ -66,7 +64,12 @@ export function Health() {
         justifyItems="center"
       >
         {weekdays.map((day) => (
-          <GridItem textTransform="uppercase" color="gray.400" mb="2">
+          <GridItem
+            key={format(day, "EEE")}
+            textTransform="uppercase"
+            color="gray.400"
+            mb="2"
+          >
             {format(day, "EEE")}
           </GridItem>
         ))}
