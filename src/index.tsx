@@ -1,5 +1,5 @@
 import React from "react"
-import ReactDOM from "react-dom"
+import { createRoot } from "react-dom/client"
 import { ChakraProvider } from "@chakra-ui/react"
 
 import "./index.css"
@@ -28,13 +28,15 @@ const database = getDatabase(app)
 
 const contextValue = createFirebaseContext(database)
 
-ReactDOM.render(
+const container = document.getElementById("root")
+const root = createRoot(container!)
+
+root.render(
   <React.StrictMode>
     <ChakraProvider>
       <FirebaseContext.Provider value={contextValue}>
         <App />
       </FirebaseContext.Provider>
     </ChakraProvider>
-  </React.StrictMode>,
-  document.getElementById("root")
+  </React.StrictMode>
 )
