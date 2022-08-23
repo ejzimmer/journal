@@ -39,13 +39,13 @@ export function App() {
   }
 
   return (
-    <Tabs defaultIndex={3}>
+    <Tabs>
       <TabList position="sticky" top="0" background="white" zIndex="1">
         <Tab>today</Tab>
         <Tab>track</Tab>
         <Tab>todo</Tab>
         <Tab>health</Tab>
-        <Tab>work</Tab>
+        <Tab isDisabled>work</Tab>
         <Tab isDisabled>reading list</Tab>
       </TabList>
 
