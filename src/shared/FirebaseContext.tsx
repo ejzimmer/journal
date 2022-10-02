@@ -99,7 +99,8 @@ export function createFirebaseContext(database: Database): ContextType {
       useEffect(() => {
         const reference = ref(database, key)
         onValue(reference, (snapshot) => {
-          setResult({ value: Object.values(snapshot.val()), loading: false })
+          if (snapshot.val())
+            setResult({ value: Object.values(snapshot.val()), loading: false })
         })
       }, [key])
 

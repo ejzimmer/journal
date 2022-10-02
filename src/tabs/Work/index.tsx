@@ -37,7 +37,6 @@ export function Work() {
   const descriptionRef = useRef<HTMLTextAreaElement>(null)
 
   const onSubmit = () => {
-    console.log("submitting")
     if (!titleRef.current?.value) {
       return
     }
