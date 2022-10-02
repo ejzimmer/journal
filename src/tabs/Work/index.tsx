@@ -9,7 +9,8 @@ import {
   ListItem,
   Textarea,
 } from "@chakra-ui/react"
-import { useRef, useState } from "react"
+import { Field, Formik, useFormikContext } from "formik"
+import { useState } from "react"
 
 // list of items
 // can add description
@@ -30,24 +31,11 @@ type WorkItem = {
 }
 
 export function Work() {
+  // const { resetForm } = useFormikContext()
   const [items, setItems] = useState<WorkItem[]>([])
-
-  const titleRef = useRef<HTMLInputElement>(null)
-  const timeRef = useRef<HTMLInputElement>(null)
-  const descriptionRef = useRef<HTMLTextAreaElement>(null)
-
-  const onSubmit = () => {
-    if (!titleRef.current?.value) {
-      return
-    }
-
-    const newItem = {
-      title: titleRef.current.value,
-      time: timeRef.current?.value,
-      description: descriptionRef.current?.value,
-    }
-
-    setItems((items) => [...items, newItem])
+  const handleSubmit = (values: any) => {
+    setItems((items) => [...items, values])
+    // resetForm()
   }
 
   return (
@@ -61,31 +49,45 @@ export function Work() {
           </ListItem>
         ))}
       </List>
+      <Formik
+        initialValues={{ title: "", time: "", description: "" }}
+        onSubmit={handleSubmit}
+      >
+        {({ handleSubmit }) => <Form onSubmit={handleSubmit} />}
+      </Formik>
+    </>
+  )
+}
+
+type FormProps = {
+  onSubmit: () => void
+}
+function Form({ onSubmit }: FormProps) {
+  return (
+    <form onSubmit={onSubmit}>
       <Grid
-        as="form"
         gridTemplateColumns="1fr 1fr"
         gridGap={4}
         maxWidth="600px"
         margin="auto"
-        onSubmit={onSubmit}
       >
         <FormControl>
           <FormLabel>Title</FormLabel>
-          <Input ref={titleRef} />
+          <Field as={Input} name="title" />
         </FormControl>
         <FormControl>
           <FormLabel>Time</FormLabel>
-          <Input ref={timeRef} />
+          <Field as={Input} name="time" />
         </FormControl>
 
         <GridItem colSpan={2}>
           <FormControl>
             <FormLabel>Description</FormLabel>
-            <Textarea ref={descriptionRef} />
+            <Field as={Textarea} name="description" />
           </FormControl>
         </GridItem>
-        <Button>Add item</Button>
+        <Button type="submit">Add item</Button>
       </Grid>
-    </>
+    </form>
   )
 }
