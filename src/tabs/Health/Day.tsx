@@ -1,3 +1,4 @@
+import React from "react"
 import { BoxProps, Flex, Heading } from "@chakra-ui/react"
 import { countCompleted, NO_COMPLETABLE_TRACKERS } from "../../shared/utilities"
 import { BooleanTracker } from "./BooleanTracker"
@@ -40,7 +41,7 @@ export function Day({ day, trackers, onChange, hue, ...rest }: Props) {
       border="2px solid"
       borderColor={borderColour}
       borderRadius="50%"
-      width="min-content"
+      width="125px"
       direction="column"
       alignItems="center"
       fontSize="24px"
@@ -67,7 +68,8 @@ export function Day({ day, trackers, onChange, hue, ...rest }: Props) {
         {mapTracker(trackers.stretch)} {mapTracker(trackers.calories)}
       </Flex>
       <Flex>
-        {mapTracker(trackers.teeth)} {mapTracker(trackers.drinks)}{" "}
+        {mapTracker(trackers.drinks)}
+        {mapTracker(trackers.teeth)}
         {mapTracker(trackers.period)}
       </Flex>
       <Flex>{mapTracker(trackers.waist)}</Flex>

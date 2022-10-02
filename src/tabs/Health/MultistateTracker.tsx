@@ -1,3 +1,4 @@
+import React from "react"
 import { Box, VisuallyHidden, FormLabel } from "@chakra-ui/react"
 import { ChangeEventHandler } from "react"
 
@@ -61,6 +62,7 @@ function MultiStateCheckbox({
         fontSize="inherit"
         cursor="pointer"
         htmlFor={`${name}-${htmlFor}`}
+        margin="0"
       >
         {value}
       </FormLabel>
