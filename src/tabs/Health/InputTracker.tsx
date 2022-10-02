@@ -10,11 +10,11 @@ export function InputTracker({ value, onChange }: Props) {
     <Input
       value={value}
       onChange={(event) => onChange(event.target.value)}
-      maxLength={2}
-      width="2ch"
+      maxLength={4}
+      width="3.5ch"
       variant="flushed"
       height="min-content"
-      textAlign="right"
+      textAlign="center"
     />
   )
 }
