@@ -1,76 +1,140 @@
 import {
+  Box,
   Button,
   FormControl,
   FormLabel,
   Grid,
   GridItem,
+  HStack,
   Input,
   List,
   ListItem,
+  RadioGroup,
   Textarea,
+  useRadio,
+  useRadioGroup,
+  UseRadioProps,
 } from "@chakra-ui/react"
-import { Field, Formik, useFormikContext } from "formik"
-import { useState } from "react"
+import { Field, Form, Formik, FormikHelpers } from "formik"
+import React, { PropsWithChildren, useState } from "react"
 
+// distinguish between meetings & tasks
 // list of items
-// can add description
-// can include links
-// can have checklist
-// can reorder items
+// can edit all fields
+// can add description later
+// can include links in description
+// can have checklists in description
 // can mark as done
 // can delete
-// can edit title, description, checklist
 // save to firebase & fetch from firebase
-// distinguish between meetings & tasks
 // fetch meeting data from google calendar?
+// can reorder items
 
-type WorkItem = {
+type ItemType = "meeting" | "task"
+
+interface WorkItem {
   title: string
-  time?: string
-  description?: string
+  type: ItemType
+}
+
+interface Meeting extends WorkItem {
+  type: "meeting"
+  time: string
+}
+interface Task extends WorkItem {
+  type: "task"
+  description: string
 }
 
 export function Work() {
-  // const { resetForm } = useFormikContext()
   const [items, setItems] = useState<WorkItem[]>([])
-  const handleSubmit = (values: any) => {
+  const handleSubmit = (values: any, { resetForm }: FormikHelpers<any>) => {
     setItems((items) => [...items, values])
-    // resetForm()
+    resetForm()
   }
 
   return (
     <>
       <List>
         {items.map((item) => (
-          <ListItem key={item.title}>
-            {item.title}
-            {item.time}
-            {item.description}
-          </ListItem>
+          <ListItem key={item.title}>{item.title}</ListItem>
         ))}
       </List>
       <Formik
         initialValues={{ title: "", time: "", description: "" }}
         onSubmit={handleSubmit}
       >
-        {({ handleSubmit }) => <Form onSubmit={handleSubmit} />}
+        <AddWorkItemForm />
       </Formik>
     </>
   )
 }
 
-type FormProps = {
-  onSubmit: () => void
-}
-function Form({ onSubmit }: FormProps) {
+function RadioSwitch(props: PropsWithChildren<UseRadioProps>) {
+  const { getInputProps, getCheckboxProps } = useRadio(props)
+
+  const input = getInputProps()
+  const checkbox = getCheckboxProps()
+
   return (
-    <form onSubmit={onSubmit}>
+    <Box
+      as="label"
+      _first={{
+        borderLeftRadius: "full",
+      }}
+      _last={{
+        borderRightRadius: "full",
+      }}
+    >
+      <input {...input} />
+      <Box
+        {...checkbox}
+        cursor="pointer"
+        borderWidth="1px"
+        borderRadius="inherit"
+        boxShadow="md"
+        color="gray.500"
+        _checked={{
+          bg: "green.400",
+          color: "white",
+          borderColor: "green.400",
+          boxShadow: "inset var(--chakra-shadows-md)",
+        }}
+        _focus={{
+          outline: "1px dashed currentColor",
+        }}
+        transition="box-shadow 0.3s"
+        px={5}
+        py={3}
+      >
+        {props.children}
+      </Box>
+    </Box>
+  )
+}
+function AddWorkItemForm() {
+  const { getRootProps, getRadioProps } = useRadioGroup({
+    name: "type",
+    defaultValue: "meeting",
+    onChange: console.log,
+  })
+
+  const group = getRootProps()
+
+  return (
+    <Form>
       <Grid
         gridTemplateColumns="1fr 1fr"
         gridGap={4}
         maxWidth="600px"
         margin="auto"
       >
+        <HStack {...group} spacing="0">
+          <RadioSwitch {...getRadioProps({ value: "meeting" })}>
+            Meeting
+          </RadioSwitch>
+          <RadioSwitch {...getRadioProps({ value: "task" })}>Task</RadioSwitch>
+        </HStack>
         <FormControl>
           <FormLabel>Title</FormLabel>
           <Field as={Input} name="title" />
@@ -79,7 +143,6 @@ function Form({ onSubmit }: FormProps) {
           <FormLabel>Time</FormLabel>
           <Field as={Input} name="time" />
         </FormControl>
-
         <GridItem colSpan={2}>
           <FormControl>
             <FormLabel>Description</FormLabel>
@@ -88,6 +151,6 @@ function Form({ onSubmit }: FormProps) {
         </GridItem>
         <Button type="submit">Add item</Button>
       </Grid>
-    </form>
+    </Form>
   )
 }
