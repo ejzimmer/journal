@@ -31,9 +31,9 @@ export function Day({ day, trackers, onChange, hue, ...rest }: Props) {
   const mapTracker = (tracker: Tracker) =>
     getTracker(day, tracker, updateTracker)
 
-  const isCompleted = countCompleted(trackers) === NO_COMPLETABLE_TRACKERS
-  const borderColour = `hsl(${hue} ${isCompleted ? "50%" : "0%"} 50% / ${
-    isCompleted ? "1" : "0.3"
+  const fractionCompleted = countCompleted(trackers) / NO_COMPLETABLE_TRACKERS
+  const borderColour = `hsl(${hue} ${fractionCompleted ? "50%" : "0%"} 50% / ${
+    fractionCompleted || "0.3"
   })`
 
   return (
@@ -48,6 +48,7 @@ export function Day({ day, trackers, onChange, hue, ...rest }: Props) {
       padding="8px"
       position="relative"
       flexShrink="0"
+      transition="border-color 2s"
       {...rest}
     >
       <Heading
