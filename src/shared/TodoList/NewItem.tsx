@@ -1,5 +1,5 @@
 import { HStack, Input, Select } from "@chakra-ui/react"
-import { ChangeEvent, FormEvent, useContext, useState } from "react"
+import React, { ChangeEvent, FormEvent, useContext, useState } from "react"
 import { FirebaseContext } from "../FirebaseContext"
 import { Category, COLOURS } from "./types"
 

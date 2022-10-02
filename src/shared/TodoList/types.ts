@@ -19,5 +19,6 @@ export const COLOURS = {
   "👾": "hsl(300 50% 90%)",
   "🖋️": "hsl(50 50% 90%)",
   "👩‍💻": "hsl(160 50% 90%)",
+  "👥": "hsl(355 90% 92%)",
 }
 export type Category = keyof typeof COLOURS
