@@ -5,7 +5,7 @@ import { FirebaseContext } from "../../shared/FirebaseContext"
 import { NewItem } from "../../shared/TodoList/NewItem"
 import { TodoList } from "../../shared/TodoList/TodoList"
 import { TodoItem } from "../../shared/TodoList/types"
-import { isDailyTask } from "../../shared/utilities"
+import { isDailyTask, isWorkDay } from "../../shared/utilities"
 
 const TODAY_KEY = "today"
 const TODAY = new Date()
@@ -20,7 +20,7 @@ export function Today() {
     (item: TodoItem) => {
       if (
         (item.frequency === "平日" || item.type === "⚒️") &&
-        isWeekend(TODAY)
+        !isWorkDay(TODAY)
       ) {
         setHiddenItems((items) => [...items, item])
         return

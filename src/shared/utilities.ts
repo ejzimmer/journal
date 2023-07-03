@@ -1,4 +1,9 @@
-import { startOfISOWeek, endOfISOWeek, eachDayOfInterval } from "date-fns"
+import {
+  startOfISOWeek,
+  endOfISOWeek,
+  eachDayOfInterval,
+  isWeekend,
+} from "date-fns"
 import { Tracker, TrackerBoolean, Trackers } from "../tabs/Health/types"
 import { TodoItem } from "./TodoList/types"
 
@@ -100,3 +105,6 @@ export const countCompleted = (trackers: Trackers) =>
   Object.values(trackers)
     .filter(isCompletable)
     .filter((tracker) => (tracker as TrackerBoolean).isChecked).length
+
+export const isWorkDay = (date: Date) =>
+  !(isWeekend(date) || date.getDay() === 1)
