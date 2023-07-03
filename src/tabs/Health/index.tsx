@@ -90,6 +90,17 @@ export function Health() {
                 my="8px"
                 onChange={onChange}
                 hue={hueIncrement * Number.parseInt(day, 10)}
+                boxShadow={
+                  isToday(
+                    new Date(
+                      date.getFullYear(),
+                      date.getMonth(),
+                      Number.parseInt(day)
+                    )
+                  )
+                    ? "0 0 8px hsl(250 50% 60% / 0.4)"
+                    : ""
+                }
               />
             </GridItem>
           ))}
