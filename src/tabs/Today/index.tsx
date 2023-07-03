@@ -1,5 +1,5 @@
 import { VStack } from "@chakra-ui/layout"
-import { isSameDay, isWeekend } from "date-fns"
+import { isSameDay } from "date-fns"
 import { useCallback, useContext, useEffect, useState } from "react"
 import { FirebaseContext } from "../../shared/FirebaseContext"
 import { NewItem } from "../../shared/TodoList/NewItem"
