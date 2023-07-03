@@ -63,6 +63,7 @@ export function Day({ day, trackers, onChange, hue, ...rest }: Props) {
         transform="translateY(-40%)"
         fontWeight="medium"
         background="white"
+        borderRadius="20px"
         px="4px"
         py="0"
         color="gray.600"
