@@ -57,6 +57,7 @@ export function TodoList({
         borderTopRadius="lg"
         alignItems="center"
         justifyContent="space-around"
+        px="10px"
       >
         <Total items={items} />
         <FilterByCategory
