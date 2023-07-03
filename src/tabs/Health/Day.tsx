@@ -35,11 +35,15 @@ export function Day({ day, trackers, onChange, hue, ...rest }: Props) {
   const borderColour = `hsl(${hue} ${fractionCompleted ? "50%" : "0%"} 50% / ${
     fractionCompleted || "0.3"
   })`
+  const backgroundColour = `hsl(${hue} ${
+    fractionCompleted ? "50%" : "0%"
+  } 50% / ${fractionCompleted / 3 || "0"})`
 
   return (
     <Flex
       border="2px solid"
       borderColor={borderColour}
+      backgroundColor={backgroundColour}
       borderRadius="50%"
       width="125px"
       direction="column"

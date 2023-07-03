@@ -1,6 +1,12 @@
 import { ChevronLeftIcon, ChevronRightIcon } from "@chakra-ui/icons"
 import { Grid, GridItem, Heading, IconButton } from "@chakra-ui/react"
-import { addMonths, format, getDaysInMonth, startOfMonth } from "date-fns"
+import {
+  addMonths,
+  format,
+  getDaysInMonth,
+  isToday,
+  startOfMonth,
+} from "date-fns"
 import { useCallback, useContext, useEffect, useState } from "react"
 import { FirebaseContext } from "../../shared/FirebaseContext"
 import { getWeekdays, initialiseDay } from "../../shared/utilities"
