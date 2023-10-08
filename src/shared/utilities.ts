@@ -107,4 +107,4 @@ export const countCompleted = (trackers: Trackers) =>
     .filter((tracker) => (tracker as TrackerBoolean).isChecked).length
 
 export const isWorkDay = (date: Date) =>
-  !(isWeekend(date) || date.getDay() === 1)
+  !(isWeekend(date) || date.getDay() === 3)
