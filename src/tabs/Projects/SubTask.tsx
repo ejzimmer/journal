@@ -1,5 +1,5 @@
-import { Button, Checkbox, Input } from "@chakra-ui/react"
-import { useState, useRef, FormEvent, useEffect } from "react"
+import { Button, Checkbox } from "@chakra-ui/react"
+import { EditableText } from "./EditableText"
 
 type Props = {
   title: string
@@ -16,38 +16,6 @@ export function SubTask({
   onTitleChange,
   onDelete,
 }: Props) {
-  const [inEditMode, setInEditMode] = useState(false)
-  const editTitleRef = useRef<HTMLInputElement>(null)
-  const editTitleFormRef = useRef<HTMLFormElement>(null)
-
-  const switchToEditMode = () => setInEditMode(true)
-  const handleSubmit = (event: FormEvent) => {
-    event.preventDefault()
-    const newTitle = editTitleRef.current?.value
-    if (newTitle) {
-      onTitleChange(newTitle)
-      setInEditMode(false)
-    }
-  }
-
-  useEffect(() => {
-    const clickOutsideListener = (event: MouseEvent) => {
-      if (!editTitleFormRef.current?.contains(event.target as Node)) {
-        setInEditMode(false)
-      }
-    }
-
-    if (inEditMode) {
-      window.addEventListener("click", clickOutsideListener)
-    }
-
-    return () => {
-      if (!inEditMode) {
-        window.removeEventListener("click", clickOutsideListener)
-      }
-    }
-  }, [inEditMode])
-
   return (
     <label
       style={{
@@ -64,19 +32,7 @@ export function SubTask({
         isChecked={isDone}
         onChange={(event) => onDoneChange(event.target.checked)}
       />
-      {inEditMode ? (
-        <form ref={editTitleFormRef} onSubmit={handleSubmit}>
-          <Input ref={editTitleRef} defaultValue={title} />
-          <Button aria-label="Save task" type="submit">
-            ✅
-          </Button>
-        </form>
-      ) : (
-        title
-      )}
-      <Button aria-label={`Edit task: ${title}`} onClick={switchToEditMode}>
-        ✏️
-      </Button>
+      <EditableText value={title} onChange={onTitleChange} />
       <Button aria-label={`Delete task: ${title}`} onClick={onDelete}>
         🗑️
       </Button>
