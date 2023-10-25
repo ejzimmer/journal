@@ -22,7 +22,6 @@ export function SubTask({
 
   const switchToEditMode = () => setInEditMode(true)
   const handleSubmit = (event: FormEvent) => {
-    console.log("in onSUbmite")
     event.preventDefault()
     const newTitle = editTitleRef.current?.value
     if (newTitle) {
