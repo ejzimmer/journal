@@ -1,6 +1,8 @@
 import { Button, Checkbox } from "@chakra-ui/react"
 import { EditableText } from "./EditableText"
 
+// Add waiting status
+
 type Props = {
   title: string
   isDone: boolean

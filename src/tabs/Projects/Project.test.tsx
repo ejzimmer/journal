@@ -4,6 +4,10 @@ import userEvent from "@testing-library/user-event"
 
 const PROJECT = {
   name: "Sew hoodie",
+  tasks: [
+    { description: "Buy fabric", isDone: true },
+    { description: "Prewash fabric", isDone: false },
+  ],
 }
 
 describe("Project", () => {
@@ -13,15 +17,61 @@ describe("Project", () => {
     expect(screen.getByText(PROJECT.name)).toBeInTheDocument()
   })
 
-  describe("when the user clicks the Add Task button", () => {
-    it("renders the add task form", async () => {
-      render(<Project project={PROJECT} />)
+  it("displays the list of tasks", () => {
+    render(<Project project={PROJECT} />)
 
-      const newTaskButton = screen.getByRole("button", { name: "New task" })
-      await userEvent.click(newTaskButton)
+    expect(screen.getByRole("checkbox", { name: /Buy fabric/ })).toBeChecked()
+    expect(prewashFabric()).not.toBeChecked()
+  })
 
-      expect(screen.getByRole("textbox")).toBeInTheDocument()
-      expect(newTaskButton).not.toBeInTheDocument()
+  it("adds new tasks", async () => {
+    render(<Project project={PROJECT} />)
+
+    const newTaskButton = screen.getByRole("button", { name: "New task" })
+    await userEvent.click(newTaskButton)
+
+    const descriptionInput = screen.getByRole("textbox")
+    await userEvent.type(descriptionInput, "Buy pattern")
+    await userEvent.keyboard("{Enter}")
+
+    expect(descriptionInput).not.toBeInTheDocument()
+    expect(screen.getByText("Buy pattern")).toBeInTheDocument()
+  })
+
+  it("marks a task as done", async () => {
+    render(<Project project={PROJECT} />)
+
+    await userEvent.click(prewashFabric())
+
+    expect(prewashFabric()).toBeChecked()
+  })
+
+  it("updates the task description", async () => {
+    render(<Project project={PROJECT} />)
+
+    const prewashFabricDescription = screen.getByText("Prewash fabric")
+    await userEvent.click(prewashFabricDescription)
+
+    const prewashFabricInput = screen.getByRole("textbox")
+    await userEvent.type(prewashFabricInput, "s")
+    await userEvent.keyboard("{Enter}")
+
+    expect(
+      screen.getByRole("checkbox", { name: /Prewash fabrics/ })
+    ).toBeInTheDocument()
+  })
+
+  it("deletes a task", async () => {
+    render(<Project project={PROJECT} />)
+
+    const deletePrewashFabric = screen.getByRole("button", {
+      name: "Delete task: Prewash fabric",
     })
+    await userEvent.click(deletePrewashFabric)
+
+    expect(screen.queryByText("Prewash fabric")).not.toBeInTheDocument()
   })
 })
+
+const prewashFabric = () =>
+  screen.getByRole("checkbox", { name: /Prewash fabric/ })
