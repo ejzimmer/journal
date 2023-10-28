@@ -13,11 +13,13 @@ import { Todo } from "./tabs/Todo"
 import { Health } from "./tabs/Health"
 import { Routes, Route, NavLink } from "react-router-dom"
 import styled from "@emotion/styled"
+import { Projects } from "./tabs/Projects"
 
 const TABS = {
   today: <Today />,
   todo: <Todo />,
   health: <Health />,
+  projects: <Projects />,
 }
 
 export function App() {
