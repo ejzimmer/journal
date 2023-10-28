@@ -71,6 +71,48 @@ describe("Project", () => {
 
     expect(screen.queryByText("Prewash fabric")).not.toBeInTheDocument()
   })
+
+  describe("when all the tasks in a project are done", () => {
+    const allDoneProject = {
+      ...PROJECT,
+      tasks: PROJECT.tasks.map((task) => ({ ...task, isDone: true })),
+    }
+
+    it("marks the project as done", async () => {
+      render(<Project project={PROJECT} />)
+
+      await userEvent.click(prewashFabric())
+
+      expect(screen.getByText("✅")).toBeInTheDocument()
+    })
+
+    describe("when one of the tasks is then unchecked", () => {
+      it("unmarks the project as done", async () => {
+        render(<Project project={allDoneProject} />)
+
+        const doneIndicator = screen.getByText("✅")
+        await userEvent.click(prewashFabric())
+
+        expect(doneIndicator).not.toBeInTheDocument()
+      })
+    })
+
+    describe("when a new task is added", () => {
+      it("unmarks the project as done", async () => {
+        render(<Project project={allDoneProject} />)
+
+        const doneIndicator = screen.getByText("✅")
+        const newTaskButton = screen.getByRole("button", { name: "New task" })
+        await userEvent.click(newTaskButton)
+
+        const descriptionInput = screen.getByRole("textbox")
+        await userEvent.type(descriptionInput, "Buy pattern")
+        await userEvent.keyboard("{Enter}")
+
+        expect(doneIndicator).not.toBeInTheDocument()
+      })
+    })
+  })
 })
 
 const prewashFabric = () =>

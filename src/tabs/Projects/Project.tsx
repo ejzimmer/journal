@@ -19,6 +19,7 @@ type Props = {
 export function Project({ project }: Props) {
   const [tasks, setTasks] = useState(project.tasks)
   const [showingForm, setShowingForm] = useState(false)
+  const allDone = tasks.every((task) => task.isDone)
 
   const addTask = (description: string) => {
     setTasks((tasks) => [...tasks, { description, isDone: false }])
@@ -37,6 +38,7 @@ export function Project({ project }: Props) {
   return (
     <>
       <EditableText value={project.name} onChange={() => undefined} />
+      {allDone && <span>✅</span>}
       <ul>
         {tasks.map(({ description, isDone }, index) => (
           <SubTask
@@ -61,6 +63,3 @@ export function Project({ project }: Props) {
     </>
   )
 }
-
-// update project status manually
-// update project status automatically
