@@ -3,6 +3,7 @@ import { EditableText } from "./EditableText"
 import { NewTaskForm } from "./NewTaskForm"
 import { Button } from "@chakra-ui/react"
 import { SubTask } from "./SubTask"
+import { MouseEvent } from "react"
 
 type Task = {
   description: string
@@ -32,7 +33,10 @@ export function Project({ project }: Props) {
     setTasks((tasks) => tasks.toSpliced(index, 1))
   }
 
-  const showForm = () => setShowingForm(true)
+  const showForm = (event: MouseEvent) => {
+    event.stopPropagation()
+    setShowingForm(true)
+  }
   const hideForm = () => setShowingForm(false)
 
   return (
