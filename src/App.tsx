@@ -1,4 +1,3 @@
-import { Tab, TabList, TabPanel, TabPanels, Tabs } from "@chakra-ui/tabs"
 import { Today } from "./tabs/Today"
 import { Button } from "@chakra-ui/button"
 import { Grid } from "@chakra-ui/layout"
@@ -12,6 +11,14 @@ import {
 import { useState } from "react"
 import { Todo } from "./tabs/Todo"
 import { Health } from "./tabs/Health"
+import { Routes, Route, NavLink } from "react-router-dom"
+import styled from "@emotion/styled"
+
+const TABS = {
+  today: <Today />,
+  todo: <Todo />,
+  health: <Health />,
+}
 
 export function App() {
   const [isLoggedIn, setLoggedIn] = useState(false)
@@ -37,24 +44,42 @@ export function App() {
   }
 
   return (
-    <Tabs>
-      <TabList position="sticky" top="0" background="white" zIndex="1">
-        <Tab>today</Tab>
-        <Tab>todo</Tab>
-        <Tab>health</Tab>
-      </TabList>
+    <>
+      <Nav>
+        {Object.keys(TABS).map((tab) => (
+          <NavItem key={tab} to={tab}>
+            {tab}
+          </NavItem>
+        ))}
+      </Nav>
 
-      <TabPanels>
-        <TabPanel>
-          <Today />
-        </TabPanel>
-        <TabPanel>
-          <Todo />
-        </TabPanel>
-        <TabPanel>
-          <Health />
-        </TabPanel>
-      </TabPanels>
-    </Tabs>
+      <Routes>
+        {Object.entries(TABS).map(([name, Element]) => (
+          <Route key={name} path={name} element={Element} />
+        ))}
+        <Route path="/" element={<Today />} />
+      </Routes>
+    </>
   )
 }
+
+const Nav = styled.nav`
+  position: sticky;
+  top: 0;
+  background: white;
+  z-index: 1;
+  border-bottom: 2px solid #e2e8f0;
+  margin-bottom: 1rem;
+  display: flex;
+`
+
+const NavItem = styled(NavLink)`
+  padding: 0.5rem 1rem;
+  margin-bottom: -2px;
+
+  &.active {
+    color: #2b6cb0;
+    border-bottom: inherit;
+    border-color: currentColor;
+  }
+`
