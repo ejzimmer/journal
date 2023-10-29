@@ -10,14 +10,10 @@ import {
   remove,
 } from "firebase/database"
 import { createContext, useEffect, useState } from "react"
-import { HabitRecord } from "../tabs/Track/types"
 import { TodoItem } from "./TodoList/types"
 
 type CrudFunction = (item: TodoItem) => void
-type ListCrudFunction = (
-  listName: string,
-  item: Partial<TodoItem | HabitRecord>
-) => void
+type ListCrudFunction = (listName: string, item: Partial<TodoItem>) => void
 
 interface CrudFunctions {
   onAdd: CrudFunction

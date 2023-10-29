@@ -11,6 +11,7 @@ import {
   createFirebaseContext,
   FirebaseContext,
 } from "./shared/FirebaseContext"
+import { BrowserRouter } from "react-router-dom"
 
 const firebaseConfig = {
   apiKey: "AIzaSyAlKw5_aMOUlR3SdkbU6vHADLTUvXZHNJg",
@@ -35,7 +36,9 @@ root.render(
   <React.StrictMode>
     <ChakraProvider>
       <FirebaseContext.Provider value={contextValue}>
-        <App />
+        <BrowserRouter>
+          <App />
+        </BrowserRouter>
       </FirebaseContext.Provider>
     </ChakraProvider>
   </React.StrictMode>
