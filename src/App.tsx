@@ -10,10 +10,8 @@ import {
   signInWithRedirect,
 } from "firebase/auth"
 import { useState } from "react"
-import { Track } from "./tabs/Track"
 import { Todo } from "./tabs/Todo"
 import { Health } from "./tabs/Health"
-import { Work } from "./tabs/Work"
 
 export function App() {
   const [isLoggedIn, setLoggedIn] = useState(false)
@@ -42,11 +40,8 @@ export function App() {
     <Tabs>
       <TabList position="sticky" top="0" background="white" zIndex="1">
         <Tab>today</Tab>
-        <Tab>track</Tab>
         <Tab>todo</Tab>
         <Tab>health</Tab>
-        <Tab isDisabled>work</Tab>
-        <Tab isDisabled>reading list</Tab>
       </TabList>
 
       <TabPanels>
@@ -54,16 +49,10 @@ export function App() {
           <Today />
         </TabPanel>
         <TabPanel>
-          <Track />
-        </TabPanel>
-        <TabPanel>
           <Todo />
         </TabPanel>
         <TabPanel>
           <Health />
-        </TabPanel>
-        <TabPanel>
-          <Work />
         </TabPanel>
       </TabPanels>
     </Tabs>
