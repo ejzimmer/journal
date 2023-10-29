@@ -33,7 +33,7 @@ export function NewTaskForm({ onSubmit, onCancel }: Props) {
 
   return (
     <form onSubmit={handleSubmit} ref={formRef}>
-      <Input ref={inputRef} />
+      <Input ref={inputRef} aria-label="New task description" />
       <Button type="submit" aria-label="Add">
         tick
       </Button>

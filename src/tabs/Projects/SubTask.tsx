@@ -1,7 +1,5 @@
-import { Button, Checkbox } from "@chakra-ui/react"
-import { EditableText } from "./EditableText"
-
-// Add waiting status
+import { Button, Checkbox, Input, ListItem, useId } from "@chakra-ui/react"
+import { useRef } from "react"
 
 type Props = {
   title: string
@@ -18,8 +16,10 @@ export function SubTask({
   onTitleChange,
   onDelete,
 }: Props) {
+  const checkboxId = useId()
+
   return (
-    <label
+    <ListItem
       style={{
         display: "flex",
         alignItems: "center",
@@ -30,14 +30,25 @@ export function SubTask({
       }}
     >
       <Checkbox
+        id={checkboxId}
         borderColor="gray.500"
         isChecked={isDone}
         onChange={(event) => onDoneChange(event.target.checked)}
       />
-      <EditableText value={title} onChange={onTitleChange} />
+      <label
+        style={{ width: 0, height: 0, overflow: "hidden" }}
+        htmlFor={checkboxId}
+      >
+        {title}
+      </label>
+      <Input
+        aria-label="Task description"
+        defaultValue={title}
+        onBlur={(event) => onTitleChange(event.target.value)}
+      />
       <Button aria-label={`Delete task: ${title}`} onClick={onDelete}>
         🗑️
       </Button>
-    </label>
+    </ListItem>
   )
 }

@@ -1,7 +1,6 @@
 import { useState } from "react"
-import { EditableText } from "./EditableText"
 import { NewTaskForm } from "./NewTaskForm"
-import { Button } from "@chakra-ui/react"
+import { Button, Input, List } from "@chakra-ui/react"
 import { SubTask } from "./SubTask"
 import { MouseEvent } from "react"
 
@@ -18,6 +17,7 @@ type Props = {
 }
 
 export function Project({ project }: Props) {
+  const [name, setName] = useState(project.name)
   const [tasks, setTasks] = useState(project.tasks)
   const [showingForm, setShowingForm] = useState(false)
   const allDone = tasks.every((task) => task.isDone)
@@ -41,9 +41,13 @@ export function Project({ project }: Props) {
 
   return (
     <>
-      <EditableText value={project.name} onChange={() => undefined} />
+      <Input
+        value={name}
+        onChange={(event) => setName(event.target.value)}
+        aria-label="Project name"
+      />
       {allDone && <span>✅</span>}
-      <ul>
+      <List>
         {tasks.map(({ description, isDone }, index) => (
           <SubTask
             key={description}
@@ -58,7 +62,7 @@ export function Project({ project }: Props) {
             onDelete={() => removeTask(index)}
           />
         ))}
-      </ul>
+      </List>
       {showingForm ? (
         <NewTaskForm onSubmit={addTask} onCancel={hideForm} />
       ) : (

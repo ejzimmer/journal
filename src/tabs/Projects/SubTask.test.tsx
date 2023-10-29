@@ -1,6 +1,7 @@
 import { render, screen } from "@testing-library/react"
 import { SubTask } from "./SubTask"
 import userEvent from "@testing-library/user-event"
+import { List } from "@chakra-ui/react"
 
 describe("SubTask", () => {
   describe("when the user clicks the sub-task", () => {
@@ -13,7 +14,8 @@ describe("SubTask", () => {
           onDoneChange={onDoneChange}
           onDelete={jest.fn()}
           onTitleChange={jest.fn()}
-        />
+        />,
+        { wrapper: List }
       )
 
       const task = screen.getByRole("checkbox", { name: /Cut out the pattern/ })
@@ -34,7 +36,8 @@ describe("SubTask", () => {
           onDoneChange={onDoneChange}
           onDelete={onDelete}
           onTitleChange={jest.fn()}
-        />
+        />,
+        { wrapper: List }
       )
 
       const deleteButton = screen.getByRole("button", {
@@ -43,6 +46,29 @@ describe("SubTask", () => {
       await userEvent.click(deleteButton)
 
       expect(onDelete).toHaveBeenCalled()
+      expect(onDoneChange).not.toHaveBeenCalled()
+    })
+  })
+
+  describe("when the user edits the task title", () => {
+    it("does not mark the task as done", async () => {
+      const onDoneChange = jest.fn()
+      render(
+        <SubTask
+          title="Buy more fabric"
+          isDone={false}
+          onDoneChange={onDoneChange}
+          onDelete={jest.fn()}
+          onTitleChange={jest.fn()}
+        />,
+        { wrapper: List }
+      )
+
+      await userEvent.click(
+        screen.getByRole("textbox", { name: "Task description" })
+      )
+
+      expect(screen.getByRole("textbox")).toBeInTheDocument()
       expect(onDoneChange).not.toHaveBeenCalled()
     })
   })

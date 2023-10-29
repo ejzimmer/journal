@@ -14,7 +14,8 @@ describe("Project", () => {
   it("has a title", () => {
     render(<Project project={PROJECT} />)
 
-    expect(screen.getByText(PROJECT.name)).toBeInTheDocument()
+    const name = screen.getByRole("textbox", { name: "Project name" })
+    expect(name).toHaveValue(PROJECT.name)
   })
 
   it("displays the list of tasks", () => {
@@ -27,14 +28,13 @@ describe("Project", () => {
   it("adds new tasks", async () => {
     render(<Project project={PROJECT} />)
 
-    const newTaskButton = screen.getByRole("button", { name: "New task" })
-    await userEvent.click(newTaskButton)
+    await addTask("Buy pattern")
 
-    const descriptionInput = screen.getByRole("textbox")
-    await userEvent.type(descriptionInput, "Buy pattern")
-    await userEvent.keyboard("{Enter}")
-
-    expect(descriptionInput).not.toBeInTheDocument()
+    expect(
+      screen.queryByRole("textbox", {
+        name: "New task description",
+      })
+    ).not.toBeInTheDocument()
     expect(screen.getByText("Buy pattern")).toBeInTheDocument()
   })
 
@@ -47,17 +47,18 @@ describe("Project", () => {
   })
 
   it("updates the task description", async () => {
-    render(<Project project={PROJECT} />)
+    const { container } = render(<Project project={PROJECT} />)
 
-    const prewashFabricDescription = screen.getByText("Prewash fabric")
-    await userEvent.click(prewashFabricDescription)
+    const prewashFabric = screen
+      .getAllByRole<HTMLInputElement>("textbox")
+      .find((textbox) => textbox.value === "Prewash fabric")!
+    await userEvent.clear(prewashFabric)
+    await userEvent.type(prewashFabric, "Pre-wash fabric")
+    await userEvent.click(container)
 
-    const prewashFabricInput = screen.getByRole("textbox")
-    await userEvent.type(prewashFabricInput, "s")
-    await userEvent.keyboard("{Enter}")
-
+    expect(prewashFabric).toHaveValue("Pre-wash fabric")
     expect(
-      screen.getByRole("checkbox", { name: /Prewash fabrics/ })
+      screen.getByRole("checkbox", { name: /Pre-wash fabric/ })
     ).toBeInTheDocument()
   })
 
@@ -102,12 +103,7 @@ describe("Project", () => {
         render(<Project project={allDoneProject} />)
 
         const doneIndicator = screen.getByText("✅")
-        const newTaskButton = screen.getByRole("button", { name: "New task" })
-        await userEvent.click(newTaskButton)
-
-        const descriptionInput = screen.getByRole("textbox")
-        await userEvent.type(descriptionInput, "Buy pattern")
-        await userEvent.keyboard("{Enter}")
+        await addTask("Buy pattern")
 
         expect(doneIndicator).not.toBeInTheDocument()
       })
@@ -117,3 +113,14 @@ describe("Project", () => {
 
 const prewashFabric = () =>
   screen.getByRole("checkbox", { name: /Prewash fabric/ })
+
+const addTask = async (description: string) => {
+  const newTaskButton = screen.getByRole("button", { name: "New task" })
+  await userEvent.click(newTaskButton)
+
+  const descriptionInput = screen.getByRole("textbox", {
+    name: "New task description",
+  })
+  await userEvent.type(descriptionInput, description)
+  await userEvent.keyboard("{Enter}")
+}
