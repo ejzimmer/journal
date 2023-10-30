@@ -69,6 +69,7 @@ describe("Project", () => {
       name: "Delete task: Prewash fabric",
     })
     await userEvent.click(deletePrewashFabric)
+    await userEvent.click(screen.getByRole("button", { name: "Yes" }))
 
     expect(screen.queryByText("Prewash fabric")).not.toBeInTheDocument()
   })

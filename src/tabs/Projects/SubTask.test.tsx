@@ -26,7 +26,7 @@ describe("SubTask", () => {
   })
 
   describe("when the user clicks the delete button", () => {
-    it("calls the onDelete handler", async () => {
+    it("shows a confirmation dialogue, then calls the onDelete handler", async () => {
       const onDelete = jest.fn()
       const onDoneChange = jest.fn()
       render(
@@ -44,6 +44,12 @@ describe("SubTask", () => {
         name: "Delete task: Buy more fabric",
       })
       await userEvent.click(deleteButton)
+
+      expect(
+        screen.getByText("Are you sure you want to delete Buy more fabric?")
+      ).toBeInTheDocument()
+
+      await userEvent.click(screen.getByRole("button", { name: "Yes" }))
 
       expect(onDelete).toHaveBeenCalled()
       expect(onDoneChange).not.toHaveBeenCalled()

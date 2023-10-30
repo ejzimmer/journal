@@ -1,5 +1,17 @@
-import { Button, Checkbox, Input, ListItem, useId } from "@chakra-ui/react"
-import { useRef } from "react"
+import {
+  AlertDialog,
+  AlertDialogBody,
+  AlertDialogContent,
+  AlertDialogFooter,
+  AlertDialogOverlay,
+  Button,
+  Checkbox,
+  HStack,
+  Input,
+  ListItem,
+  useId,
+} from "@chakra-ui/react"
+import { useRef, useState } from "react"
 
 type Props = {
   title: string
@@ -17,6 +29,7 @@ export function SubTask({
   onDelete,
 }: Props) {
   const checkboxId = useId()
+  const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false)
 
   return (
     <ListItem
@@ -46,9 +59,55 @@ export function SubTask({
         defaultValue={title}
         onBlur={(event) => onTitleChange(event.target.value)}
       />
-      <Button aria-label={`Delete task: ${title}`} onClick={onDelete}>
+      <Button
+        aria-label={`Delete task: ${title}`}
+        onClick={() => setShowDeleteConfirmation(true)}
+      >
         🗑️
       </Button>
+      <ConfirmDelete
+        isOpen={showDeleteConfirmation}
+        onClose={() => setShowDeleteConfirmation(false)}
+        task={title}
+        onDelete={onDelete}
+      />
     </ListItem>
+  )
+}
+
+function ConfirmDelete({
+  isOpen,
+  onClose,
+  task,
+  onDelete,
+}: {
+  isOpen: boolean
+  onClose: () => void
+  task: string
+  onDelete: () => void
+}) {
+  const noRef = useRef<HTMLButtonElement>(null)
+
+  return (
+    <AlertDialog isOpen={isOpen} leastDestructiveRef={noRef} onClose={onClose}>
+      <AlertDialogOverlay>
+        <AlertDialogContent width="max-content">
+          <AlertDialogBody mt="4">
+            Are you sure you want to delete {task}?
+          </AlertDialogBody>
+
+          <AlertDialogFooter>
+            <HStack spacing={2}>
+              <Button ref={noRef} onClick={onClose}>
+                No
+              </Button>
+              <Button colorScheme="red" onClick={onDelete}>
+                Yes
+              </Button>
+            </HStack>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialogOverlay>
+    </AlertDialog>
   )
 }
