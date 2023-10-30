@@ -1,6 +1,6 @@
-import { useState } from "react"
+import { Dispatch, useState } from "react"
 import { NewTaskForm } from "./NewTaskForm"
-import { Button, Input, List } from "@chakra-ui/react"
+import { Button, Input, List, ListItem } from "@chakra-ui/react"
 import { SubTask } from "./SubTask"
 import { MouseEvent } from "react"
 
@@ -9,28 +9,35 @@ type Task = {
   isDone: boolean
 }
 
-type Props = {
-  project: {
-    name: string
-    tasks: Task[]
-  }
+export type ProjectMetadata = {
+  name: string
+  tasks: Task[]
 }
 
-export function Project({ project }: Props) {
-  const [name, setName] = useState(project.name)
-  const [tasks, setTasks] = useState(project.tasks)
+type Props = {
+  project: ProjectMetadata
+  onChange: (project: ProjectMetadata) => void
+}
+
+export function Project({ project, onChange }: Props) {
   const [showingForm, setShowingForm] = useState(false)
-  const allDone = tasks.every((task) => task.isDone)
+  const allDone = project.tasks.every((task) => task.isDone)
 
   const addTask = (description: string) => {
-    setTasks((tasks) => [...tasks, { description, isDone: false }])
+    onChange({
+      ...project,
+      tasks: [...project.tasks, { description, isDone: false }],
+    })
     setShowingForm(false)
   }
   const updateTask = (index: number, task: Task) => {
-    setTasks((tasks) => tasks.with(index, task))
+    onChange({
+      ...project,
+      tasks: project.tasks.with(index, task),
+    })
   }
   const removeTask = (index: number) => {
-    setTasks((tasks) => tasks.toSpliced(index, 1))
+    onChange({ ...project, tasks: project.tasks.toSpliced(index, 1) })
   }
 
   const showForm = (event: MouseEvent) => {
@@ -40,15 +47,15 @@ export function Project({ project }: Props) {
   const hideForm = () => setShowingForm(false)
 
   return (
-    <>
+    <ListItem aria-label={project.name}>
       <Input
-        value={name}
-        onChange={(event) => setName(event.target.value)}
+        value={project.name}
+        onChange={(event) => onChange({ ...project, name: event.target.value })}
         aria-label="Project name"
       />
       {allDone && <span>✅</span>}
       <List>
-        {tasks.map(({ description, isDone }, index) => (
+        {project.tasks.map(({ description, isDone }, index) => (
           <SubTask
             key={description}
             title={description}
@@ -68,6 +75,6 @@ export function Project({ project }: Props) {
       ) : (
         <Button onClick={showForm}>New task</Button>
       )}
-    </>
+    </ListItem>
   )
 }
