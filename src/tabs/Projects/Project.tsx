@@ -1,8 +1,10 @@
-import { Dispatch, useState } from "react"
+import { useState } from "react"
 import { NewTaskForm } from "./NewTaskForm"
-import { Button, Input, List, ListItem } from "@chakra-ui/react"
+import { Button, List, ListItem } from "@chakra-ui/react"
 import { SubTask } from "./SubTask"
 import { MouseEvent } from "react"
+import { EditableLabel } from "./style"
+import { COLOURS, Category } from "../../shared/TodoList/types"
 
 type Task = {
   description: string
@@ -11,6 +13,7 @@ type Task = {
 
 export type ProjectMetadata = {
   name: string
+  category: Category
   tasks: Task[]
 }
 
@@ -46,12 +49,28 @@ export function Project({ project, onChange }: Props) {
   }
   const hideForm = () => setShowingForm(false)
 
+  const colour = COLOURS[project.category]
+
   return (
-    <ListItem aria-label={project.name}>
-      <Input
+    <ListItem
+      aria-label={project.name}
+      border="2px solid"
+      borderColor={`color-mix(
+        in hsl shorter hue,
+        ${colour},
+        hsl(300 0% 50%)
+      )`}
+      borderRadius="12px"
+      overflow="hidden"
+      background={colour}
+    >
+      <EditableLabel
         value={project.name}
         onChange={(event) => onChange({ ...project, name: event.target.value })}
         aria-label="Project name"
+        textDecoration="underline"
+        fontSize="1.2em"
+        marginBlockEnd="0.5em"
       />
       {allDone && <span>✅</span>}
       <List>

@@ -1,10 +1,13 @@
 import { List } from "@chakra-ui/react"
 import { Project, ProjectMetadata } from "./Project"
 import { useState } from "react"
+import styled from "@emotion/styled"
+import { Category } from "../../shared/TodoList/types"
 
 const PROJECTS = [
   {
     name: "Sew shirt",
+    category: "🪡" as Category,
     tasks: [
       {
         description: "Trace pattern",
@@ -26,6 +29,7 @@ const PROJECTS = [
   },
   {
     name: "Sew jeans",
+    category: "🪡" as Category,
     tasks: [
       {
         description: "Prewash fabric",
@@ -51,6 +55,7 @@ const PROJECTS = [
   },
   {
     name: "Organise sewing room",
+    category: "⚒️" as Category,
     tasks: [
       {
         description: "Sell sewing table",
@@ -76,7 +81,7 @@ export function Projects() {
   }
 
   return (
-    <List>
+    <CentredList>
       {projects.map((project, index) => (
         <Project
           key={project.name}
@@ -84,6 +89,15 @@ export function Projects() {
           onChange={(updatedProject) => updateProject(index, updatedProject)}
         />
       ))}
-    </List>
+    </CentredList>
   )
 }
+
+const CentredList = styled(List)`
+  width: 600px;
+  max-width: 100vw;
+  margin: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 2em;
+`

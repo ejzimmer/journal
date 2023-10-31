@@ -7,11 +7,11 @@ import {
   Button,
   Checkbox,
   HStack,
-  Input,
   ListItem,
   useId,
 } from "@chakra-ui/react"
 import { useRef, useState } from "react"
+import { EditableLabel } from "./style"
 
 type Props = {
   title: string
@@ -35,8 +35,7 @@ export function SubTask({
     <ListItem
       style={{
         display: "flex",
-        alignItems: "center",
-        gap: "1em",
+        alignItems: "baseline",
         flexGrow: "1",
         paddingLeft: "1em",
         cursor: "pointer",
@@ -44,17 +43,19 @@ export function SubTask({
     >
       <Checkbox
         id={checkboxId}
-        borderColor="gray.500"
+        backgroundColor="white"
+        border="none"
+        size="lg"
         isChecked={isDone}
         onChange={(event) => onDoneChange(event.target.checked)}
       />
       <label
-        style={{ width: 0, height: 0, overflow: "hidden" }}
+        style={{ width: 0, height: 0, overflow: "hidden", position: "fixed" }}
         htmlFor={checkboxId}
       >
         {title}
       </label>
-      <Input
+      <EditableLabel
         aria-label="Task description"
         defaultValue={title}
         onBlur={(event) => onTitleChange(event.target.value)}
