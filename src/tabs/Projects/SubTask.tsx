@@ -5,13 +5,13 @@ import {
   AlertDialogFooter,
   AlertDialogOverlay,
   Button,
-  Checkbox,
   HStack,
   ListItem,
   useId,
 } from "@chakra-ui/react"
 import { useRef, useState } from "react"
 import { EditableLabel } from "./style"
+import { Checkbox } from "./Checkbox"
 
 type Props = {
   title: string
@@ -28,41 +28,48 @@ export function SubTask({
   onTitleChange,
   onDelete,
 }: Props) {
-  const checkboxId = useId()
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false)
 
   return (
     <ListItem
       style={{
         display: "flex",
-        alignItems: "baseline",
-        flexGrow: "1",
+        alignItems: "center",
         paddingLeft: "1em",
         cursor: "pointer",
       }}
+      opacity={isDone ? ".6" : 1}
     >
       <Checkbox
-        id={checkboxId}
-        backgroundColor="white"
-        border="none"
-        size="lg"
+        label={title}
         isChecked={isDone}
         onChange={(event) => onDoneChange(event.target.checked)}
       />
-      <label
-        style={{ width: 0, height: 0, overflow: "hidden", position: "fixed" }}
-        htmlFor={checkboxId}
-      >
-        {title}
-      </label>
       <EditableLabel
         aria-label="Task description"
         defaultValue={title}
         onBlur={(event) => onTitleChange(event.target.value)}
+        paddingStart=".25em"
+        marginStart=".25em"
+        paddingTop=".3em"
+        paddingBottom=".1em"
+        height="unset"
+        textDecoration={isDone ? "line-through" : "none"}
       />
       <Button
         aria-label={`Delete task: ${title}`}
         onClick={() => setShowDeleteConfirmation(true)}
+        backgroundColor="transparent"
+        opacity=".6"
+        _hover={{
+          backgroundColor: "transparent",
+          opacity: 1,
+        }}
+        _active={{
+          backgroundColor: "transparent",
+          opacity: 1,
+        }}
+        transform="opacity .2s"
       >
         🗑️
       </Button>

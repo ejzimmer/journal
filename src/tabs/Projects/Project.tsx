@@ -3,8 +3,9 @@ import { NewTaskForm } from "./NewTaskForm"
 import { Button, List, ListItem } from "@chakra-ui/react"
 import { SubTask } from "./SubTask"
 import { MouseEvent } from "react"
-import { EditableLabel } from "./style"
+import { ColouredButton, EditableLabel } from "./style"
 import { COLOURS, Category } from "../../shared/TodoList/types"
+import styled from "@emotion/styled"
 
 type Task = {
   description: string
@@ -50,16 +51,18 @@ export function Project({ project, onChange }: Props) {
   const hideForm = () => setShowingForm(false)
 
   const colour = COLOURS[project.category]
+  const borderColour = `color-mix(
+    in hsl shorter hue,
+    ${colour},
+    hsl(300 0% 25%)
+  )`
+  const midColour = `color-mix(in hsl shorter hue, ${colour}, hsl(300 0% 50%))`
 
   return (
     <ListItem
       aria-label={project.name}
       border="2px solid"
-      borderColor={`color-mix(
-        in hsl shorter hue,
-        ${colour},
-        hsl(300 0% 50%)
-      )`}
+      borderColor={borderColour}
       borderRadius="12px"
       overflow="hidden"
       background={colour}
@@ -68,9 +71,10 @@ export function Project({ project, onChange }: Props) {
         value={project.name}
         onChange={(event) => onChange({ ...project, name: event.target.value })}
         aria-label="Project name"
-        textDecoration="underline"
         fontSize="1.2em"
         marginBlockEnd="0.5em"
+        borderBottomRadius="0"
+        backgroundColor={midColour}
       />
       {allDone && <span>✅</span>}
       <List>
@@ -90,9 +94,18 @@ export function Project({ project, onChange }: Props) {
         ))}
       </List>
       {showingForm ? (
-        <NewTaskForm onSubmit={addTask} onCancel={hideForm} />
+        <NewTaskForm onSubmit={addTask} onCancel={hideForm} colour={colour} />
       ) : (
-        <Button onClick={showForm}>New task</Button>
+        <ColouredButton
+          colour={colour}
+          onClick={showForm}
+          marginX=".5em"
+          marginY=".4em"
+          paddingLeft=".5em"
+          paddingTop=".25em"
+        >
+          ➕ Add task
+        </ColouredButton>
       )}
     </ListItem>
   )
