@@ -16,7 +16,8 @@ export function NewTaskForm({ onSubmit, onCancel, colour }: Props) {
   const handleSubmit = (event: FormEvent) => {
     event.preventDefault()
     const name = inputRef.current?.value ?? ""
-    onSubmit(name)
+
+    name && onSubmit(name)
   }
 
   useEffect(() => {

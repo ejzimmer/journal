@@ -1,9 +1,11 @@
 import { render, screen } from "@testing-library/react"
 import { Project } from "./Project"
 import { List } from "@chakra-ui/react"
+import { Category } from "../../shared/TodoList/types"
 
 const PROJECT = {
   name: "Sew hoodie",
+  category: "🪡" as Category,
   tasks: [
     { description: "Buy fabric", isDone: true },
     { description: "Prewash fabric", isDone: false },

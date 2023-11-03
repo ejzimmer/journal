@@ -5,7 +5,6 @@ import { SubTask } from "./SubTask"
 import { MouseEvent } from "react"
 import { ColouredButton, EditableLabel } from "./style"
 import { COLOURS, Category } from "../../shared/TodoList/types"
-import styled from "@emotion/styled"
 
 type Task = {
   description: string

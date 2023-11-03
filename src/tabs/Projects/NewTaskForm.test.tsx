@@ -4,6 +4,16 @@ import { NewTaskForm } from "./NewTaskForm"
 
 describe("NewTaskForm", () => {
   describe("when the user clicks the submit button", () => {
+    describe("when the description is empty", () => {
+      it("does not submit the form", async () => {
+        const onSubmit = jest.fn()
+        render(<NewTaskForm onSubmit={onSubmit} onCancel={jest.fn()} />)
+
+        await userEvent.click(screen.getByRole("button", { name: "Add" }))
+
+        expect(onSubmit).not.toHaveBeenCalled()
+      })
+    })
     it("submits the form", async () => {
       const onSubmit = jest.fn()
       render(<NewTaskForm onSubmit={onSubmit} onCancel={jest.fn()} />)
