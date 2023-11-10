@@ -4,7 +4,7 @@ import { Projects } from "."
 
 describe("Projects", () => {
   it("displays the list of projects", () => {
-    render(<Projects />)
+    render(<Projects onSave={jest.fn()} />)
 
     const names = screen.getAllByRole<HTMLInputElement>("textbox", {
       name: "Project name",
@@ -16,8 +16,25 @@ describe("Projects", () => {
     ])
   })
 
+  it("adds a new project", async () => {
+    const onSave = jest.fn()
+    render(<Projects onSave={onSave} />)
+
+    await userEvent.click(screen.getByRole("button", { name: "New project" }))
+    const modal = await screen.findByRole("dialog")
+    await userEvent.type(
+      within(modal).getByRole("textbox", { name: "Project name" }),
+      "Journal app"
+    )
+    await userEvent.selectOptions(
+      screen.getByRole("combobox", { name: "Project type" }),
+      "👩‍💻"
+    )
+    await userEvent.click(screen.getByRole("button", { name: "Save" }))
+  })
+
   it("adds new tasks", async () => {
-    render(<Projects />)
+    render(<Projects onSave={jest.fn()} />)
 
     await addTaskToProject("Buy pattern", "Sew shirt")
 
@@ -32,7 +49,7 @@ describe("Projects", () => {
   })
 
   it("marks a task as done", async () => {
-    render(<Projects />)
+    render(<Projects onSave={jest.fn()} />)
 
     await userEvent.click(prewashFabric())
 
@@ -40,7 +57,7 @@ describe("Projects", () => {
   })
 
   it("updates the task description", async () => {
-    const { container } = render(<Projects />)
+    const { container } = render(<Projects onSave={jest.fn()} />)
 
     const prewashFabricLabel = screen
       .getAllByRole<HTMLInputElement>("textbox")
@@ -53,7 +70,7 @@ describe("Projects", () => {
   })
 
   it("deletes a task", async () => {
-    render(<Projects />)
+    render(<Projects onSave={jest.fn()} />)
 
     const deletePrewashFabric = screen.getByRole("button", {
       name: "Delete task: Prewash fabric",

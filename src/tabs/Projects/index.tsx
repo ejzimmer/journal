@@ -1,8 +1,9 @@
-import { List } from "@chakra-ui/react"
+import { Button, List, useDisclosure } from "@chakra-ui/react"
 import { Project, ProjectMetadata } from "./Project"
 import { useState } from "react"
 import styled from "@emotion/styled"
 import { Category } from "../../shared/TodoList/types"
+import { AddProjectModal } from "./AddProjectModal"
 
 const PROJECTS = [
   {
@@ -73,23 +74,32 @@ const PROJECTS = [
   },
 ]
 
-export function Projects() {
+type Props = {
+  onSave: (project: ProjectMetadata) => void
+}
+
+export function Projects({ onSave }: Props) {
   const [projects, setProjects] = useState(PROJECTS)
+  const { isOpen, onClose, onOpen } = useDisclosure()
 
   const updateProject = (index: number, project: ProjectMetadata) => {
     setProjects((projects) => projects.with(index, project))
   }
 
   return (
-    <CentredList>
-      {projects.map((project, index) => (
-        <Project
-          key={project.name}
-          project={project}
-          onChange={(updatedProject) => updateProject(index, updatedProject)}
-        />
-      ))}
-    </CentredList>
+    <>
+      <CentredList>
+        {projects.map((project, index) => (
+          <Project
+            key={project.name}
+            project={project}
+            onChange={(updatedProject) => updateProject(index, updatedProject)}
+          />
+        ))}
+      </CentredList>
+      <Button onClick={onOpen}>New project</Button>
+      <AddProjectModal isOpen={isOpen} onClose={onClose} onSave={onSave} />
+    </>
   )
 }
 
