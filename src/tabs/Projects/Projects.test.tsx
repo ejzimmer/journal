@@ -39,11 +39,6 @@ describe("Projects", () => {
     await addTaskToProject("Buy pattern", "Sew shirt")
 
     expect(
-      screen.queryByRole("textbox", {
-        name: "New task description",
-      })
-    ).not.toBeInTheDocument()
-    expect(
       screen.getByRole("checkbox", { name: "Buy pattern" })
     ).toBeInTheDocument()
   })

@@ -19,6 +19,11 @@ export function NewTaskForm({ onSubmit, colour }: Props) {
     description && onSubmit(description)
   }
 
+  const showForm = (event: React.MouseEvent) => {
+    event.stopPropagation()
+    setShowingForm(true)
+  }
+
   useEffect(() => {
     const handleClick = (event: MouseEvent) => {
       if (
@@ -42,6 +47,7 @@ export function NewTaskForm({ onSubmit, colour }: Props) {
       padding=".25em"
       gap=".25em"
       color={colour}
+      aria-label="New task"
     >
       <Input
         ref={inputRef}
@@ -52,14 +58,7 @@ export function NewTaskForm({ onSubmit, colour }: Props) {
       <CancelButton colour={colour} onClick={() => setShowingForm(false)} />
     </chakra.form>
   ) : (
-    <ColouredButton
-      colour={colour}
-      onClick={() => setShowingForm(true)}
-      marginX=".5em"
-      marginY=".4em"
-      paddingLeft=".5em"
-      paddingTop=".25em"
-    >
+    <ColouredButton colour={colour} onClick={showForm} {...newTaskButtonStyles}>
       ➕ New task
     </ColouredButton>
   )
@@ -133,3 +132,10 @@ const inputStyleProps = (colour: string) => ({
   color: "rgb(26, 32, 44)",
   paddingTop: ".25em",
 })
+
+const newTaskButtonStyles = {
+  marginX: ".5em",
+  marginY: ".4em",
+  paddingLeft: ".5em",
+  paddingTop: ".25em",
+}

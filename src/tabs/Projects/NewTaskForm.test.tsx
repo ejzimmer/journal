@@ -11,19 +11,21 @@ describe("NewTaskForm", () => {
   it("shows the new task button", () => {
     render(<NewTaskForm {...defaultProps} />)
 
-    expect(screen.getByRole("button", { name: "New task" })).toBeInTheDocument()
-    expect(screen.queryByRole("form")).not.toBeInTheDocument()
+    expect(
+      screen.getByRole("button", { name: "➕ New task" })
+    ).toBeInTheDocument()
+    expect(form()).not.toBeInTheDocument()
   })
 
   describe("when the user clicks the new task button", () => {
     it("shows the form", async () => {
       render(<NewTaskForm {...defaultProps} />)
 
-      const newTaskButton = screen.getByRole("button", { name: "New task" })
+      const newTaskButton = screen.getByRole("button", { name: "➕ New task" })
       await userEvent.click(newTaskButton)
 
       expect(newTaskButton).not.toBeInTheDocument()
-      expect(form()).toBeInTheDocument()
+      expect(screen.getByRole("form")).toBeInTheDocument()
     })
   })
 
@@ -84,6 +86,6 @@ describe("NewTaskForm", () => {
 
 const form = () => screen.queryByRole("form")
 const openForm = () => {
-  const newTaskButton = screen.getByRole("button", { name: "New task" })
+  const newTaskButton = screen.getByRole("button", { name: "➕ New task" })
   return userEvent.click(newTaskButton)
 }
