@@ -65,6 +65,7 @@ export function Project({ project, onChange }: Props) {
       borderRadius="12px"
       overflow="hidden"
       background={colour}
+      sx={{ "--colour": colour }}
     >
       <EditableLabel
         value={project.name}

@@ -29,7 +29,7 @@ describe("NewTaskForm", () => {
     })
   })
 
-  describe("when the user clicks the submit button", () => {
+  describe("when the user submits the form", () => {
     describe("when the description is empty", () => {
       it("does not submit the form and keeps the form open", async () => {
         const onSubmit = jest.fn()
@@ -56,6 +56,7 @@ describe("NewTaskForm", () => {
 
         expect(onSubmit).toHaveBeenCalledWith("Cut the fabric")
         expect(form()).toBeInTheDocument()
+        expect(input).toHaveValue("")
       })
     })
   })

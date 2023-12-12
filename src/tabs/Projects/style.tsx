@@ -14,21 +14,17 @@ export const EditableLabel = styled(Input)`
   }
 `
 
-export const ColouredButton = styled(Button)(({ colour }) => ({
-  background: "transparent",
-  border: "2px solid",
-  borderColor: `color-mix(
-    in hsl shorter hue,
-    ${colour},
-    hsl(300 0% 25%)
-  )`,
-  height: "var(--input-height)",
-  fontWeight: "normal",
+export const ColouredButton = styled(Button)`
+  background: transparent;
+  border: 2px solid;
+  border-color: color-mix(in hsl shorter hue, var(--colour), hsl(300 0% 25%));
+  height: var(--input-height);
+  fontweight: normal;
 
-  "&:hover": {
-    background: `color-mix(in hsl shorter hue, ${colour}, hsl(300 0% 60%))`,
-  },
-  "&:active": {
-    background: `color-mix(in hsl shorter hue, ${colour}, hsl(300 0% 40%))`,
-  },
-}))
+  &:hover: {
+    background: color-mix(in hsl shorter hue, var(--colour), hsl(300 0% 60%));
+  }
+  &:active: {
+    background: color-mix(in hsl shorter hue, var(--colour), hsl(300 0% 40%));
+  }
+`

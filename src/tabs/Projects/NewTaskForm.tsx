@@ -4,10 +4,9 @@ import { ColouredButton } from "./style"
 
 type Props = {
   onSubmit: (description: string) => void
-  colour: string
 }
 
-export function NewTaskForm({ onSubmit, colour }: Props) {
+export function NewTaskForm({ onSubmit }: Props) {
   const [isShowingForm, setShowingForm] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
   const formRef = useRef<HTMLFormElement>(null)
@@ -17,6 +16,7 @@ export function NewTaskForm({ onSubmit, colour }: Props) {
     const description = inputRef.current?.value ?? ""
 
     description && onSubmit(description)
+    formRef.current?.reset()
   }
 
   const showForm = (event: React.MouseEvent) => {
@@ -46,27 +46,26 @@ export function NewTaskForm({ onSubmit, colour }: Props) {
       display="flex"
       padding=".25em"
       gap=".25em"
-      color={colour}
       aria-label="New task"
     >
       <Input
         ref={inputRef}
         aria-label="New task description"
-        {...inputStyleProps(colour)}
+        {...inputStyleProps}
       />
-      <AddButton colour={colour} />
-      <CancelButton colour={colour} onClick={() => setShowingForm(false)} />
+      <AddButton />
+      <CancelButton onClick={() => setShowingForm(false)} />
     </chakra.form>
   ) : (
-    <ColouredButton colour={colour} onClick={showForm} {...newTaskButtonStyles}>
+    <ColouredButton onClick={showForm} {...newTaskButtonStyles}>
       ➕ New task
     </ColouredButton>
   )
 }
 
-function AddButton({ colour }: { colour?: string }) {
+function AddButton() {
   return (
-    <ColouredButton colour={colour} type="submit" aria-label="Add" paddingX="0">
+    <ColouredButton type="submit" aria-label="Add" paddingX="0">
       <svg viewBox="0 0 100 100" height="100%">
         <path
           d="M10,60 L38 85, 85 20"
@@ -80,20 +79,9 @@ function AddButton({ colour }: { colour?: string }) {
   )
 }
 
-function CancelButton({
-  colour,
-  onClick,
-}: {
-  colour?: string
-  onClick: () => void
-}) {
+function CancelButton({ onClick }: { onClick: () => void }) {
   return (
-    <ColouredButton
-      colour={colour}
-      aria-label="Cancel"
-      onClick={onClick}
-      paddingX="0"
-    >
+    <ColouredButton aria-label="Cancel" onClick={onClick} paddingX="0">
       <svg
         viewBox="0 0 100 100"
         height="100%"
@@ -108,30 +96,24 @@ function CancelButton({
   )
 }
 
-const inputStyleProps = (colour: string) => ({
+const inputStyleProps = {
   backgroundColor: "hsl(0 0% 100% / 0.5)",
   height: "var(--input-height)",
   borderColor: "transparent",
   borderWidth: "2px",
   _hover: {
-    borderColor: `color-mix(
-    in hsl shorter hue,
-    ${colour},
-    hsl(300 0% 25%)
-  )`,
+    borderColor:
+      "color-mix(in hsl shorter hue, var(--colour), hsl(300 0% 25%))",
   },
   _focus: {
-    borderColor: `color-mix(
-    in hsl shorter hue,
-    ${colour},
-    hsl(300 0% 25%)
-  )`,
+    borderColor:
+      "color-mix(in hsl shorter hue, var(--colour), hsl(300 0% 25%))",
     outline: "none",
     boxShadow: "none",
   },
   color: "rgb(26, 32, 44)",
   paddingTop: ".25em",
-})
+}
 
 const newTaskButtonStyles = {
   marginX: ".5em",

@@ -18,20 +18,16 @@ describe("TaskList", () => {
     })
   })
 
-  describe("adding a new task", () => {
-    it("can be added by pressing the button", async () => {
-      const onAdd = jest.fn()
-      render(<TaskList tasks={TASKS} onAdd={onAdd} />)
+  it("adds a new task", async () => {
+    const onAdd = jest.fn()
+    render(<TaskList tasks={TASKS} onAdd={onAdd} />)
 
-      await userEvent.click(screen.getByRole("button", { name: "New task" }))
-      const input = screen.getByRole("textbox", { name: "New task" })
-      await userEvent.type(input, "Mark notches")
-      await userEvent.click(screen.getByRole("button", { name: "Add task" }))
+    await userEvent.click(screen.getByRole("button", { name: "➕ New task" }))
+    const input = screen.getByRole("textbox", { name: "New task description" })
+    await userEvent.type(input, "Mark notches")
+    await userEvent.click(screen.getByRole("button", { name: "Add" }))
 
-      expect(onAdd).toHaveBeenCalledWith("Mark notches")
-      expect(input).toBeInTheDocument()
-      expect(input).toHaveValue("")
-    })
+    expect(onAdd).toHaveBeenCalledWith("Mark notches")
   })
 
   // add a new task - tick, add task + keep form open
