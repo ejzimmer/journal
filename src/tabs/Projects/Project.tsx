@@ -1,6 +1,6 @@
 import { useState } from "react"
 import { NewTaskForm } from "./NewTaskForm"
-import { Button, List, ListItem } from "@chakra-ui/react"
+import { List, ListItem } from "@chakra-ui/react"
 import { SubTask } from "./SubTask"
 import { MouseEvent } from "react"
 import { ColouredButton, EditableLabel } from "./style"
@@ -92,20 +92,7 @@ export function Project({ project, onChange }: Props) {
           />
         ))}
       </List>
-      {showingForm ? (
-        <NewTaskForm onSubmit={addTask} onCancel={hideForm} colour={colour} />
-      ) : (
-        <ColouredButton
-          colour={colour}
-          onClick={showForm}
-          marginX=".5em"
-          marginY=".4em"
-          paddingLeft=".5em"
-          paddingTop=".25em"
-        >
-          ➕ Add task
-        </ColouredButton>
-      )}
+      <NewTaskForm onSubmit={addTask} colour={colour} />
     </ListItem>
   )
 }

@@ -7,7 +7,6 @@ import {
   Button,
   HStack,
   ListItem,
-  useId,
 } from "@chakra-ui/react"
 import { useRef, useState } from "react"
 import { EditableLabel } from "./style"

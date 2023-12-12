@@ -91,7 +91,7 @@ const addTaskToProject = async (task: string, projectName: string) => {
   })
 
   const newTaskButton = within(project).getByRole("button", {
-    name: "➕ Add task",
+    name: "➕ New task",
   })
   await userEvent.click(newTaskButton)
 

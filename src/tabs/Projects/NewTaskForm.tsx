@@ -1,23 +1,22 @@
-import { Button, Input, chakra } from "@chakra-ui/react"
-import styled from "@emotion/styled"
-import { FormEvent, useEffect, useRef } from "react"
+import { Input, chakra } from "@chakra-ui/react"
+import { FormEvent, useEffect, useRef, useState } from "react"
 import { ColouredButton } from "./style"
 
 type Props = {
-  onSubmit: (name: string) => void
-  onCancel: () => void
-  colour?: string
+  onSubmit: (description: string) => void
+  colour: string
 }
 
-export function NewTaskForm({ onSubmit, onCancel, colour }: Props) {
+export function NewTaskForm({ onSubmit, colour }: Props) {
+  const [isShowingForm, setShowingForm] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
   const formRef = useRef<HTMLFormElement>(null)
 
   const handleSubmit = (event: FormEvent) => {
     event.preventDefault()
-    const name = inputRef.current?.value ?? ""
+    const description = inputRef.current?.value ?? ""
 
-    name && onSubmit(name)
+    description && onSubmit(description)
   }
 
   useEffect(() => {
@@ -26,16 +25,16 @@ export function NewTaskForm({ onSubmit, onCancel, colour }: Props) {
         event.target instanceof Node &&
         !formRef.current?.contains(event.target)
       ) {
-        onCancel()
+        setShowingForm(false)
       }
     }
 
     window.addEventListener("click", handleClick)
 
     return () => window.removeEventListener("click", handleClick)
-  }, [onCancel])
+  }, [])
 
-  return (
+  return isShowingForm ? (
     <chakra.form
       onSubmit={handleSubmit}
       ref={formRef}
@@ -47,62 +46,90 @@ export function NewTaskForm({ onSubmit, onCancel, colour }: Props) {
       <Input
         ref={inputRef}
         aria-label="New task description"
-        backgroundColor="hsl(0 0% 100% / 0.5)"
-        height="var(--input-height)"
-        borderColor="transparent"
-        borderWidth="2px"
-        _hover={{
-          borderColor: `color-mix(
-          in hsl shorter hue,
-          ${colour},
-          hsl(300 0% 25%)
-        )`,
-        }}
-        _focus={{
-          borderColor: `color-mix(
-          in hsl shorter hue,
-          ${colour},
-          hsl(300 0% 25%)
-        )`,
-          outline: "none",
-          boxShadow: "none",
-        }}
-        color="rgb(26, 32, 44)"
-        paddingTop=".25em"
+        {...inputStyleProps(colour)}
       />
-      <ColouredButton
-        colour={colour}
-        type="submit"
-        aria-label="Add"
-        paddingX="0"
-      >
-        <svg viewBox="0 0 100 100" height="100%">
-          <path
-            d="M10,60 L38 85, 85 20"
-            stroke="hsl(180 50% 40%)"
-            strokeWidth="10"
-            strokeLinecap="round"
-            fill="none"
-          />
-        </svg>
-      </ColouredButton>
-      <ColouredButton
-        colour={colour}
-        aria-label="Cancel"
-        onClick={onCancel}
-        paddingX="0"
-      >
-        <svg
-          viewBox="0 0 100 100"
-          height="100%"
-          stroke="hsl(0 50% 50%)"
-          strokeWidth="10"
-          strokeLinecap="round"
-        >
-          <path d="M20,20 L80 80" />
-          <path d="M20, 80 L80 20" />
-        </svg>
-      </ColouredButton>
+      <AddButton colour={colour} />
+      <CancelButton colour={colour} onClick={() => setShowingForm(false)} />
     </chakra.form>
+  ) : (
+    <ColouredButton
+      colour={colour}
+      onClick={() => setShowingForm(true)}
+      marginX=".5em"
+      marginY=".4em"
+      paddingLeft=".5em"
+      paddingTop=".25em"
+    >
+      ➕ New task
+    </ColouredButton>
   )
 }
+
+function AddButton({ colour }: { colour?: string }) {
+  return (
+    <ColouredButton colour={colour} type="submit" aria-label="Add" paddingX="0">
+      <svg viewBox="0 0 100 100" height="100%">
+        <path
+          d="M10,60 L38 85, 85 20"
+          stroke="hsl(180 50% 40%)"
+          strokeWidth="10"
+          strokeLinecap="round"
+          fill="none"
+        />
+      </svg>
+    </ColouredButton>
+  )
+}
+
+function CancelButton({
+  colour,
+  onClick,
+}: {
+  colour?: string
+  onClick: () => void
+}) {
+  return (
+    <ColouredButton
+      colour={colour}
+      aria-label="Cancel"
+      onClick={onClick}
+      paddingX="0"
+    >
+      <svg
+        viewBox="0 0 100 100"
+        height="100%"
+        stroke="hsl(0 50% 50%)"
+        strokeWidth="10"
+        strokeLinecap="round"
+      >
+        <path d="M20,20 L80 80" />
+        <path d="M20, 80 L80 20" />
+      </svg>
+    </ColouredButton>
+  )
+}
+
+const inputStyleProps = (colour: string) => ({
+  backgroundColor: "hsl(0 0% 100% / 0.5)",
+  height: "var(--input-height)",
+  borderColor: "transparent",
+  borderWidth: "2px",
+  _hover: {
+    borderColor: `color-mix(
+    in hsl shorter hue,
+    ${colour},
+    hsl(300 0% 25%)
+  )`,
+  },
+  _focus: {
+    borderColor: `color-mix(
+    in hsl shorter hue,
+    ${colour},
+    hsl(300 0% 25%)
+  )`,
+    outline: "none",
+    boxShadow: "none",
+  },
+  color: "rgb(26, 32, 44)",
+  paddingTop: ".25em",
+})
