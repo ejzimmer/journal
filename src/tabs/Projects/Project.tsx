@@ -3,7 +3,7 @@ import { NewTaskForm } from "./NewTaskForm"
 import { List, ListItem } from "@chakra-ui/react"
 import { SubTask } from "./SubTask"
 import { MouseEvent } from "react"
-import { ColouredButton, EditableLabel } from "./style"
+import { EditableLabel } from "./style"
 import { COLOURS, Category } from "../../shared/TodoList/types"
 
 type Task = {
@@ -23,7 +23,6 @@ type Props = {
 }
 
 export function Project({ project, onChange }: Props) {
-  const [showingForm, setShowingForm] = useState(false)
   const allDone = project.tasks.every((task) => task.isDone)
 
   const addTask = (description: string) => {
@@ -31,7 +30,6 @@ export function Project({ project, onChange }: Props) {
       ...project,
       tasks: [...project.tasks, { description, isDone: false }],
     })
-    setShowingForm(false)
   }
   const updateTask = (index: number, task: Task) => {
     onChange({
@@ -42,12 +40,6 @@ export function Project({ project, onChange }: Props) {
   const removeTask = (index: number) => {
     onChange({ ...project, tasks: project.tasks.toSpliced(index, 1) })
   }
-
-  const showForm = (event: MouseEvent) => {
-    event.stopPropagation()
-    setShowingForm(true)
-  }
-  const hideForm = () => setShowingForm(false)
 
   const colour = COLOURS[project.category]
   const borderColour = `color-mix(
@@ -93,7 +85,7 @@ export function Project({ project, onChange }: Props) {
           />
         ))}
       </List>
-      <NewTaskForm onSubmit={addTask} colour={colour} />
+      <NewTaskForm onSubmit={addTask} />
     </ListItem>
   )
 }
