@@ -4,9 +4,10 @@ import { ColouredButton } from "./style"
 
 type Props = {
   onSubmit: (description: string) => void
+  isSubtaskList?: boolean
 }
 
-export function NewTaskForm({ onSubmit }: Props) {
+export function NewTaskForm({ onSubmit, isSubtaskList }: Props) {
   const [isShowingForm, setShowingForm] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
   const formRef = useRef<HTMLFormElement>(null)
@@ -58,7 +59,7 @@ export function NewTaskForm({ onSubmit }: Props) {
     </chakra.form>
   ) : (
     <ColouredButton onClick={showForm} {...newTaskButtonStyles}>
-      ➕ New task
+      ➕ New {isSubtaskList ? "subtask" : "task"}
     </ColouredButton>
   )
 }

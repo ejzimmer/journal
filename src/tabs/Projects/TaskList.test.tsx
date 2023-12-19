@@ -79,12 +79,127 @@ describe("TaskList", () => {
     })
   })
 
-  // remove task by clearing - enter/click away
-  // mark tasks as done
-  // add a subtask list to a task
+  describe("when the user clicks the checkbox", () => {
+    it("marks the task as done", async () => {
+      const onChange = jest.fn()
+      render(<TaskList {...defaultProps} onChange={onChange} />)
+
+      const task = TASKS[1]
+
+      await userEvent.click(
+        screen.getByRole("checkbox", { name: `${task.description} done` })
+      )
+
+      expect(onChange).toHaveBeenCalledWith({
+        ...task,
+        isDone: true,
+      })
+    })
+  })
+
+  describe("when create subtasks button is clicked", () => {
+    it("adds a task list as a child of the task", async () => {
+      const onChange = jest.fn()
+      render(<TaskList {...defaultProps} onChange={onChange} />)
+
+      const task = TASKS[0]
+      await userEvent.click(
+        screen.getByRole("button", {
+          name: `Add subtasks to ${task.description}`,
+        })
+      )
+
+      expect(onChange).toHaveBeenCalledWith({
+        ...task,
+        tasks: [],
+      })
+    })
+  })
+
+  describe("when there is a subtask list", () => {
+    const taskWithSubtasks = {
+      ...TASKS[0],
+      tasks: [
+        {
+          id: "0-0",
+          description: "Buy merino",
+          isDone: true,
+        },
+        { id: "0-1", description: "Buy zipper", isDone: false },
+        { id: "0-2", description: "Buy thread", isDone: false },
+      ],
+    }
+
+    it("hides the add subtasks button and shows the list of subtasks", () => {
+      render(<TaskList {...defaultProps} tasks={[taskWithSubtasks]} />)
+
+      expect(
+        screen.queryByRole("button", {
+          name: `Add subtasks to ${taskWithSubtasks.description}`,
+        })
+      ).not.toBeInTheDocument()
+      expect(
+        screen.getByRole("checkbox", { name: "Buy merino done" })
+      ).toBeChecked()
+      expect(
+        screen.getByRole("checkbox", { name: "Buy zipper done" })
+      ).not.toBeChecked()
+      expect(
+        screen.getByRole("checkbox", { name: "Buy thread done" })
+      ).not.toBeChecked()
+    })
+
+    it("adds a task to the subtask list", async () => {
+      const taskWithSubtasks = { ...TASKS[0], tasks: [] }
+      const onChange = jest.fn()
+      render(
+        <TaskList
+          {...defaultProps}
+          onChange={onChange}
+          tasks={[taskWithSubtasks]}
+        />
+      )
+
+      await userEvent.click(
+        screen.getByRole("button", { name: "➕ New subtask" })
+      )
+      await userEvent.type(screen.getByRole("textbox"), "Buy merino")
+      await userEvent.keyboard("{Enter}")
+
+      expect(onChange).toHaveBeenCalledWith({
+        ...taskWithSubtasks,
+        tasks: [{ description: "Buy merino" }],
+      })
+    })
+
+    it("updates a subtask", async () => {
+      const onChange = jest.fn()
+      render(
+        <TaskList
+          {...defaultProps}
+          tasks={[taskWithSubtasks]}
+          onChange={onChange}
+        />
+      )
+
+      await userEvent.click(screen.getByText("Buy merino"))
+      const input = screen.getByRole("textbox")
+      await userEvent.clear(input)
+      await userEvent.type(input, "Buy cotton")
+      await userEvent.keyboard("{Enter}")
+
+      const [firstTask, ...remainingTasks] = taskWithSubtasks.tasks
+      expect(onChange).toHaveBeenCalledWith({
+        ...taskWithSubtasks,
+        tasks: [{ ...firstTask, description: "Buy cotton" }, ...remainingTasks],
+      })
+    })
+  })
+
+  // when the last subtask is removed, remove the list
   // reorder tasks
   // move tasks between lists
-  // add task to today list - make this a prop on the task i think? so it appears in project + today list and ticking on one ticks on both
+  // add task to today list - make this a prop on the task i think? so it appears in project + today list and ticking on one ticks on both. no actually, just move it to the list with same id, but change/deletes need to check for all IDs
 })
 
 const getTask = async (index: number) => {
