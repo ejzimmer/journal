@@ -1,24 +1,17 @@
-import { Button } from "@chakra-ui/react"
-import { NewTaskForm } from "./NewTaskForm"
-import { EditableText } from "./EditableText"
-import { Checkbox } from "./Checkbox"
+import { Button } from "@chakra-ui/react";
+import { NewTaskForm } from "./NewTaskForm";
+import { EditableText } from "./EditableText";
+import { Checkbox } from "./Checkbox";
 
-type Task = {
-  id: string
-  description: string
-  isDone: boolean
-  tasks?: Task[]
-}
-
-type UpdateTask = Omit<Task, "tasks"> & { tasks?: Partial<Task>[] }
+type UpdateTask = Omit<Task, "tasks"> & { tasks?: Partial<Task>[] };
 
 type Props = {
-  tasks: Task[]
-  onAdd: (description: string) => void
-  onChange: (task: UpdateTask) => void
-  onDelete: (id: string) => void
-  isSubtaskList?: boolean
-}
+  tasks: Task[];
+  onAdd: (description: string) => void;
+  onChange: (task: UpdateTask) => void;
+  onDelete: (id: string) => void;
+  isSubtaskList?: boolean;
+};
 
 export function TaskList({
   tasks,
@@ -29,37 +22,37 @@ export function TaskList({
 }: Props) {
   const onUpdate = (task: Task) => {
     if (task.description) {
-      onChange(task)
+      onChange(task);
     } else {
-      onDelete(task.id)
+      onDelete(task.id);
     }
-  }
+  };
 
   const addSubtask = (task: Task, subtaskDescription: string) => {
     onChange({
       ...task,
       tasks: [...(task.tasks ?? []), { description: subtaskDescription }],
-    })
-  }
+    });
+  };
   const updateSubtask = (task: Task, subtask: Task) => {
     if (typeof task.tasks === "undefined") {
-      throw new Error("task does not have subtasks")
+      throw new Error("task does not have subtasks");
     }
     const indexToUpdate = task.tasks?.findIndex(
       (task) => task.id === subtask.id
-    )
+    );
     if (indexToUpdate === -1) {
-      throw new Error("could not find task")
+      throw new Error("could not find task");
     }
 
     const updatedTasks = [
       ...task.tasks.slice(0, indexToUpdate),
       subtask,
       ...task.tasks.slice(indexToUpdate + 1),
-    ]
-    onChange({ ...task, tasks: updatedTasks })
-  }
-  const deleteSubtask = () => {}
+    ];
+    onChange({ ...task, tasks: updatedTasks });
+  };
+  const deleteSubtask = () => {};
 
   return (
     <>
@@ -70,7 +63,7 @@ export function TaskList({
               label={`${task.description} done`}
               isChecked={task.isDone}
               onChange={() => {
-                onUpdate({ ...task, isDone: !task.isDone })
+                onUpdate({ ...task, isDone: !task.isDone });
               }}
             />
             <EditableText
@@ -114,5 +107,5 @@ export function TaskList({
       </ul>
       <NewTaskForm onSubmit={onAdd} isSubtaskList={isSubtaskList} />
     </>
-  )
+  );
 }

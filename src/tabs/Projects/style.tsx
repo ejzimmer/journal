@@ -1,5 +1,5 @@
-import { Button, Input } from "@chakra-ui/react"
-import styled from "@emotion/styled"
+import { Button, Input } from "@chakra-ui/react";
+import styled from "@emotion/styled";
 
 export const EditableLabel = styled(Input)`
   border: none;
@@ -12,7 +12,7 @@ export const EditableLabel = styled(Input)`
     background: var(--active-background);
     box-shadow: none;
   }
-`
+`;
 
 export const ColouredButton = styled(Button)`
   background: transparent;
@@ -27,4 +27,4 @@ export const ColouredButton = styled(Button)`
   &:active: {
     background: color-mix(in hsl shorter hue, var(--colour), hsl(300 0% 40%));
   }
-`
+`;

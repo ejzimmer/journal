@@ -7,27 +7,25 @@ import {
   Button,
   HStack,
   ListItem,
-} from "@chakra-ui/react"
-import { useRef, useState } from "react"
-import { EditableLabel } from "./style"
-import { Checkbox } from "./Checkbox"
+} from "@chakra-ui/react";
+import { useRef, useState } from "react";
+import { EditableLabel } from "./style";
+import { Checkbox } from "./Checkbox";
+import { useTask } from "../../shared/TaskContext";
 
 type Props = {
-  title: string
-  isDone: boolean
-  onDoneChange: (done: boolean) => void
-  onTitleChange: (title: string) => void
-  onDelete: () => void
-}
+  id: string;
+};
 
-export function SubTask({
-  title,
-  isDone,
-  onDoneChange,
-  onTitleChange,
-  onDelete,
-}: Props) {
-  const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false)
+export function SubTask({ id }: Props) {
+  const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
+
+  const {
+    changeDescription,
+    changeDone,
+    deleteTask,
+    task: { isDone, description },
+  } = useTask(id);
 
   return (
     <ListItem
@@ -40,14 +38,16 @@ export function SubTask({
       opacity={isDone ? ".6" : 1}
     >
       <Checkbox
-        label={title}
+        label={`${description} done`}
         isChecked={isDone}
-        onChange={(event) => onDoneChange(event.target.checked)}
+        onChange={(event) => {
+          changeDone(event.target.checked);
+        }}
       />
       <EditableLabel
-        aria-label="Task description"
-        defaultValue={title}
-        onBlur={(event) => onTitleChange(event.target.value)}
+        aria-label={`${description}`}
+        defaultValue={description}
+        onBlur={(event) => changeDescription(event.target.value)}
         paddingStart=".25em"
         marginStart=".25em"
         paddingTop=".3em"
@@ -56,7 +56,7 @@ export function SubTask({
         textDecoration={isDone ? "line-through" : "none"}
       />
       <Button
-        aria-label={`Delete task: ${title}`}
+        aria-label={`Delete task: ${description}`}
         onClick={() => setShowDeleteConfirmation(true)}
         backgroundColor="transparent"
         opacity=".6"
@@ -75,11 +75,11 @@ export function SubTask({
       <ConfirmDelete
         isOpen={showDeleteConfirmation}
         onClose={() => setShowDeleteConfirmation(false)}
-        task={title}
-        onDelete={onDelete}
+        task={description}
+        onDelete={deleteTask}
       />
     </ListItem>
-  )
+  );
 }
 
 function ConfirmDelete({
@@ -88,12 +88,12 @@ function ConfirmDelete({
   task,
   onDelete,
 }: {
-  isOpen: boolean
-  onClose: () => void
-  task: string
-  onDelete: () => void
+  isOpen: boolean;
+  onClose: () => void;
+  task: string;
+  onDelete: () => void;
 }) {
-  const noRef = useRef<HTMLButtonElement>(null)
+  const noRef = useRef<HTMLButtonElement>(null);
 
   return (
     <AlertDialog isOpen={isOpen} leastDestructiveRef={noRef} onClose={onClose}>
@@ -116,5 +116,5 @@ function ConfirmDelete({
         </AlertDialogContent>
       </AlertDialogOverlay>
     </AlertDialog>
-  )
+  );
 }
