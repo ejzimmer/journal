@@ -1,7 +1,7 @@
 import { Button } from "@chakra-ui/react"
 import { NewTaskForm } from "./NewTaskForm"
-import { EditableText } from "./EditableText"
-import { Checkbox } from "./Checkbox"
+import { EditableText } from "../../shared/controls/EditableText"
+import { Checkbox } from "../../shared/controls/Checkbox"
 
 type Task = {
   id: string
@@ -52,11 +52,7 @@ export function TaskList({
       throw new Error("could not find task")
     }
 
-    const updatedTasks = [
-      ...task.tasks.slice(0, indexToUpdate),
-      subtask,
-      ...task.tasks.slice(indexToUpdate + 1),
-    ]
+    const updatedTasks = tasks.with(indexToUpdate, subtask)
     onChange({ ...task, tasks: updatedTasks })
   }
   const deleteSubtask = () => {}

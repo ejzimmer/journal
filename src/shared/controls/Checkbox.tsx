@@ -15,12 +15,7 @@ export function Checkbox({ label, isChecked, onChange }: Props) {
 
   return (
     <chakra.label height="100%" style={{ aspectRatio: "1" }} {...htmlProps}>
-      <input {...getInputProps()} />
-      <div
-        style={{ width: 0, height: 0, overflow: "hidden", position: "fixed" }}
-      >
-        {label}
-      </div>
+      <input {...getInputProps()} aria-label={label} />
       <Square
         size="calc(var(--input-height) * .9)"
         backgroundColor="hsl(0 0% 100%/.7)"

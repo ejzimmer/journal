@@ -10,7 +10,7 @@ import {
 } from "@chakra-ui/react"
 import { useRef, useState } from "react"
 import { EditableLabel } from "./style"
-import { Checkbox } from "./Checkbox"
+import { Checkbox } from "../../shared/controls/Checkbox"
 
 type Props = {
   title: string
