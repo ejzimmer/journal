@@ -1,6 +1,6 @@
-export type Task = {
+export type TaskMetadata = {
   id: string;
   description: string;
   isDone: boolean;
-  tasks?: Task[];
+  tasks?: TaskMetadata[];
 };

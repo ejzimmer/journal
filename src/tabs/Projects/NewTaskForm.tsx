@@ -1,68 +1,66 @@
-import { Input, chakra } from "@chakra-ui/react"
-import { FormEvent, useEffect, useRef, useState } from "react"
-import { ColouredButton } from "./style"
+import { Input, chakra } from "@chakra-ui/react";
+import { forwardRef, useEffect, useRef } from "react";
+import { ColouredButton } from "./style";
 
 type Props = {
-  onSubmit: (description: string) => void
-  isSubtaskList?: boolean
-}
+  onCancel: () => void;
+  onSubmit: (description: string) => void;
+  label: string;
+};
 
-export function NewTaskForm({ onSubmit, isSubtaskList }: Props) {
-  const [isShowingForm, setShowingForm] = useState(false)
-  const inputRef = useRef<HTMLInputElement>(null)
-  const formRef = useRef<HTMLFormElement>(null)
+export const NewTaskForm = forwardRef<HTMLInputElement, Props>(
+  function NewTaskForm({ onCancel, onSubmit, label }, ref) {
+    const formRef = useRef<HTMLFormElement>(null);
+    const localInputRef = useRef<HTMLInputElement>(null);
+    const inputRef = ref ?? localInputRef;
 
-  const handleSubmit = (event: FormEvent) => {
-    event.preventDefault()
-    const description = inputRef.current?.value ?? ""
+    useEffect(() => {
+      const handleClick = (event: MouseEvent) => {
+        const clickedOutside = !formRef.current?.contains(event.target as Node);
+        if (!clickedOutside) return;
 
-    description && onSubmit(description)
-    formRef.current?.reset()
+        // nfi how to deal with functionr refs
+        if (typeof inputRef === "function") return;
+
+        if (inputRef.current?.value) {
+          handleSubmit();
+        } else {
+          onCancel();
+        }
+      };
+      window.addEventListener("click", handleClick);
+
+      return () => window.removeEventListener("click", handleClick);
+    });
+
+    const handleSubmit = () => {
+      // nfi how to deal with functionr refs
+      if (typeof inputRef === "function") return;
+
+      const description = inputRef.current?.value;
+
+      description && onSubmit(description);
+      formRef.current?.reset();
+    };
+
+    return (
+      <chakra.form
+        onSubmit={(event) => {
+          event.preventDefault();
+          handleSubmit();
+        }}
+        ref={formRef}
+        display="flex"
+        padding=".25em"
+        gap=".25em"
+        aria-label="New task"
+      >
+        <Input ref={inputRef} aria-label={label} {...inputStyleProps} />
+        <AddButton />
+      </chakra.form>
+    );
   }
-
-  const showForm = (event: React.MouseEvent) => {
-    event.stopPropagation()
-    setShowingForm(true)
-  }
-
-  useEffect(() => {
-    const handleClick = (event: MouseEvent) => {
-      if (
-        event.target instanceof Node &&
-        !formRef.current?.contains(event.target)
-      ) {
-        setShowingForm(false)
-      }
-    }
-
-    window.addEventListener("click", handleClick)
-
-    return () => window.removeEventListener("click", handleClick)
-  }, [])
-
-  return isShowingForm ? (
-    <chakra.form
-      onSubmit={handleSubmit}
-      ref={formRef}
-      display="flex"
-      padding=".25em"
-      gap=".25em"
-      aria-label="New task"
-    >
-      <Input
-        ref={inputRef}
-        aria-label="New task description"
-        {...inputStyleProps}
-      />
-      <AddButton />
-      <CancelButton onClick={() => setShowingForm(false)} />
-    </chakra.form>
-  ) : (
-    <ColouredButton onClick={showForm} {...newTaskButtonStyles}>
-      ➕ New {isSubtaskList ? "subtask" : "task"}
-    </ColouredButton>
-  )
-}
+);
 
 function AddButton() {
   return (
@@ -77,7 +75,7 @@ function AddButton() {
         />
       </svg>
     </ColouredButton>
-  )
+  );
 }
 
 function CancelButton({ onClick }: { onClick: () => void }) {
@@ -94,7 +92,7 @@ function CancelButton({ onClick }: { onClick: () => void }) {
         <path d="M20, 80 L80 20" />
       </svg>
     </ColouredButton>
-  )
+  );
 }
 
 const inputStyleProps = {
@@ -114,11 +112,11 @@ const inputStyleProps = {
   },
   color: "rgb(26, 32, 44)",
   paddingTop: ".25em",
-}
+};
 
 const newTaskButtonStyles = {
   marginX: ".5em",
   marginY: ".4em",
   paddingLeft: ".5em",
   paddingTop: ".25em",
-}
+};

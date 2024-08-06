@@ -6,36 +6,42 @@ import {
   AlertDialogOverlay,
   Button,
   HStack,
-  ListItem,
 } from "@chakra-ui/react";
-import { useRef, useState } from "react";
-import { EditableLabel } from "./style";
+import { useEffect, useRef, useState } from "react";
 import { Checkbox } from "./Checkbox";
-import { useTask } from "../../shared/TaskContext";
+import { EditableText } from "./EditableText";
+import { NewTaskForm } from "./NewTaskForm";
+import { TaskList } from "./TaskList";
+import { TaskMetadata } from "./types";
+import { useTaskMutators } from "../../shared/TaskContext";
 
 type Props = {
-  id: string;
+  task: TaskMetadata;
 };
 
-export function SubTask({ id }: Props) {
+export function Task({ task: { id, isDone, description, tasks } }: Props) {
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
+  const [showAddTaskForm, setShowAddTaskForm] = useState(false);
+  const newTaskRef = useRef<HTMLInputElement>(null);
 
-  const {
-    changeDescription,
-    changeDone,
-    deleteTask,
-    task: { isDone, description },
-  } = useTask(id);
+  const { changeDescription, changeDone, deleteTask, addSubTask } =
+    useTaskMutators(id);
+
+  useEffect(() => {
+    if (showAddTaskForm) {
+      newTaskRef.current?.focus();
+    }
+  }, [showAddTaskForm]);
 
   return (
-    <ListItem
+    <li
       style={{
         display: "flex",
         alignItems: "center",
         paddingLeft: "1em",
         cursor: "pointer",
+        opacity: isDone ? ".6" : 1,
       }}
-      opacity={isDone ? ".6" : 1}
     >
       <Checkbox
         label={`${description} done`}
@@ -44,17 +50,29 @@ export function SubTask({ id }: Props) {
           changeDone(event.target.checked);
         }}
       />
-      <EditableLabel
-        aria-label={`${description}`}
+      <EditableText
         defaultValue={description}
-        onBlur={(event) => changeDescription(event.target.value)}
+        onChange={changeDescription}
         paddingStart=".25em"
         marginStart=".25em"
         paddingTop=".3em"
         paddingBottom=".1em"
         height="unset"
         textDecoration={isDone ? "line-through" : "none"}
-      />
+      >
+        {description}
+      </EditableText>
+      {(!Array.isArray(tasks) || tasks.length === 0) && !showAddTaskForm && (
+        <Button
+          aria-label={`Add subtasks to ${description}`}
+          onClick={() => {
+            setShowAddTaskForm(true);
+          }}
+        >
+          +
+        </Button>
+      )}
+
       <Button
         aria-label={`Delete task: ${description}`}
         onClick={() => setShowDeleteConfirmation(true)}
@@ -72,13 +90,22 @@ export function SubTask({ id }: Props) {
       >
         🗑️
       </Button>
+      <TaskList tasks={tasks} />
+      {showAddTaskForm && (
+        <NewTaskForm
+          label={`New subtask for ${description}`}
+          onSubmit={addSubTask}
+          onCancel={() => setShowAddTaskForm(false)}
+          ref={newTaskRef}
+        />
+      )}
       <ConfirmDelete
         isOpen={showDeleteConfirmation}
         onClose={() => setShowDeleteConfirmation(false)}
         task={description}
         onDelete={deleteTask}
       />
-    </ListItem>
+    </li>
   );
 }
 

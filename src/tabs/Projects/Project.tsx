@@ -1,53 +1,51 @@
-import { useState } from "react"
-import { NewTaskForm } from "./NewTaskForm"
-import { List, ListItem } from "@chakra-ui/react"
-import { SubTask } from "./SubTask"
-import { MouseEvent } from "react"
-import { EditableLabel } from "./style"
-import { COLOURS, Category } from "../../shared/TodoList/types"
+import { NewTaskForm } from "./NewTaskForm";
+import { List, ListItem } from "@chakra-ui/react";
+import { SubTask } from "./Task";
+import { EditableLabel } from "./style";
+import { COLOURS, Category } from "../../shared/TodoList/types";
 
 type Task = {
-  description: string
-  isDone: boolean
-}
+  description: string;
+  isDone: boolean;
+};
 
 export type ProjectMetadata = {
-  name: string
-  category: Category
-  tasks: Task[]
-}
+  name: string;
+  category: Category;
+  tasks: Task[];
+};
 
 type Props = {
-  project: ProjectMetadata
-  onChange: (project: ProjectMetadata) => void
-}
+  project: ProjectMetadata;
+  onChange: (project: ProjectMetadata) => void;
+};
 
 export function Project({ project, onChange }: Props) {
-  const allDone = project.tasks.every((task) => task.isDone)
+  const allDone = project.tasks.every((task) => task.isDone);
 
   const addTask = (description: string) => {
     onChange({
       ...project,
       tasks: [...project.tasks, { description, isDone: false }],
-    })
-  }
+    });
+  };
   const updateTask = (index: number, task: Task) => {
     onChange({
       ...project,
       tasks: project.tasks.with(index, task),
-    })
-  }
+    });
+  };
   const removeTask = (index: number) => {
-    onChange({ ...project, tasks: project.tasks.toSpliced(index, 1) })
-  }
+    onChange({ ...project, tasks: project.tasks.toSpliced(index, 1) });
+  };
 
-  const colour = COLOURS[project.category]
+  const colour = COLOURS[project.category];
   const borderColour = `color-mix(
     in hsl shorter hue,
     ${colour},
     hsl(300 0% 25%)
-  )`
-  const midColour = `color-mix(in hsl shorter hue, ${colour}, hsl(300 0% 50%))`
+  )`;
+  const midColour = `color-mix(in hsl shorter hue, ${colour}, hsl(300 0% 50%))`;
 
   return (
     <ListItem
@@ -87,5 +85,5 @@ export function Project({ project, onChange }: Props) {
       </List>
       <NewTaskForm onSubmit={addTask} />
     </ListItem>
-  )
+  );
 }
