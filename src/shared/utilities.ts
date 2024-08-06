@@ -3,17 +3,17 @@ import {
   endOfISOWeek,
   eachDayOfInterval,
   isWeekend,
-} from "date-fns"
-import { Tracker, TrackerBoolean, Trackers } from "../tabs/Health/types"
-import { TodoItem } from "./TodoList/types"
+} from "date-fns";
+import { Tracker, TrackerBoolean, Trackers } from "../tabs/Health/types";
+import { TodoItem } from "./TodoList/types";
 
 export function isDailyTask(task: TodoItem) {
-  return task.frequency && task.frequency.endsWith("日")
+  return task.frequency && task.frequency.endsWith("日");
 }
 
 interface DraggedItem {
-  source: { index: number }
-  destination?: { index: number }
+  source: { index: number };
+  destination?: { index: number };
 }
 
 export function resortList<T>(
@@ -23,39 +23,39 @@ export function resortList<T>(
 ) {
   // dropped outside the list
   if (!destination) {
-    return items
+    return items;
   }
 
-  const movedItem = items[source.index]
-  const listWithoutItem = items.filter((_, index) => index !== source.index)
+  const movedItem = items[source.index];
+  const listWithoutItem = items.filter((_, index) => index !== source.index);
 
-  const listStart = listWithoutItem.slice(0, destination.index)
-  const listEnd = listWithoutItem.slice(destination.index)
+  const listStart = listWithoutItem.slice(0, destination.index);
+  const listEnd = listWithoutItem.slice(destination.index);
 
   const newList = [...listStart, movedItem, ...listEnd]
     .map((item, index) => ({
       ...item,
       position: index,
     }))
-    .sort(sortItems)
+    .sort(sortItems);
 
-  onReorder(newList)
+  onReorder(newList);
 }
 
-const A_IS_FIRST = -1
-const B_IS_FIRST = 1
+const A_IS_FIRST = -1;
+const B_IS_FIRST = 1;
 
 const sortByPositionInCategory = (
   a: TodoItem,
   b: TodoItem,
   inCategory: (a: TodoItem) => boolean = () => true
 ) => {
-  if (inCategory(a) && inCategory(b)) return a.position - b.position
-  if (inCategory(a)) return A_IS_FIRST
-  if (inCategory(b)) return B_IS_FIRST
+  if (inCategory(a) && inCategory(b)) return a.position - b.position;
+  if (inCategory(a)) return A_IS_FIRST;
+  if (inCategory(b)) return B_IS_FIRST;
 
-  return 0
-}
+  return 0;
+};
 
 export const sortItems = (a: TodoItem, b: TodoItem) => {
   return (
@@ -68,14 +68,14 @@ export const sortItems = (a: TodoItem, b: TodoItem) => {
     sortByPositionInCategory(a, b, (item) => item.type === "⚒️") ||
     sortByPositionInCategory(a, b, (item) => item.type === "🚴‍♀️") ||
     sortByPositionInCategory(a, b)
-  )
-}
+  );
+};
 
 export const getWeekdays = (date: Date) => {
-  const startDate = startOfISOWeek(date)
-  const endOfWeek = endOfISOWeek(startDate)
-  return eachDayOfInterval({ start: startDate, end: endOfWeek })
-}
+  const startDate = startOfISOWeek(date);
+  const endOfWeek = endOfISOWeek(startDate);
+  return eachDayOfInterval({ start: startDate, end: endOfWeek });
+};
 
 export const initialiseDay = (): Trackers => ({
   stretch: { type: "boolean", id: "stretch", label: "🧘🏽", isChecked: false },
@@ -94,17 +94,17 @@ export const initialiseDay = (): Trackers => ({
     value: "⚫",
   },
   waist: { type: "input", id: "waist", value: "" },
-})
+});
 
-export const isCompletable = ({ type }: Tracker) => type === "boolean"
+export const isCompletable = ({ type }: Tracker) => type === "boolean";
 export const NO_COMPLETABLE_TRACKERS = Object.values(initialiseDay()).filter(
   isCompletable
-).length
+).length;
 
 export const countCompleted = (trackers: Trackers) =>
   Object.values(trackers)
     .filter(isCompletable)
-    .filter((tracker) => (tracker as TrackerBoolean).isChecked).length
+    .filter((tracker) => (tracker as TrackerBoolean).isChecked).length;
 
 export const isWorkDay = (date: Date) =>
-  !(isWeekend(date) || date.getDay() === 3)
+  !(isWeekend(date) || date.getDay() === 1);
