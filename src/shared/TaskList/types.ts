@@ -1,5 +1,5 @@
-export type Task = {
+export type Item = {
   id: string
   description: string
-  isDone: boolean
+  isComplete: boolean
 }
