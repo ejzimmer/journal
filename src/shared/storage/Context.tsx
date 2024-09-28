@@ -3,96 +3,111 @@ import {
   createContext,
   useCallback,
   useContext,
-  useEffect,
   useState,
 } from "react"
 import { Item } from "../TaskList/types"
 import { getDatabase, onValue, ref, remove, update } from "firebase/database"
 
-export type FetchItemContext = {
+export type ItemResponse = {
   item?: Item
-  error?: string
+  error?: Error
+  isLoading: boolean
 }
-
-export const FetchItem = createContext<FetchItemContext>({})
+export type FetchItemContext = (id: string) => Promise<Item>
+export const FetchItem = createContext<FetchItemContext>(() => Promise.reject())
 
 export type UpdateItemContext = {
   onChange: (item: Item) => void
-  onDelete: () => void
-  onAddSubtask: (description: string) => void
+  onDelete: (id: string) => void
+  onAddSubtask: (parentId: string, description: string) => void
 }
-export function useFetchItem() {
-  let context
-  try {
-    context = useContext(FetchItem)
-  } catch (e) {
-    throw new Error("Missing fetch item provider")
-  }
-
-  return context
-}
-
 export const UpdateItem = createContext<UpdateItemContext>({
   onChange: () => undefined,
   onDelete: () => undefined,
   onAddSubtask: () => undefined,
 })
-export function useUpdateItem() {
-  let context
-  try {
-    context = useContext(UpdateItem)
-  } catch (e) {
-    throw new Error("Missing update item provider")
-  }
 
-  return context
+export function useItem(id: string) {
+  const [isLoading, setIsLoading] = useState(false)
+  const [item, setItem] = useState<Item>()
+  const [error, setError] = useState<Error>()
+
+  try {
+    const getItem = useContext(FetchItem)
+    const { onChange, onDelete, onAddSubtask } = useContext(UpdateItem)
+
+    if (!isLoading && !item && !error) {
+      setIsLoading(true)
+      getItem(id)
+        .then((item) => {
+          setItem(item)
+        })
+        .catch((error) => setError(error))
+        .finally(() => {
+          setIsLoading(false)
+        })
+    }
+
+    return {
+      isLoading,
+      item,
+      error,
+      onChange,
+      onDelete: () => onDelete(id),
+      onAddSubtask: (description: string) => onAddSubtask(id, description),
+    }
+  } catch (e) {
+    throw new Error("Missing fetch item provider")
+  }
 }
 
-export function ItemProvider({
-  itemId,
-  children,
-}: {
-  itemId: string
-  children: ReactNode
-}) {
+export function ItemProvider({ children }: { children: ReactNode }) {
   const [database] = useState(getDatabase)
-  const [item, setItem] = useState<Item>()
-  const [error, setError] = useState<string>()
 
-  useEffect(() => {
-    const itemRef = ref(database, `items/${itemId}`)
-
-    onValue(itemRef, (snapshot) => {
-      const data = snapshot.val()
-      if (!data) {
-        setError(`Unable to fetch item ${itemId}`)
-      }
-      setItem(data)
-    })
-  }, [database, itemId])
+  const getItem = useCallback(
+    (itemId: string) => {
+      const itemRef = ref(database, `items/${itemId}`)
+      return new Promise<Item>((resolve, reject) => {
+        onValue(itemRef, (snapshot) => {
+          const data = snapshot.val()
+          if (!data) {
+            reject(`Unable to fetch item ${itemId}`)
+          }
+          resolve(data)
+        })
+      })
+    },
+    [database]
+  )
 
   const onChange = useCallback(
     async (item: Item) => {
       const updates = {
-        [`/items/${itemId}`]: item,
+        [`/items/${item.id}`]: item,
       }
       await update(ref(database), updates)
     },
-    [database, itemId]
+    [database]
   )
 
-  const onAddSubtask = useCallback(async (description: string) => {
-    // create new task & get back id
-    // add id to subtasks list of current task
-  }, [])
+  const onAddSubtask = useCallback(
+    async (parentId: string, description: string) => {
+      // create new task & get back id
+      // add id to subtasks list of current task
+    },
+    []
+  )
 
-  const onDelete = useCallback(() => {
-    const deleteRef = ref(database, `items/${itemId}`)
-    return remove(deleteRef)
-  }, [database, itemId])
+  const onDelete = useCallback(
+    (id: string) => {
+      const deleteRef = ref(database, `items/${id}`)
+      return remove(deleteRef)
+    },
+    [database]
+  )
 
   return (
-    <FetchItem.Provider value={{ item, error }}>
+    <FetchItem.Provider value={getItem}>
       <UpdateItem.Provider value={{ onChange, onDelete, onAddSubtask }}>
         {children}
       </UpdateItem.Provider>

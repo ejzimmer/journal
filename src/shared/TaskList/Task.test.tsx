@@ -3,7 +3,7 @@ import { Task } from "./Task"
 import userEvent from "@testing-library/user-event"
 import {
   FetchItem,
-  FetchItemContext,
+  ItemResponse,
   UpdateItem,
   UpdateItemContext,
 } from "../storage/Context"
@@ -11,6 +11,11 @@ import { ReactNode } from "react"
 import { Item } from "./types"
 
 const TASK: Item = { id: "1", description: "Make shirt", isComplete: false }
+const SUBTASKS: Item[] = [
+  { id: "12", description: "Buy fabric", isComplete: false },
+  { id: "13", description: "Prewash fabric", isComplete: false },
+  { id: "14", description: "Cut pattern", isComplete: false },
+]
 
 const UpdateTaskProvider = ({
   context,
@@ -30,25 +35,41 @@ const UpdateTaskProvider = ({
   </UpdateItem.Provider>
 )
 const FetchTaskProvider = ({
-  context: { item, error },
+  context: { item, error, isLoading },
   children,
 }: {
-  context: FetchItemContext
+  context: ItemResponse
   children: ReactNode
-}) => (
-  <FetchItem.Provider value={{ item: item ?? error ? undefined : TASK, error }}>
-    {children}
-  </FetchItem.Provider>
-)
+}) => {
+  return (
+    <FetchItem.Provider
+      value={(id: string) => {
+        if (isLoading) {
+          return new Promise(() => undefined)
+        }
+        if (error) {
+          return Promise.reject(error)
+        }
+        return Promise.resolve(
+          item ?? SUBTASKS.find((i) => i.id === id) ?? TASK
+        )
+      }}
+    >
+      {children}
+    </FetchItem.Provider>
+  )
+}
 
 const renderTask = (
-  callbacks?: Partial<FetchItemContext> & Partial<UpdateItemContext>
+  callbacks?: Partial<ItemResponse> & Partial<UpdateItemContext>
 ) =>
-  render(<Task />, {
+  render(<Task id={TASK.id} />, {
     wrapper: ({ children }: { children: ReactNode }) => {
-      const { item, error, ...updateTask } = callbacks ?? {}
+      const { item, error, isLoading, ...updateTask } = callbacks ?? {}
       return (
-        <FetchTaskProvider context={{ item, error }}>
+        <FetchTaskProvider
+          context={{ item, error, isLoading: isLoading ?? false }}
+        >
           <UpdateTaskProvider context={{ ...updateTask }}>
             {children}
           </UpdateTaskProvider>
@@ -61,7 +82,7 @@ describe("Item", () => {
   it("shows the task description & status", async () => {
     renderTask()
 
-    expect(screen.getByText(TASK.description)).toBeInTheDocument()
+    expect(await screen.findByText(TASK.description)).toBeInTheDocument()
     expect(
       screen.getByRole("checkbox", { name: TASK.description })
     ).toBeInTheDocument()
@@ -110,7 +131,7 @@ describe("Item", () => {
 
   describe("when the task can't be fetched", () => {
     it("shows an error", async () => {
-      renderTask({ error: "Could not fetch task" })
+      renderTask({ error: new Error("Could not fetch task") })
 
       expect(
         await screen.findByText("Could not fetch task")
@@ -136,7 +157,7 @@ describe("Item", () => {
     await user.type(newTaskInput, "buy fabric")
     await user.keyboard("{Enter}")
 
-    expect(onAddSubtask).toHaveBeenCalledWith("buy fabric")
+    expect(onAddSubtask).toHaveBeenCalledWith("1", "buy fabric")
     expect(newTaskInput).toHaveValue("")
   })
 
@@ -158,7 +179,7 @@ describe("Item", () => {
     await user.type(newTaskInput, "buy fabric")
     await user.click(screen.getByRole("button", { name: "Add" }))
 
-    expect(onAddSubtask).toHaveBeenCalledWith("buy fabric")
+    expect(onAddSubtask).toHaveBeenCalledWith("1", "buy fabric")
     expect(newTaskInput).toHaveValue("")
   })
 
@@ -206,8 +227,23 @@ describe("Item", () => {
     })
   })
 
-  // disallow subtasks
-  // display subtasks
-  // move to other list
-  // rearrange items
+  xdescribe("when the task has subtasks", () => {
+    it("displays them", async () => {
+      const taskWithSubtasks: Item = {
+        ...TASK,
+        items: ["11", "12", "13"],
+      }
+      renderTask({ item: taskWithSubtasks })
+
+      SUBTASKS.forEach(({ description }) =>
+        expect(
+          screen.getByRole("checkbox", { name: description })
+        ).toBeInTheDocument()
+      )
+    })
+
+    // display subtasks
+    // move to other list
+    // rearrange items
+  })
 })

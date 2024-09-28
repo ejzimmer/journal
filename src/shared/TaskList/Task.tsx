@@ -1,26 +1,26 @@
 import { Button, Input } from "@chakra-ui/react"
 import { Checkbox } from "../controls/Checkbox"
-import { useFetchItem, useUpdateItem } from "../storage/Context"
+import { useItem } from "../storage/Context"
 import { DeleteTaskButton } from "./DeleteTaskButton"
 import { TaskButton } from "./TaskButton"
 import { FormEvent, useEffect, useRef, useState } from "react"
 import { ItemDescription } from "./ItemDescription"
 
-export function Task() {
+export function Task({ id }: { id: string }) {
   const [isAddingNewTask, setAddingNewTask] = useState(false)
-  const { item, error } = useFetchItem()
-  const { onChange, onDelete, onAddSubtask } = useUpdateItem()
+  const { item, error, isLoading, onChange, onDelete, onAddSubtask } =
+    useItem(id)
 
-  if (error) {
-    return <div>{error}</div>
-  }
-
-  if (!item) {
+  if (isLoading) {
     return <div>Loading...</div>
   }
 
+  if (error || !item) {
+    return <div>{error?.message ?? "Could not find item"}</div>
+  }
+
   return (
-    <li>
+    <>
       <Checkbox
         label={`${item.description}`}
         isChecked={item.isComplete}
@@ -49,7 +49,16 @@ export function Task() {
           onCancel={() => setAddingNewTask(false)}
         />
       )}
-    </li>
+      {item.items?.length && (
+        <ul>
+          {item.items.map((item) => (
+            <li key={item}>
+              <Task id={item} />
+            </li>
+          ))}
+        </ul>
+      )}
+    </>
   )
 }
 
