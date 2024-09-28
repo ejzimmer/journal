@@ -1,6 +1,3 @@
-import { useContext } from "react"
-import { UpdateItem } from "../storage/Context"
-import { AddTaskForm } from "./AddTaskForm"
 import { Task } from "./Task"
 
 type TaskListProps = {
@@ -8,8 +5,6 @@ type TaskListProps = {
 }
 
 export function TaskList({ tasks }: TaskListProps) {
-  const { onAddTask } = useContext(UpdateItem)
-
   return (
     <>
       {tasks.length > 0 ? (
@@ -23,7 +18,6 @@ export function TaskList({ tasks }: TaskListProps) {
       ) : (
         <div>No tasks</div>
       )}
-      <AddTaskForm onSubmit={onAddTask} onCancel={() => undefined} />
     </>
   )
 }

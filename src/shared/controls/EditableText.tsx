@@ -3,10 +3,11 @@ import { useEffect, useRef, useState } from "react"
 
 interface Props extends Omit<BoxProps, "onChange"> {
   onChange: (text: string) => void
+  label: string
   children: string
 }
 
-export function EditableText({ children, onChange, ...style }: Props) {
+export function EditableText({ children, onChange, label, ...props }: Props) {
   const [isEditing, setIsEditing] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
   const startEditing = () => setIsEditing(true)
@@ -37,10 +38,11 @@ export function EditableText({ children, onChange, ...style }: Props) {
         }
       }}
       defaultValue={children}
-      {...style}
+      aria-label={label}
+      {...props}
     />
   ) : (
-    <Box {...style} tabIndex={0} onFocus={startEditing} onClick={startEditing}>
+    <Box {...props} tabIndex={0} onFocus={startEditing} onClick={startEditing}>
       {children}
     </Box>
   )

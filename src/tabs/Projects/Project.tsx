@@ -1,91 +1,77 @@
-import { useState } from "react"
-import { NewTaskForm } from "./NewTaskForm"
-import { List, ListItem } from "@chakra-ui/react"
-import { SubTask } from "./SubTask"
-import { MouseEvent } from "react"
-import { EditableLabel } from "./style"
-import { COLOURS, Category } from "../../shared/TodoList/types"
+import { Button, Select } from "@chakra-ui/react"
+import { EditableText } from "../../shared/controls/EditableText"
+import { TaskList } from "../../shared/TaskList"
+import { COLOURS } from "../../shared/TodoList/types"
+import { AddTaskForm } from "../../shared/TaskList/AddTaskForm"
+import { UpdateItem } from "../../shared/storage/Context"
+import { useContext, useState } from "react"
 
-type Task = {
-  description: string
-  isDone: boolean
-}
-
-export type ProjectMetadata = {
+type ProjectDetails = {
   name: string
-  category: Category
-  tasks: Task[]
+  category: string
+  status: string
+  tasks: string[]
 }
 
-type Props = {
-  project: ProjectMetadata
-  onChange: (project: ProjectMetadata) => void
+type ProjectProps = {
+  project: ProjectDetails
+  onChange: (project: ProjectDetails) => void
 }
 
-export function Project({ project, onChange }: Props) {
-  const allDone = project.tasks.every((task) => task.isDone)
+const STATUSES = ["not started", "in progress", "requires materials", "done"]
+
+export function Project({ project, onChange }: ProjectProps) {
+  const [showAddTaskForm, setShowAddTaskForm] = useState(
+    project.tasks.length === 0
+  )
+
+  const { onAddTask } = useContext(UpdateItem)
 
   const addTask = (description: string) => {
-    onChange({
-      ...project,
-      tasks: [...project.tasks, { description, isDone: false }],
-    })
-  }
-  const updateTask = (index: number, task: Task) => {
-    onChange({
-      ...project,
-      tasks: project.tasks.with(index, task),
-    })
-  }
-  const removeTask = (index: number) => {
-    onChange({ ...project, tasks: project.tasks.toSpliced(index, 1) })
+    onAddTask(description)
+    // get task id and add task to task list
   }
 
-  const colour = COLOURS[project.category]
-  const borderColour = `color-mix(
-    in hsl shorter hue,
-    ${colour},
-    hsl(300 0% 25%)
-  )`
-  const midColour = `color-mix(in hsl shorter hue, ${colour}, hsl(300 0% 50%))`
+  const handleChange = (updates: Partial<ProjectDetails>) =>
+    onChange({ ...project, ...updates })
 
   return (
-    <ListItem
-      aria-label={project.name}
-      border="2px solid"
-      borderColor={borderColour}
-      borderRadius="12px"
-      overflow="hidden"
-      background={colour}
-      sx={{ "--colour": colour }}
-    >
-      <EditableLabel
-        value={project.name}
-        onChange={(event) => onChange({ ...project, name: event.target.value })}
-        aria-label="Project name"
-        fontSize="1.2em"
-        marginBlockEnd="0.5em"
-        borderBottomRadius="0"
-        backgroundColor={midColour}
-      />
-      {allDone && <span>✅</span>}
-      <List>
-        {project.tasks.map(({ description, isDone }, index) => (
-          <SubTask
-            key={description}
-            title={description}
-            isDone={isDone}
-            onDoneChange={(isDone) =>
-              updateTask(index, { description, isDone })
-            }
-            onTitleChange={(description) =>
-              updateTask(index, { description, isDone })
-            }
-            onDelete={() => removeTask(index)}
-          />
+    <>
+      <h2>
+        <EditableText
+          label="Project name"
+          onChange={(name) => handleChange({ name })}
+        >
+          {project.name}
+        </EditableText>
+      </h2>
+      <Select
+        aria-label="Category"
+        value={project.category}
+        onChange={(event) => handleChange({ category: event.target.value })}
+      >
+        {Object.keys(COLOURS).map((category) => (
+          <option key={category}>{category}</option>
         ))}
-      </List>
-      <NewTaskForm onSubmit={addTask} />
-    </ListItem>
+      </Select>
+      <Select
+        aria-label="Status"
+        value={project.status}
+        onChange={(event) => handleChange({ status: event.target.value })}
+      >
+        {STATUSES.map((status) => (
+          <option key={status}>{status}</option>
+        ))}
+      </Select>
+      <TaskList tasks={project.tasks} />
+      {showAddTaskForm ? (
+        <AddTaskForm
+          onSubmit={addTask}
+          onCancel={() => setShowAddTaskForm(false)}
+        />
+      ) : (
+        <Button onClick={() => setShowAddTaskForm(true)}>Add task</Button>
+      )}
+    </>
   )
 }
