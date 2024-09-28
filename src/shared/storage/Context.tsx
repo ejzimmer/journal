@@ -19,12 +19,12 @@ export const FetchItem = createContext<FetchItemContext>(() => Promise.reject())
 export type UpdateItemContext = {
   onChange: (item: Item) => void
   onDelete: (id: string) => void
-  onAddSubtask: (parentId: string, description: string) => void
+  onAddTask: (description: string, parentId?: string) => void
 }
 export const UpdateItem = createContext<UpdateItemContext>({
   onChange: () => undefined,
   onDelete: () => undefined,
-  onAddSubtask: () => undefined,
+  onAddTask: () => undefined,
 })
 
 export function useItem(id: string) {
@@ -34,7 +34,7 @@ export function useItem(id: string) {
 
   try {
     const getItem = useContext(FetchItem)
-    const { onChange, onDelete, onAddSubtask } = useContext(UpdateItem)
+    const { onChange, onDelete, onAddTask } = useContext(UpdateItem)
 
     if (!isLoading && !item && !error) {
       setIsLoading(true)
@@ -54,7 +54,7 @@ export function useItem(id: string) {
       error,
       onChange,
       onDelete: () => onDelete(id),
-      onAddSubtask: (description: string) => onAddSubtask(id, description),
+      onAddTask: (description: string) => onAddTask(id, description),
     }
   } catch (e) {
     throw new Error("Missing fetch item provider")
@@ -90,8 +90,8 @@ export function ItemProvider({ children }: { children: ReactNode }) {
     [database]
   )
 
-  const onAddSubtask = useCallback(
-    async (parentId: string, description: string) => {
+  const onAddTask = useCallback(
+    async (parentId: string, description?: string) => {
       // create new task & get back id
       // add id to subtasks list of current task
     },
@@ -100,6 +100,8 @@ export function ItemProvider({ children }: { children: ReactNode }) {
 
   const onDelete = useCallback(
     (id: string) => {
+      // need to also remove task from any lists it belongs
+      // to
       const deleteRef = ref(database, `items/${id}`)
       return remove(deleteRef)
     },
@@ -108,7 +110,7 @@ export function ItemProvider({ children }: { children: ReactNode }) {
 
   return (
     <FetchItem.Provider value={getItem}>
-      <UpdateItem.Provider value={{ onChange, onDelete, onAddSubtask }}>
+      <UpdateItem.Provider value={{ onChange, onDelete, onAddTask }}>
         {children}
       </UpdateItem.Provider>
     </FetchItem.Provider>

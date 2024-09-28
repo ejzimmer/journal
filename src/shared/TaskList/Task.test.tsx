@@ -1,86 +1,26 @@
 import { render, screen } from "@testing-library/react"
 import { Task } from "./Task"
 import userEvent from "@testing-library/user-event"
-import {
-  FetchItem,
-  ItemResponse,
-  UpdateItem,
-  UpdateItemContext,
-} from "../storage/Context"
+import { ItemResponse, UpdateItemContext } from "../storage/Context"
 import { ReactNode } from "react"
 import { Item } from "./types"
+import { MockTaskProvider, TASKS } from "./testUtils/MockTaskProvider"
 
-const TASK: Item = { id: "1", description: "Make shirt", isComplete: false }
-const SUBTASKS: Item[] = [
-  { id: "12", description: "Buy fabric", isComplete: false },
-  { id: "13", description: "Prewash fabric", isComplete: false },
-  { id: "14", description: "Cut pattern", isComplete: false },
-]
-
-const UpdateTaskProvider = ({
-  context,
-  children,
-}: {
-  context?: Partial<UpdateItemContext>
-  children: ReactNode
-}) => (
-  <UpdateItem.Provider
-    value={{
-      onChange: context?.onChange ?? jest.fn(),
-      onDelete: context?.onDelete ?? jest.fn(),
-      onAddSubtask: context?.onAddSubtask ?? jest.fn(),
-    }}
-  >
-    {children}
-  </UpdateItem.Provider>
-)
-const FetchTaskProvider = ({
-  context: { item, error, isLoading },
-  children,
-}: {
-  context: ItemResponse
-  children: ReactNode
-}) => {
-  return (
-    <FetchItem.Provider
-      value={(id: string) => {
-        if (isLoading) {
-          return new Promise(() => undefined)
-        }
-        if (error) {
-          return Promise.reject(error)
-        }
-        return Promise.resolve(
-          item ?? SUBTASKS.find((i) => i.id === id) ?? TASK
-        )
-      }}
-    >
-      {children}
-    </FetchItem.Provider>
-  )
-}
+const TASK = TASKS["1"]
 
 const renderTask = (
+  id: string,
   callbacks?: Partial<ItemResponse> & Partial<UpdateItemContext>
 ) =>
-  render(<Task id={TASK.id} />, {
-    wrapper: ({ children }: { children: ReactNode }) => {
-      const { item, error, isLoading, ...updateTask } = callbacks ?? {}
-      return (
-        <FetchTaskProvider
-          context={{ item, error, isLoading: isLoading ?? false }}
-        >
-          <UpdateTaskProvider context={{ ...updateTask }}>
-            {children}
-          </UpdateTaskProvider>
-        </FetchTaskProvider>
-      )
-    },
+  render(<Task id={id} />, {
+    wrapper: ({ children }: { children: ReactNode }) => (
+      <MockTaskProvider {...callbacks}>{children}</MockTaskProvider>
+    ),
   })
 
 describe("Item", () => {
   it("shows the task description & status", async () => {
-    renderTask()
+    renderTask(TASK.id)
 
     expect(await screen.findByText(TASK.description)).toBeInTheDocument()
     expect(
@@ -91,7 +31,7 @@ describe("Item", () => {
   it("edits the description", async () => {
     const onChange = jest.fn()
     const user = userEvent.setup()
-    renderTask({ onChange })
+    renderTask(TASK.id, { onChange })
 
     await user.click(await screen.findByText(TASK.description))
     const descriptionInput = screen.getByRole("textbox")
@@ -107,7 +47,7 @@ describe("Item", () => {
   it("changes the status of the task", async () => {
     const onChange = jest.fn()
     const user = userEvent.setup()
-    renderTask({ onChange })
+    renderTask(TASK.id, { onChange })
 
     await user.click(
       await screen.findByRole("checkbox", { name: TASK.description })
@@ -119,7 +59,7 @@ describe("Item", () => {
   it("deletes the task", async () => {
     const onDelete = jest.fn()
     const user = userEvent.setup()
-    renderTask({ onDelete })
+    renderTask(TASK.id, { onDelete })
 
     await user.click(
       await screen.findByRole("button", { name: `Delete ${TASK.description}` })
@@ -131,7 +71,7 @@ describe("Item", () => {
 
   describe("when the task can't be fetched", () => {
     it("shows an error", async () => {
-      renderTask({ error: new Error("Could not fetch task") })
+      renderTask(TASK.id, { error: new Error("Could not fetch task") })
 
       expect(
         await screen.findByText("Could not fetch task")
@@ -142,7 +82,7 @@ describe("Item", () => {
   it("can add a subtask by pressing enter", async () => {
     const onAddSubtask = jest.fn()
     const user = userEvent.setup()
-    renderTask({ onAddSubtask })
+    renderTask(TASK.id, { onAddTask: onAddSubtask })
 
     await user.click(
       await screen.findByRole("button", {
@@ -151,7 +91,7 @@ describe("Item", () => {
     )
 
     const newTaskInput = screen.getByRole("textbox", {
-      name: "Subtask description",
+      name: "Task description",
     })
     expect(newTaskInput).toBeInTheDocument()
     await user.type(newTaskInput, "buy fabric")
@@ -164,7 +104,7 @@ describe("Item", () => {
   it("can add a subtask by clicking the button", async () => {
     const onAddSubtask = jest.fn()
     const user = userEvent.setup()
-    renderTask({ onAddSubtask })
+    renderTask(TASK.id, { onAddTask: onAddSubtask })
 
     await user.click(
       await screen.findByRole("button", {
@@ -173,7 +113,7 @@ describe("Item", () => {
     )
 
     const newTaskInput = screen.getByRole("textbox", {
-      name: "Subtask description",
+      name: "Task description",
     })
     expect(newTaskInput).toBeInTheDocument()
     await user.type(newTaskInput, "buy fabric")
@@ -186,7 +126,7 @@ describe("Item", () => {
   describe("when the user clicks Add subtask, then cancel", () => {
     it("closes the Add subtask form", async () => {
       const user = userEvent.setup()
-      renderTask()
+      renderTask(TASK.id)
 
       await user.click(
         await screen.findByRole("button", {
@@ -195,7 +135,7 @@ describe("Item", () => {
       )
 
       const newTaskInput = screen.getByRole("textbox", {
-        name: "Subtask description",
+        name: "Task description",
       })
       expect(newTaskInput).toBeInTheDocument()
       await user.type(newTaskInput, "buy fabric")
@@ -208,7 +148,7 @@ describe("Item", () => {
   describe("when the user clicks Add subtask, then clicks away", () => {
     it("closes the Add subtask form", async () => {
       const user = userEvent.setup()
-      const { container } = renderTask()
+      const { container } = renderTask(TASK.id)
 
       await user.click(
         await screen.findByRole("button", {
@@ -217,7 +157,7 @@ describe("Item", () => {
       )
 
       const newTaskInput = screen.getByRole("textbox", {
-        name: "Subtask description",
+        name: "Task description",
       })
       expect(newTaskInput).toBeInTheDocument()
       await user.type(newTaskInput, "buy fabric")
@@ -227,22 +167,23 @@ describe("Item", () => {
     })
   })
 
-  xdescribe("when the task has subtasks", () => {
+  describe("when the task has subtasks", () => {
     it("displays them", async () => {
+      const subtasks = ["11", "12", "13"] as const
       const taskWithSubtasks: Item = {
         ...TASK,
         items: ["11", "12", "13"],
       }
-      renderTask({ item: taskWithSubtasks })
+      renderTask(TASK.id, { item: taskWithSubtasks })
 
-      SUBTASKS.forEach(({ description }) =>
-        expect(
-          screen.getByRole("checkbox", { name: description })
-        ).toBeInTheDocument()
+      const labels = subtasks.map((id) => TASKS[id].description)
+
+      const tasks = await Promise.all(
+        labels.map((label) => screen.findByRole("checkbox", { name: label }))
       )
+      tasks.forEach((task) => expect(task).toBeInTheDocument())
     })
 
-    // display subtasks
     // move to other list
     // rearrange items
   })
