@@ -3,7 +3,7 @@ import { EditableText } from "../../shared/controls/EditableText"
 import { TaskList } from "../../shared/TaskList"
 import { COLOURS } from "../../shared/TodoList/types"
 import { AddTaskForm } from "../../shared/TaskList/AddTaskForm"
-import { UpdateItem } from "../../shared/storage/Context"
+import { UpdateItem } from "../../shared/storage/ItemManager"
 import { useContext, useState } from "react"
 
 type ProjectDetails = {

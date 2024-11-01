@@ -3,5 +3,5 @@ export type Item = {
   description: string
   isComplete: boolean
   items?: string[]
+  containedBy?: string[]
 }
-s

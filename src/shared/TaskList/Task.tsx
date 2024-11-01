@@ -1,46 +1,73 @@
 import { Checkbox } from "../controls/Checkbox"
-import { useItem } from "../storage/Context"
+import { useItem } from "../storage/ItemManager"
 import { DeleteTaskButton } from "./DeleteTaskButton"
 import { TaskButton } from "./TaskButton"
-import { useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { ItemDescription } from "./ItemDescription"
 import { AddTaskForm } from "./AddTaskForm"
 import { TaskList } from "."
+import { Box } from "@chakra-ui/react"
+import invariant from "tiny-invariant"
+import { draggable } from "@atlaskit/pragmatic-drag-and-drop/element/adapter"
 
-export function Task({ id }: { id: string }) {
+type TaskProps = {
+  id: string
+}
+
+export function Task({ id }: TaskProps) {
+  const ref = useRef<HTMLDivElement>(null)
   const [isAddingNewTask, setAddingNewTask] = useState(false)
-  const { item, error, isLoading, onChange, onDelete, onAddTask } = useItem(id)
+  const {
+    item: task,
+    isLoading,
+    error,
+    onChange,
+    onDelete,
+    onAddItem: onAddTask,
+  } = useItem(id)
+
+  useEffect(() => {
+    const element = ref.current
+    if (!element) return
+    invariant(element)
+
+    return draggable({
+      element,
+      getInitialData: () => ({ location, pieceType }),
+    })
+  }, [])
 
   if (isLoading) {
     return <div>Loading...</div>
   }
 
-  if (error || !item) {
-    return <div>{error?.message ?? "Could not find item"}</div>
+  if (error || !task) {
+    return <div>{error?.message ?? "Unable to load task"}</div>
   }
 
   return (
-    <>
+    <Box border="1px solid black" ref={ref}>
       <Checkbox
-        label={`${item.description}`}
-        isChecked={item.isComplete}
+        label={`${task.description}`}
+        isChecked={task.isComplete}
         onChange={() => {
-          onChange({ ...item, isComplete: !item.isComplete })
+          const isComplete = !task.isComplete
+          onChange({ ...task, isComplete })
         }}
       />
       <ItemDescription
-        description={item.description}
-        onChange={(description) => onChange({ ...item, description })}
-        isDone={item.isComplete}
+        description={task.description}
+        onChange={(description) => onChange({ ...task, description })}
+        isDone={task.isComplete}
       />
       <TaskButton
-        aria-label={`Add subtask to ${item.description}`}
+        aria-label={`Add subtask to ${task.description}`}
         onClick={() => setAddingNewTask(true)}
       >
         +
       </TaskButton>
       <DeleteTaskButton
-        taskDescription={item.description}
+        taskDescription={task.description}
         onDelete={onDelete}
       />
       {isAddingNewTask && (
@@ -49,7 +76,7 @@ export function Task({ id }: { id: string }) {
           onCancel={() => setAddingNewTask(false)}
         />
       )}
-      {item.items?.length && <TaskList tasks={item.items} />}
-    </>
+      {task.items?.length && <TaskList taskIds={task.items} />}
+    </Box>
   )
 }

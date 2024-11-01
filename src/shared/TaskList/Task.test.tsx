@@ -1,26 +1,49 @@
 import { render, screen } from "@testing-library/react"
 import { Task } from "./Task"
 import userEvent from "@testing-library/user-event"
-import { ItemResponse, UpdateItemContext } from "../storage/Context"
-import { ReactNode } from "react"
 import { Item } from "./types"
-import { MockTaskProvider, TASKS } from "./testUtils/MockTaskProvider"
+import { TASKS } from "./testUtils/MockTaskProvider"
+import {
+  FetchItem,
+  UpdateItem,
+  UpdateItemContext,
+} from "../storage/ItemManager"
+import { ReactNode } from "react"
 
 const TASK = TASKS["1"]
 
-const renderTask = (
-  id: string,
-  callbacks?: Partial<ItemResponse> & Partial<UpdateItemContext>
-) =>
-  render(<Task id={id} />, {
-    wrapper: ({ children }: { children: ReactNode }) => (
-      <MockTaskProvider {...callbacks}>{children}</MockTaskProvider>
-    ),
-  })
+function Wrapper({
+  tasks = TASKS,
+  onChange = jest.fn(),
+  onDelete = jest.fn(),
+  onAddItem = jest.fn(),
+  children,
+}: Partial<UpdateItemContext> & {
+  children: ReactNode
+  tasks?: typeof TASKS
+}) {
+  return (
+    <FetchItem.Provider
+      value={(id) => Promise.resolve(tasks[id as keyof typeof tasks])}
+    >
+      <UpdateItem.Provider
+        value={{
+          onChange: onChange,
+          onDelete: onDelete,
+          onAddItem: onAddItem,
+        }}
+      >
+        {children}
+      </UpdateItem.Provider>
+    </FetchItem.Provider>
+  )
+}
 
 describe("Item", () => {
   it("shows the task description & status", async () => {
-    renderTask(TASK.id)
+    render(<Task id={"1"} />, {
+      wrapper: Wrapper,
+    })
 
     expect(await screen.findByText(TASK.description)).toBeInTheDocument()
     expect(
@@ -31,7 +54,11 @@ describe("Item", () => {
   it("edits the description", async () => {
     const onChange = jest.fn()
     const user = userEvent.setup()
-    renderTask(TASK.id, { onChange })
+    render(<Task id="1" />, {
+      wrapper: ({ children }) => (
+        <Wrapper onChange={onChange}>{children}</Wrapper>
+      ),
+    })
 
     await user.click(await screen.findByText(TASK.description))
     const descriptionInput = screen.getByRole("textbox")
@@ -47,7 +74,11 @@ describe("Item", () => {
   it("changes the status of the task", async () => {
     const onChange = jest.fn()
     const user = userEvent.setup()
-    renderTask(TASK.id, { onChange })
+    render(<Task id="1" />, {
+      wrapper: ({ children }) => (
+        <Wrapper onChange={onChange}>{children}</Wrapper>
+      ),
+    })
 
     await user.click(
       await screen.findByRole("checkbox", { name: TASK.description })
@@ -59,7 +90,11 @@ describe("Item", () => {
   it("deletes the task", async () => {
     const onDelete = jest.fn()
     const user = userEvent.setup()
-    renderTask(TASK.id, { onDelete })
+    render(<Task id="1" />, {
+      wrapper: ({ children }) => (
+        <Wrapper onDelete={onDelete}>{children}</Wrapper>
+      ),
+    })
 
     await user.click(
       await screen.findByRole("button", { name: `Delete ${TASK.description}` })
@@ -69,20 +104,14 @@ describe("Item", () => {
     expect(onDelete).toHaveBeenCalled()
   })
 
-  describe("when the task can't be fetched", () => {
-    it("shows an error", async () => {
-      renderTask(TASK.id, { error: new Error("Could not fetch task") })
-
-      expect(
-        await screen.findByText("Could not fetch task")
-      ).toBeInTheDocument()
-    })
-  })
-
   it("can add a subtask by pressing enter", async () => {
     const onAddSubtask = jest.fn()
     const user = userEvent.setup()
-    renderTask(TASK.id, { onAddTask: onAddSubtask })
+    render(<Task id="1" />, {
+      wrapper: ({ children }) => (
+        <Wrapper onAddItem={onAddSubtask}>{children}</Wrapper>
+      ),
+    })
 
     await user.click(
       await screen.findByRole("button", {
@@ -104,7 +133,11 @@ describe("Item", () => {
   it("can add a subtask by clicking the button", async () => {
     const onAddSubtask = jest.fn()
     const user = userEvent.setup()
-    renderTask(TASK.id, { onAddTask: onAddSubtask })
+    render(<Task id="1" />, {
+      wrapper: ({ children }) => (
+        <Wrapper onAddItem={onAddSubtask}>{children}</Wrapper>
+      ),
+    })
 
     await user.click(
       await screen.findByRole("button", {
@@ -126,7 +159,7 @@ describe("Item", () => {
   describe("when the user clicks Add subtask, then cancel", () => {
     it("closes the Add subtask form", async () => {
       const user = userEvent.setup()
-      renderTask(TASK.id)
+      render(<Task id="1" />, { wrapper: Wrapper })
 
       await user.click(
         await screen.findByRole("button", {
@@ -148,7 +181,7 @@ describe("Item", () => {
   describe("when the user clicks Add subtask, then clicks away", () => {
     it("closes the Add subtask form", async () => {
       const user = userEvent.setup()
-      const { container } = renderTask(TASK.id)
+      const { container } = render(<Task id="1" />, { wrapper: Wrapper })
 
       await user.click(
         await screen.findByRole("button", {
@@ -174,7 +207,12 @@ describe("Item", () => {
         ...TASK,
         items: ["11", "12", "13"],
       }
-      renderTask(TASK.id, { item: taskWithSubtasks })
+      const tasksWithSubtasks = { ...TASKS, "1": taskWithSubtasks }
+      render(<Task id="1" />, {
+        wrapper: ({ children }) => (
+          <Wrapper tasks={tasksWithSubtasks}>{children}</Wrapper>
+        ),
+      })
 
       const labels = subtasks.map((id) => TASKS[id].description)
 

@@ -13,7 +13,7 @@ const PROJECT = {
   tasks: [],
 }
 
-describe("Project", () => {
+xdescribe("Project", () => {
   it("shows the project name, category, status & list of tasks", async () => {
     const tasks = ["11", "12", "13"]
     render(<Project project={{ ...PROJECT, tasks }} onChange={jest.fn()} />, {

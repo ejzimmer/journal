@@ -1,5 +1,6 @@
-import { Task } from "../../shared/TaskList/Task"
-import { FetchItem, UpdateItem } from "../../shared/storage/Context"
+import { ItemProvider } from "../../shared/storage/ItemManager"
+import { MockStoreProvider } from "../../shared/storage/Store"
+import { TaskList } from "../../shared/TaskList"
 
 const TASKS = {
   "1": {
@@ -17,10 +18,10 @@ const taskList = ["1"]
 
 export function Projects() {
   return (
-    <UpdateItem.Provider value={(onchange, onDelete, onAddTask)}>
-      <FetchItem.Provider value={(id) => undefined}>
-        {taskList.map()}
-      </FetchItem.Provider>
-    </UpdateItem.Provider>
+    <MockStoreProvider initialItems={TASKS}>
+      <ItemProvider>
+        <TaskList taskIds={taskList} />
+      </ItemProvider>
+    </MockStoreProvider>
   )
 }

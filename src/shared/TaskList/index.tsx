@@ -1,17 +1,27 @@
 import { Task } from "./Task"
+import { useFetchItem } from "../storage/ItemManager"
 
 type TaskListProps = {
-  tasks: string[]
+  taskIds: string[]
+  onChangeAllComplete?: (isComplete: boolean) => void
 }
 
-export function TaskList({ tasks }: TaskListProps) {
+export function TaskList({ taskIds, onChangeAllComplete }: TaskListProps) {
+  const getItem = useFetchItem()
+
+  if (onChangeAllComplete) {
+    Promise.all(taskIds.map(getItem)).then((tasks) => {
+      onChangeAllComplete(tasks.every((task) => task.isComplete))
+    })
+  }
+
   return (
     <>
-      {tasks.length > 0 ? (
+      {taskIds.length > 0 ? (
         <ul>
-          {tasks.map((task) => (
-            <li key={task}>
-              <Task id={task} />
+          {taskIds.map((id) => (
+            <li key={id}>
+              <Task id={id} />
             </li>
           ))}
         </ul>
