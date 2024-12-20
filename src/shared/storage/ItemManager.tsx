@@ -52,7 +52,31 @@ export function useItem(id: string) {
   const fetchItem = useContext(FetchItem)
   if (!fetchItem) throw new Error("Missing fetch item provider")
 
-  const updateItem = useUpdateItem(id)
+  const refreshItem = useCallback(async () => {
+    setIsLoading(true)
+    const item = await fetchItem(id)
+    setItem(item)
+    setIsLoading(false)
+  }, [id, fetchItem])
+
+  const { onAddItem, onChange, onDelete } = useUpdateItem(id)
+
+  const handleChange = useCallback(
+    (item: Item) => {
+      onChange(item)
+      setItem(item)
+      refreshItem()
+    },
+    [refreshItem, onChange]
+  )
+
+  const handleAddItem = useCallback(
+    async (description: string) => {
+      onAddItem(description)
+      refreshItem()
+    },
+    [onAddItem, refreshItem]
+  )
 
   if (!isLoading && !item && !error) {
     setIsLoading(true)
@@ -70,7 +94,9 @@ export function useItem(id: string) {
     isLoading,
     item,
     error,
-    ...updateItem,
+    onChange: handleChange,
+    onDelete,
+    onAddItem: handleAddItem,
   }
 }
 

@@ -51,6 +51,7 @@ export function MockStoreProvider({
 
   const updateItem = useCallback(
     (item: Item) => {
+      console.log("updating item", item)
       setItems({ ...items, [item.id]: item })
     },
     [items]
