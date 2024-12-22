@@ -8,10 +8,9 @@
 // - can add due dates to tasks
 // dragging and dropping between parent/child lists - use horizontal position to determine which list to drop into
 
-import { useContext, useEffect, useId, useRef, useState } from "react"
+import { FormEvent, useContext, useEffect, useRef, useState } from "react"
 import { FirebaseContext } from "../../shared/FirebaseContext"
 import {
-  Box,
   Button,
   FormControl,
   FormErrorMessage,
@@ -24,28 +23,40 @@ import {
   ModalFooter,
   ModalHeader,
   ModalOverlay,
+  Skeleton,
+  Stack,
   useDisclosure,
 } from "@chakra-ui/react"
 
 const WORK_KEY = "work"
 
 export function Work() {
-  const { subscribeToList } = useContext(FirebaseContext)
-
-  useEffect(() => {
-    subscribeToList(WORK_KEY, {
-      onAdd: (args) => console.log("add", args),
-      onChange: (args) => console.log("change", args),
-      onDelete: (args) => console.log("delete", args),
-    })
-  }, [subscribeToList])
+  const { addItemToList, useValue } = useContext(FirebaseContext)
+  const { value: lists, loading: listsLoading } = useValue(WORK_KEY)
 
   const onAddList = (listName: string) => {
-    console.log("adding", listName)
+    addItemToList(WORK_KEY, { description: listName })
+  }
+
+  if (listsLoading) {
+    return (
+      <Stack maxWidth="400px">
+        <Skeleton height="20px" />
+        <Skeleton height="20px" />
+        <Skeleton height="20px" />
+      </Stack>
+    )
+  }
+
+  if (!lists) {
+    return <div>Uh oh. Could not load lists.</div>
   }
 
   return (
     <div>
+      {Object.entries(lists).map(([id, { description }]) => (
+        <div key={id}>{description}</div>
+      ))}
       <NewListDialog onCreate={onAddList} />
     </div>
   )
@@ -56,7 +67,8 @@ function NewListDialog({ onCreate }: { onCreate: (listName: string) => void }) {
   const [isSubmitted, setSubmitted] = useState(false)
   const { isOpen, onOpen, onClose } = useDisclosure()
 
-  const handleCreate = () => {
+  const handleCreate = (event: FormEvent) => {
+    event.preventDefault()
     const listName = listNameRef.current?.value
     if (!listName) {
       setSubmitted(true)

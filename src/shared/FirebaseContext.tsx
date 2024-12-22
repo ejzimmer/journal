@@ -32,7 +32,7 @@ interface ContextType {
   updateList: <T extends { id: string }>(listName: string, list: T[]) => void
   write: (key: string, data: any) => void
   read: (key: string, onChange: (value: any) => void) => void
-  useValue: (key: string) => { value?: any; loading: boolean }
+  useValue: (key: string) => { value?: TodoItem[]; loading: boolean }
 }
 
 const defaultContext: ContextType = {
@@ -95,6 +95,7 @@ export function createFirebaseContext(database: Database): ContextType {
       useEffect(() => {
         const reference = ref(database, key)
         onValue(reference, (snapshot) => {
+          console.log("value", snapshot.val())
           if (snapshot.val())
             setResult({ value: Object.values(snapshot.val()), loading: false })
         })
