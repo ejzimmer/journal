@@ -8,34 +8,27 @@
 // - can add due dates to tasks
 // dragging and dropping between parent/child lists - use horizontal position to determine which list to drop into
 
-import { FormEvent, useContext, useEffect, useRef, useState } from "react"
+import { useContext } from "react"
 import { FirebaseContext } from "../../shared/FirebaseContext"
-import {
-  Button,
-  FormControl,
-  FormErrorMessage,
-  FormLabel,
-  Input,
-  Modal,
-  ModalBody,
-  ModalCloseButton,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
-  ModalOverlay,
-  Skeleton,
-  Stack,
-  useDisclosure,
-} from "@chakra-ui/react"
+import { Box, Heading, HStack, Skeleton, Stack } from "@chakra-ui/react"
+import { EditableText } from "../../shared/controls/EditableText"
+import { Item } from "../../shared/TaskList/types"
+import { NewListModal } from "./NewListModal"
 
 const WORK_KEY = "work"
 
 export function Work() {
-  const { addItemToList, useValue } = useContext(FirebaseContext)
+  const { addItemToList, useValue, updateItemInList } =
+    useContext(FirebaseContext)
   const { value: lists, loading: listsLoading } = useValue(WORK_KEY)
 
   const onAddList = (listName: string) => {
     addItemToList(WORK_KEY, { description: listName })
+  }
+  const onUpdateListName = (newName: string, list: Item) => {
+    if (!newName) {
+    }
+    updateItemInList(WORK_KEY, { ...list, description: newName })
   }
 
   if (listsLoading) {
@@ -53,70 +46,21 @@ export function Work() {
   }
 
   return (
-    <div>
-      {Object.entries(lists).map(([id, { description }]) => (
-        <div key={id}>{description}</div>
+    <HStack wrap="wrap">
+      {Object.entries(lists).map(([id, list]) => (
+        <Box minWidth="200px" minHeight="600px">
+          <Heading as="h2" fontSize="20px">
+            <EditableText
+              key={id}
+              label={`Edit ${list.description} name`}
+              onChange={(value) => onUpdateListName(value, list)}
+            >
+              {list.description}
+            </EditableText>
+          </Heading>
+        </Box>
       ))}
-      <NewListDialog onCreate={onAddList} />
-    </div>
-  )
-}
-
-function NewListDialog({ onCreate }: { onCreate: (listName: string) => void }) {
-  const listNameRef = useRef<HTMLInputElement>(null)
-  const [isSubmitted, setSubmitted] = useState(false)
-  const { isOpen, onOpen, onClose } = useDisclosure()
-
-  const handleCreate = (event: FormEvent) => {
-    event.preventDefault()
-    const listName = listNameRef.current?.value
-    if (!listName) {
-      setSubmitted(true)
-      return
-    }
-    onCreate(listName)
-    handleClose()
-  }
-
-  const handleClose = () => {
-    setSubmitted(false)
-    onClose()
-  }
-
-  return (
-    <>
-      <Button variant="outline" onClick={onOpen}>
-        ➕ Add list
-      </Button>
-
-      <Modal isOpen={isOpen} onClose={handleClose}>
-        <ModalOverlay />
-        <ModalContent>
-          <ModalHeader>
-            <ModalCloseButton />
-          </ModalHeader>
-          <ModalBody>
-            <form onSubmit={handleCreate}>
-              <FormControl
-                isInvalid={isSubmitted && !listNameRef.current?.value}
-              >
-                <FormLabel fontWeight="bold">New list name</FormLabel>
-                <Input onChange={() => setSubmitted(false)} ref={listNameRef} />
-                <FormErrorMessage>List name is required</FormErrorMessage>
-              </FormControl>
-            </form>
-          </ModalBody>
-
-          <ModalFooter>
-            <Button mr={3} onClick={handleCreate}>
-              Create
-            </Button>
-            <Button variant="ghost" onClick={handleClose}>
-              Cancel
-            </Button>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
-    </>
+      <NewListModal onCreate={onAddList} />
+    </HStack>
   )
 }

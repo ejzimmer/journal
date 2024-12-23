@@ -11,6 +11,7 @@ import {
 } from "firebase/database"
 import { createContext, useEffect, useState } from "react"
 import { TodoItem } from "./TodoList/types"
+import { Item } from "./TaskList/types"
 
 type CrudFunction = (item: TodoItem) => void
 type ListCrudFunction = (listName: string, item: Partial<TodoItem>) => void
@@ -32,7 +33,7 @@ interface ContextType {
   updateList: <T extends { id: string }>(listName: string, list: T[]) => void
   write: (key: string, data: any) => void
   read: (key: string, onChange: (value: any) => void) => void
-  useValue: (key: string) => { value?: TodoItem[]; loading: boolean }
+  useValue: (key: string) => { value?: Item[]; loading: boolean }
 }
 
 const defaultContext: ContextType = {
