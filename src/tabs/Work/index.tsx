@@ -1,4 +1,3 @@
-// move task component to its own file
 // - at the start of the Day
 //   - all done tasks are removed
 //   - all not-done tasks in tomorrow are moved to today
@@ -8,20 +7,33 @@
 // add subtasks
 // dragging and dropping between parent/child lists - use horizontal position to determine which list to drop into
 
-import { useContext } from "react"
+import { useContext, useEffect, useState } from "react"
 import { FirebaseContext } from "../../shared/FirebaseContext"
 import { Box, HStack, Skeleton, Stack } from "@chakra-ui/react"
 import { Item } from "../../shared/TaskList/types"
 import { NewListModal } from "./NewListModal"
 import { useConfirmDelete } from "./useConfirmDelete"
 import { TaskList } from "./TaskList"
+import { hoursToMilliseconds, isSameDay } from "date-fns"
 
 const WORK_KEY = "work"
 
 export function Work() {
+  const [today, setToday] = useState(new Date())
   const { addItemToList, useValue, updateItemInList, deleteItemFromList } =
     useContext(FirebaseContext)
   const { value: lists, loading: listsLoading } = useValue(WORK_KEY)
+
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      const currentTime = new Date()
+      if (!isSameDay(currentTime, today)) {
+        setToday(currentTime)
+      }
+    }, hoursToMilliseconds(1))
+
+    return () => clearTimeout(timeout)
+  }, [today])
 
   const onAddList = (listName: string) => {
     addItemToList(WORK_KEY, { description: listName })
@@ -71,6 +83,7 @@ export function Work() {
             onDeleteTask={(task: Item) =>
               deleteItemFromList(`${WORK_KEY}/${list.id}/items`, task)
             }
+            clearDoneTasksIndicator={today.toString()}
           />
         ))
       ) : (

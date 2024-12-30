@@ -12,15 +12,28 @@ export function TaskList({
   onAddTask,
   onChangeTask,
   onDeleteTask,
+  clearDoneTasksIndicator,
 }: {
   list: Item
   onChangeListName: (name: string) => void
   onAddTask: (description: string) => void
   onChangeTask: (task: Item) => void
   onDeleteTask: (task: Item) => void
+  clearDoneTasksIndicator: string
 }) {
   const listRef = useRef<HTMLUListElement>(null)
   const [addTaskFormVisible, setAddTaskFormVisible] = useState(false)
+
+  const prevDoneIndicator = useRef(clearDoneTasksIndicator)
+  if (prevDoneIndicator.current !== clearDoneTasksIndicator) {
+    prevDoneIndicator.current = clearDoneTasksIndicator
+
+    list.items?.forEach((task) => {
+      if (task.isComplete) {
+        onDeleteTask(task)
+      }
+    })
+  }
 
   const showTaskForm = (event: MouseEvent | FocusEvent) => {
     event.stopPropagation()
