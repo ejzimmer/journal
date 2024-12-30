@@ -12,16 +12,20 @@ export function TaskList({
   onAddTask,
   onChangeTask,
   onDeleteTask,
+  onMoveTask,
   newDayIndicator,
   onNewDay,
+  moveDestinations,
 }: {
   list: Item
   onChangeListName: (name: string) => void
   onAddTask: (description: string) => void
   onChangeTask: (task: Item) => void
   onDeleteTask: (task: Item) => void
+  onMoveTask: (task: Item, destination: Item) => void
   newDayIndicator: string
   onNewDay: () => void
+  moveDestinations?: Item[]
 }) {
   const listRef = useRef<HTMLUListElement>(null)
   const [addTaskFormVisible, setAddTaskFormVisible] = useState(false)
@@ -91,6 +95,10 @@ export function TaskList({
                 task={item}
                 onChange={onChangeTask}
                 onDelete={() => onDeleteTask(item)}
+                actions={moveDestinations?.map((destination) => ({
+                  label: `➡️ ${destination.description}`,
+                  action: () => onMoveTask(item, destination),
+                }))}
               />
             </chakra.li>
           ))}

@@ -1,5 +1,13 @@
-import { Box, Checkbox } from "@chakra-ui/react"
-import { DeleteTaskButton } from "../../shared/TaskList/DeleteTaskButton"
+import {
+  Box,
+  Button,
+  Checkbox,
+  Menu,
+  MenuButton,
+  MenuItem,
+  MenuList,
+} from "@chakra-ui/react"
+import { useDeleteTask } from "../../shared/TaskList/DeleteTaskButton"
 import { ItemDescription } from "../../shared/TaskList/ItemDescription"
 import { Item } from "../../shared/TaskList/types"
 
@@ -7,15 +15,18 @@ export function Task({
   task,
   onChange,
   onDelete,
+  actions,
 }: {
   task: Item
   onChange: (task: Item) => void
   onDelete: () => void
+  actions?: { label: string; action: () => void }[]
 }) {
+  const { onClickDelete, ConfirmDeleteTask } = useDeleteTask(task, onDelete)
+
   return (
     <Box
-      display="grid"
-      gridTemplateColumns="min-content 1fr min-content"
+      display="flex"
       alignItems="baseline"
       opacity={task.isComplete ? 0.4 : 1}
     >
@@ -28,15 +39,45 @@ export function Task({
         }}
         colorScheme="gray"
       />
-      <ItemDescription
-        description={task.description}
-        onChange={(description) => onChange({ ...task, description })}
-        isDone={task.isComplete}
-      />
-      <DeleteTaskButton
-        taskDescription={task.description}
-        onDelete={onDelete}
-      />
+      <Box flexGrow="1">
+        <ItemDescription
+          description={task.description}
+          onChange={(description) => onChange({ ...task, description })}
+          isDone={task.isComplete}
+        />
+      </Box>
+      {actions?.length && (
+        <Menu>
+          <MenuButton
+            as={Button}
+            variant="ghost"
+            minWidth="24px"
+            height="24px"
+            padding="3px"
+            alignSelf="center"
+            _hover={{
+              background: "hsl(200 70% 90%)",
+            }}
+          >
+            <svg viewBox="0 0 30 10">
+              <circle cx="5" cy="5" r="2.5" />
+              <circle cx="15" cy="5" r="2.5" />
+              <circle cx="25" cy="5" r="2.5" />
+            </svg>
+          </MenuButton>
+          <MenuList fontFamily="Nimbus Sans" fontSize="16px">
+            {actions.map(({ label, action }) => (
+              <MenuItem key={label} onClick={action}>
+                {label}
+              </MenuItem>
+            ))}
+            <MenuItem key="delete_task" onClick={onClickDelete}>
+              🗑️ Delete
+            </MenuItem>
+          </MenuList>
+        </Menu>
+      )}
+      <ConfirmDeleteTask />
     </Box>
   )
 }

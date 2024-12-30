@@ -1,5 +1,3 @@
-// - at the start of the Day
-//   - all not-done tasks in tomorrow are moved to today
 // can move items between lists
 // - can add due dates to tasks
 // can reorder tasks
@@ -83,6 +81,10 @@ export function Work() {
             onDeleteTask={(task: Item) =>
               deleteItemFromList(`${WORK_KEY}/${list.id}/items`, task)
             }
+            onMoveTask={(task: Item, destination: Item) => {
+              addItemToList(`${WORK_KEY}/${destination.id}/items`, task)
+              deleteItemFromList(`${WORK_KEY}/${list.id}/items`, task)
+            }}
             newDayIndicator={today.toString()}
             onNewDay={() => {
               list.items?.forEach((task) => {
@@ -105,6 +107,7 @@ export function Work() {
                 })
               }
             }}
+            moveDestinations={lists.filter(({ id }) => id !== list.id)}
           />
         ))
       ) : (

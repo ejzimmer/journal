@@ -1,9 +1,14 @@
 import { Button, ButtonProps } from "@chakra-ui/react"
+import { forwardRef } from "react"
 
-export function TaskButton(props: Omit<ButtonProps, "as">) {
+export const TaskButton = forwardRef<
+  HTMLButtonElement,
+  Omit<ButtonProps, "as">
+>((props, ref) => {
   return (
     <Button
       {...props}
+      ref={ref}
       backgroundColor="transparent"
       opacity=".6"
       _hover={{ backgroundColor: "transparent", opacity: 1 }}
@@ -13,4 +18,4 @@ export function TaskButton(props: Omit<ButtonProps, "as">) {
       fontSize="16px"
     />
   )
-}
+})
