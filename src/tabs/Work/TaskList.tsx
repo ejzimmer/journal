@@ -1,47 +1,52 @@
-import { Box, Heading } from "@chakra-ui/react"
-import { useState, MouseEvent, FocusEvent } from "react"
+import { Box, Checkbox, Heading } from "@chakra-ui/react"
+import { useState, MouseEvent, FocusEvent, useRef } from "react"
 import { EditableText } from "../../shared/controls/EditableText"
 import { AddTaskForm } from "../../shared/TaskList/AddTaskForm"
 import { Item } from "../../shared/TaskList/types"
 import { ItemDescription } from "../../shared/TaskList/ItemDescription"
+import { chakra } from "@chakra-ui/react"
 
 export function TaskList({
   list,
-  onUpdateListName,
+  onChangeListName,
   onAddTask,
+  onChangeTask,
 }: {
   list: Item
-  onUpdateListName: (name: string) => void
+  onChangeListName: (name: string) => void
   onAddTask: (description: string) => void
+  onChangeTask: (task: Item) => void
 }) {
+  const listRef = useRef<HTMLUListElement>(null)
   const [addTaskFormVisible, setAddTaskFormVisible] = useState(false)
 
   const showTaskForm = (event: MouseEvent | FocusEvent) => {
     event.stopPropagation()
-    setAddTaskFormVisible(true)
+    if (event.target === listRef.current) {
+      setAddTaskFormVisible(true)
+    }
   }
 
   return (
     <Box
-      key={list.id}
       display="flex"
       flexDirection="column"
-      minWidth="200px"
+      minWidth="300px"
       minHeight="300px"
       cursor="text"
-      onClick={showTaskForm}
-      onFocus={showTaskForm}
     >
       <Heading as="h2" fontSize="20px">
         <EditableText
           label={`Edit ${list.description} name`}
-          onChange={onUpdateListName}
+          onChange={onChangeListName}
         >
           {list.description}
         </EditableText>
       </Heading>
-      <Box
-        as="ul"
+      <chakra.ul
+        ref={listRef}
+        onClick={showTaskForm}
+        onFocus={showTaskForm}
         flexGrow={1}
         lineHeight="1"
         listStyleType="none"
@@ -66,11 +71,13 @@ export function TaskList({
           <li>
             <AddTaskForm
               onSubmit={onAddTask}
-              onCancel={() => setAddTaskFormVisible(false)}
+              onCancel={(event) => {
+                setAddTaskFormVisible(false)
+              }}
             />
           </li>
         )}
-      </Box>
+      </chakra.ul>
     </Box>
   )
 }

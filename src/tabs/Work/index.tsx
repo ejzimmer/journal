@@ -1,4 +1,3 @@
-// make adding a task pretty
 // - mark task as done
 // - edit task
 // - delete task
@@ -59,7 +58,7 @@ export function Work() {
           <TaskList
             key={id}
             list={list}
-            onUpdateListName={(newName: string) =>
+            onChangeListName={(newName: string) =>
               onUpdateListName(newName, list)
             }
             onAddTask={(description: string) => {

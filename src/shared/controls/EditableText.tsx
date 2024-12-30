@@ -10,7 +10,9 @@ interface Props extends Omit<BoxProps, "onChange"> {
 export function EditableText({ children, onChange, label, ...props }: Props) {
   const [isEditing, setIsEditing] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
-  const startEditing = () => setIsEditing(true)
+  const startEditing = () => {
+    setIsEditing(true)
+  }
   const stopEditing = () => setIsEditing(false)
 
   useEffect(() => {
@@ -39,7 +41,11 @@ export function EditableText({ children, onChange, label, ...props }: Props) {
       }}
       defaultValue={children}
       aria-label={label}
+      border="none"
+      fontSize="inherit"
+      height="unset"
       {...props}
+      paddingBlock="0"
     />
   ) : (
     <Box {...props} tabIndex={0} onFocus={startEditing} onClick={startEditing}>

@@ -6,7 +6,7 @@ export function AddTaskForm({
   onCancel,
 }: {
   onSubmit: (description: string) => void
-  onCancel: () => void
+  onCancel: (event?: React.MouseEvent) => void
 }) {
   const inputRef = useRef<HTMLTextAreaElement>(null)
 
@@ -22,8 +22,6 @@ export function AddTaskForm({
   useEffect(() => {
     const listener = (event: MouseEvent) => {
       if (!inputRef.current) return
-
-      console.log(event)
 
       if (
         event.target &&
