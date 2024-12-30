@@ -12,27 +12,24 @@ export function TaskList({
   onAddTask,
   onChangeTask,
   onDeleteTask,
-  clearDoneTasksIndicator,
+  newDayIndicator,
+  onNewDay,
 }: {
   list: Item
   onChangeListName: (name: string) => void
   onAddTask: (description: string) => void
   onChangeTask: (task: Item) => void
   onDeleteTask: (task: Item) => void
-  clearDoneTasksIndicator: string
+  newDayIndicator: string
+  onNewDay: () => void
 }) {
   const listRef = useRef<HTMLUListElement>(null)
   const [addTaskFormVisible, setAddTaskFormVisible] = useState(false)
 
-  const prevDoneIndicator = useRef(clearDoneTasksIndicator)
-  if (prevDoneIndicator.current !== clearDoneTasksIndicator) {
-    prevDoneIndicator.current = clearDoneTasksIndicator
-
-    list.items?.forEach((task) => {
-      if (task.isComplete) {
-        onDeleteTask(task)
-      }
-    })
+  const dayIndicator = useRef(newDayIndicator)
+  if (dayIndicator.current !== newDayIndicator) {
+    dayIndicator.current = newDayIndicator
+    onNewDay()
   }
 
   const showTaskForm = (event: MouseEvent | FocusEvent) => {
@@ -47,7 +44,7 @@ export function TaskList({
       display="flex"
       flexDirection="column"
       minWidth="300px"
-      minHeight="300px"
+      minHeight="316px"
       cursor="text"
       sx={{
         "--margin-width": "30px",
