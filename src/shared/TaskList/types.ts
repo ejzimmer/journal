@@ -2,6 +2,6 @@ export type Item = {
   id: string
   description: string
   isComplete: boolean
-  items?: string[]
+  items?: Item[]
   containedBy?: string[]
 }

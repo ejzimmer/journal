@@ -14,7 +14,7 @@ import { TodoItem } from "./TodoList/types"
 import { Item } from "./TaskList/types"
 
 type CrudFunction = (item: TodoItem) => void
-type ListCrudFunction = (listName: string, item: Partial<TodoItem>) => void
+export type ListCrudFunction = (listId: string, item: Partial<Item>) => void
 
 interface CrudFunctions {
   onAdd: CrudFunction
@@ -95,10 +95,11 @@ export function createFirebaseContext(database: Database): ContextType {
 
       useEffect(() => {
         const reference = ref(database, key)
+
         onValue(reference, (snapshot) => {
-          console.log("value", snapshot.val())
           if (snapshot.val())
             setResult({ value: Object.values(snapshot.val()), loading: false })
+          else setResult({ loading: false })
         })
       }, [key])
 
