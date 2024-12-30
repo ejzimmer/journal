@@ -1,4 +1,4 @@
-import { Button, Box, Textarea } from "@chakra-ui/react"
+import { Box, Textarea } from "@chakra-ui/react"
 import { useRef, FormEvent, useEffect } from "react"
 import { TaskButton } from "./TaskButton"
 
