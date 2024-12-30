@@ -1,18 +1,23 @@
-// - normal task functionality with lists
+// - add task
+// - mark task as done
+// - edit task
+// - delete task
 // - at the start of the Day
 //   - all done tasks are removed
 //   - all not-done tasks in tomorrow are moved to today
 // - can add due dates to tasks
+// can reorder tasks
+// can drag and drop between lists
+// add subtasks
 // dragging and dropping between parent/child lists - use horizontal position to determine which list to drop into
 
-import { useContext, useState, MouseEvent, FocusEvent } from "react"
+import { useContext } from "react"
 import { FirebaseContext } from "../../shared/FirebaseContext"
-import { Box, Heading, HStack, Skeleton, Stack } from "@chakra-ui/react"
-import { EditableText } from "../../shared/controls/EditableText"
+import { Box, HStack, Skeleton, Stack } from "@chakra-ui/react"
 import { Item } from "../../shared/TaskList/types"
 import { NewListModal } from "./NewListModal"
 import { useConfirmDelete } from "./useConfirmDelete"
-import { AddTaskForm } from "../../shared/TaskList/AddTaskForm"
+import { TaskList } from "./TaskList"
 
 const WORK_KEY = "work"
 
@@ -51,7 +56,7 @@ export function Work() {
     <HStack wrap="wrap" alignItems="end" gap="20px">
       {lists ? (
         Object.entries(lists).map(([id, list]) => (
-          <List
+          <TaskList
             key={id}
             list={list}
             onUpdateListName={(newName: string) =>
@@ -71,51 +76,5 @@ export function Work() {
       <NewListModal onCreate={onAddList} />
       <DeleteListConfirmation />z
     </HStack>
-  )
-}
-
-function List({
-  list,
-  onUpdateListName,
-  onAddTask,
-}: {
-  list: Item
-  onUpdateListName: (name: string) => void
-  onAddTask: (description: string) => void
-}) {
-  const [addTaskFormVisible, setAddTaskFormVisible] = useState(false)
-
-  const showTaskForm = (event: MouseEvent | FocusEvent) => {
-    event.stopPropagation()
-    setAddTaskFormVisible(true)
-  }
-
-  return (
-    <Box
-      key={list.id}
-      minWidth="200px"
-      minHeight="300px"
-      background="repeating-linear-gradient(white, white 24px, hsl(200, 90%, 80%) 24px, hsl(200, 90%, 80%) 25px, white 25px)"
-      cursor="text"
-      onClick={showTaskForm}
-      onFocus={showTaskForm}
-    >
-      <Heading as="h2" fontSize="20px">
-        <EditableText
-          label={`Edit ${list.description} name`}
-          onChange={onUpdateListName}
-        >
-          {list.description}
-        </EditableText>
-      </Heading>
-      {list.items &&
-        Object.values(list.items).map((item) => <Box>{item.description}</Box>)}
-      {addTaskFormVisible && (
-        <AddTaskForm
-          onSubmit={onAddTask}
-          onCancel={() => setAddTaskFormVisible(false)}
-        />
-      )}
-    </Box>
   )
 }
