@@ -5,17 +5,20 @@ import { AddTaskForm } from "../../shared/TaskList/AddTaskForm"
 import { Item } from "../../shared/TaskList/types"
 import { ItemDescription } from "../../shared/TaskList/ItemDescription"
 import { chakra } from "@chakra-ui/react"
+import { DeleteTaskButton } from "../../shared/TaskList/DeleteTaskButton"
 
 export function TaskList({
   list,
   onChangeListName,
   onAddTask,
   onChangeTask,
+  onDeleteTask,
 }: {
   list: Item
   onChangeListName: (name: string) => void
   onAddTask: (description: string) => void
   onChangeTask: (task: Item) => void
+  onDeleteTask: (task: Item) => void
 }) {
   const listRef = useRef<HTMLUListElement>(null)
   const [addTaskFormVisible, setAddTaskFormVisible] = useState(false)
@@ -64,7 +67,7 @@ export function TaskList({
         listStyleType="none"
         sx={{
           "--line-colour": "hsl(200 90% 80%)",
-          "--line-height": "32px",
+          "--line-height": "33px",
         }}
         fontFamily="'Shadows Into Light', sans-serif"
         fontSize="24px"
@@ -74,19 +77,23 @@ export function TaskList({
       >
         {list.items &&
           Object.values(list.items).map((item) => (
-            <li key={item.id}>
-              <Task task={item} onChange={onChangeTask} />
-            </li>
+            <chakra.li key={item.id} _last={{ marginBlockEnd: "40px" }}>
+              <Task
+                task={item}
+                onChange={onChangeTask}
+                onDelete={() => onDeleteTask(item)}
+              />
+            </chakra.li>
           ))}
         {addTaskFormVisible && (
-          <li>
+          <chakra.li marginBlockStart="12px">
             <AddTaskForm
               onSubmit={onAddTask}
               onCancel={() => {
                 setAddTaskFormVisible(false)
               }}
             />
-          </li>
+          </chakra.li>
         )}
       </chakra.ul>
     </Box>
@@ -96,13 +103,16 @@ export function TaskList({
 function Task({
   task,
   onChange,
+  onDelete,
 }: {
   task: Item
   onChange: (task: Item) => void
+  onDelete: () => void
 }) {
   return (
     <Box
-      display="flex"
+      display="grid"
+      gridTemplateColumns="min-content 1fr min-content"
       alignItems="baseline"
       opacity={task.isComplete ? 0.4 : 1}
     >
@@ -119,6 +129,10 @@ function Task({
         description={task.description}
         onChange={(description) => onChange({ ...task, description })}
         isDone={task.isComplete}
+      />
+      <DeleteTaskButton
+        taskDescription={task.description}
+        onDelete={onDelete}
       />
     </Box>
   )

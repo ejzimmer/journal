@@ -42,7 +42,7 @@ export function NewListModal({
 
   return (
     <>
-      <Button variant="outline" onClick={onOpen}>
+      <Button variant="ghost" onClick={onOpen}>
         ➕ Add list
       </Button>
 

@@ -9,6 +9,8 @@ export function TaskButton(props: Omit<ButtonProps, "as">) {
       _hover={{ backgroundColor: "transparent", opacity: 1 }}
       _active={{ backgroundColor: "transparent", opacity: 1 }}
       transform="opacity .2s"
+      height="16px"
+      fontSize="16px"
     />
   )
 }

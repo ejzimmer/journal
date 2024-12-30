@@ -1,5 +1,3 @@
-// - edit task
-// - delete task
 // move task component to its own file
 // - at the start of the Day
 //   - all done tasks are removed
@@ -52,7 +50,7 @@ export function Work() {
   }
 
   return (
-    <HStack wrap="wrap" alignItems="end" gap="20px">
+    <HStack wrap="wrap" alignItems="stretch" gap="20px">
       {lists ? (
         Object.entries(lists).map(([id, list]) => (
           <TaskList
@@ -70,13 +68,18 @@ export function Work() {
             onChangeTask={(task: Item) => {
               updateItemInList(`${WORK_KEY}/${list.id}/items`, task)
             }}
+            onDeleteTask={(task: Item) =>
+              deleteItemFromList(`${WORK_KEY}/${list.id}/items`, task)
+            }
           />
         ))
       ) : (
         <Box marginInlineEnd="30px">No lists found.</Box>
       )}
-      <NewListModal onCreate={onAddList} />
-      <DeleteListConfirmation />z
+      <Box alignSelf="end">
+        <NewListModal onCreate={onAddList} />
+      </Box>
+      <DeleteListConfirmation />
     </HStack>
   )
 }

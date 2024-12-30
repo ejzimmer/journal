@@ -1,5 +1,6 @@
 import { Button, Box, Textarea } from "@chakra-ui/react"
 import { useRef, FormEvent, useEffect } from "react"
+import { TaskButton } from "./TaskButton"
 
 export function AddTaskForm({
   onSubmit,
@@ -62,20 +63,18 @@ export function AddTaskForm({
         insetBlockStart="0"
         insetInlineEnd="0"
         display="flex"
-        fontSize="1.2em"
       >
-        <Button
-          variant="ghost"
+        <TaskButton
           size="fit-content"
           padding="2px"
           type="reset"
           onClick={onCancel}
         >
           ❌
-        </Button>
-        <Button variant="ghost" size="fit-content" padding="2px" type="submit">
+        </TaskButton>
+        <TaskButton size="fit-content" padding="2px" type="submit">
           ✅
-        </Button>
+        </TaskButton>
       </Box>
     </Box>
   )
