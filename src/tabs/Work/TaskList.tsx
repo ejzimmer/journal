@@ -34,8 +34,20 @@ export function TaskList({
       minWidth="300px"
       minHeight="300px"
       cursor="text"
+      sx={{
+        "--margin-width": "30px",
+        "--margin-colour": "hsl(330 60% 85%)",
+      }}
+      paddingInlineStart="var(--margin-width)"
+      background="linear-gradient(to right, transparent, transparent var(--margin-width), var(--margin-colour) var(--margin-width), var(--margin-colour) calc(var(--margin-width) + 2px), transparent calc(var(--margin-width) + 2px))"
     >
-      <Heading as="h2" fontSize="20px">
+      <Heading
+        as="h2"
+        fontSize="20px"
+        borderBottom="2px solid hsl(200 90% 80%)"
+        marginInlineStart="calc(var(--margin-width) * -1)"
+        paddingInlineStart="calc(var(--margin-width) + 8px)"
+      >
         <EditableText
           label={`Edit ${list.description} name`}
           onChange={onChangeListName}
@@ -56,22 +68,21 @@ export function TaskList({
         }}
         fontFamily="'Shadows Into Light', sans-serif"
         fontSize="24px"
-        background="repeating-linear-gradient(white, white var(--line-height), var(--line-colour) var(--line-height), var(--line-colour) calc(var(--line-height) + 1px), white calc(var(--line-height) + 1px))"
+        marginInlineStart="calc(var(--margin-width) * -1)"
+        paddingInlineStart="calc(var(--margin-width) + 8px)"
+        background="repeating-linear-gradient(transparent, transparent var(--line-height), var(--line-colour) var(--line-height), var(--line-colour) calc(var(--line-height) + 1px), transparent calc(var(--line-height) + 1px))"
       >
         {list.items &&
           Object.values(list.items).map((item) => (
             <li key={item.id}>
-              <Task
-                task={item}
-                onChange={(task) => console.log("onChange", task)}
-              />
+              <Task task={item} onChange={onChangeTask} />
             </li>
           ))}
         {addTaskFormVisible && (
           <li>
             <AddTaskForm
               onSubmit={onAddTask}
-              onCancel={(event) => {
+              onCancel={() => {
                 setAddTaskFormVisible(false)
               }}
             />
@@ -90,7 +101,20 @@ function Task({
   onChange: (task: Item) => void
 }) {
   return (
-    <Box>
+    <Box
+      display="flex"
+      alignItems="baseline"
+      opacity={task.isComplete ? 0.4 : 1}
+    >
+      <Checkbox
+        aria-label={`${task.description}`}
+        isChecked={task.isComplete}
+        onChange={() => {
+          const isComplete = !task.isComplete
+          onChange({ ...task, isComplete })
+        }}
+        colorScheme="gray"
+      />
       <ItemDescription
         description={task.description}
         onChange={(description) => onChange({ ...task, description })}

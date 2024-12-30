@@ -17,7 +17,11 @@ export function ItemDescription({
       paddingInlineStart=".25em"
       paddingBlockStart=".3em"
       paddingBlockEnd=".1em"
+      borderRadius="0"
       textDecoration={isDone ? "line-through" : "none"}
+      _focusVisible={{
+        outline: "none",
+      }}
     >
       {description}
     </EditableText>

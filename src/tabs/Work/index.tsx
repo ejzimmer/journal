@@ -1,6 +1,6 @@
-// - mark task as done
 // - edit task
 // - delete task
+// move task component to its own file
 // - at the start of the Day
 //   - all done tasks are removed
 //   - all not-done tasks in tomorrow are moved to today
@@ -66,6 +66,9 @@ export function Work() {
                 description,
                 isComplete: false,
               })
+            }}
+            onChangeTask={(task: Item) => {
+              updateItemInList(`${WORK_KEY}/${list.id}/items`, task)
             }}
           />
         ))
