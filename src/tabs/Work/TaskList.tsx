@@ -1,4 +1,4 @@
-import { Box, Heading, Stack } from "@chakra-ui/react"
+import { Box, Heading } from "@chakra-ui/react"
 import { useState, MouseEvent, FocusEvent } from "react"
 import { EditableText } from "../../shared/controls/EditableText"
 import { AddTaskForm } from "../../shared/TaskList/AddTaskForm"
@@ -49,6 +49,8 @@ export function TaskList({
           "--line-colour": "hsl(200 90% 80%)",
           "--line-height": "32px",
         }}
+        fontFamily="'Shadows Into Light', sans-serif"
+        fontSize="24px"
         background="repeating-linear-gradient(white, white var(--line-height), var(--line-colour) var(--line-height), var(--line-colour) calc(var(--line-height) + 1px), white calc(var(--line-height) + 1px))"
       >
         {list.items &&
@@ -60,13 +62,15 @@ export function TaskList({
               />
             </li>
           ))}
+        {addTaskFormVisible && (
+          <li>
+            <AddTaskForm
+              onSubmit={onAddTask}
+              onCancel={() => setAddTaskFormVisible(false)}
+            />
+          </li>
+        )}
       </Box>
-      {addTaskFormVisible && (
-        <AddTaskForm
-          onSubmit={onAddTask}
-          onCancel={() => setAddTaskFormVisible(false)}
-        />
-      )}
     </Box>
   )
 }
@@ -79,7 +83,7 @@ function Task({
   onChange: (task: Item) => void
 }) {
   return (
-    <Box fontFamily="'Shadows Into Light', sans-serif" fontSize="24px">
+    <Box>
       <ItemDescription
         description={task.description}
         onChange={(description) => onChange({ ...task, description })}

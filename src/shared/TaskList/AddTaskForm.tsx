@@ -47,10 +47,12 @@ export function AddTaskForm({
         borderRadius="0"
         paddingInlineStart="0"
         paddingInlineEnd="40px"
+        paddingBlockStart="0"
         _focusVisible={{
           outline: "none",
         }}
-        lineHeight="24px"
+        fontFamily="inherit"
+        fontSize="inherit"
         onKeyDown={(event) => {
           if (event.key === "Enter") {
             addSubtask(event)

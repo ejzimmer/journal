@@ -1,4 +1,4 @@
-// - add task
+// make adding a task pretty
 // - mark task as done
 // - edit task
 // - delete task
