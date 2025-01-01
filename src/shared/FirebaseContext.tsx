@@ -11,9 +11,10 @@ import {
 } from "firebase/database"
 import { createContext, useEffect, useState } from "react"
 import { TodoItem } from "./TodoList/types"
+import { Item } from "./TaskList/types"
 
 type CrudFunction = (item: TodoItem) => void
-type ListCrudFunction = (listName: string, item: Partial<TodoItem>) => void
+export type ListCrudFunction = (listId: string, item: Partial<Item>) => void
 
 interface CrudFunctions {
   onAdd: CrudFunction
@@ -32,7 +33,7 @@ interface ContextType {
   updateList: <T extends { id: string }>(listName: string, list: T[]) => void
   write: (key: string, data: any) => void
   read: (key: string, onChange: (value: any) => void) => void
-  useValue: (key: string) => { value?: any; loading: boolean }
+  useValue: (key: string) => { value?: Item[]; loading: boolean }
 }
 
 const defaultContext: ContextType = {
@@ -61,12 +62,16 @@ export function createFirebaseContext(database: Database): ContextType {
     addItemToList: (listName, item) => {
       const reference = ref(database, listName)
       const newItemReference = push(reference)
-      set(newItemReference, { ...item, id: newItemReference.key })
+      set(newItemReference, {
+        ...item,
+        id: newItemReference.key,
+        lastUpdated: new Date().getTime(),
+      })
     },
     updateItemInList: (listName, item) => {
       if (item.id) {
         const reference = ref(database, `${listName}/${item.id}`)
-        set(reference, item)
+        set(reference, { ...item, lastUpdated: new Date().getTime() })
       }
     },
     deleteItemFromList: (listName, item) => {
@@ -94,9 +99,11 @@ export function createFirebaseContext(database: Database): ContextType {
 
       useEffect(() => {
         const reference = ref(database, key)
+
         onValue(reference, (snapshot) => {
           if (snapshot.val())
             setResult({ value: Object.values(snapshot.val()), loading: false })
+          else setResult({ loading: false })
         })
       }, [key])
 

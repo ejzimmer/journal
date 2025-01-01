@@ -1,6 +1,6 @@
 import { Today } from "./tabs/Today"
 import { Button } from "@chakra-ui/button"
-import { Grid } from "@chakra-ui/layout"
+import { Box, Grid } from "@chakra-ui/layout"
 
 import {
   getAuth,
@@ -13,11 +13,13 @@ import { Todo } from "./tabs/Todo"
 import { Health } from "./tabs/Health"
 import { Routes, Route, NavLink } from "react-router-dom"
 import styled from "@emotion/styled"
+import { Work } from "./tabs/Work"
 
 const TABS = {
   today: <Today />,
   todo: <Todo />,
   health: <Health />,
+  work: <Work />,
 }
 
 export function App() {
@@ -53,12 +55,14 @@ export function App() {
         ))}
       </Nav>
 
-      <Routes>
-        {Object.entries(TABS).map(([name, Element]) => (
-          <Route key={name} path={name} element={Element} />
-        ))}
-        <Route path="/" element={<Today />} />
-      </Routes>
+      <Box paddingInline="30px" paddingBlock="20px">
+        <Routes>
+          {Object.entries(TABS).map(([name, Element]) => (
+            <Route key={name} path={name} element={Element} />
+          ))}
+          <Route path="/" element={<Today />} />
+        </Routes>
+      </Box>
     </>
   )
 }
