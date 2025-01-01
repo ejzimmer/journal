@@ -4,4 +4,5 @@ export type Item = {
   isComplete: boolean
   items?: Item[]
   containedBy?: string[]
+  lastUpdated: number
 }

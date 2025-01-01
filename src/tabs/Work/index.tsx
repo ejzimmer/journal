@@ -1,11 +1,11 @@
-// can move items between lists
 // - can add due dates to tasks
 // can reorder tasks
 // can drag and drop between lists
 // add subtasks
 // dragging and dropping between parent/child lists - use horizontal position to determine which list to drop into
+// keep all done tasks, just don't show them. have a way to show done tasks & clear before a certain date (so i can use them for performance reviews)
 
-import { useContext, useEffect, useState } from "react"
+import { useContext, useEffect } from "react"
 import { FirebaseContext } from "../../shared/FirebaseContext"
 import { Box, HStack, Skeleton, Stack } from "@chakra-ui/react"
 import { Item } from "../../shared/TaskList/types"
@@ -17,21 +17,9 @@ import { hoursToMilliseconds, isSameDay } from "date-fns"
 const WORK_KEY = "work"
 
 export function Work() {
-  const [today, setToday] = useState(new Date())
   const { addItemToList, useValue, updateItemInList, deleteItemFromList } =
     useContext(FirebaseContext)
   const { value: lists, loading: listsLoading } = useValue(WORK_KEY)
-
-  useEffect(() => {
-    const timeout = setTimeout(() => {
-      const currentTime = new Date()
-      if (!isSameDay(currentTime, today)) {
-        setToday(currentTime)
-      }
-    }, hoursToMilliseconds(1))
-
-    return () => clearTimeout(timeout)
-  }, [today])
 
   const onAddList = (listName: string) => {
     addItemToList(WORK_KEY, { description: listName })
@@ -48,6 +36,32 @@ export function Work() {
   }
   const { confirmDelete, DeleteListConfirmation } =
     useConfirmDelete(onDeleteList)
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const today = new Date()
+      const todayList = lists?.find((list) => list.description === "Today")
+      const tomorrowList = lists?.find(
+        (list) => list.description === "Tomorrow"
+      )
+      lists?.forEach((list) => {
+        list.items?.forEach((task) => {
+          if (task.isComplete && !isSameDay(today, task.lastUpdated)) {
+            deleteItemFromList(`${WORK_KEY}/${list.id}/items`, task)
+          } else if (
+            list === tomorrowList &&
+            todayList &&
+            !isSameDay(today, task.lastUpdated)
+          ) {
+            addItemToList(`${WORK_KEY}/${todayList.id}/items`, task)
+            deleteItemFromList(`${WORK_KEY}/${list.id}/items`, task)
+          }
+        })
+      })
+    }, hoursToMilliseconds(1))
+
+    return () => clearInterval(interval)
+  }, [])
 
   if (listsLoading) {
     return (
@@ -84,28 +98,6 @@ export function Work() {
             onMoveTask={(task: Item, destination: Item) => {
               addItemToList(`${WORK_KEY}/${destination.id}/items`, task)
               deleteItemFromList(`${WORK_KEY}/${list.id}/items`, task)
-            }}
-            newDayIndicator={today.toString()}
-            onNewDay={() => {
-              list.items?.forEach((task) => {
-                if (task.isComplete) {
-                  deleteItemFromList(`${WORK_KEY}/${list.id}/items`, task)
-                }
-              })
-
-              if (list.description === "Tomorrow") {
-                const todayList = lists.find(
-                  ({ description }) => description === "Today"
-                )
-                if (!todayList) {
-                  return
-                }
-
-                list.items?.forEach((task) => {
-                  addItemToList(`${WORK_KEY}/${todayList.id}/items`, task)
-                  deleteItemFromList(`${WORK_KEY}/${list.id}/items`, task)
-                })
-              }
             }}
             moveDestinations={lists.filter(({ id }) => id !== list.id)}
           />

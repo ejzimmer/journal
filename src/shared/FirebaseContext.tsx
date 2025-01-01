@@ -62,12 +62,16 @@ export function createFirebaseContext(database: Database): ContextType {
     addItemToList: (listName, item) => {
       const reference = ref(database, listName)
       const newItemReference = push(reference)
-      set(newItemReference, { ...item, id: newItemReference.key })
+      set(newItemReference, {
+        ...item,
+        id: newItemReference.key,
+        lastUpdated: new Date().getTime(),
+      })
     },
     updateItemInList: (listName, item) => {
       if (item.id) {
         const reference = ref(database, `${listName}/${item.id}`)
-        set(reference, item)
+        set(reference, { ...item, lastUpdated: new Date().getTime() })
       }
     },
     deleteItemFromList: (listName, item) => {

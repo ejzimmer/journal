@@ -13,8 +13,6 @@ export function TaskList({
   onChangeTask,
   onDeleteTask,
   onMoveTask,
-  newDayIndicator,
-  onNewDay,
   moveDestinations,
 }: {
   list: Item
@@ -23,18 +21,10 @@ export function TaskList({
   onChangeTask: (task: Item) => void
   onDeleteTask: (task: Item) => void
   onMoveTask: (task: Item, destination: Item) => void
-  newDayIndicator: string
-  onNewDay: () => void
   moveDestinations?: Item[]
 }) {
   const listRef = useRef<HTMLUListElement>(null)
   const [addTaskFormVisible, setAddTaskFormVisible] = useState(false)
-
-  const dayIndicator = useRef(newDayIndicator)
-  if (dayIndicator.current !== newDayIndicator) {
-    dayIndicator.current = newDayIndicator
-    onNewDay()
-  }
 
   const showTaskForm = (event: MouseEvent | FocusEvent) => {
     event.stopPropagation()
