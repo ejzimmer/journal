@@ -5,7 +5,6 @@ import { TaskButton } from "./TaskButton"
 import { useEffect, useRef, useState } from "react"
 import { ItemDescription } from "./ItemDescription"
 import { AddTaskForm } from "./AddTaskForm"
-import { TaskList } from "."
 import { Box } from "@chakra-ui/react"
 import invariant from "tiny-invariant"
 import { combine } from "@atlaskit/pragmatic-drag-and-drop/combine"
@@ -180,7 +179,7 @@ export function Task({ id }: TaskProps) {
         )}
         {task.items?.length && (
           <Box paddingInlineStart="3em">
-            <TaskList taskIds={task.items} />
+            {/* <TaskList taskIds={task.items} /> */}
           </Box>
         )}
         {state.type === "is-dragging-over" && state.closestEdge ? (

@@ -29,7 +29,12 @@ export function DeleteTaskButton({ taskDescription, onDelete }: Props) {
   // Pass in a dummy task so we don't need to change the API of this component
   // to use the above hook. Replace this component with hook when practicable
   const { onClickDelete, ConfirmDeleteTask } = useDeleteTask(
-    { description: taskDescription, id: "", isComplete: false },
+    {
+      description: taskDescription,
+      id: "",
+      isComplete: false,
+      lastUpdated: new Date().getTime(),
+    },
     onDelete
   )
   return (

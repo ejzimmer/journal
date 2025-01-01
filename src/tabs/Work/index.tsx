@@ -61,7 +61,7 @@ export function Work() {
     }, hoursToMilliseconds(1))
 
     return () => clearInterval(interval)
-  }, [])
+  }, [addItemToList, deleteItemFromList, lists])
 
   if (listsLoading) {
     return (
