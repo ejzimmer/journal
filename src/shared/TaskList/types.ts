@@ -5,4 +5,5 @@ export type Item = {
   items?: Item[]
   containedBy?: string[]
   lastUpdated: number
+  dueDate?: number
 }

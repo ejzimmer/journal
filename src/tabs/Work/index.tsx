@@ -1,9 +1,12 @@
-// - can add due dates to tasks
+// - can edit due dates on tasks
 // can reorder tasks
 // can drag and drop between lists
 // add subtasks
 // dragging and dropping between parent/child lists - use horizontal position to determine which list to drop into
-// keep all done tasks, just don't show them. have a way to show done tasks & clear before a certain date (so i can use them for performance reviews)
+// colour code tasks
+// add button to clear done tasks
+// fix fonts in menu popout
+// make add task form go away properly
 
 import { useCallback, useContext, useEffect } from "react"
 import { FirebaseContext } from "../../shared/FirebaseContext"
@@ -93,10 +96,11 @@ export function Work() {
             onChangeListName={(newName: string) =>
               onUpdateListName(newName, list)
             }
-            onAddTask={(description: string) => {
+            onAddTask={(description: string, dueDate?: Date) => {
               addItemToList(`${WORK_KEY}/${list.id}/items`, {
                 description,
                 isComplete: false,
+                dueDate: dueDate?.getTime(),
               })
             }}
             onChangeTask={(task: Item) => {

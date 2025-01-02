@@ -17,7 +17,7 @@ export function TaskList({
 }: {
   list: Item
   onChangeListName: (name: string) => void
-  onAddTask: (description: string) => void
+  onAddTask: (description: string, dueDate?: Date) => void
   onChangeTask: (task: Item) => void
   onDeleteTask: (task: Item) => void
   onMoveTask: (task: Item, destination: Item) => void

@@ -48,7 +48,13 @@ export function EditableText({ children, onChange, label, ...props }: Props) {
       paddingBlock="0"
     />
   ) : (
-    <Box {...props} tabIndex={0} onFocus={startEditing} onClick={startEditing}>
+    <Box
+      display="inline-block"
+      {...props}
+      tabIndex={0}
+      onFocus={startEditing}
+      onClick={startEditing}
+    >
       {children}
     </Box>
   )

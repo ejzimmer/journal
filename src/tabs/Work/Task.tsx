@@ -1,4 +1,5 @@
 import {
+  Badge,
   Box,
   Button,
   Checkbox,
@@ -6,10 +7,12 @@ import {
   MenuButton,
   MenuItem,
   MenuList,
+  Tag,
 } from "@chakra-ui/react"
 import { useDeleteTask } from "../../shared/TaskList/DeleteTaskButton"
 import { ItemDescription } from "../../shared/TaskList/ItemDescription"
 import { Item } from "../../shared/TaskList/types"
+import { format } from "date-fns"
 
 export function Task({
   task,
@@ -45,6 +48,18 @@ export function Task({
           onChange={(description) => onChange({ ...task, description })}
           isDone={task.isComplete}
         />
+        {task.dueDate && (
+          <Badge
+            fontSize=".6em"
+            fontFamily="sans-serif"
+            padding="8px 4px"
+            variant="outline"
+            marginInlineStart="8px"
+            colorScheme="red"
+          >
+            {format(task.dueDate, "dd MMM")}
+          </Badge>
+        )}
       </Box>
       {actions?.length && (
         <Menu>
