@@ -1,4 +1,4 @@
-// - can edit due dates on tasks
+// - can add due dates to tasks
 // can reorder tasks
 // can drag and drop between lists
 // add subtasks
@@ -71,6 +71,7 @@ export function Work() {
   }, [lists, addItemToList, deleteItemFromList])
 
   useEffect(() => {
+    onUpdate()
     const interval = setInterval(onUpdate, hoursToMilliseconds(1))
 
     return () => clearInterval(interval)

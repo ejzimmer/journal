@@ -36,7 +36,7 @@ export function AddTaskForm({
 
     onSubmit(
       description,
-      dueDate ? parse(dueDate, "yyyy-mm-dd", new Date()) : undefined
+      dueDate ? parse(dueDate, "yyyy-MM-dd", new Date()) : undefined
     )
     formRef.current.reset()
   }
