@@ -21,7 +21,7 @@ export function AddTaskForm({
   const descriptionId = useId()
   const dueDateId = useId()
 
-  const addSubtask = (event: FormEvent) => {
+  const handleSubmit = (event: FormEvent) => {
     event.preventDefault()
 
     const controls = formRef.current?.elements
@@ -66,7 +66,7 @@ export function AddTaskForm({
       outline="2px dashed"
       paddingBlock="4px"
       paddingInline="8px"
-      onSubmit={addSubtask}
+      onSubmit={handleSubmit}
       marginBlockStart="40px"
     >
       <Textarea
@@ -85,7 +85,7 @@ export function AddTaskForm({
         noOfLines={2}
         onKeyDown={(event) => {
           if (event.key === "Enter") {
-            addSubtask(event)
+            handleSubmit(event)
           }
         }}
       />

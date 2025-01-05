@@ -10,12 +10,23 @@
 
 import { useCallback, useContext, useEffect } from "react"
 import { FirebaseContext } from "../../shared/FirebaseContext"
-import { Box, HStack, Skeleton, Stack } from "@chakra-ui/react"
+import {
+  Box,
+  Button,
+  HStack,
+  Menu,
+  MenuButton,
+  MenuItem,
+  MenuList,
+  Skeleton,
+  Stack,
+} from "@chakra-ui/react"
 import { Item } from "../../shared/TaskList/types"
 import { NewListModal } from "./NewListModal"
 import { useConfirmDelete } from "./useConfirmDelete"
 import { TaskList } from "./TaskList"
 import { hoursToMilliseconds, isSameDay } from "date-fns"
+import { useDeleteTask } from "../../shared/TaskList/DeleteTaskButton"
 
 const WORK_KEY = "work"
 
@@ -98,23 +109,34 @@ export function Work() {
               onUpdateListName(newName, list)
             }
             onAddTask={(description: string, dueDate?: Date) => {
-              addItemToList(`${WORK_KEY}/${list.id}/items`, {
+              const item: Partial<Item> = {
                 description,
                 isComplete: false,
-                dueDate: dueDate?.getTime(),
-              })
+              }
+              if (dueDate) {
+                item.dueDate = dueDate?.getTime()
+              }
+              addItemToList(`${WORK_KEY}/${list.id}/items`, item)
             }}
             onChangeTask={(task: Item) => {
               updateItemInList(`${WORK_KEY}/${list.id}/items`, task)
             }}
-            onDeleteTask={(task: Item) =>
-              deleteItemFromList(`${WORK_KEY}/${list.id}/items`, task)
-            }
-            onMoveTask={(task: Item, destination: Item) => {
-              addItemToList(`${WORK_KEY}/${destination.id}/items`, task)
-              deleteItemFromList(`${WORK_KEY}/${list.id}/items`, task)
-            }}
-            moveDestinations={lists.filter(({ id }) => id !== list.id)}
+            menu={({ task }) => (
+              <TaskMenu
+                task={task}
+                moveDestinations={lists.filter(({ id }) => id !== list.id)}
+                onDelete={() =>
+                  deleteItemFromList(`${WORK_KEY}/${list.id}/items`, task)
+                }
+                onMove={(destination: Item) => {
+                  addItemToList(`${WORK_KEY}/${destination.id}/items`, task)
+                  deleteItemFromList(`${WORK_KEY}/${list.id}/items`, task)
+                }}
+                onChange={(task: Item) =>
+                  updateItemInList(`${WORK_KEY}/${list.id}/items`, task)
+                }
+              />
+            )}
           />
         ))
       ) : (
@@ -125,5 +147,64 @@ export function Work() {
       </Box>
       <DeleteListConfirmation />
     </HStack>
+  )
+}
+
+function TaskMenu({
+  task,
+  moveDestinations,
+  onDelete,
+  onChange,
+  onMove,
+}: {
+  task: Item
+  moveDestinations: Item[]
+  onChange: (updatedTask: Item) => void
+  onDelete: () => void
+  onMove: (destination: Item) => void
+}) {
+  const { onClickDelete, ConfirmDeleteTask } = useDeleteTask(task, onDelete)
+
+  return (
+    <Menu>
+      <MenuButton
+        as={Button}
+        variant="ghost"
+        minWidth="24px"
+        height="24px"
+        padding="3px"
+        alignSelf="center"
+        _hover={{
+          background: "hsl(200 70% 90%)",
+        }}
+      >
+        <svg viewBox="0 0 30 10">
+          <circle cx="5" cy="5" r="2.5" />
+          <circle cx="15" cy="5" r="2.5" />
+          <circle cx="25" cy="5" r="2.5" />
+        </svg>
+      </MenuButton>
+      <MenuList fontFamily="Nimbus Sans" fontSize="16px">
+        {moveDestinations.map((destination) => (
+          <MenuItem
+            key={destination.description}
+            onClick={() => onMove(destination)}
+          >
+            ➡️ {destination.description}
+          </MenuItem>
+        ))}
+        <MenuItem key="delete_task" onClick={onClickDelete}>
+          🗑️ Delete <ConfirmDeleteTask />
+        </MenuItem>
+        {!task.dueDate && (
+          <MenuItem
+            key="add_due_date"
+            onClick={() => onChange({ ...task, dueDate: new Date().getTime() })}
+          >
+            📅 Add due date
+          </MenuItem>
+        )}
+      </MenuList>
+    </Menu>
   )
 }

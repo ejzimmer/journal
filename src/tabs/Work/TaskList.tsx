@@ -11,17 +11,13 @@ export function TaskList({
   onChangeListName,
   onAddTask,
   onChangeTask,
-  onDeleteTask,
-  onMoveTask,
-  moveDestinations,
+  menu: Menu,
 }: {
   list: Item
   onChangeListName: (name: string) => void
   onAddTask: (description: string, dueDate?: Date) => void
   onChangeTask: (task: Item) => void
-  onDeleteTask: (task: Item) => void
-  onMoveTask: (task: Item, destination: Item) => void
-  moveDestinations?: Item[]
+  menu?: React.FC<{ task: Item }>
 }) {
   const listRef = useRef<HTMLUListElement>(null)
   const [addTaskFormVisible, setAddTaskFormVisible] = useState(false)
@@ -84,11 +80,7 @@ export function TaskList({
               <Task
                 task={item}
                 onChange={onChangeTask}
-                onDelete={() => onDeleteTask(item)}
-                actions={moveDestinations?.map((destination) => ({
-                  label: `➡️ ${destination.description}`,
-                  action: () => onMoveTask(item, destination),
-                }))}
+                menu={() => (Menu ? <Menu task={item} /> : null)}
               />
             </chakra.li>
           ))}
