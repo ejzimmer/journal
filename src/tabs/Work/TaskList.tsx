@@ -1,27 +1,29 @@
 import { Box, Heading } from "@chakra-ui/react"
-import { useState, MouseEvent, FocusEvent, useRef } from "react"
+import { useState, MouseEvent, FocusEvent, useRef, useEffect } from "react"
 import { EditableText } from "../../shared/controls/EditableText"
 import { AddTaskForm } from "../../shared/TaskList/AddTaskForm"
 import { Item } from "../../shared/TaskList/types"
 import { chakra } from "@chakra-ui/react"
 import { Task } from "./Task"
+import { monitorForElements } from "@atlaskit/pragmatic-drag-and-drop/element/adapter"
+import { extractClosestEdge } from "@atlaskit/pragmatic-drag-and-drop-hitbox/closest-edge"
+import { reorderWithEdge } from "@atlaskit/pragmatic-drag-and-drop-hitbox/util/reorder-with-edge"
+import { isTask } from "./drag-utils"
 
 export function TaskList({
   list,
   onChangeListName,
   onAddTask,
   onChangeTask,
-  onDeleteTask,
-  onMoveTask,
-  moveDestinations,
+  onReorderTasks,
+  menu: Menu,
 }: {
   list: Item
   onChangeListName: (name: string) => void
-  onAddTask: (description: string) => void
+  onAddTask: (description: string, dueDate?: Date) => void
   onChangeTask: (task: Item) => void
-  onDeleteTask: (task: Item) => void
-  onMoveTask: (task: Item, destination: Item) => void
-  moveDestinations?: Item[]
+  onReorderTasks: (tasks: Item[]) => void
+  menu?: React.FC<{ task: Item }>
 }) {
   const listRef = useRef<HTMLUListElement>(null)
   const [addTaskFormVisible, setAddTaskFormVisible] = useState(false)
@@ -32,6 +34,57 @@ export function TaskList({
       setAddTaskFormVisible(true)
     }
   }
+
+  useEffect(() => {
+    return monitorForElements({
+      canMonitor({ source }) {
+        return isTask(source.data)
+      },
+      onDrop({ location, source }) {
+        const target = location.current.dropTargets[0]
+        if (!target || !list.items) {
+          return
+        }
+
+        const sourceData = source.data
+        const targetData = target.data
+
+        if (!isTask(sourceData) || !isTask(targetData)) {
+          return
+        }
+
+        console.log("sourceData", sourceData)
+
+        const indexOfSource = Object.values(list.items).findIndex(
+          (task) => task.id === sourceData.taskId
+        )
+        const indexOfTarget = Object.values(list.items).findIndex(
+          (task) => task.id === targetData.taskId
+        )
+
+        if (indexOfTarget < 0 || indexOfSource < 0) {
+          return
+        }
+
+        const closestEdgeOfTarget = extractClosestEdge(targetData)
+        onReorderTasks(
+          reorderWithEdge({
+            list: Object.values(list.items),
+            startIndex: indexOfSource,
+            indexOfTarget,
+            closestEdgeOfTarget,
+            axis: "vertical",
+          })
+        )
+      },
+    })
+  }, [list, onReorderTasks])
+
+  const sortedList =
+    list.items &&
+    Object.values(list.items).toSorted(
+      (a, b) => (a.order ?? Infinity) - (b.order ?? Infinity)
+    )
 
   return (
     <Box
@@ -78,20 +131,15 @@ export function TaskList({
         paddingInlineStart="calc(var(--margin-width) + 8px)"
         background="repeating-linear-gradient(transparent, transparent var(--line-height), var(--line-colour) var(--line-height), var(--line-colour) calc(var(--line-height) + 1px), transparent calc(var(--line-height) + 1px))"
       >
-        {list.items &&
-          Object.values(list.items).map((item) => (
-            <chakra.li key={item.id} _last={{ marginBlockEnd: "40px" }}>
-              <Task
-                task={item}
-                onChange={onChangeTask}
-                onDelete={() => onDeleteTask(item)}
-                actions={moveDestinations?.map((destination) => ({
-                  label: `➡️ ${destination.description}`,
-                  action: () => onMoveTask(item, destination),
-                }))}
-              />
-            </chakra.li>
-          ))}
+        {sortedList?.map((item) => (
+          <chakra.li key={item.id} _last={{ marginBlockEnd: "40px" }}>
+            <Task
+              task={item}
+              onChange={onChangeTask}
+              menu={() => (Menu ? <Menu task={item} /> : null)}
+            />
+          </chakra.li>
+        ))}
         {addTaskFormVisible && (
           <chakra.li marginBlockStart="12px">
             <AddTaskForm

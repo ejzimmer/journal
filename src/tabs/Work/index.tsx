@@ -1,11 +1,12 @@
-// - can add due dates to tasks
-// can reorder tasks
 // can drag and drop between lists
 // add subtasks
 // dragging and dropping between parent/child lists - use horizontal position to determine which list to drop into
-// keep all done tasks, just don't show them. have a way to show done tasks & clear before a certain date (so i can use them for performance reviews)
+// colour code tasks
+// add button to clear done tasks
+// fix fonts in menu popout
+// make add task form go away properly
 
-import { useContext, useEffect } from "react"
+import { useCallback, useContext, useEffect } from "react"
 import { FirebaseContext } from "../../shared/FirebaseContext"
 import { Box, HStack, Skeleton, Stack } from "@chakra-ui/react"
 import { Item } from "../../shared/TaskList/types"
@@ -13,6 +14,7 @@ import { NewListModal } from "./NewListModal"
 import { useConfirmDelete } from "./useConfirmDelete"
 import { TaskList } from "./TaskList"
 import { hoursToMilliseconds, isSameDay } from "date-fns"
+import { TaskMenu } from "./TaskMenu"
 
 const WORK_KEY = "work"
 
@@ -37,31 +39,42 @@ export function Work() {
   const { confirmDelete, DeleteListConfirmation } =
     useConfirmDelete(onDeleteList)
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      const today = new Date()
-      const todayList = lists?.find((list) => list.description === "Today")
-      const tomorrowList = lists?.find(
-        (list) => list.description === "Tomorrow"
-      )
-      lists?.forEach((list) => {
-        list.items?.forEach((task) => {
-          if (task.isComplete && !isSameDay(today, task.lastUpdated)) {
-            deleteItemFromList(`${WORK_KEY}/${list.id}/items`, task)
-          } else if (
-            list === tomorrowList &&
-            todayList &&
-            !isSameDay(today, task.lastUpdated)
-          ) {
-            addItemToList(`${WORK_KEY}/${todayList.id}/items`, task)
-            deleteItemFromList(`${WORK_KEY}/${list.id}/items`, task)
-          }
-        })
+  const onUpdate = useCallback(() => {
+    const today = new Date()
+    const todayList = lists?.find((list) => list.description === "Today")
+    const tomorrowList = lists?.find((list) => list.description === "Tomorrow")
+    const doneList = lists?.find((list) => list.description === "Done")
+    if (!todayList || !doneList) {
+      return
+    }
+
+    lists?.forEach((list) => {
+      if (list === doneList || !list.items) {
+        return
+      }
+
+      Object.values(list.items).forEach((task) => {
+        if (isSameDay(today, task.lastUpdated)) {
+          return
+        }
+
+        if (task.isComplete) {
+          addItemToList(`${WORK_KEY}/${doneList.id}/items`, task)
+          deleteItemFromList(`${WORK_KEY}/${list.id}/items`, task)
+        } else if (list === tomorrowList) {
+          addItemToList(`${WORK_KEY}/${todayList.id}/items`, task)
+          deleteItemFromList(`${WORK_KEY}/${list.id}/items`, task)
+        }
       })
-    }, hoursToMilliseconds(1))
+    })
+  }, [lists, addItemToList, deleteItemFromList])
+
+  useEffect(() => {
+    onUpdate()
+    const interval = setInterval(onUpdate, hoursToMilliseconds(1))
 
     return () => clearInterval(interval)
-  }, [addItemToList, deleteItemFromList, lists])
+  }, [onUpdate])
 
   if (listsLoading) {
     return (
@@ -83,23 +96,47 @@ export function Work() {
             onChangeListName={(newName: string) =>
               onUpdateListName(newName, list)
             }
-            onAddTask={(description: string) => {
-              addItemToList(`${WORK_KEY}/${list.id}/items`, {
+            onAddTask={(description: string, dueDate?: Date) => {
+              const item: Partial<Item> = {
                 description,
                 isComplete: false,
-              })
+              }
+              if (dueDate) {
+                item.dueDate = dueDate?.getTime()
+              }
+              addItemToList(`${WORK_KEY}/${list.id}/items`, item)
             }}
             onChangeTask={(task: Item) => {
               updateItemInList(`${WORK_KEY}/${list.id}/items`, task)
             }}
-            onDeleteTask={(task: Item) =>
-              deleteItemFromList(`${WORK_KEY}/${list.id}/items`, task)
-            }
-            onMoveTask={(task: Item, destination: Item) => {
-              addItemToList(`${WORK_KEY}/${destination.id}/items`, task)
-              deleteItemFromList(`${WORK_KEY}/${list.id}/items`, task)
+            onReorderTasks={(tasks: Item[]) => {
+              updateItemInList(WORK_KEY, {
+                ...list,
+                items: tasks.reduce(
+                  (items, task, index) => ({
+                    ...items,
+                    [task.id]: { ...task, order: index },
+                  }),
+                  {}
+                ),
+              })
             }}
-            moveDestinations={lists.filter(({ id }) => id !== list.id)}
+            menu={({ task }) => (
+              <TaskMenu
+                task={task}
+                moveDestinations={lists.filter(({ id }) => id !== list.id)}
+                onDelete={() =>
+                  deleteItemFromList(`${WORK_KEY}/${list.id}/items`, task)
+                }
+                onMove={(destination: Item) => {
+                  addItemToList(`${WORK_KEY}/${destination.id}/items`, task)
+                  deleteItemFromList(`${WORK_KEY}/${list.id}/items`, task)
+                }}
+                onChange={(task: Item) =>
+                  updateItemInList(`${WORK_KEY}/${list.id}/items`, task)
+                }
+              />
+            )}
           />
         ))
       ) : (

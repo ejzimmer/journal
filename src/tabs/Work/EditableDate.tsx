@@ -1,13 +1,13 @@
-import { Box, BoxProps, Input } from "@chakra-ui/react"
+import { Badge, BoxProps, Input } from "@chakra-ui/react"
+import { format, parse } from "date-fns"
 import { useEffect, useRef, useState } from "react"
 
-interface Props extends Omit<BoxProps, "onChange"> {
-  onChange: (text: string) => void
-  label: string
-  children: string
+interface Props extends Omit<BoxProps, "onChange" | "children"> {
+  onChange: (date: number) => void
+  value: number
 }
 
-export function EditableText({ children, onChange, label, ...props }: Props) {
+export function EditableDate({ onChange, value, ...props }: Props) {
   const [isEditing, setIsEditing] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
   const startEditing = () => {
@@ -22,9 +22,10 @@ export function EditableText({ children, onChange, label, ...props }: Props) {
   }, [isEditing, inputRef])
 
   const handleSubmit = () => {
-    const value = inputRef.current?.value ?? ""
-    if (value !== children) {
-      onChange(value)
+    const inputValue = inputRef.current?.value ?? ""
+    const date = parse(inputValue, "yyyy-MM-dd", new Date()).getTime()
+    if (date !== value) {
+      onChange(date)
     }
 
     stopEditing()
@@ -32,6 +33,7 @@ export function EditableText({ children, onChange, label, ...props }: Props) {
 
   return isEditing ? (
     <Input
+      type="date"
       ref={inputRef}
       onBlur={handleSubmit}
       onKeyDown={(event) => {
@@ -39,8 +41,8 @@ export function EditableText({ children, onChange, label, ...props }: Props) {
           handleSubmit()
         }
       }}
-      defaultValue={children}
-      aria-label={label}
+      defaultValue={value}
+      aria-label="Due date"
       border="none"
       fontSize="inherit"
       height="unset"
@@ -48,14 +50,19 @@ export function EditableText({ children, onChange, label, ...props }: Props) {
       paddingBlock="0"
     />
   ) : (
-    <Box
-      display="inline-block"
+    <Badge
+      fontSize=".6em"
+      fontFamily="sans-serif"
+      padding="8px 4px"
+      variant="outline"
+      marginInlineStart="8px"
+      colorScheme="red"
       {...props}
       tabIndex={0}
       onFocus={startEditing}
       onClick={startEditing}
     >
-      {children}
-    </Box>
+      {format(value, "dd MMM")}
+    </Badge>
   )
 }
