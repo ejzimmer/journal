@@ -139,7 +139,6 @@ export function AddTaskForm({
 
 // need to store labels in their own place in db
 // show all existing labels in dropdown
-// delete labels
 // add new labels to existing task
 // make labels on different tasks different colours
 
@@ -149,6 +148,12 @@ function Combobox({ onSubmit }: { onSubmit: (labels: Label[]) => void }) {
   const [values, setValues] = useState<Label[]>([])
 
   const [inputPadding, setInputPadding] = useState(0)
+
+  const handleDeleteLabel = (label: Label) => {
+    setValues(
+      values.filter((v) => v.text !== label.text && v.colour !== label.colour)
+    )
+  }
 
   useEffect(() => {
     if (!valuesContainerRef.current) return
@@ -167,8 +172,13 @@ function Combobox({ onSubmit }: { onSubmit: (labels: Label[]) => void }) {
         insetInline="4px"
         width="fit-content"
       >
-        {values.map(({ text, colour }, index) => (
-          <Tag key={text} text={text} colour={colour} />
+        {values.map(({ text, colour }) => (
+          <Tag
+            key={text}
+            text={text}
+            colour={colour}
+            onDelete={() => handleDeleteLabel({ text, colour })}
+          />
         ))}
       </Flex>
       <Input
@@ -187,6 +197,8 @@ function Combobox({ onSubmit }: { onSubmit: (labels: Label[]) => void }) {
             }
             setValues([...values, newValue])
             setCurrentValue("")
+
+            return
           }
 
           if (event.key === "Enter" && values.length) {

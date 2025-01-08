@@ -157,7 +157,18 @@ export function Task({
             isDone={task.isComplete}
           />
           {task.labels?.map(({ text, colour }) => (
-            <Tag text={text} colour={colour} />
+            <Tag
+              text={text}
+              colour={colour}
+              onDelete={() =>
+                onChange({
+                  ...task,
+                  labels: task.labels?.filter(
+                    (l) => l.text !== text && l.colour !== colour
+                  ),
+                })
+              }
+            />
           ))}
           {task.dueDate && (
             <EditableDate

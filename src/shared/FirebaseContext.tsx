@@ -69,7 +69,6 @@ export function createFirebaseContext(database: Database): ContextType {
       })
     },
     updateItemInList: (listName, item) => {
-      console.log(item)
       if (item.id) {
         const reference = ref(database, `${listName}/${item.id}`)
         set(reference, { ...item, lastUpdated: new Date().getTime() })
