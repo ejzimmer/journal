@@ -18,6 +18,7 @@ import {
 } from "@atlaskit/pragmatic-drag-and-drop-hitbox/closest-edge"
 import { createPortal } from "react-dom"
 import { getTaskData, isTask } from "./drag-utils"
+import { Tag } from "./Tag"
 
 type DraggingState =
   | { type: "idle" }
@@ -143,12 +144,21 @@ export function Task({
           }}
           colorScheme="gray"
         />
-        <Box flexGrow="1" marginInlineEnd="12px">
+        <Box
+          display="flex"
+          flexGrow="1"
+          marginInlineEnd="12px"
+          gap="8px"
+          alignItems="center"
+        >
           <ItemDescription
             description={task.description}
             onChange={(description) => onChange({ ...task, description })}
             isDone={task.isComplete}
           />
+          {task.labels?.map(({ text, colour }) => (
+            <Tag text={text} colour={colour} />
+          ))}
           {task.dueDate && (
             <EditableDate
               value={task.dueDate}

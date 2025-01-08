@@ -1,3 +1,8 @@
+export type Label = {
+  text: string
+  colour: string
+}
+
 export type Item = {
   id: string
   description: string
@@ -7,4 +12,5 @@ export type Item = {
   lastUpdated: number
   dueDate?: number
   order?: number
+  labels?: Label[]
 }

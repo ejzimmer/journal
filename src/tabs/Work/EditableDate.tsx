@@ -55,7 +55,6 @@ export function EditableDate({ onChange, value, ...props }: Props) {
       fontFamily="sans-serif"
       padding="8px 4px"
       variant="outline"
-      marginInlineStart="8px"
       colorScheme="red"
       {...props}
       tabIndex={0}

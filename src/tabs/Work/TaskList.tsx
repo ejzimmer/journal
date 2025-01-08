@@ -20,7 +20,7 @@ export function TaskList({
 }: {
   list: Item
   onChangeListName: (name: string) => void
-  onAddTask: (description: string, dueDate?: Date) => void
+  onAddTask: (task: Partial<Item>) => void
   onChangeTask: (task: Item) => void
   onReorderTasks: (tasks: Item[]) => void
   menu?: React.FC<{ task: Item }>

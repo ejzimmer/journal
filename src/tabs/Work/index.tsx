@@ -1,10 +1,10 @@
-// can drag and drop between lists
-// add subtasks
-// dragging and dropping between parent/child lists - use horizontal position to determine which list to drop into
 // colour code tasks
 // add button to clear done tasks
 // fix fonts in menu popout
 // make add task form go away properly
+// can drag and drop between lists
+// add subtasks
+// dragging and dropping between parent/child lists - use horizontal position to determine which list to drop into
 
 import { useCallback, useContext, useEffect } from "react"
 import { FirebaseContext } from "../../shared/FirebaseContext"
@@ -96,13 +96,16 @@ export function Work() {
             onChangeListName={(newName: string) =>
               onUpdateListName(newName, list)
             }
-            onAddTask={(description: string, dueDate?: Date) => {
+            onAddTask={({ description, dueDate, labels }: Partial<Item>) => {
               const item: Partial<Item> = {
                 description,
                 isComplete: false,
               }
-              if (dueDate) {
-                item.dueDate = dueDate?.getTime()
+              if (typeof dueDate === "number") {
+                item.dueDate = dueDate
+              }
+              if (labels?.length) {
+                item.labels = labels
               }
               addItemToList(`${WORK_KEY}/${list.id}/items`, item)
             }}
