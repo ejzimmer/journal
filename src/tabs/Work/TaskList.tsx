@@ -35,6 +35,12 @@ export function TaskList({
     }
   }
 
+  const sortedList =
+    list.items &&
+    Object.values(list.items).toSorted(
+      (a, b) => (a.order ?? Infinity) - (b.order ?? Infinity)
+    )
+
   useEffect(() => {
     return monitorForElements({
       canMonitor({ source }) {
@@ -42,7 +48,7 @@ export function TaskList({
       },
       onDrop({ location, source }) {
         const target = location.current.dropTargets[0]
-        if (!target || !list.items) {
+        if (!target || !sortedList) {
           return
         }
 
@@ -53,12 +59,10 @@ export function TaskList({
           return
         }
 
-        console.log("sourceData", sourceData)
-
-        const indexOfSource = Object.values(list.items).findIndex(
+        const indexOfSource = sortedList.findIndex(
           (task) => task.id === sourceData.taskId
         )
-        const indexOfTarget = Object.values(list.items).findIndex(
+        const indexOfTarget = sortedList.findIndex(
           (task) => task.id === targetData.taskId
         )
 
@@ -69,7 +73,7 @@ export function TaskList({
         const closestEdgeOfTarget = extractClosestEdge(targetData)
         onReorderTasks(
           reorderWithEdge({
-            list: Object.values(list.items),
+            list: sortedList,
             startIndex: indexOfSource,
             indexOfTarget,
             closestEdgeOfTarget,
@@ -78,13 +82,7 @@ export function TaskList({
         )
       },
     })
-  }, [list, onReorderTasks])
-
-  const sortedList =
-    list.items &&
-    Object.values(list.items).toSorted(
-      (a, b) => (a.order ?? Infinity) - (b.order ?? Infinity)
-    )
+  }, [list, onReorderTasks, sortedList])
 
   return (
     <Box
