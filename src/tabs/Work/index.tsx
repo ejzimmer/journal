@@ -135,6 +135,23 @@ export function Work() {
                 onChange={(task: Item) =>
                   updateItemInList(`${WORK_KEY}/${list.id}/items`, task)
                 }
+                onMoveToTop={() => {
+                  if (!list.items) return
+
+                  const resortedList = Object.fromEntries(
+                    Object.entries(list.items).map(([id, item]) => {
+                      if (id !== task.id) {
+                        return [
+                          id,
+                          { ...item, order: (item.order ?? Infinity) + 1 },
+                        ]
+                      } else {
+                        return [id, { ...item, order: 0 }]
+                      }
+                    })
+                  )
+                  updateItemInList(WORK_KEY, { ...list, items: resortedList })
+                }}
               />
             )}
           />

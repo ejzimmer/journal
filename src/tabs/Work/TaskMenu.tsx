@@ -8,12 +8,14 @@ export function TaskMenu({
   onDelete,
   onChange,
   onMove,
+  onMoveToTop,
 }: {
   task: Item
   moveDestinations: Item[]
   onChange: (updatedTask: Item) => void
   onDelete: () => void
   onMove: (destination: Item) => void
+  onMoveToTop: () => void
 }) {
   const { onClickDelete, ConfirmDeleteTask } = useDeleteTask(task, onDelete)
 
@@ -37,6 +39,9 @@ export function TaskMenu({
         </svg>
       </MenuButton>
       <MenuList fontFamily="sans-serif" fontSize="16px">
+        <MenuItem key="move_to_top" onClick={onMoveToTop}>
+          ⬆️ Move to top
+        </MenuItem>
         {moveDestinations.map((destination) => (
           <MenuItem
             key={destination.description}
