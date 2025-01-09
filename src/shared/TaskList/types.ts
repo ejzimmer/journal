@@ -12,5 +12,5 @@ export type Item = {
   lastUpdated: number
   dueDate?: number
   order?: number
-  labels?: Label[]
+  labels?: string[]
 }

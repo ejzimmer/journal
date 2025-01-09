@@ -9,7 +9,7 @@ interface Props {
 }
 
 export function NewItem({ list, showFrequency }: Props) {
-  const { addItemToList } = useContext(FirebaseContext)
+  const { addItem: addItemToList } = useContext(FirebaseContext)
   const [description, setDescription] = useState("")
   const [type, setType] = useState<Category>("🧹")
   const [frequency, setFrequency] = useState("一回")

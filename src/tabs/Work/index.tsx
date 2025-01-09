@@ -9,7 +9,7 @@
 import { useCallback, useContext, useEffect } from "react"
 import { FirebaseContext } from "../../shared/FirebaseContext"
 import { Box, HStack, Skeleton, Stack } from "@chakra-ui/react"
-import { Item } from "../../shared/TaskList/types"
+import { Item, Label } from "../../shared/TaskList/types"
 import { NewListModal } from "./NewListModal"
 import { useConfirmDelete } from "./useConfirmDelete"
 import { TaskList } from "./TaskList"
@@ -19,36 +19,45 @@ import { TaskMenu } from "./TaskMenu"
 const WORK_KEY = "work"
 
 export function Work() {
-  const { addItemToList, useValue, updateItemInList, deleteItemFromList } =
-    useContext(FirebaseContext)
-  const { value: lists, loading: listsLoading } = useValue(WORK_KEY)
+  const context = useContext(FirebaseContext)
+  if (!context) {
+    throw new Error("Missing Firebase context provider")
+  }
+  const { addItem, useValue, updateItem, deleteItem } = context
+  const { value: lists, loading: listsLoading } = useValue<Item>(WORK_KEY)
+  const { value: labels } = useValue<Label>(`${WORK_KEY}/labels`)
 
   const onAddList = (listName: string) => {
-    addItemToList(WORK_KEY, { description: listName })
+    addItem(WORK_KEY, { description: listName })
   }
   const onUpdateListName = (newName: string, list: Item) => {
     if (!newName) {
       confirmDelete(list)
       return
     }
-    updateItemInList(WORK_KEY, { ...list, description: newName })
+    updateItem(WORK_KEY, { ...list, description: newName })
   }
   const onDeleteList = (list: Item) => {
-    deleteItemFromList(WORK_KEY, list)
+    deleteItem(WORK_KEY, list)
   }
   const { confirmDelete, DeleteListConfirmation } =
     useConfirmDelete(onDeleteList)
 
   const onUpdate = useCallback(() => {
     const today = new Date()
-    const todayList = lists?.find((list) => list.description === "Today")
-    const tomorrowList = lists?.find((list) => list.description === "Tomorrow")
-    const doneList = lists?.find((list) => list.description === "Done")
+    if (!lists) return
+
+    const listsAsList = Object.values(lists)
+    const todayList = listsAsList.find((list) => list.description === "Today")
+    const tomorrowList = listsAsList.find(
+      (list) => list.description === "Tomorrow"
+    )
+    const doneList = listsAsList.find((list) => list.description === "Done")
     if (!todayList || !doneList) {
       return
     }
 
-    lists?.forEach((list) => {
+    listsAsList.forEach((list) => {
       if (list === doneList || !list.items) {
         return
       }
@@ -59,15 +68,15 @@ export function Work() {
         }
 
         if (task.isComplete) {
-          addItemToList(`${WORK_KEY}/${doneList.id}/items`, task)
-          deleteItemFromList(`${WORK_KEY}/${list.id}/items`, task)
+          addItem(`${WORK_KEY}/${doneList.id}/items`, task)
+          deleteItem(`${WORK_KEY}/${list.id}/items`, task)
         } else if (list === tomorrowList) {
-          addItemToList(`${WORK_KEY}/${todayList.id}/items`, task)
-          deleteItemFromList(`${WORK_KEY}/${list.id}/items`, task)
+          addItem(`${WORK_KEY}/${todayList.id}/items`, task)
+          deleteItem(`${WORK_KEY}/${list.id}/items`, task)
         }
       })
     })
-  }, [lists, addItemToList, deleteItemFromList])
+  }, [lists, addItem, deleteItem])
 
   useEffect(() => {
     onUpdate()
@@ -93,10 +102,11 @@ export function Work() {
           <TaskList
             key={id}
             list={list}
+            labels={labels}
             onChangeListName={(newName: string) =>
               onUpdateListName(newName, list)
             }
-            onAddTask={({ description, dueDate, labels }: Partial<Item>) => {
+            onAddTask={({ description, dueDate, labels }) => {
               const item: Partial<Item> = {
                 description,
                 isComplete: false,
@@ -105,15 +115,18 @@ export function Work() {
                 item.dueDate = dueDate
               }
               if (labels?.length) {
-                item.labels = labels
+                const labelKeys = labels.map((label) =>
+                  addItem(`${WORK_KEY}/labels`, label)
+                )
+                item.labels = labelKeys.filter((key): key is string => !!key)
               }
-              addItemToList(`${WORK_KEY}/${list.id}/items`, item)
+              addItem(`${WORK_KEY}/${list.id}/items`, item)
             }}
             onChangeTask={(task: Item) => {
-              updateItemInList(`${WORK_KEY}/${list.id}/items`, task)
+              updateItem(`${WORK_KEY}/${list.id}/items`, task)
             }}
             onReorderTasks={(tasks: Item[]) => {
-              updateItemInList(WORK_KEY, {
+              updateItem(WORK_KEY, {
                 ...list,
                 items: tasks.reduce(
                   (items, task, index) => ({
@@ -127,16 +140,18 @@ export function Work() {
             menu={({ task }) => (
               <TaskMenu
                 task={task}
-                moveDestinations={lists.filter(({ id }) => id !== list.id)}
+                moveDestinations={Object.values(lists).filter(
+                  ({ id }) => id !== list.id
+                )}
                 onDelete={() =>
-                  deleteItemFromList(`${WORK_KEY}/${list.id}/items`, task)
+                  deleteItem(`${WORK_KEY}/${list.id}/items`, task)
                 }
                 onMove={(destination: Item) => {
-                  addItemToList(`${WORK_KEY}/${destination.id}/items`, task)
-                  deleteItemFromList(`${WORK_KEY}/${list.id}/items`, task)
+                  addItem(`${WORK_KEY}/${destination.id}/items`, task)
+                  deleteItem(`${WORK_KEY}/${list.id}/items`, task)
                 }}
                 onChange={(task: Item) =>
-                  updateItemInList(`${WORK_KEY}/${list.id}/items`, task)
+                  updateItem(`${WORK_KEY}/${list.id}/items`, task)
                 }
                 onMoveToTop={() => {
                   if (!list.items) return
@@ -153,7 +168,7 @@ export function Work() {
                       }
                     })
                   )
-                  updateItemInList(WORK_KEY, { ...list, items: resortedList })
+                  updateItem(WORK_KEY, { ...list, items: resortedList })
                 }}
               />
             )}

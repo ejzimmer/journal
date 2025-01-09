@@ -1,6 +1,6 @@
 import { Box, Checkbox } from "@chakra-ui/react"
 import { ItemDescription } from "../../shared/TaskList/ItemDescription"
-import { Item } from "../../shared/TaskList/types"
+import { Item, Label } from "../../shared/TaskList/types"
 import { EditableDate } from "./EditableDate"
 import { useEffect, useRef, useState } from "react"
 import invariant from "tiny-invariant"
@@ -28,10 +28,12 @@ const IDLE: DraggingState = { type: "idle" }
 
 export function Task({
   task,
+  availableLabels,
   onChange,
   menu: Menu,
 }: {
   task: Item
+  availableLabels?: Record<string, Label>
   onChange: (task: Item) => void
   menu?: React.FC
 }) {
@@ -156,20 +158,24 @@ export function Task({
             onChange={(description) => onChange({ ...task, description })}
             isDone={task.isComplete}
           />
-          {task.labels?.map(({ text, colour }) => (
-            <Tag
-              text={text}
-              colour={colour}
-              onDelete={() =>
-                onChange({
-                  ...task,
-                  labels: task.labels?.filter(
-                    (l) => l.text !== text && l.colour !== colour
-                  ),
-                })
-              }
-            />
-          ))}
+          {availableLabels &&
+            task.labels?.map((id) => {
+              const { text, colour } =
+                availableLabels[id as keyof typeof availableLabels]
+
+              return (
+                <Tag
+                  text={text}
+                  colour={colour}
+                  onDelete={() =>
+                    onChange({
+                      ...task,
+                      labels: task.labels?.filter((l) => l !== id),
+                    })
+                  }
+                />
+              )
+            })}
           {task.dueDate && (
             <EditableDate
               value={task.dueDate}

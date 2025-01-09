@@ -2,7 +2,7 @@ import { Box, Heading } from "@chakra-ui/react"
 import { useState, MouseEvent, FocusEvent, useRef, useEffect } from "react"
 import { EditableText } from "../../shared/controls/EditableText"
 import { AddTaskForm } from "../../shared/TaskList/AddTaskForm"
-import { Item } from "../../shared/TaskList/types"
+import { Item, Label } from "../../shared/TaskList/types"
 import { chakra } from "@chakra-ui/react"
 import { Task } from "./Task"
 import { monitorForElements } from "@atlaskit/pragmatic-drag-and-drop/element/adapter"
@@ -12,6 +12,7 @@ import { isTask } from "./drag-utils"
 
 export function TaskList({
   list,
+  labels,
   onChangeListName,
   onAddTask,
   onChangeTask,
@@ -19,8 +20,11 @@ export function TaskList({
   menu: Menu,
 }: {
   list: Item
+  labels?: Record<string, Label>
   onChangeListName: (name: string) => void
-  onAddTask: (task: Partial<Item>) => void
+  onAddTask: (
+    task: Omit<Partial<Item>, "labels"> & { labels?: Label[] }
+  ) => void
   onChangeTask: (task: Item) => void
   onReorderTasks: (tasks: Item[]) => void
   menu?: React.FC<{ task: Item }>
@@ -133,6 +137,7 @@ export function TaskList({
           <chakra.li key={item.id} _last={{ marginBlockEnd: "40px" }}>
             <Task
               task={item}
+              availableLabels={labels}
               onChange={onChangeTask}
               menu={() => (Menu ? <Menu task={item} /> : null)}
             />

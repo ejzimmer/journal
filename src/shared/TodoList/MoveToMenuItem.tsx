@@ -10,7 +10,8 @@ type Props = {
 }
 
 export function MoveToMenuItem({ source, target, item }: Props) {
-  const { addItemToList, deleteItemFromList } = useContext(FirebaseContext)
+  const { addItem: addItemToList, deleteItem: deleteItemFromList } =
+    useContext(FirebaseContext)
 
   const onClick = () => {
     addItemToList(target, item)

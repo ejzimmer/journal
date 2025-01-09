@@ -16,7 +16,11 @@ export function AddTaskForm({
   onSubmit,
   onCancel,
 }: {
-  onSubmit: (task: Partial<Item>) => void
+  onSubmit: (
+    task: Omit<Partial<Item>, "labels"> & {
+      labels?: Label[]
+    }
+  ) => void
   onCancel: (event?: React.MouseEvent) => void
 }) {
   const formRef = useRef<HTMLFormElement>(null)
@@ -141,6 +145,7 @@ export function AddTaskForm({
 // show all existing labels in dropdown
 // add new labels to existing task
 // make labels on different tasks different colours
+// edit labels
 
 function Combobox({ onSubmit }: { onSubmit: (labels: Label[]) => void }) {
   const valuesContainerRef = useRef<HTMLDivElement>(null)
