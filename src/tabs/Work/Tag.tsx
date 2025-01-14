@@ -8,7 +8,7 @@ export function Tag({
 }: {
   text: string
   colour: string
-  onDelete: () => void
+  onDelete?: () => void
 }) {
   const [closeButtonVisible, setCloseButtonVisible] = useState(false)
   const showCloseButton = () => setCloseButtonVisible(true)
@@ -37,29 +37,31 @@ export function Tag({
       >
         {text}
       </Box>
-      <IconButton
-        aria-label={`Delete label ${text}`}
-        isRound
-        variant="outline"
-        icon={<XIcon />}
-        size="xs"
-        position="absolute"
-        insetInlineEnd={0}
-        insetBlockStart={0}
-        transform="translate(50%,-35%)"
-        color={colour}
-        padding="2px"
-        borderColor={colour}
-        backgroundColor="white"
-        _hover={{
-          borderColor: "white",
-          backgroundColor: colour,
-          color: "white",
-        }}
-        transition="all .2s"
-        opacity={closeButtonVisible ? 1 : 0}
-        onClick={onDelete}
-      />
+      {onDelete && (
+        <IconButton
+          aria-label={`Delete label ${text}`}
+          isRound
+          variant="outline"
+          icon={<XIcon />}
+          size="xs"
+          position="absolute"
+          insetInlineEnd={0}
+          insetBlockStart={0}
+          transform="translate(50%,-35%)"
+          color={colour}
+          padding="2px"
+          borderColor={colour}
+          backgroundColor="white"
+          _hover={{
+            borderColor: "white",
+            backgroundColor: colour,
+            color: "white",
+          }}
+          transition="all .2s"
+          opacity={closeButtonVisible ? 1 : 0}
+          onClick={onDelete}
+        />
+      )}
     </Box>
   )
 }

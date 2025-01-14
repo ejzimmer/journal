@@ -150,6 +150,7 @@ export function TaskList({
               onCancel={() => {
                 setAddTaskFormVisible(false)
               }}
+              labels={labels ? Object.values(labels) : []}
             />
           </chakra.li>
         )}

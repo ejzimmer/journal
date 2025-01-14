@@ -4,6 +4,9 @@ import {
   FormControl,
   FormLabel,
   Input,
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
   Textarea,
 } from "@chakra-ui/react"
 import { useRef, FormEvent, useEffect, useId, useState } from "react"
@@ -15,6 +18,7 @@ import { Tag, TAG_COLOURS } from "../../tabs/Work/Tag"
 export function AddTaskForm({
   onSubmit,
   onCancel,
+  labels,
 }: {
   onSubmit: (
     task: Omit<Partial<Item>, "labels"> & {
@@ -22,6 +26,7 @@ export function AddTaskForm({
     }
   ) => void
   onCancel: (event?: React.MouseEvent) => void
+  labels: Label[]
 }) {
   const formRef = useRef<HTMLFormElement>(null)
   const descriptionId = useId()
@@ -123,7 +128,10 @@ export function AddTaskForm({
           <FormLabel fontSize="0.8em" fontWeight="bold" marginBlock="0">
             Labels
           </FormLabel>
-          <Combobox onSubmit={(labels) => (labelsRef.current = labels)} />
+          <Combobox
+            onSubmit={(labels) => (labelsRef.current = labels)}
+            options={labels}
+          />
         </FormControl>
         <TaskButton
           fontSize="1em"
@@ -141,43 +149,76 @@ export function AddTaskForm({
   )
 }
 
-// need to store labels in their own place in db
-// show all existing labels in dropdown
+// make list of labels look nice
+// choose labels from the list of existing labels
 // add new labels to existing task
 // make labels on different tasks different colours
 // edit labels
+// Migrate lists to /work/tasks and keep labels at /work/labels
+// split up this file and move it into work/
 
-function Combobox({ onSubmit }: { onSubmit: (labels: Label[]) => void }) {
-  const valuesContainerRef = useRef<HTMLDivElement>(null)
-  const [currentValue, setCurrentValue] = useState("")
-  const [values, setValues] = useState<Label[]>([])
+function Combobox({
+  onSubmit,
+  options,
+}: {
+  onSubmit: (labels: Label[]) => void
+  options: Label[]
+}) {
+  return (
+    <Popover autoFocus={false} placement="bottom-start">
+      <PopoverTrigger>
+        <Box width="100%">
+          <TagsInput onSubmit={onSubmit} />
+        </Box>
+      </PopoverTrigger>
+      <PopoverContent>
+        <ul>
+          {options.map(({ text, colour }) => (
+            <li key={text}>
+              <Tag text={text} colour={colour} />
+            </li>
+          ))}
+        </ul>
+      </PopoverContent>
+    </Popover>
+  )
+}
 
+type TagsInputProps = {
+  initialValue?: Label[]
+  onSubmit: (labels: Label[]) => void
+}
+
+function TagsInput({ initialValue, onSubmit }: TagsInputProps) {
+  const containerRef = useRef<HTMLDivElement>(null)
   const [inputPadding, setInputPadding] = useState(0)
-
-  const handleDeleteLabel = (label: Label) => {
-    setValues(
-      values.filter((v) => v.text !== label.text && v.colour !== label.colour)
-    )
-  }
+  const [inputValue, setInputValue] = useState("")
+  const [labels, setLabels] = useState<Label[]>(initialValue ?? [])
 
   useEffect(() => {
-    if (!valuesContainerRef.current) return
+    if (!containerRef.current) return
 
-    const valuesContainerWidth = valuesContainerRef.current.clientWidth
-    setInputPadding(valuesContainerWidth)
-  }, [values])
+    const containerWidth = containerRef.current.clientWidth
+    setInputPadding(containerWidth)
+  }, [labels])
+
+  const handleDeleteLabel = (label: Label) => {
+    setLabels(
+      labels.filter((v) => v.text !== label.text && v.colour !== label.colour)
+    )
+  }
 
   return (
     <Flex position="relative" flexGrow={1}>
       <Flex
-        ref={valuesContainerRef}
+        ref={containerRef}
         gap="2px"
         position="absolute"
         insetBlock="4px"
         insetInline="4px"
         width="fit-content"
       >
-        {values.map(({ text, colour }) => (
+        {labels.map(({ text, colour }) => (
           <Tag
             key={text}
             text={text}
@@ -189,8 +230,8 @@ function Combobox({ onSubmit }: { onSubmit: (labels: Label[]) => void }) {
       <Input
         paddingInlineStart={`${inputPadding + 4}px`}
         flexGrow={1}
-        value={currentValue}
-        onChange={(event) => setCurrentValue(event.target.value)}
+        value={inputValue}
+        onChange={(event) => setInputValue(event.target.value)}
         onKeyDown={(event) => {
           if (event.key === "Enter" && event.currentTarget.value) {
             event.stopPropagation()
@@ -198,21 +239,21 @@ function Combobox({ onSubmit }: { onSubmit: (labels: Label[]) => void }) {
 
             const newValue: Label = {
               text: event.currentTarget.value,
-              colour: TAG_COLOURS[values.length % TAG_COLOURS.length],
+              colour: TAG_COLOURS[labels.length % TAG_COLOURS.length],
             }
-            setValues([...values, newValue])
-            setCurrentValue("")
+            setLabels([...labels, newValue])
+            setInputValue("")
 
             return
           }
 
-          if (event.key === "Enter" && values.length) {
-            onSubmit(values)
-            setValues([])
+          if (event.key === "Enter" && labels.length) {
+            onSubmit(labels)
+            setLabels([])
           }
 
           if (event.key === "Backspace" && !event.currentTarget.value) {
-            setValues(values.slice(0, values.length - 1))
+            setLabels(labels.slice(0, labels.length - 1))
           }
         }}
       />
