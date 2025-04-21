@@ -124,7 +124,7 @@ export function AddTaskForm({
           _focusVisible={{ outline: "none" }}
         />
       </FormControl>
-      <Flex alignItems="center">
+      <Flex alignItems="center" style={{ display: "none" }}>
         <FormControl display="flex" alignItems="center" flexGrow="1">
           <FormLabel fontSize="0.8em" fontWeight="bold" marginBlock="0">
             Labels
