@@ -39,7 +39,11 @@ export function TaskMenu({
         </svg>
       </MenuButton>
       <MenuList fontFamily="sans-serif" fontSize="16px">
-        <MenuItem key="move_to_top" onClick={onMoveToTop}>
+        <MenuItem
+          key="move_to_top"
+          onClick={onMoveToTop}
+          isDisabled={task.order === 0}
+        >
           ⬆️ Move to top
         </MenuItem>
         {moveDestinations.map((destination) => (

@@ -1,6 +1,6 @@
 import { Box, Checkbox } from "@chakra-ui/react"
 import { ItemDescription } from "../../shared/TaskList/ItemDescription"
-import { Item } from "../../shared/TaskList/types"
+import { Item, Label } from "../../shared/TaskList/types"
 import { EditableDate } from "./EditableDate"
 import { useEffect, useRef, useState } from "react"
 import invariant from "tiny-invariant"
@@ -18,6 +18,7 @@ import {
 } from "@atlaskit/pragmatic-drag-and-drop-hitbox/closest-edge"
 import { createPortal } from "react-dom"
 import { getTaskData, isTask } from "./drag-utils"
+import { Tag } from "./Tag"
 
 type DraggingState =
   | { type: "idle" }
@@ -27,10 +28,12 @@ const IDLE: DraggingState = { type: "idle" }
 
 export function Task({
   task,
+  availableLabels,
   onChange,
   menu: Menu,
 }: {
   task: Item
+  availableLabels?: Record<string, Label>
   onChange: (task: Item) => void
   menu?: React.FC
 }) {
@@ -143,12 +146,36 @@ export function Task({
           }}
           colorScheme="gray"
         />
-        <Box flexGrow="1" marginInlineEnd="12px">
+        <Box
+          display="flex"
+          flexGrow="1"
+          marginInlineEnd="12px"
+          gap="8px"
+          alignItems="center"
+        >
           <ItemDescription
             description={task.description}
             onChange={(description) => onChange({ ...task, description })}
             isDone={task.isComplete}
           />
+          {availableLabels &&
+            task.labels?.map((id) => {
+              const { text, colour } =
+                availableLabels[id as keyof typeof availableLabels]
+
+              return (
+                <Tag
+                  text={text}
+                  colour={colour}
+                  onDelete={() =>
+                    onChange({
+                      ...task,
+                      labels: task.labels?.filter((l) => l !== id),
+                    })
+                  }
+                />
+              )
+            })}
           {task.dueDate && (
             <EditableDate
               value={task.dueDate}

@@ -2,7 +2,7 @@ import { Box, Heading } from "@chakra-ui/react"
 import { useState, MouseEvent, FocusEvent, useRef, useEffect } from "react"
 import { EditableText } from "../../shared/controls/EditableText"
 import { AddTaskForm } from "../../shared/TaskList/AddTaskForm"
-import { Item } from "../../shared/TaskList/types"
+import { Item, Label } from "../../shared/TaskList/types"
 import { chakra } from "@chakra-ui/react"
 import { Task } from "./Task"
 import { monitorForElements } from "@atlaskit/pragmatic-drag-and-drop/element/adapter"
@@ -12,6 +12,7 @@ import { isTask } from "./drag-utils"
 
 export function TaskList({
   list,
+  labels,
   onChangeListName,
   onAddTask,
   onChangeTask,
@@ -19,8 +20,11 @@ export function TaskList({
   menu: Menu,
 }: {
   list: Item
+  labels?: Record<string, Label>
   onChangeListName: (name: string) => void
-  onAddTask: (description: string, dueDate?: Date) => void
+  onAddTask: (
+    task: Omit<Partial<Item>, "labels"> & { labels?: Label[] }
+  ) => void
   onChangeTask: (task: Item) => void
   onReorderTasks: (tasks: Item[]) => void
   menu?: React.FC<{ task: Item }>
@@ -129,10 +133,11 @@ export function TaskList({
         paddingInlineStart="calc(var(--margin-width) + 8px)"
         background="repeating-linear-gradient(transparent, transparent var(--line-height), var(--line-colour) var(--line-height), var(--line-colour) calc(var(--line-height) + 1px), transparent calc(var(--line-height) + 1px))"
       >
-        {sortedList?.map((item) => (
+        {sortedList?.map((item, index) => (
           <chakra.li key={item.id} _last={{ marginBlockEnd: "40px" }}>
             <Task
               task={item}
+              availableLabels={labels}
               onChange={onChangeTask}
               menu={() => (Menu ? <Menu task={item} /> : null)}
             />
@@ -145,6 +150,7 @@ export function TaskList({
               onCancel={() => {
                 setAddTaskFormVisible(false)
               }}
+              labelOptions={labels ? Object.values(labels) : []}
             />
           </chakra.li>
         )}

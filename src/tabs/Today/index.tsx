@@ -13,8 +13,12 @@ const TODAY = new Date()
 export function Today() {
   const [items, setItems] = useState<Record<string, TodoItem>>({})
   const [hiddenItems, setHiddenItems] = useState<TodoItem[]>([])
-  const { subscribeToList, updateItemInList, deleteItemFromList, updateList } =
-    useContext(FirebaseContext)
+  const {
+    subscribe: subscribeToList,
+    updateItem: updateItemInList,
+    deleteItem: deleteItemFromList,
+    updateList,
+  } = useContext(FirebaseContext)
 
   const onNewItem = useCallback(
     (item: TodoItem) => {
