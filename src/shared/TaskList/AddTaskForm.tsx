@@ -4,9 +4,6 @@ import {
   FormControl,
   FormLabel,
   Input,
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
   Textarea,
 } from "@chakra-ui/react"
 import { useRef, FormEvent, useEffect, useId, useState } from "react"
@@ -189,9 +186,7 @@ function Combobox({
           }
         />
       </Box>
-      <div ref={popoverRef} popover="true">
-        Popover content
-      </div>
+      <div ref={popoverRef}>Popover content</div>
     </>
   )
 
