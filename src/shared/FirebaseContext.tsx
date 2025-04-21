@@ -11,7 +11,6 @@ import {
 } from "firebase/database"
 import { createContext, useEffect, useState } from "react"
 import { TodoItem } from "./TodoList/types"
-import { Item } from "./TaskList/types"
 
 type CrudFunction = (item: TodoItem) => void
 export type ParentCrudFunction = (parentId: string, item: any) => void
