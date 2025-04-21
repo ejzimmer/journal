@@ -133,7 +133,7 @@ export function TaskList({
         paddingInlineStart="calc(var(--margin-width) + 8px)"
         background="repeating-linear-gradient(transparent, transparent var(--line-height), var(--line-colour) var(--line-height), var(--line-colour) calc(var(--line-height) + 1px), transparent calc(var(--line-height) + 1px))"
       >
-        {sortedList?.map((item) => (
+        {sortedList?.map((item, index) => (
           <chakra.li key={item.id} _last={{ marginBlockEnd: "40px" }}>
             <Task
               task={item}
