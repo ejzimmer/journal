@@ -4,10 +4,12 @@ import { useState } from "react"
 export function Tag({
   text,
   colour,
+  onClick,
   onDelete,
 }: {
   text: string
   colour: string
+  onClick?: () => void
   onDelete?: () => void
 }) {
   const [closeButtonVisible, setCloseButtonVisible] = useState(false)
@@ -21,6 +23,7 @@ export function Tag({
       onMouseLeave={hideCloseButton}
     >
       <Box
+        as={onClick ? "button" : "div"}
         fontFamily="sans-serif"
         backgroundColor={colour}
         padding="4px 8px"
@@ -29,11 +32,18 @@ export function Tag({
         color="white"
         width="fit-content"
         transition="opacity .2sx"
+        _hover={
+          onClick ? { filter: "brightness(1.2)", cursor: "pointer" } : undefined
+        }
+        _focus={{
+          outline: "2px solid rebeccapurple",
+        }}
         sx={{
           ":has(+ :hover)": {
             opacity: 0.6,
           },
         }}
+        onClick={onClick}
       >
         {text}
       </Box>

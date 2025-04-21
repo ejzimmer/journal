@@ -18,7 +18,7 @@ import { Tag, TAG_COLOURS } from "../../tabs/Work/Tag"
 export function AddTaskForm({
   onSubmit,
   onCancel,
-  labels,
+  labelOptions,
 }: {
   onSubmit: (
     task: Omit<Partial<Item>, "labels"> & {
@@ -26,12 +26,12 @@ export function AddTaskForm({
     }
   ) => void
   onCancel: (event?: React.MouseEvent) => void
-  labels: Label[]
+  labelOptions: Label[]
 }) {
   const formRef = useRef<HTMLFormElement>(null)
   const descriptionId = useId()
   const dueDateId = useId()
-  const labelsRef = useRef<Label[]>()
+  const [labels, setLabels] = useState<Label[]>([])
 
   const handleSubmit = (event: FormEvent) => {
     event.preventDefault()
@@ -51,10 +51,11 @@ export function AddTaskForm({
       dueDate: dueDate
         ? parse(dueDate, "yyyy-MM-dd", new Date()).getTime()
         : undefined,
-      labels: labelsRef.current,
+      labels,
     })
 
     formRef.current.reset()
+    setLabels([])
   }
 
   useEffect(() => {
@@ -129,7 +130,8 @@ export function AddTaskForm({
             Labels
           </FormLabel>
           <Combobox
-            onSubmit={(labels) => (labelsRef.current = labels)}
+            value={labels}
+            onChange={(labels) => setLabels(labels)}
             options={labels}
           />
         </FormControl>
@@ -149,8 +151,11 @@ export function AddTaskForm({
   )
 }
 
-// make list of labels look nice
+// change it all to use html popover because popper is a pain
+// submit labels & reset input when submitting from button
 // choose labels from the list of existing labels
+// remove chosen labels from list of available
+// filter list of available by typing
 // add new labels to existing task
 // make labels on different tasks different colours
 // edit labels
@@ -158,42 +163,68 @@ export function AddTaskForm({
 // split up this file and move it into work/
 
 function Combobox({
-  onSubmit,
+  value,
+  onChange,
   options,
 }: {
-  onSubmit: (labels: Label[]) => void
+  value: Label[]
+  onChange: (labels: Label[]) => void
   options: Label[]
 }) {
+  const popoverRef = useRef<HTMLDivElement>(null)
+  const onAddLabel = (label: Label) => onChange([...value, label])
+
   return (
-    <Popover autoFocus={false} placement="bottom-start">
-      <PopoverTrigger>
-        <Box width="100%">
-          <TagsInput onSubmit={onSubmit} />
-        </Box>
-      </PopoverTrigger>
-      <PopoverContent>
-        <ul>
-          {options.map(({ text, colour }) => (
-            <li key={text}>
-              <Tag text={text} colour={colour} />
-            </li>
-          ))}
-        </ul>
-      </PopoverContent>
-    </Popover>
+    <>
+      <Box width="100%" onClick={() => popoverRef.current?.togglePopover()}>
+        <TagsInput
+          labels={value}
+          onAddLabel={onAddLabel}
+          onDeleteLabel={(label) =>
+            onChange(
+              value.filter(
+                (v) => v.text !== label.text && v.colour !== label.colour
+              )
+            )
+          }
+        />
+      </Box>
+      <div ref={popoverRef} popover="true">
+        Popover content
+      </div>
+    </>
   )
+
+  // return (
+  //   <Popover autoFocus={false} placement="bottom-start">
+  //     <PopoverTrigger></PopoverTrigger>
+  //     <PopoverContent>
+  //       <Box as="ul" padding="4px" listStyleType="none">
+  //         {options.map(({ text, colour }) => (
+  //           <Box as="li" key={text} margin="2px" width="100%">
+  //             <Tag
+  //               text={text}
+  //               colour={colour}
+  //               onClick={() => onAddLabel({ text, colour })}
+  //             />
+  //           </Box>
+  //         ))}
+  //       </Box>
+  //     </PopoverContent>
+  //   </Popover>
+  // )
 }
 
 type TagsInputProps = {
-  initialValue?: Label[]
-  onSubmit: (labels: Label[]) => void
+  labels: Label[]
+  onAddLabel: (label: Label) => void
+  onDeleteLabel: (label: Label) => void
 }
 
-function TagsInput({ initialValue, onSubmit }: TagsInputProps) {
+function TagsInput({ labels, onAddLabel, onDeleteLabel }: TagsInputProps) {
   const containerRef = useRef<HTMLDivElement>(null)
   const [inputPadding, setInputPadding] = useState(0)
   const [inputValue, setInputValue] = useState("")
-  const [labels, setLabels] = useState<Label[]>(initialValue ?? [])
 
   useEffect(() => {
     if (!containerRef.current) return
@@ -201,12 +232,6 @@ function TagsInput({ initialValue, onSubmit }: TagsInputProps) {
     const containerWidth = containerRef.current.clientWidth
     setInputPadding(containerWidth)
   }, [labels])
-
-  const handleDeleteLabel = (label: Label) => {
-    setLabels(
-      labels.filter((v) => v.text !== label.text && v.colour !== label.colour)
-    )
-  }
 
   return (
     <Flex position="relative" flexGrow={1}>
@@ -223,7 +248,7 @@ function TagsInput({ initialValue, onSubmit }: TagsInputProps) {
             key={text}
             text={text}
             colour={colour}
-            onDelete={() => handleDeleteLabel({ text, colour })}
+            onDelete={() => onDeleteLabel({ text, colour })}
           />
         ))}
       </Flex>
@@ -241,19 +266,17 @@ function TagsInput({ initialValue, onSubmit }: TagsInputProps) {
               text: event.currentTarget.value,
               colour: TAG_COLOURS[labels.length % TAG_COLOURS.length],
             }
-            setLabels([...labels, newValue])
+            onAddLabel(newValue)
             setInputValue("")
 
             return
           }
 
-          if (event.key === "Enter" && labels.length) {
-            onSubmit(labels)
-            setLabels([])
-          }
-
           if (event.key === "Backspace" && !event.currentTarget.value) {
-            setLabels(labels.slice(0, labels.length - 1))
+            const lastLabel = labels.at(-1)
+            if (lastLabel) {
+              onDeleteLabel(lastLabel)
+            }
           }
         }}
       />
