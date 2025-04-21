@@ -1,12 +1,9 @@
-// colour code tasks
-// add button to clear done tasks
 // fix fonts in menu popout
 // make add task form go away properly
 // can drag and drop between lists
 // add subtasks
-// dragging and dropping between parent/child lists - use horizontal position to determine which list to drop into
 
-import { useCallback, useContext, useEffect } from "react"
+import { useCallback, useContext, useEffect, useMemo, useRef } from "react"
 import { FirebaseContext } from "../../shared/FirebaseContext"
 import { Box, HStack, Skeleton, Stack } from "@chakra-ui/react"
 import { Item, Label } from "../../shared/TaskList/types"
@@ -15,6 +12,7 @@ import { useConfirmDelete } from "./useConfirmDelete"
 import { TaskList } from "./TaskList"
 import { hoursToMilliseconds, isSameDay } from "date-fns"
 import { TaskMenu } from "./TaskMenu"
+import { DoneList } from "./DoneList"
 
 const WORK_KEY = "work"
 
@@ -26,6 +24,13 @@ export function Work() {
   const { addItem, useValue, updateItem, deleteItem } = context
   const { value: lists, loading: listsLoading } = useValue<Item>(WORK_KEY)
   const { value: labels } = useValue<Label>(`${WORK_KEY}/labels`)
+
+  const doneList = useMemo(() => {
+    return (
+      lists && Object.values(lists).find((list) => list.description === "Done")
+    )
+  }, [lists])
+  const defaultList = lists && Object.values(lists)[0]
 
   const onAddList = (listName: string) => {
     addItem(WORK_KEY, { description: listName })
@@ -98,82 +103,109 @@ export function Work() {
   return (
     <HStack wrap="wrap" alignItems="stretch" gap="20px">
       {lists ? (
-        Object.entries(lists).map(([id, list]) => (
-          <TaskList
-            key={id}
-            list={list}
-            labels={labels}
-            onChangeListName={(newName: string) =>
-              onUpdateListName(newName, list)
-            }
-            onAddTask={({ description, dueDate, labels }) => {
-              const item: Partial<Item> = {
-                description,
-                isComplete: false,
-              }
-              if (typeof dueDate === "number") {
-                item.dueDate = dueDate
-              }
-              if (labels?.length) {
-                const labelKeys = labels.map((label) =>
-                  addItem(`${WORK_KEY}/labels`, label)
-                )
-                item.labels = labelKeys.filter((key): key is string => !!key)
-              }
-              addItem(`${WORK_KEY}/${list.id}/items`, item)
-            }}
-            onChangeTask={(task: Item) => {
-              updateItem(`${WORK_KEY}/${list.id}/items`, task)
-            }}
-            onReorderTasks={(tasks: Item[]) => {
-              updateItem(WORK_KEY, {
-                ...list,
-                items: tasks.reduce(
-                  (items, task, index) => ({
-                    ...items,
-                    [task.id]: { ...task, order: index },
-                  }),
-                  {}
-                ),
-              })
-            }}
-            menu={({ task }) => (
-              <TaskMenu
-                task={task}
-                moveDestinations={Object.values(lists).filter(
-                  ({ id }) => id !== list.id
-                )}
-                onDelete={() =>
-                  deleteItem(`${WORK_KEY}/${list.id}/items`, task)
-                }
-                onMove={(destination: Item) => {
-                  addItem(`${WORK_KEY}/${destination.id}/items`, task)
-                  deleteItem(`${WORK_KEY}/${list.id}/items`, task)
-                }}
-                onChange={(task: Item) =>
-                  updateItem(`${WORK_KEY}/${list.id}/items`, task)
-                }
-                onMoveToTop={() => {
-                  if (!list.items) return
-
-                  const resortedList = Object.fromEntries(
-                    Object.entries(list.items).map(([id, item]) => {
-                      if (id !== task.id) {
-                        return [
-                          id,
-                          { ...item, order: (item.order ?? Infinity) + 1 },
-                        ]
-                      } else {
-                        return [id, { ...item, order: 0 }]
-                      }
+        <>
+          {Object.entries(lists).map(
+            ([id, list]) =>
+              list !== doneList && (
+                <TaskList
+                  key={id}
+                  list={list}
+                  labels={labels}
+                  onChangeListName={(newName: string) =>
+                    onUpdateListName(newName, list)
+                  }
+                  onAddTask={({ description, dueDate, labels }) => {
+                    const item: Partial<Item> = {
+                      description,
+                      isComplete: false,
+                    }
+                    if (typeof dueDate === "number") {
+                      item.dueDate = dueDate
+                    }
+                    if (labels?.length) {
+                      const labelKeys = labels.map((label) =>
+                        addItem(`${WORK_KEY}/labels`, label)
+                      )
+                      item.labels = labelKeys.filter(
+                        (key): key is string => !!key
+                      )
+                    }
+                    addItem(`${WORK_KEY}/${list.id}/items`, item)
+                  }}
+                  onChangeTask={(task: Item) => {
+                    updateItem(`${WORK_KEY}/${list.id}/items`, task)
+                  }}
+                  onReorderTasks={(tasks: Item[]) => {
+                    updateItem(WORK_KEY, {
+                      ...list,
+                      items: tasks.reduce(
+                        (items, task, index) => ({
+                          ...items,
+                          [task.id]: { ...task, order: index },
+                        }),
+                        {}
+                      ),
                     })
-                  )
-                  updateItem(WORK_KEY, { ...list, items: resortedList })
-                }}
-              />
-            )}
-          />
-        ))
+                  }}
+                  menu={({ task }) => (
+                    <TaskMenu
+                      task={task}
+                      moveDestinations={Object.values(lists).filter(
+                        ({ id }) => id !== list.id
+                      )}
+                      onDelete={() =>
+                        deleteItem(`${WORK_KEY}/${list.id}/items`, task)
+                      }
+                      onMove={(destination: Item) => {
+                        addItem(`${WORK_KEY}/${destination.id}/items`, task)
+                        deleteItem(`${WORK_KEY}/${list.id}/items`, task)
+                      }}
+                      onChange={(task: Item) =>
+                        updateItem(`${WORK_KEY}/${list.id}/items`, task)
+                      }
+                      onMoveToTop={() => {
+                        if (!list.items) return
+
+                        const resortedList = Object.fromEntries(
+                          Object.entries(list.items).map(([id, item]) => {
+                            if (id !== task.id) {
+                              return [
+                                id,
+                                {
+                                  ...item,
+                                  order: (item.order ?? Infinity) + 1,
+                                },
+                              ]
+                            } else {
+                              return [id, { ...item, order: 0 }]
+                            }
+                          })
+                        )
+                        updateItem(WORK_KEY, { ...list, items: resortedList })
+                      }}
+                    />
+                  )}
+                />
+              )
+          )}
+          {doneList?.items && (
+            <DoneList
+              tasks={doneList.items}
+              onMarkNotDone={(task) => {
+                if (!defaultList) return
+
+                addItem(`${WORK_KEY}/${defaultList.id}/items`, {
+                  ...task,
+                  isComplete: false,
+                })
+                deleteItem(`${WORK_KEY}/${doneList.id}/items`, task)
+              }}
+              onDelete={(task) =>
+                deleteItem(`${WORK_KEY}/${doneList.id}/items`, task)
+              }
+            />
+          )}
+        </>
       ) : (
         <Box marginInlineEnd="30px">No lists found.</Box>
       )}
