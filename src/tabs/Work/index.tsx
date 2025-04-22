@@ -3,7 +3,7 @@
 // can drag and drop between lists
 // add subtasks
 
-import { useCallback, useContext, useEffect, useMemo, useRef } from "react"
+import { useCallback, useContext, useEffect, useMemo } from "react"
 import { FirebaseContext } from "../../shared/FirebaseContext"
 import { Box, HStack, Skeleton, Stack } from "@chakra-ui/react"
 import { Item, Label } from "../../shared/TaskList/types"
