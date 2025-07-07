@@ -5,12 +5,12 @@ import {
   FormLabel,
   Input,
   Textarea,
-} from "@chakra-ui/react"
-import { useRef, FormEvent, useEffect, useId, useState } from "react"
-import { TaskButton } from "./TaskButton"
-import { parse } from "date-fns"
-import { Item, Label } from "./types"
-import { Tag, TAG_COLOURS } from "../../tabs/Work/Tag"
+} from "@chakra-ui/react";
+import { useRef, FormEvent, useEffect, useId, useState } from "react";
+import { TaskButton } from "./TaskButton";
+import { parse } from "date-fns";
+import { Item, Label } from "./types";
+import { Tag, TAG_COLOURS } from "../../tabs/Work/Tag";
 
 export function AddTaskForm({
   onSubmit,
@@ -19,29 +19,29 @@ export function AddTaskForm({
 }: {
   onSubmit: (
     task: Omit<Partial<Item>, "labels"> & {
-      labels?: Label[]
+      labels?: Label[];
     }
-  ) => void
-  onCancel: (event?: React.MouseEvent) => void
-  labelOptions: Label[]
+  ) => void;
+  onCancel: (event?: React.MouseEvent) => void;
+  labelOptions: Label[];
 }) {
-  const formRef = useRef<HTMLFormElement>(null)
-  const descriptionId = useId()
-  const dueDateId = useId()
-  const [labels, setLabels] = useState<Label[]>([])
+  const formRef = useRef<HTMLFormElement>(null);
+  const descriptionId = useId();
+  const dueDateId = useId();
+  const [labels, setLabels] = useState<Label[]>([]);
 
   const handleSubmit = (event: FormEvent) => {
-    event.preventDefault()
+    event.preventDefault();
 
-    const controls = formRef.current?.elements
-    if (!controls) return
-
-    // @ts-ignore
-    const description = controls[descriptionId].value
-    if (!description) return
+    const controls = formRef.current?.elements;
+    if (!controls) return;
 
     // @ts-ignore
-    const dueDate = controls[dueDateId].value
+    const description = controls[descriptionId].value;
+    if (!description) return;
+
+    // @ts-ignore
+    const dueDate = controls[dueDateId].value;
 
     onSubmit({
       description,
@@ -49,28 +49,28 @@ export function AddTaskForm({
         ? parse(dueDate, "yyyy-MM-dd", new Date()).getTime()
         : undefined,
       labels,
-    })
+    });
 
-    formRef.current.reset()
-    setLabels([])
-  }
+    formRef.current.reset();
+    setLabels([]);
+  };
 
   useEffect(() => {
     const listener = (event: MouseEvent) => {
-      if (!formRef.current) return
+      if (!formRef.current) return;
 
       if (
         event.target &&
         !formRef.current.contains(event.target as HTMLElement)
       ) {
-        onCancel()
+        onCancel();
       }
-    }
+    };
 
-    window.addEventListener("click", listener)
+    window.addEventListener("click", listener);
 
-    return () => window.removeEventListener("click", listener)
-  }, [onCancel])
+    return () => window.removeEventListener("click", listener);
+  }, [onCancel]);
 
   return (
     <Box
@@ -99,7 +99,7 @@ export function AddTaskForm({
         noOfLines={2}
         onKeyDown={(event) => {
           if (event.key === "Enter") {
-            handleSubmit(event)
+            handleSubmit(event);
           }
         }}
       />
@@ -121,7 +121,7 @@ export function AddTaskForm({
           _focusVisible={{ outline: "none" }}
         />
       </FormControl>
-      <Flex alignItems="center" style={{ display: "none" }}>
+      <Flex alignItems="center">
         <FormControl display="flex" alignItems="center" flexGrow="1">
           <FormLabel fontSize="0.8em" fontWeight="bold" marginBlock="0">
             Labels
@@ -145,7 +145,7 @@ export function AddTaskForm({
         </TaskButton>
       </Flex>
     </Box>
-  )
+  );
 }
 
 // change it all to use html popover because popper is a pain
@@ -164,12 +164,12 @@ function Combobox({
   onChange,
   options,
 }: {
-  value: Label[]
-  onChange: (labels: Label[]) => void
-  options: Label[]
+  value: Label[];
+  onChange: (labels: Label[]) => void;
+  options: Label[];
 }) {
-  const popoverRef = useRef<HTMLDivElement>(null)
-  const onAddLabel = (label: Label) => onChange([...value, label])
+  const popoverRef = useRef<HTMLDivElement>(null);
+  const onAddLabel = (label: Label) => onChange([...value, label]);
 
   return (
     <>
@@ -186,9 +186,8 @@ function Combobox({
           }
         />
       </Box>
-      <div ref={popoverRef}>Popover content</div>
     </>
-  )
+  );
 
   // return (
   //   <Popover autoFocus={false} placement="bottom-start">
@@ -211,22 +210,22 @@ function Combobox({
 }
 
 type TagsInputProps = {
-  labels: Label[]
-  onAddLabel: (label: Label) => void
-  onDeleteLabel: (label: Label) => void
-}
+  labels: Label[];
+  onAddLabel: (label: Label) => void;
+  onDeleteLabel: (label: Label) => void;
+};
 
 function TagsInput({ labels, onAddLabel, onDeleteLabel }: TagsInputProps) {
-  const containerRef = useRef<HTMLDivElement>(null)
-  const [inputPadding, setInputPadding] = useState(0)
-  const [inputValue, setInputValue] = useState("")
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [inputPadding, setInputPadding] = useState(0);
+  const [inputValue, setInputValue] = useState("");
 
   useEffect(() => {
-    if (!containerRef.current) return
+    if (!containerRef.current) return;
 
-    const containerWidth = containerRef.current.clientWidth
-    setInputPadding(containerWidth)
-  }, [labels])
+    const containerWidth = containerRef.current.clientWidth;
+    setInputPadding(containerWidth);
+  }, [labels]);
 
   return (
     <Flex position="relative" flexGrow={1}>
@@ -254,27 +253,27 @@ function TagsInput({ labels, onAddLabel, onDeleteLabel }: TagsInputProps) {
         onChange={(event) => setInputValue(event.target.value)}
         onKeyDown={(event) => {
           if (event.key === "Enter" && event.currentTarget.value) {
-            event.stopPropagation()
-            event.preventDefault()
+            event.stopPropagation();
+            event.preventDefault();
 
             const newValue: Label = {
               text: event.currentTarget.value,
               colour: TAG_COLOURS[labels.length % TAG_COLOURS.length],
-            }
-            onAddLabel(newValue)
-            setInputValue("")
+            };
+            onAddLabel(newValue);
+            setInputValue("");
 
-            return
+            return;
           }
 
           if (event.key === "Backspace" && !event.currentTarget.value) {
-            const lastLabel = labels.at(-1)
+            const lastLabel = labels.at(-1);
             if (lastLabel) {
-              onDeleteLabel(lastLabel)
+              onDeleteLabel(lastLabel);
             }
           }
         }}
       />
     </Flex>
-  )
+  );
 }
