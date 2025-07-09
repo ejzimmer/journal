@@ -14,6 +14,7 @@ import { Health } from "./tabs/Health"
 import { Routes, Route, NavLink } from "react-router-dom"
 import styled from "@emotion/styled"
 import { Work } from "./tabs/Work"
+import { Combobox } from "./shared/controls/Combobox"
 
 const TABS = {
   today: <Today />,
@@ -54,7 +55,8 @@ export function App() {
           </NavItem>
         ))}
       </Nav>
-
+      hello
+      <Combobox options={["one", "two", "three"]} />
       <Box paddingInline="30px" paddingBlock="20px">
         <Routes>
           {Object.entries(TABS).map(([name, Element]) => (
