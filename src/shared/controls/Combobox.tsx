@@ -1,4 +1,10 @@
-import { useRef, useState, type KeyboardEvent } from "react"
+import {
+  useRef,
+  useState,
+  useMemo,
+  type KeyboardEvent,
+  type ChangeEvent,
+} from "react"
 
 type Option = {
   id: string
@@ -7,65 +13,151 @@ type Option = {
 
 type ComboboxProps<T> = {
   options: T[]
+  value: T[]
+  onChange: (options: T[]) => void
+  createOption: (label: string) => T
+  onAddOption: (option: T) => void
 }
 
-export function Combobox<T extends Option>({ options }: ComboboxProps<T>) {
+export function Combobox<T extends Option>({
+  options,
+  value,
+  onChange,
+  createOption,
+  onAddOption,
+}: ComboboxProps<T>) {
   const popoverRef = useRef<HTMLDivElement>(null)
 
-  const [selectedOptions, setSelectedOptions] = useState<T[]>([])
-  const [highlightedOption, setHighlightedOption] = useState<number>()
+  const [highlightedOptionIndex, setHighlightedOptionIndex] = useState<number>()
+  const [highlightedButtonIndex, setHighlightedButtonIndex] = useState<number>()
+  const [lastKeyboardInteraction, setLastKeyboardInteraction] = useState<
+    "button" | "option"
+  >()
+
+  const [filterValue, setFilterValue] = useState<string>("")
+
+  const displayedOptions = useMemo(
+    () =>
+      filterValue.length > 0
+        ? [
+            ...options.filter((option) =>
+              option.label.toLowerCase().includes(filterValue.toLowerCase())
+            ),
+            createOption(filterValue),
+          ]
+        : options,
+    [filterValue, options, createOption]
+  )
 
   const showPopover = () => {
     popoverRef.current?.showPopover()
   }
 
-  const toggleCheckbox = (option: T) => {
-    const isChecked = selectedOptions.includes(option)
+  const toggleSelected = (option: T) => {
+    const isChecked = value.includes(option)
 
     if (isChecked) {
       deselectOption(option)
     } else {
-      setSelectedOptions((value) => [...value, option])
+      const newValue = [...value, option]
+      onChange(newValue)
     }
   }
 
   const deselectOption = (option: T) => {
-    setSelectedOptions((options) => options.filter((o) => o !== option))
+    const newValue = value.filter((o) => o !== option)
+    onChange(newValue)
   }
 
   const handleKeyDown = (event: KeyboardEvent) => {
     switch (event.key) {
       case "ArrowDown":
-        setHighlightedOption((highlighted) =>
+        setHighlightedOptionIndex((highlighted) =>
           typeof highlighted === "undefined"
             ? 0
-            : (highlighted + 1) % options.length
+            : (highlighted + 1) % displayedOptions.length
         )
+        setLastKeyboardInteraction("option")
         break
       case "ArrowUp":
-        setHighlightedOption((highlighted) =>
+        setHighlightedOptionIndex((highlighted) =>
           typeof highlighted === "undefined"
-            ? options.length - 1
-            : (highlighted + options.length - 1) % options.length
+            ? displayedOptions.length - 1
+            : (highlighted + displayedOptions.length - 1) %
+              displayedOptions.length
         )
+        setLastKeyboardInteraction("option")
+        break
+      case "ArrowRight":
+        setHighlightedButtonIndex((highlighted) =>
+          typeof highlighted === "undefined"
+            ? 0
+            : (highlighted + 1) % value.length
+        )
+        setLastKeyboardInteraction("button")
+        break
+      case "ArrowLeft":
+        setHighlightedButtonIndex((highlighted) =>
+          typeof highlighted === "undefined"
+            ? value.length - 1
+            : (highlighted + value.length - 1) % value.length
+        )
+        setLastKeyboardInteraction("button")
+        break
+      case "Enter":
+      case "Backspace":
+        if (lastKeyboardInteraction === "button" && highlightedButtonIndex) {
+          event.preventDefault()
+          deselectOption(value[highlightedButtonIndex])
+        }
         break
       case " ":
-        if (typeof highlightedOption !== "undefined") {
-          toggleCheckbox(options[highlightedOption])
+        if (typeof lastKeyboardInteraction === "undefined") {
+          return
         }
+
+        if (
+          lastKeyboardInteraction === "option" &&
+          highlightedOptionIndex !== undefined
+        ) {
+          const selectedOption = displayedOptions[highlightedOptionIndex]
+
+          if (!options.includes(selectedOption)) {
+            onAddOption(selectedOption)
+            setFilterValue("")
+          } else {
+            toggleSelected(displayedOptions[highlightedOptionIndex])
+          }
+        }
+
+        if (
+          lastKeyboardInteraction === "button" &&
+          highlightedButtonIndex !== undefined
+        ) {
+          deselectOption(value[highlightedButtonIndex])
+        }
+
+        break
     }
+  }
+
+  const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const newValue = event.target.value.trim()
+    setFilterValue(newValue)
   }
 
   return (
     <>
       <input
         type="text"
+        value={filterValue}
         onClick={showPopover}
         onFocus={showPopover}
         onKeyDown={handleKeyDown}
+        onChange={handleChange}
       />
       <div>
-        {selectedOptions.map((option) => (
+        {value.map((option) => (
           <button
             key={option.id}
             aria-label={`${option.label}, remove`}
@@ -76,12 +168,12 @@ export function Combobox<T extends Option>({ options }: ComboboxProps<T>) {
         ))}
       </div>
       <div popover="auto" id="optionslist" ref={popoverRef} role="listbox">
-        {options.map((option) => (
+        {displayedOptions.map((option) => (
           <div
             key={option.id}
             role="option"
-            aria-selected={selectedOptions.includes(option)}
-            onClick={() => toggleCheckbox(option)}
+            aria-selected={value.includes(option)}
+            onClick={() => toggleSelected(option)}
           >
             {option.label}
           </div>
