@@ -6,7 +6,7 @@ import {
   type ChangeEvent,
 } from "react"
 
-type Option = {
+export type Option = {
   id: string
   label: string
 }
@@ -17,6 +17,8 @@ type ComboboxProps<T> = {
   onChange: (options: T[]) => void
   createOption: (label: string) => T
   onAddOption: (option: T) => void
+  renderOption?: (option: T) => React.ReactNode
+  renderButton?: (option: T) => React.ReactNode
 }
 
 export function Combobox<T extends Option>({
@@ -25,6 +27,8 @@ export function Combobox<T extends Option>({
   onChange,
   createOption,
   onAddOption,
+  renderOption,
+  renderButton,
 }: ComboboxProps<T>) {
   const popoverRef = useRef<HTMLDivElement>(null)
 
@@ -163,7 +167,7 @@ export function Combobox<T extends Option>({
             aria-label={`${option.label}, remove`}
             onClick={() => deselectOption(option)}
           >
-            {option.label}
+            {renderButton?.(option) ?? option.label}
           </button>
         ))}
       </div>
@@ -175,7 +179,7 @@ export function Combobox<T extends Option>({
             aria-selected={value.includes(option)}
             onClick={() => toggleSelected(option)}
           >
-            {option.label}
+            {renderOption?.(option) ?? option.label}
           </div>
         ))}
       </div>

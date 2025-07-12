@@ -1,6 +1,6 @@
 import { render, screen } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
-import { Combobox } from "./Combobox"
+import { Combobox, type Option } from "./Combobox"
 
 HTMLElement.prototype.showPopover = jest.fn()
 
@@ -226,6 +226,36 @@ describe("Combobox", () => {
       expect(screen.getByRole("textbox")).toHaveValue("")
     })
   })
-  // can handle arbitrary options & selected lozenges
-  // remove an option via keyboard - use left/right arrow keys to navigate between options?
+
+  type CustomOption = Option & { colour: string }
+
+  it("displays custom button & option components", () => {
+    const customOption = (option: CustomOption) => (
+      <>{option.label + " " + option.colour}</>
+    )
+    const customButton = (option: CustomOption) => (
+      <>{option.colour + " " + option.label}</>
+    )
+    render(
+      <Combobox
+        {...defaultProps}
+        value={[options.leela, options.zoidberg]}
+        renderOption={customOption}
+        renderButton={customButton}
+      />
+    )
+
+    expect(
+      screen.getByRole("option", { name: "Leela purple" })
+    ).toBeInTheDocument()
+    expect(
+      screen.getByRole("option", { name: "Zoidberg salmon" })
+    ).toBeInTheDocument()
+    expect(
+      screen.getByRole("button", { name: "Leela, remove" })
+    ).toHaveTextContent("purple Leela")
+    expect(
+      screen.getByRole("button", { name: "Zoidberg, remove" })
+    ).toHaveTextContent("salmon Zoidberg")
+  })
 })
