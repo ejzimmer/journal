@@ -1,5 +1,4 @@
-import { Box, Flex, List, ListItem } from "@chakra-ui/layout"
-import { FormLabel } from "@chakra-ui/react"
+import { Box, Flex } from "@chakra-ui/react"
 import { Fragment, useEffect, useMemo, useState } from "react"
 import {
   DragDropContext,
@@ -69,7 +68,8 @@ export function TodoList({
       <DragDropContext onDragEnd={onDragEnd}>
         <Droppable droppableId={id}>
           {(provided) => (
-            <List
+            <Box
+              as="ul"
               listStyleType="none"
               width="100%"
               minWidth="400px"
@@ -83,7 +83,7 @@ export function TodoList({
                   index={index}
                 >
                   {(provided) => (
-                    <ListItem
+                    <li
                       ref={provided.innerRef}
                       {...provided.draggableProps}
                       {...provided.dragHandleProps}
@@ -96,12 +96,12 @@ export function TodoList({
                         onDelete={onDeleteItem}
                         onMoveToTop={() => onMoveToTop(index)}
                       />
-                    </ListItem>
+                    </li>
                   )}
                 </Draggable>
               ))}
               {provided.placeholder}
-            </List>
+            </Box>
           )}
         </Droppable>
       </DragDropContext>
@@ -161,7 +161,7 @@ function FilterByCategory({ items, setItems, id }: FilterProps) {
 
   return (
     <Flex
-      sx={{
+      css={{
         'input[type="checkbox"]:checked + label': {
           background: "currentColor",
         },
@@ -190,20 +190,22 @@ function FilterByCategory({ items, setItems, id }: FilterProps) {
               )
             }
           />
-          <FormLabel
-            htmlFor={`${id}-${category}`}
-            cursor="pointer"
-            margin="0"
-            padding="2"
-            color={colour}
-            _hover={{
-              background: "currentColor",
-            }}
-            flexGrow="1"
-            textAlign="center"
-          >
-            {category}
-          </FormLabel>
+          <label htmlFor={`${id}-${category}`}>
+            <Box
+              as="label"
+              cursor="pointer"
+              margin="0"
+              padding="2"
+              color={colour}
+              _hover={{
+                background: "currentColor",
+              }}
+              flexGrow="1"
+              textAlign="center"
+            >
+              {category}
+            </Box>
+          </label>
         </Fragment>
       ))}
     </Flex>

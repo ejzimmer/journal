@@ -8,6 +8,7 @@ export const TaskButton = forwardRef<
   return (
     <Button
       ref={ref}
+      ha
       backgroundColor="transparent"
       opacity=".6"
       _hover={{ backgroundColor: "transparent", opacity: 1 }}

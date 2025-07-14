@@ -1,7 +1,7 @@
-import { useDisclosure } from "@chakra-ui/react"
 import { TaskButton } from "./TaskButton"
 import { ConfirmationModal } from "../ConfirmationModal"
 import { Item } from "./types"
+import { useState } from "react"
 
 export type Props = {
   taskDescription: string
@@ -9,15 +9,19 @@ export type Props = {
 }
 
 export const useDeleteTask = (task: Item, onDelete: () => void) => {
-  const { onOpen, isOpen, onClose } = useDisclosure()
+  const [isOpen, setIsOpen] = useState(false)
 
   return {
-    onClickDelete: onOpen,
+    onClickDelete: () => setIsOpen(true),
     ConfirmDeleteTask: () => (
       <ConfirmationModal
         isOpen={isOpen}
-        onConfirm={onDelete}
-        onClose={onClose}
+        setOpen={setIsOpen}
+        onConfirm={() => {
+          onDelete()
+          setIsOpen(false)
+        }}
+        onClose={() => setIsOpen(false)}
         message={`Are you sure you want to delete ${task.description}`}
         confirmButtonText="Delete task"
       />

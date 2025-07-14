@@ -137,15 +137,20 @@ export function Task({
         >
           <DragIndicator />
         </Box>
-        <Checkbox
+        <Checkbox.Root
           aria-label={`${task.description}`}
-          isChecked={task.isComplete}
-          onChange={() => {
+          checked={task.isComplete}
+          onCheckedChange={() => {
             const isComplete = !task.isComplete
             onChange({ ...task, isComplete })
           }}
-          colorScheme="gray"
-        />
+          colorPalette="gray"
+          variant="solid"
+          size="sm"
+        >
+          <Checkbox.HiddenInput />
+          <Checkbox.Control />
+        </Checkbox.Root>
         <Box
           display="flex"
           flexGrow="1"
@@ -231,7 +236,7 @@ function DropIndicator({ edge }: { edge: Edge }) {
       right={0}
       top={edge === "top" ? lineOffset : undefined}
       bottom={edge === "bottom" ? lineOffset : undefined}
-      sx={{
+      css={{
         "&::before": {
           content: '""',
           position: "absolute",

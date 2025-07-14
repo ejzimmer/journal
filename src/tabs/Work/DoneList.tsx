@@ -28,6 +28,7 @@ export function DoneList({
         .reverse()
         .map(([week, tasks]) => (
           <Week
+            key={week}
             week={week}
             tasks={tasks}
             onMarkNotDone={onMarkNotDone}
@@ -56,7 +57,12 @@ function Week({
       {week}
       <ul>
         {tasks.map((task) => (
-          <chakra.li display="flex" alignItems="center" gap=".5em">
+          <chakra.li
+            key={task.id}
+            display="flex"
+            alignItems="center"
+            gap=".5em"
+          >
             <chakra.label
               display="inherit"
               alignItems="inherit"
@@ -64,14 +70,15 @@ function Week({
               opacity="0.5"
               cursor="pointer"
             >
-              <Checkbox
+              <Checkbox.Root
                 aria-label={`mark ${task.description} not done`}
-                isChecked
-                onChange={() => {
-                  onMarkNotDone(task)
-                }}
-                colorScheme="gray"
-              />
+                checked
+                onCheckedChange={() => onMarkNotDone(task)}
+                color="gray"
+              >
+                <Checkbox.HiddenInput />
+                <Checkbox.Control />
+              </Checkbox.Root>
               <Box textDecoration="line-through">{task.description}</Box>
             </chakra.label>
             <Button
@@ -79,7 +86,7 @@ function Week({
               aria-label={`delete ${task.description}`}
               variant="ghost"
               paddingInline="0"
-              size="1.25em"
+              size="sm"
               opacity="0.5"
               _hover={{
                 background: "transparent",

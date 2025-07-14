@@ -1,6 +1,6 @@
 import { Today } from "./tabs/Today"
-import { Button } from "@chakra-ui/button"
-import { Box, Grid } from "@chakra-ui/layout"
+import { Button } from "@chakra-ui/react"
+import { Box, Grid } from "@chakra-ui/react"
 
 import {
   getAuth,
@@ -10,16 +10,12 @@ import {
 } from "firebase/auth"
 import { useState } from "react"
 import { Todo } from "./tabs/Todo"
-import { Health } from "./tabs/Health"
 import { Routes, Route, NavLink } from "react-router-dom"
-import styled from "@emotion/styled"
 import { Work } from "./tabs/Work"
-import { Combobox } from "./shared/controls/Combobox"
 
 const TABS = {
   today: <Today />,
   todo: <Todo />,
-  health: <Health />,
   work: <Work />,
 }
 
@@ -48,15 +44,23 @@ export function App() {
 
   return (
     <>
-      <Nav>
+      <Box
+        as="nav"
+        position="sticky"
+        top={0}
+        background="white"
+        zIndex={1}
+        borderBottom="2px solid #e2e8f0"
+        marginBottom="1rem"
+        display="flex"
+      >
         {Object.keys(TABS).map((tab) => (
           <NavItem key={tab} to={tab}>
             {tab}
           </NavItem>
         ))}
-      </Nav>
-      hello
-      <Combobox options={["one", "two", "three"]} />
+      </Box>
+
       <Box paddingInline="30px" paddingBlock="20px">
         <Routes>
           {Object.entries(TABS).map(([name, Element]) => (
@@ -69,23 +73,20 @@ export function App() {
   )
 }
 
-const Nav = styled.nav`
-  position: sticky;
-  top: 0;
-  background: white;
-  z-index: 1;
-  border-bottom: 2px solid #e2e8f0;
-  margin-bottom: 1rem;
-  display: flex;
-`
-
-const NavItem = styled(NavLink)`
-  padding: 0.5rem 1rem;
-  margin-bottom: -2px;
-
-  &.active {
-    color: #2b6cb0;
-    border-bottom: inherit;
-    border-color: currentColor;
-  }
-`
+function NavItem({ to, children }: { to: string; children: React.ReactNode }) {
+  return (
+    <Box
+      padding=".5rem 1rem"
+      marginBottom="-2px"
+      css={{
+        "& .active": {
+          color: "#2b6cb0",
+          borderBottom: "inherit",
+          borderColor: "currentColor",
+        },
+      }}
+    >
+      <NavLink to={to}>{children}</NavLink>
+    </Box>
+  )
+}

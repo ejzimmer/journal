@@ -1,4 +1,4 @@
-import { HStack, Input, Select } from "@chakra-ui/react"
+import { HStack, Input, NativeSelect } from "@chakra-ui/react"
 import React, { ChangeEvent, FormEvent, useContext, useState } from "react"
 import { FirebaseContext } from "../FirebaseContext"
 import { Category, COLOURS } from "./types"
@@ -9,7 +9,11 @@ interface Props {
 }
 
 export function NewItem({ list, showFrequency }: Props) {
-  const { addItem: addItemToList } = useContext(FirebaseContext)
+  const firebaseContext = useContext(FirebaseContext)
+  if (!firebaseContext) {
+    throw new Error("no firebase context found in NewItem")
+  }
+  const { addItem: addItemToList } = firebaseContext
   const [description, setDescription] = useState("")
   const [type, setType] = useState<Category>("🧹")
   const [frequency, setFrequency] = useState("一回")
@@ -32,23 +36,27 @@ export function NewItem({ list, showFrequency }: Props) {
 
   return (
     <form action="#" onSubmit={submitForm}>
-      <HStack spacing="4" maxWidth="600px">
-        <Select width="120px" onChange={updateType} value={type}>
-          {Object.keys(COLOURS).map((category) => (
-            <Option value={category} key={category} />
-          ))}
-        </Select>
+      <HStack gap="4" maxWidth="600px">
+        <NativeSelect.Root width="120px">
+          <NativeSelect.Field onChange={updateType} value={type}>
+            {Object.keys(COLOURS).map((category) => (
+              <Option value={category} key={category} />
+            ))}
+          </NativeSelect.Field>
+        </NativeSelect.Root>
         <Input
           variant="flushed"
           onChange={updateDescription}
           value={description}
         />
         {showFrequency && (
-          <Select width="140px" onChange={updateFrequency} value={frequency}>
-            <Option value="一回" />
-            <Option value="毎日" />
-            <Option value="平日" />
-          </Select>
+          <NativeSelect.Root width="140px">
+            <NativeSelect.Field onChange={updateFrequency} value={frequency}>
+              <Option value="一回" />
+              <Option value="毎日" />
+              <Option value="平日" />
+            </NativeSelect.Field>
+          </NativeSelect.Root>
         )}
       </HStack>
     </form>

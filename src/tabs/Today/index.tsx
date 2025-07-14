@@ -1,4 +1,4 @@
-import { VStack } from "@chakra-ui/layout"
+import { VStack } from "@chakra-ui/react"
 import { isSameDay } from "date-fns"
 import { useCallback, useContext, useEffect, useState } from "react"
 import { FirebaseContext } from "../../shared/FirebaseContext"

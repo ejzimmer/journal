@@ -1,16 +1,9 @@
-import {
-  AlertDialog,
-  AlertDialogBody,
-  AlertDialogContent,
-  AlertDialogFooter,
-  Button,
-  HStack,
-} from "@chakra-ui/react"
-import { useRef } from "react"
+import { Dialog, Button, Portal } from "@chakra-ui/react"
 
 export type Props = {
   message: string
   isOpen: boolean
+  setOpen: (isOpen: boolean) => void
   onConfirm: () => void
   onClose: () => void
   confirmButtonText?: string
@@ -18,38 +11,44 @@ export type Props = {
 
 export function ConfirmationModal({
   isOpen,
+  setOpen,
   message,
   onClose,
   onConfirm,
   confirmButtonText = "Confirm",
 }: Props) {
-  const cancelRef = useRef(null)
   return (
-    <AlertDialog
-      isOpen={isOpen}
-      leastDestructiveRef={cancelRef}
-      onClose={onClose}
+    <Dialog.Root
+      lazyMount
+      open={isOpen}
+      onOpenChange={(event: { open: boolean }) => setOpen(event.open)}
+      size="sm"
+      role="alertdialog"
     >
-      <AlertDialogContent width="max-content">
-        <AlertDialogBody mt="4">{message}</AlertDialogBody>
-
-        <AlertDialogFooter>
-          <HStack spacing={2}>
-            <Button ref={cancelRef} onClick={onClose}>
-              Cancel
-            </Button>
-            <Button
-              colorScheme="red"
-              onClick={() => {
-                onConfirm()
-                onClose()
-              }}
-            >
-              {confirmButtonText}
-            </Button>
-          </HStack>
-        </AlertDialogFooter>
-      </AlertDialogContent>
-    </AlertDialog>
+      <Portal>
+        <Dialog.Backdrop />
+        <Dialog.Positioner>
+          <Dialog.Content>
+            <Dialog.Body>
+              <Dialog.Body mt="4">{message}</Dialog.Body>
+            </Dialog.Body>
+            <Dialog.Footer>
+              <Dialog.ActionTrigger asChild>
+                <Button variant="outline">Cancel</Button>
+              </Dialog.ActionTrigger>
+              <Button
+                colorScheme="red"
+                onClick={() => {
+                  onConfirm()
+                  onClose()
+                }}
+              >
+                {confirmButtonText}
+              </Button>
+            </Dialog.Footer>
+          </Dialog.Content>
+        </Dialog.Positioner>
+      </Portal>
+    </Dialog.Root>
   )
 }

@@ -1,18 +1,9 @@
-import {
-  Checkbox,
-  Box,
-  Button,
-  Menu,
-  MenuButton,
-  MenuList,
-  MenuItem,
-} from "@chakra-ui/react"
+import { Checkbox, Box, Menu, IconButton } from "@chakra-ui/react"
 import { ChangeEvent } from "react"
 import { DeleteMenuItem } from "../DeleteMenuItem"
-import styled from "@emotion/styled"
 import { Category, COLOURS, TodoItem } from "./types"
 import { isToday } from "date-fns"
-import { ChevronDownIcon } from "@chakra-ui/icons"
+import { SlArrowDown } from "react-icons/sl"
 import { MoveToMenuItem } from "./MoveToMenuItem"
 
 interface Props {
@@ -69,24 +60,27 @@ export function Item({
           cursor: "pointer",
         }}
       >
-        <Checkbox
-          borderColor="gray.500"
+        <Checkbox.Root
+          variant="subtle"
+          color="gray"
           isChecked={isDone}
           onChange={handleCheck}
-        />
+        >
+          <Checkbox.Control />
+        </Checkbox.Root>
         {item.type} {item.description}
       </label>
       {!isDone && (
-        <Menu>
-          <MenuButton
-            as={Button}
-            variant="ghost"
-            borderRadius="0"
-            aria-label="actions"
-            rightIcon={<ChevronDownIcon />}
-          />
-          <MenuList>
-            <MenuItem onClick={onMoveToTop}>⏫ Move to top</MenuItem>
+        <Menu.Root>
+          <Menu.Trigger asChild>
+            <IconButton variant="ghost" borderRadius="0" aria-label="actions">
+              <SlArrowDown />
+            </IconButton>
+          </Menu.Trigger>
+          <Menu.Content>
+            <Menu.Item value="top" onSelect={onMoveToTop}>
+              ⏫ Move to top
+            </Menu.Item>
             {currentList &&
               otherLists.map((list) => (
                 <MoveToMenuItem
@@ -97,8 +91,8 @@ export function Item({
                 />
               ))}
             <DeleteMenuItem onDelete={() => onDelete(item)} />
-          </MenuList>
-        </Menu>
+          </Menu.Content>
+        </Menu.Root>
       )}
     </Wrapper>
   )
@@ -107,11 +101,19 @@ export function Item({
 interface WrapperProps {
   checked?: boolean
   type: Category
+  children: React.ReactNode
 }
 
-const Wrapper = styled(Box)`
-  ${({ checked, type }: WrapperProps) =>
-    checked
-      ? "color: grey; opacity: .5; text-decoration: line-through"
-      : `background-color: ${COLOURS[type]}`}
-`
+const checkedStyles = {
+  color: "grey",
+  opacity: 0.5,
+  textDecoration: "line-through",
+}
+function Wrapper({ checked, type, children }: WrapperProps) {
+  const uncheckedStyles = { backgroundColour: COLOURS[type] }
+  return checked ? (
+    <Box {...checkedStyles}>{children}</Box>
+  ) : (
+    <Box {...uncheckedStyles}>{children}</Box>
+  )
+}

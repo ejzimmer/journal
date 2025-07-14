@@ -1,12 +1,6 @@
-import { Button } from "@chakra-ui/button"
-import { HStack } from "@chakra-ui/layout"
-import {
-  AlertDialog,
-  AlertDialogContent,
-  AlertDialogFooter,
-  AlertDialogBody,
-  AlertDialogOverlay,
-} from "@chakra-ui/modal"
+import { Button } from "@chakra-ui/react"
+import { HStack } from "@chakra-ui/react"
+import { Dialog } from "@chakra-ui/react"
 import { useRef } from "react"
 
 interface Props {
@@ -19,17 +13,19 @@ export function ConfirmDelete({ isOpen, onClose, onDelete }: Props) {
   const cancelRef = useRef(null)
 
   return (
-    <AlertDialog
+    <Dialog.Root
       isOpen={isOpen}
       leastDestructiveRef={cancelRef}
       onClose={onClose}
+      size="sm"
+      role="alertdialog"
     >
-      <AlertDialogOverlay>
-        <AlertDialogContent width="max-content">
-          <AlertDialogBody mt="4">Are you sure?</AlertDialogBody>
+      <Dialog.Backdrop>
+        <Dialog.Content>
+          <Dialog.Body mt="4">Are you sure?</Dialog.Body>
 
-          <AlertDialogFooter>
-            <HStack spacing={2}>
+          <Dialog.Footer>
+            <HStack gap={2}>
               <Button ref={cancelRef} onClick={onClose}>
                 Cancel
               </Button>
@@ -37,9 +33,9 @@ export function ConfirmDelete({ isOpen, onClose, onDelete }: Props) {
                 Delete
               </Button>
             </HStack>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialogOverlay>
-    </AlertDialog>
+          </Dialog.Footer>
+        </Dialog.Content>
+      </Dialog.Backdrop>
+    </Dialog.Root>
   )
 }

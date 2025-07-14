@@ -1,3 +1,0 @@
-export function AddLabelControl() {
-  return;
-}

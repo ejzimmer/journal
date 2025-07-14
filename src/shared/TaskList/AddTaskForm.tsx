@@ -1,16 +1,10 @@
-import {
-  Box,
-  Flex,
-  FormControl,
-  FormLabel,
-  Input,
-  Textarea,
-} from "@chakra-ui/react";
-import { useRef, FormEvent, useEffect, useId, useState } from "react";
-import { TaskButton } from "./TaskButton";
-import { parse } from "date-fns";
-import { Item, Label } from "./types";
-import { Tag, TAG_COLOURS } from "../../tabs/Work/Tag";
+import { Box, Flex, Field, Input, Textarea } from "@chakra-ui/react"
+import { useRef, FormEvent, useEffect, useId, useState } from "react"
+import { TaskButton } from "./TaskButton"
+import { parse } from "date-fns"
+import { Item, Label } from "./types"
+import { Tag, TAG_COLOURS } from "../../tabs/Work/Tag"
+import { Combobox } from "../controls/Combobox"
 
 export function AddTaskForm({
   onSubmit,
@@ -19,29 +13,29 @@ export function AddTaskForm({
 }: {
   onSubmit: (
     task: Omit<Partial<Item>, "labels"> & {
-      labels?: Label[];
+      labels?: Label[]
     }
-  ) => void;
-  onCancel: (event?: React.MouseEvent) => void;
-  labelOptions: Label[];
+  ) => void
+  onCancel: (event?: React.MouseEvent) => void
+  labelOptions: Label[]
 }) {
-  const formRef = useRef<HTMLFormElement>(null);
-  const descriptionId = useId();
-  const dueDateId = useId();
-  const [labels, setLabels] = useState<Label[]>([]);
+  const formRef = useRef<HTMLFormElement>(null)
+  const descriptionId = useId()
+  const dueDateId = useId()
+  const [labels, setLabels] = useState<Label[]>([])
 
   const handleSubmit = (event: FormEvent) => {
-    event.preventDefault();
+    event.preventDefault()
 
-    const controls = formRef.current?.elements;
-    if (!controls) return;
-
-    // @ts-ignore
-    const description = controls[descriptionId].value;
-    if (!description) return;
+    const controls = formRef.current?.elements
+    if (!controls) return
 
     // @ts-ignore
-    const dueDate = controls[dueDateId].value;
+    const description = controls[descriptionId].value
+    if (!description) return
+
+    // @ts-ignore
+    const dueDate = controls[dueDateId].value
 
     onSubmit({
       description,
@@ -49,28 +43,28 @@ export function AddTaskForm({
         ? parse(dueDate, "yyyy-MM-dd", new Date()).getTime()
         : undefined,
       labels,
-    });
+    })
 
-    formRef.current.reset();
-    setLabels([]);
-  };
+    formRef.current?.reset()
+    setLabels([])
+  }
 
   useEffect(() => {
     const listener = (event: MouseEvent) => {
-      if (!formRef.current) return;
+      if (!formRef.current) return
 
       if (
         event.target &&
         !formRef.current.contains(event.target as HTMLElement)
       ) {
-        onCancel();
+        onCancel()
       }
-    };
+    }
 
-    window.addEventListener("click", listener);
+    window.addEventListener("click", listener)
 
-    return () => window.removeEventListener("click", listener);
-  }, [onCancel]);
+    return () => window.removeEventListener("click", listener)
+  }, [onCancel])
 
   return (
     <Box
@@ -96,22 +90,22 @@ export function AddTaskForm({
         }}
         fontFamily="inherit"
         fontSize="inherit"
-        noOfLines={2}
         onKeyDown={(event) => {
           if (event.key === "Enter") {
-            handleSubmit(event);
+            handleSubmit(event)
           }
         }}
       />
-      <FormControl
+      <Field.Root
         id={dueDateId}
+        invalid
         display="flex"
         alignItems="center"
         flexGrow="1"
+        fontSize="0.8em"
+        fontWeight="bold"
       >
-        <FormLabel fontSize="0.8em" fontWeight="bold" marginBlock="0">
-          Due date:
-        </FormLabel>
+        <Field.Label>Due date:</Field.Label>
         <Input
           type="date"
           width="auto"
@@ -120,18 +114,24 @@ export function AddTaskForm({
           border="0"
           _focusVisible={{ outline: "none" }}
         />
-      </FormControl>
+      </Field.Root>
       <Flex alignItems="center">
-        <FormControl display="flex" alignItems="center" flexGrow="1">
-          <FormLabel fontSize="0.8em" fontWeight="bold" marginBlock="0">
-            Labels
-          </FormLabel>
+        <Field.Root
+          display="flex"
+          alignItems="center"
+          flexGrow="1"
+          fontSize="0.8em"
+          fontWeight="bold"
+          marginBlock="0"
+        >
+          <Field.Label>Labels</Field.Label>
           <Combobox
             value={labels}
             onChange={(labels) => setLabels(labels)}
             options={labels}
+            renderButton={Tag}
           />
-        </FormControl>
+        </Field.Root>
         <TaskButton
           fontSize="1em"
           padding="2px"
@@ -145,135 +145,5 @@ export function AddTaskForm({
         </TaskButton>
       </Flex>
     </Box>
-  );
-}
-
-// change it all to use html popover because popper is a pain
-// submit labels & reset input when submitting from button
-// choose labels from the list of existing labels
-// remove chosen labels from list of available
-// filter list of available by typing
-// add new labels to existing task
-// make labels on different tasks different colours
-// edit labels
-// Migrate lists to /work/tasks and keep labels at /work/labels
-// split up this file and move it into work/
-
-function Combobox({
-  value,
-  onChange,
-  options,
-}: {
-  value: Label[];
-  onChange: (labels: Label[]) => void;
-  options: Label[];
-}) {
-  const popoverRef = useRef<HTMLDivElement>(null);
-  const onAddLabel = (label: Label) => onChange([...value, label]);
-
-  return (
-    <>
-      <Box width="100%" onClick={() => popoverRef.current?.togglePopover()}>
-        <TagsInput
-          labels={value}
-          onAddLabel={onAddLabel}
-          onDeleteLabel={(label) =>
-            onChange(
-              value.filter(
-                (v) => v.text !== label.text && v.colour !== label.colour
-              )
-            )
-          }
-        />
-      </Box>
-    </>
-  );
-
-  // return (
-  //   <Popover autoFocus={false} placement="bottom-start">
-  //     <PopoverTrigger></PopoverTrigger>
-  //     <PopoverContent>
-  //       <Box as="ul" padding="4px" listStyleType="none">
-  //         {options.map(({ text, colour }) => (
-  //           <Box as="li" key={text} margin="2px" width="100%">
-  //             <Tag
-  //               text={text}
-  //               colour={colour}
-  //               onClick={() => onAddLabel({ text, colour })}
-  //             />
-  //           </Box>
-  //         ))}
-  //       </Box>
-  //     </PopoverContent>
-  //   </Popover>
-  // )
-}
-
-type TagsInputProps = {
-  labels: Label[];
-  onAddLabel: (label: Label) => void;
-  onDeleteLabel: (label: Label) => void;
-};
-
-function TagsInput({ labels, onAddLabel, onDeleteLabel }: TagsInputProps) {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const [inputPadding, setInputPadding] = useState(0);
-  const [inputValue, setInputValue] = useState("");
-
-  useEffect(() => {
-    if (!containerRef.current) return;
-
-    const containerWidth = containerRef.current.clientWidth;
-    setInputPadding(containerWidth);
-  }, [labels]);
-
-  return (
-    <Flex position="relative" flexGrow={1}>
-      <Flex
-        ref={containerRef}
-        gap="2px"
-        position="absolute"
-        insetBlock="4px"
-        insetInline="4px"
-        width="fit-content"
-      >
-        {labels.map(({ text, colour }) => (
-          <Tag
-            key={text}
-            text={text}
-            colour={colour}
-            onDelete={() => onDeleteLabel({ text, colour })}
-          />
-        ))}
-      </Flex>
-      <Input
-        paddingInlineStart={`${inputPadding + 4}px`}
-        flexGrow={1}
-        value={inputValue}
-        onChange={(event) => setInputValue(event.target.value)}
-        onKeyDown={(event) => {
-          if (event.key === "Enter" && event.currentTarget.value) {
-            event.stopPropagation();
-            event.preventDefault();
-
-            const newValue: Label = {
-              text: event.currentTarget.value,
-              colour: TAG_COLOURS[labels.length % TAG_COLOURS.length],
-            };
-            onAddLabel(newValue);
-            setInputValue("");
-
-            return;
-          }
-
-          if (event.key === "Backspace" && !event.currentTarget.value) {
-            const lastLabel = labels.at(-1);
-            if (lastLabel) {
-              onDeleteLabel(lastLabel);
-            }
-          }
-        }}
-      />
-    </Flex>
-  );
+  )
 }

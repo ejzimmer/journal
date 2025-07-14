@@ -1,14 +1,14 @@
-import { Box, Heading, IconButton } from "@chakra-ui/react";
-import { useState, MouseEvent, FocusEvent, useRef, useEffect } from "react";
-import { EditableText } from "../../shared/controls/EditableText";
-import { AddTaskForm } from "../../shared/TaskList/AddTaskForm";
-import { Item, Label } from "../../shared/TaskList/types";
-import { chakra } from "@chakra-ui/react";
-import { Task } from "./Task";
-import { monitorForElements } from "@atlaskit/pragmatic-drag-and-drop/element/adapter";
-import { extractClosestEdge } from "@atlaskit/pragmatic-drag-and-drop-hitbox/closest-edge";
-import { reorderWithEdge } from "@atlaskit/pragmatic-drag-and-drop-hitbox/util/reorder-with-edge";
-import { isTask } from "./drag-utils";
+import { Box, Heading, IconButton } from "@chakra-ui/react"
+import { useState, MouseEvent, FocusEvent, useRef, useEffect } from "react"
+import { EditableText } from "../../shared/controls/EditableText"
+import { AddTaskForm } from "../../shared/TaskList/AddTaskForm"
+import { Item, Label } from "../../shared/TaskList/types"
+import { chakra } from "@chakra-ui/react"
+import { Task } from "./Task"
+import { monitorForElements } from "@atlaskit/pragmatic-drag-and-drop/element/adapter"
+import { extractClosestEdge } from "@atlaskit/pragmatic-drag-and-drop-hitbox/closest-edge"
+import { reorderWithEdge } from "@atlaskit/pragmatic-drag-and-drop-hitbox/util/reorder-with-edge"
+import { isTask } from "./drag-utils"
 
 export function TaskList({
   list,
@@ -20,63 +20,63 @@ export function TaskList({
   onReorderTasks,
   menu: Menu,
 }: {
-  list: Item;
-  labels?: Record<string, Label>;
-  onChangeListName: (name: string) => void;
-  onDelete: () => void;
+  list: Item
+  labels?: Record<string, Label>
+  onChangeListName: (name: string) => void
+  onDelete: () => void
   onAddTask: (
     task: Omit<Partial<Item>, "labels"> & { labels?: Label[] }
-  ) => void;
-  onChangeTask: (task: Item) => void;
-  onReorderTasks: (tasks: Item[]) => void;
-  menu?: React.FC<{ task: Item }>;
+  ) => void
+  onChangeTask: (task: Item) => void
+  onReorderTasks: (tasks: Item[]) => void
+  menu?: React.FC<{ task: Item }>
 }) {
-  const listRef = useRef<HTMLUListElement>(null);
-  const [addTaskFormVisible, setAddTaskFormVisible] = useState(false);
+  const listRef = useRef<HTMLUListElement>(null)
+  const [addTaskFormVisible, setAddTaskFormVisible] = useState(false)
 
   const showTaskForm = (event: MouseEvent | FocusEvent) => {
-    event.stopPropagation();
+    event.stopPropagation()
     if (event.target === listRef.current) {
-      setAddTaskFormVisible(true);
+      setAddTaskFormVisible(true)
     }
-  };
+  }
 
   const sortedList =
     list.items &&
     Object.values(list.items).toSorted(
       (a, b) => (a.order ?? Infinity) - (b.order ?? Infinity)
-    );
+    )
 
   useEffect(() => {
     return monitorForElements({
       canMonitor({ source }) {
-        return isTask(source.data);
+        return isTask(source.data)
       },
       onDrop({ location, source }) {
-        const target = location.current.dropTargets[0];
+        const target = location.current.dropTargets[0]
         if (!target || !sortedList) {
-          return;
+          return
         }
 
-        const sourceData = source.data;
-        const targetData = target.data;
+        const sourceData = source.data
+        const targetData = target.data
 
         if (!isTask(sourceData) || !isTask(targetData)) {
-          return;
+          return
         }
 
         const indexOfSource = sortedList.findIndex(
           (task) => task.id === sourceData.taskId
-        );
+        )
         const indexOfTarget = sortedList.findIndex(
           (task) => task.id === targetData.taskId
-        );
+        )
 
         if (indexOfTarget < 0 || indexOfSource < 0) {
-          return;
+          return
         }
 
-        const closestEdgeOfTarget = extractClosestEdge(targetData);
+        const closestEdgeOfTarget = extractClosestEdge(targetData)
         onReorderTasks(
           reorderWithEdge({
             list: sortedList,
@@ -85,10 +85,10 @@ export function TaskList({
             closestEdgeOfTarget,
             axis: "vertical",
           })
-        );
+        )
       },
-    });
-  }, [list, onReorderTasks, sortedList]);
+    })
+  }, [list, onReorderTasks, sortedList])
 
   return (
     <Box
@@ -97,7 +97,7 @@ export function TaskList({
       minWidth="300px"
       minHeight="316px"
       cursor="text"
-      sx={{
+      css={{
         "--margin-width": "30px",
         "--margin-colour": "hsl(330 60% 85%)",
       }}
@@ -121,7 +121,6 @@ export function TaskList({
         </EditableText>
         <IconButton
           aria-label={`delete list ${list.description}`}
-          icon={<>🗑️</>}
           onClick={onDelete}
           size="xs"
           variant="ghost"
@@ -129,7 +128,9 @@ export function TaskList({
           _hover={{
             opacity: "1",
           }}
-        />
+        >
+          🗑️
+        </IconButton>
       </Heading>
       <chakra.ul
         ref={listRef}
@@ -138,7 +139,7 @@ export function TaskList({
         flexGrow={1}
         lineHeight="1"
         listStyleType="none"
-        sx={{
+        css={{
           "--line-colour": "hsl(200 90% 80%)",
           "--line-height": "33px",
         }}
@@ -163,7 +164,7 @@ export function TaskList({
             <AddTaskForm
               onSubmit={onAddTask}
               onCancel={() => {
-                setAddTaskFormVisible(false);
+                setAddTaskFormVisible(false)
               }}
               labelOptions={labels ? Object.values(labels) : []}
             />
@@ -171,5 +172,5 @@ export function TaskList({
         )}
       </chakra.ul>
     </Box>
-  );
+  )
 }
