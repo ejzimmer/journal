@@ -7,6 +7,7 @@ const TEXT = "Buy fabric"
 const defaultProps = {
   onChange: jest.fn(),
   children: TEXT,
+  label: "test",
 }
 
 describe("EditableLabel", () => {

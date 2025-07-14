@@ -8,6 +8,7 @@ const defaultProps: Props = {
   onClose: jest.fn(),
   onConfirm: jest.fn(),
   confirmButtonText: "Delete",
+  setOpen: jest.fn(),
 }
 
 describe("ConfirmationModal", () => {

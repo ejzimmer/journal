@@ -13,13 +13,7 @@ export function ConfirmDelete({ isOpen, onClose, onDelete }: Props) {
   const cancelRef = useRef(null)
 
   return (
-    <Dialog.Root
-      isOpen={isOpen}
-      leastDestructiveRef={cancelRef}
-      onClose={onClose}
-      size="sm"
-      role="alertdialog"
-    >
+    <Dialog.Root open={isOpen} size="sm" role="alertdialog">
       <Dialog.Backdrop>
         <Dialog.Content>
           <Dialog.Body mt="4">Are you sure?</Dialog.Body>

@@ -27,12 +27,7 @@ export function useConfirmDelete(deleteList: (list: Item) => void) {
       }
 
       return (
-        <Dialog.Root
-          open={isOpen}
-          leastDestructiveRef={cancelRef}
-          onClose={handleClose}
-          role="alertdialog"
-        >
+        <Dialog.Root open={isOpen} role="alertdialog">
           <Portal>
             <Theme appearance="light">
               <Dialog.Backdrop>

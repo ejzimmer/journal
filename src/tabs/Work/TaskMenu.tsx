@@ -46,7 +46,7 @@ export function TaskMenu({
               key="move_to_top"
               value="move_to_top"
               onClick={onMoveToTop}
-              isDisabled={task.order === 0}
+              disabled={task.order === 0}
             >
               ⬆️ Move to top
             </Menu.Item>

@@ -1,4 +1,3 @@
-import { Checkbox } from "../controls/Checkbox"
 import { useItem } from "../storage/ItemManager"
 import { DeleteTaskButton } from "./DeleteTaskButton"
 import { TaskButton } from "./TaskButton"
@@ -148,9 +147,10 @@ export function Task({ id }: TaskProps) {
   return (
     <>
       <Box border="1px solid black" position="relative" ref={ref}>
-        <Checkbox
-          label={`${task.description}`}
-          isChecked={task.isComplete}
+        <input
+          type="checkbox"
+          aria-label={`${task.description}`}
+          checked={task.isComplete}
           onChange={() => {
             const isComplete = !task.isComplete
             onChange({ ...task, isComplete })
@@ -173,8 +173,9 @@ export function Task({ id }: TaskProps) {
         />
         {isAddingNewTask && (
           <AddTaskForm
-            onSubmit={onAddTask}
+            onSubmit={(arg) => onAddTask(arg.description ?? "foo")}
             onCancel={() => setAddingNewTask(false)}
+            labelOptions={[]}
           />
         )}
         {task.items?.length && (
@@ -207,7 +208,7 @@ function DropIndicator({ edge }: { edge: Edge }) {
       right={0}
       top={edge === "top" ? lineOffset : undefined}
       bottom={edge === "bottom" ? lineOffset : undefined}
-      sx={{
+      css={{
         "&::before": {
           content: '""',
           position: "absolute",
