@@ -1,10 +1,10 @@
-import { Box, Flex, Field, Input, Textarea } from "@chakra-ui/react"
 import { useRef, FormEvent, useEffect, useId, useState } from "react"
 import { TaskButton } from "./TaskButton"
 import { parse } from "date-fns"
 import { Item, Label } from "./types"
 import { Tag, TAG_COLOURS } from "../../tabs/Work/Tag"
 import { Combobox } from "../controls/Combobox"
+import './AddTaskForm.css'
 
 export function AddTaskForm({
   onSubmit,
@@ -67,29 +67,20 @@ export function AddTaskForm({
   }, [onCancel])
 
   return (
-    <Box
-      as="form"
-      // @ts-ignore
+    <form
       ref={formRef}
-      outline="2px dashed"
-      paddingBlock="4px"
-      paddingInline="8px"
+      style={{
+        outline: '2px dashed',
+      paddingBlock:"4px",
+      paddingInline:"8px",
+      marginBlockStart:"40px"
+      }}
       onSubmit={handleSubmit}
-      marginBlockStart="40px"
     >
-      <Textarea
+      <textarea
+        className="description"
         aria-label="Task description"
         id={descriptionId}
-        border="none"
-        borderRadius="0"
-        paddingInlineStart="0"
-        paddingInlineEnd="40px"
-        paddingBlockStart="0"
-        _focusVisible={{
-          outline: "none",
-        }}
-        fontFamily="inherit"
-        fontSize="inherit"
         onKeyDown={(event) => {
           if (event.key === "Enter") {
             handleSubmit(event)
@@ -105,17 +96,13 @@ export function AddTaskForm({
         fontSize="0.8em"
         fontWeight="bold"
       >
-        <Field.Label>Due date:</Field.Label>
-        <Input
+        <label>Due date:</label>
+        <input
           type="date"
-          width="auto"
-          flexGrow={1}
-          paddingInlineStart={0}
-          border="0"
-          _focusVisible={{ outline: "none" }}
+          className='due-date'
         />
       </Field.Root>
-      <Flex alignItems="center">
+      <div style={{ alignItems: 'center'}}>
         <Field.Root
           display="flex"
           alignItems="center"
@@ -124,7 +111,7 @@ export function AddTaskForm({
           fontWeight="bold"
           marginBlock="0"
         >
-          <Field.Label>Labels</Field.Label>
+          <label>Labels</label>
           <Combobox
             value={labels}
             onChange={(labels) => setLabels(labels)}
@@ -143,7 +130,7 @@ export function AddTaskForm({
         <TaskButton padding="2px" fontSize="1em" type="submit">
           ✅
         </TaskButton>
-      </Flex>
+      </div>
     </Box>
   )
 }

@@ -1,6 +1,4 @@
 import { Today } from "./tabs/Today"
-import { Button } from "@chakra-ui/react"
-import { Box, Grid } from "@chakra-ui/react"
 
 import {
   getAuth,
@@ -12,6 +10,8 @@ import { useState } from "react"
 import { Todo } from "./tabs/Todo"
 import { Routes, Route, NavLink } from "react-router-dom"
 import { Work } from "./tabs/Work"
+
+import "./App.css"
 
 const TABS = {
   today: <Today />,
@@ -34,59 +34,38 @@ export function App() {
 
   if (!isLoggedIn) {
     return (
-      <Grid height="100vh">
-        <Button m="auto" onClick={login}>
-          Log In
-        </Button>
-      </Grid>
+      <div className="not-logged-in">
+        <button onClick={login}>Log In</button>
+      </div>
     )
   }
 
   return (
     <>
-      <Box
-        as="nav"
-        position="sticky"
-        top={0}
-        background="white"
-        zIndex={1}
-        borderBottom="2px solid #e2e8f0"
-        marginBottom="1rem"
-        display="flex"
-      >
+      <nav className="top-nav">
         {Object.keys(TABS).map((tab) => (
           <NavItem key={tab} to={tab}>
             {tab}
           </NavItem>
         ))}
-      </Box>
+      </nav>
 
-      <Box paddingInline="30px" paddingBlock="20px">
+      <div className="main-content">
         <Routes>
           {Object.entries(TABS).map(([name, Element]) => (
             <Route key={name} path={name} element={Element} />
           ))}
           <Route path="/" element={<Today />} />
         </Routes>
-      </Box>
+      </div>
     </>
   )
 }
 
 function NavItem({ to, children }: { to: string; children: React.ReactNode }) {
   return (
-    <Box
-      padding=".5rem 1rem"
-      marginBottom="-2px"
-      css={{
-        "& .active": {
-          color: "#2b6cb0",
-          borderBottom: "inherit",
-          borderColor: "currentColor",
-        },
-      }}
-    >
+    <div className="nav-item">
       <NavLink to={to}>{children}</NavLink>
-    </Box>
+    </div>
   )
 }

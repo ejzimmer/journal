@@ -1,10 +1,12 @@
-import { Checkbox, Box, Menu, IconButton } from "@chakra-ui/react"
 import { ChangeEvent } from "react"
 import { DeleteMenuItem } from "../DeleteMenuItem"
 import { Category, COLOURS, TodoItem } from "./types"
 import { isToday } from "date-fns"
 import { SlArrowDown } from "react-icons/sl"
 import { MoveToMenuItem } from "./MoveToMenuItem"
+
+import "./Item.css"
+import { Menu } from "../controls/Menu"
 
 interface Props {
   item: TodoItem
@@ -41,15 +43,7 @@ export function Item({
   const isDone = !!item.done
 
   return (
-    <Wrapper
-      checked={isDone}
-      type={item.type as keyof typeof COLOURS}
-      display="flex"
-      cursor="pointer"
-      _hover={{
-        outline: "1px solid #999",
-      }}
-    >
+    <Wrapper checked={isDone} type={item.type as keyof typeof COLOURS}>
       <label
         style={{
           display: "flex",
@@ -60,39 +54,29 @@ export function Item({
           cursor: "pointer",
         }}
       >
-        <Checkbox.Root
-          variant="subtle"
-          color="gray"
-          isChecked={isDone}
-          onChange={handleCheck}
-        >
-          <Checkbox.Control />
-        </Checkbox.Root>
+        <input type="checkbox" checked={isDone} onChange={handleCheck} />
         {item.type} {item.description}
       </label>
       {!isDone && (
-        <Menu.Root>
-          <Menu.Trigger asChild>
-            <IconButton variant="ghost" borderRadius="0" aria-label="actions">
+        <Menu
+          trigger={(props) => (
+            <button {...props} aria-label="actions">
               <SlArrowDown />
-            </IconButton>
-          </Menu.Trigger>
-          <Menu.Content>
-            <Menu.Item value="top" onSelect={onMoveToTop}>
-              ⏫ Move to top
-            </Menu.Item>
-            {currentList &&
-              otherLists.map((list) => (
-                <MoveToMenuItem
-                  key={list}
-                  source={currentList}
-                  target={list}
-                  item={item}
-                />
-              ))}
-            <DeleteMenuItem onDelete={() => onDelete(item)} />
-          </Menu.Content>
-        </Menu.Root>
+            </button>
+          )}
+        >
+          <Menu.Action onClick={onMoveToTop}>⏫ Move to top</Menu.Action>
+          {currentList &&
+            otherLists.map((list) => (
+              <MoveToMenuItem
+                key={list}
+                source={currentList}
+                target={list}
+                item={item}
+              />
+            ))}
+          <DeleteMenuItem onDelete={() => onDelete(item)} />
+        </Menu>
       )}
     </Wrapper>
   )
@@ -104,16 +88,14 @@ interface WrapperProps {
   children: React.ReactNode
 }
 
-const checkedStyles = {
-  color: "grey",
-  opacity: 0.5,
-  textDecoration: "line-through",
-}
 function Wrapper({ checked, type, children }: WrapperProps) {
-  const uncheckedStyles = { backgroundColour: COLOURS[type] }
   return checked ? (
-    <Box {...checkedStyles}>{children}</Box>
+    <div
+      style={{ color: "grey", opacity: 0.5, textDecoration: "line-through" }}
+    >
+      {children}
+    </div>
   ) : (
-    <Box {...uncheckedStyles}>{children}</Box>
+    <div style={{ backgroundColor: COLOURS[type] }}>{children}</div>
   )
 }

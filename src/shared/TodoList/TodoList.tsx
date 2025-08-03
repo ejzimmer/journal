@@ -1,4 +1,3 @@
-import { Box, Flex } from "@chakra-ui/react"
 import { Fragment, useEffect, useMemo, useState } from "react"
 import {
   DragDropContext,
@@ -49,14 +48,18 @@ export function TodoList({
   }
 
   return (
-    <Box>
-      <Flex
-        width="100%"
-        border="2px solid hsl(0 0% 85%)"
-        borderTopRadius="lg"
-        alignItems="center"
-        justifyContent="space-around"
-        px="10px"
+    <div>
+      <div
+        style={{
+          display: "flex",
+          width: "100%",
+          border: "2px solid hsl(0 0% 85%)",
+          borderTopLeftRadius: "lg",
+          borderTopRightRadius: "lg",
+          alignItems: "center",
+          justifyContent: "space-around",
+          paddingInline: "10px",
+        }}
       >
         <Total items={items} />
         <FilterByCategory
@@ -64,15 +67,16 @@ export function TodoList({
           items={sortedItems}
           setItems={setFilteredItems}
         />
-      </Flex>
+      </div>
       <DragDropContext onDragEnd={onDragEnd}>
         <Droppable droppableId={id}>
           {(provided) => (
-            <Box
-              as="ul"
-              listStyleType="none"
-              width="100%"
-              minWidth="400px"
+            <ul
+              style={{
+                listStyleType: "none",
+                width: "100%",
+                minWidth: "400px",
+              }}
               {...provided.droppableProps}
               ref={provided.innerRef}
             >
@@ -101,26 +105,28 @@ export function TodoList({
                 </Draggable>
               ))}
               {provided.placeholder}
-            </Box>
+            </ul>
           )}
         </Droppable>
       </DragDropContext>
-    </Box>
+    </div>
   )
 }
 
 function Total({ items }: { items: TodoItem[] }) {
   return (
-    <Box
-      flexGrow="1"
-      flexBasis="1.5em"
-      flexShrink="0"
-      textAlign="center"
-      fontWeight="bold"
-      color="#666"
+    <div
+      style={{
+        flexGrow: "1",
+        flexBasis: "1.5em",
+        flexShrink: "0",
+        textAlign: "center",
+        fontWeight: "bold",
+        color: "#666",
+      }}
     >
       {items.filter((item) => !item.done).length}
-    </Box>
+    </div>
   )
 }
 
@@ -160,15 +166,16 @@ function FilterByCategory({ items, setItems, id }: FilterProps) {
   }, [filters, setItems, items])
 
   return (
-    <Flex
-      css={{
-        'input[type="checkbox"]:checked + label': {
-          background: "currentColor",
-        },
-      }}
-      alignItems="center"
-      justifyContent="space-between"
-      flexGrow="1"
+    <div
+
+    // css={{
+    //   'input[type="checkbox"]:checked + label': {
+    //     background: "currentColor",
+    //   },
+    // }}
+    // alignItems="center"
+    // justifyContent="space-between"
+    // flexGrow="1"
     >
       {[...Object.entries(COLOURS)].map(([category, colour]) => (
         <Fragment key={category}>
@@ -190,24 +197,24 @@ function FilterByCategory({ items, setItems, id }: FilterProps) {
               )
             }
           />
-          <label htmlFor={`${id}-${category}`}>
-            <Box
-              as="label"
-              cursor="pointer"
-              margin="0"
-              padding="2"
-              color={colour}
-              _hover={{
-                background: "currentColor",
-              }}
-              flexGrow="1"
-              textAlign="center"
-            >
-              {category}
-            </Box>
+          <label
+            htmlFor={`${id}-${category}`}
+            style={{
+              cursor: "pointer",
+              margin: "0",
+              padding: "2",
+              color: colour,
+              // _hover:{{,
+              //   background: "currentColor",
+              // }}
+              flexGrow: "1",
+              textAlign: "center",
+            }}
+          >
+            {category}
           </label>
         </Fragment>
       ))}
-    </Flex>
+    </div>
   )
 }

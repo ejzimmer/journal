@@ -1,4 +1,3 @@
-import { Dialog, Button, Portal, Theme } from "@chakra-ui/react"
 import { useState, useRef } from "react"
 import { Item } from "../../shared/TaskList/types"
 
@@ -27,7 +26,7 @@ export function useConfirmDelete(deleteList: (list: Item) => void) {
       }
 
       return (
-        <Dialog.Root open={isOpen} role="alertdialog">
+        <Modal.Root open={isOpen} role="alertdialog">
           <Portal>
             <Theme appearance="light">
               <Dialog.Backdrop>
@@ -45,17 +44,17 @@ export function useConfirmDelete(deleteList: (list: Item) => void) {
                     borderBlockStart="1px solid"
                     borderColor="gray.400"
                   >
-                    <Button
+                    <button
                       variant="outline"
                       color="gray.600"
                       ref={cancelRef}
                       onClick={handleClose}
                     >
                       No, don't delete
-                    </Button>
-                    <Button colorScheme="red" onClick={handleDelete} ml={3}>
+                    </button>
+                    <button colorScheme="red" onClick={handleDelete} ml={3}>
                       Yes, delete
-                    </Button>
+                    </button>
                   </Dialog.Footer>
                 </Dialog.Content>
               </Dialog.Backdrop>

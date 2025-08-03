@@ -1,4 +1,4 @@
-import { Dialog, Button, Portal } from "@chakra-ui/react"
+import { Modal, ModalProps } from "./controls/Modal"
 
 export type Props = {
   message: string
@@ -7,48 +7,26 @@ export type Props = {
   onConfirm: () => void
   onClose: () => void
   confirmButtonText?: string
+  trigger: ModalProps["trigger"]
 }
 
 export function ConfirmationModal({
-  isOpen,
-  setOpen,
   message,
   onClose,
   onConfirm,
   confirmButtonText = "Confirm",
+  trigger,
 }: Props) {
   return (
-    <Dialog.Root
-      lazyMount
-      open={isOpen}
-      onOpenChange={(event: { open: boolean }) => setOpen(event.open)}
-      size="sm"
-      role="alertdialog"
-    >
-      <Portal>
-        <Dialog.Backdrop />
-        <Dialog.Positioner>
-          <Dialog.Content>
-            <Dialog.Body>
-              <Dialog.Body mt="4">{message}</Dialog.Body>
-            </Dialog.Body>
-            <Dialog.Footer>
-              <Dialog.ActionTrigger asChild>
-                <Button variant="outline">Cancel</Button>
-              </Dialog.ActionTrigger>
-              <Button
-                colorScheme="red"
-                onClick={() => {
-                  onConfirm()
-                  onClose()
-                }}
-              >
-                {confirmButtonText}
-              </Button>
-            </Dialog.Footer>
-          </Dialog.Content>
-        </Dialog.Positioner>
-      </Portal>
-    </Dialog.Root>
+    <Modal trigger={trigger}>
+      {message}
+      <Modal.Action
+        onAction={() => {
+          onConfirm()
+        }}
+      >
+        {confirmButtonText}
+      </Modal.Action>
+    </Modal>
   )
 }

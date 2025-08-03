@@ -1,0 +1,13 @@
+.skeleton {
+  background-image: linear-gradient(grey, darkgrey);
+  animation: skeleton 2s linear infinite;
+}
+
+@keyframes skeleton {
+  from {
+    background-position-x: 0;
+  }
+  to {
+    background-position-x: 100%;
+  }
+}

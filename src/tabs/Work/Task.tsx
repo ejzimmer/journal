@@ -1,4 +1,3 @@
-import { Box, Checkbox } from "@chakra-ui/react"
 import { ItemDescription } from "../../shared/TaskList/ItemDescription"
 import { Item, Label } from "../../shared/TaskList/types"
 import { EditableDate } from "./EditableDate"
@@ -19,6 +18,8 @@ import {
 import { createPortal } from "react-dom"
 import { getTaskData, isTask } from "./drag-utils"
 import { Tag } from "./Tag"
+
+import "./TaskList.css"
 
 type DraggingState =
   | { type: "idle" }
@@ -120,43 +121,44 @@ export function Task({
 
   return (
     <>
-      <Box
+      <div
         ref={draggableRef}
-        display="flex"
-        alignItems="baseline"
-        opacity={task.isComplete ? 0.4 : 1}
-        position="relative"
+        style={{
+          display: "flex",
+          alignItems: "baseline",
+          opacity: task.isComplete ? 0.4 : 1,
+          position: "relative",
+        }}
       >
-        <Box
-          height="24px"
-          alignSelf="center"
-          opacity="0.2"
-          cursor="grab"
-          _hover={{ opacity: 1 }}
-          marginInlineEnd="4px"
+        <div
+          style={{
+            height: "24px",
+            alignSelf: "center",
+            opacity: "0.2",
+            cursor: "grab",
+            // _hover:{{ opacity: 1 }},
+            marginInlineEnd: "4px",
+          }}
         >
           <DragIndicator />
-        </Box>
-        <Checkbox.Root
+        </div>
+        <input
+          type="checkbox"
           aria-label={`${task.description}`}
           checked={task.isComplete}
-          onCheckedChange={() => {
+          onChange={() => {
             const isComplete = !task.isComplete
             onChange({ ...task, isComplete })
           }}
-          colorPalette="gray"
-          variant="solid"
-          size="sm"
-        >
-          <Checkbox.HiddenInput />
-          <Checkbox.Control />
-        </Checkbox.Root>
-        <Box
-          display="flex"
-          flexGrow="1"
-          marginInlineEnd="12px"
-          gap="8px"
-          alignItems="center"
+        />
+        <div
+          style={{
+            display: "flex",
+            flexGrow: "1",
+            marginInlineEnd: "12px",
+            gap: "8px",
+            alignItems: "center",
+          }}
         >
           <ItemDescription
             description={task.description}
@@ -194,13 +196,13 @@ export function Task({
               }}
             />
           )}
-        </Box>
+        </div>
         {Menu && <Menu />}
         {draggingState.type === "is-dragging-over" &&
         draggingState.closestEdge ? (
           <DropIndicator edge={draggingState.closestEdge} />
         ) : null}
-      </Box>
+      </div>
       {draggingState.type === "preview" &&
         createPortal(<DragPreview task={task} />, draggingState.container)}
     </>
@@ -219,41 +221,6 @@ function DragIndicator() {
   )
 }
 
-const lineOffset = "-5px"
-const strokeSize = 2
-const terminalRadius = 4
-const terminalDiameter = terminalRadius * 2
-const offsetToAlignTerminalWithLine = (strokeSize - terminalDiameter) / 2
-
 function DropIndicator({ edge }: { edge: Edge }) {
-  return (
-    <Box
-      position="absolute"
-      backgroundColor="blue.500"
-      pointerEvents="none"
-      height={`${strokeSize}px`}
-      left={`${terminalRadius}px`}
-      right={0}
-      top={edge === "top" ? lineOffset : undefined}
-      bottom={edge === "bottom" ? lineOffset : undefined}
-      css={{
-        "&::before": {
-          content: '""',
-          position: "absolute",
-          top:
-            edge === "top" ? `${offsetToAlignTerminalWithLine}px` : undefined,
-          bottom:
-            edge === "bottom"
-              ? `${offsetToAlignTerminalWithLine}px`
-              : undefined,
-          left: `-${terminalDiameter}px`,
-          width: `${terminalDiameter}px`,
-          height: `${terminalDiameter}px`,
-          border: `${strokeSize}px solid`,
-          borderColor: "blue.500",
-          borderRadius: "1000px",
-        },
-      }}
-    />
-  )
+  return <div className={`drop-indicator ${edge}`} />
 }

@@ -1,0 +1,106 @@
+.delete-button {
+  opacity: 0.5;
+
+  &:hover {
+    opacity: 1;
+  }
+}
+
+li.task:last-child {
+  margin-block-end: 40px;
+}
+
+.drop-indicator {
+  --stroke-size: 2px;
+  --terminal-radius: 4px;
+  --line-offset: -5px;
+  --terminal-diameter: calc(var(--terminal-radius) * 2);
+  --terminal-offset: calc(var(--stroke-size) - var(terminal-diameter))
+  position: absolute;
+  background-color: blue;
+  pointer-events: none;
+  height: var(--stroke-size);
+  left: var(--terminal-radius);
+  right: 0;
+
+  &::before {
+    content: "";
+    position: absolute;
+    left: calc(var(--terminal-diameter) * -1);
+    width: var(--terminal-diameter);
+    height: var(--terminal-diameter);
+    border: var(--stroke-size) solid blue;
+    border-radius: 1000px;
+  }
+
+  &.top {
+    top: var(--line-offset);
+
+    &::before {
+      top: var(--terminal-offset);
+    }
+  }
+
+  &.bottom {
+    bottom: var(--line-offset);
+
+    &::before {
+      bottom: var(--terminal-offset)
+    }
+  }
+}
+
+.tag {
+  font-family: "sans-serif";
+  padding: "4px 8px";
+  border-radius: "3px";
+  font-size: "16px";
+  color: "white";
+  width: "fit-content";
+  transition: "opacity .2sx";
+  background-color: var(--colour);
+
+  .delete-button {
+    border-radius: 1000px;
+    position: absolute;
+    inset-inline-end: 0;
+    inset-inline-start: 0;
+    transform: translate(50%, -35%);
+    padding: 2px;
+    background-color: white;
+    color: var(--colour);
+    border-color: var(--colour);
+
+    &:hover {
+      border-color: white;
+      background-color: var(--colour);
+      color: white;
+      transition: all .2s;
+    }
+  }
+}
+
+button.tag {
+  &:hover {
+    filter: brightness(1.2);
+    cursor: pointer;
+  }
+  &:focus {
+    outline: 2px solid rebeccapurple;
+  }
+
+  :has(+ :hover) {
+    opacity: 0.6;
+  }
+}
+
+.menu-trigger {
+  min-width: 24px;
+  height: 24px;
+  padding: 3px;
+  align-self: center;
+
+  &:hover {
+    background: hsl(200 70% 90%);
+  }
+}

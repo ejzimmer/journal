@@ -1,14 +1,41 @@
-import { Box, Heading, IconButton } from "@chakra-ui/react"
 import { useState, MouseEvent, FocusEvent, useRef, useEffect } from "react"
 import { EditableText } from "../../shared/controls/EditableText"
 import { AddTaskForm } from "../../shared/TaskList/AddTaskForm"
 import { Item, Label } from "../../shared/TaskList/types"
-import { chakra } from "@chakra-ui/react"
 import { Task } from "./Task"
 import { monitorForElements } from "@atlaskit/pragmatic-drag-and-drop/element/adapter"
 import { extractClosestEdge } from "@atlaskit/pragmatic-drag-and-drop-hitbox/closest-edge"
 import { reorderWithEdge } from "@atlaskit/pragmatic-drag-and-drop-hitbox/util/reorder-with-edge"
 import { isTask } from "./drag-utils"
+
+import "./TaskList.css"
+
+const containerStyle = {
+  "--margin-width": "30px",
+  "--margin-colour": "hsl(330 60% 85%)",
+  display: "flex",
+  flexDirection: "column",
+  minWidth: "300px",
+  minHeight: "316px",
+  cursor: "text",
+  paddingInlineStart: "var(--margin-width)",
+  background:
+    "linear-gradient(to right, transparent, transparent var(--margin-width), var(--margin-colour) var(--margin-width), var(--margin-colour) calc(var(--margin-width) + 2px), transparent calc(var(--margin-width) + 2px))",
+} as React.CSSProperties
+
+const listStyle = {
+  "--line-colour": "hsl(200 90% 80%)",
+  "--line-height": "33px",
+  flexGrow: 1,
+  lineHeight: "1",
+  listStyleType: "none",
+  fontFamily: "'Shadows Into Light', sans-serif",
+  fontSize: "24px",
+  marginInlineStart: "calc(var(--margin-width) * -1)",
+  paddingInlineStart: "calc(var(--margin-width) + 8px)",
+  background:
+    "repeating-linear-gradient(transparent, transparent var(--line-height), var(--line-colour) var(--line-height), var(--line-colour) calc(var(--line-height) + 1px), transparent calc(var(--line-height) + 1px))",
+} as React.CSSProperties
 
 export function TaskList({
   list,
@@ -91,27 +118,16 @@ export function TaskList({
   }, [list, onReorderTasks, sortedList])
 
   return (
-    <Box
-      display="flex"
-      flexDirection="column"
-      minWidth="300px"
-      minHeight="316px"
-      cursor="text"
-      css={{
-        "--margin-width": "30px",
-        "--margin-colour": "hsl(330 60% 85%)",
-      }}
-      paddingInlineStart="var(--margin-width)"
-      background="linear-gradient(to right, transparent, transparent var(--margin-width), var(--margin-colour) var(--margin-width), var(--margin-colour) calc(var(--margin-width) + 2px), transparent calc(var(--margin-width) + 2px))"
-    >
-      <Heading
-        as="h2"
-        fontSize="20px"
-        borderBottom="2px solid hsl(200 90% 80%)"
-        marginInlineStart="calc(var(--margin-width) * -1)"
-        paddingInlineStart="calc(var(--margin-width) + 8px)"
-        display="flex"
-        justifyContent="space-between"
+    <div style={containerStyle}>
+      <h2
+        style={{
+          fontSize: "20px",
+          borderBottom: "2px solid hsl(200 90% 80%)",
+          marginInlineStart: "calc(var(--margin-width) * -1)",
+          paddingInlineStart: "calc(var(--margin-width) + 8px)",
+          display: "flex",
+          justifyContent: "space-between",
+        }}
       >
         <EditableText
           label={`Edit ${list.description} name`}
@@ -119,48 +135,32 @@ export function TaskList({
         >
           {list.description}
         </EditableText>
-        <IconButton
+        <button
           aria-label={`delete list ${list.description}`}
           onClick={onDelete}
-          size="xs"
-          variant="ghost"
-          opacity=".5"
-          _hover={{
-            opacity: "1",
-          }}
+          className="delete-button"
         >
           🗑️
-        </IconButton>
-      </Heading>
-      <chakra.ul
+        </button>
+      </h2>
+      <ul
         ref={listRef}
         onClick={showTaskForm}
         onFocus={showTaskForm}
-        flexGrow={1}
-        lineHeight="1"
-        listStyleType="none"
-        css={{
-          "--line-colour": "hsl(200 90% 80%)",
-          "--line-height": "33px",
-        }}
-        fontFamily="'Shadows Into Light', sans-serif"
-        fontSize="24px"
-        marginInlineStart="calc(var(--margin-width) * -1)"
-        paddingInlineStart="calc(var(--margin-width) + 8px)"
-        background="repeating-linear-gradient(transparent, transparent var(--line-height), var(--line-colour) var(--line-height), var(--line-colour) calc(var(--line-height) + 1px), transparent calc(var(--line-height) + 1px))"
+        style={listStyle}
       >
         {sortedList?.map((item, index) => (
-          <chakra.li key={item.id} _last={{ marginBlockEnd: "40px" }}>
+          <li className="task" key={item.id}>
             <Task
               task={item}
               availableLabels={labels}
               onChange={onChangeTask}
               menu={() => (Menu ? <Menu task={item} /> : null)}
             />
-          </chakra.li>
+          </li>
         ))}
         {addTaskFormVisible && (
-          <chakra.li marginBlockStart="12px">
+          <li style={{ marginBlockStart: "12px" }}>
             <AddTaskForm
               onSubmit={onAddTask}
               onCancel={() => {
@@ -168,9 +168,9 @@ export function TaskList({
               }}
               labelOptions={labels ? Object.values(labels) : []}
             />
-          </chakra.li>
+          </li>
         )}
-      </chakra.ul>
-    </Box>
+      </ul>
+    </div>
   )
 }

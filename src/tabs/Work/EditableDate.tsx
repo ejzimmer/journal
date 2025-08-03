@@ -1,8 +1,11 @@
-import { Badge, BoxProps, Input } from "@chakra-ui/react"
 import { format, parse } from "date-fns"
 import { useEffect, useRef, useState } from "react"
 
-interface Props extends Omit<BoxProps, "onChange" | "children"> {
+interface Props
+  extends Omit<
+    React.HTMLAttributes<HTMLDivElement>,
+    "children" | "style" | "onChange"
+  > {
   onChange: (date: number) => void
   value: number
 }
@@ -32,7 +35,7 @@ export function EditableDate({ onChange, value, ...props }: Props) {
   }
 
   return isEditing ? (
-    <Input
+    <input
       type="date"
       ref={inputRef}
       onBlur={handleSubmit}
@@ -41,27 +44,29 @@ export function EditableDate({ onChange, value, ...props }: Props) {
           handleSubmit()
         }
       }}
-      defaultValue={value}
+      value={value}
       aria-label="Due date"
-      border="none"
-      fontSize="inherit"
-      height="unset"
+      style={{
+        border: "none",
+        fontSize: "inherit",
+        height: "unset",
+        paddingBlock: "0",
+      }}
       {...props}
-      paddingBlock="0"
     />
   ) : (
-    <Badge
-      fontSize=".6em"
-      fontFamily="sans-serif"
-      padding="8px 4px"
-      variant="outline"
-      colorScheme="red"
+    <div
+      style={{
+        fontSize: ".6em",
+        fontFamily: "sans-serif",
+        padding: "8px 4px",
+      }}
       {...props}
       tabIndex={0}
       onFocus={startEditing}
       onClick={startEditing}
     >
       {format(value, "dd MMM")}
-    </Badge>
+    </div>
   )
 }

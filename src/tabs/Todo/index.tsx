@@ -1,4 +1,3 @@
-import { VStack } from "@chakra-ui/react"
 import { isSameDay } from "date-fns"
 import { useCallback, useContext, useEffect, useState } from "react"
 import { FirebaseContext } from "../../shared/FirebaseContext"
@@ -81,7 +80,7 @@ export function Todo() {
   }, [onNewItem, onChangeItem, onDeleteItem, setItems, subscribeToList])
 
   return (
-    <VStack spacing="4">
+    <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
       <TodoList
         id="todo"
         items={Object.values(items)}
@@ -92,6 +91,6 @@ export function Todo() {
         otherLists={["today"]}
       />
       <NewItem list={TODO_KEY} />
-    </VStack>
+    </div>
   )
 }

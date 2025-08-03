@@ -1,5 +1,4 @@
-import { HStack, Input, NativeSelect } from "@chakra-ui/react"
-import React, { ChangeEvent, FormEvent, useContext, useState } from "react"
+import { ChangeEvent, FormEvent, useContext, useState } from "react"
 import { FirebaseContext } from "../FirebaseContext"
 import { Category, COLOURS } from "./types"
 
@@ -36,37 +35,31 @@ export function NewItem({ list, showFrequency }: Props) {
 
   return (
     <form action="#" onSubmit={submitForm}>
-      <HStack gap="4" maxWidth="600px">
-        <NativeSelect.Root width="120px">
-          <NativeSelect.Field onChange={updateType} value={type}>
-            {Object.keys(COLOURS).map((category) => (
-              <Option value={category} key={category} />
-            ))}
-          </NativeSelect.Field>
-        </NativeSelect.Root>
-        <Input
-          variant="flushed"
-          onChange={updateDescription}
-          value={description}
-        />
+      <div style={{ display: "flex", gap: "4", maxWidth: "600px" }}>
+        <select
+          style={{ width: "120px" }}
+          onChange={updateType}
+          aria-label="task type"
+        >
+          {Object.keys(COLOURS).map((category) => (
+            <option
+              value={category}
+              key={category}
+              selected={category === type}
+            />
+          ))}
+        </select>
+        <input onChange={updateDescription} value={description} />
         {showFrequency && (
-          <NativeSelect.Root width="140px">
-            <NativeSelect.Field onChange={updateFrequency} value={frequency}>
-              <Option value="一回" />
-              <Option value="毎日" />
-              <Option value="平日" />
-            </NativeSelect.Field>
-          </NativeSelect.Root>
+          <select style={{ width: "140px" }} onChange={updateFrequency}>
+            {["一回", "毎日", "平日"].map((f) => (
+              <option key={f} value={f} selected={frequency === f}>
+                {f}
+              </option>
+            ))}
+          </select>
         )}
-      </HStack>
+      </div>
     </form>
-  )
-}
-
-function Option({ value }: { value: string }) {
-  return (
-    <option style={{ paddingRight: "70px" }} value={value}>
-      {value}
-    </option>
   )
 }

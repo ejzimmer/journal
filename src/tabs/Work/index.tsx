@@ -1,11 +1,5 @@
-// fix fonts in menu popout
-// make add task form go away properly
-// can drag and drop between lists
-// add subtasks
-
 import { useCallback, useContext, useEffect, useMemo } from "react"
 import { FirebaseContext } from "../../shared/FirebaseContext"
-import { Box, HStack, Skeleton, Stack } from "@chakra-ui/react"
 import { Item, Label } from "../../shared/TaskList/types"
 import { NewListModal } from "./NewListModal"
 import { useConfirmDelete } from "./useConfirmDelete"
@@ -13,6 +7,7 @@ import { TaskList } from "./TaskList"
 import { hoursToMilliseconds, isSameDay } from "date-fns"
 import { TaskMenu } from "./TaskMenu"
 import { DoneList } from "./DoneList"
+import { Skeleton } from "../../shared/controls/Skeleton"
 
 const WORK_KEY = "work"
 
@@ -92,19 +87,28 @@ export function Work() {
 
   if (listsLoading) {
     return (
-      <Stack maxWidth="400px">
+      <div
+        style={{ display: "flex", flexDirection: "column", maxWidth: "400px" }}
+      >
         <Skeleton height="20px" />
         <Skeleton height="20px" />
         <Skeleton height="20px" />
-      </Stack>
+      </div>
     )
   }
 
   return (
-    <HStack wrap="wrap" alignItems="stretch" gap="20px">
-      <Box position="fixed" right="40px" top="60px">
+    <div
+      style={{
+        display: "flex",
+        flexWrap: "wrap",
+        alignItems: "stretch",
+        gap: "20px",
+      }}
+    >
+      <div style={{ position: "fixed", right: "40px", top: "60px" }}>
         <NewListModal onCreate={onAddList} />
-      </Box>
+      </div>
 
       {lists ? (
         <>
@@ -215,9 +219,9 @@ export function Work() {
           )}
         </>
       ) : (
-        <Box marginInlineEnd="30px">No lists found.</Box>
+        <div style={{ marginInlineEnd: "30px" }}>No lists found.</div>
       )}
       <DeleteListConfirmation />
-    </HStack>
+    </div>
   )
 }

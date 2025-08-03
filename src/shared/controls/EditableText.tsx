@@ -1,13 +1,14 @@
-import { Box, BoxProps, Input } from "@chakra-ui/react"
-import { useEffect, useRef, useState } from "react"
+import { CSSProperties, useEffect, useRef, useState } from "react"
+import "./EditableText.css"
 
-interface Props extends Omit<BoxProps, "onChange"> {
+type Props = {
   onChange: (text: string) => void
   label: string
+  style?: CSSProperties
   children: string
 }
 
-export function EditableText({ children, onChange, label, ...props }: Props) {
+export function EditableText({ children, onChange, label, style }: Props) {
   const [isEditing, setIsEditing] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
   const startEditing = () => {
@@ -31,7 +32,8 @@ export function EditableText({ children, onChange, label, ...props }: Props) {
   }
 
   return isEditing ? (
-    <Input
+    <input
+      className="editable-text"
       ref={inputRef}
       onBlur={handleSubmit}
       onKeyDown={(event) => {
@@ -41,21 +43,16 @@ export function EditableText({ children, onChange, label, ...props }: Props) {
       }}
       defaultValue={children}
       aria-label={label}
-      border="none"
-      fontSize="inherit"
-      height="unset"
-      {...props}
-      paddingBlock="0"
+      style={style}
     />
   ) : (
-    <Box
-      display="inline-block"
-      {...props}
+    <div
       tabIndex={0}
       onFocus={startEditing}
       onClick={startEditing}
+      style={style}
     >
       {children}
-    </Box>
+    </div>
   )
 }

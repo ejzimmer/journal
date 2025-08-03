@@ -1,35 +1,17 @@
-import { Button } from "@chakra-ui/react"
-import { HStack } from "@chakra-ui/react"
-import { Dialog } from "@chakra-ui/react"
-import { useRef } from "react"
+import { Modal, ModalProps } from "./controls/Modal"
 
 interface Props {
   isOpen: boolean
   onClose: () => void
   onDelete: () => void
+  trigger: ModalProps["trigger"]
 }
 
-export function ConfirmDelete({ isOpen, onClose, onDelete }: Props) {
-  const cancelRef = useRef(null)
-
+export function ConfirmDelete({ onClose, onDelete, trigger }: Props) {
   return (
-    <Dialog.Root open={isOpen} size="sm" role="alertdialog">
-      <Dialog.Backdrop>
-        <Dialog.Content>
-          <Dialog.Body mt="4">Are you sure?</Dialog.Body>
-
-          <Dialog.Footer>
-            <HStack gap={2}>
-              <Button ref={cancelRef} onClick={onClose}>
-                Cancel
-              </Button>
-              <Button colorScheme="red" onClick={onDelete}>
-                Delete
-              </Button>
-            </HStack>
-          </Dialog.Footer>
-        </Dialog.Content>
-      </Dialog.Backdrop>
-    </Dialog.Root>
+    <Modal trigger={trigger}>
+      Are you sure?
+      <Modal.Action onAction={onDelete}>Delete</Modal.Action>
+    </Modal>
   )
 }

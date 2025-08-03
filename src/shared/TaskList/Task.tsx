@@ -1,10 +1,8 @@
 import { useItem } from "../storage/ItemManager"
 import { DeleteTaskButton } from "./DeleteTaskButton"
-import { TaskButton } from "./TaskButton"
 import { useEffect, useRef, useState } from "react"
 import { ItemDescription } from "./ItemDescription"
 import { AddTaskForm } from "./AddTaskForm"
-import { Box } from "@chakra-ui/react"
 import invariant from "tiny-invariant"
 import { combine } from "@atlaskit/pragmatic-drag-and-drop/combine"
 import { setCustomNativeDragPreview } from "@atlaskit/pragmatic-drag-and-drop/element/set-custom-native-drag-preview"
@@ -18,6 +16,8 @@ import {
   draggable,
   dropTargetForElements,
 } from "@atlaskit/pragmatic-drag-and-drop/element/adapter"
+
+import "./Task.css"
 
 type TaskProps = {
   id: string
@@ -146,7 +146,10 @@ export function Task({ id }: TaskProps) {
 
   return (
     <>
-      <Box border="1px solid black" position="relative" ref={ref}>
+      <div
+        style={{ border: "1px solid black", position: "relative" }}
+        ref={ref}
+      >
         <input
           type="checkbox"
           aria-label={`${task.description}`}
@@ -161,12 +164,13 @@ export function Task({ id }: TaskProps) {
           onChange={(description) => onChange({ ...task, description })}
           isDone={task.isComplete}
         />
-        <TaskButton
+        <button
+          className="task-button"
           aria-label={`Add subtask to ${task.description}`}
           onClick={() => setAddingNewTask(true)}
         >
           +
-        </TaskButton>
+        </button>
         <DeleteTaskButton
           taskDescription={task.description}
           onDelete={onDelete}
@@ -179,14 +183,14 @@ export function Task({ id }: TaskProps) {
           />
         )}
         {task.items?.length && (
-          <Box paddingInlineStart="3em">
+          <div style={{ paddingInlineStart: "3em" }}>
             {/* <TaskList taskIds={task.items} /> */}
-          </Box>
+          </div>
         )}
         {state.type === "is-dragging-over" && state.closestEdge ? (
           <DropIndicator edge={"top"} />
         ) : null}
-      </Box>
+      </div>
     </>
   )
 }
@@ -198,34 +202,5 @@ const terminalDiameter = terminalRadius * 2
 const offsetToAlignTerminalWithLine = (strokeSize - terminalDiameter) / 2
 
 function DropIndicator({ edge }: { edge: Edge }) {
-  return (
-    <Box
-      position="absolute"
-      backgroundColor="blue.500"
-      pointerEvents="none"
-      height={`${strokeSize}px`}
-      left={`${terminalRadius}px`}
-      right={0}
-      top={edge === "top" ? lineOffset : undefined}
-      bottom={edge === "bottom" ? lineOffset : undefined}
-      css={{
-        "&::before": {
-          content: '""',
-          position: "absolute",
-          top:
-            edge === "top" ? `${offsetToAlignTerminalWithLine}px` : undefined,
-          bottom:
-            edge === "bottom"
-              ? `${offsetToAlignTerminalWithLine}px`
-              : undefined,
-          left: `-${terminalDiameter}px`,
-          width: `${terminalDiameter}px`,
-          height: `${terminalDiameter}px`,
-          border: `${strokeSize}px solid`,
-          borderColor: "blue.500",
-          borderRadius: "1000px",
-        },
-      }}
-    />
-  )
+  return <div className={`drop-indicator ${edge}`} />
 }

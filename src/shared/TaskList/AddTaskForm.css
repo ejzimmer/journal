@@ -1,0 +1,23 @@
+.description {
+  border: none;
+  border-radius: 0;
+  padding-inline-start: 0;
+  padding-inline-end: 40px;
+  padding-block-start: 0;
+  font-family: inherit;
+  font-size: inherit;
+
+  &:focus-visible {
+    outline: none;
+  }
+}
+
+.due-date {
+  width: auto;
+  flex-grow: 1;
+  padding-inline-start: 0;
+  border: 0;
+  &:focus-visible {
+    outline: none;
+  }
+}

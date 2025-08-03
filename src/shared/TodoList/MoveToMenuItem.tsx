@@ -1,7 +1,7 @@
-import { MenuItem } from "@chakra-ui/react"
 import { useContext } from "react"
 import { FirebaseContext } from "../FirebaseContext"
 import { TodoItem } from "./types"
+import { Menu } from "../controls/Menu"
 
 type Props = {
   source: string
@@ -10,13 +10,16 @@ type Props = {
 }
 
 export function MoveToMenuItem({ source, target, item }: Props) {
-  const { addItem: addItemToList, deleteItem: deleteItemFromList } =
-    useContext(FirebaseContext)
+  const context = useContext(FirebaseContext)
+  if (!context) {
+    throw new Error("missing context")
+  }
+  const { addItem: addItemToList, deleteItem: deleteItemFromList } = context
 
   const onClick = () => {
     addItemToList(target, item)
     deleteItemFromList(source, item)
   }
 
-  return <MenuItem onClick={onClick}>↔️ Move to {target}</MenuItem>
+  return <Menu.Action onClick={onClick}>↔️ Move to {target}</Menu.Action>
 }

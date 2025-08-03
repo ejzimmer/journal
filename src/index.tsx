@@ -1,6 +1,5 @@
 import React from "react"
 import { createRoot } from "react-dom/client"
-import { Provider } from "./components/ui/provider"
 
 import "./index.css"
 import { App } from "./App"
@@ -12,8 +11,6 @@ import {
   FirebaseContext,
 } from "./shared/FirebaseContext"
 import { BrowserRouter } from "react-router-dom"
-
-import { Theme } from "@chakra-ui/react"
 
 const firebaseConfig = {
   apiKey: "AIzaSyAlKw5_aMOUlR3SdkbU6vHADLTUvXZHNJg",
@@ -36,14 +33,10 @@ const root = createRoot(container!)
 
 root.render(
   <React.StrictMode>
-    <Provider>
-      <Theme appearance="light">
-        <FirebaseContext.Provider value={contextValue}>
-          <BrowserRouter>
-            <App />
-          </BrowserRouter>
-        </FirebaseContext.Provider>
-      </Theme>
-    </Provider>
+    <FirebaseContext.Provider value={contextValue}>
+      <BrowserRouter>
+        <App />
+      </BrowserRouter>
+    </FirebaseContext.Provider>
   </React.StrictMode>
 )

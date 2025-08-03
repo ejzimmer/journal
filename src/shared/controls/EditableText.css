@@ -1,0 +1,10 @@
+input.editable-text {
+  border: none;
+  font-size: inherit;
+  height: unset;
+  padding-block: 0;
+}
+
+div.editable-text {
+  display: inline-block;
+}

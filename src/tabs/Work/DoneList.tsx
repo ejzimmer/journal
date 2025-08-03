@@ -2,7 +2,6 @@ import { useMemo } from "react"
 import { Item } from "../../shared/TaskList/types"
 import startOfWeek from "date-fns/startOfWeek"
 import { format } from "date-fns"
-import { Box, Button, chakra, Checkbox } from "@chakra-ui/react"
 
 export function DoneList({
   tasks,
@@ -57,45 +56,45 @@ function Week({
       {week}
       <ul>
         {tasks.map((task) => (
-          <chakra.li
+          <li
             key={task.id}
-            display="flex"
-            alignItems="center"
-            gap=".5em"
+            style={{ display: "flex", alignItems: "center", gap: "0.5em" }}
           >
-            <chakra.label
-              display="inherit"
-              alignItems="inherit"
-              gap="inherit"
-              opacity="0.5"
-              cursor="pointer"
+            <label
+              style={{
+                display: "inherit",
+                alignItems: "inherit",
+                gap: "inherit",
+                opacity: "0.5",
+                cursor: "pointer",
+              }}
             >
-              <Checkbox.Root
+              <input
+                type="checked"
                 aria-label={`mark ${task.description} not done`}
                 checked
-                onCheckedChange={() => onMarkNotDone(task)}
-                color="gray"
-              >
-                <Checkbox.HiddenInput />
-                <Checkbox.Control />
-              </Checkbox.Root>
-              <Box textDecoration="line-through">{task.description}</Box>
-            </chakra.label>
-            <Button
+                onChange={() => onMarkNotDone(task)}
+              />
+              <div style={{ textDecoration: "line-through" }}>
+                {task.description}
+              </div>
+            </label>
+            <button
               onClick={() => onDelete(task)}
               aria-label={`delete ${task.description}`}
-              variant="ghost"
-              paddingInline="0"
-              size="sm"
-              opacity="0.5"
-              _hover={{
-                background: "transparent",
-                opacity: 1,
+              style={{
+                paddingInline: "0",
+                size: "sm",
+                opacity: "0.5",
+                // _hover:{{,
+                //   background: "transparent",
+                //   opacity: 1,
+                // }}
               }}
             >
               🗑️
-            </Button>
-          </chakra.li>
+            </button>
+          </li>
         ))}
       </ul>
     </li>
