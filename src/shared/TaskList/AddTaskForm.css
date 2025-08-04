@@ -21,3 +21,11 @@
     outline: none;
   }
 }
+
+.form-item {
+  display: flex;
+  align-items: center;
+  flex-grow: 1;
+  font-size: 0.8em;
+  font-weight: bold;
+}

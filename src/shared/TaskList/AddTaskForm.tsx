@@ -1,10 +1,9 @@
 import { useRef, FormEvent, useEffect, useId, useState } from "react"
-import { TaskButton } from "./TaskButton"
 import { parse } from "date-fns"
 import { Item, Label } from "./types"
 import { Tag, TAG_COLOURS } from "../../tabs/Work/Tag"
 import { Combobox } from "../controls/Combobox"
-import './AddTaskForm.css'
+import "./AddTaskForm.css"
 
 export function AddTaskForm({
   onSubmit,
@@ -70,10 +69,10 @@ export function AddTaskForm({
     <form
       ref={formRef}
       style={{
-        outline: '2px dashed',
-      paddingBlock:"4px",
-      paddingInline:"8px",
-      marginBlockStart:"40px"
+        outline: "2px dashed",
+        paddingBlock: "4px",
+        paddingInline: "8px",
+        marginBlockStart: "40px",
       }}
       onSubmit={handleSubmit}
     >
@@ -87,50 +86,52 @@ export function AddTaskForm({
           }
         }}
       />
-      <Field.Root
-        id={dueDateId}
-        invalid
-        display="flex"
-        alignItems="center"
-        flexGrow="1"
-        fontSize="0.8em"
-        fontWeight="bold"
-      >
-        <label>Due date:</label>
-        <input
-          type="date"
-          className='due-date'
-        />
-      </Field.Root>
-      <div style={{ alignItems: 'center'}}>
-        <Field.Root
-          display="flex"
-          alignItems="center"
-          flexGrow="1"
-          fontSize="0.8em"
-          fontWeight="bold"
-          marginBlock="0"
-        >
+      <div className="form-item">
+        <label htmlFor={dueDateId}>Due date:</label>
+        <input id={dueDateId} type="date" className="due-date" />
+      </div>
+      <div style={{ alignItems: "center" }}>
+        <div className="form-item" style={{ marginBlock: "0" }}>
           <label>Labels</label>
-          <Combobox
-            value={labels}
-            onChange={(labels) => setLabels(labels)}
-            options={labels}
+          <Combobox<Label & { id: string; label: string }>
+            value={labels.map((l) => ({
+              id: l.text + l.colour,
+              label: l.text,
+              ...l,
+            }))}
+            onChange={(opts) => setLabels(opts)}
+            options={labelOptions.map((l) => ({
+              id: l.text + l.colour,
+              label: l.text,
+              ...l,
+            }))}
             renderButton={Tag}
+            createOption={(text) => {
+              const colour = TAG_COLOURS[2]
+              return {
+                id: `${text}${colour}`,
+                label: text,
+                text,
+                colour,
+              }
+            }}
+            onAddOption={() => console.log("add option")}
           />
-        </Field.Root>
-        <TaskButton
-          fontSize="1em"
-          padding="2px"
+        </div>
+        <button
+          style={{
+            fontSize: "1em",
+            padding: "2px",
+          }}
           type="reset"
           onClick={onCancel}
         >
           ❌
-        </TaskButton>
-        <TaskButton padding="2px" fontSize="1em" type="submit">
+        </button>
+        <button style={{ padding: "2px", fontSize: "1em" }} type="submit">
           ✅
-        </TaskButton>
+        </button>
       </div>
-    </Box>
+    </form>
   )
 }

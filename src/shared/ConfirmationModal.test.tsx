@@ -9,6 +9,7 @@ const defaultProps: Props = {
   onConfirm: jest.fn(),
   confirmButtonText: "Delete",
   setOpen: jest.fn(),
+  trigger: (triggerProps) => <button {...triggerProps}>delete</button>,
 }
 
 describe("ConfirmationModal", () => {

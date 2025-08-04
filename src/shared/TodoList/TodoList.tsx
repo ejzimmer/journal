@@ -1,10 +1,4 @@
 import { Fragment, useEffect, useMemo, useState } from "react"
-import {
-  DragDropContext,
-  Draggable,
-  Droppable,
-  DropResult,
-} from "react-beautiful-dnd"
 import { resortList, sortItems } from "../utilities"
 import { Item } from "./Item"
 import { TodoItem, Category, COLOURS } from "./types"
@@ -30,10 +24,6 @@ export function TodoList({
 }: Props) {
   const sortedItems = useMemo(() => [...items].sort(sortItems), [items])
   const [filteredItems, setFilteredItems] = useState(sortedItems)
-
-  const onDragEnd = (dropResult: DropResult) => {
-    resortList(dropResult, sortedItems, onReorder)
-  }
 
   const onMoveToTop = (sourceIndex: number) => {
     const opts = {
@@ -68,47 +58,26 @@ export function TodoList({
           setItems={setFilteredItems}
         />
       </div>
-      <DragDropContext onDragEnd={onDragEnd}>
-        <Droppable droppableId={id}>
-          {(provided) => (
-            <ul
-              style={{
-                listStyleType: "none",
-                width: "100%",
-                minWidth: "400px",
-              }}
-              {...provided.droppableProps}
-              ref={provided.innerRef}
-            >
-              {filteredItems.map((item, index) => (
-                <Draggable
-                  key={item.id || item.description}
-                  draggableId={item.id || item.description}
-                  index={index}
-                >
-                  {(provided) => (
-                    <li
-                      ref={provided.innerRef}
-                      {...provided.draggableProps}
-                      {...provided.dragHandleProps}
-                    >
-                      <Item
-                        item={item}
-                        currentList={currentList}
-                        otherLists={otherLists}
-                        onChange={onChangeItem}
-                        onDelete={onDeleteItem}
-                        onMoveToTop={() => onMoveToTop(index)}
-                      />
-                    </li>
-                  )}
-                </Draggable>
-              ))}
-              {provided.placeholder}
-            </ul>
-          )}
-        </Droppable>
-      </DragDropContext>
+      <ul
+        style={{
+          listStyleType: "none",
+          width: "100%",
+          minWidth: "400px",
+        }}
+      >
+        {filteredItems.map((item, index) => (
+          <li>
+            <Item
+              item={item}
+              currentList={currentList}
+              otherLists={otherLists}
+              onChange={onChangeItem}
+              onDelete={onDeleteItem}
+              onMoveToTop={() => onMoveToTop(index)}
+            />
+          </li>
+        ))}
+      </ul>
     </div>
   )
 }

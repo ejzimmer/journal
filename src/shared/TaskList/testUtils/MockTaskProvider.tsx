@@ -12,10 +12,30 @@ type MockTaskProviderProps = {
 }
 
 export const TASKS = {
-  "1": { id: "1", description: "Make shirt", isComplete: false },
-  "11": { id: "11", description: "Buy fabric", isComplete: false },
-  "12": { id: "12", description: "Prewash fabric", isComplete: false },
-  "13": { id: "13", description: "Cut pattern", isComplete: false },
+  "1": {
+    id: "1",
+    description: "Make shirt",
+    isComplete: false,
+    lastUpdated: Date.now(),
+  },
+  "11": {
+    id: "11",
+    description: "Buy fabric",
+    isComplete: false,
+    lastUpdated: Date.now(),
+  },
+  "12": {
+    id: "12",
+    description: "Prewash fabric",
+    isComplete: false,
+    lastUpdated: Date.now(),
+  },
+  "13": {
+    id: "13",
+    description: "Cut pattern",
+    isComplete: false,
+    lastUpdated: Date.now(),
+  },
 }
 
 export function MockTaskProvider({
@@ -23,7 +43,7 @@ export function MockTaskProvider({
   children,
 }: MockTaskProviderProps) {
   return (
-    <MockStoreProvider items={tasks}>
+    <MockStoreProvider initialItems={tasks}>
       <ItemProvider>{children}</ItemProvider>
     </MockStoreProvider>
   )

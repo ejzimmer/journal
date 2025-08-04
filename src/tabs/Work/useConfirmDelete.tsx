@@ -1,21 +1,19 @@
 import { useState, useRef } from "react"
 import { Item } from "../../shared/TaskList/types"
+import { Modal } from "../../shared/controls/Modal"
 
 export function useConfirmDelete(deleteList: (list: Item) => void) {
-  const [isOpen, setIsOpen] = useState(false)
   const [list, setList] = useState<Item>()
 
   return {
     confirmDelete: (list: Item) => {
       setList(list)
-      setIsOpen(true)
     },
     DeleteListConfirmation: () => {
       const cancelRef = useRef(null)
 
       const handleClose = () => {
         setList(undefined)
-        setIsOpen(false)
       }
 
       if (!list) return null
@@ -26,41 +24,32 @@ export function useConfirmDelete(deleteList: (list: Item) => void) {
       }
 
       return (
-        <Modal.Root open={isOpen} role="alertdialog">
-          <Portal>
-            <Theme appearance="light">
-              <Dialog.Backdrop>
-                <Dialog.Content>
-                  <Dialog.Body
-                    fontWeight="bold"
-                    fontSize="20px"
-                    marginBlock="20px"
-                  >
-                    Delete list "{list.description}"?
-                  </Dialog.Body>
+        <Modal
+          trigger={(triggerProps) => <button {...triggerProps}>delete</button>}
+        >
+          <div
+            style={{
+              fontWeight: "bold",
+              fontSize: "20px",
+              marginBlock: "20px",
+            }}
+          >
+            Delete list "{list.description}"?
+          </div>
 
-                  <Dialog.Footer
-                    gap="10px"
-                    borderBlockStart="1px solid"
-                    borderColor="gray.400"
-                  >
-                    <button
-                      variant="outline"
-                      color="gray.600"
-                      ref={cancelRef}
-                      onClick={handleClose}
-                    >
-                      No, don't delete
-                    </button>
-                    <button colorScheme="red" onClick={handleDelete} ml={3}>
-                      Yes, delete
-                    </button>
-                  </Dialog.Footer>
-                </Dialog.Content>
-              </Dialog.Backdrop>
-            </Theme>
-          </Portal>
-        </Dialog.Root>
+          <div
+            style={{
+              gap: "10px",
+              borderBlockStart: "1px solid",
+              borderColor: "gray.400",
+            }}
+          >
+            <button ref={cancelRef} onClick={handleClose}>
+              No, don't delete
+            </button>
+            <Modal.Action onAction={handleDelete}>Yes, delete</Modal.Action>
+          </div>
+        </Modal>
       )
     },
   }

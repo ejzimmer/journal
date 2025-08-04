@@ -37,10 +37,11 @@ export function MockStoreProvider({
   const addItem = useCallback(
     (description: string) => {
       const id = getNextId()
-      const newItem = {
+      const newItem: Item = {
         id,
         description,
         isComplete: false,
+        lastUpdated: Date.now(),
       }
       setItems({ ...items, [id]: newItem })
 

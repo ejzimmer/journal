@@ -108,7 +108,6 @@ export function ItemProvider({ children }: { children: ReactNode }) {
       const item = await getItem(id)
       item.containedBy?.forEach(async (containerId) => {
         const container = await getItem(containerId)
-        container.items = container.items?.filter((i) => i !== id)
         updateItem(container)
       })
       deleteItem(id)
@@ -118,13 +117,9 @@ export function ItemProvider({ children }: { children: ReactNode }) {
 
   const onAddItem = useCallback(
     async (description: string, containerId?: string) => {
-      const newItem = await addItem(description)
-      if (containerId) {
-        const container = await getItem(containerId)
-        container.items = [...(container.items ?? []), newItem.id]
-      }
+      console.log("adding", description, "to", containerId)
     },
-    [addItem, getItem]
+    []
   )
 
   return (

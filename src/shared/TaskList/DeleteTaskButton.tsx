@@ -1,4 +1,3 @@
-import { TaskButton } from "./TaskButton"
 import { ConfirmationModal } from "../ConfirmationModal"
 import { Item } from "./types"
 import { useState } from "react"
@@ -15,6 +14,11 @@ export const useDeleteTask = (task: Item, onDelete: () => void) => {
     onClickDelete: () => setIsOpen(true),
     ConfirmDeleteTask: () => (
       <ConfirmationModal
+        trigger={(triggerProps) => (
+          <button {...triggerProps} aria-label={`Delete ${task.description}`}>
+            🗑️
+          </button>
+        )}
         isOpen={isOpen}
         setOpen={setIsOpen}
         onConfirm={() => {
@@ -43,12 +47,9 @@ export function DeleteTaskButton({ taskDescription, onDelete }: Props) {
   )
   return (
     <>
-      <TaskButton
-        aria-label={`Delete ${taskDescription}`}
-        onClick={onClickDelete}
-      >
+      <button aria-label={`Delete ${taskDescription}`} onClick={onClickDelete}>
         🗑️
-      </TaskButton>
+      </button>
       <ConfirmDeleteTask />
     </>
   )

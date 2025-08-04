@@ -84,7 +84,6 @@ function Week({
               aria-label={`delete ${task.description}`}
               style={{
                 paddingInline: "0",
-                size: "sm",
                 opacity: "0.5",
                 // _hover:{{,
                 //   background: "transparent",

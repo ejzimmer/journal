@@ -1,10 +1,10 @@
-import { render, screen, waitFor } from "@testing-library/react"
+import { render, screen } from "@testing-library/react"
 import { TASKS } from "./testUtils/MockTaskProvider"
 import { TaskList } from "."
 import userEvent from "@testing-library/user-event"
 import { MockStoreProvider } from "../storage/Store"
 import { ItemProvider } from "../storage/ItemManager"
-import { ReactElement } from "react"
+import { ReactNode } from "react"
 
 const TASK = TASKS["1"]
 const TASK_LIST = [TASK.id]
@@ -14,7 +14,7 @@ const Wrapper = ({
   children,
 }: {
   tasks?: typeof TASKS
-  children: ReactElement
+  children: ReactNode
 }) => (
   <MockStoreProvider initialItems={tasks}>
     <ItemProvider>{children}</ItemProvider>

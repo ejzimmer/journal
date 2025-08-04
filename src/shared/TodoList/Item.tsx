@@ -5,7 +5,6 @@ import { isToday } from "date-fns"
 import { SlArrowDown } from "react-icons/sl"
 import { MoveToMenuItem } from "./MoveToMenuItem"
 
-import "./Item.css"
 import { Menu } from "../controls/Menu"
 
 interface Props {

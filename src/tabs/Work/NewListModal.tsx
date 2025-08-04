@@ -1,6 +1,5 @@
-import { Modal } from "@/shared/controls/Modal"
-import { useRef, FormEvent, useState } from "react"
-import { FiX } from "react-icons/fi"
+import { Modal } from "../../shared/controls/Modal"
+import { useRef } from "react"
 
 export function NewListModal({
   onCreate,
