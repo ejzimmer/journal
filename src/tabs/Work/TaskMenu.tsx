@@ -1,5 +1,5 @@
+import { ConfirmationModal } from "../../shared/ConfirmationModal"
 import { Menu } from "../../shared/controls/Menu"
-import { useDeleteTask } from "../../shared/TaskList/DeleteTaskButton"
 import { Item } from "../../shared/TaskList/types"
 
 import "./TaskList.css"
@@ -19,8 +19,6 @@ export function TaskMenu({
   onMove: (destination: Item) => void
   onMoveToTop: () => void
 }) {
-  const { onClickDelete, ConfirmDeleteTask } = useDeleteTask(task, onDelete)
-
   return (
     <>
       <Menu
@@ -49,9 +47,16 @@ export function TaskMenu({
             ➡️ {destination.description}
           </Menu.Action>
         ))}
-        <Menu.Action key="delete_task" onClick={onClickDelete}>
-          🗑️ Delete
-        </Menu.Action>
+        <ConfirmationModal
+          message={`Are you sure you want to delete ${task.description}`}
+          onConfirm={onDelete}
+          trigger={(triggerProps) => (
+            <Menu.Action key="delete_task" {...triggerProps}>
+              🗑️ Delete
+            </Menu.Action>
+          )}
+        />
+
         {!task.dueDate && (
           <Menu.Action
             key="add_due_date"
@@ -61,7 +66,6 @@ export function TaskMenu({
           </Menu.Action>
         )}
       </Menu>
-      <ConfirmDeleteTask />
     </>
   )
 }

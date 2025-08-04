@@ -1,24 +1,23 @@
-import { useState } from "react"
-import { ConfirmDelete } from "./ConfirmDelete"
 import { Menu } from "./controls/Menu"
+import { ConfirmationModal } from "./ConfirmationModal"
+import { Item } from "./TaskList/types"
 
-export function DeleteMenuItem({ onDelete }: { onDelete: () => void }) {
-  const [showConfirmation, setShowConfirmation] = useState(false)
-
-  const handleDelete = () => {
-    onDelete()
-  }
-
+export function DeleteMenuItem({
+  task,
+  onDelete,
+}: {
+  task: Item
+  onDelete: () => void
+}) {
   return (
-    <ConfirmDelete
+    <ConfirmationModal
       trigger={(props) => (
         <Menu.Action {...props}>
           <div>🗑️ Delete</div>
         </Menu.Action>
       )}
-      isOpen={showConfirmation}
-      onClose={() => setShowConfirmation(false)}
-      onDelete={handleDelete}
+      message={`Are you sure you want to delete ${task.description}`}
+      onConfirm={onDelete}
     />
   )
 }

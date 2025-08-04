@@ -1,5 +1,4 @@
 import { useItem } from "../storage/ItemManager"
-import { DeleteTaskButton } from "./DeleteTaskButton"
 import { useEffect, useRef, useState } from "react"
 import { ItemDescription } from "./ItemDescription"
 import { AddTaskForm } from "./AddTaskForm"
@@ -18,6 +17,7 @@ import {
 } from "@atlaskit/pragmatic-drag-and-drop/element/adapter"
 
 import "./Task.css"
+import { ConfirmationModal } from "../ConfirmationModal"
 
 type TaskProps = {
   id: string
@@ -171,9 +171,14 @@ export function Task({ id }: TaskProps) {
         >
           +
         </button>
-        <DeleteTaskButton
-          taskDescription={task.description}
-          onDelete={onDelete}
+        <ConfirmationModal
+          message={`Are you sure you want to delete ${task.description}`}
+          onConfirm={onDelete}
+          trigger={(triggerProps) => (
+            <button {...triggerProps} aria-label={`Delete ${task.description}`}>
+              🗑️
+            </button>
+          )}
         />
         {isAddingNewTask && (
           <AddTaskForm
@@ -194,12 +199,6 @@ export function Task({ id }: TaskProps) {
     </>
   )
 }
-
-const lineOffset = "-5px"
-const strokeSize = 2
-const terminalRadius = 4
-const terminalDiameter = terminalRadius * 2
-const offsetToAlignTerminalWithLine = (strokeSize - terminalDiameter) / 2
 
 function DropIndicator({ edge }: { edge: Edge }) {
   return <div className={`drop-indicator ${edge}`} />
