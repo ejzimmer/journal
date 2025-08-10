@@ -1,12 +1,10 @@
 import { Menu } from "./controls/Menu"
 import { ConfirmationModal } from "./ConfirmationModal"
-import { Item } from "./TaskList/types"
-
 export function DeleteMenuItem({
   task,
   onDelete,
 }: {
-  task: Item
+  task: { description: string }
   onDelete: () => void
 }) {
   return (

@@ -74,7 +74,7 @@ export function Item({
                 item={item}
               />
             ))}
-          <DeleteMenuItem onDelete={() => onDelete(item)} />
+          <DeleteMenuItem task={item} onDelete={() => onDelete(item)} />
         </Menu>
       )}
     </Wrapper>

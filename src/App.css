@@ -7,28 +7,34 @@
   }
 }
 
-.top-nav {
+nav ul {
+  list-style-type: none;
   display: flex;
-  position: sticky;
-  top: 0;
-  background: white;
-  z-index: 1;
-  border-block-end: 2px solid white;
-  margin-block-end: 1rem;
+  margin: 0;
+  padding: 0;
+  border-block-end: 2px solid var(--border-colour);
+
+  li {
+    padding: 0;
+    margin-block-end: -2px;
+
+    a {
+      display: block;
+      text-decoration: none;
+      color: inherit;
+      padding-inline: 16px;
+      padding-block: 8px;
+
+      &.active,
+      &:hover {
+        color: var(--link-colour);
+        border-block-end: 2px solid currentColor;
+      }
+    }
+  }
 }
 
 .main-content {
   padding-inline: 30px;
   padding-block: 20px;
-}
-
-.nav-item {
-  padding: 0.5rem 1rem;
-  margin-block-end: -2px;
-
-  & .active {
-    color: #2b6cb0;
-    border-block-end: inherit;
-    border-color: currentColor;
-  }
 }

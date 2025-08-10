@@ -42,12 +42,14 @@ export function App() {
 
   return (
     <>
-      <nav className="top-nav">
-        {Object.keys(TABS).map((tab) => (
-          <NavItem key={tab} to={tab}>
-            {tab}
-          </NavItem>
-        ))}
+      <nav>
+        <ul>
+          {Object.keys(TABS).map((tab) => (
+            <NavItem key={tab} to={tab}>
+              {tab}
+            </NavItem>
+          ))}
+        </ul>
       </nav>
 
       <div className="main-content">
@@ -64,8 +66,8 @@ export function App() {
 
 function NavItem({ to, children }: { to: string; children: React.ReactNode }) {
   return (
-    <div className="nav-item">
+    <li>
       <NavLink to={to}>{children}</NavLink>
-    </div>
+    </li>
   )
 }

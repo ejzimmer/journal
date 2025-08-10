@@ -6,6 +6,8 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   --input-height: 28px;
+  --border-colour: rgb(226, 232, 240);
+  --link-colour: #2b6cb0;
 }
 
 code {
