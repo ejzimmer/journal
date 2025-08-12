@@ -16,7 +16,7 @@ export function ConfirmationModal({
   return (
     <Modal trigger={trigger}>
       {message}
-      <Modal.Action onAction={onConfirm}>{confirmButtonText}</Modal.Action>
+      <Modal.Action onClick={onConfirm}>{confirmButtonText}</Modal.Action>
     </Modal>
   )
 }

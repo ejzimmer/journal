@@ -6,11 +6,78 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   --input-height: 28px;
-  --border-colour: rgb(226, 232, 240);
+
+  --body-colour: hsl(0 0% 20%);
+  --border-colour: hsl(214 32% 91%);
+  --border-colour-hover: hsl(214 32% 80%);
+
   --link-colour: #2b6cb0;
+  --error-color: hsl(10, 89%, 41%);
+
+  color: var(--body-colour);
 }
 
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
     monospace;
+}
+
+button {
+  padding-inline: 16px;
+  font-size: 1em;
+  line-height: 1.2;
+  height: 2.5rem;
+  cursor: pointer;
+  border-radius: 6px;
+  background: transparent;
+  &:hover {
+    background: var(--border-colour);
+  }
+
+  &.outline {
+    border: 2px solid var(--border-colour);
+  }
+  &.ghost {
+    border: 0;
+    opacity: 0.5;
+    padding-inline: 0;
+
+    &:hover {
+      opacity: 1;
+      background: none;
+    }
+  }
+
+  &.white {
+    background: white;
+
+    &:hover {
+      background: var(--border-colour);
+    }
+  }
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+
+  label {
+    font-weight: bold;
+    margin-block-end: 5px;
+  }
+
+  input {
+    border: 1px solid var(--border-colour);
+    border-radius: 4px;
+    padding: 8px;
+    font-size: inherit;
+    color: inherit;
+  }
+
+  .validation-error {
+    color: var(--error-color);
+    padding-block-start: 4px;
+    display: flex;
+    align-items: center;
+  }
 }

@@ -47,7 +47,7 @@ export function useConfirmDelete(deleteList: (list: Item) => void) {
             <button ref={cancelRef} onClick={handleClose}>
               No, don't delete
             </button>
-            <Modal.Action onAction={handleDelete}>Yes, delete</Modal.Action>
+            <Modal.Action onClick={handleDelete}>Yes, delete</Modal.Action>
           </div>
         </Modal>
       )

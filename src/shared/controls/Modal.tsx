@@ -1,6 +1,9 @@
 import React, { createContext, useContext } from "react"
 import { JSX, useRef } from "react"
 
+import "./Modal.css"
+import { XIcon } from "../icons/X"
+
 export type ModalProps = {
   trigger: (props: ModalTriggerProps) => JSX.Element
   children: React.ReactNode
@@ -29,11 +32,10 @@ function Modal({ trigger: Trigger, children }: ModalProps) {
       <Trigger onClick={openModal} />
       <dialog ref={dialogRef}>
         <ModalContext.Provider value={{ closeModal }}>
-          <button aria-label="close modal" onClick={closeModal}>
-            x
-          </button>
+          <div className="header">
+            <CloseButton />
+          </div>
           {children}
-          <button onClick={closeModal}>Cancel</button>
         </ModalContext.Provider>
       </dialog>
     </>
@@ -50,23 +52,55 @@ function useModal() {
   return context
 }
 
-function Action({
-  onAction,
-  children,
-}: {
-  onAction: (event: React.MouseEvent) => void
-  children: React.ReactNode
-}) {
+function Footer({ children }: { children: React.ReactNode }) {
   const { closeModal } = useModal()
 
-  const handleClick = (event: React.MouseEvent) => {
-    event.preventDefault()
-    onAction(event)
-    closeModal()
-  }
-  return <button onClick={handleClick}>{children}</button>
+  return (
+    <div>
+      {children} <button onClick={closeModal}>Cancel</button>
+    </div>
+  )
 }
 
+function CloseButton() {
+  const { closeModal } = useModal()
+
+  return (
+    <button
+      className="ghost"
+      style={{
+        color: "inherit",
+      }}
+      aria-label="close modal"
+      onClick={closeModal}
+    >
+      <XIcon width="24px" />
+    </button>
+  )
+}
+
+function Action({
+  onClick,
+  style,
+  ...props
+}: React.HTMLAttributes<HTMLButtonElement>) {
+  const { closeModal } = useModal()
+
+  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.preventDefault()
+    onClick?.(event)
+    closeModal()
+  }
+  return (
+    <button
+      {...props}
+      style={{ ...style, gridArea: "footer" }}
+      onClick={handleClick}
+    />
+  )
+}
+
+Modal.Footer = Footer
 Modal.Action = Action
 
 export { Modal }

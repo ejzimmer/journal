@@ -1,11 +1,13 @@
 import { Modal } from "../../shared/controls/Modal"
-import { useRef } from "react"
+import { useRef, useState } from "react"
+import { XIcon } from "../../shared/icons/X"
 
 export function NewListModal({
   onCreate,
 }: {
   onCreate: (listName: string) => void
 }) {
+  const [showError, setShowError] = useState(false)
   const listNameRef = useRef<HTMLInputElement>(null)
 
   const handleCreate = () => {
@@ -13,18 +15,31 @@ export function NewListModal({
 
     if (listName) {
       onCreate(listName)
+    } else {
+      setShowError(true)
     }
   }
 
   return (
-    <Modal trigger={(props) => <button {...props}>➕ Add list</button>}>
+    <Modal
+      trigger={(props) => (
+        <button {...props} className="outline white">
+          ➕ Add list
+        </button>
+      )}
+    >
       <form>
-        <label>
-          <b>New list name</b>
-        </label>
+        <label>New list name</label>
         <input ref={listNameRef} />
-        <div>List name is required</div>
-        <Modal.Action onAction={handleCreate}>Create</Modal.Action>
+        {showError && (
+          <div className="validation-error">
+            <XIcon width="18px" />
+            List name is required
+          </div>
+        )}
+        <Modal.Footer>
+          <Modal.Action onClick={handleCreate}>Create</Modal.Action>
+        </Modal.Footer>
       </form>
     </Modal>
   )

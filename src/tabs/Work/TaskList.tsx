@@ -138,7 +138,7 @@ export function TaskList({
         <button
           aria-label={`delete list ${list.description}`}
           onClick={onDelete}
-          className="delete-button"
+          className="delete-button ghost"
         >
           🗑️
         </button>

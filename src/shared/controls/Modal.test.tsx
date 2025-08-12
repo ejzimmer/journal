@@ -52,7 +52,7 @@ describe("modal", () => {
             <label>
               <input type="checkbox" /> checkbox
             </label>
-            <Modal.Action onAction={onSubmit}>submit</Modal.Action>
+            <Modal.Action onClick={onSubmit}>submit</Modal.Action>
           </form>
         </Modal>
       )
@@ -75,7 +75,7 @@ describe("modal", () => {
             <label>
               <input type="checkbox" /> checkbox
             </label>
-            <Modal.Action onAction={onSubmit}>submit</Modal.Action>
+            <Modal.Action onClick={onSubmit}>submit</Modal.Action>
           </form>
         </Modal>
       )

@@ -1,6 +1,7 @@
 import { useState } from "react"
 
 import "./TaskList.css"
+import { XIcon } from "../../shared/icons/X"
 
 export function Tag({
   text,
@@ -46,20 +47,6 @@ export function Tag({
         </button>
       )}
     </div>
-  )
-}
-
-export function XIcon() {
-  return (
-    <svg
-      viewBox="0 0 20 20"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-    >
-      <path d="M5,5 L15,15" />
-      <path d="M15,5 L5,15" />
-    </svg>
   )
 }
 
