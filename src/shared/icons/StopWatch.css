@@ -1,0 +1,14 @@
+line.watch-hand {
+  animation: tick 60s steps(60, end) infinite;
+  transform-origin: center;
+}
+
+@keyframes tick {
+  from {
+    transform: rotate(0);
+  }
+
+  to {
+    transform: rotate(1turn);
+  }
+}

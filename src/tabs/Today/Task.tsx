@@ -6,6 +6,9 @@ import { isCategory } from "../../shared/TodoList/types"
 import "./Task.css"
 import { MoveMenu, MoveMenuProps } from "./MoveMenu"
 import { DeleteTaskButton } from "./DeleteTaskButton"
+import { PlayButtonIcon } from "../../shared/icons/PlayButton"
+import { StopWatchIcon } from "../../shared/icons/StopWatch"
+import { RestartArrowIcon } from "../../shared/icons/RestartArrow"
 
 export const STATUSES: Record<StatusKey, { text: string; action: string }> = {
   not_started: {
@@ -56,9 +59,15 @@ export function Task({ task, onChange, onDelete, onMoveTo }: TaskProps) {
         onClick={onStatusChange}
         className="ghost"
       >
-        go
+        {task.status === "not_started" ? (
+          <PlayButtonIcon width="20px" colour="hsl(0 0% 50%)" />
+        ) : task.status === "in_progress" ? (
+          <StopWatchIcon width="20px" colour="hsl(0 0% 20%)" />
+        ) : (
+          <RestartArrowIcon width="20px" colour="hsl(0 0% 50%)" />
+        )}
       </button>
-      <div style={{ marginInlineStart: "10px" }}>{taskType}</div>
+      <div style={{ marginInlineStart: "5px" }}>{taskType}</div>
       <div style={{ flexGrow: 1 }}>
         <EditableText
           label="description"

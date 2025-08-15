@@ -17,9 +17,8 @@ export function DeleteTaskButton({
           {...props}
           aria-label={`delete ${description}`}
           className="ghost"
-          style={{ color: "var(--danger-colour)" }}
         >
-          <XIcon width="24px" />
+          <XIcon width="16px" colour="var(--body-colour)" />
         </button>
       )}
       message={`Are you sure you want to delete ${description}?`}
