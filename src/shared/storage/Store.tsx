@@ -40,7 +40,7 @@ export function MockStoreProvider({
       const newItem: Item = {
         id,
         description,
-        isComplete: false,
+        status: "not_started",
         lastUpdated: Date.now(),
       }
       setItems({ ...items, [id]: newItem })

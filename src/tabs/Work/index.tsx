@@ -63,7 +63,7 @@ export function Work() {
           return
         }
 
-        if (task.isComplete) {
+        if (task.status === "done") {
           addItem(`${WORK_KEY}/${doneList.id}/items`, task)
           deleteItem(`${WORK_KEY}/${list.id}/items`, task)
         }
@@ -119,18 +119,10 @@ export function Work() {
                     onAddTask={({ description, dueDate, labels }) => {
                       const item: Partial<Item> = {
                         description,
-                        isComplete: false,
+                        status: "not_started",
                       }
                       if (typeof dueDate === "number") {
                         item.dueDate = dueDate
-                      }
-                      if (labels?.length) {
-                        const labelKeys = labels.map((label) =>
-                          addItem(`${WORK_KEY}/labels`, label)
-                        )
-                        item.labels = labelKeys.filter(
-                          (key): key is string => !!key
-                        )
                       }
                       addItem(`${WORK_KEY}/${list.id}/items`, item)
                     }}

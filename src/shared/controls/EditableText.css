@@ -1,8 +1,15 @@
 input.editable-text {
-  border: none;
+  border: 1px solid black;
   font-size: inherit;
   height: unset;
-  padding-block: 0;
+  padding-block: 4px;
+  padding-inline: 2px;
+  border-radius: 4px;
+  background: hsl(0 0% 100%/0.5);
+
+  &:focus-visible {
+    outline: none;
+  }
 }
 
 div.editable-text {

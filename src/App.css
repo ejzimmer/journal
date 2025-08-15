@@ -25,9 +25,16 @@ nav ul {
       padding-inline: 16px;
       padding-block: 8px;
 
-      &.active,
-      &:hover {
+      &.active {
         color: var(--link-colour);
+        border-block-end: 2px solid currentColor;
+      }
+
+      &:hover,
+      &:focus-visible {
+        background-color: var(--link-colour);
+        color: white;
+        outline: none;
         border-block-end: 2px solid currentColor;
       }
     }

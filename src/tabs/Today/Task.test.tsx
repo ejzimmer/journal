@@ -27,7 +27,7 @@ describe("Task", () => {
         render(<Task {...commonProps} onChange={onChange} />)
 
         expect(screen.getByText("Brush teeth")).toBeInTheDocument()
-        expect(screen.getByText(/chore/)).toBeInTheDocument()
+        expect(screen.getByText("🧹")).toBeInTheDocument()
 
         await user.click(
           screen.getByRole("button", {
@@ -123,32 +123,107 @@ describe("Task", () => {
     const onDelete = jest.fn()
     render(<Task {...commonProps} onDelete={onDelete} />)
 
-    await user.click(screen.getByRole("button", { name: "delete Brush teeth" }))
+    await user.click(
+      screen.getByRole("button", { name: "delete 🧹 Brush teeth" })
+    )
+    await user.click(screen.getByRole("button", { name: "Yes, delete" }))
 
     expect(onDelete).toHaveBeenCalled()
   })
 
-  it("can be moved to the start of the list", async () => {
-    const user = userEvent.setup()
-    const onMoveTo = jest.fn()
-    render(<Task {...commonProps} onMoveTo={onMoveTo} />)
+  describe("moving by keyboard", () => {
+    it("can move up one position", async () => {
+      const user = userEvent.setup()
+      const onMoveTo = jest.fn()
+      render(<Task {...commonProps} onMoveTo={onMoveTo} />)
 
-    await user.click(
-      screen.getByRole("button", { name: "move Brush teeth to start" })
-    )
+      const moveMenu = screen.getByRole("button", { name: "move Brush teeth" })
+      moveMenu.focus()
+      await user.keyboard("{ArrowUp}")
 
-    expect(onMoveTo).toHaveBeenCalledWith("start")
+      expect(onMoveTo).toHaveBeenCalledWith("previous")
+    })
+
+    it("can move down one position", async () => {
+      const user = userEvent.setup()
+      const onMoveTo = jest.fn()
+      render(<Task {...commonProps} onMoveTo={onMoveTo} />)
+
+      const moveMenu = screen.getByRole("button", { name: "move Brush teeth" })
+      moveMenu.focus()
+      await user.keyboard("{ArrowDown}")
+
+      expect(onMoveTo).toHaveBeenCalledWith("next")
+    })
+
+    it("can move to the start", async () => {
+      const user = userEvent.setup()
+      const onMoveTo = jest.fn()
+      render(<Task {...commonProps} onMoveTo={onMoveTo} />)
+
+      const moveMenu = screen.getByRole("button", { name: "move Brush teeth" })
+      moveMenu.focus()
+      await user.keyboard("{Shift>}{ArrowUp}")
+
+      expect(onMoveTo).toHaveBeenCalledWith("start")
+    })
+
+    it("can move to the end", async () => {
+      const user = userEvent.setup()
+      const onMoveTo = jest.fn()
+      render(<Task {...commonProps} onMoveTo={onMoveTo} />)
+
+      const moveMenu = screen.getByRole("button", { name: "move Brush teeth" })
+      moveMenu.focus()
+      await user.keyboard("{Shift>}{ArrowDown}")
+
+      expect(onMoveTo).toHaveBeenCalledWith("end")
+    })
   })
 
-  it("can be moved to the end of the list", async () => {
-    const user = userEvent.setup()
-    const onMoveTo = jest.fn()
-    render(<Task {...commonProps} onMoveTo={onMoveTo} />)
+  describe("moving by mouse", () => {
+    it("can be moved up the list", async () => {
+      const user = userEvent.setup()
+      const onMoveTo = jest.fn()
+      render(<Task {...commonProps} onMoveTo={onMoveTo} />)
 
-    await user.click(
-      screen.getByRole("button", { name: "move Brush teeth to end" })
-    )
+      await user.click(screen.getByRole("button", { name: "move Brush teeth" }))
+      await user.click(screen.getByRole("menuitem", { name: "Move up" }))
 
-    expect(onMoveTo).toHaveBeenCalledWith("end")
+      expect(onMoveTo).toHaveBeenCalledWith("previous")
+    })
+
+    it("can be moved down the list", async () => {
+      const user = userEvent.setup()
+      const onMoveTo = jest.fn()
+      render(<Task {...commonProps} onMoveTo={onMoveTo} />)
+
+      await user.click(screen.getByRole("button", { name: "move Brush teeth" }))
+      await user.click(screen.getByRole("menuitem", { name: "Move down" }))
+
+      expect(onMoveTo).toHaveBeenCalledWith("next")
+    })
+
+    it("can be moved to the start of the list", async () => {
+      const user = userEvent.setup()
+      const onMoveTo = jest.fn()
+      render(<Task {...commonProps} onMoveTo={onMoveTo} />)
+
+      await user.click(screen.getByRole("button", { name: "move Brush teeth" }))
+      await user.click(screen.getByRole("menuitem", { name: "Move to top" }))
+
+      expect(onMoveTo).toHaveBeenCalledWith("start")
+    })
+
+    it("can be moved to the end of the list", async () => {
+      const user = userEvent.setup()
+      const onMoveTo = jest.fn()
+      render(<Task {...commonProps} onMoveTo={onMoveTo} />)
+
+      await user.click(screen.getByRole("button", { name: "move Brush teeth" }))
+      await user.click(screen.getByRole("menuitem", { name: "Move to bottom" }))
+
+      expect(onMoveTo).toHaveBeenCalledWith("end")
+    })
   })
 })

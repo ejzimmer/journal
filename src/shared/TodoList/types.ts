@@ -22,3 +22,6 @@ export const COLOURS = {
   "👥": "hsl(355 90% 92%)",
 }
 export type Category = keyof typeof COLOURS
+
+export const isCategory = (label?: string): label is Category =>
+  !!(label && label in COLOURS)

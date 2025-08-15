@@ -2,16 +2,6 @@ import userEvent from "@testing-library/user-event"
 import { Modal, ModalTriggerProps } from "./Modal"
 import { render, screen } from "@testing-library/react"
 
-HTMLDialogElement.prototype.show = function mock(this: HTMLDialogElement) {
-  this.open = true
-}
-HTMLDialogElement.prototype.showModal = function mock(this: HTMLDialogElement) {
-  this.open = true
-}
-HTMLDialogElement.prototype.close = function mock(this: HTMLDialogElement) {
-  this.open = false
-}
-
 const defaultProps = {
   trigger: (props: ModalTriggerProps) => <button {...props}>trigger</button>,
   children: <>content</>,

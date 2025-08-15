@@ -11,8 +11,12 @@ body {
   --border-colour: hsl(214 32% 91%);
   --border-colour-hover: hsl(214 32% 80%);
 
-  --link-colour: #2b6cb0;
-  --error-color: hsl(10, 89%, 41%);
+  --link-colour: hsl(211, 61%, 43%);
+  --error-colour: hsl(10, 89%, 41%);
+
+  --danger-colour: var(--error-colour);
+  --action-colour: hsl(211 81% 46%);
+  --action-colour-dark: hsl(211 81% 36%);
 
   color: var(--body-colour);
 }
@@ -45,6 +49,11 @@ button {
     &:hover {
       opacity: 1;
       background: none;
+    }
+    &:focus-visible {
+      opacity: 1;
+      background: none;
+      outline: 1px solid black;
     }
   }
 
@@ -80,4 +89,12 @@ form {
     display: flex;
     align-items: center;
   }
+}
+
+dialog {
+  border: 0;
+  border-radius: 10px;
+  padding-inline: 30px;
+  padding-block: 20px;
+  color: var(--body-colour);
 }

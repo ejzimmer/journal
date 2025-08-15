@@ -5,10 +5,17 @@ type Props = {
   onChange: (text: string) => void
   label: string
   style?: CSSProperties
+  className?: string
   children: string
 }
 
-export function EditableText({ children, onChange, label, style }: Props) {
+export function EditableText({
+  children,
+  onChange,
+  label,
+  style,
+  className = "",
+}: Props) {
   const [isEditing, setIsEditing] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
   const startEditing = () => {
@@ -33,7 +40,7 @@ export function EditableText({ children, onChange, label, style }: Props) {
 
   return isEditing ? (
     <input
-      className="editable-text"
+      className={`editable-text ${className}`}
       ref={inputRef}
       onBlur={handleSubmit}
       onKeyDown={(event) => {
@@ -51,6 +58,7 @@ export function EditableText({ children, onChange, label, style }: Props) {
       onFocus={startEditing}
       onClick={startEditing}
       style={style}
+      className={className}
     >
       {children}
     </div>

@@ -1,5 +1,7 @@
-import React, { createContext, useContext } from "react"
+import React, { createContext, useContext, useId } from "react"
 import { JSX, useRef } from "react"
+
+import "./Menu.css"
 
 export type MenuProps = {
   trigger: (props: MenuTriggerProps) => JSX.Element
@@ -7,7 +9,7 @@ export type MenuProps = {
 }
 
 export type MenuTriggerProps = {
-  onClick: () => void
+  popoverTarget: string
 }
 
 const MenuContext = createContext<{ closeMenu: () => void } | undefined>(
@@ -15,24 +17,22 @@ const MenuContext = createContext<{ closeMenu: () => void } | undefined>(
 )
 
 function Menu({ trigger: Trigger, children }: MenuProps) {
-  const dialogRef = useRef<HTMLDialogElement>(null)
+  const id = useId()
+  const dialogRef = useRef<HTMLDivElement>(null)
 
-  const openMenu = () => {
-    dialogRef.current?.show()
-  }
   const closeMenu = () => {
-    dialogRef.current?.close()
+    dialogRef.current?.hidePopover()
   }
 
   return (
-    <>
-      <Trigger onClick={openMenu} />
-      <dialog ref={dialogRef}>
+    <div style={{ position: "relative" }}>
+      <Trigger popoverTarget={id} />
+      <div id={id} ref={dialogRef} className="menu" popover="auto">
         <MenuContext.Provider value={{ closeMenu }}>
           {children}
         </MenuContext.Provider>
-      </dialog>
-    </>
+      </div>
+    </div>
   )
 }
 
@@ -63,7 +63,7 @@ function Action({
     closeMenu()
   }
   return (
-    <button disabled={isDisabled} onClick={handleClick}>
+    <button role="menuitem" disabled={isDisabled} onClick={handleClick}>
       {children}
     </button>
   )

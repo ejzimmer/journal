@@ -30,7 +30,7 @@ function Modal({ trigger: Trigger, children }: ModalProps) {
   return (
     <>
       <Trigger onClick={openModal} />
-      <dialog ref={dialogRef}>
+      <dialog ref={dialogRef} className="modal">
         <ModalContext.Provider value={{ closeModal }}>
           <div className="header">
             <CloseButton />
