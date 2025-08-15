@@ -15,6 +15,7 @@ body {
   --error-colour: hsl(10, 89%, 41%);
 
   --danger-colour: var(--error-colour);
+  --danger-colour-dark: hsl(10, 89%, 31%);
   --action-colour: hsl(211 81% 46%);
   --action-colour-dark: hsl(211 81% 36%);
 
@@ -34,8 +35,12 @@ button {
   cursor: pointer;
   border-radius: 6px;
   background: transparent;
-  &:hover {
+  &:hover,
+  &:focus-visible {
     background: var(--border-colour);
+  }
+  &:focus-visible {
+    outline: 1px solid black;
   }
 
   &.outline {
@@ -57,10 +62,23 @@ button {
     }
   }
 
+  &.danger {
+    color: white;
+    background: var(--danger-colour);
+    border-color: var(--danger-colour);
+
+    &:hover,
+    &:focus-visible {
+      background: var(--danger-colour-dark);
+      border-color: var(--danger-colour-dark);
+    }
+  }
+
   &.white {
     background: white;
 
-    &:hover {
+    &:hover,
+    &:focus-visible {
       background: var(--border-colour);
     }
   }

@@ -37,9 +37,7 @@ export function NewListModal({
             List name is required
           </div>
         )}
-        <Modal.Footer>
-          <Modal.Action onClick={handleCreate}>Create</Modal.Action>
-        </Modal.Footer>
+        <Modal.Action onClick={handleCreate}>Create</Modal.Action>
       </form>
     </Modal>
   )

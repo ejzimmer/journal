@@ -32,7 +32,7 @@ function Modal({ trigger: Trigger, children }: ModalProps) {
       <Trigger onClick={openModal} />
       <dialog ref={dialogRef} className="modal">
         <ModalContext.Provider value={{ closeModal }}>
-          <div className="header">
+          <div className="close-button">
             <CloseButton />
           </div>
           {children}
@@ -52,16 +52,6 @@ function useModal() {
   return context
 }
 
-function Footer({ children }: { children: React.ReactNode }) {
-  const { closeModal } = useModal()
-
-  return (
-    <div>
-      {children} <button onClick={closeModal}>Cancel</button>
-    </div>
-  )
-}
-
 function CloseButton() {
   const { closeModal } = useModal()
 
@@ -74,14 +64,21 @@ function CloseButton() {
       aria-label="close modal"
       onClick={closeModal}
     >
-      <XIcon width="24px" />
+      <XIcon width="16px" />
     </button>
   )
 }
 
+function Body({ children }: { children: React.ReactNode }) {
+  return <div style={{ gridArea: "body" }}>{children}</div>
+}
+
+function Footer({ children }: { children: React.ReactNode }) {
+  return <div className="footer">{children}</div>
+}
+
 function Action({
   onClick,
-  style,
   ...props
 }: React.HTMLAttributes<HTMLButtonElement>) {
   const { closeModal } = useModal()
@@ -91,16 +88,22 @@ function Action({
     onClick?.(event)
     closeModal()
   }
+  return <button {...props} className="danger" onClick={handleClick} />
+}
+
+function Cancel({ children }: { children: React.ReactNode }) {
+  const { closeModal } = useModal()
+
   return (
-    <button
-      {...props}
-      style={{ ...style, gridArea: "footer" }}
-      onClick={handleClick}
-    />
+    <button className="outline" onClick={closeModal}>
+      {children}
+    </button>
   )
 }
 
+Modal.Body = Body
 Modal.Footer = Footer
 Modal.Action = Action
+Modal.Cancel = Cancel
 
 export { Modal }

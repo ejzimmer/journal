@@ -15,8 +15,11 @@ export function ConfirmationModal({
 }: Props) {
   return (
     <Modal trigger={trigger}>
-      {message}
-      <Modal.Action onClick={onConfirm}>{confirmButtonText}</Modal.Action>
+      <Modal.Body>{message}</Modal.Body>
+      <Modal.Footer>
+        <Modal.Cancel>No, cancel</Modal.Cancel>
+        <Modal.Action onClick={onConfirm}>{confirmButtonText}</Modal.Action>
+      </Modal.Footer>
     </Modal>
   )
 }

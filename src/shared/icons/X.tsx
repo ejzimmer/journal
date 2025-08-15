@@ -1,6 +1,6 @@
 import { IconProps } from "./types"
 
-export function XIcon({ width = "100%", colour }: IconProps) {
+export function XIcon({ width = "100%", colour = "currentColor" }: IconProps) {
   return (
     <svg
       viewBox="0 0 20 20"
