@@ -2,6 +2,7 @@ import { useState } from "react"
 import { Item } from "../../shared/TaskList/types"
 import { Task } from "./Task"
 import { COLOURS } from "../../shared/TodoList/types"
+import { AddTaskForm } from "./AddTaskForm"
 
 const initialTasks: Item[] = [
   {
@@ -51,6 +52,7 @@ export function Today() {
 
   return (
     <>
+      <AddTaskForm onSubmit={console.log} />
       {tasks
         .sort((a, b) => (a.order ?? tasks.length) - (b.order ?? tasks.length))
         .map((task, index) => (
