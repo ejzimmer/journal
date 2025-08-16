@@ -1,5 +1,8 @@
-import { useEffect, useRef, useState } from "react"
+import { CSSProperties, useEffect, useRef, useState } from "react"
 import { COLOURS } from "../../shared/TodoList/types"
+
+import "./AddTaskForm.css"
+import { PlusIcon } from "../../shared/icons/Plus"
 
 type AddTaskFormProps = {
   onSubmit: ({
@@ -50,13 +53,31 @@ export function AddTaskForm({ onSubmit }: AddTaskFormProps) {
   })
 
   return (
-    <form ref={formRef} action="#" method="" onSubmit={handleSubmit}>
+    <form
+      ref={formRef}
+      action="#"
+      method=""
+      onSubmit={handleSubmit}
+      className="add-today-task"
+    >
       <button
         type="button"
         aria-expanded={formIsVisible}
         onClick={() => setFormIsVisible(!formIsVisible)}
+        className="round subtle"
+        aria-label={formIsVisible ? "hide add task form" : "show add task form"}
+        style={{ "--size": "32px", padding: "4px" } as CSSProperties}
       >
-        {formIsVisible ? "hide add task form" : "show add task form"}
+        <div
+          style={{
+            transform: formIsVisible ? "rotate(1.125turn)" : "",
+            transformOrigin: "center",
+            height: "20px",
+            transition: "transform .2s",
+          }}
+        >
+          <PlusIcon />
+        </div>
       </button>
       {formIsVisible && (
         <>

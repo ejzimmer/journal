@@ -37,12 +37,12 @@ describe("AddTaskForm", () => {
         name: "show add task form",
       })
       await user.click(showFormButton)
-      expect(showFormButton).toHaveTextContent("hide add task form")
+      expect(showFormButton).toHaveAccessibleName("hide add task form")
       expect(showFormButton).toHaveAttribute("aria-expanded", "true")
       expect(screen.getByRole("textbox")).toBeInTheDocument()
 
       await user.click(showFormButton)
-      expect(showFormButton).toHaveTextContent("show add task form")
+      expect(showFormButton).toHaveAccessibleName("show add task form")
       expect(showFormButton).toHaveAttribute("aria-expanded", "false")
       expect(screen.queryByRole("textbox")).not.toBeInTheDocument()
     })

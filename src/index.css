@@ -8,6 +8,7 @@ body {
   --input-height: 28px;
 
   --body-colour: hsl(0 0% 20%);
+  --body-colour-light: hsl(0 0% 60%);
   --border-colour: hsl(214 32% 91%);
   --border-colour-hover: hsl(214 32% 80%);
 
@@ -62,6 +63,13 @@ button {
     }
   }
 
+  &.round {
+    border-radius: 10000px;
+    padding: 0;
+    width: var(--size);
+    height: var(--size);
+  }
+
   &.danger {
     color: white;
     background: var(--danger-colour);
@@ -72,6 +80,11 @@ button {
       background: var(--danger-colour-dark);
       border-color: var(--danger-colour-dark);
     }
+  }
+
+  &.subtle {
+    color: var(--body-colour-light);
+    border: 2px solid var(--body-colour-light);
   }
 
   &.white {

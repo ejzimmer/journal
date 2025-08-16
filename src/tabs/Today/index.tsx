@@ -52,7 +52,6 @@ export function Today() {
 
   return (
     <>
-      <AddTaskForm onSubmit={console.log} />
       {tasks
         .sort((a, b) => (a.order ?? tasks.length) - (b.order ?? tasks.length))
         .map((task, index) => (
@@ -122,6 +121,7 @@ export function Today() {
             }}
           />
         ))}
+      <AddTaskForm onSubmit={console.log} />
     </>
   )
 }

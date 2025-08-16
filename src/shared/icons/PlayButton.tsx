@@ -11,9 +11,10 @@ export function PlayButtonIcon({
       width={width}
       strokeWidth="2"
       viewBox="0 0 20 20"
+      strokeLinejoin="round"
+      strokeLinecap="round"
     >
-      <circle cx="10" cy="10" r="9" />
-      <path d="M7,6 L7,14 14,10z" />
+      <path d="M4,4 L16,10 4,16" />
     </svg>
   )
 }
