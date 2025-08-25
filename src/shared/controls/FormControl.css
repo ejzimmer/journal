@@ -1,0 +1,39 @@
+.form-control {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+
+  label {
+    font-weight: bold;
+    margin-block-end: 5px;
+  }
+
+  input {
+    border: 1px solid var(--border-colour);
+    border-radius: 4px;
+    padding: 8px;
+    font-size: inherit;
+    color: inherit;
+
+    &:focus-visible {
+      outline: 2px solid black;
+    }
+  }
+
+  &.error {
+    input {
+      border-color: var(--error-colour);
+    }
+    input:focus-visible {
+      outline-color: var(--error-colour);
+    }
+  }
+
+  .validation-error {
+    display: flex;
+    gap: 4px;
+    align-items: center;
+    color: var(--error-colour);
+    padding-block-start: 4px;
+  }
+}

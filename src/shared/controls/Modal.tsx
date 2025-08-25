@@ -6,6 +6,7 @@ import { XIcon } from "../icons/X"
 
 export type ModalProps = {
   trigger: (props: ModalTriggerProps) => JSX.Element
+  onClose?: () => void
   children: React.ReactNode
 }
 
@@ -17,7 +18,7 @@ const ModalContext = createContext<{ closeModal: () => void } | undefined>(
   undefined
 )
 
-function Modal({ trigger: Trigger, children }: ModalProps) {
+function Modal({ trigger: Trigger, onClose, children }: ModalProps) {
   const dialogRef = useRef<HTMLDialogElement>(null)
 
   const openModal = () => {
@@ -30,7 +31,13 @@ function Modal({ trigger: Trigger, children }: ModalProps) {
   return (
     <>
       <Trigger onClick={openModal} />
-      <dialog ref={dialogRef} className="modal">
+      <dialog
+        ref={dialogRef}
+        className="modal"
+        // @ts-ignore closedby does exist really
+        closedby="any"
+        onClose={onClose}
+      >
         <ModalContext.Provider value={{ closeModal }}>
           <div className="close-button">
             <CloseButton />
@@ -42,7 +49,7 @@ function Modal({ trigger: Trigger, children }: ModalProps) {
   )
 }
 
-function useModal() {
+export function useModal() {
   const context = useContext(ModalContext)
 
   if (!context) {
@@ -84,18 +91,20 @@ function Action({
   const { closeModal } = useModal()
 
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-    event.preventDefault()
-    onClick?.(event)
-    closeModal()
+    if (onClick) {
+      event.preventDefault()
+      onClick(event)
+      closeModal()
+    }
   }
-  return <button {...props} className="danger" onClick={handleClick} />
+  return <button {...props} onClick={handleClick} />
 }
 
 function Cancel({ children }: { children: React.ReactNode }) {
   const { closeModal } = useModal()
 
   return (
-    <button className="outline" onClick={closeModal}>
+    <button className="outline" onClick={closeModal} type="button">
       {children}
     </button>
   )

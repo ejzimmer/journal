@@ -1,4 +1,4 @@
-import { ConfirmationModal } from "../../shared/ConfirmationModal"
+import { ConfirmationModal } from "../../shared/controls/ConfirmationModal"
 import { XIcon } from "../../shared/icons/X"
 
 type DeleteTaskButtonProps = {

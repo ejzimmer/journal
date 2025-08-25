@@ -1,5 +1,5 @@
 import { Menu } from "./controls/Menu"
-import { ConfirmationModal } from "./ConfirmationModal"
+import { ConfirmationModal } from "./controls/ConfirmationModal"
 export function DeleteMenuItem({
   task,
   onDelete,

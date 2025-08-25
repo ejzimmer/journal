@@ -1,4 +1,4 @@
-import { ConfirmationModal } from "../../shared/ConfirmationModal"
+import { ConfirmationModal } from "../../shared/controls/ConfirmationModal"
 import { Menu } from "../../shared/controls/Menu"
 import { Item } from "../../shared/TaskList/types"
 

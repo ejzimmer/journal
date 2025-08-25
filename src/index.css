@@ -36,21 +36,35 @@ button {
   cursor: pointer;
   border-radius: 6px;
   background: transparent;
+  border: 2px solid;
   &:hover,
   &:focus-visible {
     background: var(--border-colour);
   }
   &:focus-visible {
-    outline: 1px solid black;
+    outline: 2px solid black;
   }
 
+  &.primary {
+    color: white;
+    background: var(--action-colour);
+    border-color: var(--action-colour);
+
+    &:hover,
+    &:focus-visible {
+      background: var(--action-colour-dark);
+      border-color: var(--action-colour-dark);
+    }
+  }
   &.outline {
-    border: 2px solid var(--border-colour);
+    border-color: var(--border-colour);
   }
   &.ghost {
     border: 0;
     opacity: 0.5;
-    padding-inline: 0;
+    padding: 6px;
+    height: auto;
+    line-height: 1;
 
     &:hover {
       opacity: 1;
@@ -100,26 +114,6 @@ button {
 form {
   display: flex;
   flex-direction: column;
-
-  label {
-    font-weight: bold;
-    margin-block-end: 5px;
-  }
-
-  input {
-    border: 1px solid var(--border-colour);
-    border-radius: 4px;
-    padding: 8px;
-    font-size: inherit;
-    color: inherit;
-  }
-
-  .validation-error {
-    color: var(--error-color);
-    padding-block-start: 4px;
-    display: flex;
-    align-items: center;
-  }
 }
 
 dialog {

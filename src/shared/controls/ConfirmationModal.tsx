@@ -1,4 +1,4 @@
-import { Modal, ModalProps } from "./controls/Modal"
+import { Modal, ModalProps } from "./Modal"
 
 export type Props = {
   message: string
@@ -18,7 +18,9 @@ export function ConfirmationModal({
       <Modal.Body>{message}</Modal.Body>
       <Modal.Footer>
         <Modal.Cancel>No, cancel</Modal.Cancel>
-        <Modal.Action onClick={onConfirm}>{confirmButtonText}</Modal.Action>
+        <Modal.Action onClick={onConfirm} className="danger">
+          {confirmButtonText}
+        </Modal.Action>
       </Modal.Footer>
     </Modal>
   )
