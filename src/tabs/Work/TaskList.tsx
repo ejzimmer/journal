@@ -9,6 +9,7 @@ import { reorderWithEdge } from "@atlaskit/pragmatic-drag-and-drop-hitbox/util/r
 import { isTask } from "./drag-utils"
 
 import "./TaskList.css"
+import { ConfirmationModal } from "../../shared/controls/ConfirmationModal"
 
 const containerStyle = {
   "--margin-width": "30px",
@@ -135,13 +136,20 @@ export function TaskList({
         >
           {list.description}
         </EditableText>
-        <button
-          aria-label={`delete list ${list.description}`}
-          onClick={onDelete}
-          className="delete-button ghost"
-        >
-          🗑️
-        </button>
+        <ConfirmationModal
+          trigger={(props) => (
+            <button
+              {...props}
+              aria-label={`delete list ${list.description}`}
+              className="delete-button ghost"
+            >
+              🗑️
+            </button>
+          )}
+          message={`Are you sure you want to delete list ${list.description}?`}
+          confirmButtonText="Yes, delete"
+          onConfirm={onDelete}
+        />
       </h2>
       <ul
         ref={listRef}

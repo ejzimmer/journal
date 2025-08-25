@@ -2,7 +2,6 @@ import { useCallback, useContext, useEffect, useMemo } from "react"
 import { FirebaseContext } from "../../shared/FirebaseContext"
 import { Item, Label } from "../../shared/TaskList/types"
 import { NewListModal } from "./NewListModal"
-import { useConfirmDelete } from "./useConfirmDelete"
 import { TaskList } from "./TaskList"
 import { hoursToMilliseconds, isSameDay } from "date-fns"
 import { TaskMenu } from "./TaskMenu"
@@ -32,7 +31,6 @@ export function Work() {
   }
   const onUpdateListName = (newName: string, list: Item) => {
     if (!newName) {
-      confirmDelete(list)
       return
     }
     updateItem(WORK_KEY, { ...list, description: newName })
@@ -40,8 +38,6 @@ export function Work() {
   const onDeleteList = (list: Item) => {
     deleteItem(WORK_KEY, list)
   }
-  const { confirmDelete, DeleteListConfirmation } =
-    useConfirmDelete(onDeleteList)
 
   const onUpdate = useCallback(() => {
     const today = new Date()
@@ -115,7 +111,7 @@ export function Work() {
                     onChangeListName={(newName: string) =>
                       onUpdateListName(newName, list)
                     }
-                    onDelete={() => confirmDelete(list)}
+                    onDelete={() => onDeleteList(list)}
                     onAddTask={({ description, dueDate, labels }) => {
                       const item: Partial<Item> = {
                         description,
@@ -206,7 +202,6 @@ export function Work() {
         ) : (
           <div style={{ marginInlineEnd: "30px" }}>No lists found.</div>
         )}
-        <DeleteListConfirmation />
       </div>
     </>
   )
