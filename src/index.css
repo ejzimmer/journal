@@ -44,6 +44,9 @@ button {
   &:focus-visible {
     outline: 2px solid black;
   }
+  &:disabled {
+    opacity: 0.2;
+  }
 
   &.primary {
     color: white;

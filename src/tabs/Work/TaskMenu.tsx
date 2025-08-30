@@ -32,13 +32,6 @@ export function TaskMenu({
           </button>
         )}
       >
-        <Menu.Action
-          key="move_to_top"
-          onClick={onMoveToTop}
-          isDisabled={task.order === 0}
-        >
-          ⬆️ Move to top
-        </Menu.Action>
         {moveDestinations.map((destination) => (
           <Menu.Action
             key={destination.description}

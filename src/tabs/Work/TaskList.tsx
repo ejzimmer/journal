@@ -4,12 +4,16 @@ import { AddTaskForm } from "../../shared/TaskList/AddTaskForm"
 import { Item, Label } from "../../shared/TaskList/types"
 import { Task } from "./Task"
 import { monitorForElements } from "@atlaskit/pragmatic-drag-and-drop/element/adapter"
-import { extractClosestEdge } from "@atlaskit/pragmatic-drag-and-drop-hitbox/closest-edge"
+import {
+  Edge,
+  extractClosestEdge,
+} from "@atlaskit/pragmatic-drag-and-drop-hitbox/closest-edge"
 import { reorderWithEdge } from "@atlaskit/pragmatic-drag-and-drop-hitbox/util/reorder-with-edge"
 import { isTask } from "./drag-utils"
 
 import "./TaskList.css"
 import { ConfirmationModal } from "../../shared/controls/ConfirmationModal"
+import { Destination } from "../../shared/drag-and-drop/types"
 
 const containerStyle = {
   "--margin-width": "30px",
@@ -118,6 +122,41 @@ export function TaskList({
     })
   }, [list, onReorderTasks, sortedList])
 
+  function onChangePosition(originIndex: number, destination: Destination) {
+    if (!sortedList) return
+
+    const getTarget = (): {
+      indexOfTarget: number
+      closestEdgeOfTarget: Edge
+    } => {
+      switch (destination) {
+        case "start":
+          return { indexOfTarget: 0, closestEdgeOfTarget: "top" }
+        case "previous":
+          return { indexOfTarget: originIndex - 1, closestEdgeOfTarget: "top" }
+        case "next":
+          return {
+            indexOfTarget: originIndex + 1,
+            closestEdgeOfTarget: "bottom",
+          }
+        case "end":
+          return {
+            indexOfTarget: sortedList.length - 1,
+            closestEdgeOfTarget: "bottom",
+          }
+      }
+    }
+
+    onReorderTasks(
+      reorderWithEdge({
+        list: sortedList,
+        startIndex: originIndex,
+        ...getTarget(),
+        axis: "vertical",
+      })
+    )
+  }
+
   return (
     <div style={containerStyle}>
       <h2
@@ -160,8 +199,11 @@ export function TaskList({
         {sortedList?.map((item, index) => (
           <li className="task" key={item.id}>
             <Task
+              position={getPosition(index, sortedList.length)}
+              onChangePosition={(destination) =>
+                onChangePosition(index, destination)
+              }
               task={item}
-              availableLabels={labels}
               onChange={onChangeTask}
               menu={() => (Menu ? <Menu task={item} /> : null)}
             />
@@ -181,4 +223,15 @@ export function TaskList({
       </ul>
     </div>
   )
+}
+
+function getPosition(index: number, listLength: number) {
+  if (index === 0) {
+    return "start"
+  }
+  if (index === listLength - 1) {
+    return "end"
+  }
+
+  return "middle"
 }
