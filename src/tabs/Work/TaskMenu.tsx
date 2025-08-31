@@ -1,8 +1,12 @@
+import { useState } from "react"
 import { ConfirmationModal } from "../../shared/controls/ConfirmationModal"
 import { Menu } from "../../shared/controls/Menu"
+import { ArrowRightIcon } from "../../shared/icons/ArrowRight"
+import { RubbishBinIcon } from "../../shared/icons/RubbishBin"
 import { Item } from "../../shared/TaskList/types"
 
 import "./TaskList.css"
+import { ModalTriggerProps } from "../../shared/controls/Modal"
 
 export function TaskMenu({
   task,
@@ -37,22 +41,18 @@ export function TaskMenu({
             key={destination.description}
             onClick={() => onMove(destination)}
           >
-            ➡️ {destination.description}
+            <ArrowRightIcon width="16px" colour="var(--action-colour-dark)" />
+            {destination.description}
           </Menu.Action>
         ))}
         <ConfirmationModal
           message={`Are you sure you want to delete ${task.description}`}
           onConfirm={onDelete}
-          trigger={(triggerProps) => (
-            <Menu.Action key="delete_task" {...triggerProps}>
-              🗑️ Delete
-            </Menu.Action>
-          )}
+          trigger={(triggerProps) => <DeleteButton {...triggerProps} />}
         />
 
         {!task.dueDate && (
           <Menu.Action
-            key="add_due_date"
             onClick={() => onChange({ ...task, dueDate: new Date().getTime() })}
           >
             📅 Add due date
@@ -60,5 +60,19 @@ export function TaskMenu({
         )}
       </Menu>
     </>
+  )
+}
+
+function DeleteButton(props: ModalTriggerProps) {
+  const [isHovered, setHovered] = useState(false)
+
+  return (
+    <Menu.Action
+      {...props}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+    >
+      <RubbishBinIcon width="16px" shouldAnimate={isHovered} /> Delete
+    </Menu.Action>
   )
 }

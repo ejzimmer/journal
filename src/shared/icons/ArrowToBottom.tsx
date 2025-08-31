@@ -8,14 +8,15 @@ export function ArrowToBottomIcon({
     <svg
       viewBox="0 0 20 20"
       stroke={colour}
-      strokeWidth="2"
+      strokeWidth="4"
       strokeLinecap="round"
       strokeLinejoin="round"
       width={width}
-      fill={colour}
+      fill="none"
     >
-      <path d="M7,1 L7,8 2,8 10,17 18,8 13,8 13,1z" />
-      <path d="M2,18 L18,18" strokeWidth="3" />
+      <path d="M4,9 L10,14 16,9" />
+      <path d="M10,2 L10, 18" />
+      <path d="M2,18 L18,18" strokeWidth="4" />
     </svg>
   )
 }

@@ -8,13 +8,14 @@ export function ArrowUpIcon({
     <svg
       viewBox="0 0 20 20"
       stroke={colour}
-      strokeWidth="2"
+      strokeWidth="4"
       strokeLinecap="round"
       strokeLinejoin="round"
       width={width}
-      fill={colour}
+      fill="none"
     >
-      <path d="M7,17 L7,11 2,11 10,3 18,11 13,11 13,17z" />
+      <path d="M3,8 L10,2 17,8" />
+      <path d="M10,2 L10,18" />
     </svg>
   )
 }

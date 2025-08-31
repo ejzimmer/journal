@@ -1,6 +1,6 @@
 import { IconProps } from "./types"
 
-export function ArrowDownIcon({
+export function ArrowRightIcon({
   width = "100%",
   colour = "currentColor",
 }: IconProps) {
@@ -14,8 +14,8 @@ export function ArrowDownIcon({
       width={width}
       fill="none"
     >
-      <path d="M3,12 L10,18 17,12" />
-      <path d="M10,2 L10,18" />
+      <path d="M12,3 L18,10 12,17" />
+      <path d="M2,10 L18,10" />
     </svg>
   )
 }

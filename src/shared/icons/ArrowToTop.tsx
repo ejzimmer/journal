@@ -8,14 +8,15 @@ export function ArrowToTopIcon({
     <svg
       viewBox="0 0 20 20"
       stroke={colour}
-      strokeWidth="2"
+      strokeWidth="4"
       strokeLinecap="round"
       strokeLinejoin="round"
       width={width}
-      fill={colour}
+      fill="none"
     >
-      <path d="M2,2 L18,2" strokeWidth="3" />
-      <path d="M7,18 L7,12 2,12 10,4 18,12 13,12 13,18z" />
+      <path d="M4,11 L10,6 16,11" />
+      <path d="M10,18 L10,2" />
+      <path d="M2,2 L18,2" />
     </svg>
   )
 }

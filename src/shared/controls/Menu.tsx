@@ -50,10 +50,13 @@ function Action({
   isDisabled,
   onClick,
   children,
-}: {
+  ...props
+}: Omit<
+  React.ButtonHTMLAttributes<HTMLButtonElement>,
+  "disabled" | "onClick"
+> & {
   isDisabled?: boolean
   onClick: (event: React.MouseEvent) => void
-  children: React.ReactNode
 }) {
   const { closeMenu } = useMenu()
 
@@ -63,7 +66,12 @@ function Action({
     closeMenu()
   }
   return (
-    <button role="menuitem" disabled={isDisabled} onClick={handleClick}>
+    <button
+      {...props}
+      role="menuitem"
+      disabled={isDisabled}
+      onClick={handleClick}
+    >
       {children}
     </button>
   )
