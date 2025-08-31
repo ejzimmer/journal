@@ -1,0 +1,26 @@
+label.checkbox {
+  cursor: pointer;
+
+  .control {
+    color: var(--body-colour-light);
+    border: 2px solid;
+    width: 0.8em;
+    aspect-ratio: 1;
+    border-radius: 4px;
+
+    svg {
+      display: none;
+    }
+  }
+
+  input {
+    width: 0;
+    overflow: hidden;
+    position: fixed;
+    top: -100%;
+  }
+
+  &:has(input:checked) .control svg {
+    display: block;
+  }
+}

@@ -1,0 +1,39 @@
+.drop-indicator {
+  --stroke-size: 2px;
+  --terminal-radius: 4px;
+  --line-offset: -5px;
+  --terminal-diameter: calc(var(--terminal-radius) * 2);
+  --terminal-offset: calc(var(--stroke-size) - var(terminal-diameter))
+  position: absolute;
+  background-color: blue;
+  pointer-events: none;
+  height: var(--stroke-size);
+  left: var(--terminal-radius);
+  right: 0;
+
+  &::before {
+    content: "";
+    position: absolute;
+    left: calc(var(--terminal-diameter) * -1);
+    width: var(--terminal-diameter);
+    height: var(--terminal-diameter);
+    border: var(--stroke-size) solid blue;
+    border-radius: 1000px;
+  }
+
+  &.top {
+    top: var(--line-offset);
+
+    &::before {
+      top: var(--terminal-offset);
+    }
+  }
+
+  &.bottom {
+    bottom: var(--line-offset);
+
+    &::before {
+      bottom: var(--terminal-offset)
+    }
+  }
+}

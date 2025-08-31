@@ -7,13 +7,14 @@ import { getTaskData, isTask } from "./drag-utils"
 import "./TaskList.css"
 import { DraggableListItem } from "../../shared/drag-and-drop/DraggableListItem"
 import { Destination, Position } from "../../shared/drag-and-drop/types"
+import { Checkbox } from "../../shared/controls/Checkbox"
 
 type TaskProps = {
   task: Item
   onChange: (task: Item) => void
   position: Position
   onChangePosition: (destination: Destination) => void
-  menu?: React.FC
+  menu: React.FC
 }
 
 export function Task({
@@ -36,19 +37,19 @@ export function Task({
       <div
         style={{
           display: "flex",
-          alignItems: "baseline",
+          alignItems: "center",
           opacity: task.status === "done" ? 0.4 : 1,
-          position: "relative",
+          fontSize: "1.7rem",
+          width: "100%",
         }}
       >
-        <input
-          type="checkbox"
-          aria-label={`${task.description}`}
-          checked={task.status === "done"}
-          onChange={() => {
-            const status = task.status === "done" ? "not_started" : "done"
+        <Checkbox
+          isChecked={task.status === "done"}
+          onChange={(isChecked) => {
+            const status = isChecked ? "done" : "not_started"
             onChange({ ...task, status })
           }}
+          aria-label={`${task.description}`}
         />
         <div
           style={{
@@ -78,7 +79,7 @@ export function Task({
             />
           )}
         </div>
-        {Menu && <Menu />}
+        <Menu />
       </div>
     </DraggableListItem>
   )

@@ -104,6 +104,14 @@ button {
     border: 2px solid var(--body-colour-light);
   }
 
+  &.icon {
+    padding: 0;
+    aspect-ratio: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
   &.white {
     background: white;
 

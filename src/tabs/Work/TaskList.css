@@ -1,53 +1,57 @@
-.delete-button {
-  opacity: 0.5;
+.work-task-list {
+  --margin-width: 30px;
+  --margin-colour: hsl(330 60% 85%);
+  --line-colour: hsl(200 90% 80%);
+  --line-gap: 39px;
+  --line-width: 1px;
+  display: flex;
+  flex-direction: column;
+  min-width: 300px;
+  min-height: 316px;
+  font-family: "Shadows Into Light", sans-serif;
+  cursor: text;
+  background: linear-gradient(
+    to right,
+    transparent,
+    transparent var(--margin-width),
+    var(--margin-colour) var(--margin-width),
+    var(--margin-colour) calc(var(--margin-width) + 2px),
+    transparent calc(var(--margin-width) + 2px)
+  );
 
-  &:hover {
-    opacity: 1;
+  h2 {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    border-bottom: 2px solid var(--line-colour);
+    padding-inline-start: calc(var(--margin-width) + 8px);
+    margin-block-end: 0;
+  }
+
+  ul {
+    flex-grow: 1;
+    line-height: 1;
+    list-style-type: none;
+    margin-block: 0;
+    padding: 0;
+    background: repeating-linear-gradient(
+      transparent,
+      transparent var(--line-gap),
+      var(--line-colour) var(--line-gap),
+      var(--line-colour) calc(var(--line-gap) + var(--line-width)),
+      transparent calc(var(--line-gap) + var(--line-width))
+    );
+  }
+
+  li {
+    height: calc(var(--line-gap) + var(--line-width));
+    position: relative;
+    top: 4px;
   }
 }
 
 li.task:last-child {
   margin-block-end: 40px;
-}
-
-.drop-indicator {
-  --stroke-size: 2px;
-  --terminal-radius: 4px;
-  --line-offset: -5px;
-  --terminal-diameter: calc(var(--terminal-radius) * 2);
-  --terminal-offset: calc(var(--stroke-size) - var(terminal-diameter))
-  position: absolute;
-  background-color: blue;
-  pointer-events: none;
-  height: var(--stroke-size);
-  left: var(--terminal-radius);
-  right: 0;
-
-  &::before {
-    content: "";
-    position: absolute;
-    left: calc(var(--terminal-diameter) * -1);
-    width: var(--terminal-diameter);
-    height: var(--terminal-diameter);
-    border: var(--stroke-size) solid blue;
-    border-radius: 1000px;
-  }
-
-  &.top {
-    top: var(--line-offset);
-
-    &::before {
-      top: var(--terminal-offset);
-    }
-  }
-
-  &.bottom {
-    bottom: var(--line-offset);
-
-    &::before {
-      bottom: var(--terminal-offset)
-    }
-  }
 }
 
 .tag {
@@ -75,7 +79,7 @@ li.task:last-child {
       border-color: white;
       background-color: var(--colour);
       color: white;
-      transition: all .2s;
+      transition: all 0.2s;
     }
   }
 }
@@ -91,16 +95,5 @@ button.tag {
 
   :has(+ :hover) {
     opacity: 0.6;
-  }
-}
-
-.menu-trigger {
-  min-width: 24px;
-  height: 24px;
-  padding: 3px;
-  align-self: center;
-
-  &:hover {
-    background: hsl(200 70% 90%);
   }
 }

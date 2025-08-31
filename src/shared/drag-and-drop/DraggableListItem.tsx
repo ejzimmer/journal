@@ -16,6 +16,8 @@ import { Edge } from "@atlaskit/pragmatic-drag-and-drop-hitbox/dist/types/types"
 import { DragHandle } from "./DragHandle"
 import { Destination, Position } from "./types"
 
+import "./styles.css"
+
 type DraggingState =
   | { type: "idle" }
   | { type: "preview"; container: HTMLElement }
