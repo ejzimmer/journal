@@ -19,13 +19,19 @@
     transparent calc(var(--margin-width) + 2px)
   );
 
-  h2 {
+  .heading {
     display: flex;
     justify-content: space-between;
     align-items: baseline;
     border-bottom: 2px solid var(--line-colour);
     padding-inline-start: calc(var(--margin-width) + 8px);
-    margin-block-end: 0;
+
+    h2 {
+      margin-block-end: 0;
+      position: relative;
+      top: 10px;
+      font-size: 1.8em;
+    }
   }
 
   ul {

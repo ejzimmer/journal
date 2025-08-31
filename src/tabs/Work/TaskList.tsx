@@ -8,6 +8,8 @@ import { isTask } from "./drag-utils"
 import "./TaskList.css"
 import { ConfirmationModal } from "../../shared/controls/ConfirmationModal"
 import { useDropTarget } from "../../shared/drag-and-drop/useDropTarget"
+import { RubbishBinIcon } from "../../shared/icons/RubbishBin"
+import { ModalTriggerProps } from "../../shared/controls/Modal"
 
 export function TaskList({
   list,
@@ -60,30 +62,24 @@ export function TaskList({
 
   return (
     <div className="work-task-list">
-      <h2>
-        <div style={{ position: "relative", top: "12px", fontSize: "1.4em" }}>
+      <div className="heading">
+        <h2>
           <EditableText
             label={`Edit ${list.description} name`}
             onChange={onChangeListName}
           >
             {list.description}
           </EditableText>
-        </div>
+        </h2>
         <ConfirmationModal
           trigger={(props) => (
-            <button
-              {...props}
-              aria-label={`delete list ${list.description}`}
-              className="delete-button ghost"
-            >
-              🗑️
-            </button>
+            <DeleteButton label={list.description} {...props} />
           )}
           message={`Are you sure you want to delete list ${list.description}?`}
           confirmButtonText="Yes, delete"
           onConfirm={onDelete}
         />
-      </h2>
+      </div>
       <ul ref={listRef} onClick={showTaskForm} onFocus={showTaskForm}>
         {sortedList?.map((item, index) => (
           <li className="task" key={item.id}>
@@ -111,6 +107,25 @@ export function TaskList({
         )}
       </ul>
     </div>
+  )
+}
+
+function DeleteButton({
+  label,
+  ...props
+}: ModalTriggerProps & { label: string }) {
+  const [isHovered, setHovered] = useState(false)
+
+  return (
+    <button
+      {...props}
+      aria-label={`delete list ${label}`}
+      className="ghost"
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+    >
+      <RubbishBinIcon width="16px" shouldAnimate={isHovered} />
+    </button>
   )
 }
 

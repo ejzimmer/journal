@@ -77,7 +77,7 @@ function CloseButton() {
 }
 
 function Body({ children }: { children: React.ReactNode }) {
-  return <div style={{ gridArea: "body" }}>{children}</div>
+  return <div>{children}</div>
 }
 
 function Footer({ children }: { children: React.ReactNode }) {
