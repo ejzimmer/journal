@@ -65,6 +65,7 @@ describe("modal", () => {
             <label>
               <input type="checkbox" /> checkbox
             </label>
+            <Modal.Cancel>Cancel</Modal.Cancel>
             <Modal.Action onClick={onSubmit}>submit</Modal.Action>
           </form>
         </Modal>

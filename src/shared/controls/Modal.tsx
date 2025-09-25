@@ -22,7 +22,6 @@ function Modal({ trigger: Trigger, onClose, children }: ModalProps) {
   const dialogRef = useRef<HTMLDialogElement>(null)
 
   const openModal = () => {
-    console.log("calling open modal")
     dialogRef.current?.showModal()
   }
   const closeModal = () => {
