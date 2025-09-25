@@ -3,21 +3,23 @@
   --terminal-radius: 4px;
   --line-offset: -5px;
   --terminal-diameter: calc(var(--terminal-radius) * 2);
-  --terminal-offset: calc(var(--stroke-size) - var(terminal-diameter))
+  --terminal-offset: calc(
+    (var(--terminal-radius) + (var(--stroke-size) / 2)) * -1
+  );
   position: absolute;
-  background-color: blue;
+  background-color: var(--action-colour);
   pointer-events: none;
   height: var(--stroke-size);
-  left: var(--terminal-radius);
+  left: 0;
   right: 0;
 
   &::before {
     content: "";
     position: absolute;
-    left: calc(var(--terminal-diameter) * -1);
+    left: calc((var(--terminal-diameter) + var(--stroke-size)) * -1);
     width: var(--terminal-diameter);
     height: var(--terminal-diameter);
-    border: var(--stroke-size) solid blue;
+    border: var(--stroke-size) solid var(--action-colour);
     border-radius: 1000px;
   }
 
@@ -33,7 +35,7 @@
     bottom: var(--line-offset);
 
     &::before {
-      bottom: var(--terminal-offset)
+      bottom: var(--terminal-offset);
     }
   }
 }
