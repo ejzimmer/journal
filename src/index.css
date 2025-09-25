@@ -9,6 +9,7 @@ body {
   --input-height: 28px;
 
   --body-colour: hsl(0 0% 20%);
+  --body-colour-mid: hsl(0 0% 50%);
   --body-colour-light: hsl(0 0% 60%);
   --border-colour: hsl(214 32% 91%);
   --border-colour-hover: hsl(214 32% 80%);
@@ -20,6 +21,7 @@ body {
   --danger-colour-dark: hsl(10, 89%, 31%);
   --action-colour: hsl(211 81% 46%);
   --action-colour-dark: hsl(211 81% 36%);
+  --success-colour: hsl(108, 81%, 36%);
 
   color: var(--body-colour);
 }

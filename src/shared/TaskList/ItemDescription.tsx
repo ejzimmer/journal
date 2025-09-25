@@ -14,11 +14,8 @@ export function ItemDescription({
     <EditableText
       onChange={onChange}
       label={`Edit description ${description}`}
+      className="inline"
       style={{
-        paddingInlineStart: ".25em",
-        paddingBlockStart: ".3em",
-        paddingBlockEnd: ".1em",
-        border: "none",
         textDecoration: isDone ? "line-through" : "none",
       }}
     >

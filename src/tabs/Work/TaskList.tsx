@@ -1,6 +1,6 @@
 import { useState, MouseEvent, FocusEvent, useRef, useMemo } from "react"
 import { EditableText } from "../../shared/controls/EditableText"
-import { AddTaskForm } from "../../shared/TaskList/AddTaskForm"
+import { AddTaskForm } from "./AddTaskForm"
 import { Item, Label } from "../../shared/TaskList/types"
 import { Task } from "./Task"
 import { isTask } from "./drag-utils"
@@ -95,13 +95,12 @@ export function TaskList({
           </li>
         ))}
         {addTaskFormVisible && (
-          <li style={{ marginBlockStart: "12px" }}>
+          <li style={{ paddingInlineStart: "var(--margin-width)" }}>
             <AddTaskForm
               onSubmit={onAddTask}
-              onCancel={() => {
+              onClose={() => {
                 setAddTaskFormVisible(false)
               }}
-              labelOptions={labels ? Object.values(labels) : []}
             />
           </li>
         )}

@@ -57,7 +57,7 @@ export function Task({
           style={{
             display: "flex",
             flexGrow: "1",
-            marginInlineEnd: "12px",
+            marginInline: "12px",
             gap: "8px",
             alignItems: "center",
           }}
