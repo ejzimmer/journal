@@ -13,6 +13,7 @@ type AddTaskFormProps = {
 }
 
 export function AddTaskForm({ onSubmit, onClose }: AddTaskFormProps) {
+  const formRef = useRef<HTMLFormElement>(null)
   const descriptionRef = useRef<HTMLInputElement>(null)
   const dateRef = useRef<HTMLInputElement>(null)
 
@@ -40,8 +41,34 @@ export function AddTaskForm({ onSubmit, onClose }: AddTaskFormProps) {
     }
   }, [])
 
+  useEffect(() => {
+    if (!descriptionRef.current || !dateRef.current) return
+
+    const description = descriptionRef.current
+    const date = dateRef.current
+    const handleBlur = () => {
+      requestAnimationFrame(() => {
+        if (
+          !formRef.current?.contains(document.activeElement) &&
+          !descriptionRef.current?.value
+        ) {
+          onClose()
+        }
+      })
+    }
+
+    description.addEventListener("blur", handleBlur)
+    date.addEventListener("blur", handleBlur)
+
+    return () => {
+      description.removeEventListener("blur", handleBlur)
+      date.removeEventListener("blur", handleBlur)
+    }
+  }, [formRef, onClose])
+
   return (
     <form
+      ref={formRef}
       onSubmit={handleSubmit}
       onKeyDown={handleCancel}
       className="add-task"

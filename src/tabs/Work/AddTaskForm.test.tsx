@@ -11,7 +11,6 @@ describe("AddTaskForm", () => {
   it("adds a task with just a description", async () => {
     const user = userEvent.setup()
     const onSubmit = jest.fn()
-    const onClose = jest.fn()
     render(<AddTaskForm {...commonProps} onSubmit={onSubmit} />)
 
     const descriptionInput = screen.getByRole("textbox", {
@@ -21,7 +20,6 @@ describe("AddTaskForm", () => {
     await user.keyboard("{Enter}")
 
     expect(onSubmit).toHaveBeenCalledWith({ description: "Approve PR" })
-    expect(onClose).toHaveBeenCalled()
   })
 
   it("doesn't add a task with just a due date", async () => {
