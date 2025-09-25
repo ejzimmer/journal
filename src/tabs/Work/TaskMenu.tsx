@@ -36,27 +36,39 @@ export function TaskMenu({
           </button>
         )}
       >
-        {moveDestinations.map((destination) => (
-          <Menu.Action
-            key={destination.description}
-            onClick={() => onMove(destination)}
-          >
-            <ArrowRightIcon width="16px" colour="var(--action-colour-dark)" />
-            {destination.description}
-          </Menu.Action>
-        ))}
-        <ConfirmationModal
-          message={`Are you sure you want to delete ${task.description}`}
-          onConfirm={onDelete}
-          trigger={(triggerProps) => <DeleteButton {...triggerProps} />}
-        />
+        {({ onClose }) => (
+          <>
+            {moveDestinations.map((destination) => (
+              <Menu.Action
+                key={destination.description}
+                onClick={() => {
+                  onMove(destination)
+                  onClose()
+                }}
+              >
+                <ArrowRightIcon
+                  width="16px"
+                  colour="var(--action-colour-dark)"
+                />
+                {destination.description}
+              </Menu.Action>
+            ))}
+            <ConfirmationModal
+              message={`Are you sure you want to delete ${task.description}`}
+              onConfirm={onDelete}
+              trigger={(triggerProps) => <DeleteButton {...triggerProps} />}
+            />
 
-        {!task.dueDate && (
-          <Menu.Action
-            onClick={() => onChange({ ...task, dueDate: new Date().getTime() })}
-          >
-            📅 Add due date
-          </Menu.Action>
+            {!task.dueDate && (
+              <Menu.Action
+                onClick={() =>
+                  onChange({ ...task, dueDate: new Date().getTime() })
+                }
+              >
+                📅 Add due date
+              </Menu.Action>
+            )}
+          </>
         )}
       </Menu>
     </>

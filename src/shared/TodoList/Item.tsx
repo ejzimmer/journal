@@ -64,17 +64,21 @@ export function Item({
             </button>
           )}
         >
-          <Menu.Action onClick={onMoveToTop}>⏫ Move to top</Menu.Action>
-          {currentList &&
-            otherLists.map((list) => (
-              <MoveToMenuItem
-                key={list}
-                source={currentList}
-                target={list}
-                item={item}
-              />
-            ))}
-          <DeleteMenuItem task={item} onDelete={() => onDelete(item)} />
+          {() => (
+            <>
+              <Menu.Action onClick={onMoveToTop}>⏫ Move to top</Menu.Action>
+              {currentList &&
+                otherLists.map((list) => (
+                  <MoveToMenuItem
+                    key={list}
+                    source={currentList}
+                    target={list}
+                    item={item}
+                  />
+                ))}
+              <DeleteMenuItem task={item} onDelete={() => onDelete(item)} />
+            </>
+          )}
         </Menu>
       )}
     </Wrapper>

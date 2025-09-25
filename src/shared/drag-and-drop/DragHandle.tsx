@@ -25,30 +25,40 @@ export function DragHandle({ position, onChangePosition }: DragHandleProps) {
         </button>
       )}
     >
-      <Menu.Action
-        onClick={() => onChangePosition("start")}
-        isDisabled={position === "start"}
-      >
-        <ArrowToTopIcon {...iconProps} /> Move to top
-      </Menu.Action>
-      <Menu.Action
-        onClick={() => onChangePosition("previous")}
-        isDisabled={position === "start"}
-      >
-        <ArrowUpIcon {...iconProps} /> Move up
-      </Menu.Action>
-      <Menu.Action
-        onClick={() => onChangePosition("next")}
-        isDisabled={position === "end"}
-      >
-        <ArrowDownIcon {...iconProps} /> Move down
-      </Menu.Action>
-      <Menu.Action
-        onClick={() => onChangePosition("end")}
-        isDisabled={position === "end"}
-      >
-        <ArrowToBottomIcon {...iconProps} /> Move to bottom
-      </Menu.Action>
+      {({ onClose }) => (
+        <>
+          <Menu.Action
+            onClick={() => {
+              onChangePosition("start")
+              onClose()
+            }}
+            isDisabled={position === "start"}
+          >
+            <ArrowToTopIcon {...iconProps} /> Move to top
+          </Menu.Action>
+          <Menu.Action
+            onClick={() => onChangePosition("previous")}
+            isDisabled={position === "start"}
+          >
+            <ArrowUpIcon {...iconProps} /> Move up
+          </Menu.Action>
+          <Menu.Action
+            onClick={() => onChangePosition("next")}
+            isDisabled={position === "end"}
+          >
+            <ArrowDownIcon {...iconProps} /> Move down
+          </Menu.Action>
+          <Menu.Action
+            onClick={() => {
+              onChangePosition("end")
+              onClose()
+            }}
+            isDisabled={position === "end"}
+          >
+            <ArrowToBottomIcon {...iconProps} /> Move to bottom
+          </Menu.Action>
+        </>
+      )}
     </Menu>
   )
 }

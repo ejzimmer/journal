@@ -5,7 +5,6 @@ import { NewListModal } from "./NewListModal"
 import { TaskList } from "./TaskList"
 import { hoursToMilliseconds, isSameDay } from "date-fns"
 import { TaskMenu } from "./TaskMenu"
-import { DoneList } from "./DoneList"
 import { Skeleton } from "../../shared/controls/Skeleton"
 
 const WORK_KEY = "work"
@@ -24,7 +23,6 @@ export function Work() {
       lists && Object.values(lists).find((list) => list.description === "Done")
     )
   }, [lists])
-  const defaultList = lists && Object.values(lists)[0]
 
   const onAddList = (listName: string) => {
     addItem(WORK_KEY, { description: listName })
@@ -141,7 +139,7 @@ export function Work() {
                       <TaskMenu
                         task={task}
                         moveDestinations={Object.values(lists).filter(
-                          ({ id }) => id !== list.id
+                          ({ id }) => id !== list.id && id !== doneList?.id
                         )}
                         onDelete={() =>
                           deleteItem(`${WORK_KEY}/${list.id}/items`, task)
@@ -180,23 +178,6 @@ export function Work() {
                     )}
                   />
                 )
-            )}
-            {doneList?.items && (
-              <DoneList
-                tasks={doneList.items}
-                onMarkNotDone={(task) => {
-                  if (!defaultList) return
-
-                  addItem(`${WORK_KEY}/${defaultList.id}/items`, {
-                    ...task,
-                    isComplete: false,
-                  })
-                  deleteItem(`${WORK_KEY}/${doneList.id}/items`, task)
-                }}
-                onDelete={(task) =>
-                  deleteItem(`${WORK_KEY}/${doneList.id}/items`, task)
-                }
-              />
             )}
           </>
         ) : (

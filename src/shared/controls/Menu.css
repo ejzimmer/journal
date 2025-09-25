@@ -1,6 +1,7 @@
 [popover] {
   inset: unset;
   border-radius: 6px;
+  position: absolute;
 }
 
 :popover-open {
@@ -19,7 +20,7 @@
     align-items: center;
     gap: 4px;
     color: var(--body-colour);
-    font-size: 0.7em;
+    font-size: 1rem;
 
     &:focus-visible {
       background: var(--border-colour);

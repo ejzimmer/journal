@@ -32,22 +32,29 @@ export function MoveMenu({ description, onMoveTo }: MoveMenuProps) {
         </button>
       )}
     >
-      <Menu.Action onClick={() => onMoveTo("start")}>
-        <ArrowToTopIcon width="16px" colour="var(--action-colour-dark)" />
-        Move to top
-      </Menu.Action>
-      <Menu.Action onClick={() => onMoveTo("previous")}>
-        <ArrowUpIcon width="16px" colour="var(--action-colour-dark)" />
-        Move up
-      </Menu.Action>
-      <Menu.Action onClick={() => onMoveTo("next")}>
-        <ArrowDownIcon width="16px" colour="var(--action-colour-dark)" />
-        Move down
-      </Menu.Action>
-      <Menu.Action onClick={() => onMoveTo("end")}>
-        <ArrowToBottomIcon width="16px" colour="var(--action-colour-dark)" />
-        Move to bottom
-      </Menu.Action>
+      {() => (
+        <>
+          <Menu.Action onClick={() => onMoveTo("start")}>
+            <ArrowToTopIcon width="16px" colour="var(--action-colour-dark)" />
+            Move to top
+          </Menu.Action>
+          <Menu.Action onClick={() => onMoveTo("previous")}>
+            <ArrowUpIcon width="16px" colour="var(--action-colour-dark)" />
+            Move up
+          </Menu.Action>
+          <Menu.Action onClick={() => onMoveTo("next")}>
+            <ArrowDownIcon width="16px" colour="var(--action-colour-dark)" />
+            Move down
+          </Menu.Action>
+          <Menu.Action onClick={() => onMoveTo("end")}>
+            <ArrowToBottomIcon
+              width="16px"
+              colour="var(--action-colour-dark)"
+            />
+            Move to bottom
+          </Menu.Action>
+        </>
+      )}
     </Menu>
   )
 }
