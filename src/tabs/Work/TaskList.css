@@ -50,7 +50,7 @@
   }
 
   li {
-    height: calc(var(--line-gap) + var(--line-width));
+    min-height: calc(var(--line-gap) + var(--line-width));
     position: relative;
     top: 4px;
   }

@@ -1,5 +1,5 @@
 import { ItemDescription } from "../../shared/TaskList/ItemDescription"
-import { Item, Label } from "../../shared/TaskList/types"
+import { Item } from "../../shared/TaskList/types"
 import { EditableDate } from "./EditableDate"
 import { useCallback } from "react"
 import { getTaskData, isTask } from "./drag-utils"
@@ -43,14 +43,16 @@ export function Task({
           width: "100%",
         }}
       >
-        <Checkbox
-          isChecked={task.status === "done"}
-          onChange={(isChecked) => {
-            const status = isChecked ? "done" : "not_started"
-            onChange({ ...task, status })
-          }}
-          aria-label={`${task.description}`}
-        />
+        <div style={{ alignSelf: "start", marginBlockStart: "4px" }}>
+          <Checkbox
+            isChecked={task.status === "done"}
+            onChange={(isChecked) => {
+              const status = isChecked ? "done" : "not_started"
+              onChange({ ...task, status })
+            }}
+            aria-label={`${task.description}`}
+          />
+        </div>
         <div
           style={{
             display: "flex",
