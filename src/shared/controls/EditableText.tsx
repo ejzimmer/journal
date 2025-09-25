@@ -50,7 +50,7 @@ export function EditableText({
       }}
       defaultValue={children}
       aria-label={label}
-      style={style}
+      style={{ fontSize: ".8em", ...style }}
     />
   ) : (
     <div

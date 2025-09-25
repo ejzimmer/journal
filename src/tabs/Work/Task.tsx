@@ -68,17 +68,26 @@ export function Task({
             isDone={task.status === "done"}
           />
           {task.dueDate && (
-            <EditableDate
-              value={task.dueDate}
-              onChange={(date) => {
-                const { dueDate, ...taskWithoutDueDate } = task
-                if (date) {
-                  onChange({ ...task, dueDate: date })
-                } else {
-                  onChange(taskWithoutDueDate)
-                }
+            <div
+              style={{
+                color: "var(--error-colour)",
+                border: "2px solid",
+                fontSize: "0.9em",
+                fontWeight: "bold",
               }}
-            />
+            >
+              <EditableDate
+                value={task.dueDate}
+                onChange={(date) => {
+                  const { dueDate, ...taskWithoutDueDate } = task
+                  if (date) {
+                    onChange({ ...task, dueDate: date })
+                  } else {
+                    onChange(taskWithoutDueDate)
+                  }
+                }}
+              />
+            </div>
           )}
         </div>
         <Menu />

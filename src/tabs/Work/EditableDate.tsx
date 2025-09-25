@@ -11,6 +11,9 @@ interface Props
 }
 
 export function EditableDate({ onChange, value, ...props }: Props) {
+  const [editingValue, setEditingValue] = useState(
+    format(new Date(value), "yyyy-MM-dd")
+  )
   const [isEditing, setIsEditing] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
   const startEditing = () => {
@@ -44,11 +47,12 @@ export function EditableDate({ onChange, value, ...props }: Props) {
           handleSubmit()
         }
       }}
-      value={value}
+      value={editingValue}
+      onChange={(event) => setEditingValue(event.target.value)}
       aria-label="Due date"
       style={{
         border: "none",
-        fontSize: "inherit",
+        fontSize: ".8em",
         height: "unset",
         paddingBlock: "0",
       }}

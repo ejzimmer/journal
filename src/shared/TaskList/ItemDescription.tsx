@@ -18,7 +18,7 @@ export function ItemDescription({
         paddingInlineStart: ".25em",
         paddingBlockStart: ".3em",
         paddingBlockEnd: ".1em",
-        borderRadius: "0",
+        border: "none",
         textDecoration: isDone ? "line-through" : "none",
       }}
     >
