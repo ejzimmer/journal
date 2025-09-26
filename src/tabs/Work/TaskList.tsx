@@ -5,6 +5,7 @@ import {
   useRef,
   useMemo,
   useEffect,
+  useCallback,
 } from "react"
 import { EditableText } from "../../shared/controls/EditableText"
 import { AddTaskForm } from "./AddTaskForm"
@@ -13,28 +14,29 @@ import { Task } from "./Task"
 import {
   getListData,
   getPosition,
-  isDroppable,
+  getTarget,
+  isList,
   isTask,
   sortByOrder,
 } from "./drag-utils"
 import { combine } from "@atlaskit/pragmatic-drag-and-drop/combine"
 import { dropTargetForElements } from "@atlaskit/pragmatic-drag-and-drop/element/adapter"
+import { reorderWithEdge } from "@atlaskit/pragmatic-drag-and-drop-hitbox/util/reorder-with-edge"
 
 import "./TaskList.css"
 import { ConfirmationModal } from "../../shared/controls/ConfirmationModal"
-import {
-  MoveProps,
-  useDropTarget,
-} from "../../shared/drag-and-drop/useDropTarget"
+import { MoveProps } from "../../shared/drag-and-drop/useDropTarget"
 import { RubbishBinIcon } from "../../shared/icons/RubbishBin"
 import { ModalTriggerProps } from "../../shared/controls/Modal"
 import invariant from "tiny-invariant"
 import { DragHandle } from "../../shared/drag-and-drop/DragHandle"
 import { Destination, Position } from "../../shared/drag-and-drop/types"
+import { DraggableListItem } from "../../shared/drag-and-drop/DraggableListItem"
 
 type DragState = "idle" | "is-dragging-over"
 
 export function TaskList({
+  parentListId,
   position,
   list,
   labels,
@@ -47,6 +49,7 @@ export function TaskList({
   onMoveTask,
   menu: Menu,
 }: {
+  parentListId: string
   position: Position
   list: Item
   labels?: Record<string, Label>
@@ -76,14 +79,22 @@ export function TaskList({
     [list]
   )
 
-  const { onChangePosition: onChangeTaskPosition } = useDropTarget({
-    listId: list.id,
-    list: sortedList,
-    isDraggable: isTask,
-    isDroppable,
-    onReorderWithinList: onReorderTasks,
-    onMoveBetweenLists: onMoveTask,
-  })
+  const onChangeTaskPosition = useCallback(
+    (originIndex: number, destination: Destination) => {
+      if (!list) return
+      const tasks = sortByOrder(Object.values(list.items ?? {}))
+
+      onReorderTasks(
+        reorderWithEdge({
+          list: tasks,
+          startIndex: originIndex,
+          ...getTarget(originIndex, destination, tasks.length),
+          axis: "vertical",
+        })
+      )
+    },
+    [list, onReorderTasks]
+  )
 
   const [dragState, setDragState] = useState<DragState>("idle")
   useEffect(() => {
@@ -98,7 +109,7 @@ export function TaskList({
           return isTask(source.data)
         },
         getData() {
-          return getListData(list)
+          return getListData(list, parentListId)
         },
         onDragEnter() {
           setDragState("is-dragging-over")
@@ -114,7 +125,13 @@ export function TaskList({
   })
 
   return (
-    <div className="work-task-list">
+    <DraggableListItem
+      className="work-task-list"
+      getData={() => getListData(list, parentListId)}
+      dragPreview={<DragPreview />}
+      isDroppable={isList}
+      allowedEdges={["left", "right"]}
+    >
       <div className="heading">
         <DragHandle position={position} onChangePosition={onChangePosition} />
         <h2>
@@ -165,7 +182,7 @@ export function TaskList({
           </li>
         )}
       </ul>
-    </div>
+    </DraggableListItem>
   )
 }
 
@@ -186,4 +203,8 @@ function DeleteButton({
       <RubbishBinIcon width="16px" shouldAnimate={isHovered} />
     </button>
   )
+}
+
+function DragPreview() {
+  return <>hello i'm a drag preview</>
 }

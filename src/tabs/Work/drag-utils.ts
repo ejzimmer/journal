@@ -1,3 +1,6 @@
+import { Edge } from "@atlaskit/pragmatic-drag-and-drop-hitbox/closest-edge"
+
+import { Destination } from "../../shared/drag-and-drop/types"
 import { Item } from "../../shared/TaskList/types"
 
 export const draggableTypeKey = Symbol("draggableType")
@@ -5,14 +8,14 @@ export const draggableTypeKey = Symbol("draggableType")
 export function getTaskData(task: Item, listId: string) {
   return {
     [draggableTypeKey]: "task",
-    taskId: task.id,
-    listId,
+    itemId: task.id,
+    parentId: listId,
     position: task.order,
   }
 }
 
-export function getListData(list: Item) {
-  return { [draggableTypeKey]: "list", listId: list.id }
+export function getListData(list: Item, parentId: string) {
+  return { [draggableTypeKey]: "list", itemId: list.id, parentId }
 }
 
 export function isTask(data: any): boolean {
@@ -22,7 +25,6 @@ export function isTask(data: any): boolean {
 export function isList(data: any): boolean {
   return draggableTypeKey in data && data[draggableTypeKey] === "list"
 }
-
 export function isDroppable(data: any): boolean {
   return draggableTypeKey in data
 }
@@ -42,4 +44,30 @@ export function getPosition(index: number, listLength: number) {
   }
 
   return "middle"
+}
+
+export const getTarget = (
+  originIndex: number,
+  destination: Destination,
+  listLength: number
+): {
+  indexOfTarget: number
+  closestEdgeOfTarget: Edge
+} => {
+  switch (destination) {
+    case "start":
+      return { indexOfTarget: 0, closestEdgeOfTarget: "top" }
+    case "previous":
+      return { indexOfTarget: originIndex - 1, closestEdgeOfTarget: "top" }
+    case "next":
+      return {
+        indexOfTarget: originIndex + 1,
+        closestEdgeOfTarget: "bottom",
+      }
+    case "end":
+      return {
+        indexOfTarget: listLength - 1,
+        closestEdgeOfTarget: "bottom",
+      }
+  }
 }

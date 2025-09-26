@@ -6,8 +6,10 @@ import { TaskList } from "./TaskList"
 import { hoursToMilliseconds, isSameDay } from "date-fns"
 import { TaskMenu } from "./TaskMenu"
 import { Skeleton } from "../../shared/controls/Skeleton"
-import { getPosition, isList, sortByOrder } from "./drag-utils"
+import { getPosition, getTarget, sortByOrder } from "./drag-utils"
 import { useDropTarget } from "../../shared/drag-and-drop/useDropTarget"
+import { reorderWithEdge } from "@atlaskit/pragmatic-drag-and-drop-hitbox/util/reorder-with-edge"
+import { Destination } from "../../shared/drag-and-drop/types"
 
 const WORK_KEY = "work"
 
@@ -81,15 +83,20 @@ export function Work() {
       ),
     [lists, doneList]
   )
-  const { onChangePosition } = useDropTarget({
-    listId: WORK_KEY,
-    list: orderedLists,
-    isDraggable: isList,
-    isDroppable: isList,
-    onReorderWithinList: (lists: Item[]) => {
+
+  const onChangePosition = useCallback(
+    (originIndex: number, destination: Destination) => {
+      if (!orderedLists) return
+
+      const updatedLists = reorderWithEdge({
+        list: orderedLists,
+        startIndex: originIndex,
+        ...getTarget(originIndex, destination, orderedLists.length),
+        axis: "vertical", // keeping it vertical so getTarget works right, might need to change this
+      })
       updateItem(
         WORK_KEY,
-        lists.reduce(
+        updatedLists.reduce(
           (lists, list, index) => ({
             ...lists,
             [list.id]: { ...list, order: index },
@@ -98,7 +105,10 @@ export function Work() {
         )
       )
     },
-  })
+    [orderedLists, updateItem]
+  )
+
+  useDropTarget({ topLevelKey: WORK_KEY })
 
   if (listsLoading) {
     return <Skeleton numRows={3} />
@@ -131,6 +141,7 @@ export function Work() {
               (list, index) =>
                 list !== doneList && (
                   <TaskList
+                    parentListId={WORK_KEY}
                     position={getPosition(index, orderedLists.length)}
                     key={list.id}
                     list={list}

@@ -13,32 +13,28 @@ import {
   extractClosestEdge,
 } from "@atlaskit/pragmatic-drag-and-drop-hitbox/closest-edge"
 import { Edge } from "@atlaskit/pragmatic-drag-and-drop-hitbox/dist/types/types"
-import { DragHandle } from "./DragHandle"
-import { Destination, Position } from "./types"
+import { DraggingState, IDLE } from "./types"
 
 import "./drag-and-drop.css"
-import { isTask } from "../../tabs/Work/drag-utils"
-
-type DraggingState =
-  | { type: "idle" }
-  | { type: "preview"; container: HTMLElement }
-  | { type: "is-dragging-over"; closestEdge: Edge | null }
-const IDLE: DraggingState = { type: "idle" }
 
 type DraggableListItemProps = {
-  position: Position
-  onChangePosition: (destination: Destination) => void
   getData: () => Record<string, unknown>
   dragPreview: ReactNode
+  isDroppable: (data: any) => boolean
+  allowedEdges: Edge[]
   children: ReactNode
+  className?: string
+  style?: React.CSSProperties
 }
 
 export function DraggableListItem({
-  position,
-  onChangePosition,
   getData,
   dragPreview,
+  isDroppable,
+  allowedEdges,
   children,
+  className,
+  style,
 }: DraggableListItemProps) {
   const draggableRef = useRef<HTMLDivElement | null>(null)
   const [draggingState, setDraggingState] = useState<DraggingState>(IDLE)
@@ -78,14 +74,14 @@ export function DraggableListItem({
             return false
           }
 
-          return isTask(source.data)
+          return isDroppable(source.data)
         },
         getData({ input }) {
           const data = getData()
           return attachClosestEdge(data, {
             element,
             input,
-            allowedEdges: ["top", "bottom"],
+            allowedEdges,
           })
         },
         getIsSticky() {
@@ -118,12 +114,11 @@ export function DraggableListItem({
         },
       })
     )
-  }, [getData])
+  }, [allowedEdges, getData, isDroppable])
 
   return (
     <>
-      <div ref={draggableRef} style={{ display: "flex", alignItems: "center" }}>
-        <DragHandle position={position} onChangePosition={onChangePosition} />
+      <div ref={draggableRef} className={className} style={style}>
         {children}
         {draggingState.type === "is-dragging-over" &&
         draggingState.closestEdge ? (

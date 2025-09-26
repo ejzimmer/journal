@@ -2,12 +2,13 @@ import { ItemDescription } from "../../shared/TaskList/ItemDescription"
 import { Item } from "../../shared/TaskList/types"
 import { EditableDate } from "./EditableDate"
 import { useCallback } from "react"
-import { getTaskData } from "./drag-utils"
+import { getTaskData, isTask } from "./drag-utils"
 
 import "./TaskList.css"
 import { DraggableListItem } from "../../shared/drag-and-drop/DraggableListItem"
 import { Destination, Position } from "../../shared/drag-and-drop/types"
 import { Checkbox } from "../../shared/controls/Checkbox"
+import { DragHandle } from "../../shared/drag-and-drop/DragHandle"
 
 type TaskProps = {
   task: Item
@@ -30,11 +31,13 @@ export function Task({
 
   return (
     <DraggableListItem
-      position={position}
-      onChangePosition={onChangePosition}
       getData={getData}
       dragPreview={<DragPreview task={task} />}
+      isDroppable={isTask}
+      allowedEdges={["top", "bottom"]}
+      style={{ display: "flex", alignItems: "center" }}
     >
+      <DragHandle position={position} onChangePosition={onChangePosition} />
       <div
         style={{
           display: "flex",
