@@ -15,7 +15,12 @@ export function getTaskData(task: Item, listId: string) {
 }
 
 export function getListData(list: Item, parentId: string) {
-  return { [draggableTypeKey]: "list", itemId: list.id, parentId }
+  return {
+    [draggableTypeKey]: "list",
+    itemId: list.id,
+    parentId,
+    position: list.order,
+  }
 }
 
 export function isTask(data: any): boolean {
