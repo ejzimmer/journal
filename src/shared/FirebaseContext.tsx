@@ -58,6 +58,9 @@ export function createFirebaseContext(database: Database): ContextType {
       if (item.id) {
         const reference = ref(database, `${parent}/${item.id}`)
         set(reference, { ...item, lastUpdated: new Date().getTime() })
+      } else {
+        const reference = ref(database, parent)
+        set(reference, { ...item, lastUpdated: new Date().getTime() })
       }
     },
     deleteItem: (parent, item) => {

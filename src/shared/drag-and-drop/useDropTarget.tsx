@@ -23,8 +23,8 @@ type DroppableListProps<T> = {
   list: T[]
   isDraggable: (data: Record<string, unknown>) => boolean
   isDroppable: (data: Record<string, unknown>) => boolean
-  onReorder: (listItems: T[]) => void
-  onMove: (props: MoveProps) => void
+  onReorderWithinList: (listItems: T[]) => void
+  onMoveBetweenLists?: (props: MoveProps) => void
 }
 
 export function useDropTarget<T>({
@@ -32,8 +32,8 @@ export function useDropTarget<T>({
   listId,
   isDraggable,
   isDroppable,
-  onReorder,
-  onMove,
+  onReorderWithinList: onReorder,
+  onMoveBetweenLists: onMove,
 }: DroppableListProps<T>) {
   const getDestinationIndex = useCallback((target?: DropTargetRecord) => {
     if (!target) {
@@ -85,7 +85,7 @@ export function useDropTarget<T>({
         } else {
           const targetListIndex = getDestinationIndex(targetTask)
 
-          onMove({
+          onMove?.({
             taskId: sourceData.taskId,
             sourceListId: sourceData.listId,
             targetListId,

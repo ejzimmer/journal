@@ -21,16 +21,15 @@
 
   .heading {
     display: flex;
-    justify-content: space-between;
-    align-items: baseline;
+    align-items: end;
     border-bottom: 2px solid var(--line-colour);
-    padding-inline-start: calc(var(--margin-width) + 8px);
 
     h2 {
       margin-block-end: 0;
       position: relative;
       top: 10px;
       font-size: 1.8em;
+      flex-grow: 1;
     }
   }
 

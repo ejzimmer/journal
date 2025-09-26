@@ -6,7 +6,8 @@ import { TaskList } from "./TaskList"
 import { hoursToMilliseconds, isSameDay } from "date-fns"
 import { TaskMenu } from "./TaskMenu"
 import { Skeleton } from "../../shared/controls/Skeleton"
-import { sortByOrder } from "./drag-utils"
+import { getPosition, isList, sortByOrder } from "./drag-utils"
+import { useDropTarget } from "../../shared/drag-and-drop/useDropTarget"
 
 const WORK_KEY = "work"
 
@@ -73,6 +74,32 @@ export function Work() {
     return () => clearInterval(interval)
   }, [onUpdate])
 
+  const orderedLists = useMemo(
+    () =>
+      (lists ? sortByOrder(Object.values(lists)) : []).filter(
+        (list) => list.id !== doneList?.id
+      ),
+    [lists, doneList]
+  )
+  const { onChangePosition } = useDropTarget({
+    listId: WORK_KEY,
+    list: orderedLists,
+    isDraggable: isList,
+    isDroppable: isList,
+    onReorderWithinList: (lists: Item[]) => {
+      updateItem(
+        WORK_KEY,
+        lists.reduce(
+          (lists, list, index) => ({
+            ...lists,
+            [list.id]: { ...list, order: index },
+          }),
+          {}
+        )
+      )
+    },
+  })
+
   if (listsLoading) {
     return <Skeleton numRows={3} />
   }
@@ -100,15 +127,19 @@ export function Work() {
       >
         {lists ? (
           <>
-            {Object.entries(lists).map(
-              ([id, list]) =>
+            {orderedLists.map(
+              (list, index) =>
                 list !== doneList && (
                   <TaskList
-                    key={id}
+                    position={getPosition(index, orderedLists.length)}
+                    key={list.id}
                     list={list}
                     labels={labels}
                     onChangeListName={(newName: string) =>
                       onUpdateListName(newName, list)
+                    }
+                    onChangePosition={(destination) =>
+                      onChangePosition(index, destination)
                     }
                     onDelete={() => onDeleteList(list)}
                     onAddTask={({ description, dueDate, labels }) => {

@@ -19,6 +19,10 @@ export function isTask(data: any): boolean {
   return draggableTypeKey in data && data[draggableTypeKey] === "task"
 }
 
+export function isList(data: any): boolean {
+  return draggableTypeKey in data && data[draggableTypeKey] === "list"
+}
+
 export function isDroppable(data: any): boolean {
   return draggableTypeKey in data
 }
@@ -27,4 +31,15 @@ export function sortByOrder(list: Item[]) {
   return list
     .toSorted((a, b) => (a.order ?? Infinity) - (b.order ?? Infinity))
     .map((item, index) => ({ ...item, order: index }))
+}
+
+export function getPosition(index: number, listLength: number) {
+  if (index === 0) {
+    return "start"
+  }
+  if (index === listLength - 1) {
+    return "end"
+  }
+
+  return "middle"
 }

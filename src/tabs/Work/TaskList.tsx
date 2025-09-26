@@ -10,7 +10,13 @@ import { EditableText } from "../../shared/controls/EditableText"
 import { AddTaskForm } from "./AddTaskForm"
 import { Item, Label } from "../../shared/TaskList/types"
 import { Task } from "./Task"
-import { getListData, isDroppable, isTask, sortByOrder } from "./drag-utils"
+import {
+  getListData,
+  getPosition,
+  isDroppable,
+  isTask,
+  sortByOrder,
+} from "./drag-utils"
 import { combine } from "@atlaskit/pragmatic-drag-and-drop/combine"
 import { dropTargetForElements } from "@atlaskit/pragmatic-drag-and-drop/element/adapter"
 
@@ -23,13 +29,17 @@ import {
 import { RubbishBinIcon } from "../../shared/icons/RubbishBin"
 import { ModalTriggerProps } from "../../shared/controls/Modal"
 import invariant from "tiny-invariant"
+import { DragHandle } from "../../shared/drag-and-drop/DragHandle"
+import { Destination, Position } from "../../shared/drag-and-drop/types"
 
 type DragState = "idle" | "is-dragging-over"
 
 export function TaskList({
+  position,
   list,
   labels,
   onChangeListName,
+  onChangePosition,
   onDelete,
   onAddTask,
   onChangeTask,
@@ -37,9 +47,11 @@ export function TaskList({
   onMoveTask,
   menu: Menu,
 }: {
+  position: Position
   list: Item
   labels?: Record<string, Label>
   onChangeListName: (name: string) => void
+  onChangePosition: (destination: Destination) => void
   onDelete: () => void
   onAddTask: (
     task: Omit<Partial<Item>, "labels"> & { labels?: Label[] }
@@ -64,13 +76,13 @@ export function TaskList({
     [list]
   )
 
-  const { onChangePosition } = useDropTarget({
+  const { onChangePosition: onChangeTaskPosition } = useDropTarget({
     listId: list.id,
     list: sortedList,
     isDraggable: isTask,
     isDroppable,
-    onReorder: onReorderTasks,
-    onMove: onMoveTask,
+    onReorderWithinList: onReorderTasks,
+    onMoveBetweenLists: onMoveTask,
   })
 
   const [dragState, setDragState] = useState<DragState>("idle")
@@ -104,6 +116,7 @@ export function TaskList({
   return (
     <div className="work-task-list">
       <div className="heading">
+        <DragHandle position={position} onChangePosition={onChangePosition} />
         <h2>
           <EditableText
             label={`Edit ${list.description} name`}
@@ -132,7 +145,7 @@ export function TaskList({
             <Task
               position={getPosition(index, sortedList.length)}
               onChangePosition={(destination) =>
-                onChangePosition(index, destination)
+                onChangeTaskPosition(index, destination)
               }
               task={item}
               onChange={onChangeTask}
@@ -173,15 +186,4 @@ function DeleteButton({
       <RubbishBinIcon width="16px" shouldAnimate={isHovered} />
     </button>
   )
-}
-
-function getPosition(index: number, listLength: number) {
-  if (index === 0) {
-    return "start"
-  }
-  if (index === listLength - 1) {
-    return "end"
-  }
-
-  return "middle"
 }
