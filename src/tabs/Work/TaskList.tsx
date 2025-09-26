@@ -1,15 +1,30 @@
-import { useState, MouseEvent, FocusEvent, useRef, useMemo } from "react"
+import {
+  useState,
+  MouseEvent,
+  FocusEvent,
+  useRef,
+  useMemo,
+  useEffect,
+} from "react"
 import { EditableText } from "../../shared/controls/EditableText"
 import { AddTaskForm } from "./AddTaskForm"
 import { Item, Label } from "../../shared/TaskList/types"
 import { Task } from "./Task"
-import { isTask } from "./drag-utils"
+import { getListData, isDroppable, isTask, sortByOrder } from "./drag-utils"
+import { combine } from "@atlaskit/pragmatic-drag-and-drop/combine"
+import { dropTargetForElements } from "@atlaskit/pragmatic-drag-and-drop/element/adapter"
 
 import "./TaskList.css"
 import { ConfirmationModal } from "../../shared/controls/ConfirmationModal"
-import { useDropTarget } from "../../shared/drag-and-drop/useDropTarget"
+import {
+  MoveProps,
+  useDropTarget,
+} from "../../shared/drag-and-drop/useDropTarget"
 import { RubbishBinIcon } from "../../shared/icons/RubbishBin"
 import { ModalTriggerProps } from "../../shared/controls/Modal"
+import invariant from "tiny-invariant"
+
+type DragState = "idle" | "is-dragging-over"
 
 export function TaskList({
   list,
@@ -19,6 +34,7 @@ export function TaskList({
   onAddTask,
   onChangeTask,
   onReorderTasks,
+  onMoveTask,
   menu: Menu,
 }: {
   list: Item
@@ -30,6 +46,7 @@ export function TaskList({
   ) => void
   onChangeTask: (task: Item) => void
   onReorderTasks: (tasks: Item[]) => void
+  onMoveTask: (props: MoveProps) => void
   menu?: React.FC<{ task: Item }>
 }) {
   const listRef = useRef<HTMLUListElement>(null)
@@ -43,21 +60,45 @@ export function TaskList({
   }
 
   const sortedList = useMemo(
-    () =>
-      list.items
-        ? Object.values(list.items).toSorted(
-            (a, b) => (a.order ?? Infinity) - (b.order ?? Infinity)
-          )
-        : [],
+    () => (list.items ? sortByOrder(Object.values(list.items)) : []),
     [list]
   )
 
   const { onChangePosition } = useDropTarget({
+    listId: list.id,
     list: sortedList,
     isDraggable: isTask,
-    getItemIndex: (data) =>
-      sortedList.findIndex((task) => task.id === data.taskId),
+    isDroppable,
     onReorder: onReorderTasks,
+    onMove: onMoveTask,
+  })
+
+  const [dragState, setDragState] = useState<DragState>("idle")
+  useEffect(() => {
+    if (!listRef.current) return
+
+    const element = listRef.current
+    invariant(element)
+    return combine(
+      dropTargetForElements({
+        element,
+        canDrop({ source }) {
+          return isTask(source.data)
+        },
+        getData() {
+          return getListData(list)
+        },
+        onDragEnter() {
+          setDragState("is-dragging-over")
+        },
+        onDragLeave() {
+          setDragState("idle")
+        },
+        onDrop() {
+          setDragState("idle")
+        },
+      })
+    )
   })
 
   return (
@@ -80,7 +121,12 @@ export function TaskList({
           onConfirm={onDelete}
         />
       </div>
-      <ul ref={listRef} onClick={showTaskForm} onFocus={showTaskForm}>
+      <ul
+        ref={listRef}
+        onClick={showTaskForm}
+        onFocus={showTaskForm}
+        className={dragState}
+      >
         {sortedList?.map((item, index) => (
           <li className="task" key={item.id}>
             <Task
@@ -91,6 +137,7 @@ export function TaskList({
               task={item}
               onChange={onChangeTask}
               menu={() => (Menu ? <Menu task={item} /> : null)}
+              listId={list.id}
             />
           </li>
         ))}

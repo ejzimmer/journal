@@ -47,6 +47,10 @@
       var(--line-colour) calc(var(--line-gap) + var(--line-width)),
       transparent calc(var(--line-gap) + var(--line-width))
     );
+
+    &.is-dragging-over {
+      background-color: hsl(200 90% 80%/0.2);
+    }
   }
 
   li {

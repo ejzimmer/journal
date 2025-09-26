@@ -6,6 +6,7 @@ import { TaskList } from "./TaskList"
 import { hoursToMilliseconds, isSameDay } from "date-fns"
 import { TaskMenu } from "./TaskMenu"
 import { Skeleton } from "../../shared/controls/Skeleton"
+import { sortByOrder } from "./drag-utils"
 
 const WORK_KEY = "work"
 
@@ -14,7 +15,7 @@ export function Work() {
   if (!context) {
     throw new Error("Missing Firebase context provider")
   }
-  const { addItem, useValue, updateItem, deleteItem } = context
+  const { addItem, useValue, updateItem, deleteItem, updateList } = context
   const { value: lists, loading: listsLoading } = useValue<Item>(WORK_KEY)
   const { value: labels } = useValue<Label>(`${WORK_KEY}/labels`)
 
@@ -134,6 +135,58 @@ export function Work() {
                           {}
                         ),
                       })
+                    }}
+                    onMoveTask={({
+                      taskId,
+                      sourceListId,
+                      targetListId,
+                      targetListIndex,
+                    }) => {
+                      const sourceList = lists[sourceListId]
+                      if (!sourceList.items) {
+                        throw new Error(
+                          `Source list not found when moving task ${taskId} from list ${sourceListId}`
+                        )
+                      }
+
+                      const task = sourceList.items[taskId]
+                      if (!task) {
+                        throw new Error(
+                          `Could not find task ${taskId} in ${sourceList.id}`
+                        )
+                      }
+
+                      const targetList = lists[targetListId]
+                      if (!targetList) {
+                        throw new Error(
+                          `Target list not found when moving task ${taskId} to list ${targetListId}`
+                        )
+                      }
+
+                      const updatedList = sortByOrder(
+                        Object.values(targetList.items ?? {})
+                      ).map((item) => {
+                        if (
+                          typeof item.order === "number" &&
+                          item.order >= targetListIndex
+                        ) {
+                          return {
+                            ...item,
+                            order: item.order + 1,
+                          }
+                        }
+                        return item
+                      })
+                      updateList(
+                        `${WORK_KEY}/${targetList.id}/items`,
+                        updatedList
+                      )
+
+                      addItem(`${WORK_KEY}/${targetList.id}/items`, {
+                        ...task,
+                        order: targetListIndex,
+                      })
+                      deleteItem(`${WORK_KEY}/${sourceList.id}/items`, task)
                     }}
                     menu={({ task }) => (
                       <TaskMenu

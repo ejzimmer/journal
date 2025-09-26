@@ -17,6 +17,7 @@ import { DragHandle } from "./DragHandle"
 import { Destination, Position } from "./types"
 
 import "./drag-and-drop.css"
+import { isTask } from "../../tabs/Work/drag-utils"
 
 type DraggingState =
   | { type: "idle" }
@@ -28,7 +29,6 @@ type DraggableListItemProps = {
   position: Position
   onChangePosition: (destination: Destination) => void
   getData: () => Record<string, unknown>
-  canDrop: (data: Record<string, unknown>) => boolean
   dragPreview: ReactNode
   children: ReactNode
 }
@@ -37,7 +37,6 @@ export function DraggableListItem({
   position,
   onChangePosition,
   getData,
-  canDrop,
   dragPreview,
   children,
 }: DraggableListItemProps) {
@@ -74,13 +73,12 @@ export function DraggableListItem({
       dropTargetForElements({
         element,
         canDrop({ source }) {
-          // not allowing dropping on yourself
+          // don't allow dropping on yourself
           if (source.element === element) {
             return false
           }
 
-          // only allowing tasks to be dropped on me
-          return canDrop(source.data)
+          return isTask(source.data)
         },
         getData({ input }) {
           const data = getData()
@@ -120,7 +118,7 @@ export function DraggableListItem({
         },
       })
     )
-  }, [getData, canDrop])
+  }, [getData])
 
   return (
     <>

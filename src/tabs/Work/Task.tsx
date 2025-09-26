@@ -2,7 +2,7 @@ import { ItemDescription } from "../../shared/TaskList/ItemDescription"
 import { Item } from "../../shared/TaskList/types"
 import { EditableDate } from "./EditableDate"
 import { useCallback } from "react"
-import { getTaskData, isTask } from "./drag-utils"
+import { getTaskData } from "./drag-utils"
 
 import "./TaskList.css"
 import { DraggableListItem } from "../../shared/drag-and-drop/DraggableListItem"
@@ -15,6 +15,7 @@ type TaskProps = {
   position: Position
   onChangePosition: (destination: Destination) => void
   menu: React.FC
+  listId: string
 }
 
 export function Task({
@@ -23,8 +24,9 @@ export function Task({
   position,
   onChangePosition,
   menu: Menu,
+  listId,
 }: TaskProps) {
-  const getData = useCallback(() => getTaskData(task), [task])
+  const getData = useCallback(() => getTaskData(task, listId), [task, listId])
 
   return (
     <DraggableListItem
@@ -32,7 +34,6 @@ export function Task({
       onChangePosition={onChangePosition}
       getData={getData}
       dragPreview={<DragPreview task={task} />}
-      canDrop={isTask}
     >
       <div
         style={{
