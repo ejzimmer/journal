@@ -18,6 +18,7 @@
     var(--margin-colour) calc(var(--margin-width) + 2px),
     transparent calc(var(--margin-width) + 2px)
   );
+  order: 2; /* required to make the drag preview appear in the right place */
 
   .heading {
     display: flex;

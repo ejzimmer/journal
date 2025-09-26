@@ -88,6 +88,9 @@ export function useDropTarget({ topLevelKey }: DroppableListProps) {
         }
 
         const dropTargets = location.current.dropTargets
+        if (dropTargets.length === 0) {
+          return
+        }
 
         if (isTask(sourceData)) {
           const targetTaskData = dropTargets.find(({ data }) => isTask(data))

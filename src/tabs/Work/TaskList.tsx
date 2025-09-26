@@ -126,62 +126,64 @@ export function TaskList({
 
   return (
     <DraggableListItem
-      className="work-task-list"
       getData={() => getListData(list, parentListId)}
-      dragPreview={<DragPreview />}
+      dragPreview={<DragPreview list={list} />}
       isDroppable={isList}
       allowedEdges={["left", "right"]}
+      style={{ display: "flex" }}
     >
-      <div className="heading">
-        <DragHandle position={position} onChangePosition={onChangePosition} />
-        <h2>
-          <EditableText
-            label={`Edit ${list.description} name`}
-            onChange={onChangeListName}
-          >
-            {list.description}
-          </EditableText>
-        </h2>
-        <ConfirmationModal
-          trigger={(props) => (
-            <DeleteButton label={list.description} {...props} />
+      <div className="work-task-list">
+        <div className="heading">
+          <DragHandle position={position} onChangePosition={onChangePosition} />
+          <h2>
+            <EditableText
+              label={`Edit ${list.description} name`}
+              onChange={onChangeListName}
+            >
+              {list.description}
+            </EditableText>
+          </h2>
+          <ConfirmationModal
+            trigger={(props) => (
+              <DeleteButton label={list.description} {...props} />
+            )}
+            message={`Are you sure you want to delete list ${list.description}?`}
+            confirmButtonText="Yes, delete"
+            onConfirm={onDelete}
+          />
+        </div>
+        <ul
+          ref={listRef}
+          onClick={showTaskForm}
+          onFocus={showTaskForm}
+          className={dragState}
+        >
+          {sortedList?.map((item, index) => (
+            <li className="task" key={item.id}>
+              <Task
+                position={getPosition(index, sortedList.length)}
+                onChangePosition={(destination) =>
+                  onChangeTaskPosition(index, destination)
+                }
+                task={item}
+                onChange={onChangeTask}
+                menu={() => (Menu ? <Menu task={item} /> : null)}
+                listId={list.id}
+              />
+            </li>
+          ))}
+          {addTaskFormVisible && (
+            <li style={{ paddingInlineStart: "var(--margin-width)" }}>
+              <AddTaskForm
+                onSubmit={onAddTask}
+                onClose={() => {
+                  setAddTaskFormVisible(false)
+                }}
+              />
+            </li>
           )}
-          message={`Are you sure you want to delete list ${list.description}?`}
-          confirmButtonText="Yes, delete"
-          onConfirm={onDelete}
-        />
+        </ul>
       </div>
-      <ul
-        ref={listRef}
-        onClick={showTaskForm}
-        onFocus={showTaskForm}
-        className={dragState}
-      >
-        {sortedList?.map((item, index) => (
-          <li className="task" key={item.id}>
-            <Task
-              position={getPosition(index, sortedList.length)}
-              onChangePosition={(destination) =>
-                onChangeTaskPosition(index, destination)
-              }
-              task={item}
-              onChange={onChangeTask}
-              menu={() => (Menu ? <Menu task={item} /> : null)}
-              listId={list.id}
-            />
-          </li>
-        ))}
-        {addTaskFormVisible && (
-          <li style={{ paddingInlineStart: "var(--margin-width)" }}>
-            <AddTaskForm
-              onSubmit={onAddTask}
-              onClose={() => {
-                setAddTaskFormVisible(false)
-              }}
-            />
-          </li>
-        )}
-      </ul>
     </DraggableListItem>
   )
 }
@@ -205,6 +207,22 @@ function DeleteButton({
   )
 }
 
-function DragPreview() {
-  return <>hello i'm a drag preview</>
+function DragPreview({ list }: { list: Item }) {
+  return (
+    <div
+      style={{
+        border: "1px solid",
+        paddingInline: "20px",
+        paddingBlockEnd: "10px",
+        paddingBlockStart: "5px",
+      }}
+    >
+      <h2>{list.description}</h2>
+      <ul style={{ padding: 0, marginInline: "10px" }}>
+        {Object.values(list.items ?? {}).map((item) => (
+          <li key={item.id}>{item.description}</li>
+        ))}
+      </ul>
+    </div>
+  )
 }
