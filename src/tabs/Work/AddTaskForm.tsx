@@ -1,24 +1,30 @@
 import { useEffect, useRef, useState } from "react"
 import { TickIcon } from "../../shared/icons/Tick"
 import { XIcon } from "../../shared/icons/X"
-import { Combobox, Tag } from "./Combobox"
+import { LabelsControl } from "./LabelsControl"
+import { Label } from "../../shared/TaskList/types"
 
 type NewTask = {
   description: string
   dueDate?: number
-  labels: Tag[]
+  labels: Label[]
 }
 
 type AddTaskFormProps = {
   onSubmit: (task: NewTask) => void
   onClose: () => void
+  existingLabels: Label[]
 }
 
-export function AddTaskForm({ onSubmit, onClose }: AddTaskFormProps) {
+export function AddTaskForm({
+  onSubmit,
+  onClose,
+  existingLabels,
+}: AddTaskFormProps) {
   const formRef = useRef<HTMLFormElement>(null)
   const descriptionRef = useRef<HTMLInputElement>(null)
   const dateRef = useRef<HTMLInputElement>(null)
-  const [labels, setLabels] = useState<Tag[]>([])
+  const [labels, setLabels] = useState<Label[]>([])
 
   const handleCancel = (event: React.KeyboardEvent) => {
     if (event.key === "Escape") {
@@ -99,10 +105,13 @@ export function AddTaskForm({ onSubmit, onClose }: AddTaskFormProps) {
         className="inline"
         style={{ color: "var(--body-colour-mid)", marginBlockStart: "-4px" }}
       />
-      <Combobox
+      <LabelsControl
         value={labels}
-        onChange={setLabels}
-        options={[]}
+        onChange={(labels) => {
+          console.log("updating labels", labels)
+          setLabels(labels)
+        }}
+        options={existingLabels}
         label="Labels"
       />
       <div style={{ display: "flex", justifyContent: "end", gap: "4px" }}>

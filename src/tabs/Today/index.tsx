@@ -1,7 +1,6 @@
 import { useState } from "react"
-import { Item } from "../../shared/TaskList/types"
+import { COLOURS, Item } from "../../shared/TaskList/types"
 import { Task } from "./Task"
-import { COLOURS } from "../../shared/TodoList/types"
 import { AddTaskForm } from "./AddTaskForm"
 
 const initialTasks: Item[] = [
@@ -10,7 +9,7 @@ const initialTasks: Item[] = [
     description: "Brush teeth",
     status: "not_started",
     lastUpdated: 0,
-    labels: [{ text: "🧹", colour: COLOURS["🧹"] }],
+    labels: [{ value: "🧹", colour: COLOURS[0] }],
     order: 0,
   },
   {
@@ -18,7 +17,7 @@ const initialTasks: Item[] = [
     description: "Cast on socks",
     status: "not_started",
     lastUpdated: 0,
-    labels: [{ text: "🧶", colour: COLOURS["🧶"] }],
+    labels: [{ value: "🧶", colour: COLOURS[1] }],
     order: 1,
   },
   {
@@ -26,7 +25,7 @@ const initialTasks: Item[] = [
     description: "Anki",
     status: "not_started",
     lastUpdated: 0,
-    labels: [{ text: "📓", colour: COLOURS["📓"] }],
+    labels: [{ value: "📓", colour: COLOURS[2] }],
     order: 2,
   },
 ]

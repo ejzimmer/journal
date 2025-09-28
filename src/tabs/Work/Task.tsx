@@ -71,6 +71,9 @@ export function Task({
             onChange={(description) => onChange({ ...task, description })}
             isDone={task.status === "done"}
           />
+          {task.labels?.map((label) => (
+            <div key={label.value}>{label.value}</div>
+          ))}
           {task.dueDate && (
             <div
               style={{

@@ -27,10 +27,10 @@ export function LabelsControl({
       setFilteredOptions(
         options.filter(({ value }) => value.toLowerCase().includes(searchTerm))
       )
+      setInputValue(inputValue)
     } else {
       setFilteredOptions(options)
     }
-    setInputValue(inputValue)
     setHighlightedIndex(-1)
   }
 
@@ -118,12 +118,14 @@ export function LabelsControl({
       {value.map((label) => (
         <div key={label.value} className={label.colour}>
           {label.value}
-          <button onClick={() => handleRemoveValue(label)}>
+          <button type="button" onClick={() => handleRemoveValue(label)}>
             Remove {label.value}
           </button>
         </div>
       ))}
-      <button onClick={handleClearAll}>Clear all</button>
+      <button type="button" onClick={handleClearAll}>
+        Clear all
+      </button>
       {displayedOptions.map((option) => (
         <div
           key={option.value}

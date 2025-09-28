@@ -1,6 +1,15 @@
+export const COLOURS = [
+  "blue",
+  "yellow",
+  "purple",
+  "green",
+  "orange",
+  "red",
+] as const
+
 export type Label = {
-  text: string
-  colour: string
+  value: string
+  colour: (typeof COLOURS)[number]
 }
 
 export const STATUS_KEYS = ["not_started", "in_progress", "done"] as const

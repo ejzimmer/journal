@@ -25,7 +25,6 @@ import { reorderWithEdge } from "@atlaskit/pragmatic-drag-and-drop-hitbox/util/r
 
 import "./TaskList.css"
 import { ConfirmationModal } from "../../shared/controls/ConfirmationModal"
-import { MoveProps } from "../../shared/drag-and-drop/useDropTarget"
 import { RubbishBinIcon } from "../../shared/icons/RubbishBin"
 import { ModalTriggerProps } from "../../shared/controls/Modal"
 import invariant from "tiny-invariant"
@@ -46,22 +45,18 @@ export function TaskList({
   onAddTask,
   onChangeTask,
   onReorderTasks,
-  onMoveTask,
   menu: Menu,
 }: {
   parentListId: string
   position: Position
   list: Item
-  labels?: Record<string, Label>
+  labels: Label[]
   onChangeListName: (name: string) => void
   onChangePosition: (destination: Destination) => void
   onDelete: () => void
-  onAddTask: (
-    task: Omit<Partial<Item>, "labels"> & { labels?: Label[] }
-  ) => void
+  onAddTask: (task: Partial<Item>) => void
   onChangeTask: (task: Item) => void
   onReorderTasks: (tasks: Item[]) => void
-  onMoveTask: (props: MoveProps) => void
   menu?: React.FC<{ task: Item }>
 }) {
   const listRef = useRef<HTMLUListElement>(null)
@@ -179,6 +174,7 @@ export function TaskList({
                 onClose={() => {
                   setAddTaskFormVisible(false)
                 }}
+                existingLabels={labels}
               />
             </li>
           )}

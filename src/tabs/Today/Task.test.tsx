@@ -7,7 +7,7 @@ const task: Item = {
   id: "123",
   description: "Brush teeth",
   lastUpdated: 0,
-  labels: [{ text: "chore", colour: "blue" }],
+  labels: [{ value: "chore", colour: "blue" }],
   status: STATUS_KEYS[0],
 }
 

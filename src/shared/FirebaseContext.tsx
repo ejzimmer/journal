@@ -45,6 +45,7 @@ export function createFirebaseContext(database: Database): ContextType {
       onChildRemoved(reference, (snapshot) => onDelete(snapshot.val()))
     },
     addItem: (parent, item) => {
+      console.log("adding item in context", item)
       const reference = ref(database, parent)
       const newItemReference = push(reference)
       set(newItemReference, {

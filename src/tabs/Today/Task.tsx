@@ -34,7 +34,7 @@ type TaskProps = {
 
 export function Task({ task, onChange, onDelete, onMoveTo }: TaskProps) {
   const firstLabel = task.labels?.[0]
-  const taskType = isCategory(firstLabel?.text) ? firstLabel.text : "🧹"
+  const taskType = isCategory(firstLabel?.value) ? firstLabel.value : "🧹"
   const { text: statusLabel, action } = STATUSES[task.status]
 
   const onStatusChange = () => {

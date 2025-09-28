@@ -5,6 +5,7 @@ import { AddTaskForm } from "./AddTaskForm"
 const commonProps = {
   onSubmit: jest.fn(),
   onClose: jest.fn(),
+  existingLabels: [],
 }
 
 describe("AddTaskForm", () => {
