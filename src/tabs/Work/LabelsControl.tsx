@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react"
+import { Label, COLOURS } from "../../shared/TaskList/types"
 
 export type LabelsControlProps = {
   value: Label[]

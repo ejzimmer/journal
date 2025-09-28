@@ -1,6 +1,7 @@
 import { render, screen } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
-import { LabelsControl, LabelsControlProps, Label } from "./LabelsControl"
+import { LabelsControl, LabelsControlProps } from "./LabelsControl"
+import { Label } from "../../shared/TaskList/types"
 
 const mockOptions: Label[] = [
   { value: "a11y", colour: "blue" },
