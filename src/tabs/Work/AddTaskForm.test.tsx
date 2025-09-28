@@ -19,10 +19,13 @@ describe("AddTaskForm", () => {
     await user.type(descriptionInput, "Approve PR")
     await user.keyboard("{Enter}")
 
-    expect(onSubmit).toHaveBeenCalledWith({ description: "Approve PR" })
+    expect(onSubmit).toHaveBeenCalledWith({
+      description: "Approve PR",
+      labels: [],
+    })
   })
 
-  it("doesn't add a task with just a due date", async () => {
+  it("doesn't add a task with no description", async () => {
     const user = userEvent.setup()
     const onSubmit = jest.fn()
     render(<AddTaskForm {...commonProps} onSubmit={onSubmit} />)
@@ -53,6 +56,26 @@ describe("AddTaskForm", () => {
     expect(onSubmit).toHaveBeenCalledWith({
       description: "Approve PR",
       dueDate: new Date("2026-01-01").getTime(),
+      labels: [],
+    })
+  })
+
+  it("adds a task with labels", async () => {
+    const user = userEvent.setup()
+    const onSubmit = jest.fn()
+    render(<AddTaskForm {...commonProps} onSubmit={onSubmit} />)
+
+    const descriptionInput = screen.getByRole("textbox", {
+      name: "Description",
+    })
+    await user.type(descriptionInput, "Approve PR")
+    const labelInput = screen.getByRole("textbox", { name: "Labels" })
+    await user.type(labelInput, "PR{Enter}")
+    await user.keyboard("{Enter}")
+
+    expect(onSubmit).toHaveBeenCalledWith({
+      description: "Approve PR",
+      labels: [expect.objectContaining({ value: "PR" })],
     })
   })
 

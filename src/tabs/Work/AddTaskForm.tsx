@@ -1,10 +1,12 @@
-import { useEffect, useRef } from "react"
+import { useEffect, useRef, useState } from "react"
 import { TickIcon } from "../../shared/icons/Tick"
 import { XIcon } from "../../shared/icons/X"
+import { Combobox, Tag } from "./Combobox"
 
 type NewTask = {
   description: string
   dueDate?: number
+  labels: Tag[]
 }
 
 type AddTaskFormProps = {
@@ -16,6 +18,7 @@ export function AddTaskForm({ onSubmit, onClose }: AddTaskFormProps) {
   const formRef = useRef<HTMLFormElement>(null)
   const descriptionRef = useRef<HTMLInputElement>(null)
   const dateRef = useRef<HTMLInputElement>(null)
+  const [labels, setLabels] = useState<Tag[]>([])
 
   const handleCancel = (event: React.KeyboardEvent) => {
     if (event.key === "Escape") {
@@ -30,7 +33,7 @@ export function AddTaskForm({ onSubmit, onClose }: AddTaskFormProps) {
     if (description) {
       const dateValue = dateRef.current?.value
       const dueDate = dateValue ? new Date(dateValue).getTime() : undefined
-      onSubmit({ description, dueDate })
+      onSubmit({ description, dueDate, labels })
       onClose()
     }
   }
@@ -95,6 +98,12 @@ export function AddTaskForm({ onSubmit, onClose }: AddTaskFormProps) {
         ref={dateRef}
         className="inline"
         style={{ color: "var(--body-colour-mid)", marginBlockStart: "-4px" }}
+      />
+      <Combobox
+        value={labels}
+        onChange={setLabels}
+        options={[]}
+        label="Labels"
       />
       <div style={{ display: "flex", justifyContent: "end", gap: "4px" }}>
         <button

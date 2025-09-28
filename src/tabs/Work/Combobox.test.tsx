@@ -16,6 +16,7 @@ const commonProps: ComboboxProps = {
   value: mockValues,
   onChange: jest.fn(),
   options: mockOptions,
+  label: "Things",
 }
 
 describe("Combobox", () => {

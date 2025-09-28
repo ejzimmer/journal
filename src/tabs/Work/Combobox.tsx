@@ -11,9 +11,10 @@ export type ComboboxProps = {
   value: Tag[]
   onChange: (value: Tag[]) => void
   options: Tag[]
+  label: string
 }
 
-export function Combobox({ value, onChange, options }: ComboboxProps) {
+export function Combobox({ value, onChange, options, label }: ComboboxProps) {
   const [inputValue, setInputValue] = useState("")
   const [highlightedIndex, setHighlightedIndex] = useState(-1)
   const [filteredOptions, setFilteredOptions] = useState(options)
@@ -113,6 +114,7 @@ export function Combobox({ value, onChange, options }: ComboboxProps) {
         value={inputValue}
         onChange={(event) => handleInputChange(event.target.value)}
         onKeyDown={handleInputKeyDown}
+        aria-label={label}
       />
       {value.map((label) => (
         <div key={label.value} className={label.colour}>
