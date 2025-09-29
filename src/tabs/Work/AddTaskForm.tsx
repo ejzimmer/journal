@@ -108,13 +108,12 @@ export function AddTaskForm({
       <LabelsControl
         value={labels}
         onChange={(labels) => {
-          console.log("updating labels", labels)
           setLabels(labels)
         }}
         options={existingLabels}
         label="Labels"
       />
-      <div style={{ display: "flex", justifyContent: "end", gap: "4px" }}>
+      <div className="button-container">
         <button
           className="icon outline"
           style={{ color: "var(--success-colour)" }}

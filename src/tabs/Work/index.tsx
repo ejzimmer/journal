@@ -1,6 +1,6 @@
 import { useCallback, useContext, useEffect, useMemo } from "react"
 import { FirebaseContext } from "../../shared/FirebaseContext"
-import { Item, Label } from "../../shared/TaskList/types"
+import { Item } from "../../shared/TaskList/types"
 import { NewListModal } from "./NewListModal"
 import { TaskList } from "./TaskList"
 import { hoursToMilliseconds, isSameDay } from "date-fns"

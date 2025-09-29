@@ -151,7 +151,7 @@ export function TaskList({
           ref={listRef}
           onClick={showTaskForm}
           onFocus={showTaskForm}
-          className={dragState}
+          className={`tasks ${dragState}`}
         >
           {sortedList?.map((item, index) => (
             <li className="task" key={item.id}>

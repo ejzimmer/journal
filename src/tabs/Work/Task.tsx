@@ -72,7 +72,13 @@ export function Task({
             isDone={task.status === "done"}
           />
           {task.labels?.map((label) => (
-            <div key={label.value}>{label.value}</div>
+            <div
+              key={label.value}
+              className={`label ${label.colour}`}
+              style={{ marginBlockStart: "-16px" }}
+            >
+              {label.value}
+            </div>
           ))}
           {task.dueDate && (
             <div

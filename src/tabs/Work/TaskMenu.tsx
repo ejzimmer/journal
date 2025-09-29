@@ -14,7 +14,6 @@ export function TaskMenu({
   onDelete,
   onChange,
   onMove,
-  onMoveToTop,
 }: {
   task: Item
   moveDestinations: Item[]

@@ -16,6 +16,7 @@ body {
 
   --link-colour: hsl(211, 61%, 43%);
   --error-colour: hsl(10, 89%, 41%);
+  --highlight-colour: hsla(59, 95%, 63%, 0.6);
 
   --danger-colour: var(--error-colour);
   --danger-colour-dark: hsl(10, 89%, 31%);
@@ -24,6 +25,12 @@ body {
   --success-colour: hsl(108, 81%, 36%);
 
   color: var(--body-colour);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
 }
 
 code {

@@ -34,7 +34,7 @@
     }
   }
 
-  ul {
+  ul.tasks {
     flex-grow: 1;
     line-height: 1;
     list-style-type: none;
@@ -53,7 +53,7 @@
     }
   }
 
-  li {
+  li.task {
     min-height: calc(var(--line-gap) + var(--line-width));
     position: relative;
     top: 4px;
@@ -62,50 +62,6 @@
 
 li.task:last-child {
   margin-block-end: 40px;
-}
-
-.tag {
-  font-family: "sans-serif";
-  padding: "4px 8px";
-  border-radius: "3px";
-  font-size: "16px";
-  color: "white";
-  width: "fit-content";
-  transition: "opacity .2sx";
-  background-color: var(--colour);
-
-  .delete-button {
-    border-radius: 1000px;
-    position: absolute;
-    inset-inline-end: 0;
-    inset-inline-start: 0;
-    transform: translate(50%, -35%);
-    padding: 2px;
-    background-color: white;
-    color: var(--colour);
-    border-color: var(--colour);
-
-    &:hover {
-      border-color: white;
-      background-color: var(--colour);
-      color: white;
-      transition: all 0.2s;
-    }
-  }
-}
-
-button.tag {
-  &:hover {
-    filter: brightness(1.2);
-    cursor: pointer;
-  }
-  &:focus {
-    outline: 2px solid rebeccapurple;
-  }
-
-  :has(+ :hover) {
-    opacity: 0.6;
-  }
 }
 
 .inline {
@@ -129,8 +85,109 @@ form.add-task {
     font-family: inherit;
   }
 
+  .button-container {
+    display: flex;
+    justify-content: end;
+    gap: 4px;
+
+    button {
+      padding: 8px;
+      background: white;
+    }
+  }
+
+  [role="option"] {
+    cursor: pointer;
+  }
+}
+
+.label {
+  &.blue {
+    --colour: hsl(200 80% 50% / 0.3);
+  }
+  &.yellow {
+    --colour: hsla(59, 95%, 63%, 0.6);
+  }
+  &.purple {
+    --colour: hsl(280 80% 50% / 0.25);
+  }
+  &.green {
+    --colour: hsl(125 80% 50% / 0.3);
+  }
+  &.orange {
+    --colour: hsla(25, 94%, 52%, 0.3);
+  }
+  &.red {
+    --colour: hsla(303, 80%, 50%, 0.3);
+  }
+
   button {
+    padding: 2px;
+    margin-inline-start: 4px;
+  }
+
+  background-color: var(--colour);
+  text-transform: uppercase;
+  font-weight: bold;
+  width: max-content;
+  font-size: 1.2rem;
+  padding: 4px;
+}
+
+.labels {
+  position: relative;
+
+  input {
+    background: transparent;
+    border: 2px dashed var(--border-colour);
+    width: 100%;
+
+    &:focus {
+      outline: none;
+      border-color: var(--body-colour);
+    }
+  }
+
+  ul.selectedLabels {
+    position: absolute;
+    top: 6px;
+    left: 4px;
+    list-style: none;
+    padding: 0;
+    display: flex;
+    gap: 4px;
+
+    & + button {
+      position: absolute;
+      top: 6px;
+      right: 4px;
+    }
+  }
+}
+
+.label-options {
+  background: white;
+  border-width: 1px;
+
+  ul.options {
+    list-style-type: none;
+    padding: 0;
+    min-width: 100px;
+  }
+
+  [role="option"] {
     padding: 8px;
-    background: white;
+
+    &:not(:last-child) {
+      border-bottom: 2px solid var(--border-colour);
+      margin: 0;
+    }
+    &.highlighted {
+      background: var(--highlight-colour);
+    }
+  }
+
+  .no-options {
+    color: var(--body-colour-light);
   }
 }

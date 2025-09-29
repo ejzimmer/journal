@@ -1,5 +1,6 @@
-import { useMemo, useState } from "react"
+import { useEffect, useMemo, useRef, useState } from "react"
 import { Label, COLOURS } from "../../shared/TaskList/types"
+import { XIcon } from "../../shared/icons/X"
 
 export type LabelsControlProps = {
   value: Label[]
@@ -14,23 +15,38 @@ export function LabelsControl({
   options,
   label,
 }: LabelsControlProps) {
+  const popoutRef = useRef<HTMLDivElement | null>(null)
+  const selectedValuesRef = useRef<HTMLUListElement | null>(null)
   const [inputValue, setInputValue] = useState("")
   const [highlightedIndex, setHighlightedIndex] = useState(-1)
-  const [filteredOptions, setFilteredOptions] = useState(options)
   const [interactionMode, setInteractionMode] = useState<"search" | "scroll">(
     "search"
+  )
+  const [valuesWidth, setValuesWidth] = useState(0)
+
+  const displayedOptions = useMemo(() => {
+    const unselectedOptions = options.filter((o) => !value.includes(o))
+    const searchTerm = inputValue.toLowerCase()
+    return searchTerm
+      ? unselectedOptions.filter((o) =>
+          o.value.toLowerCase().includes(searchTerm)
+        )
+      : unselectedOptions
+  }, [options, value, inputValue])
+
+  const unselectedOptions = useMemo(
+    () => options.filter((o) => !value.includes(o)),
+    [options, value]
   )
 
   const handleInputChange = (inputValue: string) => {
     if (inputValue) {
-      const searchTerm = inputValue.toLowerCase().trim()
-      setFilteredOptions(
-        options.filter(({ value }) => value.toLowerCase().includes(searchTerm))
-      )
-      setInputValue(inputValue)
+      popoutRef.current?.showPopover()
     } else {
-      setFilteredOptions(options)
+      popoutRef.current?.hidePopover()
     }
+
+    setInputValue(inputValue)
     setHighlightedIndex(-1)
   }
 
@@ -44,11 +60,12 @@ export function LabelsControl({
 
     // Brand new option selected
     if (!existingOption) {
+      const totalOptions = unselectedOptions.length + value.length
       onChange([
         ...value,
         {
           value: text,
-          colour: COLOURS[options.length % COLOURS.length],
+          colour: COLOURS[totalOptions % COLOURS.length],
         },
       ])
     }
@@ -78,10 +95,12 @@ export function LabelsControl({
         setInputValue("")
         break
       case "ArrowDown":
+        event.preventDefault()
         setHighlightedIndex((highlightedIndex + 1) % displayedOptions.length)
         setInteractionMode("scroll")
         break
       case "ArrowUp":
+        event.preventDefault()
         setHighlightedIndex(
           (highlightedIndex - 1 + displayedOptions.length) %
             displayedOptions.length
@@ -102,43 +121,62 @@ export function LabelsControl({
     setInputValue("")
   }
 
-  const displayedOptions = useMemo(
-    () => filteredOptions.filter((o) => !value.includes(o)),
-    [filteredOptions, value]
-  )
+  useEffect(() => {
+    if (!selectedValuesRef.current) return
+
+    setValuesWidth(selectedValuesRef.current.getBoundingClientRect().width)
+  }, [selectedValuesRef, value])
 
   return (
-    <>
+    <div className="labels">
       <input
         value={inputValue}
         onChange={(event) => handleInputChange(event.target.value)}
         onKeyDown={handleInputKeyDown}
         aria-label={label}
+        style={{ paddingInlineStart: `${valuesWidth + 8}px` }}
       />
-      {value.map((label) => (
-        <div key={label.value} className={label.colour}>
-          {label.value}
-          <button type="button" onClick={() => handleRemoveValue(label)}>
-            Remove {label.value}
-          </button>
-        </div>
-      ))}
-      <button type="button" onClick={handleClearAll}>
-        Clear all
-      </button>
-      {displayedOptions.map((option) => (
-        <div
-          key={option.value}
-          role="option"
-          aria-selected="false"
-          onClick={() => {
-            onChange([...value, option])
-            setInputValue("")
-          }}
-        >
-          {option.value}
-        </div>
-      ))}
-    </>
+      <ul className="selectedLabels" ref={selectedValuesRef}>
+        {value.map((label) => (
+          <li key={label.value} className={`label ${label.colour}`}>
+            {label.value}
+            <button
+              type="button"
+              onClick={() => handleRemoveValue(label)}
+              aria-label={`Remove ${label.value}`}
+              className="ghost round"
+            >
+              <XIcon width="12px" />
+            </button>
+          </li>
+        ))}
+      </ul>
+      {value.length > 0 && (
+        <button type="button" onClick={handleClearAll} className="ghost">
+          <XIcon width="16px" />
+        </button>
+      )}
+      <div ref={popoutRef} popover="auto" className="label-options">
+        {displayedOptions.length ? (
+          <ul className="options">
+            {displayedOptions.map((option, index) => (
+              <li
+                key={option.value}
+                role="option"
+                aria-selected="false"
+                onClick={() => {
+                  onChange([...value, option])
+                }}
+                className={index === highlightedIndex ? "highlighted" : ""}
+              >
+                {option.value}
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <li className="no-options">No options found</li>
+        )}
+      </div>
+    </div>
   )
 }
