@@ -26,7 +26,7 @@ export function TaskMenu({
     <>
       <Menu
         trigger={(props) => (
-          <button {...props} className="ghost icon">
+          <button {...props} className="task-menu ghost icon">
             <svg viewBox="0 0 30 10" width="24px">
               <circle cx="5" cy="5" r="2.5" />
               <circle cx="15" cy="5" r="2.5" />

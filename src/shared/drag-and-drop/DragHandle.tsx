@@ -20,7 +20,7 @@ export function DragHandle({ position, onChangePosition }: DragHandleProps) {
   return (
     <Menu
       trigger={(props) => (
-        <button {...props} className="ghost" aria-label="drag menu">
+        <button {...props} className="drag-handle ghost" aria-label="drag menu">
           <DragHandleIcon width="24px" />
         </button>
       )}

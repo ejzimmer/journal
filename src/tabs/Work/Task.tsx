@@ -36,6 +36,7 @@ export function Task({
       isDroppable={isTask}
       allowedEdges={["top", "bottom"]}
       style={{ display: "flex", alignItems: "center" }}
+      className="task"
     >
       <DragHandle position={position} onChangePosition={onChangePosition} />
       <div

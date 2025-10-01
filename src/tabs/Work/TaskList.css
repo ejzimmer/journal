@@ -191,3 +191,17 @@ form.add-task {
     color: var(--body-colour-light);
   }
 }
+
+li.task {
+  .drag-handle,
+  .task-menu {
+    opacity: 0;
+  }
+
+  &:hover {
+    .drag-handle,
+    .task-menu {
+      opacity: 1;
+    }
+  }
+}
