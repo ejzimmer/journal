@@ -124,6 +124,18 @@ form.add-task {
   button {
     padding: 2px;
     margin-inline-start: 4px;
+
+    &.transient {
+      width: 0;
+      overflow: hidden;
+      margin-inline-start: 0;
+      transition: width 0.2s;
+    }
+  }
+
+  &:hover button.transient {
+    width: 20px;
+    margin-inline-start: 4px;
   }
 
   background-color: var(--colour);

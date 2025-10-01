@@ -9,6 +9,7 @@ import { DraggableListItem } from "../../shared/drag-and-drop/DraggableListItem"
 import { Destination, Position } from "../../shared/drag-and-drop/types"
 import { Checkbox } from "../../shared/controls/Checkbox"
 import { DragHandle } from "../../shared/drag-and-drop/DragHandle"
+import { XIcon } from "../../shared/icons/X"
 
 type TaskProps = {
   task: Item
@@ -79,6 +80,17 @@ export function Task({
               style={{ marginBlockStart: "-16px" }}
             >
               {label.value}
+              <button
+                className="ghost transient"
+                onClick={() =>
+                  onChange({
+                    ...task,
+                    labels: task.labels?.filter((l) => l !== label),
+                  })
+                }
+              >
+                <XIcon width="16px" />
+              </button>
             </div>
           ))}
           {task.dueDate && (
