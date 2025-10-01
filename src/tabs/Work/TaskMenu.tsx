@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useMemo, useState } from "react"
 import { ConfirmationModal } from "../../shared/controls/ConfirmationModal"
 import { Menu } from "../../shared/controls/Menu"
 import { ArrowRightIcon } from "../../shared/icons/ArrowRight"
@@ -22,6 +22,14 @@ export function TaskMenu({
   onMove: (destination: Item) => void
   onMoveToTop: () => void
 }) {
+  const sortedMoveDestinations = useMemo(
+    () =>
+      moveDestinations.toSorted(
+        (a, b) => (a.order ?? Infinity) - (b.order ?? Infinity)
+      ),
+    [moveDestinations]
+  )
+
   return (
     <>
       <Menu
@@ -37,7 +45,23 @@ export function TaskMenu({
       >
         {({ onClose }) => (
           <>
-            {moveDestinations.map((destination) => (
+            {!task.dueDate && (
+              <Menu.Action
+                onClick={() =>
+                  onChange({ ...task, dueDate: new Date().getTime() })
+                }
+              >
+                📅 Add due date
+              </Menu.Action>
+            )}
+
+            <ConfirmationModal
+              message={`Are you sure you want to delete ${task.description}`}
+              onConfirm={onDelete}
+              trigger={(triggerProps) => <DeleteButton {...triggerProps} />}
+            />
+
+            {sortedMoveDestinations.map((destination) => (
               <Menu.Action
                 key={destination.description}
                 onClick={() => {
@@ -52,21 +76,6 @@ export function TaskMenu({
                 {destination.description}
               </Menu.Action>
             ))}
-            <ConfirmationModal
-              message={`Are you sure you want to delete ${task.description}`}
-              onConfirm={onDelete}
-              trigger={(triggerProps) => <DeleteButton {...triggerProps} />}
-            />
-
-            {!task.dueDate && (
-              <Menu.Action
-                onClick={() =>
-                  onChange({ ...task, dueDate: new Date().getTime() })
-                }
-              >
-                📅 Add due date
-              </Menu.Action>
-            )}
           </>
         )}
       </Menu>
