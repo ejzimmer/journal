@@ -27,9 +27,12 @@ export function Work() {
     )
   }, [lists])
 
-  const onAddList = (listName: string) => {
-    addItem(WORK_KEY, { description: listName })
-  }
+  const onAddList = useCallback(
+    (listName: string) => {
+      addItem(WORK_KEY, { description: listName })
+    },
+    [addItem]
+  )
   const onUpdateListName = (newName: string, list: Item) => {
     if (!newName) {
       return
@@ -39,41 +42,6 @@ export function Work() {
   const onDeleteList = (list: Item) => {
     deleteItem(WORK_KEY, list)
   }
-
-  const onUpdate = useCallback(() => {
-    const today = new Date()
-    if (!lists) return
-
-    const listsAsList = Object.values(lists)
-    const doneList = listsAsList.find((list) => list.description === "Done")
-    if (!doneList) {
-      return
-    }
-
-    listsAsList.forEach((list) => {
-      if (list === doneList || !list.items) {
-        return
-      }
-
-      Object.values(list.items).forEach((task) => {
-        if (isSameDay(today, task.lastUpdated)) {
-          return
-        }
-
-        if (task.status === "done") {
-          addItem(`${WORK_KEY}/${doneList.id}/items`, task)
-          deleteItem(`${WORK_KEY}/${list.id}/items`, task)
-        }
-      })
-    })
-  }, [lists, addItem, deleteItem])
-
-  useEffect(() => {
-    onUpdate()
-    const interval = setInterval(onUpdate, hoursToMilliseconds(1))
-
-    return () => clearInterval(interval)
-  }, [onUpdate])
 
   const orderedLists = useMemo(
     () =>
@@ -106,6 +74,41 @@ export function Work() {
     },
     [orderedLists, updateItem]
   )
+
+  const onUpdate = useCallback(() => {
+    const today = new Date()
+    if (!lists) return
+
+    const doneList = orderedLists.find((list) => list.description === "Done")
+    if (!doneList) {
+      onAddList("done")
+      return
+    }
+
+    orderedLists.forEach((list) => {
+      if (list === doneList || !list.items) {
+        return
+      }
+
+      Object.values(list.items).forEach((task) => {
+        if (isSameDay(today, task.lastUpdated)) {
+          return
+        }
+
+        if (task.status === "done") {
+          addItem(`${WORK_KEY}/${doneList.id}/items`, task)
+          deleteItem(`${WORK_KEY}/${list.id}/items`, task)
+        }
+      })
+    })
+  }, [lists, addItem, deleteItem, orderedLists, onAddList])
+
+  useEffect(() => {
+    onUpdate()
+    const interval = setInterval(onUpdate, hoursToMilliseconds(1))
+
+    return () => clearInterval(interval)
+  }, [onUpdate])
 
   useDropTarget({ topLevelKey: WORK_KEY })
 
