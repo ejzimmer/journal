@@ -1,20 +1,17 @@
-import { useEffect, useMemo, useRef, useState } from "react"
+import { useContext, useEffect, useMemo, useRef, useState } from "react"
 import { Label, COLOURS } from "../../shared/TaskList/types"
 import { XIcon } from "../../shared/icons/X"
+import { LabelsContext } from "./LabelsContext"
 
 export type LabelsControlProps = {
   value: Label[]
   onChange: (value: Label[]) => void
-  options: Label[]
   label: string
 }
 
-export function LabelsControl({
-  value,
-  onChange,
-  options,
-  label,
-}: LabelsControlProps) {
+export function LabelsControl({ value, onChange, label }: LabelsControlProps) {
+  const labels = useContext(LabelsContext)
+  const options = useMemo(() => labels ?? [], [labels])
   const popoutRef = useRef<HTMLDivElement | null>(null)
   const selectedValuesRef = useRef<HTMLUListElement | null>(null)
   const [inputValue, setInputValue] = useState("")
@@ -26,7 +23,7 @@ export function LabelsControl({
 
   const displayedOptions = useMemo(() => {
     const unselectedOptions = options.filter((o) => !value.includes(o))
-    const searchTerm = inputValue.toLowerCase()
+    const searchTerm = inputValue.trimStart().toLowerCase()
     return searchTerm
       ? unselectedOptions.filter((o) =>
           o.value.toLowerCase().includes(searchTerm)
@@ -152,7 +149,12 @@ export function LabelsControl({
         ))}
       </ul>
       {value.length > 0 && (
-        <button type="button" onClick={handleClearAll} className="ghost">
+        <button
+          aria-label="Clear all"
+          type="button"
+          onClick={handleClearAll}
+          className="ghost"
+        >
           <XIcon width="16px" />
         </button>
       )}
@@ -166,6 +168,7 @@ export function LabelsControl({
                 aria-selected="false"
                 onClick={() => {
                   onChange([...value, option])
+                  setInputValue("")
                 }}
                 className={index === highlightedIndex ? "highlighted" : ""}
               >

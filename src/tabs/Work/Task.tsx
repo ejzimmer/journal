@@ -1,7 +1,7 @@
 import { ItemDescription } from "../../shared/TaskList/ItemDescription"
 import { Item } from "../../shared/TaskList/types"
 import { EditableDate } from "./EditableDate"
-import { useCallback } from "react"
+import { useCallback, useState } from "react"
 import { getTaskData, isTask } from "./drag-utils"
 
 import "./TaskList.css"
@@ -10,6 +10,8 @@ import { Destination, Position } from "../../shared/drag-and-drop/types"
 import { Checkbox } from "../../shared/controls/Checkbox"
 import { DragHandle } from "../../shared/drag-and-drop/DragHandle"
 import { XIcon } from "../../shared/icons/X"
+import { PlusIcon } from "../../shared/icons/Plus"
+import { LabelsControl } from "./LabelsControl"
 
 type TaskProps = {
   task: Item
@@ -28,6 +30,7 @@ export function Task({
   menu: Menu,
   listId,
 }: TaskProps) {
+  const [addingLabel, setAddingLabel] = useState(false)
   const getData = useCallback(() => getTaskData(task, listId), [task, listId])
 
   return (
@@ -114,6 +117,27 @@ export function Task({
                 }}
               />
             </div>
+          )}
+          {addingLabel ? (
+            <LabelsControl
+              value={[]}
+              onChange={(value) => {
+                const existingLabels = task.labels ?? []
+                onChange({
+                  ...task,
+                  labels: [...existingLabels, ...value],
+                })
+                setAddingLabel(false)
+              }}
+              label="Add new label"
+            />
+          ) : (
+            <button
+              className="add-metadata ghost"
+              onClick={() => setAddingLabel(true)}
+            >
+              <PlusIcon width="16px" />
+            </button>
           )}
         </div>
         <Menu />

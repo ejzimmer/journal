@@ -10,6 +10,7 @@ import { getPosition, getTarget, sortByOrder } from "./drag-utils"
 import { useDropTarget } from "../../shared/drag-and-drop/useDropTarget"
 import { reorderWithEdge } from "@atlaskit/pragmatic-drag-and-drop-hitbox/util/reorder-with-edge"
 import { Destination } from "../../shared/drag-and-drop/types"
+import { LabelsContext } from "./LabelsContext"
 
 const WORK_KEY = "work"
 
@@ -150,7 +151,7 @@ export function Work() {
         }}
       >
         {lists ? (
-          <>
+          <LabelsContext.Provider value={labels}>
             {orderedLists.map(
               (list, index) =>
                 list !== doneList && (
@@ -159,7 +160,6 @@ export function Work() {
                     position={getPosition(index, orderedLists.length)}
                     key={list.id}
                     list={list}
-                    labels={labels}
                     onChangeListName={(newName: string) =>
                       onUpdateListName(newName, list)
                     }
@@ -237,7 +237,7 @@ export function Work() {
                   />
                 )
             )}
-          </>
+          </LabelsContext.Provider>
         ) : (
           <div style={{ marginInlineEnd: "30px" }}>No lists found.</div>
         )}

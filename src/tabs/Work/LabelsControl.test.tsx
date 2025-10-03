@@ -2,6 +2,7 @@ import { render, screen } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 import { LabelsControl, LabelsControlProps } from "./LabelsControl"
 import { Label } from "../../shared/TaskList/types"
+import { LabelsContext } from "./LabelsContext"
 
 const mockOptions: Label[] = [
   { value: "a11y", colour: "blue" },
@@ -16,9 +17,14 @@ const mockValues: Label[] = [mockOptions[0], mockOptions[1]]
 const commonProps: LabelsControlProps = {
   value: mockValues,
   onChange: jest.fn(),
-  options: mockOptions,
   label: "Things",
 }
+
+const Wrapper = ({ children }: { children: React.ReactNode }) => (
+  <LabelsContext.Provider value={mockOptions}>
+    {children}
+  </LabelsContext.Provider>
+)
 
 describe("LabelsControl", () => {
   describe("When the user types some text and presses enter", () => {
@@ -26,7 +32,10 @@ describe("LabelsControl", () => {
       const user = userEvent.setup()
       const onChange = jest.fn()
       const { rerender } = render(
-        <LabelsControl {...commonProps} value={[]} onChange={onChange} />
+        <LabelsControl {...commonProps} value={[]} onChange={onChange} />,
+        {
+          wrapper: Wrapper,
+        }
       )
 
       const input = screen.getByRole("textbox")
@@ -61,7 +70,8 @@ describe("LabelsControl", () => {
       render(
         <div onKeyDown={onKeyDown}>
           <LabelsControl {...commonProps} />
-        </div>
+        </div>,
+        { wrapper: Wrapper }
       )
 
       const input = screen.getByRole("textbox")
@@ -75,7 +85,9 @@ describe("LabelsControl", () => {
     it("removes the label", async () => {
       const user = userEvent.setup()
       const onChange = jest.fn()
-      render(<LabelsControl {...commonProps} onChange={onChange} />)
+      render(<LabelsControl {...commonProps} onChange={onChange} />, {
+        wrapper: Wrapper,
+      })
 
       await user.click(screen.getByRole("button", { name: "Remove a11y" }))
 
@@ -87,7 +99,9 @@ describe("LabelsControl", () => {
     it("removes all the labels and any text in the input", async () => {
       const user = userEvent.setup()
       const onChange = jest.fn()
-      render(<LabelsControl {...commonProps} onChange={onChange} />)
+      render(<LabelsControl {...commonProps} onChange={onChange} />, {
+        wrapper: Wrapper,
+      })
 
       const input = screen.getByRole("textbox")
       await user.type(input, "dev prod")
@@ -103,7 +117,8 @@ describe("LabelsControl", () => {
     const user = userEvent.setup()
     const onChange = jest.fn()
     const { rerender } = render(
-      <LabelsControl {...commonProps} onChange={onChange} value={[]} />
+      <LabelsControl {...commonProps} onChange={onChange} value={[]} />,
+      { wrapper: Wrapper }
     )
 
     mockOptions.forEach((option) => {
@@ -136,7 +151,10 @@ describe("LabelsControl", () => {
     it("filters the list of options", async () => {
       const user = userEvent.setup()
       const onChange = jest.fn()
-      render(<LabelsControl {...commonProps} onChange={onChange} value={[]} />)
+      render(
+        <LabelsControl {...commonProps} onChange={onChange} value={[]} />,
+        { wrapper: Wrapper }
+      )
 
       const input = screen.getByRole("textbox")
       await user.type(input, "pr")
@@ -156,7 +174,9 @@ describe("LabelsControl", () => {
   describe("when some options are already selected", () => {
     it("doesn't show those options in the list", async () => {
       const onChange = jest.fn()
-      render(<LabelsControl {...commonProps} onChange={onChange} />)
+      render(<LabelsControl {...commonProps} onChange={onChange} />, {
+        wrapper: Wrapper,
+      })
 
       const options = screen.getAllByRole("option")
       expect(options).toHaveLength(mockOptions.length - mockValues.length)
@@ -171,7 +191,9 @@ describe("LabelsControl", () => {
     it("doesn't select anything from the option list unless they pressed the arrow keys first", async () => {
       const user = userEvent.setup()
       const onChange = jest.fn()
-      render(<LabelsControl {...commonProps} onChange={onChange} />)
+      render(<LabelsControl {...commonProps} onChange={onChange} />, {
+        wrapper: Wrapper,
+      })
 
       const input = screen.getByRole("textbox")
       await user.type(input, " ")
@@ -207,7 +229,9 @@ describe("LabelsControl", () => {
     it("selects that option", async () => {
       const user = userEvent.setup()
       const onChange = jest.fn()
-      render(<LabelsControl {...commonProps} onChange={onChange} />)
+      render(<LabelsControl {...commonProps} onChange={onChange} />, {
+        wrapper: Wrapper,
+      })
 
       const input = screen.getByRole("textbox")
       await user.type(input, "dev")
@@ -225,7 +249,9 @@ describe("LabelsControl", () => {
     it("doesn't add a new tag", async () => {
       const user = userEvent.setup()
       const onChange = jest.fn()
-      render(<LabelsControl {...commonProps} onChange={onChange} />)
+      render(<LabelsControl {...commonProps} onChange={onChange} />, {
+        wrapper: Wrapper,
+      })
 
       const input = screen.getByRole("textbox")
       await user.type(input, mockValues[0].value)
@@ -239,7 +265,9 @@ describe("LabelsControl", () => {
     it("updates the value, using the value in the list of options", async () => {
       const user = userEvent.setup()
       const onChange = jest.fn()
-      render(<LabelsControl {...commonProps} onChange={onChange} />)
+      render(<LabelsControl {...commonProps} onChange={onChange} />, {
+        wrapper: Wrapper,
+      })
 
       const input = screen.getByRole("textbox")
       const selectedOption = mockOptions[4]
@@ -254,9 +282,9 @@ describe("LabelsControl", () => {
     it("is assigned a colour based on the total number of options", async () => {
       const user = userEvent.setup()
       const onChange = jest.fn()
-      const { rerender } = render(
-        <LabelsControl {...commonProps} onChange={onChange} />
-      )
+      render(<LabelsControl {...commonProps} onChange={onChange} />, {
+        wrapper: Wrapper,
+      })
 
       const input = screen.getByRole("textbox")
       await user.type(input, "apex{Enter}")
@@ -265,20 +293,28 @@ describe("LabelsControl", () => {
         ...mockValues,
         { value: "apex", colour: "red" },
       ])
+    })
 
-      rerender(
-        <LabelsControl
-          {...commonProps}
-          onChange={onChange}
-          options={[...mockOptions, { value: "apex", colour: "red" }]}
-        />
-      )
-      await user.type(input, "training{Enter}")
+    describe("when there are more options than colours", () => {
+      it("goes back to the first colour", async () => {
+        const user = userEvent.setup()
+        const onChange = jest.fn()
+        render(<LabelsControl {...commonProps} onChange={onChange} />, {
+          wrapper: ({ children }) => (
+            <LabelsContext.Provider
+              value={[...mockOptions, { value: "apex", colour: "red" }]}
+            >
+              {children}
+            </LabelsContext.Provider>
+          ),
+        })
+        await user.type(screen.getByRole("textbox"), "training{Enter}")
 
-      expect(onChange).toHaveBeenCalledWith([
-        ...mockValues,
-        { value: "training", colour: "blue" },
-      ])
+        expect(onChange).toHaveBeenCalledWith([
+          ...mockValues,
+          { value: "training", colour: "blue" },
+        ])
+      })
     })
   })
 })

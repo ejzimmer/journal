@@ -13,14 +13,9 @@ type NewTask = {
 type AddTaskFormProps = {
   onSubmit: (task: NewTask) => void
   onClose: () => void
-  existingLabels: Label[]
 }
 
-export function AddTaskForm({
-  onSubmit,
-  onClose,
-  existingLabels,
-}: AddTaskFormProps) {
+export function AddTaskForm({ onSubmit, onClose }: AddTaskFormProps) {
   const formRef = useRef<HTMLFormElement>(null)
   const descriptionRef = useRef<HTMLInputElement>(null)
   const dateRef = useRef<HTMLInputElement>(null)
@@ -110,7 +105,6 @@ export function AddTaskForm({
         onChange={(labels) => {
           setLabels(labels)
         }}
-        options={existingLabels}
         label="Labels"
       />
       <div className="button-container">

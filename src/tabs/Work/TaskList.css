@@ -57,11 +57,28 @@
     min-height: calc(var(--line-gap) + var(--line-width));
     position: relative;
     top: 4px;
-  }
-}
+    .drag-handle,
+    .task-menu {
+      opacity: 0;
+    }
 
-li.task:last-child {
-  margin-block-end: 40px;
+    &:hover {
+      .drag-handle,
+      .task-menu,
+      .add-metadata {
+        opacity: 1;
+      }
+    }
+
+    button.add-metadata {
+      margin-inline-start: -8px;
+      opacity: 0;
+    }
+  }
+
+  li.task:last-child {
+    margin-block-end: 40px;
+  }
 }
 
 .inline {
@@ -201,19 +218,5 @@ form.add-task {
 
   .no-options {
     color: var(--body-colour-light);
-  }
-}
-
-li.task {
-  .drag-handle,
-  .task-menu {
-    opacity: 0;
-  }
-
-  &:hover {
-    .drag-handle,
-    .task-menu {
-      opacity: 1;
-    }
   }
 }

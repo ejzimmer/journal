@@ -9,7 +9,7 @@ import {
 } from "react"
 import { EditableText } from "../../shared/controls/EditableText"
 import { AddTaskForm } from "./AddTaskForm"
-import { Item, Label } from "../../shared/TaskList/types"
+import { Item } from "../../shared/TaskList/types"
 import { Task } from "./Task"
 import {
   getListData,
@@ -38,7 +38,6 @@ export function TaskList({
   parentListId,
   position,
   list,
-  labels,
   onChangeListName,
   onChangePosition,
   onDelete,
@@ -50,7 +49,6 @@ export function TaskList({
   parentListId: string
   position: Position
   list: Item
-  labels: Label[]
   onChangeListName: (name: string) => void
   onChangePosition: (destination: Destination) => void
   onDelete: () => void
@@ -174,7 +172,6 @@ export function TaskList({
                 onClose={() => {
                   setAddTaskFormVisible(false)
                 }}
-                existingLabels={labels}
               />
             </li>
           )}
