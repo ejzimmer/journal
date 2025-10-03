@@ -85,7 +85,6 @@ export function Work() {
 
     const doneList = orderedLists.find((list) => list.description === "Done")
     if (!doneList) {
-      onAddList("Done")
       return
     }
 
@@ -105,7 +104,7 @@ export function Work() {
         }
       })
     })
-  }, [lists, addItem, deleteItem, orderedLists, onAddList])
+  }, [lists, addItem, deleteItem, orderedLists])
 
   useEffect(() => {
     onUpdate()
