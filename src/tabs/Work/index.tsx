@@ -39,9 +39,12 @@ export function Work() {
     }
     updateItem(WORK_KEY, { ...list, description: newName })
   }
-  const onDeleteList = (list: Item) => {
-    deleteItem(WORK_KEY, list)
-  }
+  const onDeleteList = useCallback(
+    (list: Item) => {
+      deleteItem(WORK_KEY, list)
+    },
+    [deleteItem]
+  )
 
   const orderedLists = useMemo(
     () =>
@@ -81,7 +84,7 @@ export function Work() {
 
     const doneList = orderedLists.find((list) => list.description === "Done")
     if (!doneList) {
-      onAddList("done")
+      onAddList("Done")
       return
     }
 
