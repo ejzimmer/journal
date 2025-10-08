@@ -1,6 +1,6 @@
 import { useCallback, useContext, useEffect, useMemo } from "react"
 import { FirebaseContext } from "../../shared/FirebaseContext"
-import { Item } from "../../shared/TaskList/types"
+import { Item, Label } from "../../shared/TaskList/types"
 import { NewListModal } from "./NewListModal"
 import { TaskList } from "./TaskList"
 import { hoursToMilliseconds, isSameDay } from "date-fns"
@@ -115,14 +115,16 @@ export function Work() {
 
   useDropTarget({ topLevelKey: WORK_KEY })
 
-  const labels = useMemo(
-    () =>
-      orderedLists
-        .flatMap(({ items }) => (items ? Object.values(items) : []))
-        .flatMap(({ labels }) => labels)
-        .filter((label) => label !== undefined),
-    [orderedLists]
-  )
+  const labels = useMemo(() => {
+    const uniqueLabels = new Map<string, Label>()
+    orderedLists
+      .flatMap(({ items }) => (items ? Object.values(items) : []))
+      .flatMap(({ labels }) => labels)
+      .filter((label) => label !== undefined)
+      .forEach((label) => uniqueLabels.set(label.value, label))
+
+    return Array.from(uniqueLabels.values())
+  }, [orderedLists])
 
   if (listsLoading) {
     return <Skeleton numRows={3} />
