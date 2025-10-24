@@ -71,6 +71,12 @@ export function TaskList({
     () => (list.items ? sortByOrder(Object.values(list.items)) : []),
     [list]
   )
+  sortedList.forEach((item) => {
+    const originalItem = list.items?.[item.id]
+    if (originalItem?.order !== item.order) {
+      onChangeTask(item)
+    }
+  })
 
   const onChangeTaskPosition = useCallback(
     (originIndex: number, destination: Destination) => {

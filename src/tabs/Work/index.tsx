@@ -83,7 +83,6 @@ export function Work() {
     const today = new Date()
     if (!lists) return
 
-    const doneList = orderedLists.find((list) => list.description === "Done")
     if (!doneList) {
       return
     }
@@ -104,7 +103,7 @@ export function Work() {
         }
       })
     })
-  }, [lists, addItem, deleteItem, orderedLists])
+  }, [lists, addItem, deleteItem, orderedLists, doneList])
 
   useEffect(() => {
     onUpdate()

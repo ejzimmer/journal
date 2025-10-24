@@ -1,68 +1,22 @@
 import { render, screen } from "@testing-library/react"
-import userEvent from "@testing-library/user-event"
 import { AddTaskForm } from "./AddTaskForm"
-
-const commonProps = {
-  onSubmit: jest.fn(),
-}
+import userEvent from "@testing-library/user-event"
 
 describe("AddTaskForm", () => {
-  it("can open & add a new task", async () => {
-    const user = userEvent.setup()
-    const onSubmit = jest.fn()
-    render(<AddTaskForm onSubmit={onSubmit} />)
-
-    await user.click(screen.getByRole("button", { name: "show add task form" }))
-    const type = screen.getByRole("combobox", { name: "task type" })
-    const description = screen.getByRole("textbox", {
-      name: "task description",
-    })
-    await user.selectOptions(type, "📓")
-    await user.type(description, "Anki")
-    await user.keyboard("{Enter}")
-
-    expect(onSubmit).toHaveBeenCalledWith({ description: "Anki", type: "📓" })
-    expect(description).toHaveValue("")
-    expect(type).toHaveValue("🧹")
-  })
-
-  describe("when the user clicks the close button", () => {
-    it("closes the form", async () => {
+  describe("when the user presses submit without entering a description or choosing a type", () => {
+    it("shows a validation error & doesn't submit", async () => {
       const user = userEvent.setup()
-      render(<AddTaskForm {...commonProps} />)
+      const onSubmit = jest.fn()
+      render(<AddTaskForm onSubmit={onSubmit} />)
 
-      expect(screen.queryByRole("textbox")).not.toBeInTheDocument()
+      await user.click(screen.getByRole("button", { name: "Create task" }))
 
-      const showFormButton = screen.getByRole("button", {
-        name: "show add task form",
-      })
-      await user.click(showFormButton)
-      expect(showFormButton).toHaveAccessibleName("hide add task form")
-      expect(showFormButton).toHaveAttribute("aria-expanded", "true")
-      expect(screen.getByRole("textbox")).toBeInTheDocument()
-
-      await user.click(showFormButton)
-      expect(showFormButton).toHaveAccessibleName("show add task form")
-      expect(showFormButton).toHaveAttribute("aria-expanded", "false")
-      expect(screen.queryByRole("textbox")).not.toBeInTheDocument()
+      expect(screen.getByText("Description required")).toBeInTheDocument()
+      expect(screen.getByText("Type required")).toBeInTheDocument()
+      expect(onSubmit).not.toHaveBeenCalled()
     })
   })
-  describe("when the user moves focus away", () => {
-    it("closes the form", async () => {
-      const user = userEvent.setup()
-      const { container } = render(<AddTaskForm {...commonProps} />)
-
-      const showFormButton = screen.getByRole("button", {
-        name: "show add task form",
-      })
-      await user.click(showFormButton)
-      expect(showFormButton).toHaveAttribute("aria-expanded", "true")
-
-      await user.click(container)
-      expect(showFormButton).toHaveAttribute("aria-expanded", "false")
-    })
-  })
-
-  // no description, do nothing
-  // actually test that the form is shown/hidden
+  // validation: type = weekly, default to frequency: 1
+  // validation: type = calendar, date is required
+  // can add label with colour & emoji
 })

@@ -1,126 +1,27 @@
-import { useState } from "react"
-import { COLOURS, Item } from "../../shared/TaskList/types"
-import { Task } from "./Task"
-import { AddTaskForm } from "./AddTaskForm"
-
-const initialTasks: Item[] = [
-  {
-    id: "1",
-    description: "Brush teeth",
-    status: "not_started",
-    lastUpdated: 0,
-    labels: [{ value: "🧹", colour: COLOURS[0] }],
-    order: 0,
-  },
-  {
-    id: "2",
-    description: "Cast on socks",
-    status: "not_started",
-    lastUpdated: 0,
-    labels: [{ value: "🧶", colour: COLOURS[1] }],
-    order: 1,
-  },
-  {
-    id: "3",
-    description: "Anki",
-    status: "not_started",
-    lastUpdated: 0,
-    labels: [{ value: "📓", colour: COLOURS[2] }],
-    order: 2,
-  },
-]
-
-function swapTasks(tasks: Item[], task: Item, toIndex: number) {
-  const sourcePosition = task.order ?? tasks.length - 1
-  const taskToSwap = tasks.find(
-    (t) => typeof t.order === "number" && t.order + toIndex
-  )
-  return tasks.map((t) => {
-    if (t === task) {
-      return { ...task, order: sourcePosition + toIndex }
-    } else if (t === taskToSwap) {
-      return { ...t, order: sourcePosition }
-    } else {
-      return t
-    }
-  })
-}
+import { Label } from "../../shared/TaskList/types"
 
 export function Today() {
-  const [tasks, setTasks] = useState(initialTasks)
+  // today, inc every day things + things that have to happen today + 3 goals for the day
+  // this week, inc things that need to be done multiple times
+  // things from calendar, which can have state of nothing to do + due soon/overdue, automove to today on due date?
+  // long term things. subtasks?
+  // form for adding things - just one form for everything?
 
-  return (
-    <>
-      {tasks
-        .sort((a, b) => (a.order ?? tasks.length) - (b.order ?? tasks.length))
-        .map((task, index) => (
-          <Task
-            key={task.id}
-            task={task}
-            onChange={(newTask) =>
-              setTasks((tasks) => tasks.with(index, newTask))
-            }
-            onDelete={() =>
-              setTasks((tasks) => tasks.filter((t) => t.id !== task.id))
-            }
-            onMoveTo={(destination) => {
-              const sourcePosition = task.order ?? index
-
-              if (
-                (destination === "start" || destination === "previous") &&
-                sourcePosition === 0
-              ) {
-                return
-              }
-              if (
-                (destination === "end" || destination === "next") &&
-                sourcePosition === tasks.length - 1
-              ) {
-                return
-              }
-              switch (destination) {
-                case "start":
-                  setTasks(
-                    tasks.map((t) => {
-                      if (
-                        typeof t.order === "number" &&
-                        t.order < sourcePosition
-                      ) {
-                        return { ...t, order: t.order + 1 }
-                      } else if (t === task) {
-                        return { ...task, order: 0 }
-                      } else {
-                        return t
-                      }
-                    })
-                  )
-                  break
-                case "previous":
-                  setTasks(swapTasks(tasks, task, -1))
-                  break
-                case "next":
-                  setTasks(swapTasks(tasks, task, 1))
-                  break
-                case "end":
-                  setTasks(
-                    tasks.map((t) => {
-                      if (
-                        typeof t.order === "number" &&
-                        t.order > sourcePosition
-                      ) {
-                        return { ...t, order: t.order - 1 }
-                      } else if (t === task) {
-                        return { ...task, order: tasks.length - 1 }
-                      } else {
-                        return t
-                      }
-                    })
-                  )
-              }
-            }}
-          />
-        ))}
-      <AddTaskForm onSubmit={console.log} />
-    </>
-  )
+  return null
 }
+
+export type Item = {
+  id: string
+  description: string
+  lastUpdated: number
+  order?: number
+  type: "everyday" | "goal" | "weekly" | "calendar" | "project"
+  label: Label
+}
+
+type CalendarItem = Item & {
+  type: "calendar"
+  dueDate: number
+  unactionable?: boolean
+}
+type WeeklyItem = Item & { type: "weekly"; frequency: number }
