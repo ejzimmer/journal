@@ -1,12 +1,15 @@
-import { useEffect, useMemo, useRef, useState } from "react"
+import { ReactNode, useEffect, useMemo, useRef, useState } from "react"
 import { XIcon } from "../icons/X"
 
 import "./Combobox.css"
+
+type OptionBase = { text: string }
 
 type BaseProps<T> = {
   label: string
   options: T[]
   createOption: (text: string) => T
+  Option?: React.FC<{ option: T; children?: React.ReactNode }>
 }
 type SingleSelectProps<T> = BaseProps<T> & {
   allowMulti?: false
@@ -19,17 +22,18 @@ type MultiSelectProps<T> = BaseProps<T> & {
   onChange: (value: T[]) => void
 }
 
-export type ComboboxProps<T extends { text: string }> =
+export type ComboboxProps<T extends OptionBase> =
   | SingleSelectProps<T>
   | MultiSelectProps<T>
 
-export function Combobox<T extends { text: string }>({
+export function Combobox<T extends OptionBase>({
   value,
   onChange,
   label,
   options,
   createOption,
   allowMulti,
+  Option,
 }: ComboboxProps<T>) {
   const popoutRef = useRef<HTMLDivElement | null>(null)
   const selectedValuesRef = useRef<HTMLUListElement | null>(null)
@@ -43,11 +47,10 @@ export function Combobox<T extends { text: string }>({
   const unselectedOptions = useMemo(
     () =>
       Array.isArray(value)
-        ? options.filter((o) => !value.includes(o))
+        ? options.filter((o) => !listContainsOption(value, o))
         : options,
     [options, value]
   )
-
   const displayedOptions = useMemo(() => {
     const searchTerm = inputValue.trimStart().toLowerCase()
     return searchTerm
@@ -83,7 +86,7 @@ export function Combobox<T extends { text: string }>({
 
   const handleChange = (option: T) => {
     // Don't add the option if it's already in the value
-    if (allowMulti && !value.includes(option)) {
+    if (allowMulti && !listContainsOption(value, option)) {
       onChange([...value, option])
     } else if (!allowMulti) {
       onChange(option)
@@ -156,6 +159,7 @@ export function Combobox<T extends { text: string }>({
           onRemove={handleRemoveOption}
           onClearAll={handleClearAll}
           ref={selectedValuesRef}
+          Option={Option}
         />
       ) : (
         <SingleValue value={value} />
@@ -174,7 +178,7 @@ export function Combobox<T extends { text: string }>({
                 }}
                 className={index === highlightedIndex ? "highlighted" : ""}
               >
-                {option.text}
+                {Option ? <Option option={option} /> : option.text}
               </li>
             ))}
           </ul>
@@ -191,27 +195,30 @@ type MultiValueProps<T> = {
   onRemove: (option: T) => void
   onClearAll: () => void
   ref: React.Ref<HTMLUListElement>
+  Option?: React.FC<{ option: T; children?: ReactNode }>
 }
 function MultiValue<T extends { text: string }>({
   value,
   onRemove,
   onClearAll,
   ref,
+  Option = DefaultOption,
 }: MultiValueProps<T>) {
   return (
     <>
       <ul className="selectedOptions" ref={ref}>
         {value.map((option) => (
           <li key={option.text}>
-            {option.text}
-            <button
-              type="button"
-              onClick={() => onRemove(option)}
-              aria-label={`Remove ${option.text}`}
-              className="ghost round"
-            >
-              <XIcon width="12px" />
-            </button>
+            <Option option={option}>
+              <button
+                type="button"
+                onClick={() => onRemove(option)}
+                aria-label={`Remove ${option.text}`}
+                className="ghost round"
+              >
+                <XIcon width="12px" />
+              </button>
+            </Option>
           </li>
         ))}
       </ul>
@@ -232,3 +239,20 @@ function MultiValue<T extends { text: string }>({
 function SingleValue<T extends { text: string }>({ value }: { value?: T }) {
   return value ? <div>{value.text}</div> : null
 }
+
+function DefaultOption<T extends { text: string }>({
+  option,
+  children,
+}: {
+  option: T
+  children?: ReactNode
+}) {
+  return (
+    <>
+      {option.text} {children}
+    </>
+  )
+}
+
+const listContainsOption = (list: OptionBase[], option: OptionBase) =>
+  list.find((v) => v.text === option.text)

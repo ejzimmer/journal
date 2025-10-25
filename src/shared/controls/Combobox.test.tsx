@@ -27,10 +27,11 @@ const commonProps: ComboboxProps<MockOption> = {
 
 describe("Combobox", () => {
   describe("when multiselect is true", () => {
-    const multiCommonProps = {
+    const multiCommonProps: ComboboxProps<MockOption> = {
       ...commonProps,
       allowMulti: true,
       value: mockValues,
+      onChange: jest.fn(),
     }
     describe("When the user types a brand new option and presses enter", () => {
       it("Adds a new tag & clears the input", async () => {
@@ -269,7 +270,7 @@ describe("Combobox", () => {
     const user = userEvent.setup()
     const onChange = jest.fn()
     const { rerender } = render(
-      <Combobox {...commonProps} onChange={onChange} value={[]} />
+      <Combobox {...commonProps} onChange={onChange} value={undefined} />
     )
 
     mockOptions.forEach((option) => {
@@ -295,7 +296,9 @@ describe("Combobox", () => {
     it("filters the list of options", async () => {
       const user = userEvent.setup()
       const onChange = jest.fn()
-      render(<Combobox {...commonProps} onChange={onChange} value={[]} />)
+      render(
+        <Combobox {...commonProps} onChange={onChange} value={mockOptions[0]} />
+      )
 
       const input = screen.getByRole("textbox")
       await user.type(input, "pr")
