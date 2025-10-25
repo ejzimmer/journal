@@ -1,0 +1,57 @@
+.combobox {
+  position: relative;
+
+  input {
+    background: transparent;
+    border: 2px dashed var(--border-colour);
+    width: 100%;
+
+    &:focus {
+      outline: none;
+      border-color: var(--body-colour);
+    }
+  }
+
+  ul.selectedOptions {
+    position: absolute;
+    top: 6px;
+    left: 4px;
+    list-style: none;
+    padding: 0;
+    display: flex;
+    gap: 4px;
+
+    & + button {
+      position: absolute;
+      top: 6px;
+      right: 4px;
+    }
+  }
+
+  .options {
+    background: white;
+    border-width: 1px;
+
+    ul.options {
+      list-style-type: none;
+      padding: 0;
+      min-width: 100px;
+    }
+
+    [role="option"] {
+      padding: 8px;
+
+      &:not(:last-child) {
+        border-bottom: 2px solid var(--border-colour);
+        margin: 0;
+      }
+      &.highlighted {
+        background: var(--highlight-colour);
+      }
+    }
+
+    .no-options {
+      color: var(--body-colour-light);
+    }
+  }
+}
