@@ -1,8 +1,9 @@
 import { useState } from "react"
+import { Category, CategoryControl } from "./CategoryControl"
 
 type BaseNewTask = {
   description: string
-  category: [string, string]
+  category: Category
   lastUpdated: number
   type: string
 }
@@ -12,11 +13,12 @@ type NewCalendarTask = BaseNewTask & { dueDate: number }
 type NewTask = BaseNewTask | NewWeeklyTask | NewCalendarTask
 
 export type AddTaskFormProps = {
-  categories: [string, string][]
+  categories: Category[]
   onSubmit: (task: NewTask) => void
 }
 
 export function AddTaskForm({ categories, onSubmit }: AddTaskFormProps) {
+  const [category, setCategory] = useState<Category>()
   const [errors, setErrors] = useState<string[]>([])
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
@@ -48,13 +50,13 @@ export function AddTaskForm({ categories, onSubmit }: AddTaskFormProps) {
 
     if (errors.length > 0) return
 
-    const getCategory = (): [string, string] => {
+    const getCategory = (): Category => {
       if (categoryName.value) {
-        return [categoryName.value, emoji.value]
+        return { text: categoryName.value, emoji: emoji.value }
       }
 
       const selectedEmoji = category.value
-      const selected = categories.find(([, e]) => e === selectedEmoji)
+      const selected = categories.find(({ emoji }) => emoji === selectedEmoji)
       return selected ?? categories[0]
     }
 
@@ -105,16 +107,14 @@ export function AddTaskForm({ categories, onSubmit }: AddTaskFormProps) {
         </select>
       </label>
       <label>
-        Label <input />
-      </label>
-      <label>
-        Emoji <input />
+        Category
+        <CategoryControl onChange={setCategory} options={[]} />
       </label>
       <label>
         Category
         <select>
-          {categories.map(([text, icon]) => (
-            <option key={text}>{icon}</option>
+          {categories.map(({ text, emoji }) => (
+            <option key={text}>{emoji}</option>
           ))}
         </select>
       </label>

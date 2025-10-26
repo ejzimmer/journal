@@ -5,8 +5,8 @@ import userEvent from "@testing-library/user-event"
 const commonProps: AddTaskFormProps = {
   onSubmit: jest.fn(),
   categories: [
-    ["Chore", "🧹"],
-    ["Learning", "📖"],
+    { text: "Chore", emoji: "🧹" },
+    { text: "Learning", emoji: "📖" },
   ],
 }
 
@@ -51,7 +51,7 @@ describe("AddTaskForm", () => {
         description: "Exercise",
         type: "",
         lastUpdated: expect.any(Number),
-        category: ["Chore", "🧹"],
+        category: { text: "Chore", emoji: "🧹" },
       })
     })
   })
@@ -75,7 +75,7 @@ describe("AddTaskForm", () => {
         description: "Exercise",
         type: "週に",
         lastUpdated: expect.any(Number),
-        category: ["Chore", "🧹"],
+        category: { text: "Chore", emoji: "🧹" },
         frequency: 1,
       })
     })
@@ -104,7 +104,7 @@ describe("AddTaskForm", () => {
           description: "Exercise",
           type: "週に",
           lastUpdated: expect.any(Number),
-          category: ["Chore", "🧹"],
+          category: { text: "Chore", emoji: "🧹" },
           frequency: 4,
         })
       })
@@ -157,69 +157,10 @@ describe("AddTaskForm", () => {
           description: "Japanese lesson",
           type: "日付",
           lastUpdated: expect.any(Number),
-          category: ["Chore", "🧹"],
+          category: { text: "Chore", emoji: "🧹" },
           dueDate: expect.any(Number),
         })
       })
-    })
-  })
-
-  describe("when the user enters a new category", () => {
-    it("requires an emoji", async () => {
-      const user = userEvent.setup()
-      const onSubmit = jest.fn()
-      render(<AddTaskForm {...commonProps} onSubmit={onSubmit} />)
-
-      await user.type(
-        screen.getByRole("textbox", { name: "Description" }),
-        "Exercise"
-      )
-      await user.selectOptions(screen.getByRole("combobox", { name: "Type" }), [
-        "毎日",
-      ])
-      await user.type(screen.getByRole("textbox", { name: "Label" }), "fitness")
-      await user.click(screen.getByRole("button", { name: "Create task" }))
-
-      expect(
-        screen.getByText("Pick an emoji for the category")
-      ).toBeInTheDocument()
-      expect(onSubmit).not.toHaveBeenCalled()
-
-      await user.type(screen.getByRole("textbox", { name: "Emoji" }), "🏃‍♀️")
-      await user.click(screen.getByRole("button", { name: "Create task" }))
-
-      expect(onSubmit).toHaveBeenCalledWith({
-        description: "Exercise",
-        type: "毎日",
-        lastUpdated: expect.any(Number),
-        category: ["fitness", "🏃‍♀️"],
-      })
-    })
-  })
-
-  it("allows the user to select a previously used category", async () => {
-    const user = userEvent.setup()
-    const onSubmit = jest.fn()
-    render(<AddTaskForm {...commonProps} onSubmit={onSubmit} />)
-
-    await user.type(
-      screen.getByRole("textbox", { name: "Description" }),
-      "Anki"
-    )
-    await user.selectOptions(screen.getByRole("combobox", { name: "Type" }), [
-      "毎日",
-    ])
-    await user.selectOptions(
-      screen.getByRole("combobox", { name: "Category" }),
-      ["📖"]
-    )
-    await user.click(screen.getByRole("button", { name: "Create task" }))
-
-    expect(onSubmit).toHaveBeenCalledWith({
-      description: "Anki",
-      type: "毎日",
-      lastUpdated: expect.any(Number),
-      category: ["Learning", "📖"],
     })
   })
 })
