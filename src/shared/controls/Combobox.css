@@ -12,6 +12,14 @@
     }
   }
 
+  input:focus + .single-value-container {
+    display: none;
+  }
+  .single-value-container {
+    position: absolute;
+    top: 0;
+  }
+
   ul.selectedOptions {
     position: absolute;
     top: 6px;

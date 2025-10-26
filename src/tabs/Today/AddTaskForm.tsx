@@ -108,15 +108,10 @@ export function AddTaskForm({ categories, onSubmit }: AddTaskFormProps) {
       </label>
       <label>
         Category
-        <CategoryControl onChange={setCategory} options={[]} />
-      </label>
-      <label>
-        Category
-        <select>
-          {categories.map(({ text, emoji }) => (
-            <option key={text}>{emoji}</option>
-          ))}
-        </select>
+        <CategoryControl
+          onChange={setCategory}
+          options={[{ text: "Chore", emoji: "🪥" }]}
+        />
       </label>
 
       <label>

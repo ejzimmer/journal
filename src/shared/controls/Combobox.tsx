@@ -61,12 +61,6 @@ export function Combobox<T extends OptionBase>({
   }, [unselectedOptions, inputValue])
 
   const handleInputChange = (inputValue: string) => {
-    if (inputValue) {
-      popoutRef.current?.showPopover()
-    } else {
-      popoutRef.current?.hidePopover()
-    }
-
     setInputValue(inputValue)
     setHighlightedIndex(-1)
   }
@@ -152,6 +146,16 @@ export function Combobox<T extends OptionBase>({
         onKeyDown={handleInputKeyDown}
         aria-label={label}
         style={{ paddingInlineStart: `${valuesWidth + 8}px` }}
+        onFocus={() => {
+          popoutRef.current?.showPopover()
+          if (!allowMulti) {
+            const valueIndex = displayedOptions.findIndex(
+              (o) => o.text === value?.text
+            )
+            setHighlightedIndex(valueIndex)
+          }
+        }}
+        onBlur={() => popoutRef.current?.hidePopover()}
       />
       {allowMulti ? (
         <MultiValue
@@ -162,9 +166,9 @@ export function Combobox<T extends OptionBase>({
           Option={Option}
         />
       ) : (
-        <SingleValue value={value} />
+        <SingleValue value={value} Option={Option} />
       )}
-      <div ref={popoutRef} popover="auto" className="options">
+      <div ref={popoutRef} popover="manual" className="options">
         {displayedOptions.length ? (
           <ul className="options">
             {displayedOptions.map((option, index) => (
@@ -236,8 +240,18 @@ function MultiValue<T extends { text: string }>({
   )
 }
 
-function SingleValue<T extends { text: string }>({ value }: { value?: T }) {
-  return value ? <div>{value.text}</div> : null
+function SingleValue<T extends { text: string }>({
+  value,
+  Option = DefaultOption,
+}: {
+  value?: T
+  Option?: React.FC<{ option: T; children?: ReactNode }>
+}) {
+  return value ? (
+    <div className="single-value-container">
+      <Option option={value} />
+    </div>
+  ) : null
 }
 
 function DefaultOption<T extends { text: string }>({
