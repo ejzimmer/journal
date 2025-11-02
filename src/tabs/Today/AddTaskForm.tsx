@@ -18,6 +18,7 @@ export type AddTaskFormProps = {
 }
 
 export function AddTaskForm({ categories, onSubmit }: AddTaskFormProps) {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [category, setCategory] = useState<Category>()
   const [errors, setErrors] = useState<string[]>([])
 
