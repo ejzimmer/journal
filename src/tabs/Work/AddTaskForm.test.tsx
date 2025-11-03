@@ -70,7 +70,7 @@ describe("AddTaskForm", () => {
       name: "Description",
     })
     await user.type(descriptionInput, "Approve PR")
-    const labelInput = screen.getByRole("textbox", { name: "Labels" })
+    const labelInput = screen.getByRole("combobox", { name: "Labels" })
     await user.type(labelInput, "PR{Enter}")
     await user.keyboard("{Enter}")
 

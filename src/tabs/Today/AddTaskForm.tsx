@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useRef, useState } from "react"
 import { Category, CategoryControl } from "./CategoryControl"
 
 type BaseNewTask = {
@@ -18,8 +18,9 @@ export type AddTaskFormProps = {
 }
 
 export function AddTaskForm({ categories, onSubmit }: AddTaskFormProps) {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [category, setCategory] = useState<Category>()
+  const dueDateRef = useRef<HTMLInputElement>(null)
+  const [category, setCategory] = useState<Category | undefined>(categories[0])
+  const [frequency, setFrequency] = useState<string | undefined>("1")
   const [errors, setErrors] = useState<string[]>([])
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
@@ -27,23 +28,26 @@ export function AddTaskForm({ categories, onSubmit }: AddTaskFormProps) {
     if (!event.currentTarget) return
 
     const errors = []
-    const [
-      description,
-      type,
-      categoryName,
-      emoji,
-      category,
-      frequency,
-      dueDate,
-    ] = Array.from(event.currentTarget.elements) as HTMLInputElement[]
+    const [description, type] = Array.from(
+      event.currentTarget.elements
+    ) as HTMLInputElement[]
 
     if (!description.value) {
       errors.push("Description required")
     }
-    if (type.value === "日付" && !dueDate.value) {
+    if (!category) {
+      return
+    }
+    if (type.value === "日付" && !dueDateRef.current?.value) {
       errors.push("Due date required")
     }
-    if (categoryName.value && !emoji.value) {
+    if (
+      type.value === "週に" &&
+      (!frequency || isNaN(Number.parseInt(frequency)))
+    ) {
+      errors.push("Frequency required")
+    }
+    if (category?.text && !category.emoji) {
       errors.push("Pick an emoji for the category")
     }
 
@@ -51,32 +55,21 @@ export function AddTaskForm({ categories, onSubmit }: AddTaskFormProps) {
 
     if (errors.length > 0) return
 
-    const getCategory = (): Category => {
-      if (categoryName.value) {
-        return { text: categoryName.value, emoji: emoji.value }
-      }
-
-      const selectedEmoji = category.value
-      const selected = categories.find(({ emoji }) => emoji === selectedEmoji)
-      return selected ?? categories[0]
-    }
-
     switch (type.value) {
       case "日付":
         onSubmit({
           description: description.value,
-          category: getCategory(),
+          category,
           lastUpdated: Date.now(),
           type: type.value,
-          dueDate: new Date(dueDate.value).getTime(),
+          dueDate: new Date(dueDateRef.current?.value as string).getTime(),
         })
         break
       case "週に":
-        const freq = Number.parseInt(frequency.value)
         onSubmit({
           description: description.value,
-          frequency: isNaN(freq) ? 1 : freq,
-          category: getCategory(),
+          frequency: Number.parseInt(frequency as string),
+          category,
           lastUpdated: Date.now(),
           type: type.value,
         })
@@ -84,7 +77,7 @@ export function AddTaskForm({ categories, onSubmit }: AddTaskFormProps) {
       default:
         onSubmit({
           description: description.value,
-          category: getCategory(),
+          category,
           lastUpdated: Date.now(),
           type: type.value,
         })
@@ -111,15 +104,24 @@ export function AddTaskForm({ categories, onSubmit }: AddTaskFormProps) {
         Category
         <CategoryControl
           onChange={setCategory}
-          options={[{ text: "Chore", emoji: "🪥" }]}
+          options={categories}
+          value={category}
         />
       </label>
 
       <label>
-        Frequency <input min="1" step="1" type="number" />
+        Frequency{" "}
+        <input
+          min="1"
+          step="1"
+          type="number"
+          onChange={(event) => {
+            setFrequency(event.target.value)
+          }}
+        />
       </label>
       <label>
-        Due date <input type="date" />
+        Due date <input type="date" ref={dueDateRef} />
       </label>
       {errors.map((e) => (
         <div key={e}>{e}</div>

@@ -7,11 +7,16 @@ export type Category = {
 }
 
 type CategoryControlProps = {
+  value?: Category
   onChange: (value?: Category) => void
   options: Category[]
 }
 
-export function CategoryControl({ options, onChange }: CategoryControlProps) {
+export function CategoryControl({
+  value,
+  options,
+  onChange,
+}: CategoryControlProps) {
   const [partialCategory, setPartialCategory] = useState<string>()
 
   const handleChangeText = (option: Category) => {
@@ -26,7 +31,6 @@ export function CategoryControl({ options, onChange }: CategoryControlProps) {
 
   const handleChangeEmoji = (event: React.ChangeEvent<HTMLInputElement>) => {
     const emoji = event.target.value
-    console.log(emoji)
     if (partialCategory && emoji) {
       onChange({ text: partialCategory, emoji })
       setPartialCategory(undefined)
@@ -40,12 +44,13 @@ export function CategoryControl({ options, onChange }: CategoryControlProps) {
         label="Category"
         onChange={handleChangeText}
         options={options}
-        value={{ text: "Chore", emoji: "🧹" }}
+        value={
+          value &&
+          options.find((o) => o.text === value.text && o.emoji === value.emoji)
+        }
         Option={CategoryOption}
       />
-      {partialCategory && (
-        <input aria-label="Emoji" onChange={handleChangeEmoji} />
-      )}
+      {!value && <input aria-label="Emoji" onChange={handleChangeEmoji} />}
     </>
   )
 }

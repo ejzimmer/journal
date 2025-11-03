@@ -1,4 +1,4 @@
-import { ReactNode, useEffect, useMemo, useRef, useState } from "react"
+import { ReactNode, useEffect, useId, useMemo, useRef, useState } from "react"
 import { XIcon } from "../icons/X"
 
 import "./Combobox.css"
@@ -35,6 +35,7 @@ export function Combobox<T extends OptionBase>({
   allowMulti,
   Option,
 }: ComboboxProps<T>) {
+  const popoutId = useId()
   const popoutRef = useRef<HTMLDivElement | null>(null)
   const selectedValuesRef = useRef<HTMLUListElement | null>(null)
   const [inputValue, setInputValue] = useState("")
@@ -146,6 +147,9 @@ export function Combobox<T extends OptionBase>({
         onKeyDown={handleInputKeyDown}
         aria-label={label}
         style={{ paddingInlineStart: `${valuesWidth + 8}px` }}
+        role="combobox"
+        aria-controls={popoutId}
+        aria-expanded={true}
         onFocus={() => {
           popoutRef.current?.showPopover()
           if (!allowMulti) {
@@ -168,7 +172,7 @@ export function Combobox<T extends OptionBase>({
       ) : (
         <SingleValue value={value} Option={Option} />
       )}
-      <div ref={popoutRef} popover="manual" className="options">
+      <div ref={popoutRef} popover="manual" className="options" id={popoutId}>
         {displayedOptions.length ? (
           <ul className="options">
             {displayedOptions.map((option, index) => (

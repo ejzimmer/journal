@@ -38,7 +38,7 @@ describe("LabelsControl", () => {
         }
       )
 
-      const input = screen.getByRole("textbox")
+      const input = screen.getByRole("combobox")
       await user.type(input, "a11y{Enter}")
 
       expect(onChange).toHaveBeenCalledTimes(1)
@@ -74,7 +74,7 @@ describe("LabelsControl", () => {
         { wrapper: Wrapper }
       )
 
-      const input = screen.getByRole("textbox")
+      const input = screen.getByRole("combobox")
       await user.type(input, "{Enter}")
 
       expect(onKeyDown).toHaveBeenCalled()
@@ -103,7 +103,7 @@ describe("LabelsControl", () => {
         wrapper: Wrapper,
       })
 
-      const input = screen.getByRole("textbox")
+      const input = screen.getByRole("combobox")
       await user.type(input, "dev prod")
 
       await user.click(screen.getByRole("button", { name: "Clear all" }))
@@ -127,7 +127,7 @@ describe("LabelsControl", () => {
       ).toBeInTheDocument()
     })
 
-    const input = screen.getByRole("textbox")
+    const input = screen.getByRole("combobox")
     await user.type(input, "{ArrowDown}{ArrowDown} ")
     expect(onChange).toHaveBeenCalledWith([mockOptions[1]])
     expect(input).toHaveValue("") // Not space!
@@ -156,7 +156,7 @@ describe("LabelsControl", () => {
         { wrapper: Wrapper }
       )
 
-      const input = screen.getByRole("textbox")
+      const input = screen.getByRole("combobox")
       await user.type(input, "pr")
 
       const options = screen.getAllByRole("option")
@@ -195,7 +195,7 @@ describe("LabelsControl", () => {
         wrapper: Wrapper,
       })
 
-      const input = screen.getByRole("textbox")
+      const input = screen.getByRole("combobox")
       await user.type(input, " ")
 
       expect(onChange).not.toHaveBeenCalled()
@@ -233,7 +233,7 @@ describe("LabelsControl", () => {
         wrapper: Wrapper,
       })
 
-      const input = screen.getByRole("textbox")
+      const input = screen.getByRole("combobox")
       await user.type(input, "dev")
       await user.click(screen.getByRole("option", { name: "dev prod" }))
 
@@ -253,7 +253,7 @@ describe("LabelsControl", () => {
         wrapper: Wrapper,
       })
 
-      const input = screen.getByRole("textbox")
+      const input = screen.getByRole("combobox")
       await user.type(input, mockValues[0].value)
       await user.type(input, "{Enter}")
 
@@ -269,7 +269,7 @@ describe("LabelsControl", () => {
         wrapper: Wrapper,
       })
 
-      const input = screen.getByRole("textbox")
+      const input = screen.getByRole("combobox")
       const selectedOption = mockOptions[4]
       await user.type(input, selectedOption.value)
       await user.type(input, "{Enter}")
@@ -286,7 +286,7 @@ describe("LabelsControl", () => {
         wrapper: Wrapper,
       })
 
-      const input = screen.getByRole("textbox")
+      const input = screen.getByRole("combobox")
       await user.type(input, "apex{Enter}")
 
       expect(onChange).toHaveBeenCalledWith([
@@ -308,7 +308,7 @@ describe("LabelsControl", () => {
             </LabelsContext.Provider>
           ),
         })
-        await user.type(screen.getByRole("textbox"), "training{Enter}")
+        await user.type(screen.getByRole("combobox"), "training{Enter}")
 
         expect(onChange).toHaveBeenCalledWith([
           ...mockValues,
