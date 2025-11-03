@@ -14,9 +14,10 @@ describe("AddTaskForm", () => {
   it("attempts to submit the form when the enter key is pressed", async () => {
     const user = userEvent.setup()
     render(<AddTaskForm {...commonProps} onSubmit={jest.fn()} />)
+    await user.click(screen.getByRole("button", { name: "Add task" }))
 
     expect(screen.queryByText("Description required")).not.toBeInTheDocument()
-    await user.keyboard("{Tab}")
+    await user.keyboard("{Tab}{Tab}")
     await user.keyboard("{Enter}")
 
     expect(screen.getByText("Description required")).toBeInTheDocument()
@@ -27,6 +28,7 @@ describe("AddTaskForm", () => {
       const user = userEvent.setup()
       const onSubmit = jest.fn()
       render(<AddTaskForm {...commonProps} onSubmit={onSubmit} />)
+      await user.click(screen.getByRole("button", { name: "Add task" }))
 
       await user.click(screen.getByRole("button", { name: "Create task" }))
 
@@ -40,6 +42,7 @@ describe("AddTaskForm", () => {
       const user = userEvent.setup()
       const onSubmit = jest.fn()
       render(<AddTaskForm {...commonProps} onSubmit={onSubmit} />)
+      await user.click(screen.getByRole("button", { name: "Add task" }))
 
       await user.type(
         screen.getByRole("textbox", { name: "Description" }),
@@ -61,6 +64,7 @@ describe("AddTaskForm", () => {
       const user = userEvent.setup()
       const onSubmit = jest.fn()
       render(<AddTaskForm {...commonProps} onSubmit={onSubmit} />)
+      await user.click(screen.getByRole("button", { name: "Add task" }))
 
       await user.type(
         screen.getByRole("textbox", { name: "Description" }),
@@ -85,6 +89,7 @@ describe("AddTaskForm", () => {
         const user = userEvent.setup()
         const onSubmit = jest.fn()
         render(<AddTaskForm {...commonProps} onSubmit={onSubmit} />)
+        await user.click(screen.getByRole("button", { name: "Add task" }))
 
         await user.type(
           screen.getByRole("textbox", { name: "Description" }),
@@ -117,6 +122,7 @@ describe("AddTaskForm", () => {
         const user = userEvent.setup()
         const onSubmit = jest.fn()
         render(<AddTaskForm {...commonProps} onSubmit={onSubmit} />)
+        await user.click(screen.getByRole("button", { name: "Add task" }))
 
         await user.type(
           screen.getByRole("textbox", { name: "Description" }),
@@ -138,6 +144,7 @@ describe("AddTaskForm", () => {
         const user = userEvent.setup()
         const onSubmit = jest.fn()
         render(<AddTaskForm {...commonProps} onSubmit={onSubmit} />)
+        await user.click(screen.getByRole("button", { name: "Add task" }))
 
         await user.type(
           screen.getByRole("textbox", { name: "Description" }),

@@ -1,5 +1,6 @@
 import { useRef, useState } from "react"
 import { Category, CategoryControl } from "./CategoryControl"
+import { FormModal } from "../../shared/controls/FormModal"
 
 type BaseNewTask = {
   description: string
@@ -10,7 +11,7 @@ type BaseNewTask = {
 type NewWeeklyTask = BaseNewTask & { frequency: number }
 type NewCalendarTask = BaseNewTask & { dueDate: number }
 
-type NewTask = BaseNewTask | NewWeeklyTask | NewCalendarTask
+export type NewTask = BaseNewTask | NewWeeklyTask | NewCalendarTask
 
 export type AddTaskFormProps = {
   categories: Category[]
@@ -23,9 +24,10 @@ export function AddTaskForm({ categories, onSubmit }: AddTaskFormProps) {
   const [frequency, setFrequency] = useState<string | undefined>("1")
   const [errors, setErrors] = useState<string[]>([])
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault()
-    if (!event.currentTarget) return
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>): boolean => {
+    if (!event.currentTarget) {
+      return false
+    }
 
     const errors = []
     const [description, type] = Array.from(
@@ -36,7 +38,7 @@ export function AddTaskForm({ categories, onSubmit }: AddTaskFormProps) {
       errors.push("Description required")
     }
     if (!category) {
-      return
+      return false
     }
     if (type.value === "日付" && !dueDateRef.current?.value) {
       errors.push("Due date required")
@@ -53,7 +55,9 @@ export function AddTaskForm({ categories, onSubmit }: AddTaskFormProps) {
 
     setErrors(errors)
 
-    if (errors.length > 0) return
+    if (errors.length > 0) {
+      return false
+    }
 
     switch (type.value) {
       case "日付":
@@ -82,10 +86,16 @@ export function AddTaskForm({ categories, onSubmit }: AddTaskFormProps) {
           type: type.value,
         })
     }
+    return true
   }
 
   return (
-    <form onSubmit={handleSubmit}>
+    <FormModal
+      trigger={(props) => <button {...props}>Add task</button>}
+      onSubmit={handleSubmit}
+      onClose={() => setErrors([])}
+      submitButtonText="Create task"
+    >
       <label>
         Description
         <input />
@@ -110,7 +120,7 @@ export function AddTaskForm({ categories, onSubmit }: AddTaskFormProps) {
       </label>
 
       <label>
-        Frequency{" "}
+        Frequency
         <input
           min="1"
           step="1"
@@ -126,7 +136,6 @@ export function AddTaskForm({ categories, onSubmit }: AddTaskFormProps) {
       {errors.map((e) => (
         <div key={e}>{e}</div>
       ))}
-      <button type="submit">Create task</button>
-    </form>
+    </FormModal>
   )
 }
