@@ -107,7 +107,6 @@ export function AddTaskForm({ categories, onSubmit }: AddTaskFormProps) {
           <option>毎日</option>
           <option>週に</option>
           <option>日付</option>
-          <option>目標</option>
         </select>
       </label>
       <label>
