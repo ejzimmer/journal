@@ -1,4 +1,4 @@
-import { Today } from "./tabs/Today"
+import { Today } from "./tabs/Todo"
 
 import {
   getAuth,
@@ -7,7 +7,7 @@ import {
   signInWithRedirect,
 } from "firebase/auth"
 import { useState } from "react"
-import { Todo } from "./tabs/Todo"
+import { Todo } from "./tabs/Projects"
 import { Routes, Route, NavLink } from "react-router-dom"
 import { Work } from "./tabs/Work"
 
