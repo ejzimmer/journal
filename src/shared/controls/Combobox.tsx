@@ -173,9 +173,9 @@ export function Combobox<T extends OptionBase>({
         <SingleValue value={value} Option={Option} />
       )}
       <div ref={popoutRef} popover="manual" className="options" id={popoutId}>
-        {displayedOptions.length ? (
-          <ul className="options">
-            {displayedOptions.map((option, index) => (
+        <ul className="options">
+          {displayedOptions.length ? (
+            displayedOptions.map((option, index) => (
               <li
                 key={option.text}
                 role="option"
@@ -188,11 +188,13 @@ export function Combobox<T extends OptionBase>({
               >
                 {Option ? <Option option={option} /> : option.text}
               </li>
-            ))}
-          </ul>
-        ) : (
-          <li className="no-options">No options found</li>
-        )}
+            ))
+          ) : (
+            <li className="no-options" style={{ padding: "8px" }}>
+              No options found
+            </li>
+          )}
+        </ul>
       </div>
     </div>
   )
