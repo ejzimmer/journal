@@ -16,8 +16,9 @@ export type AddTaskFormProps = {
 }
 
 export function AddTaskForm({ categories, onSubmit }: AddTaskFormProps) {
-  const dueDateRef = useRef<HTMLInputElement>(null)
   const formRef = useRef<HTMLFormElement>(null)
+  const dueDateRef = useRef<HTMLInputElement>(null)
+  const [type, setType] = useState<Task["type"]>("毎日")
   const [category, setCategory] = useState<Category | undefined>(categories[0])
   const [frequency, setFrequency] = useState<string | undefined>("1")
   const [errors, setErrors] = useState<string[]>([])
@@ -28,7 +29,7 @@ export function AddTaskForm({ categories, onSubmit }: AddTaskFormProps) {
     }
 
     const errors = []
-    const [description, type] = Array.from(
+    const [description] = Array.from(
       event.currentTarget.elements
     ) as HTMLInputElement[]
 
@@ -38,13 +39,10 @@ export function AddTaskForm({ categories, onSubmit }: AddTaskFormProps) {
     if (!category) {
       return false
     }
-    if (type.value === "日付" && !dueDateRef.current?.value) {
+    if (type === "日付" && !dueDateRef.current?.value) {
       errors.push("Due date required")
     }
-    if (
-      type.value === "週に" &&
-      (!frequency || isNaN(Number.parseInt(frequency)))
-    ) {
+    if (type === "週に" && (!frequency || isNaN(Number.parseInt(frequency)))) {
       errors.push("Frequency required")
     }
     if (category?.text && !category.emoji) {
@@ -57,12 +55,12 @@ export function AddTaskForm({ categories, onSubmit }: AddTaskFormProps) {
       return false
     }
 
-    switch (type.value) {
+    switch (type) {
       case "日付":
         onSubmit({
           description: description.value,
           category,
-          type: type.value,
+          type,
           dueDate: new Date(dueDateRef.current?.value as string).getTime(),
         })
         break
@@ -71,7 +69,7 @@ export function AddTaskForm({ categories, onSubmit }: AddTaskFormProps) {
           description: description.value,
           frequency: Number.parseInt(frequency as string),
           category,
-          type: type.value,
+          type,
         })
         break
       default:
@@ -109,8 +107,10 @@ export function AddTaskForm({ categories, onSubmit }: AddTaskFormProps) {
       </label>
       <label>
         Type
-        <select>
-          <option></option>
+        <select
+          value={type}
+          onChange={(event) => setType(event.target.value as Task["type"])}
+        >
           <option>毎日</option>
           <option>週に</option>
           <option>日付</option>
@@ -125,20 +125,24 @@ export function AddTaskForm({ categories, onSubmit }: AddTaskFormProps) {
         />
       </label>
 
-      <label>
-        Frequency
-        <input
-          min="1"
-          step="1"
-          type="number"
-          onChange={(event) => {
-            setFrequency(event.target.value)
-          }}
-        />
-      </label>
-      <label>
-        Due date <input type="date" ref={dueDateRef} />
-      </label>
+      {type === "週に" && (
+        <label>
+          Frequency
+          <input
+            min="1"
+            step="1"
+            type="number"
+            onChange={(event) => {
+              setFrequency(event.target.value)
+            }}
+          />
+        </label>
+      )}
+      {type === "日付" && (
+        <label>
+          Due date <input type="date" ref={dueDateRef} />
+        </label>
+      )}
       {errors.map((e) => (
         <div key={e}>{e}</div>
       ))}

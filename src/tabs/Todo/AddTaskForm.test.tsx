@@ -11,6 +11,30 @@ const commonProps: AddTaskFormProps = {
 }
 
 describe("AddTaskForm", () => {
+  it("show the fields relevant to the selected type", async () => {
+    const user = userEvent.setup()
+    render(<AddTaskForm {...commonProps} />)
+
+    await user.click(screen.getByRole("button", { name: "Add task" }))
+    const typeSelect = screen.getByRole("combobox", { name: "Type" })
+    expect(
+      screen.queryByRole("spinbutton", { name: "Frequency" })
+    ).not.toBeInTheDocument()
+    expect(screen.queryByLabelText("Due date")).not.toBeInTheDocument()
+
+    await user.selectOptions(typeSelect, "週に")
+    expect(
+      screen.getByRole("spinbutton", { name: "Frequency" })
+    ).toBeInTheDocument()
+    expect(screen.queryByLabelText("Due date")).not.toBeInTheDocument()
+
+    await user.selectOptions(typeSelect, "日付")
+    expect(
+      screen.queryByRole("spinbutton", { name: "Frequency" })
+    ).not.toBeInTheDocument()
+    expect(screen.getByLabelText("Due date")).toBeInTheDocument()
+  })
+
   it("attempts to submit the form when the enter key is pressed", async () => {
     const user = userEvent.setup()
     render(<AddTaskForm {...commonProps} onSubmit={jest.fn()} />)
@@ -52,8 +76,7 @@ describe("AddTaskForm", () => {
 
       expect(onSubmit).toHaveBeenCalledWith({
         description: "Exercise",
-        type: "",
-        lastUpdated: expect.any(Number),
+        type: "毎日",
         category: { text: "Chore", emoji: "🧹" },
       })
     })
@@ -78,7 +101,6 @@ describe("AddTaskForm", () => {
       expect(onSubmit).toHaveBeenCalledWith({
         description: "Exercise",
         type: "週に",
-        lastUpdated: expect.any(Number),
         category: { text: "Chore", emoji: "🧹" },
         frequency: 1,
       })
@@ -108,7 +130,6 @@ describe("AddTaskForm", () => {
         expect(onSubmit).toHaveBeenCalledWith({
           description: "Exercise",
           type: "週に",
-          lastUpdated: expect.any(Number),
           category: { text: "Chore", emoji: "🧹" },
           frequency: 4,
         })
@@ -163,7 +184,6 @@ describe("AddTaskForm", () => {
         expect(onSubmit).toHaveBeenCalledWith({
           description: "Japanese lesson",
           type: "日付",
-          lastUpdated: expect.any(Number),
           category: { text: "Chore", emoji: "🧹" },
           dueDate: expect.any(Number),
         })
