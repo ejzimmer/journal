@@ -37,6 +37,7 @@ export function Combobox<T extends OptionBase>({
 }: ComboboxProps<T>) {
   const popoutId = useId()
   const popoutRef = useRef<HTMLDivElement | null>(null)
+  const inputRef = useRef<HTMLInputElement | null>(null)
   const selectedValuesRef = useRef<HTMLUListElement | null>(null)
   const [inputValue, setInputValue] = useState("")
   const [highlightedIndex, setHighlightedIndex] = useState(-1)
@@ -44,6 +45,7 @@ export function Combobox<T extends OptionBase>({
     "search"
   )
   const [valuesWidth, setValuesWidth] = useState(0)
+  const [showSingleValue, setShowSingleValue] = useState(true)
 
   const unselectedOptions = useMemo(
     () =>
@@ -85,6 +87,8 @@ export function Combobox<T extends OptionBase>({
       onChange([...value, option])
     } else if (!allowMulti) {
       onChange(option)
+      popoutRef.current?.hidePopover()
+      setShowSingleValue(true)
     }
   }
 
@@ -139,9 +143,24 @@ export function Combobox<T extends OptionBase>({
     setValuesWidth(selectedValuesRef.current.getBoundingClientRect().width)
   }, [selectedValuesRef, value, allowMulti])
 
+  useEffect(() => {
+    const onClick = (event: MouseEvent) => {
+      if (
+        !popoutRef.current?.contains(event.target as Node) &&
+        event.target !== inputRef.current
+      ) {
+        popoutRef.current?.hidePopover()
+      }
+    }
+    window.addEventListener("click", onClick)
+
+    return () => window.removeEventListener("click", onClick)
+  }, [])
+
   return (
     <div className="combobox">
       <input
+        ref={inputRef}
         value={inputValue}
         onChange={(event) => handleInputChange(event.target.value)}
         onKeyDown={handleInputKeyDown}
@@ -157,9 +176,9 @@ export function Combobox<T extends OptionBase>({
               (o) => o.text === value?.text
             )
             setHighlightedIndex(valueIndex)
+            setShowSingleValue(false)
           }
         }}
-        onBlur={() => popoutRef.current?.hidePopover()}
       />
       {allowMulti ? (
         <MultiValue
@@ -170,7 +189,7 @@ export function Combobox<T extends OptionBase>({
           Option={Option}
         />
       ) : (
-        <SingleValue value={value} Option={Option} />
+        showSingleValue && <SingleValue value={value} Option={Option} />
       )}
       <div ref={popoutRef} popover="manual" className="options" id={popoutId}>
         <ul className="options">

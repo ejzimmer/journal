@@ -12,9 +12,6 @@
     }
   }
 
-  input:focus + .single-value-container {
-    display: none;
-  }
   .single-value-container {
     position: absolute;
     top: 0;
@@ -53,8 +50,10 @@
         border-bottom: 2px solid var(--border-colour);
         margin: 0;
       }
-      &.highlighted {
+      &.highlighted,
+      &:hover {
         background: var(--highlight-colour);
+        cursor: pointer;
       }
     }
 

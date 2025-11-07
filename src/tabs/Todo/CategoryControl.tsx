@@ -1,10 +1,6 @@
 import { ReactNode, useState } from "react"
 import { Combobox } from "../../shared/controls/Combobox"
-
-export type Category = {
-  text: string
-  emoji: string
-}
+import { Category } from "./types"
 
 type CategoryControlProps = {
   value?: Category
@@ -17,12 +13,12 @@ export function CategoryControl({
   options,
   onChange,
 }: CategoryControlProps) {
-  const [partialCategory, setPartialCategory] = useState<string>()
+  const [partialCategory, setPartialCategory] = useState<string>("")
 
   const handleChangeText = (option: Category) => {
     if (option.emoji) {
       onChange(option)
-      setPartialCategory(undefined)
+      setPartialCategory("")
     } else {
       onChange(undefined)
       setPartialCategory(option.text)
@@ -33,7 +29,7 @@ export function CategoryControl({
     const emoji = event.target.value
     if (partialCategory && emoji) {
       onChange({ text: partialCategory, emoji })
-      setPartialCategory(undefined)
+      setPartialCategory("")
     }
   }
 
@@ -44,10 +40,7 @@ export function CategoryControl({
         label="Category"
         onChange={handleChangeText}
         options={options}
-        value={
-          value &&
-          options.find((o) => o.text === value.text && o.emoji === value.emoji)
-        }
+        value={partialCategory ? { text: partialCategory, emoji: "" } : value}
         Option={CategoryOption}
       />
       {!value && <input aria-label="Emoji" onChange={handleChangeEmoji} />}

@@ -1,4 +1,4 @@
-import { useRef } from "react"
+import { RefObject, useRef } from "react"
 import { Modal, ModalProps, useModal } from "./Modal"
 
 export type FormModalProps = {
@@ -9,6 +9,7 @@ export type FormModalProps = {
   submitButtonText?: string
   onClose?: () => void
   trigger: ModalProps["trigger"]
+  formRef?: RefObject<HTMLFormElement | null>
 }
 
 export function FormModal({ trigger, onClose, ...props }: FormModalProps) {
@@ -23,14 +24,16 @@ function FormBody({
   submitButtonText,
   onSubmit,
   children,
+  formRef,
 }: Omit<FormModalProps, "trigger" | "onClose">) {
-  const formRef = useRef<HTMLFormElement>(null)
+  const internalRef = useRef<HTMLFormElement>(null)
+  const ref = formRef ?? internalRef
   const { closeModal } = useModal()
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
     if (await onSubmit(event)) {
-      formRef.current?.reset()
+      ref.current?.reset()
       closeModal()
     }
   }

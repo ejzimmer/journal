@@ -1,17 +1,14 @@
 import { useRef, useState } from "react"
-import { Category, CategoryControl } from "./CategoryControl"
+import { CategoryControl } from "./CategoryControl"
 import { FormModal } from "../../shared/controls/FormModal"
+import { CalendarTask, Category, Task, WeeklyTask } from "./types"
 
-type BaseNewTask = {
-  description: string
-  category: Category
-  lastUpdated: number
-  type: string
-}
-type NewWeeklyTask = BaseNewTask & { frequency: number }
-type NewCalendarTask = BaseNewTask & { dueDate: number }
+type MissingProps = "id" | "lastUpdated" | "status"
+type NewDailyTask = Omit<Task, MissingProps>
+type NewWeeklyTask = Omit<WeeklyTask, MissingProps | "completed">
+type NewCalendarTask = Omit<CalendarTask, MissingProps>
 
-export type NewTask = BaseNewTask | NewWeeklyTask | NewCalendarTask
+export type NewTask = NewDailyTask | NewWeeklyTask | NewCalendarTask
 
 export type AddTaskFormProps = {
   categories: Category[]
@@ -20,6 +17,7 @@ export type AddTaskFormProps = {
 
 export function AddTaskForm({ categories, onSubmit }: AddTaskFormProps) {
   const dueDateRef = useRef<HTMLInputElement>(null)
+  const formRef = useRef<HTMLFormElement>(null)
   const [category, setCategory] = useState<Category | undefined>(categories[0])
   const [frequency, setFrequency] = useState<string | undefined>("1")
   const [errors, setErrors] = useState<string[]>([])
@@ -64,7 +62,6 @@ export function AddTaskForm({ categories, onSubmit }: AddTaskFormProps) {
         onSubmit({
           description: description.value,
           category,
-          lastUpdated: Date.now(),
           type: type.value,
           dueDate: new Date(dueDateRef.current?.value as string).getTime(),
         })
@@ -74,7 +71,6 @@ export function AddTaskForm({ categories, onSubmit }: AddTaskFormProps) {
           description: description.value,
           frequency: Number.parseInt(frequency as string),
           category,
-          lastUpdated: Date.now(),
           type: type.value,
         })
         break
@@ -82,18 +78,29 @@ export function AddTaskForm({ categories, onSubmit }: AddTaskFormProps) {
         onSubmit({
           description: description.value,
           category,
-          lastUpdated: Date.now(),
-          type: type.value,
+          type: "毎日",
         })
     }
+
+    resetForm()
     return true
+  }
+
+  const resetForm = () => {
+    setCategory(categories[0])
+    setFrequency("1")
+    setErrors([])
+    formRef.current?.reset()
   }
 
   return (
     <FormModal
+      formRef={formRef}
       trigger={(props) => <button {...props}>Add task</button>}
       onSubmit={handleSubmit}
-      onClose={() => setErrors([])}
+      onClose={() => {
+        resetForm()
+      }}
       submitButtonText="Create task"
     >
       <label>

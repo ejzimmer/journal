@@ -1,0 +1,21 @@
+export type Category = {
+  text: string
+  emoji: string
+}
+
+export type Task = {
+  id: string
+  description: string
+  category: Category
+  lastUpdated: number
+  type: "日付" | "週に" | "毎日"
+  status: "blocked" | "ready" | "in_progress" | "done" | "finished"
+}
+
+export type DailyTask = Task & { type: "毎日" }
+export type WeeklyTask = Task & {
+  type: "週に"
+  frequency: number
+  completed: number
+}
+export type CalendarTask = Task & { type: "日付"; dueDate: number }
