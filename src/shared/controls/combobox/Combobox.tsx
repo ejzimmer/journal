@@ -1,9 +1,10 @@
-import { ReactNode, useEffect, useId, useMemo, useRef, useState } from "react"
-import { XIcon } from "../../icons/X"
+import { useEffect, useId, useMemo, useRef, useState } from "react"
 
 import "./Combobox.css"
 import { Dropdown } from "./Dropdown"
 import { OptionBase } from "./types"
+import { MultiSelectInput } from "./MultiSelectInput"
+import { SingleSelectValue } from "./SingleSelectInput"
 
 type BaseProps<T> = {
   label: string
@@ -39,14 +40,10 @@ export function Combobox<T extends OptionBase>({
   const [isPopoutOpen, setPopoutOpen] = useState(false)
 
   const popoutId = useId()
-  const inputRef = useRef<HTMLInputElement | null>(null)
-  const selectedValuesRef = useRef<HTMLUListElement | null>(null)
-  const [inputValue, setInputValue] = useState("")
+  const [searchText, setSearchText] = useState("")
   const [interactionMode, setInteractionMode] = useState<"search" | "scroll">(
     "search"
   )
-  const [valuesWidth, setValuesWidth] = useState(0)
-  const [showSingleValue, setShowSingleValue] = useState(true)
 
   const unselectedOptions = useMemo(
     () =>
@@ -56,29 +53,20 @@ export function Combobox<T extends OptionBase>({
     [options, value]
   )
   const displayedOptions = useMemo(() => {
-    const searchTerm = inputValue.trimStart().toLowerCase()
+    const searchTerm = searchText.trimStart().toLowerCase()
     return searchTerm
       ? unselectedOptions.filter((o) =>
           o.text.toLowerCase().includes(searchTerm)
         )
       : unselectedOptions
-  }, [unselectedOptions, inputValue])
+  }, [unselectedOptions, searchText])
 
-  const handleInputChange = (inputValue: string) => {
-    setInputValue(inputValue)
-  }
-
-  const handleEnter = (event: React.KeyboardEvent) => {
-    if (!inputValue) return
-    event.preventDefault()
-    event.stopPropagation()
-
-    const text = inputValue.trim()
+  const handleEnter = (text: string) => {
     const existingOption = options.find((o) => o.text === text)
     const option = existingOption ?? createOption(text)
 
     handleChange(option)
-    setInputValue("")
+    setSearchText("")
   }
 
   const handleChange = (option: T) => {
@@ -88,9 +76,8 @@ export function Combobox<T extends OptionBase>({
     } else if (!allowMulti) {
       onChange(option)
       setPopoutOpen(false)
-      setShowSingleValue(true)
     }
-    setInputValue("")
+    setSearchText("")
   }
 
   const handleInputKeyDown = (event: React.KeyboardEvent) => {
@@ -98,8 +85,9 @@ export function Combobox<T extends OptionBase>({
 
     switch (key) {
       case "Enter":
-        handleEnter(event)
-        setInteractionMode("search")
+        if (interactionMode === "search" && searchText.trim()) {
+          handleEnter(searchText.trim())
+        }
         break
       case " ":
         if (interactionMode === "search") {
@@ -125,23 +113,6 @@ export function Combobox<T extends OptionBase>({
     }
   }
 
-  const handleRemoveOption = (option: T) => {
-    if (!allowMulti) return
-    onChange(value.filter((v) => v !== option))
-  }
-
-  const handleClearAll = () => {
-    if (!allowMulti) return
-    onChange([])
-    setInputValue("")
-  }
-
-  useEffect(() => {
-    if (!selectedValuesRef.current || !allowMulti) return
-
-    setValuesWidth(selectedValuesRef.current.getBoundingClientRect().width)
-  }, [selectedValuesRef, value, allowMulti])
-
   useEffect(() => {
     const onClick = (event: MouseEvent) => {
       if (!containerRef.current?.contains(event.target as Node)) {
@@ -162,110 +133,32 @@ export function Combobox<T extends OptionBase>({
         Option={Option}
         id={popoutId}
       >
-        <input
-          ref={inputRef}
-          value={inputValue}
-          onChange={(event) => handleInputChange(event.target.value)}
-          onKeyDown={handleInputKeyDown}
-          aria-label={label}
-          style={{ paddingInlineStart: `${valuesWidth + 8}px` }}
-          role="combobox"
-          aria-controls={popoutId}
-          aria-expanded={isPopoutOpen}
-          onFocus={() => {
-            setPopoutOpen(true)
-            if (!allowMulti) {
-              setShowSingleValue(false)
-            }
-          }}
-        />
         {allowMulti ? (
-          <MultiValue
+          <MultiSelectInput
+            label={label}
             value={value}
-            onRemove={handleRemoveOption}
-            onClearAll={handleClearAll}
-            ref={selectedValuesRef}
-            Option={Option}
+            onKeyDown={handleInputKeyDown}
+            inputValue={searchText}
+            onChangeInputValue={setSearchText}
+            onFocus={() => setPopoutOpen(true)}
+            popoutId={popoutId}
+            isPopoutOpen={isPopoutOpen}
+            onChange={onChange}
           />
         ) : (
-          showSingleValue && <SingleValue value={value} Option={Option} />
+          <SingleSelectValue
+            label={label}
+            value={value}
+            inputValue={searchText}
+            onChangeInputValue={setSearchText}
+            onKeyDown={handleInputKeyDown}
+            popoutId={popoutId}
+            isPopoutOpen={isPopoutOpen}
+            onFocus={() => setPopoutOpen(true)}
+          />
         )}
       </Dropdown>
     </div>
-  )
-}
-
-type MultiValueProps<T> = {
-  value: T[]
-  onRemove: (option: T) => void
-  onClearAll: () => void
-  ref: React.Ref<HTMLUListElement>
-  Option?: React.FC<{ option: T; children?: ReactNode }>
-}
-function MultiValue<T extends { text: string }>({
-  value,
-  onRemove,
-  onClearAll,
-  ref,
-  Option = DefaultOption,
-}: MultiValueProps<T>) {
-  return (
-    <>
-      <ul className="selectedOptions" ref={ref}>
-        {value.map((option) => (
-          <li key={option.text}>
-            <Option option={option}>
-              <button
-                type="button"
-                onClick={() => onRemove(option)}
-                aria-label={`Remove ${option.text}`}
-                className="ghost round"
-              >
-                <XIcon width="12px" />
-              </button>
-            </Option>
-          </li>
-        ))}
-      </ul>
-      {value.length > 0 && (
-        <button
-          aria-label="Clear all"
-          type="button"
-          onClick={onClearAll}
-          className="ghost"
-        >
-          <XIcon width="16px" />
-        </button>
-      )}
-    </>
-  )
-}
-
-function SingleValue<T extends { text: string }>({
-  value,
-  Option = DefaultOption,
-}: {
-  value?: T
-  Option?: React.FC<{ option: T; children?: ReactNode }>
-}) {
-  return value ? (
-    <div className="single-value-container">
-      <Option option={value} />
-    </div>
-  ) : null
-}
-
-function DefaultOption<T extends { text: string }>({
-  option,
-  children,
-}: {
-  option: T
-  children?: ReactNode
-}) {
-  return (
-    <>
-      {option.text} {children}
-    </>
   )
 }
 

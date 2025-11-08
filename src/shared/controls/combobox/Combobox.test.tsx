@@ -123,7 +123,9 @@ describe("Combobox", () => {
       it("adds that option to the selected options", async () => {
         const user = userEvent.setup()
         const onChange = jest.fn()
-        render(<Combobox {...multiCommonProps} onChange={onChange} />)
+        const { rerender } = render(
+          <Combobox {...multiCommonProps} onChange={onChange} />
+        )
 
         const input = screen.getByRole("combobox")
         await user.type(input, "dev")
@@ -133,6 +135,13 @@ describe("Combobox", () => {
           ...mockValues,
           expect.objectContaining({ text: "dev prod" }),
         ])
+
+        rerender(
+          <Combobox
+            {...multiCommonProps}
+            value={[...multiCommonProps.value, mockOptions[2]]}
+          />
+        )
         expect(input).toHaveValue("")
       })
     })
