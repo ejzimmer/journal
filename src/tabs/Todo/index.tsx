@@ -1,6 +1,6 @@
 import React, { useState } from "react"
 import { AddTaskForm, NewTask } from "./AddTaskForm"
-import { Category, Task } from "./types"
+import { CalendarTask, Category, Task, WeeklyTask } from "./types"
 import { EditableText } from "../../shared/controls/EditableText"
 
 const STORAGE_KEY = "todo"
@@ -71,6 +71,10 @@ export function Today() {
   )
 }
 
+const isWeeklyTask = (task: Task): task is WeeklyTask => task.type === "週に"
+const isCalendarTask = (task: Task): task is CalendarTask =>
+  task.type === "日付"
+
 type TaskListProps = {
   tasks?: Task[]
   onChangeTask: (task: Task) => void
@@ -88,15 +92,127 @@ function TaskList({ tasks, onChangeTask, onDeleteTask }: TaskListProps) {
           key={task.description}
           style={{ display: "flex", gap: "10px", alignItems: "center" }}
         >
-          <EditableText
-            label="description"
-            onChange={(description) => onChangeTask({ ...task, description })}
-          >
-            {task.description}
-          </EditableText>
-          <button onClick={() => onDeleteTask(task)}>Delete</button>
+          {isWeeklyTask(task) ? (
+            <Weekly
+              task={task}
+              onChange={onChangeTask}
+              onDelete={() => onDeleteTask(task)}
+            />
+          ) : isCalendarTask(task) ? (
+            <Calendar
+              task={task}
+              onChange={onChangeTask}
+              onDelete={() => onDeleteTask(task)}
+            />
+          ) : (
+            <Everyday
+              task={task}
+              onChange={onChangeTask}
+              onDelete={() => onDeleteTask(task)}
+            />
+          )}
         </li>
       ))}
     </ul>
+  )
+}
+
+function Everyday({
+  task,
+  onChange,
+  onDelete,
+}: {
+  task: Task
+  onChange: (task: Task) => void
+  onDelete: () => void
+}) {
+  return (
+    <>
+      <input
+        type="checkbox"
+        onClick={() => onChange({ ...task, status: "done" })}
+        checked={task.status === "done" || task.status === "finished"}
+      />
+      <EditableText
+        label="description"
+        onChange={(description) => onChange({ ...task, description })}
+      >
+        {task.description}
+      </EditableText>
+      <button onClick={onDelete}>delete</button>
+    </>
+  )
+}
+
+function Weekly({
+  task,
+  onChange,
+  onDelete,
+}: {
+  task: WeeklyTask
+  onChange: (task: WeeklyTask) => void
+  onDelete: () => void
+}) {
+  const [completed, setCompleted] = useState(() =>
+    Array.from({ length: task.frequency }).map(
+      (_, index) => index < task.completed
+    )
+  )
+
+  const handleCompleted = (index: number) => {
+    const completedStatus = completed.with(index, !completed[index])
+    setCompleted(completedStatus)
+    const timesCompleted = completedStatus.reduce(
+      (total, current) => total + (current ? 1 : 0),
+      0
+    )
+    onChange({ ...task, completed: timesCompleted })
+  }
+
+  return (
+    <>
+      <EditableText
+        label="description"
+        onChange={(description) => onChange({ ...task, description })}
+      >
+        {task.description}
+      </EditableText>
+      {completed.map((c, index) => (
+        <input
+          type="checkbox"
+          key={index}
+          checked={c}
+          onClick={() => handleCompleted(index)}
+        />
+      ))}
+      <button onClick={onDelete}>delete</button>
+    </>
+  )
+}
+
+function Calendar({
+  task,
+  onChange,
+  onDelete,
+}: {
+  task: Task
+  onChange: (task: Task) => void
+  onDelete: () => void
+}) {
+  return (
+    <>
+      <input
+        type="checkbox"
+        onClick={() => onChange({ ...task, status: "finished" })}
+        checked={task.status === "done" || task.status === "finished"}
+      />
+      <EditableText
+        label="description"
+        onChange={(description) => onChange({ ...task, description })}
+      >
+        {task.description}
+      </EditableText>
+      <button onClick={onDelete}>delete</button>
+    </>
   )
 }
