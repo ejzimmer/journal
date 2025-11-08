@@ -1,7 +1,15 @@
-import React, { useState } from "react"
+import React, { useEffect, useState } from "react"
 import { AddTaskForm, NewTask } from "./AddTaskForm"
-import { CalendarTask, Category, Task, WeeklyTask } from "./types"
+import {
+  Category,
+  isCalendarTask,
+  isWeeklyTask,
+  Task,
+  WeeklyTask,
+} from "./types"
 import { EditableText } from "../../shared/controls/EditableText"
+import { dailyReset } from "./dailyReset"
+import { hoursToMilliseconds } from "date-fns"
 
 const STORAGE_KEY = "todo"
 
@@ -44,6 +52,14 @@ export function Today() {
     }
   }
 
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      dailyReset(tasks)
+    }, hoursToMilliseconds(1))
+
+    return () => clearTimeout(timer)
+  }, [tasks])
+
   return (
     <>
       <AddTaskForm
@@ -70,10 +86,6 @@ export function Today() {
     </>
   )
 }
-
-const isWeeklyTask = (task: Task): task is WeeklyTask => task.type === "週に"
-const isCalendarTask = (task: Task): task is CalendarTask =>
-  task.type === "日付"
 
 type TaskListProps = {
   tasks?: Task[]
@@ -153,20 +165,13 @@ function Weekly({
   onChange: (task: WeeklyTask) => void
   onDelete: () => void
 }) {
-  const [completed, setCompleted] = useState(() =>
-    Array.from({ length: task.frequency }).map(
-      (_, index) => index < task.completed
-    )
-  )
-
   const handleCompleted = (index: number) => {
-    const completedStatus = completed.with(index, !completed[index])
-    setCompleted(completedStatus)
-    const timesCompleted = completedStatus.reduce(
-      (total, current) => total + (current ? 1 : 0),
-      0
-    )
-    onChange({ ...task, completed: timesCompleted })
+    const completed = task.completed ?? []
+    if (typeof completed[index] === "number") {
+      onChange({ ...task, completed: completed.toSpliced(index, 1) })
+    } else {
+      onChange({ ...task, completed: completed.with(index, Date.now()) })
+    }
   }
 
   return (
@@ -177,11 +182,11 @@ function Weekly({
       >
         {task.description}
       </EditableText>
-      {completed.map((c, index) => (
+      {Array.from({ length: task.frequency }).map((_, index) => (
         <input
-          type="checkbox"
           key={index}
-          checked={c}
+          type="checkbox"
+          checked={typeof task.completed?.[index] === "number"}
           onClick={() => handleCompleted(index)}
         />
       ))}

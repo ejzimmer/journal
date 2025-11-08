@@ -16,6 +16,11 @@ export type DailyTask = Task & { type: "毎日" }
 export type WeeklyTask = Task & {
   type: "週に"
   frequency: number
-  completed: number
+  completed?: number[]
 }
 export type CalendarTask = Task & { type: "日付"; dueDate: number }
+
+export const isWeeklyTask = (task: Task): task is WeeklyTask =>
+  task.type === "週に"
+export const isCalendarTask = (task: Task): task is CalendarTask =>
+  task.type === "日付"
