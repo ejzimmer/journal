@@ -1,5 +1,5 @@
 import { ItemDescription } from "../../shared/TaskList/ItemDescription"
-import { Item } from "../../shared/TaskList/types"
+import { Item, Label } from "../../shared/TaskList/types"
 import { EditableDate } from "./EditableDate"
 import { useCallback, useState } from "react"
 import { getTaskData, isTask } from "./drag-utils"
@@ -122,10 +122,15 @@ export function Task({
             <LabelsControl
               value={[]}
               onChange={(value) => {
-                const existingLabels = task.labels ?? []
+                const labels = new Map<string, Label>(
+                  task.labels?.map((label) => [label.value, label])
+                )
+                value.forEach((label) => {
+                  labels.set(label.value, label)
+                })
                 onChange({
                   ...task,
-                  labels: [...existingLabels, ...value],
+                  labels: Array.from(labels.values()),
                 })
                 setAddingLabel(false)
               }}

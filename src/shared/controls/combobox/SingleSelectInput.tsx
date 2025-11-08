@@ -35,6 +35,7 @@ export function SingleSelectValue<T extends { text: string }>({
         aria-controls={popoutId}
         aria-expanded={isPopoutOpen}
         onFocus={onFocus}
+        onClick={onFocus}
       />
       {!isPopoutOpen && <SingleValue value={value} Option={Option} />}
     </>

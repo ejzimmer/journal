@@ -15,6 +15,7 @@ export function LabelsControl({ value, onChange, label }: LabelsControlProps) {
     () => labels?.map((l) => ({ text: l.value, colour: l.colour })) ?? [],
     [labels]
   )
+
   const valueOptions = useMemo(
     () => value.map((l) => ({ text: l.value, colour: l.colour })),
     [value]

@@ -52,6 +52,7 @@ export function Combobox<T extends OptionBase>({
         : options,
     [options, value]
   )
+
   const displayedOptions = useMemo(() => {
     const searchTerm = searchText.trimStart().toLowerCase()
     return searchTerm
@@ -75,7 +76,7 @@ export function Combobox<T extends OptionBase>({
       onChange([...value, option])
     } else if (!allowMulti) {
       onChange(option)
-      setPopoutOpen(false)
+      setTimeout(() => setPopoutOpen(false))
     }
     setSearchText("")
   }
@@ -155,6 +156,7 @@ export function Combobox<T extends OptionBase>({
             popoutId={popoutId}
             isPopoutOpen={isPopoutOpen}
             onFocus={() => setPopoutOpen(true)}
+            Option={Option}
           />
         )}
       </Dropdown>
