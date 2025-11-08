@@ -1,5 +1,5 @@
 import { ReactNode, useState } from "react"
-import { Combobox } from "../../shared/controls/Combobox"
+import { Combobox } from "../../shared/controls/combobox/Combobox"
 import { Category } from "./types"
 
 type CategoryControlProps = {

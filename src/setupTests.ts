@@ -14,5 +14,9 @@ HTMLDialogElement.prototype.close = function mock(this: HTMLDialogElement) {
   this.open = false
 }
 
-HTMLElement.prototype.hidePopover = function mock(this: HTMLElement) {}
-HTMLElement.prototype.showPopover = function mock(this: HTMLElement) {}
+HTMLElement.prototype.hidePopover = function mock(this: HTMLElement) {
+  this.style.visibility = "hidden"
+}
+HTMLElement.prototype.showPopover = function mock(this: HTMLElement) {
+  this.style.visibility = "visible"
+}

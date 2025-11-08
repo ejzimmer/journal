@@ -1,9 +1,9 @@
 import { ReactNode, useEffect, useId, useMemo, useRef, useState } from "react"
-import { XIcon } from "../icons/X"
+import { XIcon } from "../../icons/X"
 
 import "./Combobox.css"
-
-type OptionBase = { text: string }
+import { Dropdown } from "./Dropdown"
+import { OptionBase } from "./types"
 
 type BaseProps<T> = {
   label: string
@@ -35,12 +35,13 @@ export function Combobox<T extends OptionBase>({
   allowMulti,
   Option,
 }: ComboboxProps<T>) {
+  const containerRef = useRef<HTMLDivElement>(null)
+  const [isPopoutOpen, setPopoutOpen] = useState(false)
+
   const popoutId = useId()
-  const popoutRef = useRef<HTMLDivElement | null>(null)
   const inputRef = useRef<HTMLInputElement | null>(null)
   const selectedValuesRef = useRef<HTMLUListElement | null>(null)
   const [inputValue, setInputValue] = useState("")
-  const [highlightedIndex, setHighlightedIndex] = useState(-1)
   const [interactionMode, setInteractionMode] = useState<"search" | "scroll">(
     "search"
   )
@@ -65,7 +66,6 @@ export function Combobox<T extends OptionBase>({
 
   const handleInputChange = (inputValue: string) => {
     setInputValue(inputValue)
-    setHighlightedIndex(-1)
   }
 
   const handleEnter = (event: React.KeyboardEvent) => {
@@ -87,9 +87,10 @@ export function Combobox<T extends OptionBase>({
       onChange([...value, option])
     } else if (!allowMulti) {
       onChange(option)
-      popoutRef.current?.hidePopover()
+      setPopoutOpen(false)
       setShowSingleValue(true)
     }
+    setInputValue("")
   }
 
   const handleInputKeyDown = (event: React.KeyboardEvent) => {
@@ -102,24 +103,22 @@ export function Combobox<T extends OptionBase>({
         break
       case " ":
         if (interactionMode === "search") {
-          return
+          event.stopPropagation()
+        } else {
+          event.preventDefault()
         }
-        event.preventDefault()
-        handleChange(displayedOptions[highlightedIndex])
-        setInputValue("")
         break
       case "ArrowDown":
-        event.preventDefault()
-        setHighlightedIndex((highlightedIndex + 1) % displayedOptions.length)
+        if (!isPopoutOpen) {
+          setPopoutOpen(true)
+        }
         setInteractionMode("scroll")
         break
       case "ArrowUp":
-        event.preventDefault()
-        setHighlightedIndex(
-          (highlightedIndex - 1 + displayedOptions.length) %
-            displayedOptions.length
-        )
         setInteractionMode("scroll")
+        if (!isPopoutOpen) {
+          setPopoutOpen(true)
+        }
         break
       default:
         setInteractionMode("search")
@@ -145,11 +144,8 @@ export function Combobox<T extends OptionBase>({
 
   useEffect(() => {
     const onClick = (event: MouseEvent) => {
-      if (
-        !popoutRef.current?.contains(event.target as Node) &&
-        event.target !== inputRef.current
-      ) {
-        popoutRef.current?.hidePopover()
+      if (!containerRef.current?.contains(event.target as Node)) {
+        setPopoutOpen(false)
       }
     }
     window.addEventListener("click", onClick)
@@ -158,63 +154,43 @@ export function Combobox<T extends OptionBase>({
   }, [])
 
   return (
-    <div className="combobox">
-      <input
-        ref={inputRef}
-        value={inputValue}
-        onChange={(event) => handleInputChange(event.target.value)}
-        onKeyDown={handleInputKeyDown}
-        aria-label={label}
-        style={{ paddingInlineStart: `${valuesWidth + 8}px` }}
-        role="combobox"
-        aria-controls={popoutId}
-        aria-expanded={true}
-        onFocus={() => {
-          popoutRef.current?.showPopover()
-          if (!allowMulti) {
-            const valueIndex = displayedOptions.findIndex(
-              (o) => o.text === value?.text
-            )
-            setHighlightedIndex(valueIndex)
-            setShowSingleValue(false)
-          }
-        }}
-      />
-      {allowMulti ? (
-        <MultiValue
-          value={value}
-          onRemove={handleRemoveOption}
-          onClearAll={handleClearAll}
-          ref={selectedValuesRef}
-          Option={Option}
+    <div ref={containerRef}>
+      <Dropdown
+        isPopoutOpen={isPopoutOpen}
+        onClick={handleChange}
+        options={displayedOptions}
+        Option={Option}
+        id={popoutId}
+      >
+        <input
+          ref={inputRef}
+          value={inputValue}
+          onChange={(event) => handleInputChange(event.target.value)}
+          onKeyDown={handleInputKeyDown}
+          aria-label={label}
+          style={{ paddingInlineStart: `${valuesWidth + 8}px` }}
+          role="combobox"
+          aria-controls={popoutId}
+          aria-expanded={isPopoutOpen}
+          onFocus={() => {
+            setPopoutOpen(true)
+            if (!allowMulti) {
+              setShowSingleValue(false)
+            }
+          }}
         />
-      ) : (
-        showSingleValue && <SingleValue value={value} Option={Option} />
-      )}
-      <div ref={popoutRef} popover="manual" className="options" id={popoutId}>
-        <ul className="options">
-          {displayedOptions.length ? (
-            displayedOptions.map((option, index) => (
-              <li
-                key={option.text}
-                role="option"
-                aria-selected="false"
-                onClick={() => {
-                  handleChange(option)
-                  setInputValue("")
-                }}
-                className={index === highlightedIndex ? "highlighted" : ""}
-              >
-                {Option ? <Option option={option} /> : option.text}
-              </li>
-            ))
-          ) : (
-            <li className="no-options" style={{ padding: "8px" }}>
-              No options found
-            </li>
-          )}
-        </ul>
-      </div>
+        {allowMulti ? (
+          <MultiValue
+            value={value}
+            onRemove={handleRemoveOption}
+            onClearAll={handleClearAll}
+            ref={selectedValuesRef}
+            Option={Option}
+          />
+        ) : (
+          showSingleValue && <SingleValue value={value} Option={Option} />
+        )}
+      </Dropdown>
     </div>
   )
 }

@@ -1,7 +1,7 @@
 import { ReactNode, useContext, useMemo } from "react"
 import { Label, COLOURS } from "../../shared/TaskList/types"
 import { LabelsContext } from "./LabelsContext"
-import { Combobox } from "../../shared/controls/Combobox"
+import { Combobox } from "../../shared/controls/combobox/Combobox"
 
 export type LabelsControlProps = {
   value: Label[]

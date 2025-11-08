@@ -1,6 +1,7 @@
 import React, { useState } from "react"
 import { AddTaskForm, NewTask } from "./AddTaskForm"
 import { Category, Task } from "./types"
+import { EditableText } from "../../shared/controls/EditableText"
 
 const STORAGE_KEY = "todo"
 
@@ -10,14 +11,17 @@ export function Today() {
     return stored ? JSON.parse(stored) : []
   })
 
+  const saveTasks = (tasks: Task[]) => {
+    setTasks(tasks)
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(tasks))
+  }
+
   const addTask = (task: NewTask) => {
     const id = crypto.randomUUID()
-    const updatedTasks: Task[] = [
+    saveTasks([
       ...tasks,
       { id, ...task, lastUpdated: Date.now(), status: "ready" },
-    ]
-    setTasks(updatedTasks)
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedTasks))
+    ])
   }
 
   const groupedTasks = Object.groupBy(tasks, (task) => task.type)
@@ -26,27 +30,73 @@ export function Today() {
     categories.set(task.category.text, task.category)
   })
 
+  const updateTask = (task: Task) => {
+    const index = tasks.findIndex((t) => t.id === task.id)
+    if (index > -1) {
+      saveTasks(tasks.with(index, task))
+    }
+  }
+
+  const deleteTask = (task: Task) => {
+    const index = tasks.findIndex((t) => t.id === task.id)
+    if (index > -1) {
+      saveTasks(tasks.toSpliced(index, 1))
+    }
+  }
+
   return (
     <>
       <AddTaskForm
         onSubmit={addTask}
         categories={Array.from(categories.values())}
       />
-      <ul>
-        {groupedTasks["毎日"]?.map((task) => (
-          <li key={task.description}>{task.description}</li>
-        ))}
-      </ul>
-      <ul>
-        {groupedTasks["週に"]?.map((task) => (
-          <li key={task.description}>{task.description}</li>
-        ))}
-      </ul>
-      <ul>
-        {groupedTasks["日付"]?.map((task) => (
-          <li key={task.description}>{task.description}</li>
-        ))}
-      </ul>
+      <div style={{ display: "flex", flexWrap: "wrap", gap: "80px" }}>
+        <TaskList
+          tasks={groupedTasks["毎日"]}
+          onChangeTask={updateTask}
+          onDeleteTask={deleteTask}
+        />
+        <TaskList
+          tasks={groupedTasks["週に"]}
+          onChangeTask={updateTask}
+          onDeleteTask={deleteTask}
+        />
+        <TaskList
+          tasks={groupedTasks["日付"]}
+          onChangeTask={updateTask}
+          onDeleteTask={deleteTask}
+        />
+      </div>
     </>
+  )
+}
+
+type TaskListProps = {
+  tasks?: Task[]
+  onChangeTask: (task: Task) => void
+  onDeleteTask: (task: Task) => void
+}
+function TaskList({ tasks, onChangeTask, onDeleteTask }: TaskListProps) {
+  if (!tasks) {
+    return <div>No tasks</div>
+  }
+
+  return (
+    <ul>
+      {tasks.map((task) => (
+        <li
+          key={task.description}
+          style={{ display: "flex", gap: "10px", alignItems: "center" }}
+        >
+          <EditableText
+            label="description"
+            onChange={(description) => onChangeTask({ ...task, description })}
+          >
+            {task.description}
+          </EditableText>
+          <button onClick={() => onDeleteTask(task)}>Delete</button>
+        </li>
+      ))}
+    </ul>
   )
 }

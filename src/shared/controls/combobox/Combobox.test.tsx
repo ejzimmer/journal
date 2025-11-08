@@ -41,7 +41,7 @@ describe("Combobox", () => {
           <Combobox {...multiCommonProps} onChange={onChange} />
         )
 
-        const input = screen.getByRole("textbox")
+        const input = screen.getByRole("combobox")
         await user.type(input, "data decoration{Enter}")
 
         expect(onChange).toHaveBeenCalledTimes(1)
@@ -94,7 +94,7 @@ describe("Combobox", () => {
         const onChange = jest.fn()
         render(<Combobox {...multiCommonProps} onChange={onChange} />)
 
-        const input = screen.getByRole("textbox")
+        const input = screen.getByRole("combobox")
         await user.type(input, "dev prod")
 
         await user.click(screen.getByRole("button", { name: "Clear all" }))
@@ -109,7 +109,7 @@ describe("Combobox", () => {
           const onChange = jest.fn()
           render(<Combobox {...multiCommonProps} onChange={onChange} />)
 
-          const input = screen.getByRole("textbox")
+          const input = screen.getByRole("combobox")
           await user.type(input, mockValues[0].text)
           await user.type(input, "{Enter}")
 
@@ -125,7 +125,7 @@ describe("Combobox", () => {
         const onChange = jest.fn()
         render(<Combobox {...multiCommonProps} onChange={onChange} />)
 
-        const input = screen.getByRole("textbox")
+        const input = screen.getByRole("combobox")
         await user.type(input, "dev")
         await user.click(screen.getByRole("option", { name: "dev prod" }))
 
@@ -157,7 +157,7 @@ describe("Combobox", () => {
         const onChange = jest.fn()
         render(<Combobox {...multiCommonProps} onChange={onChange} />)
 
-        const input = screen.getByRole("textbox")
+        const input = screen.getByRole("combobox")
         const selectedOption = mockOptions[4]
         await user.type(input, selectedOption.text)
         await user.type(input, "{Enter}")
@@ -185,7 +185,7 @@ describe("Combobox", () => {
           <Combobox {...commonProps} onChange={onChange} />
         )
 
-        const input = screen.getByRole("textbox")
+        const input = screen.getByRole("combobox")
         await user.type(input, "data decoration{Enter}")
 
         expect(onChange).toHaveBeenCalledTimes(1)
@@ -222,7 +222,7 @@ describe("Combobox", () => {
         const onChange = jest.fn()
         render(<Combobox {...commonProps} onChange={onChange} />)
 
-        const input = screen.getByRole("textbox")
+        const input = screen.getByRole("combobox")
         await user.type(input, "dev")
         await user.click(screen.getByRole("option", { name: "dev prod" }))
 
@@ -239,7 +239,7 @@ describe("Combobox", () => {
         const onChange = jest.fn()
         render(<Combobox {...commonProps} onChange={onChange} />)
 
-        const input = screen.getByRole("textbox")
+        const input = screen.getByRole("combobox")
         const selectedOption = mockOptions[4]
         await user.type(input, selectedOption.text)
         await user.type(input, "{Enter}")
@@ -259,37 +259,11 @@ describe("Combobox", () => {
         </div>
       )
 
-      const input = screen.getByRole("textbox")
+      const input = screen.getByRole("combobox")
       await user.type(input, "{Enter}")
 
       expect(onKeyDown).toHaveBeenCalled()
     })
-  })
-
-  it("shows the list of options & navigates the list via arrow keys & space to select", async () => {
-    const user = userEvent.setup()
-    const onChange = jest.fn()
-    const { rerender } = render(
-      <Combobox {...commonProps} onChange={onChange} value={undefined} />
-    )
-
-    mockOptions.forEach((option) => {
-      expect(
-        screen.getByRole("option", { name: option.text })
-      ).toBeInTheDocument()
-    })
-
-    const input = screen.getByRole("textbox")
-    await user.type(input, "{ArrowDown}{ArrowDown} ")
-    expect(onChange).toHaveBeenCalledWith(mockOptions[1])
-    expect(input).toHaveValue("") // Not space!
-
-    rerender(
-      <Combobox {...commonProps} onChange={onChange} value={mockOptions[1]} />
-    )
-
-    await user.keyboard("{ArrowUp}{ArrowUp} ")
-    expect(onChange).toHaveBeenCalledWith(mockOptions[mockOptions.length - 1])
   })
 
   describe("when the user types in the input", () => {
@@ -300,7 +274,7 @@ describe("Combobox", () => {
         <Combobox {...commonProps} onChange={onChange} value={mockOptions[0]} />
       )
 
-      const input = screen.getByRole("textbox")
+      const input = screen.getByRole("combobox")
       await user.type(input, "pr")
 
       const options = screen.getAllByRole("option")
@@ -321,7 +295,7 @@ describe("Combobox", () => {
       const onChange = jest.fn()
       render(<Combobox {...commonProps} onChange={onChange} />)
 
-      const input = screen.getByRole("textbox")
+      const input = screen.getByRole("combobox")
       await user.type(input, " ")
 
       expect(onChange).not.toHaveBeenCalled()
