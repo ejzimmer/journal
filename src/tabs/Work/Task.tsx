@@ -1,6 +1,6 @@
 import { ItemDescription } from "../../shared/TaskList/ItemDescription"
 import { Item, Label } from "../../shared/TaskList/types"
-import { EditableDate } from "./EditableDate"
+import { EditableDate } from "../../shared/controls/EditableDate"
 import { useCallback, useState } from "react"
 import { getTaskData, isTask } from "./drag-utils"
 

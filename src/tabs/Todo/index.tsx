@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react"
 import { AddTaskForm, NewTask } from "./AddTaskForm"
 import {
+  CalendarTask,
   Category,
   isCalendarTask,
   isWeeklyTask,
@@ -10,6 +11,8 @@ import {
 import { EditableText } from "../../shared/controls/EditableText"
 import { dailyReset } from "./dailyReset"
 import { hoursToMilliseconds } from "date-fns"
+import { EditableDate } from "../../shared/controls/EditableDate"
+import { XIcon } from "../../shared/icons/X"
 
 const STORAGE_KEY = "todo"
 
@@ -78,7 +81,9 @@ export function Today() {
           onDeleteTask={deleteTask}
         />
         <TaskList
-          tasks={groupedTasks["日付"]}
+          tasks={groupedTasks["日付"]?.sort(
+            (a, b) => (a as CalendarTask).dueDate - (b as CalendarTask).dueDate
+          )}
           onChangeTask={updateTask}
           onDeleteTask={deleteTask}
         />
@@ -142,16 +147,17 @@ function Everyday({
     <>
       <input
         type="checkbox"
-        onClick={() => onChange({ ...task, status: "done" })}
+        onChange={() => onChange({ ...task, status: "done" })}
         checked={task.status === "done" || task.status === "finished"}
       />
+      {task.category.emoji}
       <EditableText
         label="description"
         onChange={(description) => onChange({ ...task, description })}
       >
         {task.description}
       </EditableText>
-      <button onClick={onDelete}>delete</button>
+      <DeleteButton onDelete={onDelete} />
     </>
   )
 }
@@ -165,32 +171,44 @@ function Weekly({
   onChange: (task: WeeklyTask) => void
   onDelete: () => void
 }) {
-  const handleCompleted = (index: number) => {
-    const completed = task.completed ?? []
-    if (typeof completed[index] === "number") {
-      onChange({ ...task, completed: completed.toSpliced(index, 1) })
-    } else {
-      onChange({ ...task, completed: completed.with(index, Date.now()) })
+  useEffect(() => {
+    if (!Array.isArray(task.completed)) {
+      onChange({ ...task, completed: Array.from({ length: task.frequency }) })
     }
+  }, [task, onChange])
+
+  const handleCompleted = (index: number) => {
+    if (!task.completed) return
+
+    const currentValue = task.completed[index]
+    const completed = task.completed.with(
+      index,
+      typeof currentValue === "number" ? undefined : Date.now()
+    )
+    onChange({
+      ...task,
+      completed,
+    })
   }
 
   return (
     <>
+      {task.category.emoji}
       <EditableText
         label="description"
         onChange={(description) => onChange({ ...task, description })}
       >
         {task.description}
       </EditableText>
-      {Array.from({ length: task.frequency }).map((_, index) => (
+      {task.completed?.map((date, index) => (
         <input
           key={index}
           type="checkbox"
-          checked={typeof task.completed?.[index] === "number"}
-          onClick={() => handleCompleted(index)}
+          checked={typeof date === "number"}
+          onChange={() => handleCompleted(index)}
         />
       ))}
-      <button onClick={onDelete}>delete</button>
+      <DeleteButton onDelete={onDelete} />
     </>
   )
 }
@@ -200,24 +218,50 @@ function Calendar({
   onChange,
   onDelete,
 }: {
-  task: Task
-  onChange: (task: Task) => void
+  task: CalendarTask
+  onChange: (task: CalendarTask) => void
   onDelete: () => void
 }) {
   return (
     <>
       <input
         type="checkbox"
-        onClick={() => onChange({ ...task, status: "finished" })}
+        onChange={() => onChange({ ...task, status: "finished" })}
         checked={task.status === "done" || task.status === "finished"}
       />
+      <div
+        style={{
+          color:
+            task.dueDate < Date.now() ? "var(--error-colour)" : "currentcolor",
+          border: "2px solid",
+          fontSize: "1rem",
+          fontWeight: "bold",
+        }}
+      >
+        <EditableDate
+          value={task.dueDate}
+          onChange={(date) => onChange({ ...task, dueDate: date })}
+        />
+      </div>
+      {task.category.emoji}
       <EditableText
         label="description"
         onChange={(description) => onChange({ ...task, description })}
       >
         {task.description}
       </EditableText>
-      <button onClick={onDelete}>delete</button>
+      <DeleteButton onDelete={onDelete} />
     </>
+  )
+}
+
+type DeleteButtonProps = {
+  onDelete: () => void
+}
+function DeleteButton({ onDelete }: DeleteButtonProps) {
+  return (
+    <button onClick={onDelete} className="ghost">
+      <XIcon width="16px" />
+    </button>
   )
 }

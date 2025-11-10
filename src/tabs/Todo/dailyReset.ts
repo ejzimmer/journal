@@ -18,8 +18,8 @@ export function dailyReset(tasks: Task[]) {
         const oneWeekAgo = subDays(today, 7)
         return {
           ...task,
-          completed: task.completed?.filter((date) =>
-            isAfter(date, oneWeekAgo)
+          completed: task.completed?.filter(
+            (date) => date && isAfter(date, oneWeekAgo)
           ),
         }
       }

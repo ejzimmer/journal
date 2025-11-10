@@ -16,7 +16,7 @@ export type DailyTask = Task & { type: "毎日" }
 export type WeeklyTask = Task & {
   type: "週に"
   frequency: number
-  completed?: number[]
+  completed?: (number | undefined)[]
 }
 export type CalendarTask = Task & { type: "日付"; dueDate: number }
 
