@@ -1,64 +1,85 @@
-import { ReactNode, useState } from "react"
-import { Combobox } from "../../shared/controls/combobox/Combobox"
-import { Category } from "./types"
+import { ReactNode, useState } from "react";
+import { Combobox } from "../../shared/controls/combobox/Combobox";
+import { Category } from "./types";
+import { ColourPicker } from "./ColourPicker";
+import { COLOURS } from "../../shared/TaskList/types";
 
-type CategoryControlProps = {
-  value?: Category
-  onChange: (value?: Category) => void
-  options: Category[]
-}
+export type CategoryControlProps = {
+  value?: Category;
+  onChange: (value?: Category) => void;
+  options: Category[];
+};
 
 export function CategoryControl({
   value,
   options,
   onChange,
 }: CategoryControlProps) {
-  const [partialCategory, setPartialCategory] = useState<string>("")
+  const [text, setText] = useState<string>("");
+  const [emoji, setEmoji] = useState<string>("");
+  const [colour, setColour] = useState<(typeof COLOURS)[number]>(COLOURS[0]);
 
   const handleChangeText = (option: Category) => {
     if (option.emoji) {
-      onChange(option)
-      setPartialCategory("")
+      onChange(option);
+      setText("");
     } else {
-      onChange(undefined)
-      setPartialCategory(option.text)
+      onChange(undefined);
+      setText(option.text);
     }
-  }
+  };
 
-  const handleChangeEmoji = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const emoji = event.target.value
-    if (partialCategory && emoji) {
-      onChange({ text: partialCategory, emoji })
-      setPartialCategory("")
-    }
-  }
+  const handleSubmit = () => {
+    onChange({ text, emoji, colour });
+  };
 
   return (
-    <>
-      <Combobox
-        createOption={(text) => ({ text, emoji: "" })}
-        label="Category"
-        onChange={handleChangeText}
-        options={options}
-        value={partialCategory ? { text: partialCategory, emoji: "" } : value}
-        Option={CategoryOption}
-      />
-      {!value && <input aria-label="Emoji" onChange={handleChangeEmoji} />}
-    </>
-  )
+    <div onKeyDown={handleSubmit}>
+      {value || (!value && !text) ? (
+        <Combobox
+          createOption={(text) => ({ text, emoji: "", colour })}
+          label="Category"
+          onChange={handleChangeText}
+          options={options}
+          value={text ? { text: text, emoji: "", colour } : value}
+          Option={CategoryOption}
+        />
+      ) : (
+        <div style={{ display: "flex", gap: "8px" }}>
+          <input
+            aria-label="Text"
+            value={text}
+            onChange={(event) => setText(event.target.value)}
+          />
+          <input
+            aria-label="Emoji"
+            value={emoji}
+            onChange={(event) => setEmoji(event.target.value)}
+          />
+          <ColourPicker
+            label="Category colour"
+            options={[...COLOURS]}
+            onChange={(colour) => setColour(colour)}
+          />
+          <button onClick={handleSubmit}>Create</button>
+          <button>Cancel</button>
+        </div>
+      )}
+    </div>
+  );
 }
 
 function CategoryOption({
   option,
   children,
 }: {
-  option: Category
-  children?: ReactNode
+  option: Category;
+  children?: ReactNode;
 }) {
   return (
     <>
       {option.emoji} {option.text}
       {children}
     </>
-  )
+  );
 }

@@ -1,26 +1,29 @@
+import { COLOURS } from "../../shared/TaskList/types";
+
 export type Category = {
-  text: string
-  emoji: string
-}
+  text: string;
+  emoji: string;
+  colour: (typeof COLOURS)[number];
+};
 
 export type Task = {
-  id: string
-  description: string
-  category: Category
-  lastUpdated: number
-  type: "日付" | "週に" | "毎日"
-  status: "blocked" | "ready" | "in_progress" | "done" | "finished"
-}
+  id: string;
+  description: string;
+  category: Category;
+  lastUpdated: number;
+  type: "日付" | "週に" | "毎日";
+  status: "blocked" | "ready" | "in_progress" | "done" | "finished";
+};
 
-export type DailyTask = Task & { type: "毎日" }
+export type DailyTask = Task & { type: "毎日" };
 export type WeeklyTask = Task & {
-  type: "週に"
-  frequency: number
-  completed?: (number | undefined)[]
-}
-export type CalendarTask = Task & { type: "日付"; dueDate: number }
+  type: "週に";
+  frequency: number;
+  completed?: (number | undefined)[];
+};
+export type CalendarTask = Task & { type: "日付"; dueDate: number };
 
 export const isWeeklyTask = (task: Task): task is WeeklyTask =>
-  task.type === "週に"
+  task.type === "週に";
 export const isCalendarTask = (task: Task): task is CalendarTask =>
-  task.type === "日付"
+  task.type === "日付";
