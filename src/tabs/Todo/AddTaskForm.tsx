@@ -1,58 +1,59 @@
-import { useRef, useState } from "react"
-import { CategoryControl } from "./CategoryControl"
-import { FormModal } from "../../shared/controls/FormModal"
-import { CalendarTask, Category, Task, WeeklyTask } from "./types"
+import { useRef, useState } from "react";
+import { CategoryControl } from "./CategoryControl";
+import { FormModal } from "../../shared/controls/FormModal";
+import { CalendarTask, Category, Task, WeeklyTask } from "./types";
+import { FormControl } from "../../shared/controls/FormControl";
 
-type MissingProps = "id" | "lastUpdated" | "status"
-type NewDailyTask = Omit<Task, MissingProps>
-type NewWeeklyTask = Omit<WeeklyTask, MissingProps | "completed">
-type NewCalendarTask = Omit<CalendarTask, MissingProps>
+type MissingProps = "id" | "lastUpdated" | "status";
+type NewDailyTask = Omit<Task, MissingProps>;
+type NewWeeklyTask = Omit<WeeklyTask, MissingProps | "completed">;
+type NewCalendarTask = Omit<CalendarTask, MissingProps>;
 
-export type NewTask = NewDailyTask | NewWeeklyTask | NewCalendarTask
+export type NewTask = NewDailyTask | NewWeeklyTask | NewCalendarTask;
 
 export type AddTaskFormProps = {
-  categories: Category[]
-  onSubmit: (task: NewTask) => void
-}
+  categories: Category[];
+  onSubmit: (task: NewTask) => void;
+};
 
 export function AddTaskForm({ categories, onSubmit }: AddTaskFormProps) {
-  const formRef = useRef<HTMLFormElement>(null)
-  const dueDateRef = useRef<HTMLInputElement>(null)
-  const [type, setType] = useState<Task["type"]>("毎日")
-  const [category, setCategory] = useState<Category | undefined>(categories[0])
-  const [frequency, setFrequency] = useState<string | undefined>("1")
-  const [errors, setErrors] = useState<string[]>([])
+  const formRef = useRef<HTMLFormElement>(null);
+  const dueDateRef = useRef<HTMLInputElement>(null);
+  const [type, setType] = useState<Task["type"]>("毎日");
+  const [category, setCategory] = useState<Category | undefined>(categories[0]);
+  const [frequency, setFrequency] = useState<string | undefined>("1");
+  const [errors, setErrors] = useState<string[]>([]);
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>): boolean => {
     if (!event.currentTarget) {
-      return false
+      return false;
     }
 
-    const errors = []
+    const errors = [];
     const [description] = Array.from(
       event.currentTarget.elements
-    ) as HTMLInputElement[]
+    ) as HTMLInputElement[];
 
     if (!description.value) {
-      errors.push("Description required")
+      errors.push("Description required");
     }
     if (!category) {
-      return false
+      return false;
     }
     if (type === "日付" && !dueDateRef.current?.value) {
-      errors.push("Due date required")
+      errors.push("Due date required");
     }
     if (type === "週に" && (!frequency || isNaN(Number.parseInt(frequency)))) {
-      errors.push("Frequency required")
+      errors.push("Frequency required");
     }
     if (category?.text && !category.emoji) {
-      errors.push("Pick an emoji for the category")
+      errors.push("Pick an emoji for the category");
     }
 
-    setErrors(errors)
+    setErrors(errors);
 
     if (errors.length > 0) {
-      return false
+      return false;
     }
 
     switch (type) {
@@ -62,34 +63,34 @@ export function AddTaskForm({ categories, onSubmit }: AddTaskFormProps) {
           category,
           type,
           dueDate: new Date(dueDateRef.current?.value as string).getTime(),
-        })
-        break
+        });
+        break;
       case "週に":
         onSubmit({
           description: description.value,
           frequency: Number.parseInt(frequency as string),
           category,
           type,
-        })
-        break
+        });
+        break;
       default:
         onSubmit({
           description: description.value,
           category,
           type: "毎日",
-        })
+        });
     }
 
-    resetForm()
-    return true
-  }
+    resetForm();
+    return true;
+  };
 
   const resetForm = () => {
-    setCategory(categories[0])
-    setFrequency("1")
-    setErrors([])
-    formRef.current?.reset()
-  }
+    setCategory(categories[0]);
+    setFrequency("1");
+    setErrors([]);
+    formRef.current?.reset();
+  };
 
   return (
     <FormModal
@@ -97,14 +98,11 @@ export function AddTaskForm({ categories, onSubmit }: AddTaskFormProps) {
       trigger={(props) => <button {...props}>Add task</button>}
       onSubmit={handleSubmit}
       onClose={() => {
-        resetForm()
+        resetForm();
       }}
       submitButtonText="Create task"
     >
-      <label>
-        Description
-        <input />
-      </label>
+      <FormControl label="Description" />
       <label>
         Type
         <select
@@ -133,7 +131,7 @@ export function AddTaskForm({ categories, onSubmit }: AddTaskFormProps) {
             step="1"
             type="number"
             onChange={(event) => {
-              setFrequency(event.target.value)
+              setFrequency(event.target.value);
             }}
           />
         </label>
@@ -147,5 +145,5 @@ export function AddTaskForm({ categories, onSubmit }: AddTaskFormProps) {
         <div key={e}>{e}</div>
       ))}
     </FormModal>
-  )
+  );
 }
