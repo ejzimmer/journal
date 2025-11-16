@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
-import { AddTaskForm, NewTask } from "./AddTaskForm";
+import React, { useEffect, useState } from "react"
+import { AddTaskForm, NewTask } from "./AddTaskForm"
 import {
   CalendarTask,
   Category,
@@ -7,62 +7,65 @@ import {
   isWeeklyTask,
   Task,
   WeeklyTask,
-} from "./types";
-import { EditableText } from "../../shared/controls/EditableText";
-import { dailyReset } from "./dailyReset";
-import { hoursToMilliseconds } from "date-fns";
-import { EditableDate } from "../../shared/controls/EditableDate";
-import { TodayTask } from "./TodayTask";
-import { DeleteButton } from "./DeleteButton";
+} from "./types"
+import { EditableText } from "../../shared/controls/EditableText"
+import { dailyReset } from "./dailyReset"
+import { hoursToMilliseconds } from "date-fns"
+import { EditableDate } from "../../shared/controls/EditableDate"
+import { TodayTask } from "./TodayTask"
+import { DeleteButton } from "./DeleteButton"
 
-const STORAGE_KEY = "todo";
+const STORAGE_KEY = "todo"
 
 export function Today() {
   const [tasks, setTasks] = useState<Task[]>(() => {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    return stored ? JSON.parse(stored) : [];
-  });
+    const stored = localStorage.getItem(STORAGE_KEY)
+    return stored ? JSON.parse(stored) : []
+  })
 
   const saveTasks = (tasks: Task[]) => {
-    setTasks(tasks);
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(tasks));
-  };
+    setTasks(tasks)
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(tasks))
+  }
 
   const addTask = (task: NewTask) => {
-    const id = crypto.randomUUID();
+    const id = crypto.randomUUID()
     saveTasks([
       ...tasks,
       { id, ...task, lastUpdated: Date.now(), status: "ready" },
-    ]);
-  };
+    ])
+  }
 
-  const groupedTasks = Object.groupBy(tasks, (task) => task.type);
-  const categories = new Map<string, Category>();
+  const groupedTasks = Object.groupBy(tasks, (task) => task.type)
+  const categories = new Map<string, Category>()
   tasks.forEach((task) => {
-    categories.set(task.category.text, task.category);
-  });
+    categories.set(task.category.text, task.category)
+  })
 
   const updateTask = (task: Task) => {
-    const index = tasks.findIndex((t) => t.id === task.id);
+    const index = tasks.findIndex((t) => t.id === task.id)
     if (index > -1) {
-      saveTasks(tasks.with(index, task));
+      saveTasks(tasks.with(index, task))
     }
-  };
+  }
 
   const deleteTask = (task: Task) => {
-    const index = tasks.findIndex((t) => t.id === task.id);
+    console.log("deleting", task)
+    const index = tasks.findIndex((t) => t.id === task.id)
+    console.log("from", tasks)
+    console.log("index", index)
     if (index > -1) {
-      saveTasks(tasks.toSpliced(index, 1));
+      saveTasks(tasks.toSpliced(index, 1))
     }
-  };
+  }
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      dailyReset(tasks);
-    }, hoursToMilliseconds(1));
+      dailyReset(tasks)
+    }, hoursToMilliseconds(1))
 
-    return () => clearTimeout(timer);
-  }, [tasks]);
+    return () => clearTimeout(timer)
+  }, [tasks])
 
   return (
     <>
@@ -90,17 +93,17 @@ export function Today() {
         />
       </div>
     </>
-  );
+  )
 }
 
 type TaskListProps = {
-  tasks?: Task[];
-  onChangeTask: (task: Task) => void;
-  onDeleteTask: (task: Task) => void;
-};
+  tasks?: Task[]
+  onChangeTask: (task: Task) => void
+  onDeleteTask: (task: Task) => void
+}
 function TaskList({ tasks, onChangeTask, onDeleteTask }: TaskListProps) {
   if (!tasks) {
-    return <div>No tasks</div>;
+    return <div>No tasks</div>
   }
 
   return (
@@ -132,7 +135,7 @@ function TaskList({ tasks, onChangeTask, onDeleteTask }: TaskListProps) {
         </li>
       ))}
     </ul>
-  );
+  )
 }
 
 function Weekly({
@@ -140,29 +143,29 @@ function Weekly({
   onChange,
   onDelete,
 }: {
-  task: WeeklyTask;
-  onChange: (task: WeeklyTask) => void;
-  onDelete: () => void;
+  task: WeeklyTask
+  onChange: (task: WeeklyTask) => void
+  onDelete: () => void
 }) {
   useEffect(() => {
     if (!Array.isArray(task.completed)) {
-      onChange({ ...task, completed: Array.from({ length: task.frequency }) });
+      onChange({ ...task, completed: Array.from({ length: task.frequency }) })
     }
-  }, [task, onChange]);
+  }, [task, onChange])
 
   const handleCompleted = (index: number) => {
-    if (!task.completed) return;
+    if (!task.completed) return
 
-    const currentValue = task.completed[index];
+    const currentValue = task.completed[index]
     const completed = task.completed.with(
       index,
       typeof currentValue === "number" ? undefined : Date.now()
-    );
+    )
     onChange({
       ...task,
       completed,
-    });
-  };
+    })
+  }
 
   return (
     <>
@@ -183,7 +186,7 @@ function Weekly({
       ))}
       <DeleteButton onDelete={onDelete} />
     </>
-  );
+  )
 }
 
 function Calendar({
@@ -191,9 +194,9 @@ function Calendar({
   onChange,
   onDelete,
 }: {
-  task: CalendarTask;
-  onChange: (task: CalendarTask) => void;
-  onDelete: () => void;
+  task: CalendarTask
+  onChange: (task: CalendarTask) => void
+  onDelete: () => void
 }) {
   return (
     <>
@@ -225,5 +228,5 @@ function Calendar({
       </EditableText>
       <DeleteButton onDelete={onDelete} />
     </>
-  );
+  )
 }
