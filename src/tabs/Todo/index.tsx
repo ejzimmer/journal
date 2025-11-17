@@ -50,10 +50,7 @@ export function Today() {
   }
 
   const deleteTask = (task: Task) => {
-    console.log("deleting", task)
     const index = tasks.findIndex((t) => t.id === task.id)
-    console.log("from", tasks)
-    console.log("index", index)
     if (index > -1) {
       saveTasks(tasks.toSpliced(index, 1))
     }
