@@ -34,7 +34,14 @@ export function TodayTask({
                 checked={task.status === "done" || task.status === "finished"}
               />
             </label>
-            <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "4px",
+                flexGrow: 1,
+              }}
+            >
               {task.category.emoji}
               <EditableText
                 label="description"
