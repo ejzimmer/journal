@@ -14,6 +14,7 @@ import { hoursToMilliseconds } from "date-fns"
 import { EditableDate } from "../../shared/controls/EditableDate"
 import { TodayTask } from "./TodayTask"
 import { DeleteButton } from "./DeleteButton"
+import { ThisWeekTask } from "./ThisWeekTask"
 
 const STORAGE_KEY = "todo"
 
@@ -111,7 +112,7 @@ function TaskList({ tasks, onChangeTask, onDeleteTask }: TaskListProps) {
           style={{ display: "flex", gap: "10px", alignItems: "center" }}
         >
           {isWeeklyTask(task) ? (
-            <Weekly
+            <ThisWeekTask
               task={task}
               onChange={onChangeTask}
               onDelete={() => onDeleteTask(task)}
@@ -132,57 +133,6 @@ function TaskList({ tasks, onChangeTask, onDeleteTask }: TaskListProps) {
         </li>
       ))}
     </ul>
-  )
-}
-
-function Weekly({
-  task,
-  onChange,
-  onDelete,
-}: {
-  task: WeeklyTask
-  onChange: (task: WeeklyTask) => void
-  onDelete: () => void
-}) {
-  useEffect(() => {
-    if (!Array.isArray(task.completed)) {
-      onChange({ ...task, completed: Array.from({ length: task.frequency }) })
-    }
-  }, [task, onChange])
-
-  const handleCompleted = (index: number) => {
-    if (!task.completed) return
-
-    const currentValue = task.completed[index]
-    const completed = task.completed.with(
-      index,
-      typeof currentValue === "number" ? undefined : Date.now()
-    )
-    onChange({
-      ...task,
-      completed,
-    })
-  }
-
-  return (
-    <>
-      {task.category.emoji}
-      <EditableText
-        label="description"
-        onChange={(description) => onChange({ ...task, description })}
-      >
-        {task.description}
-      </EditableText>
-      {task.completed?.map((date, index) => (
-        <input
-          key={index}
-          type="checkbox"
-          checked={typeof date === "number"}
-          onChange={() => handleCompleted(index)}
-        />
-      ))}
-      <DeleteButton onDelete={onDelete} />
-    </>
   )
 }
 
