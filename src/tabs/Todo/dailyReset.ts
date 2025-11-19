@@ -1,7 +1,7 @@
 import { subDays, isBefore, startOfDay, isAfter } from "date-fns"
 import { isWeeklyTask, Task } from "./types"
 
-export function dailyReset(tasks: Task[]) {
+export function dailyReset(tasks: Task[]): Task[] {
   return tasks
     .filter((task) => task.status !== "finished")
     .map((task) => {

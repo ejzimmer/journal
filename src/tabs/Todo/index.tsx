@@ -6,7 +6,6 @@ import {
   isCalendarTask,
   isWeeklyTask,
   Task,
-  WeeklyTask,
 } from "./types"
 import { EditableText } from "../../shared/controls/EditableText"
 import { dailyReset } from "./dailyReset"
@@ -59,7 +58,7 @@ export function Today() {
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      dailyReset(tasks)
+      setTasks(dailyReset(tasks))
     }, hoursToMilliseconds(1))
 
     return () => clearTimeout(timer)
