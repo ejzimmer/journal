@@ -14,6 +14,7 @@ import { EditableDate } from "../../shared/controls/EditableDate"
 import { TodayTask } from "./TodayTask"
 import { DeleteButton } from "./DeleteButton"
 import { ThisWeekTask } from "./ThisWeekTask"
+import { RestartArrowIcon } from "../../shared/icons/RestartArrow"
 
 const STORAGE_KEY = "todo"
 
@@ -70,6 +71,9 @@ export function Today() {
         onSubmit={addTask}
         categories={Array.from(categories.values())}
       />
+      <button className="ghost" onClick={() => setTasks(dailyReset(tasks))}>
+        <RestartArrowIcon width="20px" />
+      </button>
       <div style={{ display: "flex", flexWrap: "wrap", gap: "80px" }}>
         <TaskList
           tasks={groupedTasks["毎日"]}
