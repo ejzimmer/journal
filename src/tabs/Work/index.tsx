@@ -203,7 +203,19 @@ export function Work() {
                           deleteItem(`${WORK_KEY}/${list.id}/items`, task)
                         }
                         onMove={(destination: Item) => {
-                          addItem(`${WORK_KEY}/${destination.id}/items`, task)
+                          const position = destination.items
+                            ? Object.values(destination.items).reduce(
+                                (highest, item) =>
+                                  item.order
+                                    ? Math.max(highest, item.order)
+                                    : highest,
+                                0
+                              )
+                            : 0
+                          addItem(`${WORK_KEY}/${destination.id}/items`, {
+                            ...task,
+                            order: position,
+                          })
                           deleteItem(`${WORK_KEY}/${list.id}/items`, task)
                         }}
                         onChange={(task: Item) =>
