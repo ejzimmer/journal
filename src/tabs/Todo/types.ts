@@ -24,3 +24,9 @@ export const isWeeklyTask = (task: Task): task is WeeklyTask =>
   task.type === "週に"
 export const isCalendarTask = (task: Task): task is CalendarTask =>
   task.type === "日付"
+
+export type TaskListProps = {
+  tasks?: Task[]
+  onChangeTask: (task: Task) => void
+  onDeleteTask: (task: Task) => void
+}

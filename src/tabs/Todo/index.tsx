@@ -11,7 +11,7 @@ import { EditableText } from "../../shared/controls/EditableText"
 import { dailyReset } from "./dailyReset"
 import { hoursToMilliseconds } from "date-fns"
 import { EditableDate } from "../../shared/controls/EditableDate"
-import { TodayTask } from "./TodayTask"
+import { TodayList } from "./TodayTask"
 import { DeleteButton } from "./DeleteButton"
 import { ThisWeekTask } from "./ThisWeekTask"
 import { RestartArrowIcon } from "../../shared/icons/RestartArrow"
@@ -46,7 +46,9 @@ export function Today() {
   const updateTask = (task: Task) => {
     const index = tasks.findIndex((t) => t.id === task.id)
     if (index > -1) {
-      saveTasks(tasks.with(index, task))
+      saveTasks(
+        tasks.with(index, { ...task, lastUpdated: new Date().getTime() })
+      )
     }
   }
 
@@ -75,7 +77,7 @@ export function Today() {
         <RestartArrowIcon width="20px" />
       </button>
       <div style={{ display: "flex", flexWrap: "wrap", gap: "80px" }}>
-        <TaskList
+        <TodayList
           tasks={groupedTasks["毎日"]}
           onChangeTask={updateTask}
           onDeleteTask={deleteTask}
@@ -126,13 +128,7 @@ function TaskList({ tasks, onChangeTask, onDeleteTask }: TaskListProps) {
               onChange={onChangeTask}
               onDelete={() => onDeleteTask(task)}
             />
-          ) : (
-            <TodayTask
-              task={task}
-              onChange={onChangeTask}
-              onDelete={() => onDeleteTask(task)}
-            />
-          )}
+          ) : null}
         </li>
       ))}
     </ul>
