@@ -33,6 +33,9 @@ describe("AddTaskForm", () => {
       screen.queryByRole("spinbutton", { name: "Frequency" })
     ).not.toBeInTheDocument()
     expect(screen.getByLabelText("Due date")).toBeInTheDocument()
+
+    await user.selectOptions(typeSelect, "一度")
+    expect(screen.queryByLabelText("Due date")).not.toBeInTheDocument()
   })
 
   it("attempts to submit the form when the enter key is pressed", async () => {
@@ -77,6 +80,31 @@ describe("AddTaskForm", () => {
       expect(onSubmit).toHaveBeenCalledWith({
         description: "Exercise",
         type: "毎日",
+        category: { text: "Chore", emoji: "🧹" },
+      })
+    })
+  })
+
+  describe("when the user chooses one-off type", () => {
+    it("submits the task correctly", async () => {
+      const user = userEvent.setup()
+      const onSubmit = jest.fn()
+      render(<AddTaskForm {...commonProps} onSubmit={onSubmit} />)
+      await user.click(screen.getByRole("button", { name: "Add task" }))
+
+      await user.type(
+        screen.getByRole("textbox", { name: "Description" }),
+        "Wrap xmas presents"
+      )
+      await user.selectOptions(screen.getByRole("combobox", { name: "Type" }), [
+        "一度",
+      ])
+
+      await user.click(screen.getByRole("button", { name: "Create task" }))
+
+      expect(onSubmit).toHaveBeenCalledWith({
+        description: "Wrap xmas presents",
+        type: "一度",
         category: { text: "Chore", emoji: "🧹" },
       })
     })

@@ -8,11 +8,11 @@ export type Task = {
   description: string
   category: Category
   lastUpdated: number
-  type: "日付" | "週に" | "毎日"
+  type: "日付" | "週に" | "毎日" | "一度"
   status: "blocked" | "ready" | "in_progress" | "done" | "finished"
 }
 
-export type DailyTask = Task & { type: "毎日" }
+export type DailyTask = Task & { type: "毎日" | "一度" }
 export type WeeklyTask = Task & {
   type: "週に"
   frequency: number

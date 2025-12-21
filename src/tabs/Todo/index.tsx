@@ -82,7 +82,10 @@ export function Today() {
       </button>
       <div style={{ display: "flex", flexWrap: "wrap", gap: "80px" }}>
         <TodayList
-          tasks={groupedTasks["毎日"]}
+          tasks={[
+            ...(groupedTasks["毎日"] ?? []),
+            ...(groupedTasks["一度"] ?? []),
+          ]}
           onChangeTask={updateTask}
           onDeleteTask={deleteTask}
         />

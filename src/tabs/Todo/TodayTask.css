@@ -99,7 +99,8 @@ li:last-child .today-task {
   border-bottom-right-radius: var(--border-radius);
 }
 
-.today-task.status-done {
+.today-task.status-done,
+.today-task.status-finished {
   .button-edge {
     box-shadow: 0 0 0 0 rgba(5, 5, 5, 1), 0 0 0 0 rgba(5, 5, 5, 0.5),
       0 0 0 0 rgba(5, 5, 5, 0.25);
