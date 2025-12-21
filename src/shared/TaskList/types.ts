@@ -7,6 +7,8 @@ export const COLOURS = [
   "red",
 ] as const
 
+export type Colour = (typeof COLOURS)[number]
+
 export type Label = {
   value: string
   colour: (typeof COLOURS)[number]

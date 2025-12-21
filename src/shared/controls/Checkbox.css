@@ -20,6 +20,10 @@ label.checkbox {
     top: -100%;
   }
 
+  &:focus-within .control {
+    border-color: var(--body-colour);
+  }
+
   &:has(input:checked) .control svg {
     display: block;
   }

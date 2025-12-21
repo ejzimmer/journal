@@ -150,7 +150,8 @@ form.add-task {
     }
   }
 
-  &:hover button.transient {
+  &:hover button.transient,
+  button.transient:focus {
     width: 20px;
     margin-inline-start: 4px;
   }
