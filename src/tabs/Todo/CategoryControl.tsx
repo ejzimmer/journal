@@ -31,14 +31,14 @@ export function CategoryControl({
   }
 
   return (
-    <div onKeyDown={handleSubmit}>
-      {value || (!value && !text) ? (
+    <div>
+      {value && value.emoji ? (
         <Combobox
           createOption={(text) => ({ text, emoji: "" })}
           label="Category"
           onChange={handleChangeText}
           options={options}
-          value={text ? { text: text, emoji: "" } : value}
+          value={value}
           Option={CategoryOption}
         />
       ) : (
