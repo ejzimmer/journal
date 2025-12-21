@@ -38,6 +38,8 @@ export function Today() {
   }
 
   const groupedTasks = Object.groupBy(tasks, (task) => task.type)
+
+  // For the categories dropdown
   const categories = new Map<string, Category>()
   tasks.forEach((task) => {
     categories.set(task.category.text, task.category)
@@ -60,7 +62,9 @@ export function Today() {
   }
 
   useEffect(() => {
+    console.log("tasks changed, effect fired")
     const timer = setTimeout(() => {
+      console.log("reset timer ended, updating tasks")
       setTasks(dailyReset(tasks))
     }, hoursToMilliseconds(1))
 
