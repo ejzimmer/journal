@@ -31,6 +31,7 @@ import invariant from "tiny-invariant"
 import { DragHandle } from "../../shared/drag-and-drop/DragHandle"
 import { Destination, Position } from "../../shared/drag-and-drop/types"
 import { DraggableListItem } from "../../shared/drag-and-drop/DraggableListItem"
+import { PostitModal } from "./PostitModal"
 
 type DragState = "idle" | "is-dragging-over"
 
@@ -142,12 +143,11 @@ export function TaskList({
               {list.description}
             </EditableText>
           </h2>
-          <ConfirmationModal
+          <PostitModal
             trigger={(props) => (
               <DeleteButton label={list.description} {...props} />
             )}
             message={`Are you sure you want to delete list ${list.description}?`}
-            confirmButtonText="Yes, delete"
             onConfirm={onDelete}
           />
         </div>

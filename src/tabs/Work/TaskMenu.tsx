@@ -7,6 +7,7 @@ import { Item } from "../../shared/TaskList/types"
 
 import "./TaskList.css"
 import { ModalTriggerProps } from "../../shared/controls/Modal"
+import { PostitModal } from "./PostitModal"
 
 export function TaskMenu({
   task,
@@ -55,8 +56,8 @@ export function TaskMenu({
               </Menu.Action>
             )}
 
-            <ConfirmationModal
-              message={`Are you sure you want to delete ${task.description}`}
+            <PostitModal
+              message={`Are you sure you want to delete ${task.description}?`}
               onConfirm={onDelete}
               trigger={(triggerProps) => <DeleteButton {...triggerProps} />}
             />

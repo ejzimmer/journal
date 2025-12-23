@@ -21,6 +21,7 @@
     gap: 4px;
     color: var(--body-colour);
     font-size: 1rem;
+    width: 100%;
 
     &:focus-visible {
       background: var(--border-colour);

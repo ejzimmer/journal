@@ -1,0 +1,62 @@
+.post-it .modal {
+  --post-it-yellow: #ffff88;
+  border-radius: 0;
+  aspect-ratio: 1.2;
+  position: relative;
+  background: linear-gradient(to bottom, hsl(0 0 0/0.1) 30px, transparent 48px),
+    linear-gradient(#ffff88 81%, #ffff88 82%, hsl(0 0 0/0.3));
+  font: inherit;
+  font-size: 32px;
+  line-height: 1.2;
+  transform: rotate(-6deg);
+  align-content: center;
+
+  &::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 20%;
+    background: linear-gradient(135deg, #ffff88 81%, #ffff88 82%, #ffffc6);
+    border-bottom-right-radius: 60px 5px;
+  }
+
+  .close-button button {
+    display: none;
+  }
+
+  .footer {
+    justify-content: center;
+    gap: 60px;
+
+    button {
+      font: inherit;
+      background: none;
+      color: var(--body-colour);
+      border: 0;
+      border-radius: 0;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 0;
+
+      &:first-child::before {
+        content: "X";
+        font-size: 1.5em;
+      }
+
+      &::before {
+        content: "✓";
+        font-size: 1.5em;
+      }
+
+      &:focus {
+        outline: none;
+        border: none;
+        border-bottom: 2px solid;
+      }
+    }
+  }
+}
