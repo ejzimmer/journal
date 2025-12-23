@@ -3,6 +3,7 @@ import { DeleteButton } from "./DeleteButton"
 import { Task, TaskListProps } from "./types"
 
 import "./TodayTask.css"
+import { EmojiCheckbox } from "./EmojiCheckbox"
 
 export function TodayList({
   tasks,
@@ -52,37 +53,19 @@ export function TodayTask({
 
   return (
     <div className={`today-task status-${task.status}`}>
-      <div className="button-edge">
-        <div className="button-surface">
-          <span>
-            <label className="led">
-              <input
-                aria-label="done"
-                type="checkbox"
-                onChange={handleStatusChange}
-                checked={task.status === "done" || task.status === "finished"}
-              />
-            </label>
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: "4px",
-                flexGrow: 1,
-              }}
-            >
-              {task.category.emoji}
-              <EditableText
-                label="description"
-                onChange={(description) => onChange({ ...task, description })}
-              >
-                {task.description}
-              </EditableText>
-            </div>
-            <DeleteButton onDelete={onDelete} />
-          </span>
-        </div>
-      </div>
+      <EmojiCheckbox
+        emoji={task.category.emoji}
+        isChecked={task.status === "done" || task.status === "finished"}
+        onChange={handleStatusChange}
+        label={`${task.description} done`}
+      />
+      <EditableText
+        label="description"
+        onChange={(description) => onChange({ ...task, description })}
+      >
+        {task.description}
+      </EditableText>
+      <DeleteButton onDelete={onDelete} />
     </div>
   )
 }

@@ -4,16 +4,8 @@
   gap: 8px;
   font-size: 18px;
   width: 100%;
+  transition: all 0.2s ease-in;
 
-  .indicators {
-    font-size: 1.4em;
-    flex-grow: 1;
-
-    .not-done {
-      filter: grayscale(1);
-      opacity: 0.3;
-    }
-  }
   .remainder {
     font-size: 0.7em;
     margin-inline-start: 0.2em;

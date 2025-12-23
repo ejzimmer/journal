@@ -1,0 +1,16 @@
+.emoji-checkbox {
+  font-size: 1.2em;
+  text-shadow: 1px 1px hsl(0 0 0/0.1);
+  transition: inherit;
+  cursor: pointer;
+
+  &.done {
+    text-shadow: none;
+    filter: grayscale(60%);
+  }
+
+  input {
+    position: fixed;
+    top: -100vh;
+  }
+}

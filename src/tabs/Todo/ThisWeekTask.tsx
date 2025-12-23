@@ -53,7 +53,10 @@ export function ThisWeekTask({
       </EditableText>
       <div className="indicators" onClick={undo}>
         {indicators.map((date, index) => (
-          <span key={index} className={date ? "" : "not-done"}>
+          <span
+            key={index}
+            className={`emoji-indicator ${date ? "status-done" : ""}`}
+          >
             {task.category.emoji}
           </span>
         ))}
