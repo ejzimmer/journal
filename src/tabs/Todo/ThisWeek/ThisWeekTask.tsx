@@ -1,6 +1,6 @@
-import { EditableText } from "../../shared/controls/EditableText"
-import { DeleteButton } from "./DeleteButton"
-import { WeeklyTask } from "./types"
+import { EditableText } from "../../../shared/controls/EditableText"
+import { DeleteButton } from "../DeleteButton"
+import { WeeklyTask } from "../types"
 
 import "./ThisWeekTask.css"
 

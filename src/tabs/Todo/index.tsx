@@ -1,20 +1,12 @@
 import React, { useEffect, useState } from "react"
 import { AddTaskForm, NewTask } from "./AddTaskForm"
-import {
-  CalendarTask,
-  Category,
-  isCalendarTask,
-  isWeeklyTask,
-  Task,
-} from "./types"
-import { EditableText } from "../../shared/controls/EditableText"
+import { Category, isCalendarTask, isWeeklyTask, Task } from "./types"
 import { dailyReset } from "./dailyReset"
 import { hoursToMilliseconds } from "date-fns"
-import { EditableDate } from "../../shared/controls/EditableDate"
-import { TodayList } from "./TodayTask"
-import { DeleteButton } from "./DeleteButton"
-import { ThisWeekTask } from "./ThisWeekTask"
+import { TodayList } from "./Today/TodayList"
 import { RestartArrowIcon } from "../../shared/icons/RestartArrow"
+import { ThisWeekList } from "./ThisWeek/ThisWeekList"
+import { DueDateList } from "./DueDate/DueDateList"
 
 const STORAGE_KEY = "todo"
 
@@ -89,97 +81,17 @@ export function Today() {
           onChangeTask={updateTask}
           onDeleteTask={deleteTask}
         />
-        <TaskList
-          tasks={groupedTasks["週に"]}
+        <ThisWeekList
+          tasks={tasks.filter(isWeeklyTask)}
           onChangeTask={updateTask}
           onDeleteTask={deleteTask}
         />
-        <TaskList
-          tasks={groupedTasks["日付"]?.sort(
-            (a, b) => (a as CalendarTask).dueDate - (b as CalendarTask).dueDate
-          )}
+        <DueDateList
+          tasks={tasks.filter(isCalendarTask)}
           onChangeTask={updateTask}
           onDeleteTask={deleteTask}
         />
       </div>
-    </>
-  )
-}
-
-type TaskListProps = {
-  tasks?: Task[]
-  onChangeTask: (task: Task) => void
-  onDeleteTask: (task: Task) => void
-}
-function TaskList({ tasks, onChangeTask, onDeleteTask }: TaskListProps) {
-  if (!tasks) {
-    return <div>No tasks</div>
-  }
-
-  return (
-    <ul>
-      {tasks.map((task) => (
-        <li
-          key={task.description}
-          style={{ display: "flex", gap: "10px", alignItems: "center" }}
-        >
-          {isWeeklyTask(task) ? (
-            <ThisWeekTask
-              task={task}
-              onChange={onChangeTask}
-              onDelete={() => onDeleteTask(task)}
-            />
-          ) : isCalendarTask(task) ? (
-            <Calendar
-              task={task}
-              onChange={onChangeTask}
-              onDelete={() => onDeleteTask(task)}
-            />
-          ) : null}
-        </li>
-      ))}
-    </ul>
-  )
-}
-
-function Calendar({
-  task,
-  onChange,
-  onDelete,
-}: {
-  task: CalendarTask
-  onChange: (task: CalendarTask) => void
-  onDelete: () => void
-}) {
-  return (
-    <>
-      <input
-        type="checkbox"
-        onChange={() => onChange({ ...task, status: "finished" })}
-        checked={task.status === "done" || task.status === "finished"}
-      />
-      <div
-        style={{
-          color:
-            task.dueDate < Date.now() ? "var(--error-colour)" : "currentcolor",
-          border: "2px solid",
-          fontSize: "1rem",
-          fontWeight: "bold",
-        }}
-      >
-        <EditableDate
-          value={task.dueDate}
-          onChange={(date) => onChange({ ...task, dueDate: date })}
-        />
-      </div>
-      {task.category.emoji}
-      <EditableText
-        label="description"
-        onChange={(description) => onChange({ ...task, description })}
-      >
-        {task.description}
-      </EditableText>
-      <DeleteButton onDelete={onDelete} />
     </>
   )
 }

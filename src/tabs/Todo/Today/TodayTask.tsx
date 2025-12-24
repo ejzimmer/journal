@@ -1,36 +1,9 @@
-import { EditableText } from "../../shared/controls/EditableText"
-import { DeleteButton } from "./DeleteButton"
-import { Task, TaskListProps } from "./types"
+import { EditableText } from "../../../shared/controls/EditableText"
+import { DeleteButton } from "../DeleteButton"
+import { Task, TaskListProps } from "../types"
 
 import "./TodayTask.css"
 import { EmojiCheckbox } from "./EmojiCheckbox"
-
-export function TodayList({
-  tasks,
-  onChangeTask,
-  onDeleteTask,
-}: TaskListProps) {
-  if (!tasks) {
-    return <div>No tasks for today</div>
-  }
-
-  return (
-    <ul>
-      {tasks.map((task) => (
-        <li
-          key={task.id}
-          style={{ display: "flex", gap: "10px", alignItems: "center" }}
-        >
-          <TodayTask
-            task={task}
-            onChange={onChangeTask}
-            onDelete={() => onDeleteTask(task)}
-          />
-        </li>
-      ))}
-    </ul>
-  )
-}
 
 export function TodayTask({
   task,
