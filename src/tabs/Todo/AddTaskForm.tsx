@@ -73,12 +73,6 @@ export function AddTaskForm({ categories, onSubmit }: AddTaskFormProps) {
           type,
         })
         break
-      default:
-        onSubmit({
-          description: description.value,
-          category,
-          type,
-        })
     }
 
     resetForm()
@@ -109,8 +103,6 @@ export function AddTaskForm({ categories, onSubmit }: AddTaskFormProps) {
           value={type}
           onChange={(event) => setType(event.target.value as Task["type"])}
         >
-          <option>一度</option>
-          <option>毎日</option>
           <option>週に</option>
           <option>日付</option>
         </select>

@@ -8,6 +8,8 @@ import { RestartArrowIcon } from "../../shared/icons/RestartArrow"
 import { ThisWeekList } from "./ThisWeek/ThisWeekList"
 import { DueDateList } from "./DueDate/DueDateList"
 
+import "./index.css"
+
 const STORAGE_KEY = "todo"
 
 export function Today() {
@@ -80,16 +82,22 @@ export function Today() {
           ]}
           onChangeTask={updateTask}
           onDeleteTask={deleteTask}
+          onCreateTask={addTask}
+          categories={categories.values().toArray()}
         />
         <ThisWeekList
           tasks={tasks.filter(isWeeklyTask)}
           onChangeTask={updateTask}
           onDeleteTask={deleteTask}
+          onCreateTask={addTask}
+          categories={categories.values().toArray()}
         />
         <DueDateList
           tasks={tasks.filter(isCalendarTask)}
           onChangeTask={updateTask}
           onDeleteTask={deleteTask}
+          onCreateTask={addTask}
+          categories={categories.values().toArray()}
         />
       </div>
     </>

@@ -76,7 +76,7 @@ function Option({
   children?: ReactNode
 }) {
   return (
-    <div className={`label ${option.colour}`}>
+    <div className={`label-tag ${option.colour}`}>
       {option.text}
       {children}
     </div>

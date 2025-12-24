@@ -1,0 +1,64 @@
+.todo-task-list {
+  display: flex;
+  flex-direction: column;
+
+  & > ul:first-child {
+    padding-inline-start: 0;
+    margin-block-end: 0;
+
+    li {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+  }
+
+  button > * {
+    transition: transform 0.2s ease-in;
+  }
+
+  button.form-visible > * {
+    transform: rotate(45deg);
+  }
+
+  form {
+    transition: height 0.2s ease-out;
+    opacity: 0;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding-inline: 2px;
+    padding-block-end: 12px;
+
+    &.visible {
+      opacity: 1;
+    }
+    &:not(.visible) {
+      transition: height 0.2s ease-out, opacity 0.1s 0.2s linear;
+    }
+
+    .buttons {
+      display: flex;
+      justify-content: end;
+      gap: 12px;
+
+      button.primary {
+        --light: var(--action-colour);
+        --dark: var(--action-colour-dark);
+        background: linear-gradient(
+          var(--dark),
+          var(--light) 5%,
+          var(--dark) 95%
+        );
+      }
+    }
+  }
+
+  input {
+    border: 1px solid var(--border-colour);
+    border-radius: 4px;
+    padding: 8px;
+    font-size: 16px;
+  }
+}

@@ -118,7 +118,7 @@ form.add-task {
   }
 }
 
-.label {
+.label-tag {
   &.blue {
     --colour: hsl(200 80% 50% / 0.3);
   }

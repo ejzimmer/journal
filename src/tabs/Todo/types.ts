@@ -1,14 +1,18 @@
+import { NewTask } from "./AddTaskForm"
+
 export type Category = {
   text: string
   emoji: string
 }
+
+export type TaskType = "日付" | "週に" | "毎日" | "一度"
 
 export type Task = {
   id: string
   description: string
   category: Category
   lastUpdated: number
-  type: "日付" | "週に" | "毎日" | "一度"
+  type: TaskType
   status: "blocked" | "ready" | "in_progress" | "done" | "finished"
 }
 
@@ -29,4 +33,6 @@ export type TaskListProps<T extends Task> = {
   tasks?: T[]
   onChangeTask: (task: T) => void
   onDeleteTask: (task: T) => void
+  onCreateTask: (task: NewTask) => void
+  categories: Category[]
 }

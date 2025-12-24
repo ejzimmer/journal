@@ -2,13 +2,17 @@ import { useMemo, useRef } from "react"
 
 import "./Switch.css"
 
-type SwitchProps = {
-  options: string[]
-  value: string
-  onChange: (value: string) => void
+type SwitchProps<T extends string> = {
+  options: T[]
+  value: T
+  onChange: (value: T) => void
 }
 
-export function Switch({ options, value, onChange }: SwitchProps) {
+export function Switch<T extends string>({
+  options,
+  value,
+  onChange,
+}: SwitchProps<T>) {
   const radioGroupRef = useRef<HTMLDivElement>(null)
 
   const checkedOptionLabel = radioGroupRef.current

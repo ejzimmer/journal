@@ -79,7 +79,7 @@ export function Task({
           {task.labels?.map((label) => (
             <div
               key={label.value}
-              className={`label ${label.colour}`}
+              className={`label-tag ${label.colour}`}
               style={{ marginBlockStart: "-16px" }}
             >
               {label.value}

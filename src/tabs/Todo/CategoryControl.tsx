@@ -2,6 +2,10 @@ import { ReactNode, useState } from "react"
 import { Combobox } from "../../shared/controls/combobox/Combobox"
 import { Category } from "./types"
 
+import "./CategoryControl.css"
+import { TickIcon } from "../../shared/icons/Tick"
+import { XIcon } from "../../shared/icons/X"
+
 export type CategoryControlProps = {
   value?: Category
   onChange: (value?: Category) => void
@@ -31,7 +35,7 @@ export function CategoryControl({
   }
 
   return (
-    <div>
+    <div className="category-control">
       {value && value.emoji ? (
         <Combobox
           createOption={(text) => ({ text, emoji: "" })}
@@ -42,7 +46,7 @@ export function CategoryControl({
           Option={CategoryOption}
         />
       ) : (
-        <div style={{ display: "flex", gap: "8px" }}>
+        <>
           <input
             aria-label="Text"
             value={text}
@@ -51,11 +55,16 @@ export function CategoryControl({
           <input
             aria-label="Emoji"
             value={emoji}
+            size={1}
             onChange={(event) => setEmoji(event.target.value)}
           />
-          <button onClick={handleSubmit}>Create</button>
-          <button>Cancel</button>
-        </div>
+          <button className="icon outline" onClick={handleSubmit}>
+            <TickIcon width="16px" colour="var(--success-colour)" />
+          </button>
+          <button className="icon outline">
+            <XIcon width="16px" colour="var(--error-colour)" />
+          </button>
+        </>
       )}
     </div>
   )
