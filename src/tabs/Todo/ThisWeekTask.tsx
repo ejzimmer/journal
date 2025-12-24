@@ -3,7 +3,6 @@ import { DeleteButton } from "./DeleteButton"
 import { WeeklyTask } from "./types"
 
 import "./ThisWeekTask.css"
-import { TickIcon } from "../../shared/icons/Tick"
 
 export function ThisWeekTask({
   task,
@@ -18,48 +17,44 @@ export function ThisWeekTask({
     onChange({ ...task, completed: [] })
   }
 
-  const handleDone = () => {
+  const handleClick = (event: React.MouseEvent) => {
     if (!task.completed) {
       return
     }
 
-    onChange({ ...task, completed: [...task.completed, Date.now()] })
-  }
-
-  const undo = () => {
-    if (!task.completed) {
-      return
+    if (event.shiftKey) {
+      task.completed.pop()
+      onChange({ ...task, completed: [...task.completed] })
+    } else {
+      onChange({ ...task, completed: [...task.completed, Date.now()] })
     }
-
-    task.completed.pop()
-    onChange({ ...task, completed: [...task.completed] })
   }
 
-  const indicators = Array.from({ length: task.frequency }).map(
-    (_, index) => task.completed?.[index]
-  )
-  const remainder = task.completed ? task.completed.length - task.frequency : 0
+  const numberDone = (task.completed?.filter((date) => !!date) ?? []).length
+  const remainder = Math.max(numberDone - task.frequency, 0)
+  const percent = (1 / task.frequency) * 100
 
   return (
     <div className="weekly-task">
-      <button onClick={handleDone} className="ghost">
-        <TickIcon width="16px" colour="var(--action-colour)" />
+      <button onClick={handleClick} className="icon subtle">
+        {task.category.emoji}
       </button>
-      <EditableText
-        label="description"
-        onChange={(description) => onChange({ ...task, description })}
-      >
-        {task.description}
-      </EditableText>
-      <div className="indicators" onClick={undo}>
-        {indicators.map((date, index) => (
-          <span
-            key={index}
-            className={`emoji-indicator ${date ? "status-done" : ""}`}
-          >
-            {task.category.emoji}
-          </span>
-        ))}
+      <div style={{ flexGrow: 1 }}>
+        <EditableText
+          label="description"
+          onChange={(description) => onChange({ ...task, description })}
+        >
+          {task.description}
+        </EditableText>
+      </div>
+      <div className="indicators">
+        <progress
+          max={task.frequency}
+          value={numberDone}
+          style={{
+            background: `repeating-linear-gradient(to right, transparent, transparent ${percent}%, var(--body-colour-light) ${percent}%, var(--body-colour-light) calc(${percent}% + 1px))`,
+          }}
+        />
         {remainder > 0 && <span className="remainder">+{remainder}</span>}
       </div>
       <DeleteButton onDelete={onDelete} />

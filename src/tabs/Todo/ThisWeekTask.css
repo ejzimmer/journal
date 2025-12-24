@@ -7,7 +7,34 @@
   transition: all 0.2s ease-in;
 
   .remainder {
-    font-size: 0.7em;
+    position: absolute;
+    font-size: 0.8em;
+    font-weight: bold;
     margin-inline-start: 0.2em;
+    right: 0;
+    transform: translate(50%, -50%);
+    color: var(--body-colour-);
+  }
+
+  .indicators {
+    position: relative;
+    progress {
+      --light: hsl(108, 81%, 66%);
+      --dark: hsl(108, 81%, 36%);
+      appearance: none;
+      border-radius: 100px;
+      border: 2px solid white;
+      box-shadow: 1px 1px 2px hsl(0 0 0 /0.6), inset 0 0 1px hsl(0 0 0/0.5);
+      &::-moz-progress-bar {
+        background: linear-gradient(
+            to right,
+            var(--dark),
+            transparent 6%,
+            transparent 94%,
+            var(--dark)
+          ),
+          linear-gradient(var(--dark), var(--light), var(--dark));
+      }
+    }
   }
 }

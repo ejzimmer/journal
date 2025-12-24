@@ -16,8 +16,6 @@ import { DeleteButton } from "./DeleteButton"
 import { ThisWeekTask } from "./ThisWeekTask"
 import { RestartArrowIcon } from "../../shared/icons/RestartArrow"
 
-import "./Task.css"
-
 const STORAGE_KEY = "todo"
 
 export function Today() {
