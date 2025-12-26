@@ -1,8 +1,9 @@
-import { useRef, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { CategoryControl } from "./CategoryControl"
 import { FormModal } from "../../shared/controls/FormModal"
 import { CalendarTask, Category, Task, WeeklyTask } from "./types"
 import { FormControl } from "../../shared/controls/FormControl"
+import { PlusIcon } from "../../shared/icons/Plus"
 
 type MissingProps = "id" | "lastUpdated" | "status"
 type NewDailyTask = Omit<Task, MissingProps>
@@ -11,12 +12,15 @@ type NewCalendarTask = Omit<CalendarTask, MissingProps>
 
 export type NewTask = NewDailyTask | NewWeeklyTask | NewCalendarTask
 
-export type AddTaskFormProps = {
+export type AddTaskForm_OldProps = {
   categories: Category[]
   onSubmit: (task: NewTask) => void
 }
 
-export function AddTaskForm({ categories, onSubmit }: AddTaskFormProps) {
+export function AddTaskForm_Old({
+  categories,
+  onSubmit,
+}: AddTaskForm_OldProps) {
   const formRef = useRef<HTMLFormElement>(null)
   const dueDateRef = useRef<HTMLInputElement>(null)
   const [type, setType] = useState<Task["type"]>("一度")
@@ -138,5 +142,62 @@ export function AddTaskForm({ categories, onSubmit }: AddTaskFormProps) {
         <div key={e}>{e}</div>
       ))}
     </FormModal>
+  )
+}
+
+type AddTaskFormProps = {
+  children: React.ReactNode
+  onSubmit: () => boolean
+}
+
+export function AddTaskForm({ onSubmit, children }: AddTaskFormProps) {
+  const formRef = useRef<HTMLFormElement>(null)
+  const formHeightRef = useRef(0)
+
+  const [formVisible, setFormVisible] = useState(false)
+
+  useEffect(() => {
+    if (formRef.current) {
+      formHeightRef.current = formRef.current.scrollHeight
+    }
+  }, [])
+
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault()
+
+    if (onSubmit()) {
+      setFormVisible(false)
+    }
+  }
+
+  return (
+    <>
+      <button
+        className={`icon subtle ${formVisible ? "form-visible" : ""}`}
+        onClick={() => setFormVisible(!formVisible)}
+      >
+        <PlusIcon width="16px" />
+      </button>
+      <form
+        ref={formRef}
+        className={formVisible ? "visible" : ""}
+        style={{ height: formVisible ? formHeightRef.current : 0 }}
+        onSubmit={handleSubmit}
+      >
+        {children}
+        <div className="buttons">
+          <button type="submit" className="primary">
+            Create
+          </button>
+          <button
+            type="reset"
+            className="white outline"
+            onClick={() => setFormVisible(false)}
+          >
+            Cancel
+          </button>
+        </div>
+      </form>
+    </>
   )
 }

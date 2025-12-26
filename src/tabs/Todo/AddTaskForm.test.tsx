@@ -1,8 +1,8 @@
 import { fireEvent, render, screen } from "@testing-library/react"
-import { AddTaskForm, AddTaskFormProps } from "./AddTaskForm"
+import { AddTaskForm_Old, AddTaskForm_OldProps } from "./AddTaskForm"
 import userEvent from "@testing-library/user-event"
 
-const commonProps: AddTaskFormProps = {
+const commonProps: AddTaskForm_OldProps = {
   onSubmit: jest.fn(),
   categories: [
     { text: "Chore", emoji: "🧹" },
@@ -13,7 +13,7 @@ const commonProps: AddTaskFormProps = {
 describe("AddTaskForm", () => {
   it("show the fields relevant to the selected type", async () => {
     const user = userEvent.setup()
-    render(<AddTaskForm {...commonProps} />)
+    render(<AddTaskForm_Old {...commonProps} />)
 
     await user.click(screen.getByRole("button", { name: "Add task" }))
     const typeSelect = screen.getByRole("combobox", { name: "Type" })
@@ -40,7 +40,7 @@ describe("AddTaskForm", () => {
 
   it("attempts to submit the form when the enter key is pressed", async () => {
     const user = userEvent.setup()
-    render(<AddTaskForm {...commonProps} onSubmit={jest.fn()} />)
+    render(<AddTaskForm_Old {...commonProps} onSubmit={jest.fn()} />)
     await user.click(screen.getByRole("button", { name: "Add task" }))
 
     expect(screen.queryByText("Description required")).not.toBeInTheDocument()
@@ -54,7 +54,7 @@ describe("AddTaskForm", () => {
     it("shows a validation error & doesn't submit", async () => {
       const user = userEvent.setup()
       const onSubmit = jest.fn()
-      render(<AddTaskForm {...commonProps} onSubmit={onSubmit} />)
+      render(<AddTaskForm_Old {...commonProps} onSubmit={onSubmit} />)
       await user.click(screen.getByRole("button", { name: "Add task" }))
 
       await user.click(screen.getByRole("button", { name: "Create task" }))
@@ -68,7 +68,7 @@ describe("AddTaskForm", () => {
     it("submits the task with the correct defaults", async () => {
       const user = userEvent.setup()
       const onSubmit = jest.fn()
-      render(<AddTaskForm {...commonProps} onSubmit={onSubmit} />)
+      render(<AddTaskForm_Old {...commonProps} onSubmit={onSubmit} />)
       await user.click(screen.getByRole("button", { name: "Add task" }))
 
       await user.type(
@@ -89,7 +89,7 @@ describe("AddTaskForm", () => {
     it("submits the task correctly", async () => {
       const user = userEvent.setup()
       const onSubmit = jest.fn()
-      render(<AddTaskForm {...commonProps} onSubmit={onSubmit} />)
+      render(<AddTaskForm_Old {...commonProps} onSubmit={onSubmit} />)
       await user.click(screen.getByRole("button", { name: "Add task" }))
 
       await user.type(
@@ -114,7 +114,7 @@ describe("AddTaskForm", () => {
     it("defaults to frequency of 1", async () => {
       const user = userEvent.setup()
       const onSubmit = jest.fn()
-      render(<AddTaskForm {...commonProps} onSubmit={onSubmit} />)
+      render(<AddTaskForm_Old {...commonProps} onSubmit={onSubmit} />)
       await user.click(screen.getByRole("button", { name: "Add task" }))
 
       await user.type(
@@ -138,7 +138,7 @@ describe("AddTaskForm", () => {
       it("submits the task with the given frequency", async () => {
         const user = userEvent.setup()
         const onSubmit = jest.fn()
-        render(<AddTaskForm {...commonProps} onSubmit={onSubmit} />)
+        render(<AddTaskForm_Old {...commonProps} onSubmit={onSubmit} />)
         await user.click(screen.getByRole("button", { name: "Add task" }))
 
         await user.type(
@@ -170,7 +170,7 @@ describe("AddTaskForm", () => {
       it("shows a validation error an doesn't submit the form", async () => {
         const user = userEvent.setup()
         const onSubmit = jest.fn()
-        render(<AddTaskForm {...commonProps} onSubmit={onSubmit} />)
+        render(<AddTaskForm_Old {...commonProps} onSubmit={onSubmit} />)
         await user.click(screen.getByRole("button", { name: "Add task" }))
 
         await user.type(
@@ -192,7 +192,7 @@ describe("AddTaskForm", () => {
       it("submits the form", async () => {
         const user = userEvent.setup()
         const onSubmit = jest.fn()
-        render(<AddTaskForm {...commonProps} onSubmit={onSubmit} />)
+        render(<AddTaskForm_Old {...commonProps} onSubmit={onSubmit} />)
         await user.click(screen.getByRole("button", { name: "Add task" }))
 
         await user.type(

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react"
-import { AddTaskForm, NewTask } from "./AddTaskForm"
+import { AddTaskForm_Old, NewTask } from "./AddTaskForm"
 import { Category, isCalendarTask, isWeeklyTask, Task } from "./types"
 import { dailyReset } from "./dailyReset"
 import { hoursToMilliseconds } from "date-fns"
@@ -67,7 +67,7 @@ export function Today() {
 
   return (
     <>
-      <AddTaskForm
+      <AddTaskForm_Old
         onSubmit={addTask}
         categories={Array.from(categories.values())}
       />
