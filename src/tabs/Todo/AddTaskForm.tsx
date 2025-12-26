@@ -25,7 +25,6 @@ export function AddTaskForm_Old({
   const dueDateRef = useRef<HTMLInputElement>(null)
   const [type, setType] = useState<Task["type"]>("一度")
   const [category, setCategory] = useState<Category | undefined>(categories[0])
-  const [frequency, setFrequency] = useState<string | undefined>("1")
   const [errors, setErrors] = useState<string[]>([])
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>): boolean => {
@@ -47,9 +46,6 @@ export function AddTaskForm_Old({
     if (type === "日付" && !dueDateRef.current?.value) {
       errors.push("Due date required")
     }
-    if (type === "週に" && (!frequency || isNaN(Number.parseInt(frequency)))) {
-      errors.push("Frequency required")
-    }
     if (category?.text && !category.emoji) {
       errors.push("Pick an emoji for the category")
     }
@@ -69,14 +65,6 @@ export function AddTaskForm_Old({
           dueDate: new Date(dueDateRef.current?.value as string).getTime(),
         })
         break
-      case "週に":
-        onSubmit({
-          description: description.value,
-          frequency: Number.parseInt(frequency as string),
-          category,
-          type,
-        })
-        break
     }
 
     resetForm()
@@ -85,7 +73,6 @@ export function AddTaskForm_Old({
 
   const resetForm = () => {
     setCategory(categories[0])
-    setFrequency("1")
     setErrors([])
     formRef.current?.reset()
   }
@@ -119,20 +106,6 @@ export function AddTaskForm_Old({
           value={category}
         />
       </label>
-
-      {type === "週に" && (
-        <label>
-          Frequency
-          <input
-            min="1"
-            step="1"
-            type="number"
-            onChange={(event) => {
-              setFrequency(event.target.value)
-            }}
-          />
-        </label>
-      )}
       {type === "日付" && (
         <label>
           Due date <input type="date" ref={dueDateRef} />

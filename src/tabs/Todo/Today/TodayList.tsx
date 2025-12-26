@@ -1,7 +1,6 @@
 import { Task, TaskListProps } from "../types"
 import { TodayTask } from "./TodayTask"
 
-import "./TodayList.css"
 import { AddTodayTaskForm } from "./AddTodayTaskForm"
 
 export function TodayList({
@@ -19,7 +18,7 @@ export function TodayList({
     <div className="todo-task-list">
       <ul>
         {tasks.map((task) => (
-          <li key={task.id}>
+          <li key={task.id} className={`today-task status-${task.status}`}>
             <TodayTask
               task={task}
               onChange={onChangeTask}

@@ -5,12 +5,15 @@ import { NewTask, AddTaskForm } from "../AddTaskForm"
 import { CategoryControl } from "../CategoryControl"
 import { Category, TaskType } from "../types"
 
-type AddTaskFormProps = {
+type AddTodayTaskFormProps = {
   categories: Category[]
   onSubmit: (task: NewTask) => void
 }
 
-export function AddTodayTaskForm({ categories, onSubmit }: AddTaskFormProps) {
+export function AddTodayTaskForm({
+  categories,
+  onSubmit,
+}: AddTodayTaskFormProps) {
   const [description, setDescription] = useState("")
   const [taskType, setTaskType] = useState<TaskType>("一度")
   const [category, setCategory] = useState<Category | undefined>(categories[0])

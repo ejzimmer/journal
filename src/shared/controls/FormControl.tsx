@@ -8,10 +8,11 @@ type FormControlProps = {
   onChange?: (value: string) => void
   errors?: string[] | false
   type?: HTMLInputElement["type"]
+  size?: HTMLInputElement["size"]
 }
 
 export const FormControl = forwardRef<HTMLInputElement, FormControlProps>(
-  ({ label, value, onChange, type = "text", errors }, ref) => {
+  ({ label, value, onChange, type = "text", errors, ...props }, ref) => {
     const inputId = useId()
     const descriptionId = useId()
 
@@ -25,6 +26,7 @@ export const FormControl = forwardRef<HTMLInputElement, FormControlProps>(
           ref={ref}
           value={value}
           onChange={(event) => onChange?.(event.target.value)}
+          {...props}
         />
         {errors && (
           <div

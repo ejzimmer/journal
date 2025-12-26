@@ -4,7 +4,8 @@
   transition: inherit;
   cursor: pointer;
 
-  &.done {
+  &.done,
+  &.finished {
     text-shadow: none;
     filter: grayscale(60%);
   }

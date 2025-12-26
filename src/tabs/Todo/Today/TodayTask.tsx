@@ -1,9 +1,10 @@
 import { EditableText } from "../../../shared/controls/EditableText"
 import { DeleteButton } from "../DeleteButton"
-import { Task, TaskListProps } from "../types"
+import { Task } from "../types"
+
+import { EmojiCheckbox } from "./EmojiCheckbox"
 
 import "./TodayTask.css"
-import { EmojiCheckbox } from "./EmojiCheckbox"
 
 export function TodayTask({
   task,
@@ -25,20 +26,22 @@ export function TodayTask({
   }
 
   return (
-    <div className={`today-task status-${task.status}`}>
+    <>
       <EmojiCheckbox
         emoji={task.category.emoji}
         isChecked={task.status === "done" || task.status === "finished"}
         onChange={handleStatusChange}
         label={`${task.description} done`}
       />
-      <EditableText
-        label="description"
-        onChange={(description) => onChange({ ...task, description })}
-      >
-        {task.description}
-      </EditableText>
+      <div style={{ flexGrow: 1 }}>
+        <EditableText
+          label="description"
+          onChange={(description) => onChange({ ...task, description })}
+        >
+          {task.description}
+        </EditableText>
+      </div>
       <DeleteButton onDelete={onDelete} />
-    </div>
+    </>
   )
 }
