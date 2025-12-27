@@ -1,0 +1,29 @@
+.todo-task-list.calendar ul:first-child {
+  display: grid;
+  grid-template-columns: min-content 1fr max-content max-content;
+
+  & > li {
+    display: grid;
+    grid-template-columns: subgrid;
+    grid-column: 1/-1;
+
+    &.status-finished {
+      opacity: 0.4;
+
+      .description {
+        text-decoration: line-through;
+      }
+    }
+  }
+
+  .due-date {
+    color: currentColor;
+    border: 2px solid;
+    font-weight: bold;
+    font-size: 1.1em;
+
+    &.overdue {
+      color: var(--error-colour);
+    }
+  }
+}

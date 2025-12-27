@@ -35,7 +35,7 @@ export function ThisWeekTask({
   const percent = (1 / task.frequency) * 100
 
   return (
-    <div className="weekly-task">
+    <>
       <button onClick={handleClick} className="icon subtle">
         {task.category.emoji}
       </button>
@@ -58,6 +58,6 @@ export function ThisWeekTask({
         {remainder > 0 && <span className="remainder">+{remainder}</span>}
       </div>
       <DeleteButton onDelete={onDelete} />
-    </div>
+    </>
   )
 }

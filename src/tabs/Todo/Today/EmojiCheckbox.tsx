@@ -1,9 +1,10 @@
+import { ChangeEvent } from "react"
 import "./EmojiCheckbox.css"
 
 type EmojiCheckboxProps = {
   emoji: string
   isChecked: boolean
-  onChange: () => void
+  onChange: (event: React.ChangeEvent<HTMLInputElement>) => void
   label: string
 }
 

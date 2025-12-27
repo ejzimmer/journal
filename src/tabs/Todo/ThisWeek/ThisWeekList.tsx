@@ -14,13 +14,10 @@ export function ThisWeekList({
   }
 
   return (
-    <div className="todo-task-list">
+    <div className="todo-task-list weekly">
       <ul>
         {tasks.map((task) => (
-          <li
-            key={task.description}
-            style={{ display: "flex", gap: "10px", alignItems: "center" }}
-          >
+          <li key={task.description}>
             <ThisWeekTask
               task={task}
               onChange={onChangeTask}

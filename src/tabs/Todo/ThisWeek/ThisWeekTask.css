@@ -1,11 +1,4 @@
-.weekly-task {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 18px;
-  width: 100%;
-  transition: all 0.2s ease-in;
-
+.todo-task-list.weekly {
   .remainder {
     position: absolute;
     font-size: 0.8em;

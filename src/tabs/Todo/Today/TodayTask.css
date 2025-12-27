@@ -1,9 +1,6 @@
 .today-task {
   display: flex;
   width: 100%;
-  font-size: 18px;
-  transition: all 0.2s ease-in;
-  gap: 8px;
 
   &.status-done,
   &.status-finished {

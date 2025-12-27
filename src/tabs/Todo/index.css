@@ -1,6 +1,7 @@
 .todo-task-list {
   display: flex;
   flex-direction: column;
+  transition: all 0.2s ease-in;
 
   & > ul:first-child {
     padding-inline-start: 0;
@@ -10,6 +11,7 @@
       display: flex;
       gap: 10px;
       align-items: center;
+      font-size: 18px;
     }
   }
 
