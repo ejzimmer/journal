@@ -24,11 +24,6 @@ export type WeeklyTask = Task & {
 }
 export type CalendarTask = Task & { type: "日付"; dueDate: number }
 
-export const isWeeklyTask = (task: Task): task is WeeklyTask =>
-  task.type === "週に"
-export const isCalendarTask = (task: Task): task is CalendarTask =>
-  task.type === "日付"
-
 export type TaskListProps<T extends Task> = {
   tasks?: T[]
   onChangeTask: (task: T) => void

@@ -1,4 +1,4 @@
-import { useMemo, useRef } from "react"
+import { useEffect, useMemo, useRef, useState } from "react"
 
 import "./Switch.css"
 
@@ -14,16 +14,29 @@ export function Switch<T extends string>({
   onChange,
 }: SwitchProps<T>) {
   const radioGroupRef = useRef<HTMLDivElement>(null)
+  const [width, setWidth] = useState<number>()
+  const [left, setLeft] = useState<number>()
 
-  const checkedOptionLabel = radioGroupRef.current
-    ?.querySelector(`input[value="${value}"]`)
-    ?.closest("label")
-  const width = checkedOptionLabel?.clientWidth
-  const left = useMemo(() => {
-    const labelLeft = checkedOptionLabel?.getBoundingClientRect().left ?? 0
-    const parentLeft = radioGroupRef.current?.getBoundingClientRect().left ?? 0
-    return labelLeft - parentLeft - 1
-  }, [checkedOptionLabel])
+  useEffect(() => {
+    if (!radioGroupRef.current) {
+      return
+    }
+    const checkedOption = radioGroupRef.current.querySelector(
+      `input[value="${value}"]`
+    )
+    if (!checkedOption) {
+      return
+    }
+    const checkedOptionLabel = checkedOption.closest("label")
+    if (!checkedOptionLabel) {
+      return
+    }
+
+    setWidth(checkedOptionLabel.clientWidth)
+    const labelLeft = checkedOptionLabel.getBoundingClientRect().left ?? 0
+    const parentLeft = radioGroupRef.current.getBoundingClientRect().left ?? 0
+    setLeft(labelLeft - parentLeft - 1)
+  }, [value])
 
   const borderRadiusLeft = value === options[0] ? "inherit" : undefined
   const borderRadiusRight =
@@ -39,7 +52,7 @@ export function Switch<T extends string>({
             value={option}
             name="switch-option"
             checked={value === option}
-            onClick={() => onChange(option)}
+            onChange={() => onChange(option)}
           />
         </label>
       ))}

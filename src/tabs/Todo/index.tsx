@@ -1,10 +1,7 @@
-import React, { useEffect, useState } from "react"
+import React, { useState } from "react"
 import { NewTask } from "./AddTaskForm"
-import { Category, isCalendarTask, isWeeklyTask, Task } from "./types"
-import { dailyReset } from "./dailyReset"
-import { hoursToMilliseconds } from "date-fns"
+import { CalendarTask, Category, Task, WeeklyTask } from "./types"
 import { TodayList } from "./Today/TodayList"
-import { RestartArrowIcon } from "../../shared/icons/RestartArrow"
 import { ThisWeekList } from "./ThisWeek/ThisWeekList"
 import { DueDateList } from "./DueDate/DueDateList"
 
@@ -12,84 +9,81 @@ import "./index.css"
 
 const STORAGE_KEY = "todo"
 
+type Tasks = Record<Task["type"], Task[]>
+
 export function Today() {
-  const [tasks, setTasks] = useState<Task[]>(() => {
+  const [tasks, setTasks] = useState<Tasks>(() => {
     const stored = localStorage.getItem(STORAGE_KEY)
-    return stored ? JSON.parse(stored) : []
+    return stored ? JSON.parse(stored) : {}
   })
 
-  const saveTasks = (tasks: Task[]) => {
+  const saveTasks = (tasks: Tasks) => {
     setTasks(tasks)
     localStorage.setItem(STORAGE_KEY, JSON.stringify(tasks))
   }
 
   const addTask = (task: NewTask) => {
     const id = crypto.randomUUID()
-    saveTasks([
+    saveTasks({
       ...tasks,
-      { id, ...task, lastUpdated: Date.now(), status: "ready" },
-    ])
+      [task.type]: [
+        ...tasks[task.type],
+        { id, ...task, lastUpdated: Date.now(), status: "ready" },
+      ],
+    })
   }
-
-  const groupedTasks = Object.groupBy(tasks, (task) => task.type)
 
   // For the categories dropdown
   const categories = new Map<string, Category>()
-  tasks.forEach((task) => {
-    categories.set(task.category.text, task.category)
-  })
+  Object.values(tasks)
+    .flat()
+    .forEach((task) => {
+      categories.set(task.category.text, task.category)
+    })
 
   const updateTask = (task: Task) => {
-    const index = tasks.findIndex((t) => t.id === task.id)
+    const tasksOfType = tasks[task.type]
+    const index = tasksOfType.findIndex((t) => t.id === task.id)
     if (index > -1) {
-      saveTasks(
-        tasks.with(index, { ...task, lastUpdated: new Date().getTime() })
-      )
+      saveTasks({
+        ...tasks,
+        [task.type]: tasksOfType.with(index, {
+          ...task,
+          lastUpdated: new Date().getTime(),
+        }),
+      })
     }
   }
 
   const deleteTask = (task: Task) => {
-    const index = tasks.findIndex((t) => t.id === task.id)
+    const tasksOfType = tasks[task.type]
+    const index = tasksOfType.findIndex((t) => t.id === task.id)
     if (index > -1) {
-      saveTasks(tasks.toSpliced(index, 1))
+      saveTasks({
+        ...tasks,
+        [task.type]: tasksOfType.toSpliced(index, 1),
+      })
     }
   }
-
-  useEffect(() => {
-    console.log("tasks changed, effect fired")
-    const timer = setTimeout(() => {
-      console.log("reset timer ended, updating tasks")
-      setTasks(dailyReset(tasks))
-    }, hoursToMilliseconds(1))
-
-    return () => clearTimeout(timer)
-  }, [tasks])
-
   return (
     <>
-      <button className="ghost" onClick={() => setTasks(dailyReset(tasks))}>
-        <RestartArrowIcon width="20px" />
-      </button>
       <div style={{ display: "flex", flexWrap: "wrap", gap: "80px" }}>
         <TodayList
-          tasks={[
-            ...(groupedTasks["毎日"] ?? []),
-            ...(groupedTasks["一度"] ?? []),
-          ]}
+          tasks={[...(tasks["毎日"] ?? []), ...(tasks["一度"] ?? [])]}
           onChangeTask={updateTask}
           onDeleteTask={deleteTask}
           onCreateTask={addTask}
           categories={categories.values().toArray()}
         />
         <ThisWeekList
-          tasks={tasks.filter(isWeeklyTask)}
+          tasks={tasks["週に"] as WeeklyTask[]}
           onChangeTask={updateTask}
           onDeleteTask={deleteTask}
           onCreateTask={addTask}
           categories={categories.values().toArray()}
         />
         <DueDateList
-          tasks={tasks.filter(isCalendarTask)}
+          tasks={tasks["日付"] as CalendarTask[]}
           onChangeTask={updateTask}
           onDeleteTask={deleteTask}
           onCreateTask={addTask}
