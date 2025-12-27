@@ -4,15 +4,15 @@ import { NewTask, AddTaskForm } from "../AddTaskForm"
 import { CategoryControl } from "../CategoryControl"
 import { Category } from "../types"
 
-type AddThisWeekFormProps = {
+type AddDueDateFormProps = {
   categories: Category[]
   onSubmit: (task: NewTask) => void
 }
 
-export function AddThisWeekTaskForm({
+export function AddDueDateTaskForm({
   categories,
   onSubmit,
-}: AddThisWeekFormProps) {
+}: AddDueDateFormProps) {
   const [description, setDescription] = useState("")
   const [category, setCategory] = useState<Category | undefined>(categories[0])
   const [frequency, setFrequency] = useState<string | undefined>("1")

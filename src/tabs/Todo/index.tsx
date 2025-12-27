@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react"
-import { AddTaskForm_Old, NewTask } from "./AddTaskForm"
+import { NewTask } from "./AddTaskForm"
 import { Category, isCalendarTask, isWeeklyTask, Task } from "./types"
 import { dailyReset } from "./dailyReset"
 import { hoursToMilliseconds } from "date-fns"
@@ -67,10 +67,6 @@ export function Today() {
 
   return (
     <>
-      <AddTaskForm_Old
-        onSubmit={addTask}
-        categories={Array.from(categories.values())}
-      />
       <button className="ghost" onClick={() => setTasks(dailyReset(tasks))}>
         <RestartArrowIcon width="20px" />
       </button>

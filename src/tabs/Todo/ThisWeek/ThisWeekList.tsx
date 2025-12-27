@@ -1,5 +1,5 @@
 import { TaskListProps, WeeklyTask } from "../types"
-import { AddThisWeekTaskForm } from "./AddThisWeekForm"
+import { AddThisWeekTaskForm } from "./AddThisWeekTaskForm"
 import { ThisWeekTask } from "./ThisWeekTask"
 
 export function ThisWeekList({
