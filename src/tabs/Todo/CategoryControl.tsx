@@ -37,7 +37,7 @@ export function CategoryControl({
 
   return (
     <div className="category-control">
-      {value && value.emoji ? (
+      {!text ? (
         <Combobox
           createOption={(text) => ({ text, emoji: "" })}
           label="Category"
@@ -59,10 +59,14 @@ export function CategoryControl({
             size={1}
             onChange={(event) => setEmoji(event.target.value)}
           />
-          <button className="icon outline" onClick={handleSubmit}>
+          <button
+            aria-label="Create"
+            className="icon outline"
+            onClick={handleSubmit}
+          >
             <TickIcon width="16px" colour="var(--success-colour)" />
           </button>
-          <button className="icon outline">
+          <button aria-label="Cancel" className="icon outline">
             <XIcon width="16px" colour="var(--error-colour)" />
           </button>
         </>
