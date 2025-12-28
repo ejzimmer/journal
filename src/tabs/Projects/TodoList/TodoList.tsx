@@ -1,5 +1,4 @@
 import { Fragment, useEffect, useMemo, useState } from "react"
-import { resortList, sortItems } from "../utilities"
 import { Item } from "./Item"
 import { TodoItem, Category, COLOURS } from "./types"
 
@@ -22,20 +21,7 @@ export function TodoList({
   currentList,
   otherLists,
 }: Props) {
-  const sortedItems = useMemo(() => [...items].sort(sortItems), [items])
-  const [filteredItems, setFilteredItems] = useState(sortedItems)
-
-  const onMoveToTop = (sourceIndex: number) => {
-    const opts = {
-      source: {
-        index: sourceIndex,
-      },
-      destination: {
-        index: 0,
-      },
-    }
-    resortList(opts, sortedItems, onReorder)
-  }
+  const [filteredItems, setFilteredItems] = useState(items)
 
   return (
     <div>
@@ -52,11 +38,7 @@ export function TodoList({
         }}
       >
         <Total items={items} />
-        <FilterByCategory
-          id={id}
-          items={sortedItems}
-          setItems={setFilteredItems}
-        />
+        <FilterByCategory id={id} items={items} setItems={setFilteredItems} />
       </div>
       <ul
         style={{
@@ -73,7 +55,7 @@ export function TodoList({
               otherLists={otherLists}
               onChange={onChangeItem}
               onDelete={onDeleteItem}
-              onMoveToTop={() => onMoveToTop(index)}
+              onMoveToTop={() => undefined}
             />
           </li>
         ))}

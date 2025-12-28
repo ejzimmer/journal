@@ -1,6 +1,6 @@
 import { ChangeEvent, FormEvent, useContext, useState } from "react"
-import { FirebaseContext } from "../FirebaseContext"
 import { Category, COLOURS } from "./types"
+import { FirebaseContext } from "../../../shared/FirebaseContext"
 
 interface Props {
   list: string

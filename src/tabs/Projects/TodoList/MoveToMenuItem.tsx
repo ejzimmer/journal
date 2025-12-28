@@ -1,7 +1,7 @@
 import { useContext } from "react"
-import { FirebaseContext } from "../FirebaseContext"
 import { TodoItem } from "./types"
-import { Menu } from "../controls/Menu"
+import { Menu } from "../../../shared/controls/Menu"
+import { FirebaseContext } from "../../../shared/FirebaseContext"
 
 type Props = {
   source: string

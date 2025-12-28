@@ -1,7 +1,7 @@
 import { Edge } from "@atlaskit/pragmatic-drag-and-drop-hitbox/closest-edge"
 
 import { Destination } from "../../shared/drag-and-drop/types"
-import { Item } from "../../shared/TaskList/types"
+import { Item } from "../../shared/types"
 
 export const draggableTypeKey = Symbol("draggableType")
 

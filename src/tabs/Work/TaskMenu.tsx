@@ -3,7 +3,7 @@ import { ConfirmationModal } from "../../shared/controls/ConfirmationModal"
 import { Menu } from "../../shared/controls/Menu"
 import { ArrowRightIcon } from "../../shared/icons/ArrowRight"
 import { RubbishBinIcon } from "../../shared/icons/RubbishBin"
-import { Item } from "../../shared/TaskList/types"
+import { Item } from "../../shared/types"
 
 import "./TaskList.css"
 import { ModalTriggerProps } from "../../shared/controls/Modal"

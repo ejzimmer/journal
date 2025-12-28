@@ -1,11 +1,10 @@
 import { ChangeEvent } from "react"
-import { DeleteMenuItem } from "../DeleteMenuItem"
 import { Category, COLOURS, TodoItem } from "./types"
 import { isToday } from "date-fns"
 import { SlArrowDown } from "react-icons/sl"
 import { MoveToMenuItem } from "./MoveToMenuItem"
 
-import { Menu } from "../controls/Menu"
+import { Menu } from "../../../shared/controls/Menu"
 
 interface Props {
   item: TodoItem
@@ -76,7 +75,6 @@ export function Item({
                     item={item}
                   />
                 ))}
-              <DeleteMenuItem task={item} onDelete={() => onDelete(item)} />
             </>
           )}
         </Menu>

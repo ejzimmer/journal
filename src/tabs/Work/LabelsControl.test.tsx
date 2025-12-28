@@ -5,7 +5,7 @@ import {
   LabelsControl,
   LabelsControlProps,
 } from "./LabelsControl"
-import { COLOURS, Label } from "../../shared/TaskList/types"
+import { COLOURS, Label } from "../../shared/types"
 import { LabelsContext } from "./LabelsContext"
 
 const mockOptions: Label[] = [

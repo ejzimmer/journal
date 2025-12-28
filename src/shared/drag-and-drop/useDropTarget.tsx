@@ -9,7 +9,7 @@ import {
   sortByOrder,
 } from "../../tabs/Work/drag-utils"
 import { FirebaseContext } from "../FirebaseContext"
-import { Item } from "../TaskList/types"
+import { Item } from "../types"
 
 type TaskData = { itemId: string; parentId: string; position: number }
 

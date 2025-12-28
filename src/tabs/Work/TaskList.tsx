@@ -9,7 +9,7 @@ import {
 } from "react"
 import { EditableText } from "../../shared/controls/EditableText"
 import { AddTaskForm } from "./AddTaskForm"
-import { Item } from "../../shared/TaskList/types"
+import { Item } from "../../shared/types"
 import { Task } from "./Task"
 import {
   getListData,

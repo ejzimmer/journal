@@ -1,5 +1,5 @@
 import { ReactNode, useContext, useMemo } from "react"
-import { Label, COLOURS, Colour } from "../../shared/TaskList/types"
+import { Label, COLOURS, Colour } from "../../shared/types"
 import { LabelsContext } from "./LabelsContext"
 import { Combobox } from "../../shared/controls/combobox/Combobox"
 

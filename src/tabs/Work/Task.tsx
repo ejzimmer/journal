@@ -1,5 +1,4 @@
-import { ItemDescription } from "../../shared/TaskList/ItemDescription"
-import { Item, Label } from "../../shared/TaskList/types"
+import { Item, Label } from "../../shared/types"
 import { EditableDate } from "../../shared/controls/EditableDate"
 import { useCallback, useState } from "react"
 import { getTaskData, isTask } from "./drag-utils"
@@ -12,6 +11,7 @@ import { DragHandle } from "../../shared/drag-and-drop/DragHandle"
 import { XIcon } from "../../shared/icons/X"
 import { PlusIcon } from "../../shared/icons/Plus"
 import { LabelsControl } from "./LabelsControl"
+import { EditableText } from "../../shared/controls/EditableText"
 
 type TaskProps = {
   task: Item
@@ -71,11 +71,17 @@ export function Task({
             alignItems: "center",
           }}
         >
-          <ItemDescription
-            description={task.description}
+          <EditableText
             onChange={(description) => onChange({ ...task, description })}
-            isDone={task.status === "done"}
-          />
+            label={`Edit description ${task.description}`}
+            className="inline"
+            style={{
+              textDecoration: task.status === "done" ? "line-through" : "none",
+            }}
+          >
+            {task.description}
+          </EditableText>
+
           {task.labels?.map((label) => (
             <div
               key={label.value}
