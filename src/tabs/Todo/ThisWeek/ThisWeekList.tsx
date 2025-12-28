@@ -20,7 +20,7 @@ export function ThisWeekList() {
     task.completed?.some(moreThanAWeekAgo)
   )
   readyForReset.forEach((task) =>
-    storageContext.updateItem(PARENT_LIST, {
+    storageContext.updateItem<WeeklyTask>(PARENT_LIST, {
       ...task,
       completed: task.completed?.map((date) =>
         moreThanAWeekAgo(date) ? undefined : date

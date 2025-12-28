@@ -19,7 +19,7 @@ export function Work() {
   if (!context) {
     throw new Error("Missing Firebase context provider")
   }
-  const { addItem, useValue, updateItem, deleteItem } = context
+  const { addItem, useValue, updateItem, deleteItem, updateList } = context
   const { value: lists, loading: listsLoading } = useValue<Item>(WORK_KEY)
 
   const doneList = useMemo(() => {
@@ -65,18 +65,9 @@ export function Work() {
         ...getTarget(originIndex, destination, orderedLists.length),
         axis: "vertical", // keeping it vertical so getTarget works right, might need to change this
       })
-      updateItem(
-        WORK_KEY,
-        updatedLists.reduce(
-          (lists, list, index) => ({
-            ...lists,
-            [list.id]: { ...list, order: index },
-          }),
-          {}
-        )
-      )
+      updateList(WORK_KEY, updatedLists)
     },
-    [orderedLists, updateItem]
+    [orderedLists, updateList]
   )
 
   const onUpdate = useCallback(() => {
@@ -98,7 +89,10 @@ export function Work() {
         }
 
         if (task.status === "done") {
-          addItem(`${WORK_KEY}/${doneList.id}/items`, task)
+          addItem(`${WORK_KEY}/${doneList.id}/items`, {
+            ...task,
+            lastUpdated: new Date().getTime(),
+          })
           deleteItem(`${WORK_KEY}/${list.id}/items`, task)
         }
       })
@@ -175,10 +169,16 @@ export function Work() {
                       if (!task.dueDate) {
                         delete item.dueDate
                       }
-                      addItem(`${WORK_KEY}/${list.id}/items`, item)
+                      addItem(`${WORK_KEY}/${list.id}/items`, {
+                        ...item,
+                        lastUpdated: new Date().getTime(),
+                      })
                     }}
                     onChangeTask={(task: Item) => {
-                      updateItem(`${WORK_KEY}/${list.id}/items`, task)
+                      updateItem(`${WORK_KEY}/${list.id}/items`, {
+                        ...task,
+                        lastUpdated: new Date().getTime(),
+                      })
                     }}
                     onReorderTasks={(tasks: Item[]) => {
                       updateItem(WORK_KEY, {
@@ -214,11 +214,15 @@ export function Work() {
                           addItem(`${WORK_KEY}/${destination.id}/items`, {
                             ...task,
                             order: position,
+                            lastUpdated: new Date().getTime(),
                           })
                           deleteItem(`${WORK_KEY}/${list.id}/items`, task)
                         }}
                         onChange={(task: Item) =>
-                          updateItem(`${WORK_KEY}/${list.id}/items`, task)
+                          updateItem(`${WORK_KEY}/${list.id}/items`, {
+                            ...task,
+                            lastUpdated: new Date().getTime(),
+                          })
                         }
                         onMoveToTop={() => {
                           if (!list.items) return

@@ -6,7 +6,7 @@ import { CategoryControl } from "../CategoryControl"
 import { Category } from "../types"
 import { CategoriesContext } from ".."
 import { FirebaseContext } from "../../../shared/FirebaseContext"
-import { Daily, PARENT_LIST } from "./types"
+import { Daily, DailyTask, PARENT_LIST } from "./types"
 
 export function AddTodayTaskForm() {
   const storageContext = useContext(FirebaseContext)
@@ -28,7 +28,7 @@ export function AddTodayTaskForm() {
       return false
     }
 
-    storageContext.addItem(PARENT_LIST, {
+    storageContext.addItem<DailyTask>(PARENT_LIST, {
       description,
       category,
       type: taskType,

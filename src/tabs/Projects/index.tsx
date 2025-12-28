@@ -15,11 +15,8 @@ export function Todo() {
   if (!context) {
     throw new Error("missing firebase context")
   }
-  const {
-    subscribe: subscribeToList,
-    updateItem: updateItemInList,
-    deleteItem: deleteItemFromList,
-  } = context
+  const { updateItem: updateItemInList, deleteItem: deleteItemFromList } =
+    context
 
   const onNewItem = useCallback(
     (item: any) => {
@@ -75,13 +72,13 @@ export function Todo() {
     [setItems, updateItemInList]
   )
 
-  useEffect(() => {
-    subscribeToList(TODO_KEY, {
-      onAdd: onNewItem,
-      onChange: onChangeItem,
-      onDelete: onDeleteItem,
-    })
-  }, [onNewItem, onChangeItem, onDeleteItem, setItems, subscribeToList])
+  // useEffect(() => {
+  //   subscribeToList(TODO_KEY, {
+  //     onAdd: onNewItem,
+  //     onChange: onChangeItem,
+  //     onDelete: onDeleteItem,
+  //   })
+  // }, [onNewItem, onChangeItem, onDeleteItem, setItems, subscribeToList])
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>

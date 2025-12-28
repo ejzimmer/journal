@@ -1,34 +1,18 @@
-import {
-  ref,
-  set,
-  onValue,
-  Database,
-  push,
-  onChildAdded,
-  onChildChanged,
-  onChildRemoved,
-  remove,
-} from "firebase/database"
+import { ref, set, onValue, Database, push, remove } from "firebase/database"
 import { createContext, useEffect, useState } from "react"
-import { TodoItem } from "../tabs/Projects/TodoList/types"
 
-type CrudFunction = (item: TodoItem) => void
-export type ParentCrudFunction = (parentId: string, item: any) => void
+type Item = { id: string }
 
-interface CrudFunctions {
-  onAdd: CrudFunction
-  onChange: CrudFunction
-  onDelete: CrudFunction
-}
+export type ParentCrudFunction = <T extends Item>(
+  parentId: string,
+  item: T
+) => void
 
 interface ContextType {
-  subscribe: (parentName: string, { onAdd, onChange }: CrudFunctions) => void
-  addItem: (parentName: string, item: any) => string | null
+  addItem: <T>(parentName: string, item: Omit<T, "id">) => void
   updateItem: ParentCrudFunction
   deleteItem: ParentCrudFunction
-  updateList: <T extends { id: string }>(listName: string, list: T[]) => void
-  write: (key: string, data: any) => void
-  read: (key: string, onChange: (value: any) => void) => void
+  updateList: <T extends Item>(listName: string, list: T[]) => void
   useValue: <T>(key: string) => { value?: Record<string, T>; loading: boolean }
 }
 
@@ -36,31 +20,21 @@ export const FirebaseContext = createContext<ContextType | undefined>(undefined)
 
 export function createFirebaseContext(database: Database): ContextType {
   return {
-    subscribe: (objectName, { onAdd, onChange, onDelete }) => {
-      const reference = ref(database, objectName)
-      onChildAdded(reference, (snapshot) => {
-        onAdd({ id: snapshot.key, ...snapshot.val() })
-      })
-      onChildChanged(reference, (snapshot) => onChange(snapshot.val()))
-      onChildRemoved(reference, (snapshot) => onDelete(snapshot.val()))
-    },
     addItem: (parent, item) => {
       const reference = ref(database, parent)
       const newItemReference = push(reference)
       set(newItemReference, {
         ...item,
         id: newItemReference.key,
-        lastUpdated: new Date().getTime(),
       })
-      return newItemReference.key
     },
     updateItem: (parent, item) => {
       if (item.id) {
         const reference = ref(database, `${parent}/${item.id}`)
-        set(reference, { ...item, lastUpdated: new Date().getTime() })
+        set(reference, item)
       } else {
         const reference = ref(database, parent)
-        set(reference, { ...item, lastUpdated: new Date().getTime() })
+        set(reference, item)
       }
     },
     deleteItem: (parent, item) => {
@@ -73,15 +47,6 @@ export function createFirebaseContext(database: Database): ContextType {
         return items
       }, {} as Record<string, T>)
       set(ref(database, listName), map)
-    },
-    write: (key: string, data: any) => {
-      set(ref(database, key), data)
-    },
-    read: (key: string, onChange: (value: any) => void) => {
-      const reference = ref(database, key)
-      onValue(reference, (snapshot) => {
-        onChange(snapshot.val())
-      })
     },
     useValue: (key: string) => {
       const [result, setResult] = useState<any>({ loading: true })

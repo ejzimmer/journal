@@ -13,7 +13,7 @@ export function DueDateTask({ task }: { task: CalendarTask }) {
   }
 
   const onChange = (task: CalendarTask) => context.updateItem(PARENT_LIST, task)
-  const onDelete = () => context.deleteItem(PARENT_LIST, task)
+  const onDelete = () => context.deleteItem<CalendarTask>(PARENT_LIST, task)
 
   return (
     <>

@@ -145,8 +145,10 @@ export function useDropTarget({ topLevelKey }: DroppableListProps) {
             addItem(`${topLevelKey}/${targetListId}/items`, {
               ...task,
               order: targetListIndex,
+              lastUpdated: new Date().getTime(),
             })
-            deleteItem(`${topLevelKey}/${sourceList.id}/items`, task)
+
+            if (task) deleteItem(`${topLevelKey}/${sourceList.id}/items`, task)
           }
         } else if (isList(sourceData)) {
           const targetListData = dropTargets.find(({ data }) => isList(data))

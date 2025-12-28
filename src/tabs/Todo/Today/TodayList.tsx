@@ -20,11 +20,13 @@ export function TodayList() {
   const finishedTasks = tasks.filter((task) =>
     updatedYesterday(task, "finished")
   )
-  finishedTasks.forEach((task) => storageContext.deleteItem(PARENT_LIST, task))
+  finishedTasks.forEach((task) =>
+    storageContext.deleteItem<DailyTask>(PARENT_LIST, task)
+  )
 
   const readyToReset = tasks.filter((task) => updatedYesterday(task, "done"))
   readyToReset.forEach((task) =>
-    storageContext.updateItem(PARENT_LIST, {
+    storageContext.updateItem<DailyTask>(PARENT_LIST, {
       ...task,
       status: "ready",
       lastCompleted: new Date().getTime(),

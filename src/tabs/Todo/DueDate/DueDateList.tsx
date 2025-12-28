@@ -22,7 +22,7 @@ export function DueDateList() {
   if (readyToReset) {
     const finishedTasks = tasks.filter(taskIsFinished)
     finishedTasks.forEach((task) =>
-      storageContext.deleteItem(PARENT_LIST, task)
+      storageContext.deleteItem<CalendarTask>(PARENT_LIST, task)
     )
   }
 

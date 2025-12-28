@@ -17,7 +17,7 @@ export function TodayTask({ task }: { task: DailyTask }) {
   console.log("task", task)
 
   const onChange = (task: DailyTask) => {
-    storageContext.updateItem(PARENT_LIST, task)
+    storageContext.updateItem<DailyTask>(PARENT_LIST, task)
   }
 
   const handleStatusChange = () => {
@@ -53,7 +53,7 @@ export function TodayTask({ task }: { task: DailyTask }) {
         </EditableText>
       </div>
       <DeleteButton
-        onDelete={() => storageContext.deleteItem(PARENT_LIST, task)}
+        onDelete={() => storageContext.deleteItem<DailyTask>(PARENT_LIST, task)}
       />
     </>
   )

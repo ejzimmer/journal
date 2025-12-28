@@ -6,7 +6,7 @@ import { Category } from "../types"
 import { EditableDate } from "../../../shared/controls/EditableDate"
 import { FirebaseContext } from "../../../shared/FirebaseContext"
 import { CategoriesContext } from ".."
-import { PARENT_LIST } from "./types"
+import { CalendarTask, PARENT_LIST } from "./types"
 
 export function AddDueDateTaskForm() {
   const storageContext = useContext(FirebaseContext)
@@ -30,7 +30,7 @@ export function AddDueDateTaskForm() {
       return false
     }
 
-    storageContext.addItem(PARENT_LIST, {
+    storageContext.addItem<CalendarTask>(PARENT_LIST, {
       description,
       category,
       dueDate,

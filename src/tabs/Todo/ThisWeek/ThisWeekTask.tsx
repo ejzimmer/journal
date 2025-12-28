@@ -13,7 +13,7 @@ export function ThisWeekTask({ task }: { task: WeeklyTask }) {
   }
 
   const onChange = (task: WeeklyTask) => {
-    storageContext.updateItem(PARENT_LIST, task)
+    storageContext.updateItem<WeeklyTask>(PARENT_LIST, task)
   }
 
   const handleClick = (event: React.MouseEvent) => {
@@ -57,7 +57,9 @@ export function ThisWeekTask({ task }: { task: WeeklyTask }) {
         {remainder > 0 && <span className="remainder">+{remainder}</span>}
       </div>
       <DeleteButton
-        onDelete={() => storageContext.deleteItem(PARENT_LIST, task)}
+        onDelete={() =>
+          storageContext.deleteItem<WeeklyTask>(PARENT_LIST, task)
+        }
       />
     </>
   )
