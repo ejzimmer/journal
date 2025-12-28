@@ -1,10 +1,20 @@
+import { useContext } from "react"
 import { EditableDate } from "../../../shared/controls/EditableDate"
 import { EditableText } from "../../../shared/controls/EditableText"
 import { DeleteButton } from "../DeleteButton"
 import { EmojiCheckbox } from "../Today/EmojiCheckbox"
-import { Calendar, TaskProps } from "../types"
+import { FirebaseContext } from "../../../shared/FirebaseContext"
+import { CalendarTask, PARENT_LIST } from "./types"
 
-export function DueDateTask({ task, onChange, onDelete }: TaskProps<Calendar>) {
+export function DueDateTask({ task }: { task: CalendarTask }) {
+  const context = useContext(FirebaseContext)
+  if (!context) {
+    throw new Error("Missing Firebase context provider")
+  }
+
+  const onChange = (task: CalendarTask) => context.updateItem(PARENT_LIST, task)
+  const onDelete = () => context.deleteItem(PARENT_LIST, task)
+
   return (
     <>
       <EmojiCheckbox

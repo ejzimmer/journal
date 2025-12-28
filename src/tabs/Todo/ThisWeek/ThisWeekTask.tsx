@@ -1,17 +1,24 @@
+import { useContext } from "react"
 import { EditableText } from "../../../shared/controls/EditableText"
 import { DeleteButton } from "../DeleteButton"
-import { TaskProps, Weekly } from "../types"
 
 import "./ThisWeekTask.css"
+import { FirebaseContext } from "../../../shared/FirebaseContext"
+import { PARENT_LIST, WeeklyTask } from "./types"
 
-export function ThisWeekTask({ task, onChange, onDelete }: TaskProps<Weekly>) {
-  if (!Array.isArray(task.completed)) {
-    onChange({ ...task, completed: [] })
+export function ThisWeekTask({ task }: { task: WeeklyTask }) {
+  const storageContext = useContext(FirebaseContext)
+  if (!storageContext) {
+    throw new Error("Missing Firebase context provider")
+  }
+
+  const onChange = (task: WeeklyTask) => {
+    storageContext.updateItem(PARENT_LIST, task)
   }
 
   const handleClick = (event: React.MouseEvent) => {
     if (!task.completed) {
-      return
+      task.completed = []
     }
 
     if (event.shiftKey) {
@@ -49,7 +56,9 @@ export function ThisWeekTask({ task, onChange, onDelete }: TaskProps<Weekly>) {
         />
         {remainder > 0 && <span className="remainder">+{remainder}</span>}
       </div>
-      <DeleteButton onDelete={onDelete} />
+      <DeleteButton
+        onDelete={() => storageContext.deleteItem(PARENT_LIST, task)}
+      />
     </>
   )
 }

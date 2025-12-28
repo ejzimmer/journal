@@ -172,7 +172,6 @@ export function Work() {
                         ...task,
                         status: "not_started",
                       }
-                      console.log("adding task", item)
                       if (!task.dueDate) {
                         delete item.dueDate
                       }
@@ -228,7 +227,6 @@ export function Work() {
                             Object.entries(list.items).map(
                               ([id, item], index) => {
                                 if (id !== task.id) {
-                                  console.log("order", item.order)
                                   return [
                                     id,
                                     {

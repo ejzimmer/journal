@@ -1,28 +1,27 @@
-import { useId, useState } from "react"
+import { useContext, useId, useState } from "react"
 import { FormControl } from "../../../shared/controls/FormControl"
 import { AddTaskForm } from "../AddTaskForm"
 import { CategoryControl } from "../CategoryControl"
-import { Category, Task } from "../types"
+import { Category } from "../types"
 import { EditableDate } from "../../../shared/controls/EditableDate"
+import { FirebaseContext } from "../../../shared/FirebaseContext"
+import { CategoriesContext } from ".."
+import { PARENT_LIST } from "./types"
 
-export type TaskDetails = {
-  description: Task["description"]
-  category: Task["category"]
-  dueDate: number
-}
+export function AddDueDateTaskForm() {
+  const storageContext = useContext(FirebaseContext)
+  if (!storageContext) {
+    throw new Error("Missing Firebase context provider")
+  }
 
-type AddDueDateFormProps = {
-  categories: Category[]
-  onSubmit: (task: TaskDetails) => void
-}
+  const categories = useContext(CategoriesContext)
+  if (!categories) {
+    throw new Error("Missing categories context provider")
+  }
 
-export function AddDueDateTaskForm({
-  categories,
-  onSubmit,
-}: AddDueDateFormProps) {
   const [description, setDescription] = useState("")
   const [category, setCategory] = useState<Category | undefined>(categories[0])
-  const [dueDate, setDueDate] = useState<number>(new Date().getDate())
+  const [dueDate, setDueDate] = useState<number>(new Date().getTime())
 
   const dueDateId = useId()
 
@@ -31,15 +30,16 @@ export function AddDueDateTaskForm({
       return false
     }
 
-    onSubmit({
+    storageContext.addItem(PARENT_LIST, {
       description,
       category,
       dueDate,
+      status: "ready",
     })
 
     setDescription("")
     setCategory(categories[0])
-    setDueDate(new Date().getDate())
+    setDueDate(new Date().getTime())
 
     return true
   }

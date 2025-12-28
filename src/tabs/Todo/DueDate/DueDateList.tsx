@@ -1,44 +1,29 @@
-import { endOfDay, isAfter, isBefore, startOfDay } from "date-fns"
-import { Calendar, Task, TaskListProps } from "../types"
-import { AddDueDateTaskForm, TaskDetails } from "./AddDueDateTaskForm"
+import { isBefore, startOfDay } from "date-fns"
+import { AddDueDateTaskForm } from "./AddDueDateTaskForm"
 import { DueDateTask } from "./DueDateTask"
 
 import "./DueDateTask.css"
+import { useContext } from "react"
+import { FirebaseContext } from "../../../shared/FirebaseContext"
+import { CalendarTask, PARENT_LIST } from "./types"
 
-export type CalendarTask = Calendar & Task
+const taskIsFinished = (task: CalendarTask) =>
+  task.status === "finished" && isBefore(task.dueDate, startOfDay(new Date()))
 
-export function DueDateList({
-  tasks,
-  onUpdateList,
-  createTask,
-  categories,
-}: TaskListProps<Calendar>) {
-  const readyToReset = tasks.some(
-    (task) =>
-      task.status === "finished" &&
-      isBefore(task.dueDate, startOfDay(new Date()))
-  )
+export function DueDateList() {
+  const storageContext = useContext(FirebaseContext)
+  if (!storageContext) {
+    throw new Error("Missing Firebase context provider")
+  }
+  const { value } = storageContext.useValue<CalendarTask>(PARENT_LIST)
+  const tasks = value ? Object.values(value) : []
+
+  const readyToReset = tasks.some(taskIsFinished)
   if (readyToReset) {
-    onUpdateList(
-      tasks.filter(
-        (task) =>
-          task.status !== "finished" ||
-          isAfter(task.dueDate, endOfDay(new Date()))
-      )
+    const finishedTasks = tasks.filter(taskIsFinished)
+    finishedTasks.forEach((task) =>
+      storageContext.deleteItem(PARENT_LIST, task)
     )
-  }
-
-  const onChangeTask = (task: CalendarTask) => {
-    const index = tasks.findIndex((t) => t.id === task.id)
-    onUpdateList(tasks.with(index, task))
-  }
-  const onDeleteTask = (task: Task) => {
-    const index = tasks.findIndex((t) => t.id === task.id)
-    onUpdateList(tasks.toSpliced(index, 1))
-  }
-  const onCreateTask = (details: TaskDetails) => {
-    const task = createTask({ ...details, status: "ready" })
-    onUpdateList([...tasks, task])
   }
 
   return (
@@ -49,18 +34,14 @@ export function DueDateList({
             .sort((a, b) => a.dueDate - b.dueDate)
             .map((task) => (
               <li key={task.description} className={`status-${task.status}`}>
-                <DueDateTask
-                  task={task}
-                  onChange={onChangeTask}
-                  onDelete={() => onDeleteTask(task)}
-                />
+                <DueDateTask task={task} />
               </li>
             ))}
         </ul>
       ) : (
         <div>No tasks</div>
       )}
-      <AddDueDateTaskForm categories={categories} onSubmit={onCreateTask} />
+      <AddDueDateTaskForm />
     </div>
   )
 }

@@ -1,45 +1,32 @@
 import { isBefore, subDays } from "date-fns"
-import { Task, TaskListProps, Weekly } from "../types"
-import { AddThisWeekTaskForm, TaskDetails } from "./AddThisWeekTaskForm"
+import { AddThisWeekTaskForm } from "./AddThisWeekTaskForm"
 import { ThisWeekTask } from "./ThisWeekTask"
-
-export type WeeklyTask = Weekly & Task
+import { PARENT_LIST, WeeklyTask } from "./types"
+import { useContext } from "react"
+import { FirebaseContext } from "../../../shared/FirebaseContext"
 
 const moreThanAWeekAgo = (date: number | undefined) =>
   date && isBefore(date, subDays(new Date(), 7))
 
-export function ThisWeekList({
-  tasks,
-  onUpdateList,
-  createTask,
-  categories,
-}: TaskListProps<Weekly>) {
-  const readyForReset = tasks.some((task) =>
-    task.completed.some(moreThanAWeekAgo)
-  )
-  if (readyForReset) {
-    onUpdateList(
-      tasks.map((task) => ({
-        ...task,
-        completed: task.completed.map((date) =>
-          moreThanAWeekAgo(date) ? undefined : date
-        ),
-      }))
-    )
+export function ThisWeekList() {
+  const storageContext = useContext(FirebaseContext)
+  if (!storageContext) {
+    throw new Error("Missing Firebase context provider")
   }
+  const { value } = storageContext.useValue<WeeklyTask>(PARENT_LIST)
+  const tasks = value ? Object.values(value) : []
 
-  const onChangeTask = (task: WeeklyTask) => {
-    const index = tasks.findIndex((t) => t.id === task.id)
-    onUpdateList(tasks.with(index, task))
-  }
-  const onDeleteTask = (task: Task) => {
-    const index = tasks.findIndex((t) => t.id === task.id)
-    onUpdateList(tasks.toSpliced(index, 1))
-  }
-  const onCreateTask = (details: TaskDetails) => {
-    const task = createTask({ ...details, completed: [] })
-    onUpdateList([...tasks, task])
-  }
+  const readyForReset = tasks.filter((task) =>
+    task.completed?.some(moreThanAWeekAgo)
+  )
+  readyForReset.forEach((task) =>
+    storageContext.updateItem(PARENT_LIST, {
+      ...task,
+      completed: task.completed?.map((date) =>
+        moreThanAWeekAgo(date) ? undefined : date
+      ),
+    })
+  )
 
   return (
     <div className="todo-task-list weekly">
@@ -47,18 +34,14 @@ export function ThisWeekList({
         <ul>
           {tasks.map((task) => (
             <li key={task.description}>
-              <ThisWeekTask
-                task={task}
-                onChange={onChangeTask}
-                onDelete={() => onDeleteTask(task)}
-              />
+              <ThisWeekTask task={task} />
             </li>
           ))}
         </ul>
       ) : (
         <div>No tasks</div>
       )}
-      <AddThisWeekTaskForm onSubmit={onCreateTask} categories={categories} />
+      <AddThisWeekTaskForm />
     </div>
   )
 }

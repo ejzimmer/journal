@@ -1,54 +1,35 @@
-import { Daily, Task, TaskListProps } from "../types"
 import { TodayTask } from "./TodayTask"
 
-import { AddTodayTaskForm, TaskDetails } from "./AddTodayTaskForm"
+import { AddTodayTaskForm } from "./AddTodayTaskForm"
 import { isBefore, startOfDay } from "date-fns"
-
-export type DailyTask = Daily & Task
+import { DailyTask, PARENT_LIST } from "./types"
+import { useContext } from "react"
+import { FirebaseContext } from "../../../shared/FirebaseContext"
 
 const updatedYesterday = (task: DailyTask, status: DailyTask["status"]) =>
   task.status === status && isBefore(task.lastCompleted, startOfDay(new Date()))
 
-export function TodayList({
-  tasks,
-  createTask,
-  onUpdateList,
-  categories,
-}: TaskListProps<Daily>) {
+export function TodayList() {
+  const storageContext = useContext(FirebaseContext)
+  if (!storageContext) {
+    throw new Error("Missing Firebase context provider")
+  }
+  const { value } = storageContext.useValue<DailyTask>(PARENT_LIST)
+  const tasks = value ? Object.values(value) : []
+
   const finishedTasks = tasks.filter((task) =>
     updatedYesterday(task, "finished")
   )
-  if (finishedTasks.length) {
-    onUpdateList(tasks.filter((task) => !finishedTasks.includes(task)))
-  }
+  finishedTasks.forEach((task) => storageContext.deleteItem(PARENT_LIST, task))
 
-  const readyToReset = tasks.some((task) => updatedYesterday(task, "done"))
-  if (readyToReset) {
-    onUpdateList(
-      tasks.map((task) => ({
-        ...task,
-        status: "ready",
-        lastUpdated: new Date().getDate(),
-      }))
-    )
-  }
-
-  const onChangeTask = (task: DailyTask) => {
-    const index = tasks.findIndex((t) => t.id === task.id)
-    onUpdateList(tasks.with(index, task))
-  }
-  const onDeleteTask = (task: Task) => {
-    const index = tasks.findIndex((t) => t.id === task.id)
-    onUpdateList(tasks.toSpliced(index, 1))
-  }
-  const onCreateTask = (details: TaskDetails) => {
-    const task = createTask({
-      ...details,
+  const readyToReset = tasks.filter((task) => updatedYesterday(task, "done"))
+  readyToReset.forEach((task) =>
+    storageContext.updateItem(PARENT_LIST, {
+      ...task,
       status: "ready",
-      lastCompleted: new Date().getDate(),
+      lastCompleted: new Date().getTime(),
     })
-    onUpdateList([...tasks, task])
-  }
+  )
 
   return (
     <div className="todo-task-list">
@@ -56,18 +37,14 @@ export function TodayList({
         <ul>
           {tasks.map((task) => (
             <li key={task.id} className={`today-task status-${task.status}`}>
-              <TodayTask
-                task={task}
-                onChange={onChangeTask}
-                onDelete={() => onDeleteTask(task)}
-              />
+              <TodayTask task={task} />
             </li>
           ))}
         </ul>
       ) : (
         <div>No tasks for today</div>
       )}
-      <AddTodayTaskForm categories={categories} onSubmit={onCreateTask} />
+      <AddTodayTaskForm />
     </div>
   )
 }

@@ -1,24 +1,23 @@
-import { useState } from "react"
+import { useContext, useState } from "react"
 import { FormControl } from "../../../shared/controls/FormControl"
 import { AddTaskForm } from "../AddTaskForm"
 import { CategoryControl } from "../CategoryControl"
-import { Category, Task } from "../types"
+import { Category } from "../types"
+import { CategoriesContext } from ".."
+import { FirebaseContext } from "../../../shared/FirebaseContext"
+import { PARENT_LIST } from "./types"
 
-export type TaskDetails = {
-  description: Task["description"]
-  category: Task["category"]
-  frequency: number
-}
+export function AddThisWeekTaskForm() {
+  const storageContext = useContext(FirebaseContext)
+  if (!storageContext) {
+    throw new Error("Missing Firebase context provider")
+  }
 
-type AddThisWeekFormProps = {
-  categories: Category[]
-  onSubmit: (task: TaskDetails) => void
-}
+  const categories = useContext(CategoriesContext)
+  if (!categories) {
+    throw new Error("Missing categories context provider")
+  }
 
-export function AddThisWeekTaskForm({
-  categories,
-  onSubmit,
-}: AddThisWeekFormProps) {
   const [description, setDescription] = useState("")
   const [category, setCategory] = useState<Category | undefined>(categories[0])
   const [frequency, setFrequency] = useState<string | undefined>("1")
@@ -33,10 +32,11 @@ export function AddThisWeekTaskForm({
       return false
     }
 
-    onSubmit({
+    storageContext.addItem(PARENT_LIST, {
       description,
       category,
       frequency: Number.parseInt(frequency),
+      completed: [],
     })
 
     setDescription("")

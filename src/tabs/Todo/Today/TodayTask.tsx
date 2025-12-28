@@ -1,17 +1,38 @@
+import { useContext } from "react"
 import { EditableText } from "../../../shared/controls/EditableText"
+import { FirebaseContext } from "../../../shared/FirebaseContext"
 import { DeleteButton } from "../DeleteButton"
-import { Daily, TaskProps } from "../types"
 
 import { EmojiCheckbox } from "./EmojiCheckbox"
 
 import "./TodayTask.css"
+import { DailyTask, PARENT_LIST } from "./types"
 
-export function TodayTask({ task, onChange, onDelete }: TaskProps<Daily>) {
+export function TodayTask({ task }: { task: DailyTask }) {
+  const storageContext = useContext(FirebaseContext)
+  if (!storageContext) {
+    throw new Error("Missing Firebase context provider")
+  }
+
+  console.log("task", task)
+
+  const onChange = (task: DailyTask) => {
+    storageContext.updateItem(PARENT_LIST, task)
+  }
+
   const handleStatusChange = () => {
     if (task.status !== "ready") {
-      onChange({ ...task, status: "ready" })
+      onChange({
+        ...task,
+        status: "ready",
+        lastCompleted: new Date().getTime(),
+      })
     } else {
-      onChange({ ...task, status: task.type === "毎日" ? "done" : "finished" })
+      onChange({
+        ...task,
+        status: task.type === "毎日" ? "done" : "finished",
+        lastCompleted: new Date().getTime(),
+      })
     }
   }
 
@@ -31,7 +52,9 @@ export function TodayTask({ task, onChange, onDelete }: TaskProps<Daily>) {
           {task.description}
         </EditableText>
       </div>
-      <DeleteButton onDelete={onDelete} />
+      <DeleteButton
+        onDelete={() => storageContext.deleteItem(PARENT_LIST, task)}
+      />
     </>
   )
 }
