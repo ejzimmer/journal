@@ -1,18 +1,10 @@
 import { EditableText } from "../../../shared/controls/EditableText"
 import { DeleteButton } from "../DeleteButton"
-import { WeeklyTask } from "../types"
+import { TaskProps, Weekly } from "../types"
 
 import "./ThisWeekTask.css"
 
-export function ThisWeekTask({
-  task,
-  onChange,
-  onDelete,
-}: {
-  task: WeeklyTask
-  onChange: (task: WeeklyTask) => void
-  onDelete: () => void
-}) {
+export function ThisWeekTask({ task, onChange, onDelete }: TaskProps<Weekly>) {
   if (!Array.isArray(task.completed)) {
     onChange({ ...task, completed: [] })
   }

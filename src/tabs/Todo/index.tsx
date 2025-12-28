@@ -1,36 +1,34 @@
 import React, { useState } from "react"
-import { NewTask } from "./AddTaskForm"
-import { CalendarTask, Category, Task, WeeklyTask } from "./types"
-import { TodayList } from "./Today/TodayList"
-import { ThisWeekList } from "./ThisWeek/ThisWeekList"
-import { DueDateList } from "./DueDate/DueDateList"
+import { Category, Task } from "./types"
+import { DailyTask, TodayList } from "./Today/TodayList"
+import { ThisWeekList, WeeklyTask } from "./ThisWeek/ThisWeekList"
+import { CalendarTask, DueDateList } from "./DueDate/DueDateList"
 
 import "./index.css"
 
 const STORAGE_KEY = "todo"
 
-type Tasks = Record<Task["type"], Task[]>
+type Tasks = {
+  日: DailyTask[]
+  週: WeeklyTask[]
+  暦: CalendarTask[]
+}
 
 export function Today() {
   const [tasks, setTasks] = useState<Tasks>(() => {
     const stored = localStorage.getItem(STORAGE_KEY)
-    return stored ? JSON.parse(stored) : {}
+    const parsed = stored ? JSON.parse(stored) : {}
+    return {
+      日: parsed.日 ?? [],
+      週: parsed.週 ?? [],
+      暦: parsed.暦 ?? [],
+    }
   })
 
-  const saveTasks = (tasks: Tasks) => {
-    setTasks(tasks)
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(tasks))
-  }
-
-  const addTask = (task: NewTask) => {
-    const id = crypto.randomUUID()
-    saveTasks({
-      ...tasks,
-      [task.type]: [
-        ...tasks[task.type],
-        { id, ...task, lastUpdated: Date.now(), status: "ready" },
-      ],
-    })
+  const updateList = (listName: string, list: Task[]) => {
+    const updatedTasks = { ...tasks, [listName]: list }
+    setTasks(updatedTasks)
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedTasks))
   }
 
   // For the categories dropdown
@@ -41,53 +39,35 @@ export function Today() {
       categories.set(task.category.text, task.category)
     })
 
-  const updateTask = (task: Task) => {
-    const tasksOfType = tasks[task.type]
-    const index = tasksOfType.findIndex((t) => t.id === task.id)
-    if (index > -1) {
-      saveTasks({
-        ...tasks,
-        [task.type]: tasksOfType.with(index, {
-          ...task,
-          lastUpdated: new Date().getTime(),
-        }),
-      })
-    }
-  }
-
-  const deleteTask = (task: Task) => {
-    const tasksOfType = tasks[task.type]
-    const index = tasksOfType.findIndex((t) => t.id === task.id)
-    if (index > -1) {
-      saveTasks({
-        ...tasks,
-        [task.type]: tasksOfType.toSpliced(index, 1),
-      })
-    }
-  }
   return (
     <>
       <div style={{ display: "flex", flexWrap: "wrap", gap: "80px" }}>
         <TodayList
-          tasks={[...(tasks["毎日"] ?? []), ...(tasks["一度"] ?? [])]}
-          onChangeTask={updateTask}
-          onDeleteTask={deleteTask}
-          onCreateTask={addTask}
+          tasks={tasks["日"]}
           categories={categories.values().toArray()}
+          onUpdateList={(tasks) => updateList("日", tasks)}
+          createTask={(taskDetails) => ({
+            id: crypto.randomUUID(),
+            ...taskDetails,
+          })}
         />
         <ThisWeekList
-          tasks={tasks["週に"] as WeeklyTask[]}
-          onChangeTask={updateTask}
-          onDeleteTask={deleteTask}
-          onCreateTask={addTask}
+          tasks={tasks["週"]}
           categories={categories.values().toArray()}
+          onUpdateList={(tasks) => updateList("週", tasks)}
+          createTask={(taskDetails) => ({
+            id: crypto.randomUUID(),
+            ...taskDetails,
+          })}
         />
         <DueDateList
-          tasks={tasks["日付"] as CalendarTask[]}
-          onChangeTask={updateTask}
-          onDeleteTask={deleteTask}
-          onCreateTask={addTask}
+          tasks={tasks["暦"] as CalendarTask[]}
           categories={categories.values().toArray()}
+          onUpdateList={(tasks) => updateList("暦", tasks)}
+          createTask={(taskDetails) => ({
+            id: crypto.randomUUID(),
+            ...taskDetails,
+          })}
         />
       </div>
     </>

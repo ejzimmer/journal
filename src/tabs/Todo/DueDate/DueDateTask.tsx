@@ -2,17 +2,9 @@ import { EditableDate } from "../../../shared/controls/EditableDate"
 import { EditableText } from "../../../shared/controls/EditableText"
 import { DeleteButton } from "../DeleteButton"
 import { EmojiCheckbox } from "../Today/EmojiCheckbox"
-import { CalendarTask } from "../types"
+import { Calendar, TaskProps } from "../types"
 
-export function DueDateTask({
-  task,
-  onChange,
-  onDelete,
-}: {
-  task: CalendarTask
-  onChange: (task: CalendarTask) => void
-  onDelete: () => void
-}) {
+export function DueDateTask({ task, onChange, onDelete }: TaskProps<Calendar>) {
   return (
     <>
       <EmojiCheckbox

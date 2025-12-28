@@ -27,6 +27,7 @@ export function CategoryControl({
     } else {
       onChange(undefined)
       setText(option.text)
+      setEmoji("")
     }
   }
 

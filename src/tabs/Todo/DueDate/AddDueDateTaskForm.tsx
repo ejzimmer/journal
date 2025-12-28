@@ -1,12 +1,19 @@
-import { useState } from "react"
+import { useId, useState } from "react"
 import { FormControl } from "../../../shared/controls/FormControl"
-import { NewTask, AddTaskForm } from "../AddTaskForm"
+import { AddTaskForm } from "../AddTaskForm"
 import { CategoryControl } from "../CategoryControl"
-import { Category } from "../types"
+import { Category, Task } from "../types"
+import { EditableDate } from "../../../shared/controls/EditableDate"
+
+export type TaskDetails = {
+  description: Task["description"]
+  category: Task["category"]
+  dueDate: number
+}
 
 type AddDueDateFormProps = {
   categories: Category[]
-  onSubmit: (task: NewTask) => void
+  onSubmit: (task: TaskDetails) => void
 }
 
 export function AddDueDateTaskForm({
@@ -15,28 +22,24 @@ export function AddDueDateTaskForm({
 }: AddDueDateFormProps) {
   const [description, setDescription] = useState("")
   const [category, setCategory] = useState<Category | undefined>(categories[0])
-  const [frequency, setFrequency] = useState<string | undefined>("1")
+  const [dueDate, setDueDate] = useState<number>(new Date().getDate())
+
+  const dueDateId = useId()
 
   const handleSubmit = () => {
-    if (
-      !description ||
-      !category ||
-      !frequency ||
-      isNaN(Number.parseInt(frequency))
-    ) {
+    if (!description || !category || !dueDate) {
       return false
     }
 
     onSubmit({
       description,
       category,
-      type: "週に",
-      frequency: Number.parseInt(frequency),
+      dueDate,
     })
 
     setDescription("")
     setCategory(categories[0])
-    setFrequency("1")
+    setDueDate(new Date().getDate())
 
     return true
   }
@@ -48,22 +51,27 @@ export function AddDueDateTaskForm({
         value={description}
         onChange={setDescription}
       />
-      <div style={{ display: "flex", gap: "16px" }}>
-        <div>
-          <div className="label">Category</div>
-          <CategoryControl
-            onChange={setCategory}
-            options={categories}
-            value={category}
-          />
-        </div>
-        <FormControl
-          type="number"
-          label="Frequency"
-          value={frequency}
-          size={2}
-          onChange={setFrequency}
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "1fr 1fr",
+          gridTemplateRows: "min-content 1fr",
+          gridAutoFlow: "column",
+          gap: "2px 12px",
+        }}
+      >
+        <div className="label">Category</div>
+        <CategoryControl
+          onChange={setCategory}
+          options={categories}
+          value={category}
         />
+        <label className="label" htmlFor={dueDateId}>
+          Due date
+        </label>
+        <div style={{ fontSize: "24px" }}>
+          <EditableDate id={dueDateId} value={dueDate} onChange={setDueDate} />
+        </div>
       </div>
     </AddTaskForm>
   )

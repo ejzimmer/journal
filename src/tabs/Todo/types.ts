@@ -1,33 +1,34 @@
-import { NewTask } from "./AddTaskForm"
-
 export type Category = {
   text: string
   emoji: string
 }
 
-export type TaskType = "日付" | "週に" | "毎日" | "一度"
-
 export type Task = {
   id: string
   description: string
   category: Category
-  lastUpdated: number
-  type: TaskType
-  status: "blocked" | "ready" | "in_progress" | "done" | "finished"
 }
 
-export type DailyTask = Task & { type: "毎日" | "一度" }
-export type WeeklyTask = Task & {
-  type: "週に"
+export type Daily = {
+  type: "毎日" | "一度"
+  status: "ready" | "done" | "finished"
+  lastCompleted: number
+}
+export type Weekly = {
   frequency: number
-  completed?: (number | undefined)[]
+  completed: (number | undefined)[]
 }
-export type CalendarTask = Task & { type: "日付"; dueDate: number }
+export type Calendar = { dueDate: number; status: "ready" | "finished" }
 
-export type TaskListProps<T extends Task> = {
-  tasks?: T[]
-  onChangeTask: (task: T) => void
-  onDeleteTask: (task: T) => void
-  onCreateTask: (task: NewTask) => void
+export type TaskListProps<T extends Daily | Weekly | Calendar> = {
+  tasks: (T & Task)[]
+  createTask: (task: T & Omit<Task, "id">) => T & Task
+  onUpdateList: (list: (T & Task)[]) => void
   categories: Category[]
+}
+
+export type TaskProps<T extends Daily | Weekly | Calendar> = {
+  task: Task & T
+  onChange: (task: Task & T) => void
+  onDelete: () => void
 }

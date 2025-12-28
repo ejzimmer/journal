@@ -1,13 +1,19 @@
 import { useState } from "react"
 import { FormControl } from "../../../shared/controls/FormControl"
 import { Switch } from "../../../shared/controls/Switch"
-import { NewTask, AddTaskForm } from "../AddTaskForm"
+import { AddTaskForm } from "../AddTaskForm"
 import { CategoryControl } from "../CategoryControl"
-import { Category, TaskType } from "../types"
+import { Category, Daily, Task } from "../types"
+
+export type TaskDetails = {
+  description: Task["description"]
+  category: Task["category"]
+  type: Daily["type"]
+}
 
 type AddTodayTaskFormProps = {
   categories: Category[]
-  onSubmit: (task: NewTask) => void
+  onSubmit: (task: TaskDetails) => void
 }
 
 export function AddTodayTaskForm({
@@ -15,7 +21,7 @@ export function AddTodayTaskForm({
   onSubmit,
 }: AddTodayTaskFormProps) {
   const [description, setDescription] = useState("")
-  const [taskType, setTaskType] = useState<TaskType>("一度")
+  const [taskType, setTaskType] = useState<TaskDetails["type"]>("一度")
   const [category, setCategory] = useState<Category | undefined>(categories[0])
 
   const handleSubmit = () => {

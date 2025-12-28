@@ -1,13 +1,5 @@
 import { useEffect, useRef, useState } from "react"
-import { CalendarTask, Task, WeeklyTask } from "./types"
 import { PlusIcon } from "../../shared/icons/Plus"
-
-type MissingProps = "id" | "lastUpdated" | "status"
-type NewDailyTask = Omit<Task, MissingProps>
-type NewWeeklyTask = Omit<WeeklyTask, MissingProps | "completed">
-type NewCalendarTask = Omit<CalendarTask, MissingProps>
-
-export type NewTask = NewDailyTask | NewWeeklyTask | NewCalendarTask
 
 type AddTaskFormProps = {
   children: React.ReactNode

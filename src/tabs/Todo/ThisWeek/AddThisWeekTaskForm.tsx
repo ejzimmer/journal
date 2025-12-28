@@ -1,13 +1,18 @@
 import { useState } from "react"
 import { FormControl } from "../../../shared/controls/FormControl"
-import { NewTask, AddTaskForm } from "../AddTaskForm"
+import { AddTaskForm } from "../AddTaskForm"
 import { CategoryControl } from "../CategoryControl"
-import { Category } from "../types"
-import { EditableDate } from "../../../shared/controls/EditableDate"
+import { Category, Task } from "../types"
+
+export type TaskDetails = {
+  description: Task["description"]
+  category: Task["category"]
+  frequency: number
+}
 
 type AddThisWeekFormProps = {
   categories: Category[]
-  onSubmit: (task: NewTask) => void
+  onSubmit: (task: TaskDetails) => void
 }
 
 export function AddThisWeekTaskForm({
@@ -16,23 +21,27 @@ export function AddThisWeekTaskForm({
 }: AddThisWeekFormProps) {
   const [description, setDescription] = useState("")
   const [category, setCategory] = useState<Category | undefined>(categories[0])
-  const [dueDate, setDueDate] = useState<number>(new Date().getDate())
+  const [frequency, setFrequency] = useState<string | undefined>("1")
 
   const handleSubmit = () => {
-    if (!description || !category || !dueDate) {
+    if (
+      !description ||
+      !category ||
+      !frequency ||
+      isNaN(Number.parseInt(frequency))
+    ) {
       return false
     }
 
     onSubmit({
       description,
       category,
-      type: "日付",
-      dueDate: new Date(dueDate).getDate(),
+      frequency: Number.parseInt(frequency),
     })
 
     setDescription("")
     setCategory(categories[0])
-    setDueDate(new Date().getDate())
+    setFrequency("1")
 
     return true
   }
@@ -53,7 +62,13 @@ export function AddThisWeekTaskForm({
             value={category}
           />
         </div>
-        <EditableDate value={dueDate} onChange={setDueDate} />
+        <FormControl
+          type="number"
+          label="Frequency"
+          value={frequency}
+          size={2}
+          onChange={setFrequency}
+        />
       </div>
     </AddTaskForm>
   )
