@@ -3,7 +3,7 @@ import { EditableText } from "../../../shared/controls/EditableText"
 import { FirebaseContext } from "../../../shared/FirebaseContext"
 import { DeleteButton } from "../DeleteButton"
 
-import { EmojiCheckbox } from "./EmojiCheckbox"
+import { EmojiCheckbox } from "../../../shared/controls/EmojiCheckbox"
 
 import "./TodayTask.css"
 import { DailyTask, PARENT_LIST } from "./types"

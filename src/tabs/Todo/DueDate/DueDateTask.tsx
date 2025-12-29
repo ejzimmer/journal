@@ -2,7 +2,7 @@ import { useContext } from "react"
 import { EditableDate } from "../../../shared/controls/EditableDate"
 import { EditableText } from "../../../shared/controls/EditableText"
 import { DeleteButton } from "../DeleteButton"
-import { EmojiCheckbox } from "../Today/EmojiCheckbox"
+import { EmojiCheckbox } from "../../../shared/controls/EmojiCheckbox"
 import { FirebaseContext } from "../../../shared/FirebaseContext"
 import { CalendarTask, PARENT_LIST } from "./types"
 
