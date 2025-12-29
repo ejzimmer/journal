@@ -1,5 +1,5 @@
 import { Books } from "./books/Books"
-import { Games } from "./Games"
+import { Games } from "./games/Games"
 
 export function Media() {
   return (

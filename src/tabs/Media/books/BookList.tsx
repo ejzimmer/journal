@@ -1,7 +1,7 @@
 import { useContext, useRef } from "react"
 import { FirebaseContext } from "../../../shared/FirebaseContext"
 import { Book } from "./Book"
-import { BookDetails, KEY } from "./types"
+import { BookDetails, BOOKS_KEY } from "../types"
 
 export function BookList({
   books,
@@ -22,7 +22,7 @@ export function BookList({
     event.preventDefault()
 
     if (newBookRef.current?.value) {
-      storageContext.addItem<BookDetails>(`${KEY}/${path}/books`, {
+      storageContext.addItem<BookDetails>(`${BOOKS_KEY}/${path}/books`, {
         title: newBookRef.current?.value,
         type: "book",
       })
@@ -35,7 +35,7 @@ export function BookList({
       <ul>
         {bookDetails.map((book) => (
           <li key={book.id}>
-            <Book book={book} path={`${KEY}/${path}/books`} />
+            <Book book={book} path={`${BOOKS_KEY}/${path}/books`} />
           </li>
         ))}
         <form onSubmit={addBook}>

@@ -1,40 +1,39 @@
 import { useContext } from "react"
 import { FirebaseContext } from "../../../shared/FirebaseContext"
-import { AddBookForm } from "./AddBookForm"
-import { ItemDetails, BOOKS_KEY } from "../types"
-import { Book } from "./Book"
-import { Author } from "./Author"
+import { AddGameForm } from "./AddGameForm"
+import { GameDetails, GAMES_KEY, SeriesDetails } from "../types"
+import { Game } from "./Game"
 import { Series } from "./Series"
 
-function getComponent<T extends ItemDetails>(item: T) {
+function getComponent<T extends SeriesDetails | GameDetails>(item: T) {
   switch (item.type) {
-    case "book":
-      return <Book book={item} path={BOOKS_KEY} />
-    case "author":
-      return <Author author={item} />
+    case "game":
+      return <Game game={item} path={GAMES_KEY} />
     case "series":
-      return <Series series={item} path={BOOKS_KEY} />
+      return <Series series={item} path={GAMES_KEY} />
   }
 }
 
-export function Books() {
+export function Games() {
   const storageContext = useContext(FirebaseContext)
   if (!storageContext) {
     throw new Error("Missing Firebase context provider")
   }
 
-  const { value } = storageContext.useValue<ItemDetails>(BOOKS_KEY)
+  const { value } = storageContext.useValue<SeriesDetails | GameDetails>(
+    GAMES_KEY
+  )
   const items = value ? Object.values(value) : []
 
   return (
     <div style={{ display: "flex", flexDirection: "column" }}>
-      <h2>Books</h2>
+      <h2>Games</h2>
       <ul>
         {items.map((item) => (
           <li key={item.id}>{getComponent(item)}</li>
         ))}
       </ul>
-      <AddBookForm />
+      <AddGameForm />
     </div>
   )
 }

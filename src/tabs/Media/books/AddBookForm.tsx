@@ -5,9 +5,9 @@ import {
   AuthorDetails,
   SeriesDetails,
   ItemDetails,
-  KEY,
+  BOOKS_KEY,
   BookDetails,
-} from "./types"
+} from "../types"
 
 export function AddBookForm() {
   const storageContext = useContext(FirebaseContext)
@@ -25,7 +25,7 @@ export function AddBookForm() {
     value?: SeriesDetails
   }>()
 
-  const { value } = storageContext.useValue<ItemDetails>(KEY)
+  const { value } = storageContext.useValue<ItemDetails>(BOOKS_KEY)
   const items = value ? Object.values(value) : []
 
   const authors = items.filter((item) => item.type === "author")
@@ -56,7 +56,7 @@ export function AddBookForm() {
       const authorKey =
         author.value && value?.[author.value.id]
           ? author.value.id
-          : storageContext.addItem<AuthorDetails>(KEY, {
+          : storageContext.addItem<AuthorDetails>(BOOKS_KEY, {
               name: author.text,
               type: "author",
             })
@@ -64,19 +64,19 @@ export function AddBookForm() {
         const seriesKey =
           series.value && author.value?.series?.[series.value.id]
             ? series.value.id
-            : createSeries(`${KEY}/${authorKey}/series`, series.text)
-        addBookTo(`${KEY}/${authorKey}/series/${seriesKey}/books`)
+            : createSeries(`${BOOKS_KEY}/${authorKey}/series`, series.text)
+        addBookTo(`${BOOKS_KEY}/${authorKey}/series/${seriesKey}/items`)
       } else {
-        addBookTo(`${KEY}/${authorKey}/books`)
+        addBookTo(`${BOOKS_KEY}/${authorKey}/books`)
       }
     } else if (series) {
       const seriesKey =
         series.value && value?.[series.value.id]
           ? series.value.id
-          : createSeries(KEY, series.text)
-      addBookTo(`${KEY}/${seriesKey}/books`)
+          : createSeries(BOOKS_KEY, series.text)
+      addBookTo(`${BOOKS_KEY}/${seriesKey}/items`)
     } else {
-      addBookTo(KEY)
+      addBookTo(BOOKS_KEY)
     }
 
     setAuthor(undefined)

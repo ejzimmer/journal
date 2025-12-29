@@ -1,58 +1,48 @@
 import { useContext } from "react"
 import { EmojiCheckbox } from "../../../shared/controls/EmojiCheckbox"
 import { FirebaseContext } from "../../../shared/FirebaseContext"
-import { BookDetails } from "../types"
+import { GameDetails } from "../types"
 
-import "./Book.css"
+import "./Game.css"
 import { XIcon } from "../../../shared/icons/X"
 import { EditableText } from "../../../shared/controls/EditableText"
 
-export function Book({ book, path }: { book: BookDetails; path: string }) {
+export function Game({ game, path }: { game: GameDetails; path: string }) {
   const storageContext = useContext(FirebaseContext)
   if (!storageContext) {
     throw new Error("Missing Firebase context provider")
   }
 
   const updateTitle = (title: string) => {
-    storageContext.updateItem<BookDetails>(path, {
-      ...book,
+    storageContext.updateItem<GameDetails>(path, {
+      ...game,
       title,
     })
   }
 
   const toggleDone = () => {
-    storageContext.updateItem<BookDetails>(path, {
-      ...book,
-      isDone: !book.isDone,
+    storageContext.updateItem<GameDetails>(path, {
+      ...game,
+      isDone: !game.isDone,
     })
   }
 
-  const updateMedium = () => {
-    const medium =
-      book.medium === "🎧" ? "📖" : book.medium === "📖" ? null : "🎧"
-    storageContext.updateItem<BookDetails>(path, {
-      ...book,
-      medium,
-    })
-  }
-
-  const deleteBook = () => {
-    storageContext.deleteItem(path, book)
+  const deleteGame = () => {
+    storageContext.deleteItem(path, game)
   }
 
   return (
-    <div className="book">
+    <div className="game">
       <EditableText label="title" onChange={updateTitle}>
-        {book.title}
+        {game.title}
       </EditableText>
-      <button onClick={updateMedium}>{book.medium}</button>
       <EmojiCheckbox
         emoji="✅"
-        isChecked={!!book.isDone}
+        isChecked={!!game.isDone}
         onChange={toggleDone}
         label="done"
       />
-      <button className="emoji ghost" onClick={deleteBook}>
+      <button className="emoji ghost" onClick={deleteGame}>
         <XIcon width="16px" />
       </button>
     </div>

@@ -1,4 +1,5 @@
-export const KEY = "media/books"
+export const BOOKS_KEY = "media/books"
+export const GAMES_KEY = "media/games"
 
 export type AuthorDetails = {
   id: string
@@ -16,11 +17,18 @@ export type BookDetails = {
   isDone?: boolean
 }
 
+export type GameDetails = {
+  id: string
+  type: "game"
+  title: string
+  isDone?: boolean
+}
+
 export type SeriesDetails = {
   id: string
   type: "series"
   name: string
-  books?: Record<string, BookDetails>
+  items?: Record<string, BookDetails | GameDetails>
 }
 
 export type ItemDetails = BookDetails | AuthorDetails | SeriesDetails

@@ -1,8 +1,8 @@
 import { useContext } from "react"
 import { EditableText } from "../../../shared/controls/EditableText"
 import { FirebaseContext } from "../../../shared/FirebaseContext"
-import { BookList } from "./BookList"
-import { BookDetails, SeriesDetails } from "../types"
+import { GameList } from "./GameList"
+import { GameDetails, SeriesDetails } from "../types"
 
 export function Series({
   series,
@@ -30,8 +30,8 @@ export function Series({
           {series.name}
         </EditableText>
       </div>
-      <BookList
-        books={series.items as Record<string, BookDetails>}
+      <GameList
+        games={series.items as Record<string, GameDetails>}
         path={series.id}
       />
     </>

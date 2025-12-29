@@ -1,7 +1,7 @@
 import { useContext, useRef } from "react"
 import { FirebaseContext } from "../../../shared/FirebaseContext"
 import { Book } from "./Book"
-import { AuthorDetails, KEY, BookDetails } from "./types"
+import { AuthorDetails, BOOKS_KEY, BookDetails } from "../types"
 import { Series } from "./Series"
 import { EditableText } from "../../../shared/controls/EditableText"
 
@@ -11,13 +11,13 @@ export function Author({ author }: { author: AuthorDetails }) {
     throw new Error("Missing Firebase context provider")
   }
 
-  const path = `${KEY}/${author.id}`
+  const path = `${BOOKS_KEY}/${author.id}`
   const newBookRef = useRef<HTMLInputElement>(null)
   const books = author.books ? Object.values(author.books) : undefined
   const series = author.series ? Object.values(author.series) : undefined
 
   const updateAuthorName = (name: string) => {
-    storageContext.updateItem<AuthorDetails>(KEY, { ...author, name })
+    storageContext.updateItem<AuthorDetails>(BOOKS_KEY, { ...author, name })
   }
 
   const addBook = (event: React.FormEvent) => {
