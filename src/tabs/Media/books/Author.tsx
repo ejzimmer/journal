@@ -1,9 +1,8 @@
 import { useContext, useRef } from "react"
 import { FirebaseContext } from "../../../shared/FirebaseContext"
-import { Book } from "./Book"
 import { AuthorDetails, BOOKS_KEY, BookDetails } from "../types"
-import { Series } from "./Series"
 import { EditableText } from "../../../shared/controls/EditableText"
+import { getComponent } from "./utils"
 
 export function Author({ author }: { author: AuthorDetails }) {
   const storageContext = useContext(FirebaseContext)
@@ -11,10 +10,9 @@ export function Author({ author }: { author: AuthorDetails }) {
     throw new Error("Missing Firebase context provider")
   }
 
-  const path = `${BOOKS_KEY}/${author.id}`
+  const path = `${BOOKS_KEY}/${author.id}/items`
   const newBookRef = useRef<HTMLInputElement>(null)
-  const books = author.books ? Object.values(author.books) : undefined
-  const series = author.series ? Object.values(author.series) : undefined
+  const items = author.items ? Object.values(author.items) : undefined
 
   const updateAuthorName = (name: string) => {
     storageContext.updateItem<AuthorDetails>(BOOKS_KEY, { ...author, name })
@@ -39,17 +37,10 @@ export function Author({ author }: { author: AuthorDetails }) {
           {author.name}
         </EditableText>
       </div>
-      {books && (
+      {items && (
         <ul>
-          {books.map((book) => (
-            <li key={book.id}>
-              <Book book={book} path={`${path}/books`} />
-            </li>
-          ))}
-          {series?.map((series) => (
-            <li key={series.id}>
-              <Series series={series} path={`${path}/series`} />
-            </li>
+          {items.map((item) => (
+            <li key={item.id}>{getComponent(item, path)}</li>
           ))}
           <form onSubmit={addBook}>
             <input ref={newBookRef} />

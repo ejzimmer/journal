@@ -4,10 +4,20 @@ import { FirebaseContext } from "../../../shared/FirebaseContext"
 import {
   AuthorDetails,
   SeriesDetails,
-  ItemDetails,
+  ReadingItemDetails,
   BOOKS_KEY,
   BookDetails,
+  isSeries,
 } from "../types"
+
+type Option<T extends SeriesDetails<BookDetails> | AuthorDetails> = {
+  text: string
+  id?: string
+  value?: T
+}
+
+const getSeriesForAuthor = (author: AuthorDetails) =>
+  author.items ? Object.values(author.items).filter(isSeries) : []
 
 export function AddBookForm() {
   const storageContext = useContext(FirebaseContext)
@@ -16,22 +26,14 @@ export function AddBookForm() {
   }
 
   const bookRef = useRef<HTMLInputElement>(null)
-  const [author, setAuthor] = useState<{
-    text: string
-    value?: AuthorDetails
-  }>()
-  const [series, setSeries] = useState<{
-    text: string
-    value?: SeriesDetails
-  }>()
+  const [author, setAuthor] = useState<Option<AuthorDetails>>()
+  const [series, setSeries] = useState<Option<SeriesDetails<BookDetails>>>()
 
-  const { value } = storageContext.useValue<ItemDetails>(BOOKS_KEY)
+  const { value } = storageContext.useValue<ReadingItemDetails>(BOOKS_KEY)
   const items = value ? Object.values(value) : []
 
   const authors = items.filter((item) => item.type === "author")
-  const authorSeries = authors.flatMap((author) =>
-    author.series ? Object.values(author.series) : []
-  )
+  const authorSeries = authors.flatMap(getSeriesForAuthor)
   const serieses = [
     ...items.filter((item) => item.type === "series"),
     ...authorSeries,
@@ -48,7 +50,7 @@ export function AddBookForm() {
     const addBookTo = (key: string) =>
       storageContext.addItem<BookDetails>(key, newBook)
     const createSeries = (key: string, name: string) =>
-      storageContext.addItem<SeriesDetails>(key, {
+      storageContext.addItem<SeriesDetails<BookDetails>>(key, {
         name,
         type: "series",
       })
@@ -62,12 +64,12 @@ export function AddBookForm() {
             })
       if (series) {
         const seriesKey =
-          series.value && author.value?.series?.[series.value.id]
+          series.value && author.value?.items?.[series.value.id]
             ? series.value.id
-            : createSeries(`${BOOKS_KEY}/${authorKey}/series`, series.text)
+            : createSeries(`${BOOKS_KEY}/${authorKey}/items`, series.text)
         addBookTo(`${BOOKS_KEY}/${authorKey}/series/${seriesKey}/items`)
       } else {
-        addBookTo(`${BOOKS_KEY}/${authorKey}/books`)
+        addBookTo(`${BOOKS_KEY}/${authorKey}/items`)
       }
     } else if (series) {
       const seriesKey =
@@ -99,17 +101,17 @@ export function AddBookForm() {
         createOption={(text) => ({ text })}
         onChange={setAuthor}
       />
-      <Combobox
+      <Combobox<Option<SeriesDetails<BookDetails>>>
         label="series"
-        options={(author?.value?.series
-          ? Object.values(author.value.series)
+        options={(author?.value
+          ? getSeriesForAuthor(author.value)
           : serieses
         ).map((series) => ({
           text: series.name,
           id: series.id,
           value: series,
         }))}
-        value={series}
+        value={{ ...series } as Option<SeriesDetails<BookDetails>>}
         createOption={(text) => ({ text })}
         onChange={setSeries}
       />

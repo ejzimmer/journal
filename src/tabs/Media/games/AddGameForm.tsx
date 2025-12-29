@@ -1,7 +1,12 @@
 import { useContext, useRef, useState } from "react"
 import { Combobox } from "../../../shared/controls/combobox/Combobox"
 import { FirebaseContext } from "../../../shared/FirebaseContext"
-import { SeriesDetails, GAMES_KEY, GameDetails } from "../types"
+import {
+  SeriesDetails,
+  GAMES_KEY,
+  GameDetails,
+  PlayingItemDetails,
+} from "../types"
 
 export function AddGameForm() {
   const storageContext = useContext(FirebaseContext)
@@ -12,12 +17,10 @@ export function AddGameForm() {
   const gameRef = useRef<HTMLInputElement>(null)
   const [series, setSeries] = useState<{
     text: string
-    value?: SeriesDetails
+    value?: SeriesDetails<GameDetails>
   }>()
 
-  const { value } = storageContext.useValue<GameDetails | SeriesDetails>(
-    GAMES_KEY
-  )
+  const { value } = storageContext.useValue<PlayingItemDetails>(GAMES_KEY)
   const items = value ? Object.values(value) : []
 
   const serieses = items.filter((item) => item.type === "series")
@@ -33,7 +36,7 @@ export function AddGameForm() {
     const addGameTo = (key: string) =>
       storageContext.addItem<GameDetails>(key, newGame)
     const createSeries = (key: string, name: string) =>
-      storageContext.addItem<SeriesDetails>(key, {
+      storageContext.addItem<SeriesDetails<GameDetails>>(key, {
         name,
         type: "series",
       })

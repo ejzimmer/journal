@@ -8,7 +8,7 @@ export function Series({
   series,
   path,
 }: {
-  series: SeriesDetails
+  series: SeriesDetails<GameDetails>
   path: string
 }) {
   const storageContext = useContext(FirebaseContext)
@@ -17,7 +17,7 @@ export function Series({
   }
 
   const updateSeriesName = (name: string) => {
-    storageContext.updateItem<SeriesDetails>(path, {
+    storageContext.updateItem<SeriesDetails<GameDetails>>(path, {
       ...series,
       name,
     })

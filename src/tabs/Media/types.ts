@@ -5,8 +5,14 @@ export type AuthorDetails = {
   id: string
   type: "author"
   name: string
-  books?: Record<string, BookDetails>
-  series?: Record<string, SeriesDetails>
+  items?: Record<string, SeriesDetails<BookDetails> | BookDetails>
+}
+
+export type SeriesDetails<T extends BookDetails | GameDetails> = {
+  id: string
+  type: "series"
+  name: string
+  items?: Record<string, T>
 }
 
 export type BookDetails = {
@@ -24,11 +30,13 @@ export type GameDetails = {
   isDone?: boolean
 }
 
-export type SeriesDetails = {
-  id: string
-  type: "series"
-  name: string
-  items?: Record<string, BookDetails | GameDetails>
-}
+export type ReadingItemDetails =
+  | BookDetails
+  | AuthorDetails
+  | SeriesDetails<BookDetails>
 
-export type ItemDetails = BookDetails | AuthorDetails | SeriesDetails
+export type PlayingItemDetails = GameDetails | SeriesDetails<GameDetails>
+
+export const isSeries = (
+  item: ReadingItemDetails | PlayingItemDetails
+): item is SeriesDetails<any> => item.type === "series"

@@ -1,21 +1,8 @@
 import { useContext } from "react"
 import { FirebaseContext } from "../../../shared/FirebaseContext"
 import { AddBookForm } from "./AddBookForm"
-import { ItemDetails, BOOKS_KEY } from "../types"
-import { Book } from "./Book"
-import { Author } from "./Author"
-import { Series } from "./Series"
-
-function getComponent<T extends ItemDetails>(item: T) {
-  switch (item.type) {
-    case "book":
-      return <Book book={item} path={BOOKS_KEY} />
-    case "author":
-      return <Author author={item} />
-    case "series":
-      return <Series series={item} path={BOOKS_KEY} />
-  }
-}
+import { BOOKS_KEY, ReadingItemDetails } from "../types"
+import { getComponent } from "./utils"
 
 export function Books() {
   const storageContext = useContext(FirebaseContext)
@@ -23,7 +10,7 @@ export function Books() {
     throw new Error("Missing Firebase context provider")
   }
 
-  const { value } = storageContext.useValue<ItemDetails>(BOOKS_KEY)
+  const { value } = storageContext.useValue<ReadingItemDetails>(BOOKS_KEY)
   const items = value ? Object.values(value) : []
 
   return (

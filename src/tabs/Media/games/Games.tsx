@@ -1,11 +1,11 @@
 import { useContext } from "react"
 import { FirebaseContext } from "../../../shared/FirebaseContext"
 import { AddGameForm } from "./AddGameForm"
-import { GameDetails, GAMES_KEY, SeriesDetails } from "../types"
+import { GAMES_KEY, PlayingItemDetails } from "../types"
 import { Game } from "./Game"
 import { Series } from "./Series"
 
-function getComponent<T extends SeriesDetails | GameDetails>(item: T) {
+function getComponent<T extends PlayingItemDetails>(item: T) {
   switch (item.type) {
     case "game":
       return <Game game={item} path={GAMES_KEY} />
@@ -20,9 +20,7 @@ export function Games() {
     throw new Error("Missing Firebase context provider")
   }
 
-  const { value } = storageContext.useValue<SeriesDetails | GameDetails>(
-    GAMES_KEY
-  )
+  const { value } = storageContext.useValue<PlayingItemDetails>(GAMES_KEY)
   const items = value ? Object.values(value) : []
 
   return (
