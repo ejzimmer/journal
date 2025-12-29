@@ -11,7 +11,7 @@ export const CategoriesContext = createContext<Category[] | undefined>(
   undefined
 )
 
-export function Today() {
+export function Todo() {
   const storageContext = useContext(FirebaseContext)
   if (!storageContext) {
     throw new Error("Missing Firebase context provider")

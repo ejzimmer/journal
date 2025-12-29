@@ -1,5 +1,3 @@
-import { Today } from "./tabs/Todo"
-
 import {
   getAuth,
   GoogleAuthProvider,
@@ -7,15 +5,18 @@ import {
   signInWithRedirect,
 } from "firebase/auth"
 import { useState } from "react"
-import { Todo } from "./tabs/Projects"
+import { Todo } from "./tabs/Todo"
+import { Projects } from "./tabs/Projects"
 import { Routes, Route, NavLink } from "react-router-dom"
 import { Work } from "./tabs/Work"
 
 import "./App.css"
+import { Media } from "./tabs/Media"
 
 const TABS = {
-  today: <Today />,
   todo: <Todo />,
+  projects: <Projects />,
+  media: <Media />,
   work: <Work />,
 }
 
@@ -57,7 +58,7 @@ export function App() {
           {Object.entries(TABS).map(([name, Element]) => (
             <Route key={name} path={name} element={Element} />
           ))}
-          <Route path="/" element={<Today />} />
+          <Route path="/" element={<Todo />} />
         </Routes>
       </div>
     </>

@@ -9,7 +9,7 @@ export type ParentCrudFunction = <T extends Item>(
 ) => void
 
 interface ContextType {
-  addItem: <T>(parentName: string, item: Omit<T, "id">) => void
+  addItem: <T>(parentName: string, item: Omit<T, "id">) => string | null
   updateItem: ParentCrudFunction
   deleteItem: ParentCrudFunction
   updateList: <T extends Item>(listName: string, list: T[]) => void
@@ -27,6 +27,7 @@ export function createFirebaseContext(database: Database): ContextType {
         ...item,
         id: newItemReference.key,
       })
+      return newItemReference.key
     },
     updateItem: (parent, item) => {
       if (item.id) {

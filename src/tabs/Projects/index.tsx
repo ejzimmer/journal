@@ -9,7 +9,7 @@ const TODO_KEY = "todo"
 
 const TODAY = new Date()
 
-export function Todo() {
+export function Projects() {
   const [items, setItems] = useState<Record<string, TodoItem>>({})
   const context = useContext(FirebaseContext)
   if (!context) {

@@ -73,7 +73,7 @@ export function Dropdown<T extends OptionBase>({
           {options.length ? (
             options.map((option) => (
               <li
-                key={option.text}
+                key={"id" in option ? `${option.id}` : option.text}
                 role="option"
                 aria-selected={highlightedOption === option}
                 onClick={() => onClick(option)}
