@@ -1,5 +1,4 @@
 import { useMemo, useState } from "react"
-import { ConfirmationModal } from "../../shared/controls/ConfirmationModal"
 import { Menu } from "../../shared/controls/Menu"
 import { ArrowRightIcon } from "../../shared/icons/ArrowRight"
 import { RubbishBinIcon } from "../../shared/icons/RubbishBin"
@@ -8,6 +7,7 @@ import { Item } from "../../shared/types"
 import "./TaskList.css"
 import { ModalTriggerProps } from "../../shared/controls/Modal"
 import { PostitModal } from "./PostitModal"
+import { EllipsisIcon } from "../../shared/icons/Ellipsis"
 
 export function TaskMenu({
   task,
@@ -36,11 +36,7 @@ export function TaskMenu({
       <Menu
         trigger={(props) => (
           <button {...props} className="task-menu ghost icon">
-            <svg viewBox="0 0 30 10" width="24px">
-              <circle cx="5" cy="5" r="2.5" />
-              <circle cx="15" cy="5" r="2.5" />
-              <circle cx="25" cy="5" r="2.5" />
-            </svg>
+            <EllipsisIcon width="24px" />
           </button>
         )}
       >
