@@ -24,7 +24,7 @@ export function Series({
   }
 
   return (
-    <>
+    <li className="series">
       <div>
         <EditableText label="Series name" onChange={updateSeriesName}>
           {series.name}
@@ -34,6 +34,6 @@ export function Series({
         games={series.items as Record<string, GameDetails>}
         path={series.id}
       />
-    </>
+    </li>
   )
 }

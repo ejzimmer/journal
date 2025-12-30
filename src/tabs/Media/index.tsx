@@ -1,9 +1,11 @@
 import { Books } from "./books/Books"
 import { Games } from "./games/Games"
 
+import "./index.css"
+
 export function Media() {
   return (
-    <div style={{ display: "flex", gap: "16px" }}>
+    <div className="media">
       <Books />
       <Games />
     </div>

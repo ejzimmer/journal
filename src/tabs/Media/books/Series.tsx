@@ -24,7 +24,7 @@ export function Series({
   }
 
   return (
-    <>
+    <li className="series">
       <div>
         <EditableText label="Series name" onChange={updateSeriesName}>
           {series.name}
@@ -32,8 +32,8 @@ export function Series({
       </div>
       <BookList
         books={series.items as Record<string, BookDetails>}
-        path={series.id}
+        path={`${path}/${series.id}`}
       />
-    </>
+    </li>
   )
 }

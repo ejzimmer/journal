@@ -3,9 +3,11 @@ import { EmojiCheckbox } from "../../../shared/controls/EmojiCheckbox"
 import { FirebaseContext } from "../../../shared/FirebaseContext"
 import { BookDetails } from "../types"
 
-import "./Book.css"
 import { XIcon } from "../../../shared/icons/X"
 import { EditableText } from "../../../shared/controls/EditableText"
+
+import "./Book.css"
+import { Checkbox } from "../../../shared/controls/Checkbox"
 
 export function Book({ book, path }: { book: BookDetails; path: string }) {
   const storageContext = useContext(FirebaseContext)
@@ -41,20 +43,28 @@ export function Book({ book, path }: { book: BookDetails; path: string }) {
   }
 
   return (
-    <div className="book">
-      <EditableText label="title" onChange={updateTitle}>
-        {book.title}
-      </EditableText>
-      <button onClick={updateMedium}>{book.medium}</button>
-      <EmojiCheckbox
-        emoji="✅"
+    <li className="book">
+      <Checkbox
+        aria-label="is read"
         isChecked={!!book.isDone}
         onChange={toggleDone}
-        label="done"
       />
+
+      <div className="details">
+        <EditableText label="title" onChange={updateTitle}>
+          {book.title}
+        </EditableText>
+        <button
+          className={`medium ${book.medium ? "" : "empty"}`}
+          aria-label="update medium"
+          onClick={updateMedium}
+        >
+          {book.medium}
+        </button>
+      </div>
       <button className="emoji ghost" onClick={deleteBook}>
         <XIcon width="16px" />
       </button>
-    </div>
+    </li>
   )
 }

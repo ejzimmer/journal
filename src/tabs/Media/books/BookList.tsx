@@ -22,7 +22,7 @@ export function BookList({
     event.preventDefault()
 
     if (newBookRef.current?.value) {
-      storageContext.addItem<BookDetails>(`${BOOKS_KEY}/${path}/books`, {
+      storageContext.addItem<BookDetails>(`${path}/items`, {
         title: newBookRef.current?.value,
         type: "book",
       })
@@ -34,12 +34,10 @@ export function BookList({
     bookDetails && (
       <ul>
         {bookDetails.map((book) => (
-          <li key={book.id}>
-            <Book book={book} path={`${BOOKS_KEY}/${path}/books`} />
-          </li>
+          <Book book={book} path={`${BOOKS_KEY}/${path}/books`} />
         ))}
         <form onSubmit={addBook}>
-          <input ref={newBookRef} />
+          <input className="add-item-to-list" ref={newBookRef} />
         </form>
       </ul>
     )

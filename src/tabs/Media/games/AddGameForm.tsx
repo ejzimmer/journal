@@ -7,6 +7,7 @@ import {
   GameDetails,
   PlayingItemDetails,
 } from "../types"
+import { SubmitButton } from "../SubmitButton"
 
 export function AddGameForm() {
   const storageContext = useContext(FirebaseContext)
@@ -55,7 +56,7 @@ export function AddGameForm() {
   }
 
   return (
-    <form onSubmit={onCreateItem}>
+    <form className="create-new" onSubmit={onCreateItem}>
       <input aria-label="book" ref={gameRef} />
       <Combobox
         label="series"
@@ -68,7 +69,7 @@ export function AddGameForm() {
         createOption={(text) => ({ text })}
         onChange={setSeries}
       />
-      <button type="submit">submit</button>
+      <SubmitButton />
     </form>
   )
 }

@@ -31,7 +31,7 @@ export function Author({ author }: { author: AuthorDetails }) {
   }
 
   return (
-    <>
+    <li className="author">
       <div>
         <EditableText label="author name" onChange={updateAuthorName}>
           {author.name}
@@ -39,14 +39,12 @@ export function Author({ author }: { author: AuthorDetails }) {
       </div>
       {items && (
         <ul>
-          {items.map((item) => (
-            <li key={item.id}>{getComponent(item, path)}</li>
-          ))}
+          {items.map((item) => getComponent(item, path))}
           <form onSubmit={addBook}>
-            <input ref={newBookRef} />
+            <input className="add-item-to-list" ref={newBookRef} />
           </form>
         </ul>
       )}
-    </>
+    </li>
   )
 }

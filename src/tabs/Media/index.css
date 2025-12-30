@@ -1,0 +1,121 @@
+.media {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(400px, 600px));
+  gap: 32px;
+  font-size: 18px;
+  justify-content: center;
+
+  h2 {
+    margin-block-end: 0;
+  }
+
+  & > div {
+    border: 2px solid var(--border-colour);
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    padding-inline: 24px;
+    padding-block-end: 24px;
+    border: 2px solid hsl(29, 94%, 50%);
+    background: hsla(29, 97%, 46%, 0.1);
+  }
+
+  ul {
+    padding: 0;
+  }
+
+  li {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  li.series,
+  li.author {
+    flex-direction: column;
+    align-items: start;
+    margin-block: 24px;
+    padding: 12px;
+    border-radius: 12px;
+
+    ul:first-of-type {
+      padding-inline-start: 8px;
+      width: 100%;
+    }
+  }
+
+  li.series {
+    border: 2px solid hsla(184, 97%, 46%);
+    background: hsla(184, 97%, 46%, 0.1);
+  }
+  li.author {
+    border: 2px solid hsla(150, 97%, 46%);
+    background: hsla(150, 97%, 46%, 0.1);
+  }
+
+  li.series > div:first-child {
+    font-style: italic;
+  }
+  li.author > div:first-child {
+    font-weight: bold;
+  }
+
+  .checkbox .control {
+    font-size: 24px;
+    color: var(--border-colour-hover);
+
+    svg {
+      stroke: currentColor;
+    }
+  }
+
+  input {
+    border: 0;
+    border-bottom: 2px solid var(--border-colour);
+    padding-inline: 0;
+    padding-block-start: 4px;
+    width: 75%;
+    font-size: 1em;
+    background: transparent;
+
+    &[role="combobox"] {
+      border: 2px solid var(--border-colour);
+      border-radius: 6px;
+      padding: 4px;
+      position: relative;
+    }
+
+    &:focus {
+      outline: 0;
+      border-color: var(--body-colour);
+    }
+  }
+
+  form.create-new {
+    border: 2px solid var(--border-colour);
+    border-radius: 12px;
+    background: white;
+    padding: 12px;
+    gap: 12px;
+    margin-block-start: auto;
+  }
+
+  .combobox {
+    position: relative;
+
+    input {
+      width: 100%;
+    }
+
+    &::after {
+      content: "";
+      position: absolute;
+      right: 8px;
+      top: calc(50% + 5px);
+      transform: translateY(-50%);
+      width: 8px;
+      border: 8px solid transparent;
+      border-top-color: var(--border-colour-hover);
+    }
+  }
+}

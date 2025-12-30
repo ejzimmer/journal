@@ -9,6 +9,8 @@ import {
   BookDetails,
   isSeries,
 } from "../types"
+import { TickIcon } from "../../../shared/icons/Tick"
+import { SubmitButton } from "../SubmitButton"
 
 type Option<T extends SeriesDetails<BookDetails> | AuthorDetails> = {
   text: string
@@ -67,7 +69,7 @@ export function AddBookForm() {
           series.value && author.value?.items?.[series.value.id]
             ? series.value.id
             : createSeries(`${BOOKS_KEY}/${authorKey}/items`, series.text)
-        addBookTo(`${BOOKS_KEY}/${authorKey}/series/${seriesKey}/items`)
+        addBookTo(`${BOOKS_KEY}/${authorKey}/items/${seriesKey}/items`)
       } else {
         addBookTo(`${BOOKS_KEY}/${authorKey}/items`)
       }
@@ -88,7 +90,7 @@ export function AddBookForm() {
   }
 
   return (
-    <form onSubmit={onCreateItem}>
+    <form className="create-new" onSubmit={onCreateItem}>
       <input aria-label="book" ref={bookRef} />
       <Combobox
         label="author"
@@ -115,7 +117,7 @@ export function AddBookForm() {
         createOption={(text) => ({ text })}
         onChange={setSeries}
       />
-      <button type="submit">submit</button>
+      <SubmitButton />
     </form>
   )
 }

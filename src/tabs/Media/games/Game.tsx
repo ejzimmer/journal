@@ -3,9 +3,9 @@ import { EmojiCheckbox } from "../../../shared/controls/EmojiCheckbox"
 import { FirebaseContext } from "../../../shared/FirebaseContext"
 import { GameDetails } from "../types"
 
-import "./Game.css"
 import { XIcon } from "../../../shared/icons/X"
 import { EditableText } from "../../../shared/controls/EditableText"
+import { Checkbox } from "../../../shared/controls/Checkbox"
 
 export function Game({ game, path }: { game: GameDetails; path: string }) {
   const storageContext = useContext(FirebaseContext)
@@ -32,19 +32,20 @@ export function Game({ game, path }: { game: GameDetails; path: string }) {
   }
 
   return (
-    <div className="game">
-      <EditableText label="title" onChange={updateTitle}>
-        {game.title}
-      </EditableText>
-      <EmojiCheckbox
-        emoji="✅"
+    <li>
+      <Checkbox
         isChecked={!!game.isDone}
         onChange={toggleDone}
-        label="done"
+        aria-label="is played"
       />
+      <div style={{ flexGrow: 1 }}>
+        <EditableText label="title" onChange={updateTitle}>
+          {game.title}
+        </EditableText>
+      </div>
       <button className="emoji ghost" onClick={deleteGame}>
         <XIcon width="16px" />
       </button>
-    </div>
+    </li>
   )
 }

@@ -1,13 +1,32 @@
 .book {
-  .emoji-checkbox {
-    opacity: 0.4;
-    filter: grayscale(60%);
-    text-shadow: none;
+  .details {
+    flex-grow: 1;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
 
-    &.done {
-      opacity: 1;
-      filter: none;
+  button.medium {
+    padding: 0;
+    width: 24px;
+    height: 24px;
+    border: 0;
+    transition: all 0.2s;
+
+    &:hover {
+      background: none;
+    }
+
+    &:hover:not(.empty) {
+      transform: scale(1.1);
       text-shadow: 1px 1px hsl(0 0 0/0.1);
+    }
+
+    &.empty {
+      border: 1px dotted var(--border-colour);
+      &:hover {
+        border-width: 2px;
+      }
     }
   }
 }

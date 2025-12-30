@@ -14,13 +14,9 @@ export function Books() {
   const items = value ? Object.values(value) : []
 
   return (
-    <div style={{ display: "flex", flexDirection: "column" }}>
+    <div className="books">
       <h2>Books</h2>
-      <ul>
-        {items.map((item) => (
-          <li key={item.id}>{getComponent(item)}</li>
-        ))}
-      </ul>
+      <ul>{items.map((item) => getComponent(item))}</ul>
       <AddBookForm />
     </div>
   )
