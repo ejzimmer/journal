@@ -12,12 +12,14 @@ import { Work } from "./tabs/Work"
 
 import "./App.css"
 import { Media } from "./tabs/Media"
+import { ThisYear } from "./tabs/ThisYear"
 
 const TABS = {
   todo: <Todo />,
   projects: <Projects />,
   media: <Media />,
   work: <Work />,
+  "2025": <ThisYear />,
 }
 
 export function App() {

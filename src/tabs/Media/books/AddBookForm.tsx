@@ -9,7 +9,6 @@ import {
   BookDetails,
   isSeries,
 } from "../types"
-import { TickIcon } from "../../../shared/icons/Tick"
 import { SubmitButton } from "../SubmitButton"
 
 type Option<T extends SeriesDetails<BookDetails> | AuthorDetails> = {

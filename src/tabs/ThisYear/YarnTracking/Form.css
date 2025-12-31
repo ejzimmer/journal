@@ -1,0 +1,40 @@
+.yarn-tracking-form {
+  display: grid;
+  grid-template-columns: 6em 1fr min-content;
+  gap: 8px 12px;
+
+  select {
+    grid-column: 1/-1;
+  }
+
+  select,
+  input {
+    background: transparent;
+    padding: 8px;
+    border-radius: 8px;
+    border-color: var(--border-colour);
+    border-style: solid;
+    font-size: 16px;
+
+    &:focus {
+      outline: none;
+      border-color: var(--body-colour);
+    }
+  }
+
+  .switch {
+    width: 100%;
+    border-radius: 15px;
+    font-size: 24px;
+    border-width: 2px;
+    border-color: var(--border-colour);
+    overflow: hidden;
+    height: 100%;
+
+    & > label {
+      width: 50%;
+      text-align: center;
+      padding: 4px;
+    }
+  }
+}

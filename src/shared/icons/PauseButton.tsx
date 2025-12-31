@@ -1,6 +1,6 @@
 import { IconProps } from "./types"
 
-export function PlayButtonIcon({
+export function PauseButtonIcon({
   width = "100%",
   colour = "currentColor",
 }: IconProps) {
@@ -14,7 +14,8 @@ export function PlayButtonIcon({
       strokeLinejoin="round"
       strokeLinecap="round"
     >
-      <path d="M4,4 L16,10 4,16z" />
+      <rect x="2" y="2" width="5" height="16" />
+      <rect x="12" y="2" width="5" height="16" />
     </svg>
   )
 }

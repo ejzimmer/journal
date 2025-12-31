@@ -1,97 +1,89 @@
-import { isSameDay } from "date-fns"
-import { useCallback, useContext, useEffect, useState } from "react"
+import { useContext } from "react"
 import { FirebaseContext } from "../../shared/FirebaseContext"
-import { NewItem } from "./TodoList/NewItem"
-import { TodoList } from "./TodoList/TodoList"
-import { TodoItem } from "./TodoList/types"
 
-const TODO_KEY = "todo"
+import "./index.css"
+import { XIcon } from "../../shared/icons/X"
+import { EditableText } from "../../shared/controls/EditableText"
+import { PlayButtonIcon } from "../../shared/icons/PlayButton"
+import { TickIcon } from "../../shared/icons/Tick"
+import { PauseButtonIcon } from "../../shared/icons/PauseButton"
 
-const TODAY = new Date()
+const KEY = "projects"
+
+type ProjectDetails = {
+  id: string
+  description: string
+  type: string
+  position: number
+  lastUpdated: number
+  status?: "ready" | "in_progress" | "done"
+}
+
+const COLOURS = {
+  "🛒": "hsla(197 36% 70% /.3)",
+  "📓": "hsl(0  0% 49% / .3)",
+  "🖊️": "hsl(209 79% 48% /.3)",
+  "👩‍💻": "hsl(93 90% 45% / .3)",
+  "🧹": "hsl(45 100% 76% / .3)",
+  "🪡": "hsl(203 85% 77% / .3)",
+  "🧶": "hsl(339 78% 67% / .3)",
+  "🚚": "hsla(352 90% 45% / .3)",
+}
 
 export function Projects() {
-  const [items, setItems] = useState<Record<string, TodoItem>>({})
-  const context = useContext(FirebaseContext)
-  if (!context) {
-    throw new Error("missing firebase context")
+  const storageContext = useContext(FirebaseContext)
+  if (!storageContext) {
+    throw new Error("Missing Firebase context provider")
   }
-  const { updateItem: updateItemInList, deleteItem: deleteItemFromList } =
-    context
 
-  const onNewItem = useCallback(
-    (item: any) => {
-      if (item.done && !isSameDay(item.done, TODAY)) {
-        deleteItemFromList(TODO_KEY, item)
-      } else {
-        setItems((items) => {
-          if (typeof item.position === "undefined") {
-            item.position = Object.keys(items).length
-            updateItemInList(TODO_KEY, item)
-          }
-          return { ...items, [item.id]: item }
-        })
-      }
-    },
-    [setItems, deleteItemFromList, updateItemInList]
-  )
-
-  const onChangeItem = useCallback(
-    (item: TodoItem) => {
-      setItems((items) => ({
-        ...items,
-        [item.id]: item,
-      }))
-    },
-    [setItems]
-  )
-
-  const onDeleteItem = useCallback(
-    (item: TodoItem) => {
-      setItems((items) => {
-        const copy = { ...items }
-        delete copy[item.id]
-        return copy
-      })
-    },
-    [setItems]
-  )
-
-  const onReorder = useCallback(
-    (list: TodoItem[]) => {
-      setItems(
-        list.reduce(
-          (items, item) => ({
-            ...items,
-            [item.id]: item,
-          }),
-          {}
-        )
-      )
-      list.forEach((item) => updateItemInList(TODO_KEY, item))
-    },
-    [setItems, updateItemInList]
-  )
-
-  // useEffect(() => {
-  //   subscribeToList(TODO_KEY, {
-  //     onAdd: onNewItem,
-  //     onChange: onChangeItem,
-  //     onDelete: onDeleteItem,
-  //   })
-  // }, [onNewItem, onChangeItem, onDeleteItem, setItems, subscribeToList])
+  const { value } = storageContext.useValue<ProjectDetails>(KEY)
+  const projects = value ? Object.values(value) : undefined
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
-      <TodoList
-        id="todo"
-        items={Object.values(items)}
-        onChangeItem={(item) => updateItemInList(TODO_KEY, item)}
-        onDeleteItem={(item) => deleteItemFromList(TODO_KEY, item)}
-        onReorder={onReorder}
-        currentList="todo"
-        otherLists={["today"]}
-      />
-      <NewItem list={TODO_KEY} />
-    </div>
+    <ul className="projects">
+      {projects?.map((project) => (
+        <li
+          className={project.status}
+          style={{
+            background:
+              project.type in COLOURS
+                ? COLOURS[project.type as keyof typeof COLOURS]
+                : "white",
+          }}
+        >
+          {project.type}
+          <EditableText
+            label="project"
+            onChange={(description) =>
+              storageContext.updateItem<ProjectDetails>(KEY, {
+                ...project,
+                description,
+              })
+            }
+          >
+            {project.description}
+          </EditableText>
+          <div className="actions">
+            <button
+              className="ghost"
+              onClick={() =>
+                storageContext.updateItem<ProjectDetails>(KEY, {
+                  ...project,
+                  status: project.status === "done" ? "ready" : "done",
+                })
+              }
+            >
+              <TickIcon width="20px" colour="var(--success-colour)" />
+            </button>
+            <button
+              className="ghost"
+              onClick={() => storageContext.deleteItem(KEY, project)}
+            >
+              <XIcon width="20px" colour="var(--body-colour-light)" />
+            </button>
+          </div>
+        </li>
+      ))}
+    </ul>
   )
 }
