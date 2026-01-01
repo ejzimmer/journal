@@ -1,28 +1,46 @@
-ul.projects {
-  display: flex;
-  flex-direction: column;
-  list-style-type: none;
-  max-height: 90vh;
-  width: fit-content;
-  flex-wrap: wrap;
-  gap: 2px;
+.knitting-sewing {
+  display: grid;
+  grid-template-columns: auto min-content;
+  grid-template-rows: auto auto;
+  gap: 4px;
 
-  li {
-    border: 1px solid black;
-    padding-block: 10px;
-    padding-inline: 20px;
+  ul {
+    grid-column: 1;
     display: flex;
-    gap: 12px;
-    align-items: center;
+    margin: 0;
+    padding: 0;
+    gap: 2px;
+    flex-wrap: wrap;
+  }
 
-    &.done {
-      filter: grayscale(0.5);
-      opacity: 0.5;
-      text-decoration: line-through;
-    }
+  & > div {
+    grid-column: 2;
+    grid-row: 1/-1;
+    margin-inline-end: 40px;
+    align-self: center;
+  }
 
-    .actions {
-      margin-inline-start: auto;
+  input {
+    font-size: 16px;
+    padding: 5px 10px;
+    margin-block-end: 12px;
+    border: 0;
+    border-block-end: 2px solid var(--border-colour);
+  }
+
+  .buttons {
+    text-align: end;
+    button:first-child {
+      margin-inline-end: 4px;
     }
   }
+}
+
+.projects {
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+  max-height: 100%;
+  gap: 2px;
 }

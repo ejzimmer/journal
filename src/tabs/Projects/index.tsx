@@ -1,89 +1,91 @@
-import { useContext } from "react"
+import { useContext, useEffect, useRef, useState } from "react"
 import { FirebaseContext } from "../../shared/FirebaseContext"
 
 import "./index.css"
-import { XIcon } from "../../shared/icons/X"
-import { EditableText } from "../../shared/controls/EditableText"
-import { PlayButtonIcon } from "../../shared/icons/PlayButton"
-import { TickIcon } from "../../shared/icons/Tick"
-import { PauseButtonIcon } from "../../shared/icons/PauseButton"
-
-const KEY = "projects"
-
-type ProjectDetails = {
-  id: string
-  description: string
-  type: string
-  position: number
-  lastUpdated: number
-  status?: "ready" | "in_progress" | "done"
-}
-
-const COLOURS = {
-  "🛒": "hsla(197 36% 70% /.3)",
-  "📓": "hsl(0  0% 49% / .3)",
-  "🖊️": "hsl(209 79% 48% /.3)",
-  "👩‍💻": "hsl(93 90% 45% / .3)",
-  "🧹": "hsl(45 100% 76% / .3)",
-  "🪡": "hsl(203 85% 77% / .3)",
-  "🧶": "hsl(339 78% 67% / .3)",
-  "🚚": "hsla(352 90% 45% / .3)",
-}
+import { ProjectDetails, KEY } from "./type"
+import { Project } from "./Project"
 
 export function Projects() {
+  const containerRef = useRef<HTMLUListElement>(null)
+  const [containerHeight, setContainerHeight] = useState<number>()
+
   const storageContext = useContext(FirebaseContext)
   if (!storageContext) {
     throw new Error("Missing Firebase context provider")
   }
 
   const { value } = storageContext.useValue<ProjectDetails>(KEY)
-  const projects = value ? Object.values(value) : undefined
+  const projects = value ? Object.values(value) : []
+
+  const { knittingProjects, sewingProjects, otherProjects } = projects.reduce<
+    Record<string, ProjectDetails[]>
+  >(
+    (groupedProjects, project) => {
+      if (project.type === "🧶") {
+        groupedProjects.knittingProjects.push(project)
+      } else if (project.type === "🪡") {
+        groupedProjects.sewingProjects.push(project)
+      } else {
+        groupedProjects.otherProjects.push(project)
+      }
+      return groupedProjects
+    },
+    { knittingProjects: [], sewingProjects: [], otherProjects: [] }
+  )
+
+  const projectNameRef = useRef<HTMLInputElement>(null)
+
+  const addProject = (type: string) => {
+    const description = projectNameRef.current?.value
+    if (!description) return
+
+    storageContext.addItem<ProjectDetails>(KEY, { description, type })
+
+    projectNameRef.current!.value = ""
+  }
+
+  useEffect(() => {
+    if (containerRef.current) {
+      setContainerHeight(
+        window.innerHeight - containerRef.current.getBoundingClientRect().top
+      )
+    }
+  }, [])
 
   return (
-    <ul className="projects">
-      {projects?.map((project) => (
-        <li
-          className={project.status}
-          style={{
-            background:
-              project.type in COLOURS
-                ? COLOURS[project.type as keyof typeof COLOURS]
-                : "white",
-          }}
-        >
-          {project.type}
-          <EditableText
-            label="project"
-            onChange={(description) =>
-              storageContext.updateItem<ProjectDetails>(KEY, {
-                ...project,
-                description,
-              })
-            }
-          >
-            {project.description}
-          </EditableText>
-          <div className="actions">
-            <button
-              className="ghost"
-              onClick={() =>
-                storageContext.updateItem<ProjectDetails>(KEY, {
-                  ...project,
-                  status: project.status === "done" ? "ready" : "done",
-                })
-              }
-            >
-              <TickIcon width="20px" colour="var(--success-colour)" />
+    <div className="projects-container">
+      <div className="knitting-sewing">
+        <ul>
+          {knittingProjects.map((project) => (
+            <Project key={project.id} project={project} />
+          ))}
+        </ul>
+        <ul>
+          {sewingProjects.map((project) => (
+            <Project key={project.id} project={project} />
+          ))}
+        </ul>
+        <div>
+          <input ref={projectNameRef} />
+          <div className="buttons">
+            <button className="outline" onClick={() => addProject("🧶")}>
+              🧶
             </button>
-            <button
-              className="ghost"
-              onClick={() => storageContext.deleteItem(KEY, project)}
-            >
-              <XIcon width="20px" colour="var(--body-colour-light)" />
+            <button className="outline" onClick={() => addProject("🪡")}>
+              🪡
             </button>
           </div>
-        </li>
-      ))}
-    </ul>
+        </div>
+      </div>
+      <ul
+        className="projects"
+        ref={containerRef}
+        style={{ height: containerHeight }}
+      >
+        {otherProjects.map((project) => (
+          <Project key={project.id} project={project} />
+        ))}
+      </ul>
+    </div>
   )
 }

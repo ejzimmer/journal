@@ -1,0 +1,31 @@
+li.project {
+  flex-shrink: 0;
+  border: 1px solid var(--border-colour);
+  padding-block: 5px;
+  padding-inline: 10px;
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  position: relative;
+
+  &.done {
+    filter: grayscale(0.5);
+    opacity: 0.5;
+    text-decoration: line-through;
+  }
+
+  label.emoji-checkbox.done {
+    filter: none;
+    text-shadow: 1px 1px 4px hsl(0 0 0 /0.4);
+  }
+
+  &.in_progress {
+    outline: 2px solid var(--body-colour-light);
+    outline-offset: -2px;
+    filter: contrast(200%);
+  }
+
+  .actions {
+    margin-inline-start: auto;
+  }
+}

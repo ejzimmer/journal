@@ -19,7 +19,7 @@ const TABS = {
   projects: <Projects />,
   media: <Media />,
   work: <Work />,
-  "2025": <ThisYear />,
+  "2026": <ThisYear />,
 }
 
 export function App() {
