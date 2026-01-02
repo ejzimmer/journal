@@ -3,6 +3,7 @@ import { FirebaseContext } from "../../../shared/FirebaseContext"
 import { AddBookForm } from "./AddBookForm"
 import { BOOKS_KEY, ReadingItemDetails } from "../types"
 import { getComponent } from "./utils"
+import React from "react"
 
 export function Books() {
   const storageContext = useContext(FirebaseContext)
@@ -16,7 +17,11 @@ export function Books() {
   return (
     <div className="books">
       <h2>Books</h2>
-      <ul>{items.map((item) => getComponent(item))}</ul>
+      <ul>
+        {items.map((item) => (
+          <React.Fragment key={item.id}>{getComponent(item)}</React.Fragment>
+        ))}
+      </ul>
       <AddBookForm />
     </div>
   )

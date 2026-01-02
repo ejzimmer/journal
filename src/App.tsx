@@ -25,7 +25,6 @@ const TABS = {
 export function App() {
   const [isLoggedIn, setLoggedIn] = useState(false)
   const auth = getAuth()
-  console.log(auth.currentUser)
 
   onAuthStateChanged(auth, () => {
     setLoggedIn(!!auth.currentUser)

@@ -14,8 +14,6 @@ export function TodayTask({ task }: { task: DailyTask }) {
     throw new Error("Missing Firebase context provider")
   }
 
-  console.log("task", task)
-
   const onChange = (task: DailyTask) => {
     storageContext.updateItem<DailyTask>(PARENT_LIST, task)
   }

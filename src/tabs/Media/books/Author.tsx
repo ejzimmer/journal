@@ -1,4 +1,4 @@
-import { useContext, useRef } from "react"
+import { Fragment, useContext, useRef } from "react"
 import { FirebaseContext } from "../../../shared/FirebaseContext"
 import { AuthorDetails, BOOKS_KEY, BookDetails } from "../types"
 import { EditableText } from "../../../shared/controls/EditableText"
@@ -39,7 +39,9 @@ export function Author({ author }: { author: AuthorDetails }) {
       </div>
       {items && (
         <ul>
-          {items.map((item) => getComponent(item, path))}
+          {items.map((item) => (
+            <Fragment key={item.id}>{getComponent(item, path)}</Fragment>
+          ))}
           <form onSubmit={addBook}>
             <input className="add-item-to-list" ref={newBookRef} />
           </form>

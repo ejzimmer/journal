@@ -1,4 +1,4 @@
-import { useContext } from "react"
+import { Fragment, useContext } from "react"
 import { FirebaseContext } from "../../../shared/FirebaseContext"
 import { AddGameForm } from "./AddGameForm"
 import { GAMES_KEY, PlayingItemDetails } from "../types"
@@ -26,7 +26,11 @@ export function Games() {
   return (
     <div className="games">
       <h2>Games</h2>
-      <ul>{items.map((item) => getComponent(item))}</ul>
+      <ul>
+        {items.map((item) => (
+          <Fragment key={item.id}>{getComponent(item)}</Fragment>
+        ))}
+      </ul>
       <AddGameForm />
     </div>
   )

@@ -34,7 +34,7 @@ export function GameList({
     gameDetails && (
       <ul>
         {gameDetails.map((game) => (
-          <Game game={game} path={`${GAMES_KEY}/${path}/games`} />
+          <Game key={game.id} game={game} path={`${GAMES_KEY}/${path}/games`} />
         ))}
         <form onSubmit={addGame}>
           <input className="add-item-to-list" ref={newGameRef} />
