@@ -24,7 +24,6 @@ import { dropTargetForElements } from "@atlaskit/pragmatic-drag-and-drop/element
 import { reorderWithEdge } from "@atlaskit/pragmatic-drag-and-drop-hitbox/util/reorder-with-edge"
 
 import "./TaskList.css"
-import { ConfirmationModal } from "../../shared/controls/ConfirmationModal"
 import { RubbishBinIcon } from "../../shared/icons/RubbishBin"
 import { ModalTriggerProps } from "../../shared/controls/Modal"
 import invariant from "tiny-invariant"

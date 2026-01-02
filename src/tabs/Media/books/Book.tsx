@@ -1,5 +1,4 @@
 import { useContext } from "react"
-import { EmojiCheckbox } from "../../../shared/controls/EmojiCheckbox"
 import { FirebaseContext } from "../../../shared/FirebaseContext"
 import { BookDetails } from "../types"
 
