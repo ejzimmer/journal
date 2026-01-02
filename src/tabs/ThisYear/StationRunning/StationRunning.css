@@ -1,0 +1,33 @@
+.trainline {
+  list-style-type: none;
+  margin: 0;
+  margin-block-start: 100px;
+  padding: 0;
+  display: flex;
+  gap: 20px;
+
+  .station {
+    width: 30px;
+    height: 30px;
+    border: 8px solid #d11c2e;
+    border-radius: 100px;
+    position: relative;
+
+    &::after {
+      content: "";
+      width: 24px;
+      height: 10px;
+      background: #d11c2e;
+      position: absolute;
+      right: -6px;
+      top: 50%;
+      transform: translate(100%, -50%);
+    }
+
+    .name {
+      transform: translate(15px, -150%) rotate(-1.125turn);
+      transform-origin: bottom left;
+      width: max-content;
+    }
+  }
+}

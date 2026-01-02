@@ -5,6 +5,27 @@ import "./index.css"
 import { YarnTrackingForm } from "./YarnTracking/Form"
 import { YarnDetails, KEY, yarnTypes } from "./YarnTracking/types"
 import { YarnState } from "./YarnTracking/YarnState"
+import { Combobox } from "../../shared/controls/combobox/Combobox"
+import { StationRunning } from "./StationRunning/StationRunning"
+
+const tags = [
+  "💪",
+  "🏃‍♀️",
+  "🛼",
+  "🍺",
+  "🍻",
+  "✈️",
+  "🤒",
+  "🟤",
+  "🩸",
+  "🇯🇵",
+  "📕",
+  "🇫🇷",
+  "🈲",
+  "🚫",
+  "🥡",
+  "✏️",
+]
 
 export function ThisYear() {
   const storageContext = useContext(FirebaseContext)
@@ -30,9 +51,24 @@ export function ThisYear() {
   )
 
   return (
-    <div style={{ display: "flex", gap: "36px" }}>
-      <YarnTrackingForm />
-      <YarnState total={total} yarns={yarnAmounts} />
+    <div style={{ display: "grid", gap: "36px" }}>
+      <div style={{ display: "flex", gap: "36px" }}>
+        <YarnTrackingForm />
+        <YarnState total={total} yarns={yarnAmounts} />
+      </div>
+      <StationRunning />
+      <div className="day">
+        <input />
+        <input />
+        <Combobox
+          value={[]}
+          label="tags"
+          options={tags.map((tag) => ({ text: tag }))}
+          createOption={(text) => ({ text })}
+          allowMulti
+          onChange={(value) => console.log(value)}
+        />
+      </div>
     </div>
   )
 }
