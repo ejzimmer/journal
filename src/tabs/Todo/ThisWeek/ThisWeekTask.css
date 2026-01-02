@@ -15,9 +15,11 @@
       --light: hsl(108, 81%, 66%);
       --dark: hsl(108, 81%, 36%);
       appearance: none;
+      -webkit-appearance: none;
       border-radius: 100px;
       border: 2px solid white;
       box-shadow: 1px 1px 2px hsl(0 0 0 /0.6), inset 0 0 1px hsl(0 0 0/0.5);
+      height: 25px;
       &::-moz-progress-bar {
         background: linear-gradient(
             to right,
@@ -27,6 +29,20 @@
             var(--dark)
           ),
           linear-gradient(var(--dark), var(--light), var(--dark));
+      }
+      &::-webkit-progress-value {
+        background: linear-gradient(
+            to right,
+            var(--dark),
+            transparent 6%,
+            transparent 94%,
+            var(--dark)
+          ),
+          linear-gradient(var(--dark), var(--light), var(--dark));
+        border-radius: 100px;
+      }
+      &::-webkit-progress-bar {
+        border-radius: 100px;
       }
     }
   }

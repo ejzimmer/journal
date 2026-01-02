@@ -2,7 +2,7 @@ import {
   getAuth,
   GoogleAuthProvider,
   onAuthStateChanged,
-  signInWithRedirect,
+  signInWithPopup,
 } from "firebase/auth"
 import { useState } from "react"
 import { Todo } from "./tabs/Todo"
@@ -25,6 +25,7 @@ const TABS = {
 export function App() {
   const [isLoggedIn, setLoggedIn] = useState(false)
   const auth = getAuth()
+  console.log(auth.currentUser)
 
   onAuthStateChanged(auth, () => {
     setLoggedIn(!!auth.currentUser)
@@ -32,7 +33,8 @@ export function App() {
 
   const login = () => {
     const provider = new GoogleAuthProvider()
-    signInWithRedirect(auth, provider)
+    signInWithPopup(auth, provider)
+    // signInWithRedirect(auth, provider)
   }
 
   if (!isLoggedIn) {
