@@ -10,10 +10,9 @@ export function Combobox<T extends OptionType>({
   createOption,
   hideSelectedOptions,
 }: ComboboxProps<T>) {
+  const popoverId = useId()
   const popoverRef = useRef<HTMLDivElement>(null)
   const popoverState = usePopoverState(popoverRef)
-
-  const popoverId = useId()
 
   const [searchTerm, setSearchTerm] = useState("")
   const displayedOptions = (
