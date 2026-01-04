@@ -186,42 +186,17 @@ describe("Combobox", () => {
       ).not.toBeInTheDocument()
     })
 
-    describe("When the user types a brand new option and presses enter", () => {
-      it("Sets the value & clears the input", async () => {
-        const user = userEvent.setup()
-        const onChange = jest.fn()
-        const { rerender } = render(
-          <Combobox {...commonProps} onChange={onChange} />
-        )
+    it("sets the value to whatever the user has typed", async () => {
+      const user = userEvent.setup()
+      const onChange = jest.fn()
+      render(<Combobox {...commonProps} onChange={onChange} />)
 
-        const input = screen.getByRole("combobox")
-        await user.type(input, "data decoration{Enter}")
+      const input = screen.getByRole("combobox")
+      await user.type(input, "cleaning")
 
-        expect(onChange).toHaveBeenCalledTimes(1)
-        expect(onChange).toHaveBeenCalledWith({
-          text: "data decoration",
-          colour: "orange",
-        })
-        expect(input).toHaveValue("")
-
-        rerender(
-          <Combobox
-            {...commonProps}
-            onChange={onChange}
-            value={{ text: "data decoration", colour: "orange" }}
-          />
-        )
-
-        expect(
-          screen.queryByRole("button", { name: "Remove data decoration" })
-        ).not.toBeInTheDocument()
-
-        await user.type(input, "support null values{Enter}")
-
-        expect(onChange).toHaveBeenCalledWith({
-          text: "support null values",
-          colour: "orange",
-        })
+      expect(onChange).toHaveBeenCalledWith({
+        text: "cleaning",
+        colour: "orange",
       })
     })
 
@@ -311,7 +286,7 @@ describe("Combobox", () => {
 
       await user.type(input, "dev ")
 
-      expect(onChange).not.toHaveBeenCalled()
+      expect(onChange).toHaveBeenCalledWith({ text: "dev", colour: "orange" })
 
       await user.type(input, "{ArrowDown} ")
 
@@ -323,12 +298,7 @@ describe("Combobox", () => {
       onChange.mockClear()
       await user.type(input, "{ArrowDown}{ArrowDown}")
       await user.type(input, "dev ")
-      expect(onChange).not.toHaveBeenCalled()
-
-      await user.type(input, "{Enter}")
-      expect(onChange).toHaveBeenCalledWith(
-        expect.objectContaining({ text: "dev" })
-      )
+      expect(onChange).toHaveBeenCalledWith({ text: "dev", colour: "orange" })
     })
   })
 })

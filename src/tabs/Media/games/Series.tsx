@@ -2,7 +2,7 @@ import { useContext } from "react"
 import { EditableText } from "../../../shared/controls/EditableText"
 import { FirebaseContext } from "../../../shared/FirebaseContext"
 import { GameList } from "./GameList"
-import { GameDetails, SeriesDetails } from "../types"
+import { GameDetails, GAMES_KEY, SeriesDetails } from "../types"
 
 export function Series({
   series,
@@ -32,7 +32,7 @@ export function Series({
       </div>
       <GameList
         games={series.items as Record<string, GameDetails>}
-        path={series.id}
+        path={`${GAMES_KEY}/${series.id}/items`}
       />
     </li>
   )

@@ -34,7 +34,7 @@ export function BookList({
     bookDetails && (
       <ul>
         {bookDetails.map((book) => (
-          <Book key={book.id} book={book} path={`${BOOKS_KEY}/${path}/books`} />
+          <Book key={book.id} book={book} path={path} />
         ))}
         <form onSubmit={addBook}>
           <input className="add-item-to-list" ref={newBookRef} />

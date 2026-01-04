@@ -151,7 +151,10 @@ export function Combobox<T extends OptionBase>({
             label={label}
             value={value}
             inputValue={searchText}
-            onChangeInputValue={setSearchText}
+            onChangeInputValue={(value) => {
+              if (value.trim()) onChange(createOption(value))
+              setSearchText(value.trim())
+            }}
             onKeyDown={handleInputKeyDown}
             popoutId={popoutId}
             isPopoutOpen={isPopoutOpen}

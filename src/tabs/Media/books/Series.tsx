@@ -32,7 +32,7 @@ export function Series({
       </div>
       <BookList
         books={series.items as Record<string, BookDetails>}
-        path={`${path}/${series.id}`}
+        path={`${path}/${series.id}/items`}
       />
     </li>
   )
