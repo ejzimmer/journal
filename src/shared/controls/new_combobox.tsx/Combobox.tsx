@@ -5,14 +5,27 @@ type OptionType = {
   label: string
 }
 
-type ComboboxProps<T extends OptionType> = {
-  value: T
+type BaseProps<T> = {
   options: T[]
-  onChange: (value: T) => void
   createOption: (label: string) => T
 }
+type SingleValueProps<T> = BaseProps<T> & {
+  isMultiValue?: false
+  value: T | undefined
+  onChange: (value: T) => void
+}
+type MultiValueProps<T> = BaseProps<T> & {
+  isMultiValue: true
+  value: T[]
+  onChange: (value: T[]) => void
+}
+
+export type ComboboxProps<T extends OptionType> =
+  | SingleValueProps<T>
+  | MultiValueProps<T>
 
 export function Combobox<T extends OptionType>({
+  isMultiValue,
   value,
   options,
   onChange,
@@ -35,8 +48,8 @@ export function Combobox<T extends OptionType>({
     : -1
   const [highlightedIndex, setHighlightedIndex] = useState(selectedIndex)
 
-  const reset = () => {
-    popoverRef.current?.hidePopover()
+  const reset = (alwayClosePopover?: boolean) => {
+    if (!isMultiValue || alwayClosePopover) popoverRef.current?.hidePopover()
     setSearchTerm("")
   }
 
@@ -56,25 +69,35 @@ export function Combobox<T extends OptionType>({
     }
   }, [])
 
+  const updateValue = (newValue: T) => {
+    if (isMultiValue) {
+      onChange([...value, newValue])
+    } else {
+      onChange(newValue)
+    }
+  }
+
   const handleKeyDown = (event: React.KeyboardEvent) => {
     switch (event.key) {
       case "Enter":
         event.stopPropagation()
         if (highlightedIndex > -1) {
-          onChange(displayedOptions[highlightedIndex])
+          updateValue(displayedOptions[highlightedIndex])
+        } else if (isMultiValue && searchTerm) {
+          addOption(searchTerm)
         }
         reset()
         break
       case "ArrowDown":
         if (popoverStateRef.current !== "open")
-          onChange(
+          updateValue(
             displayedOptions[(selectedIndex + 1) % displayedOptions.length]
           )
         setHighlightedIndex((highlightedIndex + 1) % displayedOptions.length)
         break
       case "ArrowUp":
         if (popoverStateRef.current !== "open")
-          onChange(
+          updateValue(
             displayedOptions[
               (Math.max(selectedIndex, 0) - 1 + displayedOptions.length) %
                 displayedOptions.length
@@ -91,6 +114,11 @@ export function Combobox<T extends OptionType>({
     }
   }
 
+  const addOption = (label: string) => {
+    const existingOption = options.find((o) => o.label === label)
+    updateValue(existingOption ?? createOption(label))
+  }
+
   return (
     <>
       <input
@@ -103,14 +131,14 @@ export function Combobox<T extends OptionType>({
         onChange={(event) => {
           const value = event.target.value.trim()
           if (value) {
-            const existingOption = displayedOptions.find(
-              (o) => o.label === value
-            )
-            onChange(existingOption ?? createOption(value))
             setSearchTerm(value)
+
+            if (!isMultiValue) {
+              addOption(value)
+            }
           }
         }}
-        onBlur={reset}
+        onBlur={() => reset(true)}
       />
       <div
         ref={popoverRef}
@@ -125,7 +153,7 @@ export function Combobox<T extends OptionType>({
               role="option"
               aria-selected={index === selectedIndex}
               onClick={() => {
-                onChange(option)
+                updateValue(option)
                 reset()
               }}
             >

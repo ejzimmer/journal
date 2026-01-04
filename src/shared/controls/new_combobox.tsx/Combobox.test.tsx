@@ -189,17 +189,125 @@ describe("Combobox", () => {
     })
   })
 
+  describe("multi value combobox", () => {
+    const multivalueProps = {
+      ...commonProps,
+      isMultiValue: true,
+      value: [options[0]],
+    }
+
+    describe("when the popover is open", () => {
+      describe("and the user presses the arrow keys", () => {
+        it("updates the highlighted option, but doesn't update the value until the user presses enter", async () => {
+          const user = userEvent.setup()
+          const onChange = jest.fn()
+          const onKeydown = jest.fn()
+          render(<Combobox {...multivalueProps} onChange={onChange} />, {
+            wrapper: ({ children }) => (
+              <div onKeyDown={onKeydown}>{children}</div>
+            ),
+          })
+          const input = screen.getByRole("combobox")
+          const popover = screen.getByTestId("popover")
+          jest.spyOn(popover, "hidePopover")
+          await user.type(input, " ") // open popover
+
+          await user.type(input, "{ArrowDown}{ArrowDown}")
+
+          expect(onChange).not.toHaveBeenCalled()
+
+          onKeydown.mockClear()
+          await user.type(input, "{Enter}")
+
+          expect(onChange).toHaveBeenCalledWith([options[0], options[1]])
+          expect(onKeydown).not.toHaveBeenCalled()
+          expect(popover.hidePopover).not.toHaveBeenCalled()
+        })
+      })
+    })
+
+    describe("when the user types in the input", () => {
+      it("opens the popover & filters the options, but doesn't update the value until the user presses enter", async () => {
+        const user = userEvent.setup()
+        const onChange = jest.fn()
+        render(<Combobox {...multivalueProps} onChange={onChange} />)
+        const popover = screen.getByTestId("popover")
+        jest.spyOn(popover, "showPopover")
+        const input = screen.getByRole("combobox")
+
+        await user.type(input, "gr")
+        expect(popover.showPopover).toHaveBeenCalled()
+        expect(onChange).not.toHaveBeenCalled()
+        await user.type(input, "{ArrowDown}{Enter}")
+        expect(onChange).toHaveBeenCalledWith([options[0], options[2]])
+      })
+
+      describe("and the text matches an existing option label exactly", () => {
+        it("updates the value to the existing option", async () => {
+          const user = userEvent.setup()
+          const onChange = jest.fn()
+          render(
+            <Combobox
+              {...multivalueProps}
+              value={[options[0]]}
+              onChange={onChange}
+            />
+          )
+          const input = screen.getByRole("combobox")
+
+          await user.type(input, "grape{Enter}")
+
+          expect(onChange).toHaveBeenCalledWith([
+            options[0],
+            { id: "3", label: "grape" },
+          ])
+        })
+      })
+
+      describe("then presses enter", () => {
+        it("clears the input and updates the value", async () => {
+          const user = userEvent.setup()
+          const onChange = jest.fn()
+          render(<Combobox {...multivalueProps} onChange={onChange} />)
+          const input = screen.getByRole("combobox")
+
+          await user.type(input, "kiwi")
+          onChange.mockClear()
+          await user.type(input, "{Enter}")
+
+          expect(onChange).toHaveBeenCalledWith([
+            options[0],
+            { id: "5", label: "kiwi" },
+          ])
+          expect(input).toHaveValue("")
+        })
+      })
+    })
+
+    describe("when the user clicks an option", () => {
+      it("updates the value, clears the search text & keeps the popover open", async () => {
+        const user = userEvent.setup()
+        const onChange = jest.fn()
+        render(<Combobox {...multivalueProps} onChange={onChange} />)
+        const popover = screen.getByTestId("popover")
+        jest.spyOn(popover, "hidePopover")
+        const input = screen.getByRole("combobox")
+
+        await user.type(input, "g")
+        await user.click(screen.getByRole("option", { name: "grapefruit" }))
+
+        expect(onChange).toHaveBeenCalledWith([options[0], options[3]])
+        expect(input).toHaveValue("")
+        expect(popover.hidePopover).toHaveBeenCalled()
+      })
+    })
+  })
+
   // multi value
-  // same as single value except
-  // arrow key on its own deselects all unhighlighted elements, selects newly highlighted element
-  // ctrl + arrow key to navigate without selecting, ctrl + space to select non-contiguous elements
-  // shift + arrow key to select multiple contiguous elements
-  // enter key does the same as arrow key
-  // when the user types something that's the same as an existing option, it adds the existing option to the value, clears the input & keeps the popover open
+  // correctly select initial values
+  // when clicking already selected option, unselect it
   // when the user types something that's already a selected value, it doesn't add it to the value
-  // when an option is selected, the popout doesn't close
   // remove item & remove all
-  // when the user clicks an option with the mouse, it updates the value, clears the input & keeps the popover open
 
   // remove elements from the list?
   // highlight previously selected element
