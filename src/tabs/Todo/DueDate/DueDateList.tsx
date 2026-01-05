@@ -33,7 +33,7 @@ export function DueDateList() {
           {tasks
             .sort((a, b) => a.dueDate - b.dueDate)
             .map((task) => (
-              <li key={task.description} className={`status-${task.status}`}>
+              <li key={task.id} className={`status-${task.status}`}>
                 <DueDateTask task={task} />
               </li>
             ))}

@@ -33,7 +33,7 @@ export function ThisWeekList() {
       {tasks.length ? (
         <ul>
           {tasks.map((task) => (
-            <li key={task.description}>
+            <li key={task.id}>
               <ThisWeekTask task={task} />
             </li>
           ))}
