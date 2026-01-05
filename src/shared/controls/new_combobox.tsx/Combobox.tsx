@@ -1,4 +1,4 @@
-import { useCallback, useId, useRef, useState } from "react"
+import { useCallback, useEffect, useId, useRef, useState } from "react"
 import { OptionType, ComboboxProps } from "./types"
 import { usePopoverState } from "./usePopoverState"
 
@@ -12,7 +12,9 @@ export function Combobox<T extends OptionType>({
   createOption,
   hideSelectedOptions,
   Option,
+  Value,
 }: ComboboxProps<T>) {
+  const containerRef = useRef<HTMLDivElement>(null)
   const popoverId = useId()
   const popoverRef = useRef<HTMLDivElement>(null)
   const { popoverState, hidePopover, showPopover, togglePopover } =
@@ -64,6 +66,7 @@ export function Combobox<T extends OptionType>({
     switch (event.key) {
       case "Enter":
         event.stopPropagation()
+        event.preventDefault()
         if (highlightedIndex > -1) {
           updateValue(displayedOptions[highlightedIndex])
         } else if (isMultiValue && searchTerm) {
@@ -105,6 +108,10 @@ export function Combobox<T extends OptionType>({
           ]
         )
         break
+      case "Tab": {
+        reset()
+        break
+      }
       default:
         showPopover()
     }
@@ -118,8 +125,24 @@ export function Combobox<T extends OptionType>({
     updateValue(existingOption ?? createOption(label))
   }
 
+  useEffect(() => {
+    const handler = (event: MouseEvent) => {
+      if (
+        event.target instanceof Node &&
+        !containerRef.current?.contains(event.target)
+      ) {
+        reset(true)
+      }
+    }
+    window.addEventListener("click", handler)
+
+    return () => {
+      window.removeEventListener("click", handler)
+    }
+  }, [reset])
+
   return (
-    <div className="combobox" onBlur={() => reset(true)}>
+    <div ref={containerRef} className="combobox">
       <input
         role="combobox"
         aria-controls={popoverId}
@@ -152,7 +175,9 @@ export function Combobox<T extends OptionType>({
         </div>
       ) : (
         popoverState === "closed" && (
-          <div className="single-value-container">{value?.label}</div>
+          <div className="single-value-container">
+            {Value ? <Value value={value} /> : value?.label}
+          </div>
         )
       )}
       <div
@@ -173,7 +198,7 @@ export function Combobox<T extends OptionType>({
               }}
               className={option === highlightedOption ? "highlighted" : ""}
             >
-              {Option ? <Option option={option} /> : option.label}
+              {Option ? <Option value={option} /> : option.label}
             </li>
           ))}
         </ul>

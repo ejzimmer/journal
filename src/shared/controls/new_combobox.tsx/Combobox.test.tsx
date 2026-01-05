@@ -78,7 +78,7 @@ describe("Combobox", () => {
     render(
       <Combobox
         {...commonProps}
-        Option={({ option }) => <div>custom: {option.label}</div>}
+        Option={({ value }) => <div>custom: {value.label}</div>}
       />
     )
 
@@ -87,6 +87,18 @@ describe("Combobox", () => {
         screen.getByRole("option", { name: `custom: ${option.label}` })
       ).toBeInTheDocument()
     })
+  })
+
+  it("supports custom value", () => {
+    const value = options[2]
+    render(
+      <Combobox
+        {...commonProps}
+        value={value}
+        Value={({ value }) => <div>custom: {value?.label}</div>}
+      />
+    )
+    expect(screen.getByText(`custom: ${value.label}`)).toBeInTheDocument()
   })
 
   describe("single value combobox", () => {

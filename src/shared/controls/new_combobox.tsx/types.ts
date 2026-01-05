@@ -7,17 +7,19 @@ type BaseProps<T> = {
   options: T[]
   createOption: (label: string) => T
   hideSelectedOptions?: boolean
-  Option?: React.FC<{ option: T }>
+  Option?: React.FC<{ value: T }>
 }
 type SingleValueProps<T> = BaseProps<T> & {
   isMultiValue?: false
   value: T | undefined
   onChange: (value: T) => void
+  Value?: React.FC<{ value?: T }>
 }
 type MultiValueProps<T> = BaseProps<T> & {
   isMultiValue: true
   value: T[]
   onChange: (value: T[]) => void
+  Value?: React.FC<{ value?: T[] }>
 }
 
 export type ComboboxProps<T extends OptionType> =

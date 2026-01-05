@@ -62,10 +62,22 @@ export function AddTodayTaskForm() {
       <div>
         <div className="label">Category</div>
         <Combobox
-          value={category && { id: category.text, label: category.text }}
-          options={categories.map((c) => ({ id: c.text, label: c.text }))}
-          onChange={(c) => setCategory({ text: c.label, emoji: "" })}
-          createOption={(label) => ({ label, id: label })}
+          value={
+            category && {
+              id: category.text,
+              label: category.text,
+              emoji: category.emoji,
+            }
+          }
+          options={categories.map((c) => ({
+            id: c.text,
+            label: c.text,
+            emoji: c.emoji,
+          }))}
+          onChange={(c) => setCategory({ text: c.label, emoji: c.emoji })}
+          createOption={(label) => ({ label, id: label, emoji: "" })}
+          Option={CustomOption}
+          Value={CustomOption}
         />
         {/* <CategoryControl
           onChange={setCategory}
@@ -74,5 +86,13 @@ export function AddTodayTaskForm() {
         /> */}
       </div>
     </AddTaskForm>
+  )
+}
+
+function CustomOption({ value }: { value?: { label: string; emoji: string } }) {
+  return (
+    <>
+      {value?.emoji} {value?.label}
+    </>
   )
 }
