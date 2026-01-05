@@ -12,7 +12,8 @@ export function Combobox<T extends OptionType>({
 }: ComboboxProps<T>) {
   const popoverId = useId()
   const popoverRef = useRef<HTMLDivElement>(null)
-  const popoverState = usePopoverState(popoverRef)
+  const { popoverState, hidePopover, showPopover, togglePopover } =
+    usePopoverState(popoverRef)
 
   const [searchTerm, setSearchTerm] = useState("")
   const displayedOptions = (
@@ -24,25 +25,29 @@ export function Combobox<T extends OptionType>({
   ).filter(
     (option) =>
       !hideSelectedOptions ||
-      (isMultiValue ? !value.includes(option) : value !== option)
+      (isMultiValue
+        ? !value.find((v) => v.id === option.id)
+        : value?.id !== option.id)
   )
 
-  const selectedIndex = value
-    ? displayedOptions.findIndex((o) => o === value)
-    : -1
+  const selectedIndex =
+    value && !isMultiValue
+      ? displayedOptions.findIndex((o) => o.id === value.id)
+      : -1
   const [highlightedOption, setHighlightedOption] = useState(
     selectedIndex > -1 ? displayedOptions[selectedIndex] : undefined
   )
 
   const reset = (alwayClosePopover?: boolean) => {
-    if (!isMultiValue || alwayClosePopover) popoverRef.current?.hidePopover()
+    if (!isMultiValue || alwayClosePopover) hidePopover()
     setSearchTerm("")
   }
 
   const updateValue = (option: T) => {
     if (isMultiValue) {
-      if (value.includes(option)) {
-        onChange(value.filter((o) => o !== option))
+      const index = value.findIndex((v) => option.id === v.id)
+      if (index > -1) {
+        onChange(value.toSpliced(index, 1))
       } else {
         onChange([...value, option])
       }
@@ -55,6 +60,7 @@ export function Combobox<T extends OptionType>({
     const highlightedIndex = displayedOptions.findIndex(
       (o) => o === highlightedOption
     )
+
     switch (event.key) {
       case "Enter":
         event.stopPropagation()
@@ -68,7 +74,7 @@ export function Combobox<T extends OptionType>({
       case "ArrowDown":
         if (popoverState !== "open") {
           if (isMultiValue) {
-            popoverRef.current?.showPopover()
+            showPopover()
           } else {
             updateValue(
               displayedOptions[(selectedIndex + 1) % displayedOptions.length]
@@ -82,7 +88,7 @@ export function Combobox<T extends OptionType>({
       case "ArrowUp":
         if (popoverState !== "open") {
           if (isMultiValue) {
-            popoverRef.current?.showPopover()
+            showPopover()
           } else {
             updateValue(
               displayedOptions[
@@ -100,7 +106,7 @@ export function Combobox<T extends OptionType>({
         )
         break
       default:
-        if (popoverState !== "open") popoverRef.current?.showPopover()
+        showPopover()
     }
   }
 
@@ -131,8 +137,9 @@ export function Combobox<T extends OptionType>({
           }
         }}
         onBlur={() => reset(true)}
+        onClick={togglePopover}
       />
-      {isMultiValue && (
+      {isMultiValue ? (
         <div>
           <ul>
             {value.map((v) => (
@@ -144,6 +151,8 @@ export function Combobox<T extends OptionType>({
           </ul>
           <button onClick={() => onChange([])}>Remove all</button>
         </div>
+      ) : (
+        <div>{value?.label}</div>
       )}
       <div
         ref={popoverRef}
@@ -151,7 +160,7 @@ export function Combobox<T extends OptionType>({
         data-testid="popover"
         id={popoverId}
       >
-        <ul>
+        <ul className="options">
           {displayedOptions.map((option) => (
             <li
               key={option.id}
@@ -163,12 +172,13 @@ export function Combobox<T extends OptionType>({
                 updateValue(option)
                 reset()
               }}
+              className={option === highlightedOption ? "highlighted" : ""}
             >
               {option.label}
             </li>
           ))}
         </ul>
       </div>
-    </>
+    </div>
   )
 }

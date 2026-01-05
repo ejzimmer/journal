@@ -41,6 +41,19 @@ describe("Combobox", () => {
         expect(popover.showPopover).toHaveBeenCalled()
       })
     })
+
+    describe("and the user clicks the input", () => {
+      it("opens the popout", async () => {
+        const user = userEvent.setup()
+        render(<Combobox {...commonProps} value={options[0]} />)
+        const popover = screen.getByTestId("popover")
+        jest.spyOn(popover, "showPopover")
+
+        await user.click(screen.getByRole("combobox"))
+
+        expect(popover.showPopover).toHaveBeenCalled()
+      })
+    })
   })
 
   describe("when the input loses focus", () => {
@@ -66,6 +79,9 @@ describe("Combobox", () => {
       const value = options[2]
       render(<Combobox {...commonProps} value={value} />)
 
+      // One for the value & one in the options
+      expect(screen.getAllByText(value.label)).toHaveLength(2)
+
       options.forEach((option) => {
         expect(
           screen.getByRole("option", { name: option.label })
@@ -76,7 +92,7 @@ describe("Combobox", () => {
     describe("when the popover is closed", () => {
       describe("and the user presses the arrow keys", () => {
         it("updates the value", async () => {
-          const user = userEvent.setup()
+          const user = userEvent.setup({ skipClick: true })
           const onChange = jest.fn()
           const { rerender } = render(
             <Combobox {...commonProps} onChange={onChange} />
@@ -85,6 +101,7 @@ describe("Combobox", () => {
           jest.spyOn(popover, "showPopover")
           const input = screen.getByRole("combobox")
 
+          await user.tab()
           await user.type(input, "{ArrowDown}")
 
           expect(onChange).toHaveBeenCalledWith(options[0])
@@ -103,7 +120,7 @@ describe("Combobox", () => {
     describe("when the popover is open", () => {
       describe("and the user presses the arrow keys", () => {
         it("updates the highlighted option, but doesn't update the value until the user presses enter", async () => {
-          const user = userEvent.setup()
+          const user = userEvent.setup({ skipClick: true })
           const onChange = jest.fn()
           const onKeydown = jest.fn()
           render(<Combobox {...commonProps} onChange={onChange} />, {
@@ -114,6 +131,7 @@ describe("Combobox", () => {
           const input = screen.getByRole("combobox")
           const popover = screen.getByTestId("popover")
           jest.spyOn(popover, "hidePopover")
+          await user.tab()
           await user.type(input, " ") // open popover
 
           await user.type(input, "{ArrowDown}{ArrowDown}")
@@ -262,7 +280,7 @@ describe("Combobox", () => {
     describe("when the popover is open", () => {
       describe("and the user presses the arrow keys", () => {
         it("updates the highlighted option, but doesn't update the value until the user presses enter", async () => {
-          const user = userEvent.setup()
+          const user = userEvent.setup({ skipClick: true })
           const onChange = jest.fn()
           const onKeydown = jest.fn()
           render(<Combobox {...multivalueProps} onChange={onChange} />, {
@@ -273,6 +291,7 @@ describe("Combobox", () => {
           const input = screen.getByRole("combobox")
           const popover = screen.getByTestId("popover")
           jest.spyOn(popover, "hidePopover")
+          await user.tab()
           await user.type(input, " ") // open popover
 
           await user.type(input, "{ArrowDown}{ArrowDown}")

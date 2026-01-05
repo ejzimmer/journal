@@ -1,27 +1,26 @@
-import { useEffect, useState } from "react"
+import { useState } from "react"
 
 export function usePopoverState(
   popoverRef: React.RefObject<HTMLDivElement | null>
 ) {
   const [popoverState, setPopoverState] = useState<"open" | "closed">("closed")
 
-  useEffect(() => {
-    if (!popoverRef.current) {
-      return
-    }
-
-    const showPopover = popoverRef.current?.showPopover.bind(popoverRef.current)
-    popoverRef.current.showPopover = function () {
+  const showPopover = () => {
+    if (popoverRef.current && popoverState !== "open") {
       setPopoverState("open")
-      showPopover()
+      popoverRef.current.showPopover()
     }
+  }
 
-    const hidePopover = popoverRef.current?.hidePopover.bind(popoverRef.current)
-    popoverRef.current.hidePopover = function () {
+  const hidePopover = () => {
+    if (popoverRef.current && popoverState !== "closed") {
       setPopoverState("closed")
-      hidePopover()
+      popoverRef.current.hidePopover()
     }
-  }, [popoverRef])
+  }
 
-  return popoverState
+  const togglePopover = () =>
+    popoverState === "open" ? hidePopover() : showPopover()
+
+  return { popoverState, showPopover, hidePopover, togglePopover }
 }
