@@ -7,6 +7,7 @@ import { Category } from "../types"
 import { CategoriesContext } from ".."
 import { FirebaseContext } from "../../../shared/FirebaseContext"
 import { Daily, DailyTask, PARENT_LIST } from "./types"
+import { Combobox } from "../../../shared/controls/new_combobox.tsx/Combobox"
 
 export function AddTodayTaskForm() {
   const storageContext = useContext(FirebaseContext)
@@ -60,11 +61,17 @@ export function AddTodayTaskForm() {
       </fieldset>
       <div>
         <div className="label">Category</div>
-        <CategoryControl
+        <Combobox
+          value={category && { id: category.text, label: category.text }}
+          options={categories.map((c) => ({ id: c.text, label: c.text }))}
+          onChange={(c) => setCategory({ text: c.label, emoji: "" })}
+          createOption={(label) => ({ label, id: label })}
+        />
+        {/* <CategoryControl
           onChange={setCategory}
           options={categories}
           value={category}
-        />
+        /> */}
       </div>
     </AddTaskForm>
   )

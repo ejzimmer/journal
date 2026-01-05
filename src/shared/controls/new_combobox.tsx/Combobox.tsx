@@ -2,6 +2,8 @@ import { useId, useRef, useState } from "react"
 import { OptionType, ComboboxProps } from "./types"
 import { usePopoverState } from "./usePopoverState"
 
+import "./Combobox.css"
+
 export function Combobox<T extends OptionType>({
   isMultiValue,
   value,
@@ -22,13 +24,7 @@ export function Combobox<T extends OptionType>({
           o.label.toLowerCase().includes(searchTerm.toLowerCase())
         )
       : options
-  ).filter(
-    (option) =>
-      !hideSelectedOptions ||
-      (isMultiValue
-        ? !value.find((v) => v.id === option.id)
-        : value?.id !== option.id)
-  )
+  ).filter((option) => !hideSelectedOptions || !isSelected({ value, option }))
 
   const selectedIndex =
     value && !isMultiValue
@@ -119,7 +115,7 @@ export function Combobox<T extends OptionType>({
   }
 
   return (
-    <>
+    <div className="combobox">
       <input
         role="combobox"
         aria-controls={popoverId}
@@ -152,7 +148,9 @@ export function Combobox<T extends OptionType>({
           <button onClick={() => onChange([])}>Remove all</button>
         </div>
       ) : (
-        <div>{value?.label}</div>
+        popoverState === "closed" && (
+          <div className="single-value-container">{value?.label}</div>
+        )
       )}
       <div
         ref={popoverRef}
@@ -165,9 +163,7 @@ export function Combobox<T extends OptionType>({
             <li
               key={option.id}
               role="option"
-              aria-selected={
-                isMultiValue ? value.includes(option) : option === value
-              }
+              aria-selected={isSelected({ value, option }) ? "true" : "false"}
               onClick={() => {
                 updateValue(option)
                 reset()
@@ -181,4 +177,18 @@ export function Combobox<T extends OptionType>({
       </div>
     </div>
   )
+}
+
+const isSelected = <T extends OptionType>({
+  value,
+  option,
+}: {
+  value?: T | T[]
+  option: T
+}): boolean => {
+  if (Array.isArray(value)) {
+    return !!value.find((v) => v.id === option.id)
+  } else {
+    return value?.id === option.id
+  }
 }

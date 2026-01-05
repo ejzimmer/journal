@@ -1,0 +1,32 @@
+.combobox {
+  position: relative;
+
+  ul.options {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .single-value-container {
+    position: absolute;
+    top: 0;
+  }
+
+  [role="option"] {
+    padding: 8px;
+
+    &:not(:last-child) {
+      border-bottom: 2px solid var(--border-colour);
+      margin: 0;
+    }
+    &.highlighted,
+    &:hover {
+      background: var(--highlight-colour);
+      cursor: pointer;
+    }
+
+    &[aria-selected="true"]::before {
+      content: "✔️ ";
+    }
+  }
+}

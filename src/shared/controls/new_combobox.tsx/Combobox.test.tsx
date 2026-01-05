@@ -32,7 +32,7 @@ describe("Combobox", () => {
     describe("and the user presses space", () => {
       it("opens the popout", async () => {
         const user = userEvent.setup()
-        render(<Combobox {...commonProps} />)
+        render(<Combobox {...commonProps} value={options[0]} />)
         const popover = screen.getByTestId("popover")
         jest.spyOn(popover, "showPopover")
 
