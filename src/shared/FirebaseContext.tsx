@@ -8,7 +8,7 @@ export type ParentCrudFunction = <T extends Item>(
   item: T
 ) => void
 
-interface ContextType {
+export interface ContextType {
   addItem: <T>(parentName: string, item: Omit<T, "id">) => string | null
   updateItem: ParentCrudFunction
   deleteItem: ParentCrudFunction

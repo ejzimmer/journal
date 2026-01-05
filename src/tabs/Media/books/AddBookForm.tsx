@@ -1,119 +1,122 @@
-import { useContext, useRef, useState } from "react"
-import { Combobox } from "../../../shared/controls/combobox/Combobox"
+import { useContext, useMemo, useRef, useState } from "react"
+import { FormControl } from "../../../shared/controls/FormControl"
 import { FirebaseContext } from "../../../shared/FirebaseContext"
 import {
   AuthorDetails,
-  SeriesDetails,
-  ReadingItemDetails,
-  BOOKS_KEY,
   BookDetails,
-  isSeries,
+  BOOKS_KEY,
+  ReadingItemDetails,
+  SeriesDetails,
 } from "../types"
+import { Combobox } from "../../../shared/controls/new_combobox/Combobox"
+import { OptionType } from "../../../shared/controls/new_combobox/types"
 import { SubmitButton } from "../SubmitButton"
 
-type Option<T extends SeriesDetails<BookDetails> | AuthorDetails> = {
-  text: string
-  id?: string
-  value?: T
-}
-
-const getSeriesForAuthor = (author: AuthorDetails) =>
-  author.items ? Object.values(author.items).filter(isSeries) : []
-
 export function AddBookForm() {
+  const titleRef = useRef<HTMLInputElement>(null)
+  const [author, setAuthor] = useState<OptionType>()
+  const [series, setSeries] = useState<OptionType>()
+
   const storageContext = useContext(FirebaseContext)
   if (!storageContext) {
-    throw new Error("Missing Firebase context provider")
+    throw new Error("Missing storage context")
   }
 
-  const bookRef = useRef<HTMLInputElement>(null)
-  const [author, setAuthor] = useState<Option<AuthorDetails>>()
-  const [series, setSeries] = useState<Option<SeriesDetails<BookDetails>>>()
-
   const { value } = storageContext.useValue<ReadingItemDetails>(BOOKS_KEY)
-  const items = value ? Object.values(value) : []
+  const authorOptions = value
+    ? Object.values(value)
+        .filter((item) => item.type === "author")
+        .map((author) => ({ id: author.id, label: author.name }))
+    : []
 
-  const authors = items.filter((item) => item.type === "author")
-  const authorSeries = authors.flatMap(getSeriesForAuthor)
-  const serieses = [
-    ...items.filter((item) => item.type === "series"),
-    ...authorSeries,
-  ]
+  const seriesOptions = useMemo(() => {
+    if (!value) {
+      return []
+    }
 
-  const onCreateItem = (event: React.FormEvent) => {
+    if (author && !author.id) {
+      return []
+    }
+
+    const items = author?.id ? (value[author.id] as AuthorDetails).items : value
+    return items
+      ? Object.values(items)
+          .filter((item) => item.type === "series")
+          .map((author) => ({ id: author.id, label: author.name }))
+      : []
+  }, [value, author])
+
+  const createParentItem = <
+    T extends AuthorDetails | SeriesDetails<BookDetails>
+  >(
+    item: T,
+    path: string
+  ) => {
+    const id =
+      item.id === ""
+        ? storageContext.addItem(path, {
+            type: item.type,
+            name: item.name,
+          })
+        : item.id
+
+    return `${path}/${id}/items`
+  }
+
+  const createItem = (event: React.FormEvent) => {
     event.preventDefault()
-    const book = bookRef.current?.value
-    if (!book) {
-      return
-    }
 
-    const newBook: Omit<BookDetails, "id"> = { title: book, type: "book" }
-    const addBookTo = (key: string) =>
-      storageContext.addItem<BookDetails>(key, newBook)
-    const createSeries = (key: string, name: string) =>
-      storageContext.addItem<SeriesDetails<BookDetails>>(key, {
-        name,
-        type: "series",
-      })
+    const title = titleRef.current?.value
+    if (!title) return
+
+    let path = BOOKS_KEY
+
     if (author) {
-      const authorKey =
-        author.value && value?.[author.value.id]
-          ? author.value.id
-          : storageContext.addItem<AuthorDetails>(BOOKS_KEY, {
-              name: author.text,
-              type: "author",
-            })
-      if (series) {
-        const seriesKey =
-          series.value && author.value?.items?.[series.value.id]
-            ? series.value.id
-            : createSeries(`${BOOKS_KEY}/${authorKey}/items`, series.text)
-        addBookTo(`${BOOKS_KEY}/${authorKey}/items/${seriesKey}/items`)
-      } else {
-        addBookTo(`${BOOKS_KEY}/${authorKey}/items`)
-      }
-    } else if (series) {
-      const seriesKey =
-        series.value && value?.[series.value.id]
-          ? series.value.id
-          : createSeries(BOOKS_KEY, series.text)
-      addBookTo(`${BOOKS_KEY}/${seriesKey}/items`)
-    } else {
-      addBookTo(BOOKS_KEY)
+      path = createParentItem(
+        {
+          id: author.id,
+          type: "author",
+          name: author.label,
+        },
+        path
+      )
     }
 
+    if (series) {
+      path = createParentItem(
+        {
+          id: series.id,
+          type: "series",
+          name: series.label,
+        },
+        path
+      )
+    }
+
+    storageContext?.addItem<BookDetails>(path, {
+      type: "book",
+      title,
+    })
+    ;(event.target as HTMLFormElement).reset()
     setAuthor(undefined)
     setSeries(undefined)
-
-    bookRef.current?.form?.reset()
   }
 
   return (
-    <form className="create-new" onSubmit={onCreateItem}>
-      <input aria-label="book" ref={bookRef} />
+    <form onSubmit={createItem} className="create-new">
+      <FormControl label="Book title" ref={titleRef} />
       <Combobox
-        label="author"
-        options={authors.map((author) => ({
-          text: author.name,
-          id: author.id,
-          value: author,
-        }))}
+        label="Author name"
         value={author}
-        createOption={(text) => ({ text })}
+        options={authorOptions}
+        createOption={(label) => ({ id: "", label })}
         onChange={setAuthor}
       />
-      <Combobox<Option<SeriesDetails<BookDetails>>>
-        label="series"
-        options={(author?.value
-          ? getSeriesForAuthor(author.value)
-          : serieses
-        ).map((series) => ({
-          text: series.name,
-          id: series.id,
-          value: series,
-        }))}
-        value={{ ...series } as Option<SeriesDetails<BookDetails>>}
-        createOption={(text) => ({ text })}
+      <Combobox
+        label="Series name"
+        value={series}
+        options={seriesOptions}
+        createOption={(label) => ({ id: "", label })}
         onChange={setSeries}
       />
       <SubmitButton />

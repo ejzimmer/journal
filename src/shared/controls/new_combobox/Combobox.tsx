@@ -13,7 +13,9 @@ export function Combobox<T extends OptionType>({
   hideSelectedOptions,
   Option,
   Value,
+  label,
 }: ComboboxProps<T>) {
+  const inputId = useId()
   const containerRef = useRef<HTMLDivElement>(null)
   const popoverId = useId()
   const popoverRef = useRef<HTMLDivElement>(null)
@@ -142,66 +144,83 @@ export function Combobox<T extends OptionType>({
   }, [reset])
 
   return (
-    <div ref={containerRef} className="combobox">
-      <input
-        role="combobox"
-        aria-controls={popoverId}
-        aria-expanded={popoverState === "open"}
-        onKeyDown={handleKeyDown}
-        value={searchTerm}
-        onChange={(event) => {
-          const value = event.target.value.trim()
-          if (value) {
-            setSearchTerm(value)
-
-            if (!isMultiValue) {
-              addOption(value)
-            }
-          }
-        }}
-        onClick={togglePopover}
-      />
-      {isMultiValue ? (
-        <div>
-          <ul>
-            {value.map((v) => (
-              <li key={v.id}>
-                {v.label}{" "}
-                <button onClick={() => updateValue(v)}>Remove {v.label}</button>
-              </li>
-            ))}
-          </ul>
-          <button onClick={() => onChange([])}>Remove all</button>
-        </div>
-      ) : (
-        popoverState === "closed" && (
-          <div className="single-value-container">
-            {Value ? <Value value={value} /> : value?.label}
-          </div>
-        )
+    <div>
+      {label && (
+        <label className="label" htmlFor={inputId}>
+          {label}
+        </label>
       )}
-      <div
-        ref={popoverRef}
-        popover="manual"
-        data-testid="popover"
-        id={popoverId}
-      >
-        <ul className="options">
-          {displayedOptions.map((option) => (
-            <li
-              key={option.id}
-              role="option"
-              aria-selected={isSelected({ value, option }) ? "true" : "false"}
-              onClick={() => {
-                updateValue(option)
-                reset()
-              }}
-              className={option === highlightedOption ? "highlighted" : ""}
-            >
-              {Option ? <Option value={option} /> : option.label}
-            </li>
-          ))}
-        </ul>
+
+      <div ref={containerRef} className="combobox">
+        <input
+          id={inputId}
+          role="combobox"
+          aria-controls={popoverId}
+          aria-expanded={popoverState === "open"}
+          onKeyDown={handleKeyDown}
+          value={searchTerm}
+          onChange={(event) => {
+            const value = event.target.value
+            if (value.trim()) {
+              setSearchTerm(value)
+
+              if (!isMultiValue) {
+                addOption(value)
+              }
+            }
+          }}
+          onClick={togglePopover}
+        />
+        {isMultiValue ? (
+          <div>
+            <ul>
+              {value.map((v) => (
+                <li key={v.id}>
+                  {v.label}{" "}
+                  <button onClick={() => updateValue(v)}>
+                    Remove {v.label}
+                  </button>
+                </li>
+              ))}
+            </ul>
+            <button onClick={() => onChange([])}>Remove all</button>
+          </div>
+        ) : (
+          popoverState === "closed" && (
+            <div className="single-value-container">
+              {Value ? <Value value={value} /> : value?.label}
+            </div>
+          )
+        )}
+        <div
+          ref={popoverRef}
+          popover="manual"
+          data-testid="popover"
+          id={popoverId}
+        >
+          {displayedOptions.length ? (
+            <ul className="options">
+              {displayedOptions.map((option) => (
+                <li
+                  key={option.id}
+                  role="option"
+                  aria-selected={
+                    isSelected({ value, option }) ? "true" : "false"
+                  }
+                  onClick={() => {
+                    updateValue(option)
+                    reset()
+                  }}
+                  className={option === highlightedOption ? "highlighted" : ""}
+                >
+                  {Option ? <Option value={option} /> : option.label}
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <div>No options</div>
+          )}
+        </div>
       </div>
     </div>
   )
