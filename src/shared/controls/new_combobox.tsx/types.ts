@@ -7,6 +7,7 @@ type BaseProps<T> = {
   options: T[]
   createOption: (label: string) => T
   hideSelectedOptions?: boolean
+  Option?: React.FC<{ option: T }>
 }
 type SingleValueProps<T> = BaseProps<T> & {
   isMultiValue?: false

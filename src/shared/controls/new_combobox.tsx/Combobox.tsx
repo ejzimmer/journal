@@ -1,4 +1,4 @@
-import { useId, useRef, useState } from "react"
+import { useCallback, useId, useRef, useState } from "react"
 import { OptionType, ComboboxProps } from "./types"
 import { usePopoverState } from "./usePopoverState"
 
@@ -11,6 +11,7 @@ export function Combobox<T extends OptionType>({
   onChange,
   createOption,
   hideSelectedOptions,
+  Option,
 }: ComboboxProps<T>) {
   const popoverId = useId()
   const popoverRef = useRef<HTMLDivElement>(null)
@@ -34,10 +35,13 @@ export function Combobox<T extends OptionType>({
     selectedIndex > -1 ? displayedOptions[selectedIndex] : undefined
   )
 
-  const reset = (alwayClosePopover?: boolean) => {
-    if (!isMultiValue || alwayClosePopover) hidePopover()
-    setSearchTerm("")
-  }
+  const reset = useCallback(
+    (alwayClosePopover?: boolean) => {
+      if (!isMultiValue || alwayClosePopover) hidePopover()
+      setSearchTerm("")
+    },
+    [hidePopover, isMultiValue]
+  )
 
   const updateValue = (option: T) => {
     if (isMultiValue) {
@@ -115,7 +119,7 @@ export function Combobox<T extends OptionType>({
   }
 
   return (
-    <div className="combobox">
+    <div className="combobox" onBlur={() => reset(true)}>
       <input
         role="combobox"
         aria-controls={popoverId}
@@ -132,7 +136,6 @@ export function Combobox<T extends OptionType>({
             }
           }
         }}
-        onBlur={() => reset(true)}
         onClick={togglePopover}
       />
       {isMultiValue ? (
@@ -170,7 +173,7 @@ export function Combobox<T extends OptionType>({
               }}
               className={option === highlightedOption ? "highlighted" : ""}
             >
-              {option.label}
+              {Option ? <Option option={option} /> : option.label}
             </li>
           ))}
         </ul>

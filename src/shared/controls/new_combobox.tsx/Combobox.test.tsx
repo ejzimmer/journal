@@ -74,6 +74,21 @@ describe("Combobox", () => {
     })
   })
 
+  it("supports custom options", () => {
+    render(
+      <Combobox
+        {...commonProps}
+        Option={({ option }) => <div>custom: {option.label}</div>}
+      />
+    )
+
+    options.forEach((option) => {
+      expect(
+        screen.getByRole("option", { name: `custom: ${option.label}` })
+      ).toBeInTheDocument()
+    })
+  })
+
   describe("single value combobox", () => {
     it("shows the selected option", () => {
       const value = options[2]

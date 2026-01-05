@@ -19,14 +19,17 @@
       border-bottom: 2px solid var(--border-colour);
       margin: 0;
     }
+
+    &[aria-selected="true"] {
+      background: var(--action-colour);
+      color: white;
+    }
+
     &.highlighted,
     &:hover {
       background: var(--highlight-colour);
       cursor: pointer;
-    }
-
-    &[aria-selected="true"]::before {
-      content: "✔️ ";
+      color: var(--body-colour);
     }
   }
 }
