@@ -1,7 +1,7 @@
 import { useContext, useRef } from "react"
 import { FirebaseContext } from "../../../shared/FirebaseContext"
 import { Book } from "./Book"
-import { BookDetails, BOOKS_KEY } from "../types"
+import { BookDetails } from "../types"
 
 export function BookList({
   books,
