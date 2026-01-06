@@ -1,72 +1,82 @@
 import { useContext, useRef, useState } from "react"
-import { Combobox } from "../../../shared/controls/combobox/Combobox"
+import { FormControl } from "../../../shared/controls/FormControl"
 import { FirebaseContext } from "../../../shared/FirebaseContext"
 import {
-  SeriesDetails,
-  GAMES_KEY,
   GameDetails,
-  PlayingItemDetails,
+  GAMES_KEY,
+  ReadingItemDetails,
+  SeriesDetails,
 } from "../types"
+import { Combobox } from "../../../shared/controls/new_combobox/Combobox"
+import { OptionType } from "../../../shared/controls/new_combobox/types"
 import { SubmitButton } from "../SubmitButton"
 
 export function AddGameForm() {
+  const titleRef = useRef<HTMLInputElement>(null)
+  const [series, setSeries] = useState<OptionType>()
+
   const storageContext = useContext(FirebaseContext)
   if (!storageContext) {
-    throw new Error("Missing Firebase context provider")
+    throw new Error("Missing storage context")
   }
 
-  const gameRef = useRef<HTMLInputElement>(null)
-  const [series, setSeries] = useState<{
-    text: string
-    value?: SeriesDetails<GameDetails>
-  }>()
+  const { value } = storageContext.useValue<ReadingItemDetails>(GAMES_KEY)
+  const seriesOptions = value
+    ? Object.values(value)
+        .filter((item) => item.type === "series")
+        .map((series) => ({ id: series.id, label: series.name }))
+    : []
 
-  const { value } = storageContext.useValue<PlayingItemDetails>(GAMES_KEY)
-  const items = value ? Object.values(value) : []
+  const createParentItem = <T extends SeriesDetails<GameDetails>>(
+    item: T,
+    path: string
+  ) => {
+    const id =
+      item.id === ""
+        ? storageContext.addItem(path, {
+            type: item.type,
+            name: item.name,
+          })
+        : item.id
 
-  const serieses = items.filter((item) => item.type === "series")
+    return `${path}/${id}/items`
+  }
 
-  const onCreateItem = (event: React.FormEvent) => {
+  const createItem = (event: React.FormEvent) => {
     event.preventDefault()
-    const game = gameRef.current?.value
-    if (!game) {
-      return
-    }
 
-    const newGame: Omit<GameDetails, "id"> = { title: game, type: "game" }
-    const addGameTo = (key: string) =>
-      storageContext.addItem<GameDetails>(key, newGame)
-    const createSeries = (key: string, name: string) =>
-      storageContext.addItem<SeriesDetails<GameDetails>>(key, {
-        name,
-        type: "series",
-      })
+    const title = titleRef.current?.value
+    if (!title) return
+
+    let path = GAMES_KEY
+
     if (series) {
-      const seriesKey =
-        series.value && value?.[series.value.id]
-          ? series.value.id
-          : createSeries(GAMES_KEY, series.text)
-      addGameTo(`${GAMES_KEY}/${seriesKey}/items`)
-    } else {
-      addGameTo(GAMES_KEY)
+      path = createParentItem(
+        {
+          id: series.id,
+          type: "series",
+          name: series.label,
+        },
+        path
+      )
     }
 
+    storageContext?.addItem<GameDetails>(path, {
+      type: "game",
+      title,
+    })
+    ;(event.target as HTMLFormElement).reset()
     setSeries(undefined)
-    gameRef.current?.form?.reset()
   }
 
   return (
-    <form className="create-new" onSubmit={onCreateItem}>
-      <input aria-label="book" ref={gameRef} />
+    <form onSubmit={createItem} className="create-new">
+      <FormControl label="Game title" ref={titleRef} />
       <Combobox
-        label="series"
-        options={serieses.map((series) => ({
-          text: series.name,
-          id: series.id,
-          value: series,
-        }))}
+        label="Series name"
         value={series}
-        createOption={(text) => ({ text })}
+        options={seriesOptions}
+        createOption={(label) => ({ id: "", label })}
         onChange={setSeries}
       />
       <SubmitButton />

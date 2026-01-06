@@ -4,6 +4,11 @@
     display: flex;
     align-items: center;
     gap: 8px;
+
+    &.isDone {
+      opacity: 0.4;
+      text-decoration: line-through;
+    }
   }
 
   button.medium {
@@ -23,9 +28,11 @@
     }
 
     &.empty {
-      border: 1px dotted var(--border-colour);
+      filter: grayscale(100%) contrast(0.5);
+      opacity: 0.4;
       &:hover {
-        border-width: 2px;
+        filter: grayscale(0) contrast(1);
+        opacity: 1;
       }
     }
   }

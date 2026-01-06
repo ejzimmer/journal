@@ -218,7 +218,7 @@ export function Combobox<T extends OptionType>({
               ))}
             </ul>
           ) : (
-            <div>No options</div>
+            <div style={{ padding: "20px 30px" }}>No options</div>
           )}
         </div>
       </div>

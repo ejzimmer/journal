@@ -9,7 +9,9 @@
 
   .single-value-container {
     position: absolute;
-    top: 0;
+    top: 50%;
+    left: 8px;
+    transform: translateY(-50%);
   }
 
   [role="option"] {

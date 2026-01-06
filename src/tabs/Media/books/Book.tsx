@@ -49,7 +49,7 @@ export function Book({ book, path }: { book: BookDetails; path: string }) {
         onChange={toggleDone}
       />
 
-      <div className="details">
+      <div className={`details ${book.isDone ? "isDone" : ""}`}>
         <EditableText label="title" onChange={updateTitle}>
           {book.title}
         </EditableText>
@@ -58,7 +58,7 @@ export function Book({ book, path }: { book: BookDetails; path: string }) {
           aria-label="update medium"
           onClick={updateMedium}
         >
-          {book.medium}
+          {book.medium ?? "📖"}
         </button>
       </div>
       <button className="emoji ghost" onClick={deleteBook}>

@@ -27,7 +27,7 @@ export type GameDetails = {
   id: string
   type: "game"
   title: string
-  isDone?: boolean
+  status?: null | "in_progress" | "done"
 }
 
 export type ReadingItemDetails =
