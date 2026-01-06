@@ -56,11 +56,7 @@ export function AddThisWeekTaskForm() {
       <div style={{ display: "flex", gap: "16px" }}>
         <div>
           <div className="label">Category</div>
-          <CategoryControl
-            onChange={setCategory}
-            options={categories}
-            value={category}
-          />
+          <CategoryControl onChange={setCategory} value={category} />
         </div>
         <FormControl
           type="number"

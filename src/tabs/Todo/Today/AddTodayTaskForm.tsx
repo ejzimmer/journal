@@ -60,20 +60,8 @@ export function AddTodayTaskForm() {
       </fieldset>
       <div>
         <div className="label">Category</div>
-        <CategoryControl
-          onChange={setCategory}
-          options={categories}
-          value={category}
-        />
+        <CategoryControl onChange={setCategory} value={category} />
       </div>
     </AddTaskForm>
-  )
-}
-
-function CustomOption({ value }: { value?: { label: string; emoji: string } }) {
-  return (
-    <>
-      {value?.emoji} {value?.label}
-    </>
   )
 }

@@ -2,19 +2,10 @@
   position: relative;
 
   input {
-    background: transparent;
-    border: 2px dashed var(--border-colour);
-    width: 100%;
-
     &:focus {
       outline: none;
       border-color: var(--body-colour);
     }
-  }
-
-  .single-value-container {
-    position: absolute;
-    top: 0;
   }
 
   ul.selectedOptions {

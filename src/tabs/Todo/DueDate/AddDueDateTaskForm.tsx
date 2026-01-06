@@ -61,11 +61,7 @@ export function AddDueDateTaskForm() {
         }}
       >
         <div className="label">Category</div>
-        <CategoryControl
-          onChange={setCategory}
-          options={categories}
-          value={category}
-        />
+        <CategoryControl onChange={setCategory} value={category} />
         <label className="label" htmlFor={dueDateId}>
           Due date
         </label>

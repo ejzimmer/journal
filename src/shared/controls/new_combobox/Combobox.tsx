@@ -30,7 +30,6 @@ export function Combobox<T extends OptionType>({
         )
       : options
   ).filter((option) => !hideSelectedOptions || !isSelected({ value, option }))
-
   const selectedIndex =
     value && !isMultiValue
       ? displayedOptions.findIndex((o) => o.id === value.id)
@@ -160,16 +159,15 @@ export function Combobox<T extends OptionType>({
           onKeyDown={handleKeyDown}
           value={searchTerm}
           onChange={(event) => {
-            const value = event.target.value
-            if (value.trim()) {
-              setSearchTerm(value)
+            const value = event.target.value ?? ""
+            setSearchTerm(value)
 
-              if (!isMultiValue) {
-                addOption(value)
-              }
+            if (!isMultiValue) {
+              addOption(value)
             }
           }}
           onClick={togglePopover}
+          autoComplete="off"
         />
         {isMultiValue ? (
           <div>

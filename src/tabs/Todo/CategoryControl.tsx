@@ -1,91 +1,60 @@
-import { ReactNode, useState } from "react"
-import { Combobox } from "../../shared/controls/combobox/Combobox"
+import { useContext, useMemo } from "react"
+import { Combobox } from "../../shared/controls/new_combobox/Combobox"
 import { Category } from "./types"
+import { CategoriesContext } from "."
 
 import "./CategoryControl.css"
-import { TickIcon } from "../../shared/icons/Tick"
-import { XIcon } from "../../shared/icons/X"
 
 export type CategoryControlProps = {
   value?: Category
   onChange: (value?: Category) => void
-  options: Category[]
 }
 
-export function CategoryControl({
-  value,
-  options,
-  onChange,
-}: CategoryControlProps) {
-  const [text, setText] = useState<string>("")
-  const [emoji, setEmoji] = useState<string>("")
+const categoryToOption = ({ text, emoji }: Category) => ({
+  id: text + emoji,
+  label: text,
+  emoji: emoji,
+})
 
-  const handleChangeText = (option: Category) => {
-    if (option.emoji) {
-      onChange(option)
-      setText("")
-    } else {
-      onChange(undefined)
-      setText(option.text)
-      setEmoji("")
-    }
+export function CategoryControl({ value, onChange }: CategoryControlProps) {
+  const categories = useContext(CategoriesContext)
+  if (!categories) {
+    throw new Error("missing category context")
   }
 
-  const handleSubmit = () => {
-    onChange({ text, emoji })
-  }
+  const options = useMemo(() => categories.map(categoryToOption), [categories])
 
   return (
     <div className="category-control">
-      {!text ? (
-        <Combobox
-          createOption={(text) => ({ text, emoji: "" })}
-          label="Category"
-          onChange={handleChangeText}
-          options={options}
-          value={value}
-          Option={CategoryOption}
-        />
-      ) : (
-        <>
-          <input
-            aria-label="Text"
-            value={text}
-            onChange={(event) => setText(event.target.value)}
-          />
-          <input
-            aria-label="Emoji"
-            value={emoji}
-            size={1}
-            onChange={(event) => setEmoji(event.target.value)}
-          />
-          <button
-            aria-label="Create"
-            className="icon outline"
-            onClick={handleSubmit}
-          >
-            <TickIcon width="16px" colour="var(--success-colour)" />
-          </button>
-          <button aria-label="Cancel" className="icon outline">
-            <XIcon width="16px" colour="var(--error-colour)" />
-          </button>
-        </>
-      )}
+      <Combobox
+        value={value && categoryToOption(value)}
+        options={options}
+        createOption={(label: string) => ({ id: label, label, emoji: "" })}
+        onChange={(option) =>
+          onChange({ text: option.label, emoji: option.emoji })
+        }
+        Option={CategoryOption}
+      />
+      <input
+        value={value?.emoji}
+        onChange={(event) => {
+          if (value?.text)
+            onChange({ text: value.text, emoji: event.target.value })
+        }}
+        size={1}
+      />
     </div>
   )
 }
 
 function CategoryOption({
-  option,
-  children,
+  value,
 }: {
-  option: Category
-  children?: ReactNode
+  value: { id: string; label: string; emoji: string }
 }) {
   return (
     <>
-      {option.emoji} {option.text}
-      {children}
+      {value.emoji} {value.label}
     </>
   )
 }

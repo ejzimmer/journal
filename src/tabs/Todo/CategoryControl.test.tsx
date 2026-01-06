@@ -1,85 +1,101 @@
 import { render, screen } from "@testing-library/react"
 import { CategoryControl, type CategoryControlProps } from "./CategoryControl"
 import userEvent from "@testing-library/user-event"
+import { CategoriesContext } from "."
+import { ReactNode } from "react"
 
 const commonProps: CategoryControlProps = {
   onChange: jest.fn(),
-  options: [
-    { text: "Chore", emoji: "🧹" },
-    { text: "Learning", emoji: "📖" },
-  ],
+}
+
+const categories = [
+  { text: "Chore", emoji: "🧹" },
+  { text: "Learning", emoji: "📖" },
+]
+
+function Wrapper({ children }: { children: ReactNode }) {
+  return (
+    <CategoriesContext.Provider value={categories}>
+      {children}
+    </CategoriesContext.Provider>
+  )
 }
 
 describe("CategoryControl", () => {
-  describe("when no value is passed in", () => {
-    it("shows the dropdown", () => {
-      render(<CategoryControl {...commonProps} />)
+  it("shows the combobox input + emoji input, options show emoji + description", () => {
+    render(<CategoryControl {...commonProps} />, { wrapper: Wrapper })
 
-      expect(screen.getByRole("combobox")).toBeInTheDocument()
+    expect(screen.getByRole("combobox")).toBeInTheDocument()
+    expect(screen.getByRole("textbox")).toBeInTheDocument()
+    categories.forEach((category) => {
+      expect(
+        screen.getByRole("option", {
+          name: `${category.emoji} ${category.text}`,
+        })
+      ).toBeInTheDocument()
     })
   })
 
-  describe("when a value is passed in", () => {
-    it("displays that value and hides the emoji input", () => {
+  describe("when the user selects an option", () => {
+    it("calls the onchange handler", async () => {
+      const user = userEvent.setup()
+      const onChange = jest.fn()
+      render(<CategoryControl {...commonProps} onChange={onChange} />, {
+        wrapper: Wrapper,
+      })
+
+      await user.keyboard("{Tab}{ArrowDown}")
+
+      expect(onChange).toHaveBeenCalledWith(categories[0])
+    })
+  })
+
+  describe("when the value has an emoji", () => {
+    it("shows the label in the combobox and the emoji in the textbox", () => {
+      render(<CategoryControl {...commonProps} value={categories[0]} />, {
+        wrapper: Wrapper,
+      })
+
+      expect(
+        screen.getByText(new RegExp(categories[0].text))
+      ).toBeInTheDocument()
+      expect(screen.getByRole("textbox")).toHaveValue(categories[0].emoji)
+    })
+  })
+
+  describe("when the value has no emoji", () => {
+    it("shows the label in the combobox and the emoji in the textbox", () => {
       render(
         <CategoryControl
           {...commonProps}
-          value={{ text: "Learning", emoji: "📖" }}
-        />
+          value={{ text: "Exercise", emoji: "" }}
+        />,
+        { wrapper: Wrapper }
       )
 
-      expect(screen.getByRole("combobox")).toBeInTheDocument()
-      expect(screen.getAllByText("📖 Learning")).toHaveLength(2) // One for the option & one for the value
-      expect(screen.queryByRole("textbox")).not.toBeInTheDocument()
-    })
-  })
-
-  describe("when the user selects an existing category", () => {
-    it("calls on change & keeps the emoji input hidden", async () => {
-      const user = userEvent.setup()
-      const onChange = jest.fn()
-      render(<CategoryControl {...commonProps} onChange={onChange} />)
-
-      await user.click(screen.getByRole("option", { name: "📖 Learning" }))
-
-      expect(onChange).toHaveBeenCalledWith({
-        text: "Learning",
-        emoji: "📖",
-      })
       expect(
-        screen.queryByRole("textbox", { name: "emoji" })
-      ).not.toBeInTheDocument()
+        screen.getByText(new RegExp(categories[0].text))
+      ).toBeInTheDocument()
+      expect(screen.getByRole("textbox")).toHaveValue("")
     })
   })
 
-  describe("when the user adds a new category", () => {
-    it("shows the category create interface and calls onChange with undefined", async () => {
+  describe("when the user updates the emoji", () => {
+    it("calls the onChange handler", async () => {
       const user = userEvent.setup()
       const onChange = jest.fn()
-      const { rerender } = render(
-        <CategoryControl {...commonProps} onChange={onChange} />
-      )
-
-      await user.type(
-        screen.getByRole("combobox", { name: "Category" }),
-        "Fitness{Enter}"
-      )
-
-      expect(onChange).toHaveBeenCalledWith(undefined)
-
-      rerender(
+      render(
         <CategoryControl
           {...commonProps}
+          value={{ text: "Exercise", emoji: "" }}
           onChange={onChange}
-          value={undefined}
-        />
+        />,
+        { wrapper: Wrapper }
       )
 
-      expect(screen.queryByRole("combobox")).not.toBeInTheDocument()
-      expect(screen.getByRole("textbox", { name: "Text" })).toBeInTheDocument()
-      expect(screen.getByRole("textbox", { name: "Emoji" })).toBeInTheDocument()
-      expect(screen.getByRole("button", { name: "Create" })).toBeInTheDocument()
-      expect(screen.getByRole("button", { name: "Cancel" })).toBeInTheDocument()
+      await user.type(screen.getByRole("textbox"), "x")
+
+      expect(onChange).toHaveBeenCalledWith({ text: "Exercise", emoji: "x" })
     })
   })
 })
