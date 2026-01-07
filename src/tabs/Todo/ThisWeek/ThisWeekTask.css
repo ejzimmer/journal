@@ -39,10 +39,12 @@
             var(--dark)
           ),
           linear-gradient(var(--dark), var(--light), var(--dark));
-        border-radius: 100px;
+        border-top-left-radius: 100px;
+        border-bottom-left-radius: 100px;
       }
       &::-webkit-progress-bar {
         border-radius: 100px;
+        background: inherit;
       }
     }
   }

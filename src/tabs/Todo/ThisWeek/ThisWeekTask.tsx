@@ -51,7 +51,8 @@ export function ThisWeekTask({ task }: { task: WeeklyTask }) {
           max={task.frequency}
           value={numberDone}
           style={{
-            background: `repeating-linear-gradient(to right, transparent, transparent ${percent}%, var(--body-colour-light) ${percent}%, var(--body-colour-light) calc(${percent}% + 1px))`,
+            backgroundColor: "#eee",
+            backgroundImage: `repeating-linear-gradient(to right, transparent, transparent ${percent}%, var(--body-colour-light) ${percent}%, var(--body-colour-light) calc(${percent}% + 1px))`,
           }}
         />
         {remainder > 0 && <span className="remainder">+{remainder}</span>}
