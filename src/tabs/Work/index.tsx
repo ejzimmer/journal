@@ -6,10 +6,9 @@ import { TaskList } from "./TaskList"
 import { hoursToMilliseconds, isSameDay } from "date-fns"
 import { TaskMenu } from "./TaskMenu"
 import { Skeleton } from "../../shared/controls/Skeleton"
-import { getPosition, getTarget, sortByOrder } from "./drag-utils"
+import { sortByOrder } from "./drag-utils"
 import { useDropTarget } from "../../shared/drag-and-drop/useDropTarget"
-import { reorderWithEdge } from "@atlaskit/pragmatic-drag-and-drop-hitbox/util/reorder-with-edge"
-import { Destination } from "../../shared/drag-and-drop/types"
+import { Draggable } from "../../shared/drag-and-drop/types"
 import { LabelsContext } from "./LabelsContext"
 
 const WORK_KEY = "work"
@@ -19,7 +18,7 @@ export function Work() {
   if (!context) {
     throw new Error("Missing Firebase context provider")
   }
-  const { addItem, useValue, updateItem, deleteItem, updateList } = context
+  const { addItem, useValue, updateItem, deleteItem } = context
   const { value: lists, loading: listsLoading } = useValue<Item>(WORK_KEY)
 
   const doneList = useMemo(() => {
@@ -53,21 +52,6 @@ export function Work() {
         (list) => list.id !== doneList?.id
       ),
     [lists, doneList]
-  )
-
-  const onChangePosition = useCallback(
-    (originIndex: number, destination: Destination) => {
-      if (!orderedLists) return
-
-      const updatedLists = reorderWithEdge({
-        list: orderedLists,
-        startIndex: originIndex,
-        ...getTarget(originIndex, destination, orderedLists.length),
-        axis: "vertical", // keeping it vertical so getTarget works right, might need to change this
-      })
-      updateList(WORK_KEY, updatedLists)
-    },
-    [orderedLists, updateList]
   )
 
   const onUpdate = useCallback(() => {
@@ -150,15 +134,12 @@ export function Work() {
               (list, index) =>
                 list !== doneList && (
                   <TaskList
+                    index={index}
                     parentListId={WORK_KEY}
-                    position={getPosition(index, orderedLists.length)}
                     key={list.id}
                     list={list}
                     onChangeListName={(newName: string) =>
                       onUpdateListName(newName, list)
-                    }
-                    onChangePosition={(destination) =>
-                      onChangePosition(index, destination)
                     }
                     onDelete={() => onDeleteList(list)}
                     onAddTask={(task) => {
@@ -180,7 +161,7 @@ export function Work() {
                         lastUpdated: new Date().getTime(),
                       })
                     }}
-                    onReorderTasks={(tasks: Item[]) => {
+                    onReorderTasks={(tasks: Draggable[]) => {
                       updateItem(WORK_KEY, {
                         ...list,
                         items: tasks.reduce(

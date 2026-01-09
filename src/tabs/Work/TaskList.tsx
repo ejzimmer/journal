@@ -5,56 +5,45 @@ import {
   useRef,
   useMemo,
   useEffect,
-  useCallback,
 } from "react"
 import { EditableText } from "../../shared/controls/EditableText"
 import { AddTaskForm } from "./AddTaskForm"
 import { Item } from "../../shared/types"
 import { Task } from "./Task"
-import {
-  getListData,
-  getPosition,
-  getTarget,
-  isList,
-  isTask,
-  sortByOrder,
-} from "./drag-utils"
+import { getListData, isList, isTask, sortByOrder } from "./drag-utils"
 import { combine } from "@atlaskit/pragmatic-drag-and-drop/combine"
 import { dropTargetForElements } from "@atlaskit/pragmatic-drag-and-drop/element/adapter"
-import { reorderWithEdge } from "@atlaskit/pragmatic-drag-and-drop-hitbox/util/reorder-with-edge"
 
 import "./TaskList.css"
 import { RubbishBinIcon } from "../../shared/icons/RubbishBin"
 import { ModalTriggerProps } from "../../shared/controls/Modal"
 import invariant from "tiny-invariant"
 import { DragHandle } from "../../shared/drag-and-drop/DragHandle"
-import { Destination, Position } from "../../shared/drag-and-drop/types"
+import { Draggable } from "../../shared/drag-and-drop/types"
 import { DraggableListItem } from "../../shared/drag-and-drop/DraggableListItem"
 import { PostitModal } from "./PostitModal"
 
 type DragState = "idle" | "is-dragging-over"
 
 export function TaskList({
+  index,
   parentListId,
-  position,
   list,
   onChangeListName,
-  onChangePosition,
   onDelete,
   onAddTask,
   onChangeTask,
   onReorderTasks,
   menu: Menu,
 }: {
+  index: number
   parentListId: string
-  position: Position
   list: Item
   onChangeListName: (name: string) => void
-  onChangePosition: (destination: Destination) => void
   onDelete: () => void
   onAddTask: (task: Partial<Item>) => void
   onChangeTask: (task: Item) => void
-  onReorderTasks: (tasks: Item[]) => void
+  onReorderTasks: (tasks: Draggable[]) => void
   menu?: React.FC<{ task: Item }>
 }) {
   const listRef = useRef<HTMLUListElement>(null)
@@ -68,7 +57,10 @@ export function TaskList({
   }
 
   const sortedList = useMemo(
-    () => (list.items ? sortByOrder(Object.values(list.items)) : []),
+    () =>
+      (list.items ? sortByOrder(Object.values(list.items)) : []).map(
+        (item) => ({ ...item, position: item.order }) // need to do data migration to update this form order to position in the database
+      ),
     [list]
   )
   sortedList.forEach((item) => {
@@ -77,23 +69,6 @@ export function TaskList({
       onChangeTask(item)
     }
   })
-
-  const onChangeTaskPosition = useCallback(
-    (originIndex: number, destination: Destination) => {
-      if (!list) return
-      const tasks = sortByOrder(Object.values(list.items ?? {}))
-
-      onReorderTasks(
-        reorderWithEdge({
-          list: tasks,
-          startIndex: originIndex,
-          ...getTarget(originIndex, destination, tasks.length),
-          axis: "vertical",
-        })
-      )
-    },
-    [list, onReorderTasks]
-  )
 
   const [dragState, setDragState] = useState<DragState>("idle")
   useEffect(() => {
@@ -133,7 +108,11 @@ export function TaskList({
     >
       <div className="work-task-list">
         <div className="heading">
-          <DragHandle position={position} onChangePosition={onChangePosition} />
+          <DragHandle
+            list={sortedList}
+            index={index}
+            onReorder={onReorderTasks}
+          />
           <h2>
             <EditableText
               label={`Edit ${list.description} name`}
@@ -159,10 +138,9 @@ export function TaskList({
           {sortedList?.map((item, index) => (
             <li className="task" key={item.id}>
               <Task
-                position={getPosition(index, sortedList.length)}
-                onChangePosition={(destination) =>
-                  onChangeTaskPosition(index, destination)
-                }
+                list={sortedList}
+                index={index}
+                onReorder={onReorderTasks}
                 task={item}
                 onChange={onChangeTask}
                 menu={() => (Menu ? <Menu task={item} /> : null)}

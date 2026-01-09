@@ -4,11 +4,13 @@ import { ArrowToTopIcon } from "../icons/ArrowToTop"
 import { ArrowUpIcon } from "../icons/ArrowUp"
 import { DragHandleIcon } from "../icons/DragHandle"
 import { Menu } from "../controls/Menu"
-import { Destination, Position } from "./types"
+import { Draggable } from "./types"
+import { getPosition, onChangePosition } from "./utils"
 
 type DragHandleProps = {
-  position: Position
-  onChangePosition: (newPosition: Destination) => void
+  list: Draggable[]
+  index: number
+  onReorder: (list: Draggable[]) => void
 }
 
 const iconProps = {
@@ -16,7 +18,8 @@ const iconProps = {
   colour: "var(--action-colour-dark)",
 }
 
-export function DragHandle({ position, onChangePosition }: DragHandleProps) {
+export function DragHandle({ list, index, onReorder }: DragHandleProps) {
+  const position = getPosition(index, list.length)
   return (
     <Menu
       trigger={(props) => (
@@ -29,7 +32,7 @@ export function DragHandle({ position, onChangePosition }: DragHandleProps) {
         <>
           <Menu.Action
             onClick={() => {
-              onChangePosition("start")
+              onChangePosition(list, index, "start", onReorder)
               onClose()
             }}
             isDisabled={position === "start"}
@@ -37,20 +40,20 @@ export function DragHandle({ position, onChangePosition }: DragHandleProps) {
             <ArrowToTopIcon {...iconProps} /> Move to top
           </Menu.Action>
           <Menu.Action
-            onClick={() => onChangePosition("previous")}
+            onClick={() => onChangePosition(list, index, "previous", onReorder)}
             isDisabled={position === "start"}
           >
             <ArrowUpIcon {...iconProps} /> Move up
           </Menu.Action>
           <Menu.Action
-            onClick={() => onChangePosition("next")}
+            onClick={() => onChangePosition(list, index, "next", onReorder)}
             isDisabled={position === "end"}
           >
             <ArrowDownIcon {...iconProps} /> Move down
           </Menu.Action>
           <Menu.Action
             onClick={() => {
-              onChangePosition("end")
+              onChangePosition(list, index, "end", onReorder)
               onClose()
             }}
             isDisabled={position === "end"}

@@ -5,7 +5,11 @@ import { getTaskData, isTask } from "./drag-utils"
 
 import "./TaskList.css"
 import { DraggableListItem } from "../../shared/drag-and-drop/DraggableListItem"
-import { Destination, Position } from "../../shared/drag-and-drop/types"
+import {
+  Destination,
+  Draggable,
+  Position,
+} from "../../shared/drag-and-drop/types"
 import { Checkbox } from "../../shared/controls/Checkbox"
 import { DragHandle } from "../../shared/drag-and-drop/DragHandle"
 import { XIcon } from "../../shared/icons/X"
@@ -14,19 +18,21 @@ import { LabelsControl } from "./LabelsControl"
 import { EditableText } from "../../shared/controls/EditableText"
 
 type TaskProps = {
+  list: Draggable[]
+  index: number
+  onReorder: (tasks: Draggable[]) => void
   task: Item
   onChange: (task: Item) => void
-  position: Position
-  onChangePosition: (destination: Destination) => void
   menu: React.FC
   listId: string
 }
 
 export function Task({
+  list,
+  index,
+  onReorder,
   task,
   onChange,
-  position,
-  onChangePosition,
   menu: Menu,
   listId,
 }: TaskProps) {
@@ -42,7 +48,7 @@ export function Task({
       style={{ display: "flex", alignItems: "center" }}
       className="task"
     >
-      <DragHandle position={position} onChangePosition={onChangePosition} />
+      <DragHandle list={list} index={index} onReorder={onReorder} />
       <div
         style={{
           display: "flex",

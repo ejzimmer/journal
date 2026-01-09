@@ -5,6 +5,13 @@ import { isBefore, startOfDay } from "date-fns"
 import { DailyTask, PARENT_LIST } from "./types"
 import { useContext } from "react"
 import { FirebaseContext } from "../../../shared/FirebaseContext"
+import { DraggableListItem } from "../../../shared/drag-and-drop/DraggableListItem"
+import {
+  Draggable,
+  draggableTypeKey,
+} from "../../../shared/drag-and-drop/types"
+import { DragPreview } from "../DragPreview"
+import { DragHandle } from "../../../shared/drag-and-drop/DragHandle"
 
 const updatedYesterday = (task: DailyTask, status: DailyTask["status"]) =>
   task.status === status && isBefore(task.lastCompleted, startOfDay(new Date()))
@@ -37,9 +44,29 @@ export function TodayList() {
     <div className="todo-task-list">
       {tasks.length ? (
         <ul>
-          {tasks.map((task) => (
+          {tasks.map((task, index) => (
             <li key={task.id} className={`today-task status-${task.status}`}>
-              <TodayTask task={task} />
+              <DraggableListItem
+                getData={() => ({
+                  [draggableTypeKey]: "日",
+                  id: task.id,
+                  parentId: PARENT_LIST,
+                  position: task.position,
+                })}
+                dragPreview={<DragPreview task={task} />}
+                isDroppable={(data) => data[draggableTypeKey] === "日"}
+                allowedEdges={["bottom", "top"]}
+                className="item"
+              >
+                <DragHandle
+                  list={tasks}
+                  index={index}
+                  onReorder={(tasks: Draggable[]) => {
+                    storageContext.updateList(PARENT_LIST, tasks)
+                  }}
+                />
+                <TodayTask task={task} />
+              </DraggableListItem>
             </li>
           ))}
         </ul>
