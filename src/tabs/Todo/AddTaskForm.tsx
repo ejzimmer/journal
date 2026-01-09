@@ -1,12 +1,36 @@
-import { useEffect, useRef, useState } from "react"
+import { useContext, useEffect, useRef, useState } from "react"
 import { PlusIcon } from "../../shared/icons/Plus"
+import { FirebaseContext } from "../../shared/FirebaseContext"
+import { CategoriesContext } from "."
+import { Category, Task } from "./types"
+import { FormControl } from "../../shared/controls/FormControl"
+import { CategoryControl } from "./CategoryControl"
 
-type AddTaskFormProps = {
+type AddTaskFormProps<T> = {
+  listId: string
+  getAdditionalFieldValues: () => T
   children: React.ReactNode
-  onSubmit: () => boolean
 }
 
-export function AddTaskForm({ onSubmit, children }: AddTaskFormProps) {
+export function AddTaskForm<T>({
+  listId,
+  getAdditionalFieldValues,
+  children,
+}: AddTaskFormProps<T>) {
+  const storageContext = useContext(FirebaseContext)
+  if (!storageContext) {
+    throw new Error("Missing Firebase context provider")
+  }
+  const { value } = storageContext.useValue<T & Task>(listId)
+
+  const categories = useContext(CategoriesContext)
+  if (!categories) {
+    throw new Error("Missing categories context provider")
+  }
+
+  const [description, setDescription] = useState("")
+  const [category, setCategory] = useState<Category | undefined>(categories[0])
+
   const formRef = useRef<HTMLFormElement>(null)
   const formHeightRef = useRef(0)
 
@@ -21,9 +45,25 @@ export function AddTaskForm({ onSubmit, children }: AddTaskFormProps) {
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
 
-    if (onSubmit()) {
-      setFormVisible(false)
+    if (!description || !category) {
+      return
     }
+
+    const additionalFields = getAdditionalFieldValues()
+    if (!additionalFields) {
+      return
+    }
+
+    storageContext.addItem<Task & T>(listId, {
+      description,
+      category,
+      position: value ? Object.keys(value).length : 0,
+      ...additionalFields,
+    } as Task & T)
+
+    setDescription("")
+    setCategory(categories[0])
+    setFormVisible(false)
   }
 
   return (
@@ -40,6 +80,14 @@ export function AddTaskForm({ onSubmit, children }: AddTaskFormProps) {
         style={{ height: formVisible ? formHeightRef.current : 0 }}
         onSubmit={handleSubmit}
       >
+        <FormControl
+          label="Description"
+          value={description}
+          onChange={setDescription}
+        />
+        <div className="label">Category</div>
+        <CategoryControl onChange={setCategory} value={category} />
+
         {children}
         <div className="buttons">
           <button type="submit" className="primary">
