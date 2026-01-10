@@ -22,6 +22,11 @@
       }
       .drag-handle {
         opacity: 0;
+        margin-inline-end: -8px;
+
+        svg {
+          width: 18px;
+        }
       }
 
       &:hover {

@@ -25,7 +25,10 @@ export function ThisWeekTask({ task }: { task: WeeklyTask }) {
       task.completed.pop()
       onChange({ ...task, completed: [...task.completed] })
     } else {
-      onChange({ ...task, completed: [...task.completed, Date.now()] })
+      onChange({
+        ...task,
+        completed: [...task.completed.filter(Boolean), Date.now()],
+      })
     }
   }
 
@@ -50,6 +53,7 @@ export function ThisWeekTask({ task }: { task: WeeklyTask }) {
         <progress
           max={task.frequency}
           value={numberDone}
+          className={numberDone === task.frequency ? "full" : ""}
           style={{
             backgroundColor: "#eee",
             backgroundImage: `repeating-linear-gradient(to right, transparent, transparent ${percent}%, var(--body-colour-light) ${percent}%, var(--body-colour-light) calc(${percent}% + 1px))`,

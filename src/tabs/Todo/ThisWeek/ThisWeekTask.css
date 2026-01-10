@@ -42,6 +42,11 @@
         border-top-left-radius: 100px;
         border-bottom-left-radius: 100px;
       }
+
+      &.full::-webkit-progress-value {
+        border-radius: 100px;
+      }
+
       &::-webkit-progress-bar {
         border-radius: 100px;
         background: inherit;
