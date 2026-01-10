@@ -14,13 +14,13 @@ import "./App.css"
 import { Media } from "./tabs/Media"
 import { ThisYear } from "./tabs/ThisYear"
 
-const TABS = {
-  todo: <Todo />,
-  projects: <Projects />,
-  media: <Media />,
-  work: <Work />,
-  "2026": <ThisYear />,
-}
+const TABS = [
+  { path: "todo", Element: Todo },
+  { path: "2026", Element: ThisYear },
+  { path: "projects", Element: Projects },
+  { path: "media", Element: Media },
+  { path: "work", Element: Work },
+]
 
 export function App() {
   const [isLoggedIn, setLoggedIn] = useState(false)
@@ -48,9 +48,9 @@ export function App() {
     <>
       <nav>
         <ul>
-          {Object.keys(TABS).map((tab) => (
-            <NavItem key={tab} to={tab}>
-              {tab}
+          {TABS.map(({ path }) => (
+            <NavItem key={path} to={path}>
+              {path}
             </NavItem>
           ))}
         </ul>
@@ -58,8 +58,8 @@ export function App() {
 
       <div className="main-content">
         <Routes>
-          {Object.entries(TABS).map(([name, Element]) => (
-            <Route key={name} path={name} element={Element} />
+          {TABS.map(({ path, Element }) => (
+            <Route key={path} path={path} element={<Element />} />
           ))}
           <Route path="/" element={<Todo />} />
         </Routes>

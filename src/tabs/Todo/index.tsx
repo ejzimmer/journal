@@ -21,9 +21,7 @@ export function Todo() {
     return null
   }
 
-  const tasks = Object.values(lists ?? {}).flatMap((list) =>
-    Object.values(list)
-  )
+  const tasks = Object.values(lists).flatMap((list) => Object.values(list))
 
   // For the categories dropdown
   const categories = new Map<string, Category>()
