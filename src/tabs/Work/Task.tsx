@@ -5,11 +5,7 @@ import { getTaskData, isTask } from "./drag-utils"
 
 import "./TaskList.css"
 import { DraggableListItem } from "../../shared/drag-and-drop/DraggableListItem"
-import {
-  Destination,
-  Draggable,
-  Position,
-} from "../../shared/drag-and-drop/types"
+import { Draggable } from "../../shared/drag-and-drop/types"
 import { Checkbox } from "../../shared/controls/Checkbox"
 import { DragHandle } from "../../shared/drag-and-drop/DragHandle"
 import { XIcon } from "../../shared/icons/X"
