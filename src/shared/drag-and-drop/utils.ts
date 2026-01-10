@@ -1,10 +1,6 @@
 import { reorderWithEdge } from "@atlaskit/pragmatic-drag-and-drop-hitbox/util/reorder-with-edge"
-import { Destination, Draggable, draggableTypeKey, DragState } from "./types"
+import { Destination, Draggable, draggableTypeKey } from "./types"
 import { Edge } from "@atlaskit/pragmatic-drag-and-drop-hitbox/closest-edge"
-import { useEffect, useState } from "react"
-import invariant from "tiny-invariant"
-import { combine } from "@atlaskit/pragmatic-drag-and-drop/combine"
-import { dropTargetForElements } from "@atlaskit/pragmatic-drag-and-drop/element/adapter"
 
 export const isDraggable = (item: any): item is Draggable =>
   draggableTypeKey in item
