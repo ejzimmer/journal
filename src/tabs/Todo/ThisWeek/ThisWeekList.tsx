@@ -2,19 +2,30 @@ import { isBefore, subDays } from "date-fns"
 import { AddThisWeekTaskForm } from "./AddThisWeekTaskForm"
 import { ThisWeekTask } from "./ThisWeekTask"
 import { PARENT_LIST, WeeklyTask } from "./types"
-import { useContext } from "react"
+import { useContext, useRef } from "react"
 import { FirebaseContext } from "../../../shared/FirebaseContext"
+import { sortByPosition } from "../../../shared/drag-and-drop/utils"
+import { useDraggableList } from "../../../shared/drag-and-drop/useDraggable"
+import { useDropTarget } from "../../../shared/drag-and-drop/useDropTarget"
+import { DraggableListItem } from "../../../shared/drag-and-drop/DraggableListItem"
+import {
+  Draggable,
+  draggableTypeKey,
+} from "../../../shared/drag-and-drop/types"
+import { DragPreview } from "../DragPreview"
+import { DragHandle } from "../../../shared/drag-and-drop/DragHandle"
 
 const moreThanAWeekAgo = (date: number | null) =>
   date && isBefore(date, subDays(new Date(), 7))
 
 export function ThisWeekList() {
+  const listRef = useRef<HTMLOListElement>(null)
   const storageContext = useContext(FirebaseContext)
   if (!storageContext) {
     throw new Error("Missing Firebase context provider")
   }
   const { value } = storageContext.useValue<WeeklyTask>(PARENT_LIST)
-  const tasks = value ? Object.values(value) : []
+  const tasks = sortByPosition(value ? Object.values(value) : [])
 
   const readyForReset = tasks.filter((task) =>
     task.completed?.some(moreThanAWeekAgo)
@@ -28,16 +39,39 @@ export function ThisWeekList() {
     })
   )
 
+  useDropTarget(listRef, PARENT_LIST)
+  useDraggableList(PARENT_LIST)
+
   return (
     <div className="todo-task-list weekly">
       {tasks.length ? (
-        <ul>
-          {tasks.map((task) => (
+        <ol ref={listRef}>
+          {tasks.map((task, index) => (
             <li key={task.id}>
-              <ThisWeekTask task={task} />
+              <DraggableListItem
+                getData={() => ({
+                  [draggableTypeKey]: "週",
+                  id: task.id,
+                  parentId: PARENT_LIST,
+                  position: task.position,
+                })}
+                dragPreview={<DragPreview task={task} />}
+                isDroppable={(data) => data[draggableTypeKey] === "週"}
+                allowedEdges={["bottom", "top"]}
+                className="item"
+              >
+                <DragHandle
+                  list={tasks}
+                  index={index}
+                  onReorder={(tasks: Draggable[]) => {
+                    storageContext.updateList(PARENT_LIST, tasks)
+                  }}
+                />
+                <ThisWeekTask task={task} />
+              </DraggableListItem>
             </li>
           ))}
-        </ul>
+        </ol>
       ) : (
         <div>No tasks</div>
       )}
