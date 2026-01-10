@@ -7,9 +7,9 @@ import { hoursToMilliseconds, isSameDay } from "date-fns"
 import { TaskMenu } from "./TaskMenu"
 import { Skeleton } from "../../shared/controls/Skeleton"
 import { sortByOrder } from "./drag-utils"
-import { useDropTarget } from "../../shared/drag-and-drop/useDropTarget"
 import { Draggable } from "../../shared/drag-and-drop/types"
 import { LabelsContext } from "./LabelsContext"
+import { useDropTarget } from "./useDropTarget"
 
 const WORK_KEY = "work"
 

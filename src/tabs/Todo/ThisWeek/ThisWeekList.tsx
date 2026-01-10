@@ -5,7 +5,7 @@ import { PARENT_LIST, WeeklyTask } from "./types"
 import { useContext } from "react"
 import { FirebaseContext } from "../../../shared/FirebaseContext"
 
-const moreThanAWeekAgo = (date: number | undefined) =>
+const moreThanAWeekAgo = (date: number | null) =>
   date && isBefore(date, subDays(new Date(), 7))
 
 export function ThisWeekList() {
@@ -23,7 +23,7 @@ export function ThisWeekList() {
     storageContext.updateItem<WeeklyTask>(PARENT_LIST, {
       ...task,
       completed: task.completed?.map((date) =>
-        moreThanAWeekAgo(date) ? undefined : date
+        moreThanAWeekAgo(date) ? null : date
       ),
     })
   )

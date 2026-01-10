@@ -3,7 +3,7 @@ import { TodayTask } from "./TodayTask"
 import { AddTodayTaskForm } from "./AddTodayTaskForm"
 import { isBefore, startOfDay } from "date-fns"
 import { DailyTask, PARENT_LIST } from "./types"
-import { useContext } from "react"
+import { useContext, useRef } from "react"
 import { FirebaseContext } from "../../../shared/FirebaseContext"
 import { DraggableListItem } from "../../../shared/drag-and-drop/DraggableListItem"
 import {
@@ -12,17 +12,21 @@ import {
 } from "../../../shared/drag-and-drop/types"
 import { DragPreview } from "../DragPreview"
 import { DragHandle } from "../../../shared/drag-and-drop/DragHandle"
+import { useDropTarget } from "../../../shared/drag-and-drop/useDropTarget"
+import { useDraggableList } from "../../../shared/drag-and-drop/useDraggable"
+import { sortByPosition } from "../../../shared/drag-and-drop/utils"
 
 const updatedYesterday = (task: DailyTask, status: DailyTask["status"]) =>
   task.status === status && isBefore(task.lastCompleted, startOfDay(new Date()))
 
 export function TodayList() {
+  const listRef = useRef<HTMLOListElement>(null)
   const storageContext = useContext(FirebaseContext)
   if (!storageContext) {
     throw new Error("Missing Firebase context provider")
   }
   const { value } = storageContext.useValue<DailyTask>(PARENT_LIST)
-  const tasks = value ? Object.values(value) : []
+  const tasks = sortByPosition(value ? Object.values(value) : [])
 
   const finishedTasks = tasks.filter((task) =>
     updatedYesterday(task, "finished")
@@ -40,10 +44,13 @@ export function TodayList() {
     })
   )
 
+  useDropTarget(listRef, PARENT_LIST)
+  useDraggableList(PARENT_LIST)
+
   return (
     <div className="todo-task-list">
       {tasks.length ? (
-        <ul>
+        <ol ref={listRef}>
           {tasks.map((task, index) => (
             <li key={task.id} className={`today-task status-${task.status}`}>
               <DraggableListItem
@@ -69,7 +76,7 @@ export function TodayList() {
               </DraggableListItem>
             </li>
           ))}
-        </ul>
+        </ol>
       ) : (
         <div>No tasks for today</div>
       )}

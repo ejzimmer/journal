@@ -1,3 +1,7 @@
+.draggable-item {
+  position: relative;
+}
+
 .drop-indicator.top,
 .drop-indicator.bottom {
   --stroke-size: 2px;
@@ -17,7 +21,8 @@
   &::before {
     content: "";
     position: absolute;
-    left: calc((var(--terminal-diameter) + var(--stroke-size)) * -1);
+    top: 50%;
+    transform: translate(-100%, -50%);
     width: var(--terminal-diameter);
     height: var(--terminal-diameter);
     border: var(--stroke-size) solid var(--action-colour);
@@ -26,18 +31,10 @@
 
   &.top {
     top: var(--line-offset);
-
-    &::before {
-      top: var(--terminal-offset);
-    }
   }
 
   &.bottom {
     bottom: var(--line-offset);
-
-    &::before {
-      bottom: var(--terminal-offset);
-    }
   }
 }
 

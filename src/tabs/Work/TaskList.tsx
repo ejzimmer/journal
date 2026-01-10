@@ -59,9 +59,9 @@ export function TaskList({
   const sortedList = useMemo(
     () =>
       (list.items ? sortByOrder(Object.values(list.items)) : []).map(
-        (item) => ({ ...item, position: item.order }) // need to do data migration to update this form order to position in the database
+        (item) => ({ ...item, position: item.order, parentId: parentListId }) // need to do data migration to update this form order to position in the database & add parentId
       ),
-    [list]
+    [list, parentListId]
   )
   sortedList.forEach((item) => {
     const originalItem = list.items?.[item.id]

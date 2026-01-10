@@ -3,19 +3,32 @@
   flex-direction: column;
   transition: all 0.2s ease-in;
 
+  ol,
   ul {
     list-style-type: none;
   }
 
-  & > ul:first-child {
+  & > ul:first-child,
+  & > ol:first-child {
     padding-inline-start: 0;
     margin-block-end: 0;
 
-    li .item {
-      display: flex;
-      gap: 10px;
-      align-items: center;
-      font-size: 18px;
+    li {
+      .item {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        font-size: 18px;
+      }
+      .drag-handle {
+        opacity: 0;
+      }
+
+      &:hover {
+        .drag-handle {
+          opacity: 1;
+        }
+      }
     }
   }
 

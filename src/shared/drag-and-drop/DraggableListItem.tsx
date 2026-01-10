@@ -73,7 +73,6 @@ export function DraggableListItem({
           if (source.element === element) {
             return false
           }
-
           return isDroppable(source.data)
         },
         getData({ input }) {
@@ -118,7 +117,11 @@ export function DraggableListItem({
 
   return (
     <>
-      <div ref={draggableRef} className={className} style={style}>
+      <div
+        ref={draggableRef}
+        className={`${className} draggable-item`}
+        style={style}
+      >
         {children}
         {draggingState.type === "is-dragging-over" &&
         draggingState.closestEdge ? (

@@ -14,4 +14,11 @@ export const draggableTypeKey = Symbol("draggableType")
 export type Draggable = {
   id: string
   position: number
+  parentId: string
 }
+
+export type DropTarget = {
+  id: string
+}
+
+export type DragState = "idle" | "is-dragging-over"
