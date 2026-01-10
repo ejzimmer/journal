@@ -15,7 +15,6 @@ body {
   --border-colour-hover: hsl(214 32% 80%);
 
   --link-colour: hsl(211, 61%, 43%);
-  --error-colour: hsl(10, 89%, 41%);
   --highlight-colour: hsla(59, 95%, 63%, 0.6);
 
   --danger-colour: var(--error-colour);
@@ -23,6 +22,8 @@ body {
   --action-colour: hsl(211 81% 46%);
   --action-colour-dark: hsl(211 81% 36%);
   --success-colour: hsl(108, 81%, 36%);
+  --warning-colour: hsla(41, 94%, 50%);
+  --error-colour: hsl(10, 89%, 41%);
 
   color: var(--body-colour);
 }

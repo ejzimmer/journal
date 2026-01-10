@@ -1,4 +1,4 @@
-import { isBefore, startOfDay } from "date-fns"
+import { isBefore, isSameDay, startOfDay } from "date-fns"
 import { AddDueDateTaskForm } from "./AddDueDateTaskForm"
 import { DueDateTask } from "./DueDateTask"
 
@@ -9,6 +9,8 @@ import { CalendarTask, PARENT_LIST } from "./types"
 
 const taskIsFinished = (task: CalendarTask) =>
   task.status === "finished" && isBefore(task.dueDate, startOfDay(new Date()))
+
+const taskIsToday = (task: CalendarTask) => isSameDay(task.dueDate, new Date())
 
 export function DueDateList() {
   const storageContext = useContext(FirebaseContext)
@@ -23,6 +25,12 @@ export function DueDateList() {
     const finishedTasks = tasks.filter(taskIsFinished)
     finishedTasks.forEach((task) =>
       storageContext.deleteItem<CalendarTask>(PARENT_LIST, task)
+    )
+    const todayTasks = tasks.filter(
+      (task) => taskIsToday(task) && task.status === "paused"
+    )
+    todayTasks.forEach((task) =>
+      storageContext.updateItem(PARENT_LIST, { ...task, status: "ready" })
     )
   }
 

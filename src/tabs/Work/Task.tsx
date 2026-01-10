@@ -109,8 +109,8 @@ export function Task({
               style={{
                 color: "var(--error-colour)",
                 border: "2px solid",
-                fontSize: "0.9em",
                 fontWeight: "bold",
+                fontSize: "14px",
               }}
             >
               <EditableDate

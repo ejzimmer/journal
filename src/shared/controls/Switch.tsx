@@ -6,12 +6,16 @@ type SwitchProps<T extends string> = {
   options: T[]
   value: T
   onChange: (value: T) => void
+  name: string
+  Option?: React.FC<{ value: T }>
 }
 
 export function Switch<T extends string>({
   options,
   value,
   onChange,
+  name,
+  Option,
 }: SwitchProps<T>) {
   const radioGroupRef = useRef<HTMLDivElement>(null)
   const [width, setWidth] = useState<number>()
@@ -46,11 +50,11 @@ export function Switch<T extends string>({
     <div ref={radioGroupRef} role="radiogroup" className="switch">
       {options.map((option) => (
         <label key={option}>
-          {option}
+          {Option ? <Option value={option} /> : option}
           <input
             type="radio"
             value={option}
-            name="switch-option"
+            name={name}
             checked={value === option}
             onChange={() => onChange(option)}
           />

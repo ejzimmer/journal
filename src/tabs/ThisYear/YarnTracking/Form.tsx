@@ -57,7 +57,12 @@ export function YarnTrackingForm() {
           </option>
         ))}
       </select>
-      <Switch options={["-", "+"]} value={operation} onChange={setOperation} />
+      <Switch
+        options={["-", "+"]}
+        value={operation}
+        onChange={setOperation}
+        name="yarn-tracking"
+      />
       <input pattern="[0-9, ]+" size={5} ref={amountRef} />
       <button className="outline" type="submit">
         <TickIcon width="18px" colour="var(--success-colour)" />

@@ -1,6 +1,6 @@
 .todo-task-list.calendar ul:first-child {
   display: grid;
-  grid-template-columns: min-content 1fr max-content max-content;
+  grid-template-columns: max-content 1fr max-content min-content;
 
   & > li {
     display: grid;
@@ -8,6 +8,12 @@
     grid-column: 1/-1;
     gap: 12px;
     margin-block-end: 8px;
+    align-items: center;
+    font-size: 18px;
+
+    &.status-paused {
+      opacity: 0.6;
+    }
 
     &.status-finished {
       opacity: 0.4;
@@ -19,12 +25,58 @@
   }
 
   .due-date {
-    color: currentColor;
     border: 2px solid;
     font-weight: bold;
+    font-size: 0.8em;
 
+    &.today {
+      color: var(--success-colour);
+    }
     &.overdue {
       color: var(--error-colour);
+    }
+    &.this-week {
+      color: var(--action-colour);
+    }
+  }
+
+  .description {
+    display: flex;
+    gap: 4px;
+  }
+
+  .switch {
+    font-size: 0.6em;
+    border-radius: 100px;
+    color: var(--body-colour-mid);
+    overflow: hidden;
+
+    label {
+      padding-block-start: 10px;
+
+      &:hover {
+        color: var(--body-colour);
+      }
+    }
+
+    label:first-child {
+      padding-inline-start: 12px;
+    }
+    label:last-of-type {
+      padding-inline-end: 12px;
+
+      svg {
+        stroke-width: 4;
+      }
+    }
+
+    svg {
+      overflow: visible;
+    }
+
+    .indicator {
+      --light: orange;
+      --dark: red;
     }
   }
 }

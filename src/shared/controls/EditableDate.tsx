@@ -52,18 +52,18 @@ export function EditableDate({ onChange, value, ...props }: Props) {
       aria-label="Due date"
       style={{
         border: "none",
-        fontSize: ".8em",
         height: "unset",
         paddingBlock: "0",
+        fontSize: "1.2em",
       }}
       {...props}
     />
   ) : (
     <div
       style={{
-        fontSize: ".6em",
         fontFamily: "sans-serif",
         padding: "8px 4px",
+        width: "max-content",
       }}
       {...props}
       tabIndex={0}

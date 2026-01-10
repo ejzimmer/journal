@@ -2,9 +2,31 @@ import { useContext } from "react"
 import { EditableDate } from "../../../shared/controls/EditableDate"
 import { EditableText } from "../../../shared/controls/EditableText"
 import { DeleteButton } from "../DeleteButton"
-import { EmojiCheckbox } from "../../../shared/controls/EmojiCheckbox"
 import { FirebaseContext } from "../../../shared/FirebaseContext"
-import { CalendarTask, PARENT_LIST } from "./types"
+import { CalendarTask, PARENT_LIST, STATUSES } from "./types"
+import { differenceInDays, startOfDay } from "date-fns"
+import { Switch } from "../../../shared/controls/Switch"
+import { PlayButtonIcon } from "../../../shared/icons/PlayButton"
+import { PauseButtonIcon } from "../../../shared/icons/PauseButton"
+import { TickIcon } from "../../../shared/icons/Tick"
+import { IconProps } from "../../../shared/icons/types"
+
+const getDateClass = (task: CalendarTask) => {
+  const today = startOfDay(Date.now())
+  const dueDateDay = startOfDay(task.dueDate)
+  if (dueDateDay < today) {
+    return "past"
+  }
+  if (dueDateDay === today) {
+    return "now"
+  }
+
+  if (differenceInDays(dueDateDay, today) <= 7) {
+    return "this-week"
+  }
+
+  return ""
+}
 
 export function DueDateTask({ task }: { task: CalendarTask }) {
   const context = useContext(FirebaseContext)
@@ -19,18 +41,13 @@ export function DueDateTask({ task }: { task: CalendarTask }) {
 
   return (
     <>
-      <EmojiCheckbox
-        emoji={task.category.emoji}
-        isChecked={task.status === "finished"}
-        onChange={() =>
-          onChange({
-            ...task,
-            status: task.status === "finished" ? "ready" : "finished",
-          })
-        }
-        label={`${task.description} finished`}
+      <EditableDate
+        value={task.dueDate}
+        onChange={(date) => onChange({ ...task, dueDate: date })}
+        className={`due-date ${getDateClass(task)}`}
       />
       <div className="description">
+        {task.category.emoji}
         <EditableText
           label="description"
           onChange={(description) => onChange({ ...task, description })}
@@ -38,13 +55,25 @@ export function DueDateTask({ task }: { task: CalendarTask }) {
           {task.description}
         </EditableText>
       </div>
-      <div className={`due-date ${task.dueDate < Date.now() ? "overdue" : ""}`}>
-        <EditableDate
-          value={task.dueDate}
-          onChange={(date) => onChange({ ...task, dueDate: date })}
-        />
-      </div>
+      <Switch
+        options={[...STATUSES]}
+        value={task.status}
+        onChange={(status) => onChange({ ...task, status })}
+        name={task.description}
+        Option={StatusOption}
+      />
       <DeleteButton onDelete={onDelete} />
     </>
   )
+}
+
+const statusIconMapping: Record<CalendarTask["status"], React.FC<IconProps>> = {
+  ready: PlayButtonIcon,
+  paused: PauseButtonIcon,
+  finished: TickIcon,
+}
+
+function StatusOption({ value }: { value: CalendarTask["status"] }) {
+  const Icon = statusIconMapping[value]
+  return <Icon colour="currentColor" width="12px" />
 }

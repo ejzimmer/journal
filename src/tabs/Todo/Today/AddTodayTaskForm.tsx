@@ -25,6 +25,7 @@ export function AddTodayTaskForm() {
           options={["一度", "毎日"]}
           value={taskType}
           onChange={setTaskType}
+          name="task-type"
         />
       </fieldset>
     </AddTaskForm>
