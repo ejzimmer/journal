@@ -1,12 +1,18 @@
-import { ReactNode, useContext, useMemo } from "react"
+import { useContext, useMemo } from "react"
 import { Label, COLOURS, Colour } from "../../shared/types"
 import { LabelsContext } from "./LabelsContext"
-import { Combobox } from "../../shared/controls/combobox/Combobox"
+import { Combobox } from "../../shared/controls/new_combobox/Combobox"
 
 export type LabelsControlProps = {
   value: Label[]
   onChange: (value: Label[]) => void
   label: string
+}
+
+type LabelOption = {
+  id: string
+  label: string
+  colour: Colour
 }
 
 const isColour = (text?: string): text is Colour =>
@@ -32,53 +38,54 @@ export function getNextColour(colours: Colour[]): Colour {
 
 export function LabelsControl({ value, onChange, label }: LabelsControlProps) {
   const labels = useContext(LabelsContext)
-  const options = useMemo(
-    () => labels?.map((l) => ({ text: l.value, colour: l.colour })) ?? [],
+  const options: LabelOption[] = useMemo(
+    () =>
+      labels?.map(({ value, colour }) => ({
+        id: value + colour,
+        label: value,
+        colour,
+      })) ?? [],
     [labels]
   )
 
-  const valueOptions = useMemo(
-    () => value.map((l) => ({ text: l.value, colour: l.colour })),
+  const selectedOptions: LabelOption[] = useMemo(
+    () =>
+      value.map((l) => ({
+        id: l.value + l.colour,
+        label: l.value,
+        colour: l.colour,
+      })),
     [value]
   )
 
-  const createOption = (text: string) => {
+  const createOption = (text: string): LabelOption => {
+    const colour = getNextColour(
+      [...options, ...value].map((label) => label.colour)
+    )
     return {
-      text,
-      colour: getNextColour(
-        [...options, ...value].map((label) => label.colour)
-      ),
+      id: text + colour,
+      label: text,
+      colour,
     }
   }
 
-  const handleChange = (value: { text: string; colour: Label["colour"] }[]) => {
-    onChange(value.map((o) => ({ value: o.text, colour: o.colour })))
+  const handleChange = (value: LabelOption[]) => {
+    onChange(value.map((o) => ({ value: o.label, colour: o.colour })))
   }
 
   return (
     <Combobox
-      value={valueOptions}
+      value={selectedOptions}
       onChange={handleChange}
       label={label}
       options={options}
       createOption={createOption}
       Option={Option}
-      allowMulti
+      isMultiValue
     />
   )
 }
 
-function Option({
-  option,
-  children,
-}: {
-  option: { text: string; colour: (typeof COLOURS)[number] }
-  children?: ReactNode
-}) {
-  return (
-    <div className={`label-tag ${option.colour}`}>
-      {option.text}
-      {children}
-    </div>
-  )
+function Option({ value }: { value: LabelOption }) {
+  return <div className={`label-tag ${value.colour}`}>{value.label}</div>
 }
