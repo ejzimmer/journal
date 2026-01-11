@@ -26,7 +26,7 @@ export function Combobox<T extends OptionType>({
   const displayedOptions = (
     searchTerm
       ? options.filter((o) =>
-          o.label.toLowerCase().includes(searchTerm.toLowerCase())
+          o.label.toLowerCase().includes(searchTerm.trimStart().toLowerCase())
         )
       : options
   ).filter((option) => !hideSelectedOptions || !isSelected({ value, option }))
@@ -85,6 +85,7 @@ export function Combobox<T extends OptionType>({
             )
           }
         }
+
         setHighlightedOption(
           displayedOptions[(highlightedIndex + 1) % displayedOptions.length]
         )
@@ -162,7 +163,7 @@ export function Combobox<T extends OptionType>({
             const value = event.target.value ?? ""
             setSearchTerm(value)
 
-            if (!isMultiValue) {
+            if (!isMultiValue && value.trim()) {
               addOption(value)
             }
           }}

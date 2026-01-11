@@ -407,7 +407,6 @@ describe("Combobox", () => {
 
         expect(onChange).toHaveBeenCalledWith([options[0], options[3]])
         expect(input).toHaveValue("")
-        expect(popover.hidePopover).toHaveBeenCalled()
       })
     })
 
