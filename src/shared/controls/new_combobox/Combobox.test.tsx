@@ -509,7 +509,7 @@ describe("Combobox", () => {
     })
 
     describe("and the currently highlighted option is no longer in the list", () => {
-      it("stay highlighted", async () => {
+      it("nothing is highlighted", async () => {
         const user = userEvent.setup()
         const onChange = jest.fn()
         render(<Combobox {...commonProps} onChange={onChange} />)

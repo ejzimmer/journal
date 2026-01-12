@@ -1,6 +1,4 @@
 .combobox {
-  position: relative;
-
   ul.options {
     list-style-type: none;
     padding: 0;
@@ -8,10 +6,14 @@
   }
 
   .single-value-container {
-    position: absolute;
-    top: 50%;
-    left: 8px;
-    transform: translateY(-50%);
+    position: relative;
+
+    .value {
+      position: absolute;
+      top: 50%;
+      left: 8px;
+      transform: translateY(-50%);
+    }
   }
 
   [role="option"] {
