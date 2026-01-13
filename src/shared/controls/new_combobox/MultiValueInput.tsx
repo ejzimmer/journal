@@ -1,15 +1,7 @@
-import { useEffect, useRef, useState } from "react"
+import { ReactNode, useEffect, useRef, useState } from "react"
 import { XIcon } from "../../icons/X"
-import { SearchInputProps, SearchInput } from "./SearchInput"
-import { OptionType } from "./types"
-
-type MultiValueInputProps<T> = {
-  value: T[]
-  onRemoveValue: (value: T) => void
-  onRemoveAll: () => void
-  searchInputValue: SearchInputProps["value"]
-  onChangeSearchTerm: (event: React.ChangeEvent<HTMLInputElement>) => void
-} & Omit<SearchInputProps, "value" | "onChange">
+import { SearchInput } from "./SearchInput"
+import { MultiValueInputProps, OptionType } from "./types"
 
 export function MultiValueInput<T extends OptionType>({
   value,
@@ -17,6 +9,7 @@ export function MultiValueInput<T extends OptionType>({
   onRemoveAll,
   searchInputValue,
   onChangeSearchTerm,
+  Value = DefaultValue,
   ...searchInputProps
 }: MultiValueInputProps<T>) {
   const valuesRef = useRef<HTMLUListElement>(null)
@@ -43,14 +36,15 @@ export function MultiValueInput<T extends OptionType>({
         <ul ref={valuesRef} className="values">
           {value.map((v) => (
             <li key={v.id} className="value">
-              {v.label}
-              <button
-                aria-label={`Remove ${v.label}`}
-                onClick={() => onRemoveValue(v)}
-                className="remove"
-              >
-                <XIcon width="14px" />
-              </button>
+              <Value value={v}>
+                <button
+                  aria-label={`Remove ${v.label}`}
+                  onClick={() => onRemoveValue(v)}
+                  className="remove"
+                >
+                  <XIcon width="14px" />
+                </button>
+              </Value>
             </li>
           ))}
         </ul>
@@ -63,5 +57,19 @@ export function MultiValueInput<T extends OptionType>({
         </button>
       </div>
     </div>
+  )
+}
+
+export function DefaultValue<T extends OptionType>({
+  value,
+  children,
+}: {
+  value: T
+  children?: ReactNode
+}) {
+  return (
+    <>
+      {value.label} {children}
+    </>
   )
 }

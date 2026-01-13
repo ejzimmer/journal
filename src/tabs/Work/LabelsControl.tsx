@@ -1,4 +1,4 @@
-import { useContext, useMemo } from "react"
+import { ReactNode, useContext, useMemo } from "react"
 import { Label, COLOURS, Colour } from "../../shared/types"
 import { LabelsContext } from "./LabelsContext"
 import { Combobox } from "../../shared/controls/new_combobox/Combobox"
@@ -81,11 +81,22 @@ export function LabelsControl({ value, onChange, label }: LabelsControlProps) {
       options={options}
       createOption={createOption}
       Option={Option}
+      Value={Option}
       isMultiValue
     />
   )
 }
 
-function Option({ value }: { value: LabelOption }) {
-  return <div className={`label-tag ${value.colour}`}>{value.label}</div>
+function Option({
+  value,
+  children,
+}: {
+  value: LabelOption
+  children?: ReactNode
+}) {
+  return (
+    <div className={`label-tag ${value.colour}`}>
+      {value.label} {children}
+    </div>
+  )
 }

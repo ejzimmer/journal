@@ -116,6 +116,17 @@ form.add-task {
   [role="option"] {
     cursor: pointer;
   }
+
+  .multi-value-container input {
+    padding-block: 4px;
+    border-style: solid;
+    border-color: var(--border-colour);
+  }
+
+  ul.values li.value {
+    border: 0;
+    padding: 0;
+  }
 }
 
 .label-tag {

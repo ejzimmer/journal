@@ -1,12 +1,4 @@
-export type SearchInputProps = {
-  id: string
-  value: string
-  popoverId: string
-  isPopoverOpen: boolean
-  onKeyDown: (event: React.KeyboardEvent) => void
-  onChange: (event: React.ChangeEvent<HTMLInputElement>) => void
-  onClick: (event: React.MouseEvent) => void
-}
+import { SearchInputProps } from "./types"
 
 export function SearchInput({
   id,

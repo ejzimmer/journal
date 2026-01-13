@@ -136,6 +136,7 @@ export function Combobox<T extends OptionType>({
             isPopoverOpen={popoverState === "open"}
             onKeyDown={handleKeyDown}
             onClick={togglePopover}
+            Value={Value}
           />
         ) : (
           <SingleValueInput
@@ -157,7 +158,7 @@ export function Combobox<T extends OptionType>({
             onKeyDown={handleKeyDown}
             onClick={togglePopover}
           >
-            {Value ? <Value value={value} /> : null}
+            {Value && value ? <Value value={value} /> : null}
           </SingleValueInput>
         )}
         <Popover

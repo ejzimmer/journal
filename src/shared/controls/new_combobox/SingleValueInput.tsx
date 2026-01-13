@@ -1,13 +1,5 @@
-import { ReactNode } from "react"
-import { SearchInputProps, SearchInput } from "./SearchInput"
-import { OptionType } from "./types"
-
-type SingleValueInputProps<T> = {
-  value?: T
-  searchInputValue: string
-  onChangeSearchTerm: (event: React.ChangeEvent<HTMLInputElement>) => void
-  children: ReactNode
-} & Omit<SearchInputProps, "value" | "onChange">
+import { SearchInput } from "./SearchInput"
+import { OptionType, SingleValueInputProps } from "./types"
 
 export function SingleValueInput<T extends OptionType>({
   value,
