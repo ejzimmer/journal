@@ -1,55 +1,97 @@
 .combobox {
-  position: relative;
-
   input {
-    &:focus {
-      outline: none;
-      border-color: var(--body-colour);
+    width: 100%;
+  }
+
+  ul.options {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .single-value-container {
+    position: relative;
+
+    .value {
+      position: absolute;
+      top: 50%;
+      left: 8px;
+      transform: translateY(-50%);
     }
   }
 
-  ul.selectedOptions {
-    position: absolute;
-    top: 6px;
-    left: 4px;
-    list-style: none;
-    padding: 0;
-    display: flex;
-    gap: 4px;
+  .multi-value-container {
+    position: relative;
 
-    & + button {
+    input {
+      background: transparent;
+      padding-inline-start: var(--input-padding);
+    }
+
+    input,
+    li,
+    button {
+      font-size: 20px;
+    }
+
+    ul.values {
+      padding: 0;
       position: absolute;
       top: 6px;
-      right: 4px;
+      left: 4px;
+      display: flex;
+      gap: 2px;
+    }
+
+    li.value {
+      width: max-content;
+      border: 2px solid var(--body-colour-mid);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding-inline: 12px;
+      border-radius: 100px;
+    }
+
+    button.remove-all,
+    button.remove {
+      border: 0;
+      padding: 0;
+      background: none;
+      color: var(--body-colour-light);
+      height: auto;
+
+      &:hover,
+      &:focus {
+        color: var(--body-colour);
+      }
+    }
+
+    button.remove-all {
+      position: absolute;
+      top: 10px;
+      right: 8px;
     }
   }
 
-  .options {
-    background: white;
-    border-width: 1px;
+  [role="option"] {
+    padding: 8px;
 
-    ul.options {
-      list-style-type: none;
-      padding: 0;
-      min-width: 100px;
+    &:not(:last-child) {
+      border-bottom: 2px solid var(--border-colour);
+      margin: 0;
     }
 
-    [role="option"] {
-      padding: 8px;
-
-      &:not(:last-child) {
-        border-bottom: 2px solid var(--border-colour);
-        margin: 0;
-      }
-      &.highlighted,
-      &:hover {
-        background: var(--highlight-colour);
-        cursor: pointer;
-      }
+    &[aria-selected="true"] {
+      background: var(--action-colour);
+      color: white;
     }
 
-    .no-options {
-      color: var(--body-colour-light);
+    &.highlighted,
+    &:hover {
+      background: var(--highlight-colour);
+      cursor: pointer;
+      color: var(--body-colour);
     }
   }
 }

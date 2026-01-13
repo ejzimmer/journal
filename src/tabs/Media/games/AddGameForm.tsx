@@ -7,8 +7,8 @@ import {
   ReadingItemDetails,
   SeriesDetails,
 } from "../types"
-import { Combobox } from "../../../shared/controls/new_combobox/Combobox"
-import { OptionType } from "../../../shared/controls/new_combobox/types"
+import { Combobox } from "../../../shared/controls/combobox/Combobox"
+import { OptionType } from "../../../shared/controls/combobox/types"
 import { SubmitButton } from "../SubmitButton"
 
 export function AddGameForm() {

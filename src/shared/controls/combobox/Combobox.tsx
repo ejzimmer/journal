@@ -1,171 +1,179 @@
-import { useEffect, useId, useMemo, useRef, useState } from "react"
+import React, { useCallback, useId, useRef, useState } from "react"
+import { OptionType, ComboboxProps } from "./types"
+import { usePopoverState } from "./usePopoverState"
+import { SingleValueInput } from "./SingleValueInput"
+import { MultiValueInput } from "./MultiValueInput"
 
 import "./Combobox.css"
-import { Dropdown } from "./Dropdown"
-import { OptionBase } from "./types"
-import { MultiSelectInput } from "./MultiSelectInput"
-import { SingleSelectValue } from "./SingleSelectInput"
+import { isSelected } from "./utils"
+import { Popover } from "./Popover"
+import { useClickOutside } from "./useClickOutside"
+import { useKeyboardNavigation } from "./useKeyboardNavigation"
 
-type BaseProps<T> = {
-  label: string
-  options: T[]
-  createOption: (text: string) => T
-  Option?: React.FC<{ option: T; children?: React.ReactNode }>
-}
-type SingleSelectProps<T> = BaseProps<T> & {
-  allowMulti?: false
-  value: T | undefined
-  onChange: (value: T) => void
-}
-type MultiSelectProps<T> = BaseProps<T> & {
-  allowMulti: true
-  value: T[]
-  onChange: (value: T[]) => void
-}
-
-export type ComboboxProps<T extends OptionBase> =
-  | SingleSelectProps<T>
-  | MultiSelectProps<T>
-
-export function Combobox<T extends OptionBase>({
+export function Combobox<T extends OptionType>({
+  isMultiValue,
   value,
-  onChange,
-  label,
   options,
+  onChange,
   createOption,
-  allowMulti,
+  hideSelectedOptions,
   Option,
+  Value,
+  label,
 }: ComboboxProps<T>) {
+  const inputId = useId()
   const containerRef = useRef<HTMLDivElement>(null)
-  const [isPopoutOpen, setPopoutOpen] = useState(false)
 
-  const popoutId = useId()
-  const [searchText, setSearchText] = useState("")
-  const [interactionMode, setInteractionMode] = useState<"search" | "scroll">(
-    "search"
-  )
+  const popoverId = useId()
+  const popoverRef = useRef<HTMLDivElement>(null)
+  const { popoverState, hidePopover, showPopover, togglePopover } =
+    usePopoverState(popoverRef)
 
-  const unselectedOptions = useMemo(
-    () =>
-      Array.isArray(value)
-        ? options.filter((o) => !listContainsOption(value, o))
-        : options,
-    [options, value]
-  )
-
-  const displayedOptions = useMemo(() => {
-    const searchTerm = searchText.trimStart().toLowerCase()
-    return searchTerm
-      ? unselectedOptions.filter((o) =>
-          o.text.toLowerCase().includes(searchTerm)
+  const [searchTerm, setSearchTerm] = useState("")
+  const displayedOptions = (
+    searchTerm
+      ? options.filter((o) =>
+          o.label.toLowerCase().includes(searchTerm.trimStart().toLowerCase())
         )
-      : unselectedOptions
-  }, [unselectedOptions, searchText])
+      : options
+  ).filter((option) => !hideSelectedOptions || !isSelected({ value, option }))
 
-  const handleEnter = (text: string) => {
-    const existingOption = options.find((o) => o.text === text)
-    const option = existingOption ?? createOption(text)
-
-    handleChange(option)
-    setSearchText("")
-  }
-
-  const handleChange = (option: T) => {
-    // Don't add the option if it's already in the value
-    if (allowMulti && !listContainsOption(value, option)) {
-      onChange([...value, option])
-    } else if (!allowMulti) {
-      onChange(option)
-      setTimeout(() => setPopoutOpen(false))
-    }
-    setSearchText("")
-  }
-
-  const handleInputKeyDown = (event: React.KeyboardEvent) => {
-    const key = event.key
-
-    switch (key) {
-      case "Enter":
-        if (interactionMode === "search" && searchText.trim()) {
-          handleEnter(searchText.trim())
-        }
-        break
-      case " ":
-        if (interactionMode === "search") {
-          event.stopPropagation()
+  const { highlightedOption, onArrowKeyDown } = useKeyboardNavigation({
+    value: isMultiValue ? undefined : value,
+    options: displayedOptions,
+    onChange: (selectedOption: T) => {
+      if (popoverState !== "open") {
+        if (isMultiValue) {
+          showPopover()
         } else {
-          event.preventDefault()
+          updateValue(selectedOption)
         }
+      }
+    },
+  })
+
+  const reset = useCallback(
+    (alwayClosePopover?: boolean) => {
+      if (!isMultiValue || alwayClosePopover) hidePopover()
+      setSearchTerm("")
+    },
+    [hidePopover, isMultiValue]
+  )
+  useClickOutside({
+    elementRef: containerRef,
+    onClickOutside: () => reset(true),
+  })
+
+  const updateValue = (option: T) => {
+    if (isMultiValue) {
+      const index = value.findIndex((v) => option.id === v.id)
+      if (index > -1) {
+        onChange(value.toSpliced(index, 1))
+      } else {
+        onChange([...value, option])
+      }
+    } else {
+      onChange(option)
+    }
+  }
+
+  const handleKeyDown = (event: React.KeyboardEvent) => {
+    switch (event.key) {
+      case "Enter":
+        event.stopPropagation()
+        event.preventDefault()
+        if (highlightedOption) {
+          updateValue(highlightedOption)
+        } else if (isMultiValue && searchTerm) {
+          addOption(searchTerm)
+        }
+        reset()
         break
       case "ArrowDown":
-        if (!isPopoutOpen) {
-          setPopoutOpen(true)
-        }
-        setInteractionMode("scroll")
+        onArrowKeyDown("down")
         break
       case "ArrowUp":
-        setInteractionMode("scroll")
-        if (!isPopoutOpen) {
-          setPopoutOpen(true)
-        }
+        onArrowKeyDown("up")
         break
+      case "Tab": {
+        reset()
+        break
+      }
       default:
-        setInteractionMode("search")
+        showPopover()
     }
   }
 
-  useEffect(() => {
-    const onClick = (event: MouseEvent) => {
-      if (!containerRef.current?.contains(event.target as Node)) {
-        setPopoutOpen(false)
-      }
+  const addOption = (label: string) => {
+    const existingOption = options.find((o) => o.label === label)
+    if (existingOption && isMultiValue && value.includes(existingOption)) {
+      return
     }
-    window.addEventListener("click", onClick)
-
-    return () => window.removeEventListener("click", onClick)
-  }, [])
+    updateValue(existingOption ?? createOption(label))
+  }
 
   return (
-    <div ref={containerRef}>
-      <Dropdown
-        isPopoutOpen={isPopoutOpen}
-        onClick={handleChange}
-        options={displayedOptions}
-        Option={Option}
-        id={popoutId}
-      >
-        {allowMulti ? (
-          <MultiSelectInput
-            label={label}
+    <div>
+      {label && (
+        <label className="label" htmlFor={inputId}>
+          {label}
+        </label>
+      )}
+
+      <div ref={containerRef} className="combobox">
+        {isMultiValue ? (
+          <MultiValueInput
             value={value}
-            onKeyDown={handleInputKeyDown}
-            inputValue={searchText}
-            onChangeInputValue={setSearchText}
-            onFocus={() => setPopoutOpen(true)}
-            popoutId={popoutId}
-            isPopoutOpen={isPopoutOpen}
-            onChange={onChange}
+            onRemoveValue={(v) => updateValue(v)}
+            onRemoveAll={() => onChange([])}
+            searchInputValue={searchTerm}
+            onChangeSearchTerm={(event) => {
+              const value = event.target.value ?? ""
+              setSearchTerm(value)
+            }}
+            id={inputId}
+            popoverId={popoverId}
+            isPopoverOpen={popoverState === "open"}
+            onKeyDown={handleKeyDown}
+            onClick={togglePopover}
+            Value={Value}
           />
         ) : (
-          <SingleSelectValue
-            label={label}
+          <SingleValueInput
             value={value}
-            inputValue={searchText}
-            onChangeInputValue={(value) => {
-              if (value.trim()) onChange(createOption(value))
-              setSearchText(value.trim())
+            searchInputValue={searchTerm}
+            onChangeSearchTerm={(
+              event: React.ChangeEvent<HTMLInputElement>
+            ) => {
+              const value = event.target.value ?? ""
+              setSearchTerm(value)
+
+              if (value.trim()) {
+                addOption(value)
+              }
             }}
-            onKeyDown={handleInputKeyDown}
-            popoutId={popoutId}
-            isPopoutOpen={isPopoutOpen}
-            onFocus={() => setPopoutOpen(true)}
-            Option={Option}
-          />
+            id={inputId}
+            popoverId={popoverId}
+            isPopoverOpen={popoverState === "open"}
+            onKeyDown={handleKeyDown}
+            onClick={togglePopover}
+          >
+            {Value && value ? <Value value={value} /> : null}
+          </SingleValueInput>
         )}
-      </Dropdown>
+        <Popover
+          popoverRef={popoverRef}
+          popoverId={popoverId}
+          options={displayedOptions}
+          selected={value}
+          onClick={(option) => {
+            updateValue(option)
+            reset()
+          }}
+          highlightedOption={highlightedOption}
+          Option={Option}
+        />
+      </div>
     </div>
   )
 }
-
-const listContainsOption = (list: OptionBase[], option: OptionBase) =>
-  list.find((v) => v.text === option.text)

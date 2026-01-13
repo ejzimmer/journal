@@ -63,9 +63,9 @@ export function ThisYear() {
         <Combobox
           value={[]}
           label="tags"
-          options={tags.map((tag) => ({ text: tag }))}
-          createOption={(text) => ({ text })}
-          allowMulti
+          options={tags.map((tag) => ({ id: tag, label: tag }))}
+          createOption={(text) => ({ label: text, id: text })}
+          isMultiValue
           onChange={(value) => console.log(value)}
         />
       </div>

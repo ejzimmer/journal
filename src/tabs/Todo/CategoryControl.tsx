@@ -1,5 +1,5 @@
 import { useContext, useMemo } from "react"
-import { Combobox } from "../../shared/controls/new_combobox/Combobox"
+import { Combobox } from "../../shared/controls/combobox/Combobox"
 import { Category } from "./types"
 import { CategoriesContext } from "."
 
