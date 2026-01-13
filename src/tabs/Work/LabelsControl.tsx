@@ -83,6 +83,7 @@ export function LabelsControl({ value, onChange, label }: LabelsControlProps) {
       Option={Option}
       Value={Option}
       isMultiValue
+      hideSelectedOptions
     />
   )
 }

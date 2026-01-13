@@ -121,6 +121,11 @@ form.add-task {
     padding-block: 4px;
     border-style: solid;
     border-color: var(--border-colour);
+
+    &:focus-visible {
+      outline: none;
+      border-color: var(--body-colour);
+    }
   }
 
   ul.values li.value {

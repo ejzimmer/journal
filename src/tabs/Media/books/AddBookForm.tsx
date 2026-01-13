@@ -119,7 +119,7 @@ export function AddBookForm() {
         createOption={(label) => ({ id: "", label })}
         onChange={setSeries}
       />
-      <SubmitButton />
+      <SubmitButton label="Create" />
     </form>
   )
 }

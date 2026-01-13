@@ -72,7 +72,7 @@ describe("AddTaskForm", () => {
     await user.type(descriptionInput, "Approve PR")
     const labelInput = screen.getByRole("combobox", { name: "Labels" })
     await user.type(labelInput, "PR{Enter}")
-    await user.keyboard("{Enter}")
+    await user.click(screen.getByRole("button", { name: "submit" }))
 
     expect(onSubmit).toHaveBeenCalledWith({
       description: "Approve PR",

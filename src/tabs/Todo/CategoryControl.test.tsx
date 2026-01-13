@@ -56,15 +56,15 @@ describe("CategoryControl", () => {
         wrapper: Wrapper,
       })
 
-      expect(
-        screen.getByText(new RegExp(categories[0].text))
-      ).toBeInTheDocument()
+      expect(screen.getAllByText(new RegExp(categories[0].text))).toHaveLength(
+        2
+      )
       expect(screen.getByRole("textbox")).toHaveValue(categories[0].emoji)
     })
   })
 
   describe("when the value has no emoji", () => {
-    it("shows the label in the combobox and the emoji in the textbox", () => {
+    it("shows the label in the combobox and empty string in the textbox", () => {
       render(
         <CategoryControl
           {...commonProps}

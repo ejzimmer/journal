@@ -79,7 +79,7 @@ export function AddGameForm() {
         createOption={(label) => ({ id: "", label })}
         onChange={setSeries}
       />
-      <SubmitButton />
+      <SubmitButton label="Create" />
     </form>
   )
 }

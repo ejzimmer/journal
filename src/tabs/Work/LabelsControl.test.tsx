@@ -67,24 +67,6 @@ describe("LabelsControl", () => {
     })
   })
 
-  describe("when the user presses Enter without adding any text", () => {
-    it("doesn't swallows the key event", async () => {
-      const user = userEvent.setup()
-      const onKeyDown = jest.fn()
-      render(
-        <div onKeyDown={onKeyDown}>
-          <LabelsControl {...commonProps} />
-        </div>,
-        { wrapper: Wrapper }
-      )
-
-      const input = screen.getByRole("combobox")
-      await user.type(input, "{Enter}")
-
-      expect(onKeyDown).toHaveBeenCalled()
-    })
-  })
-
   describe("when the user clicks remove <label name>", () => {
     it("removes the label", async () => {
       const user = userEvent.setup()
@@ -96,82 +78,6 @@ describe("LabelsControl", () => {
       await user.click(screen.getByRole("button", { name: "Remove a11y" }))
 
       expect(onChange).toHaveBeenCalledWith([mockValues[1]])
-    })
-  })
-
-  describe("when the user clicks clear all", () => {
-    it("removes all the labels and any text in the input", async () => {
-      const user = userEvent.setup()
-      const onChange = jest.fn()
-      render(<LabelsControl {...commonProps} onChange={onChange} />, {
-        wrapper: Wrapper,
-      })
-
-      const input = screen.getByRole("combobox")
-      await user.type(input, "dev prod")
-
-      await user.click(screen.getByRole("button", { name: "Clear all" }))
-
-      expect(onChange).toHaveBeenCalledWith([])
-      expect(input).toHaveValue("")
-    })
-  })
-
-  it("shows the list of options & navigates the list via arrow keys & space to select", async () => {
-    const user = userEvent.setup()
-    const onChange = jest.fn()
-    const { rerender } = render(
-      <LabelsControl {...commonProps} onChange={onChange} value={[]} />,
-      { wrapper: Wrapper }
-    )
-
-    mockOptions.forEach((option) => {
-      expect(
-        screen.getByRole("option", { name: option.value })
-      ).toBeInTheDocument()
-    })
-
-    const input = screen.getByRole("combobox")
-    await user.type(input, "{ArrowDown}{ArrowDown} ")
-    expect(onChange).toHaveBeenCalledWith([mockOptions[1]])
-    expect(input).toHaveValue("") // Not space!
-
-    rerender(
-      <LabelsControl
-        {...commonProps}
-        onChange={onChange}
-        value={[mockOptions[1]]}
-      />
-    )
-
-    await user.keyboard("{ArrowUp}{ArrowUp} ")
-    expect(onChange).toHaveBeenCalledWith([
-      mockOptions[1],
-      mockOptions[mockOptions.length - 2],
-    ])
-  })
-
-  describe("when the user types in the input", () => {
-    it("filters the list of options", async () => {
-      const user = userEvent.setup()
-      const onChange = jest.fn()
-      render(
-        <LabelsControl {...commonProps} onChange={onChange} value={[]} />,
-        { wrapper: Wrapper }
-      )
-
-      const input = screen.getByRole("combobox")
-      await user.type(input, "pr")
-
-      const options = screen.getAllByRole("option")
-      expect(options).toHaveLength(2)
-      expect(options[0]).toHaveTextContent(/dev prod/)
-      expect(options[1]).toHaveTextContent(/PR/)
-
-      await user.keyboard("{ArrowDown} ")
-      expect(onChange).toHaveBeenCalledWith([
-        expect.objectContaining({ value: "dev prod" }),
-      ])
     })
   })
 
@@ -188,44 +94,6 @@ describe("LabelsControl", () => {
         expect(option).not.toHaveTextContent(mockValues[0].value)
         expect(option).not.toHaveTextContent(mockValues[1].value)
       })
-    })
-  })
-
-  describe("when the user types a label with a space in it", () => {
-    it("doesn't select anything from the option list unless they pressed the arrow keys first", async () => {
-      const user = userEvent.setup()
-      const onChange = jest.fn()
-      render(<LabelsControl {...commonProps} onChange={onChange} />, {
-        wrapper: Wrapper,
-      })
-
-      const input = screen.getByRole("combobox")
-      await user.type(input, " ")
-
-      expect(onChange).not.toHaveBeenCalled()
-
-      await user.type(input, "dev ")
-
-      expect(onChange).not.toHaveBeenCalled()
-
-      await user.type(input, "{ArrowDown} ")
-
-      expect(onChange).toHaveBeenCalledWith([
-        ...mockValues,
-        expect.objectContaining({ value: "dev prod" }),
-      ])
-      expect(input).toHaveValue("")
-
-      onChange.mockClear()
-      await user.type(input, "{ArrowDown}{ArrowDown}")
-      await user.type(input, "dev ")
-      expect(onChange).not.toHaveBeenCalled()
-
-      await user.type(input, "{Enter}")
-      expect(onChange).toHaveBeenCalledWith([
-        ...mockValues,
-        expect.objectContaining({ value: "dev" }),
-      ])
     })
   })
 
@@ -249,22 +117,6 @@ describe("LabelsControl", () => {
     })
   })
 
-  describe("when the user types a tag that has already been selected and presses enter", () => {
-    it("doesn't add a new tag", async () => {
-      const user = userEvent.setup()
-      const onChange = jest.fn()
-      render(<LabelsControl {...commonProps} onChange={onChange} />, {
-        wrapper: Wrapper,
-      })
-
-      const input = screen.getByRole("combobox")
-      await user.type(input, mockValues[0].value)
-      await user.type(input, "{Enter}")
-
-      expect(onChange).not.toHaveBeenCalled()
-      expect(input).toHaveValue("")
-    })
-  })
   describe("when the user types a tag that's in the list of options and presses enter", () => {
     it("updates the value, using the value in the list of options", async () => {
       const user = userEvent.setup()

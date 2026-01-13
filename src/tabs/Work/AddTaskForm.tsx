@@ -109,12 +109,14 @@ export function AddTaskForm({ onSubmit, onClose }: AddTaskFormProps) {
       />
       <div className="button-container">
         <button
+          aria-label="submit"
           className="icon outline"
           style={{ color: "var(--success-colour)" }}
         >
           <TickIcon />
         </button>
         <button
+          aria-label="cancel"
           className="icon outline"
           style={{ color: "var(--danger-colour-dark)" }}
           onClick={onClose}
