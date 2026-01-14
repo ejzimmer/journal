@@ -5,8 +5,9 @@ import {
   LabelsControl,
   LabelsControlProps,
 } from "./LabelsControl"
-import { COLOURS, Label } from "../../shared/types"
+import { COLOURS } from "../../shared/types"
 import { LabelsContext } from "./LabelsContext"
+import { Label } from "./types"
 
 const mockOptions: Label[] = [
   { value: "a11y", colour: "blue" },

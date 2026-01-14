@@ -4,7 +4,7 @@ import { monitorForElements } from "@atlaskit/pragmatic-drag-and-drop/element/ad
 import { useEffect, useCallback, useContext } from "react"
 import { isDroppable, isList, isTask, sortByOrder } from "./drag-utils"
 import { FirebaseContext } from "../../shared/FirebaseContext"
-import { Item } from "../../shared/types"
+import { Item } from "./types"
 
 type TaskData = { itemId: string; parentId: string; position: number }
 

@@ -8,7 +8,6 @@ import {
 } from "react"
 import { EditableText } from "../../shared/controls/EditableText"
 import { AddTaskForm } from "./AddTaskForm"
-import { Item } from "../../shared/types"
 import { Task } from "./Task"
 import { getListData, isList, isTask, sortByOrder } from "./drag-utils"
 import { combine } from "@atlaskit/pragmatic-drag-and-drop/combine"
@@ -22,6 +21,7 @@ import { DragHandle } from "../../shared/drag-and-drop/DragHandle"
 import { Draggable } from "../../shared/drag-and-drop/types"
 import { DraggableListItem } from "../../shared/drag-and-drop/DraggableListItem"
 import { PostitModal } from "./PostitModal"
+import { Item } from "./types"
 
 type DragState = "idle" | "is-dragging-over"
 

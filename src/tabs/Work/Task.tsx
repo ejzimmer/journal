@@ -1,4 +1,3 @@
-import { Item, Label } from "../../shared/types"
 import { EditableDate } from "../../shared/controls/EditableDate"
 import { useCallback, useState } from "react"
 import { getTaskData, isTask } from "./drag-utils"
@@ -12,6 +11,7 @@ import { XIcon } from "../../shared/icons/X"
 import { PlusIcon } from "../../shared/icons/Plus"
 import { LabelsControl } from "./LabelsControl"
 import { EditableText } from "../../shared/controls/EditableText"
+import { Item, Label } from "./types"
 
 type TaskProps = {
   list: Draggable[]

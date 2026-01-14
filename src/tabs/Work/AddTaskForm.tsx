@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react"
 import { TickIcon } from "../../shared/icons/Tick"
 import { XIcon } from "../../shared/icons/X"
 import { LabelsControl } from "./LabelsControl"
-import { Label } from "../../shared/types"
+import { Label } from "./types"
 
 type NewTask = {
   description: string

@@ -2,12 +2,12 @@ import { useMemo, useState } from "react"
 import { Menu } from "../../shared/controls/Menu"
 import { ArrowRightIcon } from "../../shared/icons/ArrowRight"
 import { RubbishBinIcon } from "../../shared/icons/RubbishBin"
-import { Item } from "../../shared/types"
 
 import "./TaskList.css"
 import { ModalTriggerProps } from "../../shared/controls/Modal"
 import { PostitModal } from "./PostitModal"
 import { EllipsisIcon } from "../../shared/icons/Ellipsis"
+import { Item } from "./types"
 
 export function TaskMenu({
   task,

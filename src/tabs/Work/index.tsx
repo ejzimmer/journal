@@ -1,6 +1,5 @@
 import { useCallback, useContext, useEffect, useMemo } from "react"
 import { FirebaseContext } from "../../shared/FirebaseContext"
-import { Item, Label } from "../../shared/types"
 import { NewListModal } from "./NewListModal"
 import { TaskList } from "./TaskList"
 import { hoursToMilliseconds, isSameDay } from "date-fns"
@@ -10,6 +9,7 @@ import { sortByOrder } from "./drag-utils"
 import { Draggable } from "../../shared/drag-and-drop/types"
 import { LabelsContext } from "./LabelsContext"
 import { useDropTarget } from "./useDropTarget"
+import { Item, Label } from "./types"
 
 const WORK_KEY = "work"
 
