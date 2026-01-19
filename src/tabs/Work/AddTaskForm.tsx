@@ -30,13 +30,22 @@ export function AddTaskForm({ onSubmit, onClose }: AddTaskFormProps) {
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault()
     const description = descriptionRef.current?.value
-
-    if (description) {
-      const dateValue = dateRef.current?.value
-      const dueDate = dateValue ? new Date(dateValue).getTime() : undefined
-      onSubmit({ description, dueDate, labels })
-      onClose()
+    if (!description) {
+      return
     }
+
+    const task: NewTask = {
+      description,
+      labels,
+    }
+
+    const dateValue = dateRef.current?.value
+    if (dateValue) {
+      task.dueDate = new Date(dateValue).getTime()
+    }
+
+    onSubmit(task)
+    onClose()
   }
 
   useEffect(() => {

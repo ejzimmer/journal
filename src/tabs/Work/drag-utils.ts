@@ -1,27 +1,7 @@
 import { Edge } from "@atlaskit/pragmatic-drag-and-drop-hitbox/closest-edge"
 
-import { Destination } from "../../shared/drag-and-drop/types"
-import { Item } from "./types"
-
-export const draggableTypeKey = Symbol("draggableType")
-
-export function getTaskData(task: Item, listId: string) {
-  return {
-    [draggableTypeKey]: "task",
-    itemId: task.id,
-    parentId: listId,
-    position: task.order,
-  }
-}
-
-export function getListData(list: Item, parentId: string) {
-  return {
-    [draggableTypeKey]: "list",
-    itemId: list.id,
-    parentId,
-    position: list.order,
-  }
-}
+import { Destination, draggableTypeKey } from "../../shared/drag-and-drop/types"
+import { WorkTask } from "./types"
 
 export function isTask(data: any): boolean {
   return draggableTypeKey in data && data[draggableTypeKey] === "task"
@@ -34,10 +14,10 @@ export function isDroppable(data: any): boolean {
   return draggableTypeKey in data
 }
 
-export function sortByOrder(list: Item[]) {
+export function sortByOrder(list: WorkTask[]) {
   return list
-    .toSorted((a, b) => (a.order ?? Infinity) - (b.order ?? Infinity))
-    .map((item, index) => ({ ...item, order: index }))
+    .toSorted((a, b) => a.position - b.position)
+    .map((item, index) => ({ ...item, position: index }))
 }
 
 export function getPosition(index: number, listLength: number) {

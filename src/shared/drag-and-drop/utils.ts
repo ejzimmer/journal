@@ -1,5 +1,10 @@
 import { reorderWithEdge } from "@atlaskit/pragmatic-drag-and-drop-hitbox/util/reorder-with-edge"
-import { Destination, Draggable, draggableTypeKey } from "./types"
+import {
+  Destination,
+  Draggable,
+  draggableTypeKey,
+  OrderedListItem,
+} from "./types"
 import { Edge } from "@atlaskit/pragmatic-drag-and-drop-hitbox/closest-edge"
 
 export const isDraggable = (item: any): item is Draggable =>
@@ -16,9 +21,9 @@ export function getPosition(index: number, listLength: number) {
   return "middle"
 }
 
-export function sortByPosition<T extends Draggable>(list: T[]) {
+export function sortByPosition<T extends OrderedListItem>(list: T[]) {
   return list
-    .toSorted((a, b) => (a.position ?? Infinity) - (b.position ?? Infinity))
+    .toSorted((a, b) => a.position - b.position)
     .map((item, index) => ({ ...item, position: index }))
 }
 
@@ -49,10 +54,10 @@ const getTarget = (
 }
 
 export const onChangePosition = (
-  list: Draggable[],
+  list: OrderedListItem[],
   originIndex: number,
   destination: Destination,
-  onReorder: (list: Draggable[]) => void
+  onReorder: (list: OrderedListItem[]) => void
 ) => {
   const sortedList = sortByPosition(list)
 
@@ -62,6 +67,6 @@ export const onChangePosition = (
       startIndex: originIndex,
       ...getTarget(originIndex, destination, list.length),
       axis: "vertical",
-    })
+    }).map((item, index) => ({ ...item, position: index }))
   )
 }

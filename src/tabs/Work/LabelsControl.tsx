@@ -8,6 +8,7 @@ export type LabelsControlProps = {
   value: Label[]
   onChange: (value: Label[]) => void
   label: string
+  hideLabel?: boolean
 }
 
 type LabelOption = {

@@ -52,7 +52,8 @@
         font-size: 1.5em;
       }
 
-      &:focus {
+      &:focus,
+      &:hover {
         outline: none;
         border: none;
         border-bottom: 2px solid;

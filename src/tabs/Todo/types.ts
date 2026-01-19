@@ -1,11 +1,11 @@
-import { Draggable } from "../../shared/drag-and-drop/types"
+import { OrderedListItem } from "../../shared/drag-and-drop/types"
 
 export type Category = {
   text: string
   emoji: string
 }
 
-export type Task = Draggable & {
+export type Task = OrderedListItem & {
   description: string
   category: Category
 }

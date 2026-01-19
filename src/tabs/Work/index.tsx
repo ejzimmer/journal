@@ -1,4 +1,4 @@
-import { useCallback, useContext, useEffect, useMemo } from "react"
+import { useCallback, useContext, useEffect, useMemo, useRef } from "react"
 import { FirebaseContext } from "../../shared/FirebaseContext"
 import { NewListModal } from "./NewListModal"
 import { TaskList } from "./TaskList"
@@ -6,20 +6,23 @@ import { hoursToMilliseconds, isSameDay } from "date-fns"
 import { TaskMenu } from "./TaskMenu"
 import { Skeleton } from "../../shared/controls/Skeleton"
 import { sortByOrder } from "./drag-utils"
-import { Draggable } from "../../shared/drag-and-drop/types"
+import { draggableTypeKey } from "../../shared/drag-and-drop/types"
 import { LabelsContext } from "./LabelsContext"
-import { useDropTarget } from "./useDropTarget"
-import { Item, Label } from "./types"
+import { WorkTask, Label, WORK_KEY } from "./types"
+import { useDraggableList } from "../../shared/drag-and-drop/useDraggableList"
+import { isDraggable } from "../../shared/drag-and-drop/utils"
+import { useDropTarget } from "../../shared/drag-and-drop/useDropTarget"
 
-const WORK_KEY = "work"
+import "./index.css"
 
 export function Work() {
+  const dropTargetRef = useRef<HTMLOListElement>(null)
   const context = useContext(FirebaseContext)
   if (!context) {
     throw new Error("Missing Firebase context provider")
   }
   const { addItem, useValue, updateItem, deleteItem } = context
-  const { value: lists, loading: listsLoading } = useValue<Item>(WORK_KEY)
+  const { value: lists, loading: listsLoading } = useValue<WorkTask>(WORK_KEY)
 
   const doneList = useMemo(() => {
     return (
@@ -32,18 +35,6 @@ export function Work() {
       addItem(WORK_KEY, { description: listName })
     },
     [addItem]
-  )
-  const onUpdateListName = (newName: string, list: Item) => {
-    if (!newName) {
-      return
-    }
-    updateItem(WORK_KEY, { ...list, description: newName })
-  }
-  const onDeleteList = useCallback(
-    (list: Item) => {
-      deleteItem(WORK_KEY, list)
-    },
-    [deleteItem]
   )
 
   const orderedLists = useMemo(
@@ -68,7 +59,7 @@ export function Work() {
       }
 
       Object.values(list.items).forEach((task) => {
-        if (isSameDay(today, task.lastUpdated)) {
+        if (isSameDay(today, task.lastStatusUpdate)) {
           return
         }
 
@@ -90,7 +81,45 @@ export function Work() {
     return () => clearInterval(interval)
   }, [onUpdate])
 
-  useDropTarget({ topLevelKey: WORK_KEY })
+  useDropTarget({
+    dropTargetRef,
+    canDrop: ({ source }) => isDraggable(source.data),
+    getData: () => ({ id: WORK_KEY }),
+  })
+  useDraggableList({
+    listId: WORK_KEY,
+    canDropSourceOnTarget: (source, target) => {
+      if (!isDraggable(target)) {
+        return source[draggableTypeKey] === "list"
+      }
+
+      if (source[draggableTypeKey] === target[draggableTypeKey]) {
+        return true
+      }
+
+      if (
+        source[draggableTypeKey] === "task" &&
+        target[draggableTypeKey] === "list"
+      ) {
+        return true
+      }
+
+      return false
+    },
+    getTargetListId: (source, target) => {
+      if (
+        isDraggable(target) &&
+        source[draggableTypeKey] === target[draggableTypeKey]
+      ) {
+        return target.parentId
+      }
+
+      return `${WORK_KEY}/${target.id}/items`
+    },
+    getAxis: (source) => {
+      return source[draggableTypeKey] === "task" ? "vertical" : "horizontal"
+    },
+  })
 
   const labels = useMemo(() => {
     const uniqueLabels = new Map<string, Label>()
@@ -109,70 +138,20 @@ export function Work() {
 
   return (
     <>
-      <div
-        style={{
-          position: "sticky",
-          top: "20px",
-          zIndex: 1,
-          display: "flex",
-          justifyContent: "end",
-        }}
-      >
+      <div className="new-list-modal-container">
         <NewListModal onCreate={onAddList} />
       </div>
-      <div
-        style={{
-          display: "flex",
-          flexWrap: "wrap",
-          alignItems: "stretch",
-          gap: "20px",
-        }}
-      >
-        {lists ? (
-          <LabelsContext.Provider value={labels}>
+      {lists ? (
+        <LabelsContext.Provider value={labels}>
+          <ol ref={dropTargetRef} className="work-lists">
             {orderedLists.map(
               (list, index) =>
                 list !== doneList && (
                   <TaskList
+                    key={list.id}
+                    listId={list.id}
                     index={index}
                     parentListId={WORK_KEY}
-                    key={list.id}
-                    list={list}
-                    onChangeListName={(newName: string) =>
-                      onUpdateListName(newName, list)
-                    }
-                    onDelete={() => onDeleteList(list)}
-                    onAddTask={(task) => {
-                      const item: Partial<Item> = {
-                        ...task,
-                        status: "not_started",
-                      }
-                      if (!task.dueDate) {
-                        delete item.dueDate
-                      }
-                      addItem(`${WORK_KEY}/${list.id}/items`, {
-                        ...item,
-                        lastUpdated: new Date().getTime(),
-                      })
-                    }}
-                    onChangeTask={(task: Item) => {
-                      updateItem(`${WORK_KEY}/${list.id}/items`, {
-                        ...task,
-                        lastUpdated: new Date().getTime(),
-                      })
-                    }}
-                    onReorderTasks={(tasks: Draggable[]) => {
-                      updateItem(WORK_KEY, {
-                        ...list,
-                        items: tasks.reduce(
-                          (items, task, index) => ({
-                            ...items,
-                            [task.id]: { ...task, order: index },
-                          }),
-                          {}
-                        ),
-                      })
-                    }}
                     menu={({ task }) => (
                       <TaskMenu
                         task={task}
@@ -182,24 +161,24 @@ export function Work() {
                         onDelete={() =>
                           deleteItem(`${WORK_KEY}/${list.id}/items`, task)
                         }
-                        onMove={(destination: Item) => {
+                        onMove={(destination: WorkTask) => {
                           const position = destination.items
                             ? Object.values(destination.items).reduce(
                                 (highest, item) =>
-                                  item.order
-                                    ? Math.max(highest, item.order)
+                                  item.position
+                                    ? Math.max(highest, item.position)
                                     : highest,
                                 0
                               )
                             : 0
                           addItem(`${WORK_KEY}/${destination.id}/items`, {
                             ...task,
-                            order: position,
+                            position,
                             lastUpdated: new Date().getTime(),
                           })
                           deleteItem(`${WORK_KEY}/${list.id}/items`, task)
                         }}
-                        onChange={(task: Item) =>
+                        onChange={(task: WorkTask) =>
                           updateItem(`${WORK_KEY}/${list.id}/items`, {
                             ...task,
                             lastUpdated: new Date().getTime(),
@@ -216,27 +195,30 @@ export function Work() {
                                     id,
                                     {
                                       ...item,
-                                      order: (item.order ?? index) + 1,
+                                      position: (item.position ?? index) + 1,
                                     },
                                   ]
                                 } else {
-                                  return [id, { ...item, order: 0 }]
+                                  return [id, { ...item, position: 0 }]
                                 }
                               }
                             )
                           )
-                          updateItem(WORK_KEY, { ...list, items: resortedList })
+                          updateItem(WORK_KEY, {
+                            ...list,
+                            items: resortedList,
+                          })
                         }}
                       />
                     )}
                   />
                 )
             )}
-          </LabelsContext.Provider>
-        ) : (
-          <div style={{ marginInlineEnd: "30px" }}>No lists found.</div>
-        )}
-      </div>
+          </ol>
+        </LabelsContext.Provider>
+      ) : (
+        <div style={{ marginInlineEnd: "30px" }}>No lists found.</div>
+      )}
     </>
   )
 }

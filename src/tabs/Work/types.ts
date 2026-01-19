@@ -8,13 +8,16 @@ export type Label = {
 export const STATUS_KEYS = ["not_started", "done"] as const
 export type StatusKey = (typeof STATUS_KEYS)[number]
 
-export type Item = {
+export type WorkTask = {
   id: string
   description: string
   status: StatusKey
-  items?: Record<string, Item>
-  lastUpdated: number
+  parentId: string
+  items?: Record<string, WorkTask>
+  lastStatusUpdate: number
   dueDate?: number
-  order?: number
+  position: number
   labels?: Label[]
 }
+
+export const WORK_KEY = "work"

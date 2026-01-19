@@ -3,18 +3,16 @@
   flex-direction: column;
   transition: all 0.2s ease-in;
 
-  ol,
-  ul {
+  ol {
     list-style-type: none;
   }
 
-  & > ul:first-child,
   & > ol:first-child {
     padding-inline-start: 0;
     margin-block-end: 0;
 
     li {
-      .item {
+      &.item {
         display: flex;
         gap: 10px;
         align-items: center;

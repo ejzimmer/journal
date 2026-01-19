@@ -37,7 +37,7 @@ export function DueDateList() {
   return (
     <div className="todo-task-list calendar">
       {tasks.length ? (
-        <ul>
+        <ol>
           {tasks
             .sort((a, b) => a.dueDate - b.dueDate)
             .map((task) => (
@@ -45,7 +45,7 @@ export function DueDateList() {
                 <DueDateTask task={task} />
               </li>
             ))}
-        </ul>
+        </ol>
       ) : (
         <div>No tasks</div>
       )}

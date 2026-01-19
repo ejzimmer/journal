@@ -2,14 +2,18 @@ import { useEffect, useState } from "react"
 import invariant from "tiny-invariant"
 import { combine } from "@atlaskit/pragmatic-drag-and-drop/combine"
 import { dropTargetForElements } from "@atlaskit/pragmatic-drag-and-drop/element/adapter"
-import { isDraggable } from "./utils"
 
 type DragState = "idle" | "is-dragging-over"
 
-export function useDropTarget(
-  dropTargetRef: React.RefObject<HTMLUListElement | null>,
-  listId: string
-) {
+export function useDropTarget({
+  dropTargetRef,
+  canDrop,
+  getData,
+}: {
+  dropTargetRef: React.RefObject<HTMLOListElement | null>
+  canDrop: Parameters<typeof dropTargetForElements>[0]["canDrop"]
+  getData: Parameters<typeof dropTargetForElements>[0]["getData"]
+}) {
   const [dragState, setDragState] = useState<DragState>("idle")
 
   useEffect(() => {
@@ -20,12 +24,8 @@ export function useDropTarget(
     return combine(
       dropTargetForElements({
         element,
-        canDrop({ source }) {
-          return isDraggable(source.data)
-        },
-        getData() {
-          return { listId }
-        },
+        canDrop,
+        getData,
         onDragEnter() {
           setDragState("is-dragging-over")
         },

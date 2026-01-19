@@ -1,6 +1,6 @@
 import { setCustomNativeDragPreview } from "@atlaskit/pragmatic-drag-and-drop/element/set-custom-native-drag-preview"
 import { combine } from "@atlaskit/pragmatic-drag-and-drop/combine"
-import { ReactNode, useRef, useState, useEffect } from "react"
+import { ReactNode, useRef, useState, useEffect, ReactElement } from "react"
 import { createPortal } from "react-dom"
 import invariant from "tiny-invariant"
 import {
@@ -13,15 +13,16 @@ import {
   extractClosestEdge,
 } from "@atlaskit/pragmatic-drag-and-drop-hitbox/closest-edge"
 import { Edge } from "@atlaskit/pragmatic-drag-and-drop-hitbox/dist/types/types"
-import { DraggingState, IDLE } from "./types"
+import { Draggable, DraggingState, IDLE } from "./types"
 
 import "./drag-and-drop.css"
 
 type DraggableListItemProps = {
-  getData: () => Record<string, unknown>
+  getData: () => Draggable
   dragPreview: ReactNode
   isDroppable: (data: any) => boolean
   allowedEdges: Edge[]
+  dragHandle: ReactElement
   children: ReactNode
   className?: string
   style?: React.CSSProperties
@@ -32,11 +33,12 @@ export function DraggableListItem({
   dragPreview,
   isDroppable,
   allowedEdges,
+  dragHandle,
   children,
   className,
   style,
 }: DraggableListItemProps) {
-  const draggableRef = useRef<HTMLDivElement | null>(null)
+  const draggableRef = useRef<HTMLLIElement | null>(null)
   const [draggingState, setDraggingState] = useState<DraggingState>(IDLE)
 
   useEffect(() => {
@@ -117,17 +119,18 @@ export function DraggableListItem({
 
   return (
     <>
-      <div
+      <li
         ref={draggableRef}
-        className={`${className} draggable-item`}
+        className={`${className ?? ""} draggable-item`}
         style={style}
       >
+        {dragHandle}
         {children}
         {draggingState.type === "is-dragging-over" &&
         draggingState.closestEdge ? (
           <DropIndicator edge={draggingState.closestEdge} />
         ) : null}
-      </div>
+      </li>
       {draggingState.type === "preview" &&
         createPortal(dragPreview, draggingState.container)}
     </>

@@ -7,14 +7,17 @@ import { useContext, useRef } from "react"
 import { FirebaseContext } from "../../../shared/FirebaseContext"
 import { DraggableListItem } from "../../../shared/drag-and-drop/DraggableListItem"
 import {
-  Draggable,
   draggableTypeKey,
+  OrderedListItem,
 } from "../../../shared/drag-and-drop/types"
 import { DragPreview } from "../DragPreview"
 import { DragHandle } from "../../../shared/drag-and-drop/DragHandle"
 import { useDropTarget } from "../../../shared/drag-and-drop/useDropTarget"
-import { useDraggableList } from "../../../shared/drag-and-drop/useDraggable"
-import { sortByPosition } from "../../../shared/drag-and-drop/utils"
+import { useDraggableList } from "../../../shared/drag-and-drop/useDraggableList"
+import {
+  isDraggable,
+  sortByPosition,
+} from "../../../shared/drag-and-drop/utils"
 
 const updatedYesterday = (task: DailyTask, status: DailyTask["status"]) =>
   task.status === status && isBefore(task.lastCompleted, startOfDay(new Date()))
@@ -44,37 +47,49 @@ export function TodayList() {
     })
   )
 
-  useDropTarget(listRef, PARENT_LIST)
-  useDraggableList(PARENT_LIST)
+  useDropTarget({
+    dropTargetRef: listRef,
+    canDrop: ({ source }) => isDraggable(source.data),
+    getData: () => ({ listId: PARENT_LIST }),
+  })
+  useDraggableList({
+    listId: PARENT_LIST,
+    canDropSourceOnTarget: (source) => {
+      return source[draggableTypeKey] === "日"
+    },
+    getTargetListId: (source) => source.parentId,
+    getAxis: () => "vertical",
+  })
 
   return (
     <div className="todo-task-list">
       {tasks.length ? (
         <ol ref={listRef}>
           {tasks.map((task, index) => (
-            <li key={task.id} className={`today-task status-${task.status}`}>
-              <DraggableListItem
-                getData={() => ({
-                  [draggableTypeKey]: "日",
-                  id: task.id,
-                  parentId: PARENT_LIST,
-                  position: task.position,
-                })}
-                dragPreview={<DragPreview task={task} />}
-                isDroppable={(data) => data[draggableTypeKey] === "日"}
-                allowedEdges={["bottom", "top"]}
-                className="item"
-              >
+            <DraggableListItem
+              key={task.id}
+              className={`today-task item status-${task.status}`}
+              getData={() => ({
+                [draggableTypeKey]: "日",
+                id: task.id,
+                parentId: PARENT_LIST,
+                position: task.position,
+              })}
+              dragPreview={<DragPreview task={task} />}
+              isDroppable={(data) => data[draggableTypeKey] === "日"}
+              allowedEdges={["bottom", "top"]}
+              dragHandle={
                 <DragHandle
                   list={tasks}
                   index={index}
-                  onReorder={(tasks: Draggable[]) => {
+                  onReorder={(tasks: OrderedListItem[]) => {
                     storageContext.updateList(PARENT_LIST, tasks)
                   }}
                 />
-                <TodayTask task={task} />
-              </DraggableListItem>
-            </li>
+              }
+            >
+              <TodayTask task={task} />
+            </DraggableListItem>
           ))}
         </ol>
       ) : (

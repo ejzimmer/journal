@@ -4,13 +4,13 @@ import { ArrowToTopIcon } from "../icons/ArrowToTop"
 import { ArrowUpIcon } from "../icons/ArrowUp"
 import { DragHandleIcon } from "../icons/DragHandle"
 import { Menu } from "../controls/Menu"
-import { Draggable } from "./types"
+import { OrderedListItem } from "./types"
 import { getPosition, onChangePosition } from "./utils"
 
 type DragHandleProps = {
-  list: Draggable[]
+  list: OrderedListItem[]
   index: number
-  onReorder: (list: Draggable[]) => void
+  onReorder: (list: OrderedListItem[]) => void
 }
 
 const iconProps = {

@@ -30,13 +30,13 @@ const stations = [
 
 export function StationRunning() {
   return (
-    <ul className="trainline">
+    <ol className="trainline">
       {stations.map(({ name, distance }) => (
         <li key={name}>
           <Station name={name} distance={distance} />
         </li>
       ))}
-    </ul>
+    </ol>
   )
 }
 

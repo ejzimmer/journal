@@ -4,51 +4,47 @@ import {
   FocusEvent,
   useRef,
   useMemo,
-  useEffect,
+  useContext,
 } from "react"
 import { EditableText } from "../../shared/controls/EditableText"
 import { AddTaskForm } from "./AddTaskForm"
-import { Task } from "./Task"
-import { getListData, isList, isTask, sortByOrder } from "./drag-utils"
-import { combine } from "@atlaskit/pragmatic-drag-and-drop/combine"
-import { dropTargetForElements } from "@atlaskit/pragmatic-drag-and-drop/element/adapter"
+import { Task } from "./Task/Task"
+import { isList, isTask, sortByOrder } from "./drag-utils"
 
 import "./TaskList.css"
 import { RubbishBinIcon } from "../../shared/icons/RubbishBin"
 import { ModalTriggerProps } from "../../shared/controls/Modal"
-import invariant from "tiny-invariant"
 import { DragHandle } from "../../shared/drag-and-drop/DragHandle"
-import { Draggable } from "../../shared/drag-and-drop/types"
+import { draggableTypeKey } from "../../shared/drag-and-drop/types"
 import { DraggableListItem } from "../../shared/drag-and-drop/DraggableListItem"
 import { PostitModal } from "./PostitModal"
-import { Item } from "./types"
+import { WorkTask, WORK_KEY } from "./types"
+import { FirebaseContext } from "../../shared/FirebaseContext"
+import { useDropTarget } from "../../shared/drag-and-drop/useDropTarget"
 
-type DragState = "idle" | "is-dragging-over"
+function getListData(list: WorkTask, parentId: string) {
+  return {
+    [draggableTypeKey]: "list",
+    id: list.id,
+    parentId: parentId,
+    position: list.position,
+  }
+}
 
 export function TaskList({
   index,
+  listId,
   parentListId,
-  list,
-  onChangeListName,
-  onDelete,
-  onAddTask,
-  onChangeTask,
-  onReorderTasks,
   menu: Menu,
 }: {
   index: number
+  listId: string
   parentListId: string
-  list: Item
-  onChangeListName: (name: string) => void
-  onDelete: () => void
-  onAddTask: (task: Partial<Item>) => void
-  onChangeTask: (task: Item) => void
-  onReorderTasks: (tasks: Draggable[]) => void
-  menu?: React.FC<{ task: Item }>
+  menu?: React.FC<{ task: WorkTask }>
 }) {
-  const listRef = useRef<HTMLUListElement>(null)
-  const [addTaskFormVisible, setAddTaskFormVisible] = useState(false)
+  const listRef = useRef<HTMLOListElement>(null)
 
+  const [addTaskFormVisible, setAddTaskFormVisible] = useState(false)
   const showTaskForm = (event: MouseEvent | FocusEvent) => {
     event.stopPropagation()
     if (event.target === listRef.current) {
@@ -56,47 +52,28 @@ export function TaskList({
     }
   }
 
+  const storageContext = useContext(FirebaseContext)
+  if (!storageContext) {
+    throw new Error("missing storage context")
+  }
+
+  const { value: lists } = storageContext.useValue<WorkTask>(WORK_KEY)
+  const list = lists?.[listId]
+
   const sortedList = useMemo(
-    () =>
-      (list.items ? sortByOrder(Object.values(list.items)) : []).map(
-        (item) => ({ ...item, position: item.order, parentId: parentListId }) // need to do data migration to update this form order to position in the database & add parentId
-      ),
-    [list, parentListId]
+    () => (list?.items ? sortByOrder(Object.values(list.items)) : []),
+    [list?.items]
   )
-  sortedList.forEach((item) => {
-    const originalItem = list.items?.[item.id]
-    if (originalItem?.order !== item.order) {
-      onChangeTask(item)
-    }
+
+  const dragState = useDropTarget({
+    dropTargetRef: listRef,
+    canDrop: ({ source }) => isTask(source.data),
+    getData: () => (list ? getListData(list, parentListId) : {}),
   })
 
-  const [dragState, setDragState] = useState<DragState>("idle")
-  useEffect(() => {
-    if (!listRef.current) return
-
-    const element = listRef.current
-    invariant(element)
-    return combine(
-      dropTargetForElements({
-        element,
-        canDrop({ source }) {
-          return isTask(source.data)
-        },
-        getData() {
-          return getListData(list, parentListId)
-        },
-        onDragEnter() {
-          setDragState("is-dragging-over")
-        },
-        onDragLeave() {
-          setDragState("idle")
-        },
-        onDrop() {
-          setDragState("idle")
-        },
-      })
-    )
-  })
+  if (!list) {
+    return
+  }
 
   return (
     <DraggableListItem
@@ -105,18 +82,24 @@ export function TaskList({
       isDroppable={isList}
       allowedEdges={["left", "right"]}
       style={{ display: "flex" }}
+      dragHandle={
+        <DragHandle
+          list={Object.values(lists)}
+          index={index}
+          onReorder={(reorderedList) => {
+            storageContext.updateList(WORK_KEY, reorderedList)
+          }}
+        />
+      }
     >
       <div className="work-task-list">
         <div className="heading">
-          <DragHandle
-            list={sortedList}
-            index={index}
-            onReorder={onReorderTasks}
-          />
           <h2>
             <EditableText
               label={`Edit ${list.description} name`}
-              onChange={onChangeListName}
+              onChange={(description) => {
+                storageContext.updateItem(WORK_KEY, { ...list, description })
+              }}
             >
               {list.description}
             </EditableText>
@@ -126,39 +109,50 @@ export function TaskList({
               <DeleteButton label={list.description} {...props} />
             )}
             message={`Are you sure you want to delete list ${list.description}?`}
-            onConfirm={onDelete}
+            onConfirm={() => {
+              storageContext.deleteItem(WORK_KEY, list)
+            }}
           />
         </div>
-        <ul
+        <ol
           ref={listRef}
           onClick={showTaskForm}
           onFocus={showTaskForm}
           className={`tasks ${dragState}`}
         >
           {sortedList?.map((item, index) => (
-            <li className="task" key={item.id}>
-              <Task
-                list={sortedList}
-                index={index}
-                onReorder={onReorderTasks}
-                task={item}
-                onChange={onChangeTask}
-                menu={() => (Menu ? <Menu task={item} /> : null)}
-                listId={list.id}
-              />
-            </li>
+            <Task
+              key={item.id}
+              path={`${WORK_KEY}/${listId}/items`}
+              task={item}
+              menu={() => (Menu ? <Menu task={item} /> : null)}
+              dragHandle={
+                <DragHandle
+                  list={sortedList}
+                  index={index}
+                  onReorder={(reorderedList) =>
+                    storageContext.updateList(
+                      `${WORK_KEY}/${listId}/items`,
+                      reorderedList
+                    )
+                  }
+                />
+              }
+            />
           ))}
           {addTaskFormVisible && (
             <li style={{ paddingInlineStart: "var(--margin-width)" }}>
               <AddTaskForm
-                onSubmit={onAddTask}
+                onSubmit={(newTask) =>
+                  storageContext.addItem(`${WORK_KEY}/${listId}/items`, newTask)
+                }
                 onClose={() => {
                   setAddTaskFormVisible(false)
                 }}
               />
             </li>
           )}
-        </ul>
+        </ol>
       </div>
     </DraggableListItem>
   )
@@ -183,7 +177,7 @@ function DeleteButton({
   )
 }
 
-function DragPreview({ list }: { list: Item }) {
+function DragPreview({ list }: { list: WorkTask }) {
   return (
     <div
       style={{
@@ -194,11 +188,11 @@ function DragPreview({ list }: { list: Item }) {
       }}
     >
       <h2>{list.description}</h2>
-      <ul style={{ padding: 0, marginInline: "10px" }}>
+      <ol style={{ padding: 0, marginInline: "10px" }}>
         {Object.values(list.items ?? {}).map((item) => (
           <li key={item.id}>{item.description}</li>
         ))}
-      </ul>
+      </ol>
     </div>
   )
 }

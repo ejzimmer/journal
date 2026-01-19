@@ -7,7 +7,7 @@ import "./TaskList.css"
 import { ModalTriggerProps } from "../../shared/controls/Modal"
 import { PostitModal } from "./PostitModal"
 import { EllipsisIcon } from "../../shared/icons/Ellipsis"
-import { Item } from "./types"
+import { WorkTask } from "./types"
 
 export function TaskMenu({
   task,
@@ -16,18 +16,15 @@ export function TaskMenu({
   onChange,
   onMove,
 }: {
-  task: Item
-  moveDestinations: Item[]
-  onChange: (updatedTask: Item) => void
+  task: WorkTask
+  moveDestinations: WorkTask[]
+  onChange: (updatedTask: WorkTask) => void
   onDelete: () => void
-  onMove: (destination: Item) => void
+  onMove: (destination: WorkTask) => void
   onMoveToTop: () => void
 }) {
   const sortedMoveDestinations = useMemo(
-    () =>
-      moveDestinations.toSorted(
-        (a, b) => (a.order ?? Infinity) - (b.order ?? Infinity)
-      ),
+    () => moveDestinations.toSorted((a, b) => a.position - b.position),
     [moveDestinations]
   )
 
