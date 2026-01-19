@@ -50,26 +50,10 @@ export function EditableDate({ onChange, value, ...props }: Props) {
       value={editingValue}
       onChange={(event) => setEditingValue(event.target.value)}
       aria-label="Due date"
-      style={{
-        border: "none",
-        height: "unset",
-        paddingBlock: "0",
-        fontSize: "1.2em",
-      }}
       {...props}
     />
   ) : (
-    <div
-      style={{
-        fontFamily: "sans-serif",
-        padding: "8px 4px",
-        width: "max-content",
-      }}
-      {...props}
-      tabIndex={0}
-      onFocus={startEditing}
-      onClick={startEditing}
-    >
+    <div {...props} tabIndex={0} onFocus={startEditing} onClick={startEditing}>
       {format(value, "dd MMM")}
     </div>
   )

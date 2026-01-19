@@ -28,11 +28,12 @@
     border: 2px solid;
     font-weight: bold;
     font-size: 0.8em;
+    padding: 4px;
 
-    &.today {
+    &.now {
       color: var(--success-colour);
     }
-    &.overdue {
+    &.past {
       color: var(--error-colour);
     }
     &.this-week {

@@ -85,8 +85,10 @@ export function AddTaskForm<T>({
           value={description}
           onChange={setDescription}
         />
-        <div className="label">Category</div>
-        <CategoryControl onChange={setCategory} value={category} />
+        <div>
+          <div className="label">Category</div>
+          <CategoryControl onChange={setCategory} value={category} />
+        </div>
 
         {children}
         <div className="buttons">

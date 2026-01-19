@@ -1,11 +1,10 @@
-import { useId, useState } from "react"
+import { useState } from "react"
 import { AddTaskForm } from "../AddTaskForm"
-import { EditableDate } from "../../../shared/controls/EditableDate"
 import { PARENT_LIST } from "./types"
+import { FormControl } from "../../../shared/controls/FormControl"
 
 export function AddDueDateTaskForm() {
-  const [dueDate, setDueDate] = useState<number>(new Date().getTime())
-  const dueDateId = useId()
+  const [dueDate, setDueDate] = useState<string>(new Date().toString())
 
   const getAdditionalFieldValue = () => {
     if (!dueDate) {
@@ -13,7 +12,7 @@ export function AddDueDateTaskForm() {
     }
 
     return {
-      dueDate: new Date().getTime(),
+      dueDate: new Date(dueDate).getTime(),
     }
   }
 
@@ -22,12 +21,12 @@ export function AddDueDateTaskForm() {
       listId={PARENT_LIST}
       getAdditionalFieldValues={getAdditionalFieldValue}
     >
-      <label className="label" htmlFor={dueDateId}>
-        Due date
-      </label>
-      <div style={{ fontSize: "24px" }}>
-        <EditableDate id={dueDateId} value={dueDate} onChange={setDueDate} />
-      </div>
+      <FormControl
+        label="Due date"
+        type="date"
+        value={dueDate}
+        onChange={setDueDate}
+      />
     </AddTaskForm>
   )
 }
