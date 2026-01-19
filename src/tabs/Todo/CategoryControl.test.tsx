@@ -9,8 +9,8 @@ const commonProps: CategoryControlProps = {
 }
 
 const categories = [
-  { text: "Chore", emoji: "🧹" },
-  { text: "Learning", emoji: "📖" },
+  { text: "chore", emoji: "🧹" },
+  { text: "learning", emoji: "📖" },
 ]
 
 function Wrapper({ children }: { children: ReactNode }) {

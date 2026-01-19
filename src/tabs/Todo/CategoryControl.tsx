@@ -12,7 +12,7 @@ export type CategoryControlProps = {
 
 const categoryToOption = ({ text, emoji }: Category) => ({
   id: text + emoji,
-  label: text,
+  label: text.toLowerCase(),
   emoji: emoji,
 })
 
@@ -22,7 +22,15 @@ export function CategoryControl({ value, onChange }: CategoryControlProps) {
     throw new Error("missing category context")
   }
 
-  const options = useMemo(() => categories.map(categoryToOption), [categories])
+  const options = useMemo(
+    () =>
+      categories
+        .map(categoryToOption)
+        .sort((a, b) =>
+          a.label.toLowerCase() > b.label.toLowerCase() ? 1 : -1
+        ),
+    [categories]
+  )
 
   return (
     <div className="category-control">
