@@ -58,7 +58,9 @@ export function DueDateTask({ task }: { task: CalendarTask }) {
       <Switch
         options={[...STATUSES]}
         value={task.status}
-        onChange={(status) => onChange({ ...task, status })}
+        onChange={(status) =>
+          onChange({ ...task, status, statusUpdateDate: new Date().getTime() })
+        }
         name={task.description}
         Option={StatusOption}
       />

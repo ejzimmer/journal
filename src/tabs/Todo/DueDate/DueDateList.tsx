@@ -7,8 +7,14 @@ import { useContext } from "react"
 import { FirebaseContext } from "../../../shared/FirebaseContext"
 import { CalendarTask, PARENT_LIST } from "./types"
 
-const taskIsFinished = (task: CalendarTask) =>
-  task.status === "finished" && isBefore(task.dueDate, startOfDay(new Date()))
+const readyToDelete = (task: CalendarTask) => {
+  const today = startOfDay(new Date())
+  return (
+    task.status === "finished" &&
+    isBefore(task.dueDate, today) &&
+    isBefore(task.statusUpdateDate, today)
+  )
+}
 
 const taskIsToday = (task: CalendarTask) => isSameDay(task.dueDate, new Date())
 
@@ -20,9 +26,9 @@ export function DueDateList() {
   const { value } = storageContext.useValue<CalendarTask>(PARENT_LIST)
   const tasks = value ? Object.values(value) : []
 
-  const readyToReset = tasks.some(taskIsFinished)
+  const readyToReset = tasks.some(readyToDelete)
   if (readyToReset) {
-    const finishedTasks = tasks.filter(taskIsFinished)
+    const finishedTasks = tasks.filter(readyToDelete)
     finishedTasks.forEach((task) =>
       storageContext.deleteItem<CalendarTask>(PARENT_LIST, task)
     )
