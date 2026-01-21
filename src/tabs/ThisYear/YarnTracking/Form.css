@@ -2,6 +2,8 @@
   display: grid;
   grid-template-columns: 6em 1fr min-content;
   gap: 8px 12px;
+  height: min-content;
+  align-self: end;
 
   select {
     grid-column: 1/-1;
