@@ -1,49 +1,54 @@
+import { useContext } from "react"
+import { FirebaseContext } from "../../../shared/FirebaseContext"
 import "./StationRunning.css"
 
-const stations = [
-  { name: "Southern Cross", distance: 30 },
-  { name: "Flinders St", distance: 25.5 },
-  { name: "Jolimont", distance: 24 },
-  { name: "West Richmond", distance: 23 },
-  { name: "North Richmond", distance: 22.5 },
-  { name: "Collingwood", distance: 22 },
-  { name: "Victoria Park", distance: 20.5 },
-  { name: "Clifton Hill", distance: 19.5 },
-  { name: "Westgarth", distance: 19.5 },
-  { name: "Dennis", distance: 19 },
-  { name: "Fairfield", distance: 14.5 },
-  { name: "Alphington", distance: 13.5 },
-  { name: "Darebin", distance: 13.5 },
-  { name: "Ivanhoe", distance: 13.5 },
-  { name: "Eaglemont", distance: 13 },
-  { name: "Heidelberg", distance: 8 },
-  { name: "Rosanna", distance: 4.5 },
-  { name: "Mcleod", distance: 3 },
-  { name: "Watsonia", distance: 0 },
-  { name: "Greensborough", distance: 4 },
-  { name: "Montmorency", distance: 6 },
-  { name: "Eltham", distance: 14 },
-  { name: "Diamond Creek", distance: 15 },
-  { name: "Wattle Glen", distance: 16.5 },
-  { name: "Hurstbridge", distance: 20 },
-]
+const KEY = "2026/stations"
+
+type StationDetails = {
+  id: string
+  name: string
+  distance: number
+  isDone: boolean
+}
 
 export function StationRunning() {
+  const storageContext = useContext(FirebaseContext)
+  if (!storageContext) {
+    throw new Error("missing storage context")
+  }
+
+  const { value } = storageContext.useValue<StationDetails>(KEY)
+  const stations = value && Object.values(value)
+
   return (
     <ol className="trainline">
-      {stations.map(({ name, distance }) => (
-        <li key={name}>
-          <Station name={name} distance={distance} />
+      {stations?.map((station) => (
+        <li key={station.name}>
+          <Station
+            {...station}
+            onChange={(station) => storageContext.updateItem(KEY, station)}
+          />
         </li>
       ))}
     </ol>
   )
 }
 
-function Station({ name, distance }: { name: string; distance: number }) {
+function Station({
+  onChange,
+  ...station
+}: StationDetails & { onChange: (station: StationDetails) => void }) {
   return (
-    <div className="station">
-      <div className="name">{name}</div>
-    </div>
+    <label className={`station ${station.isDone ? "done" : ""}`}>
+      <div className="name">
+        <b>{station.name}</b>{" "}
+        <span className="distance">{station.distance}km</span>
+        <input
+          type="checkbox"
+          checked={station.isDone}
+          onChange={() => onChange({ ...station, isDone: !station.isDone })}
+        />
+      </div>
+    </label>
   )
 }
