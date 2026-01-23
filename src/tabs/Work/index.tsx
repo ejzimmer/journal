@@ -64,9 +64,9 @@ export function Work() {
         }
 
         if (task.status === "done") {
-          addItem(`${WORK_KEY}/${doneList.id}/items`, {
+          addItem<WorkTask>(`${WORK_KEY}/${doneList.id}/items`, {
             ...task,
-            lastUpdated: new Date().getTime(),
+            lastStatusUpdate: new Date().getTime(),
           })
           deleteItem(`${WORK_KEY}/${list.id}/items`, task)
         }

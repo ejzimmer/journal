@@ -6,7 +6,7 @@ import { DeleteButton } from "../DeleteButton"
 import { EmojiCheckbox } from "../../../shared/controls/EmojiCheckbox"
 
 import "./TodayTask.css"
-import { DailyTask, PARENT_LIST } from "./types"
+import { DailyTask, LIST_KEY } from "./types"
 
 export function TodayTask({ task }: { task: DailyTask }) {
   const storageContext = useContext(FirebaseContext)
@@ -15,7 +15,7 @@ export function TodayTask({ task }: { task: DailyTask }) {
   }
 
   const onChange = (task: DailyTask) => {
-    storageContext.updateItem<DailyTask>(PARENT_LIST, task)
+    storageContext.updateItem<DailyTask>(LIST_KEY, task)
   }
 
   const handleStatusChange = () => {
@@ -51,7 +51,7 @@ export function TodayTask({ task }: { task: DailyTask }) {
         </EditableText>
       </div>
       <DeleteButton
-        onDelete={() => storageContext.deleteItem<DailyTask>(PARENT_LIST, task)}
+        onDelete={() => storageContext.deleteItem<DailyTask>(LIST_KEY, task)}
       />
     </>
   )

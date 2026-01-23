@@ -2,7 +2,7 @@ import { TodayTask } from "./TodayTask"
 
 import { AddTodayTaskForm } from "./AddTodayTaskForm"
 import { isBefore, startOfDay } from "date-fns"
-import { DailyTask, PARENT_LIST } from "./types"
+import { DailyTask, LIST_KEY } from "./types"
 import { useContext, useRef } from "react"
 import { FirebaseContext } from "../../../shared/FirebaseContext"
 import { DraggableListItem } from "../../../shared/drag-and-drop/DraggableListItem"
@@ -28,19 +28,37 @@ export function TodayList() {
   if (!storageContext) {
     throw new Error("Missing Firebase context provider")
   }
-  const { value } = storageContext.useValue<DailyTask>(PARENT_LIST)
+  const { value } = storageContext.useValue<DailyTask>(LIST_KEY)
   const tasks = sortByPosition(value ? Object.values(value) : [])
 
-  const finishedTasks = tasks.filter((task) =>
-    updatedYesterday(task, "finished")
+  const { finishedTasks, unfinishedTasks } = tasks.reduce(
+    (sortedTasks: Record<string, DailyTask[]>, task) => {
+      if (updatedYesterday(task, "finished")) {
+        sortedTasks.finishedTasks.push(task)
+      } else {
+        sortedTasks.unfinishedTasks.push(task)
+      }
+      return sortedTasks
+    },
+    {
+      finishedTasks: [],
+      unfinishedTasks: [],
+    }
   )
+
   finishedTasks.forEach((task) =>
-    storageContext.deleteItem<DailyTask>(PARENT_LIST, task)
+    storageContext.deleteItem<DailyTask>(LIST_KEY, task)
   )
+  if (finishedTasks.length) {
+    storageContext.updateList(
+      LIST_KEY,
+      unfinishedTasks.map((task, index) => ({ ...task, position: index }))
+    )
+  }
 
   const readyToReset = tasks.filter((task) => updatedYesterday(task, "done"))
   readyToReset.forEach((task) =>
-    storageContext.updateItem<DailyTask>(PARENT_LIST, {
+    storageContext.updateItem<DailyTask>(LIST_KEY, {
       ...task,
       status: "ready",
       lastCompleted: new Date().getTime(),
@@ -50,10 +68,10 @@ export function TodayList() {
   useDropTarget({
     dropTargetRef: listRef,
     canDrop: ({ source }) => isDraggable(source.data),
-    getData: () => ({ listId: PARENT_LIST }),
+    getData: () => ({ listId: LIST_KEY }),
   })
   useDraggableList({
-    listId: PARENT_LIST,
+    listId: LIST_KEY,
     canDropSourceOnTarget: (source) => {
       return source[draggableTypeKey] === "日"
     },
@@ -72,7 +90,7 @@ export function TodayList() {
               getData={() => ({
                 [draggableTypeKey]: "日",
                 id: task.id,
-                parentId: PARENT_LIST,
+                parentId: LIST_KEY,
                 position: task.position,
               })}
               dragPreview={<DragPreview task={task} />}
@@ -83,7 +101,7 @@ export function TodayList() {
                   list={tasks}
                   index={index}
                   onReorder={(tasks: OrderedListItem[]) => {
-                    storageContext.updateList(PARENT_LIST, tasks)
+                    storageContext.updateList(LIST_KEY, tasks)
                   }}
                 />
               }
