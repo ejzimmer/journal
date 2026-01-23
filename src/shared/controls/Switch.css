@@ -10,6 +10,15 @@
     cursor: pointer;
     transition: all 0.2s;
 
+    &:first-child {
+      border-top-left-radius: 100px;
+      border-bottom-left-radius: 100px;
+    }
+    &:last-of-type {
+      border-top-right-radius: 100px;
+      border-bottom-right-radius: 100px;
+    }
+
     &:not(:last-of-type) {
       border-inline-end: 1px solid var(--body-colour-light);
     }
@@ -44,12 +53,5 @@
     transition-property: left, box-shadow, border-radius;
     transition-duration: 0.2s;
     transition-timing-function: ease-out;
-
-    &:first-child {
-      box-shadow: inset 2px 2px 8px var(--dark);
-    }
-    &:last-child {
-      box-shadow: inset -2px 2px 8px var(--dark);
-    }
   }
 }
