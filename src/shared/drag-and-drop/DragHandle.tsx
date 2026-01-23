@@ -25,12 +25,7 @@ export function DragHandle({ list, index, onReorder, style }: DragHandleProps) {
   return (
     <Menu
       trigger={(props) => (
-        <button
-          {...props}
-          style={style}
-          className="drag-handle ghost"
-          aria-label="drag menu"
-        >
+        <button {...props} className="drag-handle ghost" aria-label="drag menu">
           <DragHandleIcon width="24px" />
         </button>
       )}

@@ -35,7 +35,6 @@ export function Task({ task, menu: Menu, path, dragHandle }: TaskProps) {
       dragPreview={<DragPreview task={task} />}
       isDroppable={isTask}
       allowedEdges={["top", "bottom"]}
-      style={{ display: "flex", alignItems: "center" }}
       className={`task status-${task.status}`}
       dragHandle={dragHandle}
     >

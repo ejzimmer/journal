@@ -81,7 +81,6 @@ export function TaskList({
       dragPreview={<DragPreview list={list} />}
       isDroppable={isList}
       allowedEdges={["left", "right"]}
-      style={{ display: "flex" }}
       dragHandle={
         <DragHandle
           list={Object.values(lists)}
@@ -89,7 +88,6 @@ export function TaskList({
           onReorder={(reorderedList) => {
             storageContext.updateList(WORK_KEY, reorderedList)
           }}
-          style={{ translate: "80%" }}
         />
       }
     >
