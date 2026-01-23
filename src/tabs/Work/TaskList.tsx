@@ -89,6 +89,7 @@ export function TaskList({
           onReorder={(reorderedList) => {
             storageContext.updateList(WORK_KEY, reorderedList)
           }}
+          style={{ translate: "80%" }}
         />
       }
     >

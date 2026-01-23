@@ -6,11 +6,13 @@ import { DragHandleIcon } from "../icons/DragHandle"
 import { Menu } from "../controls/Menu"
 import { OrderedListItem } from "./types"
 import { getPosition, onChangePosition } from "./utils"
+import { CSSProperties } from "react"
 
 type DragHandleProps = {
   list: OrderedListItem[]
   index: number
   onReorder: (list: OrderedListItem[]) => void
+  style?: CSSProperties
 }
 
 const iconProps = {
@@ -18,12 +20,17 @@ const iconProps = {
   colour: "var(--action-colour-dark)",
 }
 
-export function DragHandle({ list, index, onReorder }: DragHandleProps) {
+export function DragHandle({ list, index, onReorder, style }: DragHandleProps) {
   const position = getPosition(index, list.length)
   return (
     <Menu
       trigger={(props) => (
-        <button {...props} className="drag-handle ghost" aria-label="drag menu">
+        <button
+          {...props}
+          style={style}
+          className="drag-handle ghost"
+          aria-label="drag menu"
+        >
           <DragHandleIcon width="24px" />
         </button>
       )}
