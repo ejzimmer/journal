@@ -17,4 +17,4 @@ export type MonthBalances = {
   perYarnType: Record<YarnType, number>
 }
 
-export const KEY = "2025/yarn"
+export const KEY = "2026/yarn"
