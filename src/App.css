@@ -13,10 +13,23 @@ nav ul {
   margin: 0;
   padding: 0;
   border-block-end: 2px solid var(--border-colour);
+  position: relative;
+
+  &::before {
+    content: "";
+    height: 100%;
+    background: var(--link-colour);
+    position: absolute;
+    left: var(--hover-left, 0);
+    width: var(--hover-width);
+    transition: all 0.2s;
+  }
 
   li {
     padding: 0;
     margin-block-end: -2px;
+    transition: all 2s;
+    position: relative;
 
     a {
       display: block;
@@ -30,12 +43,10 @@ nav ul {
         border-block-end: 2px solid currentColor;
       }
 
-      &:hover,
-      &:focus-visible {
-        background-color: var(--link-colour);
+      &:focus-visible,
+      &:hover {
         color: white;
         outline: none;
-        border-block-end: 2px solid currentColor;
       }
     }
   }

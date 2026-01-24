@@ -4,7 +4,7 @@ import {
   onAuthStateChanged,
   signInWithPopup,
 } from "firebase/auth"
-import { useState } from "react"
+import { useCallback, useEffect, useRef, useState } from "react"
 import { Todo } from "./tabs/Todo"
 import { Projects } from "./tabs/Projects"
 import { Routes, Route, NavLink } from "react-router-dom"
@@ -23,6 +23,7 @@ const TABS = [
 ]
 
 export function App() {
+  const navListRef = useRef<HTMLUListElement>(null)
   const [isLoggedIn, setLoggedIn] = useState(false)
   const auth = getAuth()
 
@@ -36,6 +37,43 @@ export function App() {
     // signInWithRedirect(auth, provider)
   }
 
+  const hideHighlight = useCallback(() => {
+    if (!navListRef.current) return
+    navListRef.current.style = `--hover-width: 0px`
+  }, [])
+
+  useEffect(() => {
+    if (!navListRef.current) return
+
+    const tabElements = navListRef.current.children
+    const listElement = navListRef.current
+
+    const onMouseMove = (event: MouseEvent) => {
+      const mouseX = event.clientX
+      const hoveredTab = Array.from(tabElements).find((tab) => {
+        const { x, width } = tab.getBoundingClientRect()
+        return x < mouseX && x + width >= mouseX
+      })
+
+      moveHighlight(hoveredTab)
+    }
+
+    navListRef.current.addEventListener("mousemove", onMouseMove)
+    navListRef.current.addEventListener("mouseleave", hideHighlight)
+
+    return () => {
+      listElement.removeEventListener("mousemove", onMouseMove)
+      listElement.removeEventListener("mouseleave", hideHighlight)
+    }
+  }, [isLoggedIn, hideHighlight])
+
+  const moveHighlight = (hoveredTab?: Element | null) => {
+    if (!hoveredTab || !navListRef.current) return
+
+    const { x, width } = hoveredTab.getBoundingClientRect()
+    navListRef.current.style = `--hover-left: ${x}px; --hover-width: ${width}px`
+  }
+
   if (!isLoggedIn) {
     return (
       <div className="not-logged-in">
@@ -46,10 +84,14 @@ export function App() {
 
   return (
     <>
-      <nav>
-        <ul>
+      <nav className="tabs">
+        <ul ref={navListRef} onBlur={hideHighlight}>
           {TABS.map(({ path }) => (
-            <NavItem key={path} to={path}>
+            <NavItem
+              key={path}
+              to={path}
+              onFocus={(event) => moveHighlight(event.target.parentElement)}
+            >
               {path}
             </NavItem>
           ))}
@@ -68,10 +110,20 @@ export function App() {
   )
 }
 
-function NavItem({ to, children }: { to: string; children: React.ReactNode }) {
+function NavItem({
+  to,
+  onFocus,
+  children,
+}: {
+  to: string
+  onFocus: React.FocusEventHandler<HTMLAnchorElement> | undefined
+  children: React.ReactNode
+}) {
   return (
     <li>
-      <NavLink to={to}>{children}</NavLink>
+      <NavLink to={to} onFocus={onFocus}>
+        {children}
+      </NavLink>
     </li>
   )
 }
