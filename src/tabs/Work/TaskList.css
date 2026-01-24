@@ -1,6 +1,10 @@
-ol.work-lists > li > .draggable-item > div:first-child {
-  margin-inline-end: -2em;
-  top: 10px;
+ol.work-lists > li {
+  display: flex;
+  margin-inline-start: -30px;
+
+  & > :first-child {
+    translate: 80%;
+  }
 }
 
 .work-task-list {
