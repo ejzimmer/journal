@@ -9,21 +9,38 @@ type FormControlProps = {
   errors?: string[] | false
   type?: HTMLInputElement["type"]
   size?: HTMLInputElement["size"]
+  defaultValue?: string
+  hideLabel?: boolean
+  pattern?: string
 }
 
 export const FormControl = forwardRef<HTMLInputElement, FormControlProps>(
-  ({ label, value, onChange, type = "text", errors, ...props }, ref) => {
+  (
+    {
+      label,
+      defaultValue,
+      value,
+      onChange,
+      type = "text",
+      errors,
+      hideLabel,
+      ...props
+    },
+    ref
+  ) => {
     const inputId = useId()
     const descriptionId = useId()
 
     return (
       <div className={`form-control ${errors ? "error" : ""}`}>
-        <label htmlFor={inputId}>{label}</label>
+        {!hideLabel && <label htmlFor={inputId}>{label}</label>}
         <input
           type={type}
           id={inputId}
+          aria-label={hideLabel ? label.toString() : undefined}
           aria-describedby={descriptionId}
           ref={ref}
+          defaultValue={defaultValue}
           value={value}
           onChange={(event) => onChange?.(event.target.value)}
           {...props}

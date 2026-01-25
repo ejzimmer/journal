@@ -1,0 +1,77 @@
+ol.days {
+  list-style-type: none;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, 150px);
+
+  & > li {
+    border: 2px solid var(--border-colour);
+    aspect-ratio: 1;
+    border-radius: 1000px;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 12px;
+    gap: 12px;
+
+    .balance {
+      font-weight: bold;
+    }
+
+    &.balance-up,
+    &.balance-down {
+      box-shadow: inset 0 -4px 4px var(--balance-colour);
+    }
+    &.balance-up {
+      --balance-colour: hsl(32, 82%, 64%);
+    }
+    &.balance-down {
+      --balance-colour: hsl(105, 65%, 47%);
+    }
+  }
+
+  h2 {
+    font-size: 14px;
+    margin: 0;
+  }
+
+  form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+
+    button {
+      display: none;
+    }
+  }
+
+  .emoji-checkbox {
+    opacity: 0.4;
+    filter: grayscale(50%);
+  }
+  .emoji-checkbox:hover,
+  .emoji-checkbox:focus-within {
+    opacity: 1;
+  }
+  .emoji-checkbox:has(:checked) {
+    opacity: 1;
+    filter: none;
+  }
+
+  .trackers {
+    display: flex;
+    flex-wrap: wrap;
+    margin-block: auto;
+
+    .single-value-container input {
+      width: 24px;
+    }
+
+    button.tracker {
+      padding: 0;
+      height: unset;
+    }
+  }
+}

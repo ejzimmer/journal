@@ -15,5 +15,9 @@
     height: 0;
     overflow: hidden;
     position: fixed;
+
+    :focus {
+      outline: none;
+    }
   }
 }

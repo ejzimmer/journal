@@ -33,7 +33,7 @@ export function Combobox<T extends OptionType>({
   const displayedOptions = (
     searchTerm
       ? options.filter((o) =>
-          o.label.toLowerCase().includes(searchTerm.trimStart().toLowerCase())
+          o.label.toLowerCase().includes(searchTerm.trimStart().toLowerCase()),
         )
       : options
   ).filter((option) => !hideSelectedOptions || !isSelected({ value, option }))
@@ -57,11 +57,12 @@ export function Combobox<T extends OptionType>({
       if (!isMultiValue || alwayClosePopover) hidePopover()
       setSearchTerm("")
     },
-    [hidePopover, isMultiValue]
+    [hidePopover, isMultiValue],
   )
   useClickOutside({
     elementRef: containerRef,
     onClickOutside: () => reset(true),
+    shouldListen: !!containerRef.current,
   })
 
   const updateValue = (option: T) => {
@@ -143,7 +144,7 @@ export function Combobox<T extends OptionType>({
             value={value}
             searchInputValue={searchTerm}
             onChangeSearchTerm={(
-              event: React.ChangeEvent<HTMLInputElement>
+              event: React.ChangeEvent<HTMLInputElement>,
             ) => {
               const value = event.target.value ?? ""
               setSearchTerm(value)
