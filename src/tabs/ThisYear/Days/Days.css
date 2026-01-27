@@ -1,7 +1,39 @@
+.daily {
+  .emoji-checkbox {
+    opacity: 0.4;
+    filter: grayscale(50%);
+  }
+  .emoji-checkbox:hover,
+  .emoji-checkbox:has(:focus-visible) {
+    opacity: 1;
+    filter: none;
+  }
+  .emoji-checkbox:has(:checked) {
+    opacity: 1;
+    filter: none;
+  }
+}
+
+.daily-filters {
+  display: flex;
+  border: 2px solid var(--border-colour);
+  border-radius: 8px;
+  padding: 4px;
+  font-size: 1.2em;
+  width: max-content;
+  margin-inline: auto;
+  margin-block: 0;
+  margin-block-start: 20px;
+}
+
 ol.days {
   list-style-type: none;
   display: grid;
   grid-template-columns: repeat(auto-fit, 150px);
+
+  &:has(.highlight) > li:not(.highlight) {
+    opacity: 0.3;
+  }
 
   & > li {
     border: 2px solid var(--border-colour);
@@ -45,19 +77,6 @@ ol.days {
     button {
       display: none;
     }
-  }
-
-  .emoji-checkbox {
-    opacity: 0.4;
-    filter: grayscale(50%);
-  }
-  .emoji-checkbox:hover,
-  .emoji-checkbox:focus-within {
-    opacity: 1;
-  }
-  .emoji-checkbox:has(:checked) {
-    opacity: 1;
-    filter: none;
   }
 
   .trackers {

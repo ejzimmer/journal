@@ -6,6 +6,7 @@
   padding: 0;
   display: flex;
   gap: 20px;
+  margin-inline: auto;
 
   .station {
     display: block;

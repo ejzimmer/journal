@@ -4,6 +4,7 @@ import { EmojiCheckbox } from "../../../shared/controls/EmojiCheckbox"
 import { DayData, DayMonth, HABITS } from "./types"
 import { CalorieForm } from "./CalorieForm"
 import { Trackers } from "./Trackers"
+import { toggleListItem } from "./utils"
 
 type DayProps = DayData & { date: DayMonth; path: string; balance?: number }
 
@@ -48,7 +49,7 @@ export function Day({ path, date, balance, ...props }: DayProps) {
                 onChange={() => {
                   storageContext.updateItem(path, {
                     ...props,
-                    habits: toggleHabit(props.habits, habit),
+                    habits: toggleListItem(props.habits, habit),
                   })
                 }}
               />
@@ -67,14 +68,4 @@ export function Day({ path, date, balance, ...props }: DayProps) {
       )}
     </>
   )
-}
-
-const toggleHabit = (habits: string[] | undefined, habit: string) => {
-  if (!habits) {
-    return [habit]
-  } else if (habits.includes(habit)) {
-    return habits.filter((h) => h !== habit)
-  } else {
-    return [...habits, habit]
-  }
 }
