@@ -5,6 +5,9 @@ import { DeleteButton } from "../DeleteButton"
 import "./ThisWeekTask.css"
 import { FirebaseContext } from "../../../shared/FirebaseContext"
 import { PARENT_LIST, WeeklyTask } from "./types"
+import { formatDate } from "../../../shared/utils"
+import { DayData, Habit, HABITS, isHabit } from "../../ThisYear/Days/types"
+import { PATH as dailyPath } from "../../ThisYear/Days/Days"
 
 export function ThisWeekTask({ task }: { task: WeeklyTask }) {
   const storageContext = useContext(FirebaseContext)
@@ -15,6 +18,11 @@ export function ThisWeekTask({ task }: { task: WeeklyTask }) {
   const onChange = (task: WeeklyTask) => {
     storageContext.updateItem<WeeklyTask>(PARENT_LIST, task)
   }
+
+  const { day, month } = formatDate(new Date())
+  const { value: today } = storageContext.useValue<DayData>(
+    `${dailyPath}/${day}${month}`,
+  )
 
   const handleClick = (event: React.MouseEvent) => {
     if (!task.completed) {
@@ -30,6 +38,19 @@ export function ThisWeekTask({ task }: { task: WeeklyTask }) {
         completed: [...task.completed.filter(Boolean), Date.now()],
       })
     }
+
+    if (!isHabit(task.category.emoji)) {
+      return
+    }
+    const habits =
+      today?.habits ?? Object.fromEntries(HABITS.map((habit) => [habit, false]))
+    storageContext.updateItem<DayData>(dailyPath, {
+      id: `${day}${month}`,
+      habits: {
+        ...habits,
+        [task.category.emoji]: !event.shiftKey,
+      } as Record<Habit, boolean>,
+    })
   }
 
   const numberDone = (task.completed?.filter((date) => !!date) ?? []).length

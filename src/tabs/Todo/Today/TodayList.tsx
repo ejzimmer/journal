@@ -18,6 +18,9 @@ import {
   isDraggable,
   sortByPosition,
 } from "../../../shared/drag-and-drop/utils"
+import { DayData, Habit, HABITS, isHabit } from "../../ThisYear/Days/types"
+import { formatDate } from "../../../shared/utils"
+import { PATH as dailyPath } from "../../ThisYear/Days/Days"
 
 const updatedYesterday = (task: DailyTask, status: DailyTask["status"]) =>
   task.status === status && isBefore(task.lastCompleted, startOfDay(new Date()))
@@ -31,6 +34,11 @@ export function TodayList() {
   const { value } = storageContext.useValue<DailyTask>(LIST_KEY)
   const tasks = sortByPosition(value ? Object.values(value) : [])
 
+  const { day, month } = formatDate(new Date())
+  const { value: today } = storageContext.useValue<DayData>(
+    `${dailyPath}/${day}${month}`,
+  )
+
   const { finishedTasks, unfinishedTasks } = tasks.reduce(
     (sortedTasks: Record<string, DailyTask[]>, task) => {
       if (updatedYesterday(task, "finished")) {
@@ -43,16 +51,16 @@ export function TodayList() {
     {
       finishedTasks: [],
       unfinishedTasks: [],
-    }
+    },
   )
 
   finishedTasks.forEach((task) =>
-    storageContext.deleteItem<DailyTask>(LIST_KEY, task)
+    storageContext.deleteItem<DailyTask>(LIST_KEY, task),
   )
   if (finishedTasks.length) {
     storageContext.updateList(
       LIST_KEY,
-      unfinishedTasks.map((task, index) => ({ ...task, position: index }))
+      unfinishedTasks.map((task, index) => ({ ...task, position: index })),
     )
   }
 
@@ -62,7 +70,7 @@ export function TodayList() {
       ...task,
       status: "ready",
       lastCompleted: new Date().getTime(),
-    })
+    }),
   )
 
   useDropTarget({
@@ -106,7 +114,36 @@ export function TodayList() {
                 />
               }
             >
-              <TodayTask task={task} />
+              <TodayTask
+                task={task}
+                onChange={(task: DailyTask) => {
+                  storageContext.updateItem<DailyTask>(LIST_KEY, task)
+
+                  if (!isHabit(task.category.emoji)) {
+                    return
+                  }
+
+                  const otherTasksInCategory = tasks.filter(
+                    (t) =>
+                      t.id !== task.id &&
+                      t.category.emoji === task.category.emoji,
+                  )
+                  const allTasksDone =
+                    otherTasksInCategory.every((t) => t.status === "done") &&
+                    task.status === "done"
+
+                  const habits =
+                    today?.habits ??
+                    Object.fromEntries(HABITS.map((habit) => [habit, false]))
+                  storageContext.updateItem<DayData>(dailyPath, {
+                    id: `${day}${month}`,
+                    habits: {
+                      ...habits,
+                      [task.category.emoji]: allTasksDone,
+                    } as Record<Habit, boolean>,
+                  })
+                }}
+              />
             </DraggableListItem>
           ))}
         </ol>

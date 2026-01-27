@@ -7,22 +7,10 @@ import { FirebaseContext } from "../../../shared/FirebaseContext"
 import { DayData, HABITS, TrackerContext } from "./types"
 import { EmojiCheckbox } from "../../../shared/controls/EmojiCheckbox"
 import { toggleListItem } from "./utils"
+import { formatDate } from "../../../shared/utils"
 
-const PATH = "2026/daily"
+export const PATH = "2026/daily"
 const STARTING_BALANCE = 19687
-
-const dateFormatter = Intl.DateTimeFormat("en-AU", {
-  month: "short",
-})
-
-const formatDate = (date: Date) => {
-  const day = date.getDate()
-  const month = dateFormatter
-    .formatToParts(day)
-    .find((part) => part.type === "month")!.value
-
-  return { day, month }
-}
 
 export function Days() {
   const [filters, setFilters] = useState<string[]>([])
@@ -32,7 +20,6 @@ export function Days() {
     throw new Error("no storage context")
   }
   const { value } = storageContext.useValue<DayData>(PATH)
-  console.log(value)
 
   const days = useMemo(() => setupDays(value), [value])
   const weeklyBalances = useMemo(() => getWeeklyBalance(days), [days])
@@ -84,7 +71,7 @@ type Balance = { day: number; month: string; balance?: number; diff?: number }
 function setupDays(dayData?: Record<string, DayData>): Balance[] {
   const today = startOfDay(new Date())
   const newYearsDay = startOfDay(new Date("2026-01-01"))
-  const numberOfDays = differenceInCalendarDays(today, newYearsDay) - 1
+  const numberOfDays = differenceInCalendarDays(today, newYearsDay)
   const days = new Array<Balance>(numberOfDays)
 
   for (let i = 0; i <= numberOfDays; i += 1) {
@@ -123,10 +110,13 @@ const getDayClass = ({
     classes = diff > 0 ? "balance-down" : "balance-up"
   }
 
-  const filtered = [day.habits, day.trackers].flat()
   if (
     filters.length > 0 &&
-    filters.some((filter) => filtered.includes(filter))
+    filters.some(
+      (filter) =>
+        day.habits?.[filter as keyof typeof day.habits] ||
+        day.trackers?.includes(filter),
+    )
   ) {
     classes += " highlight"
   }
@@ -160,8 +150,9 @@ function Filters({ filters, onChange }: FiltersProps) {
 function WeeklyCalories({ balances }: { balances: number[] }) {
   return (
     <div className="weekly">
-      {balances.map((balance) => (
+      {balances.map((balance, index) => (
         <div
+          key={index}
           className="week"
           style={{ width: (balance / STARTING_BALANCE) * 100 + "%" }}
         />

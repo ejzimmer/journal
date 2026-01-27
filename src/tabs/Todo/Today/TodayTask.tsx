@@ -8,14 +8,16 @@ import { EmojiCheckbox } from "../../../shared/controls/EmojiCheckbox"
 import "./TodayTask.css"
 import { DailyTask, LIST_KEY } from "./types"
 
-export function TodayTask({ task }: { task: DailyTask }) {
+export function TodayTask({
+  task,
+  onChange,
+}: {
+  task: DailyTask
+  onChange: (task: DailyTask) => void
+}) {
   const storageContext = useContext(FirebaseContext)
   if (!storageContext) {
     throw new Error("Missing Firebase context provider")
-  }
-
-  const onChange = (task: DailyTask) => {
-    storageContext.updateItem<DailyTask>(LIST_KEY, task)
   }
 
   const handleStatusChange = () => {
