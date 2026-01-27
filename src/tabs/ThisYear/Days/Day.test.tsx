@@ -28,7 +28,7 @@ const commonProps = {
   consumed: 1200,
   expended: 1500,
   balance: 20028,
-  habits: ["🇫🇷"],
+  habits: { "🇫🇷": true, "🇯🇵": false, "🧘": false, "🖍️": false, "🛼": false },
   trackers: ["🥡", "🥡", "🤕"],
 }
 
@@ -47,13 +47,13 @@ describe("Day", () => {
       })
 
       expect(
-        screen.getByRole("textbox", { name: "consumed" })
+        screen.getByRole("textbox", { name: "consumed" }),
       ).toBeInTheDocument()
       expect(
-        screen.getByRole("textbox", { name: "expended" })
+        screen.getByRole("textbox", { name: "expended" }),
       ).toBeInTheDocument()
       expect(
-        screen.queryByRole("button", { name: "Cancel" })
+        screen.queryByRole("button", { name: "Cancel" }),
       ).not.toBeInTheDocument()
     })
   })
@@ -74,10 +74,10 @@ describe("Day", () => {
       })
 
       expect(screen.getAllByRole("button", { name: "delete 🥡" })).toHaveLength(
-        2
+        2,
       )
       expect(
-        screen.getByRole("combobox", { name: "add tracker" })
+        screen.getByRole("combobox", { name: "add tracker" }),
       ).toBeInTheDocument()
     })
 

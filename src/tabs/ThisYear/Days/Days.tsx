@@ -32,6 +32,7 @@ export function Days() {
     throw new Error("no storage context")
   }
   const { value } = storageContext.useValue<DayData>(PATH)
+  console.log(value)
 
   const days = useMemo(() => setupDays(value), [value])
   const weeklyBalances = useMemo(() => getWeeklyBalance(days), [days])
