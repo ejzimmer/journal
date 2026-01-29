@@ -1,4 +1,14 @@
 .combobox {
+  position: relative;
+  anchor-scope: --combobox;
+
+  [popover] {
+    position-anchor: --combobox;
+    position-area: end center;
+    top: 4px;
+    min-width: 100%;
+  }
+
   input {
     width: 100%;
   }
@@ -11,6 +21,7 @@
 
   .single-value-container {
     position: relative;
+    anchor-name: --combobox;
 
     .value {
       position: absolute;
@@ -22,6 +33,7 @@
 
   .multi-value-container {
     position: relative;
+    anchor-name: --combobox;
 
     input {
       background: transparent;
