@@ -73,6 +73,7 @@ function setupDays(dayData?: Record<string, DayData>): Balance[] {
   const newYearsDay = startOfDay(new Date("2026-01-01"))
   const numberOfDays = differenceInCalendarDays(today, newYearsDay)
   const days = new Array<Balance>(numberOfDays)
+  console.log("number of days", numberOfDays)
 
   for (let i = 0; i <= numberOfDays; i += 1) {
     const date = addDays(newYearsDay, i)
