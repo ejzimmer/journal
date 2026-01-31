@@ -1,0 +1,58 @@
+ul.other-goals {
+  display: flex;
+  flex-direction: column;
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+
+  li {
+    width: fit-content;
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    margin-block: 4px;
+    .volume {
+      display: flex;
+      gap: 8px;
+
+      progress {
+        appearance: none;
+        -webkit-appearance: none;
+        height: 12px;
+        margin-block: 2px;
+        border-radius: 4px;
+        --light: hsl(203 96% 54%);
+        --dark: hsl(203 96% 34%);
+        &::-moz-progress-bar {
+          background: linear-gradient(var(--light), var(--dark));
+        }
+        &::-webkit-progress-value {
+          background: linear-gradient(var(--light), var(--dark));
+          border-top-left-radius: 100px;
+          border-bottom-left-radius: 100px;
+        }
+      }
+
+      form {
+        display: flex;
+        flex-direction: row;
+
+        input {
+          border: 0;
+          border-block-end: 1px solid var(--border-colour);
+        }
+
+        button {
+          font-size: 12px;
+          filter: grayscale(100%);
+          transform: rotateY(0.5turn);
+
+          &:hover,
+          &:focus {
+            filter: none;
+          }
+        }
+      }
+    }
+  }
+}
