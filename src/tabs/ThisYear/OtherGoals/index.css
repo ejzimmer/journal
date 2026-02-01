@@ -28,8 +28,11 @@ ul.other-goals {
         }
         &::-webkit-progress-value {
           background: linear-gradient(var(--light), var(--dark));
-          border-top-left-radius: 100px;
-          border-bottom-left-radius: 100px;
+          border-radius: 4px;
+        }
+        &::-webkit-progress-bar {
+          border-radius: 4px;
+          background: var(--border-colour);
         }
       }
 

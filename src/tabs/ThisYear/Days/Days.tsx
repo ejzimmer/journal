@@ -48,7 +48,7 @@ export function Days() {
 
             return (
               <li
-                key={day.toString()}
+                key={id}
                 className={getDayClass({ filters, day: dayData, diff })}
               >
                 <Day
@@ -90,10 +90,15 @@ function setupDays(dayData?: Record<string, DayData>): Balance[] {
   return days
 }
 
-const getWeeklyBalance = (balances: Balance[]): number[] =>
-  balances
+const getWeeklyBalance = (balances: Balance[]): number[] => {
+  const weeklyBalances = balances
     .filter((b, index) => index % 7 === 6 && b.balance)
     .map((balance) => balance.balance as number)
+  const finalBalance = balances.at(-2)?.balance
+  return balances.length % 7 !== 6 && typeof finalBalance === "number"
+    ? [...weeklyBalances, finalBalance]
+    : weeklyBalances
+}
 
 const trackersMatchFilter = (filters: string[], day: DayData) =>
   filters.some(
