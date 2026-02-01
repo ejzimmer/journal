@@ -73,7 +73,6 @@ function setupDays(dayData?: Record<string, DayData>): Balance[] {
   const newYearsDay = startOfDay(new Date("2026-01-01"))
   const numberOfDays = differenceInCalendarDays(today, newYearsDay)
   const days = new Array<Balance>(numberOfDays)
-  console.log("number of days", numberOfDays)
 
   for (let i = 0; i <= numberOfDays; i += 1) {
     const date = addDays(newYearsDay, i)
@@ -96,6 +95,20 @@ const getWeeklyBalance = (balances: Balance[]): number[] =>
     .filter((b, index) => index % 7 === 6 && b.balance)
     .map((balance) => balance.balance as number)
 
+const trackersMatchFilter = (filters: string[], day: DayData) =>
+  filters.some(
+    (filter) =>
+      day.habits?.[filter as keyof typeof day.habits] ||
+      day.trackers?.includes(filter),
+  )
+const diffMatchesFilter = (filters: string[], diff?: number) => {
+  return (
+    typeof diff === "number" &&
+    ((filters.includes("🟠") && diff < 0) ||
+      (filters.includes("🟢") && diff >= 0))
+  )
+}
+
 const getDayClass = ({
   day,
   filters,
@@ -113,11 +126,7 @@ const getDayClass = ({
 
   if (
     filters.length > 0 &&
-    filters.some(
-      (filter) =>
-        day.habits?.[filter as keyof typeof day.habits] ||
-        day.trackers?.includes(filter),
-    )
+    (trackersMatchFilter(filters, day) || diffMatchesFilter(filters, diff))
   ) {
     classes += " highlight"
   }
@@ -135,14 +144,15 @@ function Filters({ filters, onChange }: FiltersProps) {
 
   return (
     <ul className="daily-filters">
-      {[...HABITS, ...trackers].map((filter) => (
-        <EmojiCheckbox
-          key={filter}
-          emoji={filter}
-          label={`filter by ${filter}`}
-          isChecked={filters.includes(filter)}
-          onChange={() => onChange(toggleListItem(filters, filter))}
-        />
+      {[...HABITS, ...trackers, "🟠", "🟢"].map((filter) => (
+        <li key={filter}>
+          <EmojiCheckbox
+            emoji={filter}
+            label={`filter by ${filter}`}
+            isChecked={filters.includes(filter)}
+            onChange={() => onChange(toggleListItem(filters, filter))}
+          />
+        </li>
       ))}
     </ul>
   )
