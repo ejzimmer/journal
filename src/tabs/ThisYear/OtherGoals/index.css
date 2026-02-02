@@ -73,4 +73,50 @@ ul.other-goals {
       }
     }
   }
+
+  .bikes {
+    display: flex;
+    gap: 4px;
+    padding: 0;
+    align-items: center;
+
+    li {
+      anchor-scope: --bike-name;
+      position: relative;
+    }
+
+    label {
+      anchor-name: --bike-name;
+    }
+
+    label:not(.done) {
+      opacity: 0.4;
+      filter: grayscale(100%);
+    }
+    label.done {
+      opacity: 1;
+      filter: grayscale(0%);
+    }
+    label:hover {
+      filter: grayscale(0%);
+    }
+
+    label + div {
+      background: var(--body-colour);
+      color: white;
+      position: absolute;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s;
+      padding: 6px 8px;
+      font-size: 0.8em;
+      border-radius: 4px;
+    }
+
+    label:hover + div {
+      position-anchor: --bike-name;
+      position-area: top right;
+      opacity: 0.8;
+    }
+  }
 }
