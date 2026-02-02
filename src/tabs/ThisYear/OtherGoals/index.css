@@ -58,4 +58,19 @@ ul.other-goals {
       }
     }
   }
+
+  .basic-goal {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+
+    .switch {
+      border-radius: 100px;
+
+      .indicator {
+        --dark: forestgreen;
+        --light: limegreen;
+      }
+    }
+  }
 }

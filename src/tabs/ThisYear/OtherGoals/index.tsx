@@ -3,9 +3,12 @@ import { FirebaseContext } from "../../../shared/FirebaseContext"
 import { Book, Reading } from "./Reading"
 
 import "./index.css"
+import { BasicGoal, BasicGoalData } from "./BasicGoal"
+
+type Goal = Book | BasicGoalData
 
 const path = "2026/other_goals"
-const hasId = (book: Book): book is Required<Book> =>
+const hasId = (book: Goal): book is Required<Goal> =>
   typeof book.id === "string"
 
 export function OtherGoals() {
@@ -14,24 +17,30 @@ export function OtherGoals() {
     throw new Error("missing storage context")
   }
 
-  const { value } = storageContext.useValue<Book>(path)
+  const { value } = storageContext.useValue<Goal>(path)
   const goals = value ? Object.values(value) : []
 
-  const handleUpdateBook = (book: Book) => {
-    if (hasId(book)) {
-      storageContext.updateItem(path, book)
+  const onUpdate = (goal: Goal) => {
+    if (hasId(goal)) {
+      storageContext.updateItem(path, goal)
     } else {
-      storageContext.addItem<Book>(path, book)
+      storageContext.addItem<Goal>(path, goal)
     }
   }
 
   return (
     <ul className="other-goals">
       {goals.map((goal) => (
-        <li key={goal.id}>
-          <Reading book={goal} onChange={handleUpdateBook} />
-        </li>
+        <li key={goal.id}>{getComponent(goal, onUpdate)}</li>
       ))}
     </ul>
   )
+}
+
+const getComponent = (goal: Goal, onUpdate: (goal: Goal) => void) => {
+  if ("title" in goal) {
+    return <Reading book={goal} onChange={onUpdate} />
+  } else {
+    return <BasicGoal goal={goal} onChange={onUpdate} />
+  }
 }
