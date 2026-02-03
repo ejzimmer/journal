@@ -119,4 +119,30 @@ ul.other-goals {
       opacity: 0.8;
     }
   }
+
+  .discrete-times-goal {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 0 4px;
+
+    .description {
+      grid-column: 1;
+      grid-row: 1/10;
+      align-self: center;
+    }
+    .completions {
+      grid-column: 2;
+      display: flex;
+
+      label.emoji-checkbox {
+        opacity: 0.4;
+        filter: grayscale(100%);
+
+        &.done {
+          opacity: 1;
+          filter: none;
+        }
+      }
+    }
+  }
 }

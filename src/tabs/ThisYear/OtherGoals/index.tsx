@@ -5,8 +5,15 @@ import { Book, Reading } from "./Reading"
 import "./index.css"
 import { BasicGoal, BasicGoalData } from "./BasicGoal"
 import { Bikes, BikesGoal } from "./Bikes"
+import { EmojiCheckbox } from "../../../shared/controls/EmojiCheckbox"
 
-type Goal = Book | BasicGoalData | BikesGoal
+type DiscreteTimesGoal = {
+  id?: string
+  description: string
+  times: { id: string; total: number; completed?: number }[]
+}
+
+type Goal = Book | BasicGoalData | BikesGoal | DiscreteTimesGoal
 
 const path = "2026/other_goals"
 const hasId = (book: Goal): book is Required<Goal> =>
@@ -38,12 +45,43 @@ export function OtherGoals() {
   )
 }
 
+const isDiscreteTimesGoal = (goal: Goal): goal is DiscreteTimesGoal =>
+  "times" in goal
 const isBikes = (goal: Goal): goal is BikesGoal =>
   "bikes" in goal && Array.isArray(goal.bikes)
 
 const getComponent = (goal: Goal, onUpdate: (goal: Goal) => void) => {
   if ("title" in goal) {
     return <Reading book={goal} onChange={onUpdate} />
+  } else if (isDiscreteTimesGoal(goal)) {
+    return (
+      <div className="discrete-times-goal">
+        <div className="description">{goal.description}</div>
+        {goal.times.map((times, timesesIndex) => (
+          <div className="completions" key={times.id}>
+            {Array.from({ length: times.total }).map((_, index) => (
+              <EmojiCheckbox
+                key={index}
+                label={times.id + index}
+                emoji="✅"
+                isChecked={!!(times.completed && index < times.completed)}
+                onChange={() => {
+                  const isChecked = index <= (times.completed ?? 0) ? -1 : 1
+                  const completed = (times.completed ?? 0) + isChecked
+                  onUpdate({
+                    ...goal,
+                    times: goal.times.with(timesesIndex, {
+                      ...times,
+                      completed,
+                    }),
+                  })
+                }}
+              />
+            ))}
+          </div>
+        ))}
+      </div>
+    )
   } else if (isBikes(goal)) {
     return <Bikes goal={goal} onChange={onUpdate} />
   } else {
