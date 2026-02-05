@@ -33,9 +33,12 @@ export function ThisWeekTask({ task }: { task: WeeklyTask }) {
       task.completed.pop()
       onChange({ ...task, completed: [...task.completed] })
     } else {
+      const completed = Array.isArray(task.completed)
+        ? task.completed
+        : (Object.values(task.completed ?? {}) as number[])
       onChange({
         ...task,
-        completed: [...task.completed.filter(Boolean), Date.now()],
+        completed: [...completed.filter(Boolean), Date.now()],
       })
     }
 
@@ -53,7 +56,10 @@ export function ThisWeekTask({ task }: { task: WeeklyTask }) {
     })
   }
 
-  const numberDone = (task.completed?.filter((date) => !!date) ?? []).length
+  const completed = Array.isArray(task.completed)
+    ? task.completed
+    : (Object.values(task.completed ?? {}) as number[])
+  const numberDone = (completed.filter((date) => !!date) ?? []).length
   const remainder = Math.max(numberDone - task.frequency, 0)
   const percent = (1 / task.frequency) * 100
 

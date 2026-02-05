@@ -30,16 +30,19 @@ export function ThisWeekList() {
   const { value } = storageContext.useValue<WeeklyTask>(PARENT_LIST)
   const tasks = sortByPosition(value ? Object.values(value) : [])
 
-  const readyForReset = tasks.filter((task) =>
-    task.completed?.some(moreThanAWeekAgo)
-  )
+  const readyForReset = tasks.filter((task) => {
+    const completed = Array.isArray(task.completed)
+      ? task.completed
+      : (Object.values(task.completed ?? {}) as number[])
+    return completed.some(moreThanAWeekAgo)
+  })
   readyForReset.forEach((task) =>
     storageContext.updateItem<WeeklyTask>(PARENT_LIST, {
       ...task,
       completed: task.completed?.map((date) =>
-        moreThanAWeekAgo(date) ? null : date
+        moreThanAWeekAgo(date) ? null : date,
       ),
-    })
+    }),
   )
 
   useDropTarget({
