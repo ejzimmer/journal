@@ -18,8 +18,7 @@ type BasicGoalProps = {
 
 export function BasicGoal({ goal, onChange }: BasicGoalProps) {
   return (
-    <div className="basic-goal">
-      {goal.description}
+    <div className={`basic-goal ${goal.status}`}>
       <Switch
         options={[...STATUSES]}
         value={goal.status}
@@ -32,6 +31,7 @@ export function BasicGoal({ goal, onChange }: BasicGoalProps) {
         name={goal.description}
         Option={StatusOption}
       />
+      {goal.description}
     </div>
   )
 }
