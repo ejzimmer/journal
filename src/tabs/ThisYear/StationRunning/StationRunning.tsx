@@ -23,7 +23,10 @@ export function StationRunning() {
   return (
     <ol className="trainline">
       {stations?.map((station) => (
-        <li key={station.name}>
+        <li
+          key={station.name}
+          className={station.name === "Watsonia" ? "home" : ""}
+        >
           <Station
             {...station}
             onChange={(station) => storageContext.updateItem(KEY, station)}
