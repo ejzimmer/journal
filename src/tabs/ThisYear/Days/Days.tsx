@@ -8,6 +8,7 @@ import { DayData, HABITS, TrackerContext } from "./types"
 import { EmojiCheckbox } from "../../../shared/controls/EmojiCheckbox"
 import { toggleListItem } from "./utils"
 import { formatDate } from "../../../shared/utils"
+import React from "react"
 
 export const PATH = "2026/daily"
 const STARTING_BALANCE = 19687
@@ -90,11 +91,11 @@ function setupDays(dayData?: Record<string, DayData>): Balance[] {
   return days
 }
 
-const getWeeklyBalance = (balances: Balance[]): number[] => {
-  const weeklyBalances = balances
-    .filter((b, index) => index % 7 === 6 && b.balance)
-    .map((balance) => balance.balance as number)
-  const finalBalance = balances.at(-2)?.balance
+const getWeeklyBalance = (balances: Balance[]): Required<Balance>[] => {
+  const weeklyBalances = balances.filter(
+    (b, index) => index % 7 === 6 && b.balance,
+  ) as Required<Balance>[]
+  const finalBalance = balances.at(-2)
   return balances.length % 7 !== 6 && typeof finalBalance === "number"
     ? [...weeklyBalances, finalBalance]
     : weeklyBalances
@@ -163,15 +164,19 @@ function Filters({ filters, onChange }: FiltersProps) {
   )
 }
 
-function WeeklyCalories({ balances }: { balances: number[] }) {
+function WeeklyCalories({ balances }: { balances: Required<Balance>[] }) {
   return (
     <div className="weekly">
       {balances.map((balance, index) => (
-        <div
-          key={index}
-          className="week"
-          style={{ width: (balance / STARTING_BALANCE) * 100 + "%" }}
-        />
+        <div className="week-container" key={index}>
+          <div
+            className="week"
+            style={{ width: (balance.balance / STARTING_BALANCE) * 100 + "%" }}
+          />
+          <div className="week-hovertext">
+            {balance.day} {balance.month}: {balance.balance.toLocaleString()}
+          </div>
+        </div>
       ))}
     </div>
   )
