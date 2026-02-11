@@ -6,6 +6,7 @@ import "./index.css"
 import { BasicGoal, BasicGoalData } from "./BasicGoal"
 import { Bikes, BikesGoal } from "./Bikes"
 import { EmojiCheckbox } from "../../../shared/controls/EmojiCheckbox"
+import { GameGoal, GameGoalData } from "./GameGoals"
 
 type DiscreteTimesGoal = {
   id?: string
@@ -13,7 +14,7 @@ type DiscreteTimesGoal = {
   times: { id: string; total: number; completed?: number }[]
 }
 
-type Goal = Book | BasicGoalData | BikesGoal | DiscreteTimesGoal
+type Goal = Book | BasicGoalData | BikesGoal | DiscreteTimesGoal | GameGoalData
 
 const path = "2026/other_goals"
 const hasId = (book: Goal): book is Required<Goal> =>
@@ -49,6 +50,8 @@ const isDiscreteTimesGoal = (goal: Goal): goal is DiscreteTimesGoal =>
   "times" in goal
 const isBikes = (goal: Goal): goal is BikesGoal =>
   "bikes" in goal && Array.isArray(goal.bikes)
+const isGame = (goal: Goal): goal is GameGoalData =>
+  "name" in goal && goal.name === "Wind Waker"
 
 const getComponent = (goal: Goal, onUpdate: (goal: Goal) => void) => {
   if ("title" in goal) {
@@ -84,6 +87,8 @@ const getComponent = (goal: Goal, onUpdate: (goal: Goal) => void) => {
     )
   } else if (isBikes(goal)) {
     return <Bikes goal={goal} onChange={onUpdate} />
+  } else if (isGame(goal)) {
+    return <GameGoal goal={goal} onChange={onUpdate} />
   } else {
     return <BasicGoal goal={goal} onChange={onUpdate} />
   }

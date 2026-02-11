@@ -1,8 +1,8 @@
 body {
   margin: 0;
-  --body-font: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
-    "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
-    sans-serif;
+  --body-font:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu",
+    "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
   font-family: var(--body-font);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -35,8 +35,8 @@ body {
 }
 
 code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
-    monospace;
+  font-family:
+    source-code-pro, Menlo, Monaco, Consolas, "Courier New", monospace;
 }
 
 button {
@@ -154,4 +154,29 @@ dialog {
   padding-inline: 30px;
   padding-block: 20px;
   color: var(--body-colour);
+}
+
+.tooltip-container {
+  anchor-scope: --tooltip;
+}
+
+.tooltip-anchor {
+  anchor-name: --tooltip;
+}
+
+.tooltip {
+  background: var(--body-colour);
+  color: white;
+  padding: 6px 8px;
+  border-radius: 3px;
+  font-size: 14px;
+  position: absolute;
+  position-anchor: --tooltip;
+  position-area: right;
+  margin-inline-start: 4px;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.2s;
+  z-index: 1;
+  width: max-content;
 }

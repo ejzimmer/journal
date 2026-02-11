@@ -7,6 +7,7 @@ type Props = {
   style?: CSSProperties
   className?: string
   children: string
+  size?: number
 }
 
 export function EditableText({
@@ -15,6 +16,7 @@ export function EditableText({
   label,
   style,
   className = "",
+  size,
 }: Props) {
   const [isEditing, setIsEditing] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
@@ -48,6 +50,7 @@ export function EditableText({
           handleSubmit()
         }
       }}
+      size={size}
       defaultValue={children}
       aria-label={label}
       style={{ fontSize: ".8em", ...style }}
