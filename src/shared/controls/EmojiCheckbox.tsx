@@ -22,7 +22,19 @@ export function EmojiCheckbox({
         onChange={onChange}
         checked={isChecked}
       />
-      <div>{emoji}</div>
+      {emoji.startsWith(".") ? (
+        <img
+          src={emoji}
+          alt=""
+          style={{
+            verticalAlign: "bottom",
+            maxWidth: "24px",
+            maxHeight: "24px",
+          }}
+        />
+      ) : (
+        <div>{emoji}</div>
+      )}
     </label>
   )
 }

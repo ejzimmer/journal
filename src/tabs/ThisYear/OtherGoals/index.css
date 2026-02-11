@@ -194,10 +194,14 @@ ul.other-goals {
     }
   }
 
-  label.emoji-checkbox div:not(.tooltip) {
-    opacity: 0.4;
+  label.emoji-checkbox {
+    div:not(.tooltip),
+    img {
+      opacity: 0.4;
+    }
 
-    &.done {
+    &.done div:not(.tooltip),
+    &.done img {
       opacity: 1;
     }
   }

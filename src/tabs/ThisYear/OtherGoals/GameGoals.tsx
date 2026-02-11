@@ -33,6 +33,9 @@ export function GameGoal({
     spinAttack,
     walletCapacity,
     zunariShopDecorations,
+    herosCharm,
+    joyPendants,
+    magicArmour,
     ...rest
   } = goals
 
@@ -55,7 +58,7 @@ export function GameGoal({
       />
       <ul>
         <CountGoal
-          icon="❤️"
+          icon="./heart.png"
           label="Hearts"
           value={hearts.collected}
           total={hearts.total}
@@ -67,7 +70,7 @@ export function GameGoal({
           }
         />
         <CountGoal
-          icon="🍶"
+          icon="./bottle.png"
           label="Bottles"
           value={bottles.collected}
           total={bottles.total}
@@ -80,8 +83,7 @@ export function GameGoal({
         />
 
         <BooleanGoal
-          style={{ filter: "saturate(150%) hue-rotate(60deg)" }}
-          emoji="🧪"
+          emoji="./blue-potion.png"
           label={bluePotion.label}
           isChecked={bluePotion.unlocked}
           onChange={(isChecked) => {
@@ -89,8 +91,7 @@ export function GameGoal({
           }}
         />
         <BooleanGoal
-          style={{ filter: "saturate(150%) hue-rotate(60deg)" }}
-          emoji="🧪"
+          emoji="./green-potion.png"
           label={greenPotion.label}
           isChecked={greenPotion.unlocked}
           onChange={(isChecked) => {
@@ -110,9 +111,26 @@ export function GameGoal({
           label={spinAttack.label}
           isChecked={spinAttack.learnt}
           onChange={(isChecked) => {
-            updateGoal("songOfPassing", { ...spinAttack, learnt: isChecked })
+            updateGoal("spinAttack", { ...spinAttack, learnt: isChecked })
           }}
         />
+        <BooleanGoal
+          emoji="./heros-charm.png"
+          label={herosCharm.label}
+          isChecked={herosCharm.collected}
+          onChange={(isChecked) => {
+            updateGoal("herosCharm", { ...herosCharm, collected: isChecked })
+          }}
+        />
+        <BooleanGoal
+          emoji="./magic-armour.png"
+          label={magicArmour.label}
+          isChecked={magicArmour.collected}
+          onChange={(isChecked) => {
+            updateGoal("magicArmour", { ...magicArmour, collected: isChecked })
+          }}
+        />
+
         <BooleanGoal
           emoji="👵"
           label={cureGrandma.label}
@@ -163,7 +181,7 @@ export function GameGoal({
           value={arrowCapacity.current}
           total={arrowCapacity.total}
           onChange={(value: number) =>
-            updateGoal("arrowCapcity", {
+            updateGoal("arrowCapacity", {
               ...arrowCapacity,
               current: value,
             })
@@ -193,6 +211,19 @@ export function GameGoal({
             })
           }
         />
+        <CountGoal
+          icon="./joy-pendant.png"
+          label={joyPendants.label}
+          value={joyPendants.given}
+          total={joyPendants.total}
+          onChange={(value: number) =>
+            updateGoal("joyPendants", {
+              ...joyPendants,
+              given: value,
+            })
+          }
+        />
+
         <CountGoal
           icon="🔵"
           label={blueChuJellies.label}
@@ -259,7 +290,21 @@ function CountGoal({ icon, label, value, total, onChange }: CountGoalProps) {
   return (
     <li>
       <div className="tooltip-container">
-        <span className="icon">{icon}</span>
+        <span className="icon">
+          {icon.startsWith(".") ? (
+            <img
+              src={icon}
+              alt=""
+              style={{
+                verticalAlign: "bottom",
+                maxHeight: "24px",
+                maxWidth: "24px",
+              }}
+            />
+          ) : (
+            <span>{icon}</span>
+          )}
+        </span>
         <EditableText
           label={label}
           size={2}
