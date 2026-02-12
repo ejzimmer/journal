@@ -9,6 +9,14 @@ import { CalendarTask, PARENT_LIST } from "./types"
 
 const readyToDelete = (task: CalendarTask) => {
   const today = startOfDay(new Date())
+  console.log("Today: ", today)
+  console.log("Task", task.description, task.status, new Date(task.dueDate))
+  console.log("Due date is before today", isBefore(task.dueDate, today))
+  console.log(
+    "Was updated before today",
+    new Date(task.statusUpdateDate),
+    isBefore(task.statusUpdateDate, today),
+  )
   return (
     task.status === "finished" &&
     isBefore(task.dueDate, today) &&
@@ -30,13 +38,13 @@ export function DueDateList() {
   if (readyToReset) {
     const finishedTasks = tasks.filter(readyToDelete)
     finishedTasks.forEach((task) =>
-      storageContext.deleteItem<CalendarTask>(PARENT_LIST, task)
+      storageContext.deleteItem<CalendarTask>(PARENT_LIST, task),
     )
     const todayTasks = tasks.filter(
-      (task) => taskIsToday(task) && task.status === "paused"
+      (task) => taskIsToday(task) && task.status === "paused",
     )
     todayTasks.forEach((task) =>
-      storageContext.updateItem(PARENT_LIST, { ...task, status: "ready" })
+      storageContext.updateItem(PARENT_LIST, { ...task, status: "ready" }),
     )
   }
 

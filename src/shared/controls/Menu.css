@@ -9,8 +9,14 @@
   flex-direction: column;
   border: none;
   padding: 0;
-  box-shadow: 2px 2px 2px hsl(0 0% 0%/0.1), 2px 2px 4px hsl(0 0% 0%/0.1),
-    2px 2px 8px hsl(0 0% 0%/0.1), 2px 2px 16px 8px hsl(0 0% 0%/0.1);
+  box-shadow:
+    2px 2px 2px hsl(0 0% 0%/0.1),
+    2px 2px 4px hsl(0 0% 0%/0.1),
+    2px 2px 8px hsl(0 0% 0%/0.1),
+    2px 2px 16px 8px hsl(0 0% 0%/0.1);
+  top: anchor(bottom);
+  left: anchor(left);
+  translate: 0 12px;
 
   [role="menuitem"] {
     border: 0;
