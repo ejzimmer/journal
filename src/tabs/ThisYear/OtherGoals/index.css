@@ -2,11 +2,10 @@ ul.other-goals {
   --light: hsl(203 96% 54%);
   --dark: hsl(203 96% 34%);
 
-  display: flex;
-  flex-direction: column;
   list-style-type: none;
   margin: 0;
   padding: 0;
+  margin-block-end: 100px;
 
   li {
     width: fit-content;
@@ -172,12 +171,18 @@ ul.other-goals {
   }
 }
 
-.windwaker ul {
+.windwaker {
   display: flex;
-  flex-wrap: wrap;
+}
+
+.windwaker ul {
+  display: grid;
+  grid-template-rows: auto auto auto;
+  grid-auto-flow: column;
   padding-inline: 0;
-  gap: 12px;
+  gap: 6px;
   font-size: 1.2em;
+  justify-items: center;
 
   li {
     .tooltip-container {
@@ -200,9 +205,30 @@ ul.other-goals {
       opacity: 0.4;
     }
 
-    &.done div:not(.tooltip),
-    &.done img {
-      opacity: 1;
+    &.done {
+      filter: none;
+
+      div:not(.tooltip),
+      img {
+        opacity: 1;
+      }
+    }
+  }
+
+  .double-magic-meter {
+    width: 30px;
+
+    &::before,
+    &::after {
+      content: "";
+      display: block;
+      width: 100%;
+      height: 10px;
+      border: 1px solid white;
+      border-radius: 4px;
+      background: linear-gradient(#32f751, #00aa1c 90%);
+      box-shadow: 0 0 3px hsl(0 0% 0%/0.8);
+      margin-block-end: 2px;
     }
   }
 }

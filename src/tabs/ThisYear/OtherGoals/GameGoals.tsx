@@ -36,7 +36,7 @@ export function GameGoal({
     herosCharm,
     joyPendants,
     magicArmour,
-    ...rest
+    magicMeterDouble,
   } = goals
 
   const updateGoal = (key: string, value: any) => {
@@ -81,7 +81,17 @@ export function GameGoal({
             })
           }
         />
-
+        <BooleanGoal
+          emoji={<div className="double-magic-meter" />}
+          label={magicMeterDouble.label}
+          isChecked={magicMeterDouble.completed}
+          onChange={(isChecked) => {
+            updateGoal("magicMeterDouble", {
+              ...magicMeterDouble,
+              completed: isChecked,
+            })
+          }}
+        />
         <BooleanGoal
           emoji="./blue-potion.png"
           label={bluePotion.label}
@@ -152,7 +162,7 @@ export function GameGoal({
           }
         />
         <CountGoal
-          icon="📍"
+          icon="./chart.png"
           label="Charts"
           value={charts.chartCollected}
           total={charts.total}
@@ -164,7 +174,7 @@ export function GameGoal({
           }
         />
         <CountGoal
-          icon="🪙"
+          icon="./treasure.webp"
           label="Treasure"
           value={charts.treasureCollected}
           total={charts.total}
@@ -225,7 +235,7 @@ export function GameGoal({
         />
 
         <CountGoal
-          icon="🔵"
+          icon="./blue-chu.png"
           label={blueChuJellies.label}
           value={blueChuJellies.collected}
           total={blueChuJellies.total}
@@ -261,7 +271,7 @@ export function GameGoal({
           }
         />
         <CountGoal
-          icon="🎋"
+          icon="./decoration.png"
           label={zunariShopDecorations.label}
           value={zunariShopDecorations.collected}
           total={zunariShopDecorations.total}
@@ -273,7 +283,6 @@ export function GameGoal({
           }
         />
       </ul>
-      {JSON.stringify(rest)}
     </div>
   )
 }
@@ -290,7 +299,10 @@ function CountGoal({ icon, label, value, total, onChange }: CountGoalProps) {
   return (
     <li>
       <div className="tooltip-container">
-        <span className="icon">
+        <span
+          className="icon"
+          style={{ opacity: 0.2 + (value ? value / total : 0) }}
+        >
           {icon.startsWith(".") ? (
             <img
               src={icon}
@@ -331,7 +343,7 @@ function BooleanGoal({
   onChange,
   style,
 }: {
-  emoji: string
+  emoji: string | React.ReactElement
   isChecked: boolean
   label: string
   onChange: (isChecked: boolean) => void

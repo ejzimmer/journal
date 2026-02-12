@@ -61,7 +61,14 @@ function PagesRead({ totalPages, readPages, onChange }: PagesReadProps) {
     <div className="volume">
       <progress max={totalPages} value={readPages} />
       <form onSubmit={handleUpdate}>
-        {isEditing && <input type="number" size={4} defaultValue={readPages} />}
+        {isEditing && (
+          <input
+            type="number"
+            size={4}
+            style={{ width: "fit-content" }}
+            defaultValue={readPages}
+          />
+        )}
         <button
           className="icon ghost"
           onClick={(event) => {
