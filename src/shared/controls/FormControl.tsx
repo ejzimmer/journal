@@ -12,6 +12,7 @@ type FormControlProps = {
   defaultValue?: string
   hideLabel?: boolean
   pattern?: string
+  inputClass?: string
 }
 
 export const FormControl = forwardRef<HTMLInputElement, FormControlProps>(
@@ -24,9 +25,10 @@ export const FormControl = forwardRef<HTMLInputElement, FormControlProps>(
       type = "text",
       errors,
       hideLabel,
+      inputClass,
       ...props
     },
-    ref
+    ref,
   ) => {
     const inputId = useId()
     const descriptionId = useId()
@@ -43,6 +45,7 @@ export const FormControl = forwardRef<HTMLInputElement, FormControlProps>(
           defaultValue={defaultValue}
           value={value}
           onChange={(event) => onChange?.(event.target.value)}
+          className={inputClass}
           {...props}
         />
         {errors && (
@@ -60,5 +63,5 @@ export const FormControl = forwardRef<HTMLInputElement, FormControlProps>(
         )}
       </div>
     )
-  }
+  },
 )

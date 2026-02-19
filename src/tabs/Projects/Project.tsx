@@ -23,13 +23,11 @@ export function Project({ project }: ProjectProps) {
       className={`project ${project.status}`}
       style={{
         background:
-          project.type in COLOURS
-            ? COLOURS[project.type as keyof typeof COLOURS]
-            : "white",
+          project.category in COLOURS ? COLOURS[project.category] : "white",
       }}
     >
       <EmojiCheckbox
-        emoji={project.type}
+        emoji={project.category}
         isChecked={project.status === "in_progress"}
         onChange={() =>
           storageContext.updateItem(KEY, {

@@ -20,14 +20,6 @@
     align-self: center;
   }
 
-  input {
-    font-size: 16px;
-    padding: 5px 10px;
-    margin-block-end: 12px;
-    border: 0;
-    border-block-end: 2px solid var(--border-colour);
-  }
-
   .buttons {
     text-align: end;
     button:first-child {

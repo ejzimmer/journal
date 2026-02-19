@@ -148,6 +148,23 @@ form {
   flex-direction: column;
 }
 
+.form-control input.subtle,
+input.subtle {
+  font-size: 16px;
+  padding: 5px 10px;
+  border: 0;
+  border-block-end: 2px solid var(--border-colour);
+  border-radius: 0;
+}
+
+select.subtle {
+  font-size: 20px;
+  background: transparent;
+  border: 2px solid var(--border-colour);
+  border-radius: 6px;
+  padding-block: 4px;
+}
+
 dialog {
   border: 0;
   border-radius: 10px;

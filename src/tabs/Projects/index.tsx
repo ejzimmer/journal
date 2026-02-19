@@ -2,8 +2,9 @@ import { useContext, useEffect, useRef, useState } from "react"
 import { FirebaseContext } from "../../shared/FirebaseContext"
 
 import "./index.css"
-import { ProjectDetails, KEY } from "./type"
+import { ProjectDetails, KEY, Category } from "./type"
 import { Project } from "./Project"
+import { AddProjectForm } from "./AddProjectForm"
 
 export function Projects() {
   const containerRef = useRef<HTMLUListElement>(null)
@@ -21,25 +22,25 @@ export function Projects() {
     Record<string, ProjectDetails[]>
   >(
     (groupedProjects, project) => {
-      if (project.type === "🧶") {
+      if (project.category === "🧶") {
         groupedProjects.knittingProjects.push(project)
-      } else if (project.type === "🪡") {
+      } else if (project.category === "🪡") {
         groupedProjects.sewingProjects.push(project)
       } else {
         groupedProjects.otherProjects.push(project)
       }
       return groupedProjects
     },
-    { knittingProjects: [], sewingProjects: [], otherProjects: [] }
+    { knittingProjects: [], sewingProjects: [], otherProjects: [] },
   )
 
   const projectNameRef = useRef<HTMLInputElement>(null)
 
-  const addProject = (type: string) => {
+  const addProject = (type: Category) => {
     const description = projectNameRef.current?.value
     if (!description) return
 
-    storageContext.addItem<ProjectDetails>(KEY, { description, type })
+    storageContext.addItem<ProjectDetails>(KEY, { description, category: type })
 
     projectNameRef.current!.value = ""
   }
@@ -47,7 +48,7 @@ export function Projects() {
   useEffect(() => {
     if (containerRef.current) {
       setContainerHeight(
-        window.innerHeight - containerRef.current.getBoundingClientRect().top
+        window.innerHeight - containerRef.current.getBoundingClientRect().top,
       )
     }
   }, [])
@@ -66,7 +67,7 @@ export function Projects() {
           ))}
         </ul>
         <div>
-          <input ref={projectNameRef} />
+          <input ref={projectNameRef} className="subtle" />
           <div className="buttons">
             <button className="outline" onClick={() => addProject("🧶")}>
               🧶
@@ -85,6 +86,9 @@ export function Projects() {
         {otherProjects.map((project) => (
           <Project key={project.id} project={project} />
         ))}
+        <li>
+          <AddProjectForm />
+        </li>
       </ul>
     </div>
   )
