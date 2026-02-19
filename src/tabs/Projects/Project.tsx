@@ -7,6 +7,7 @@ import { COLOURS, KEY, ProjectDetails } from "./type"
 
 import "./Project.css"
 import { EmojiCheckbox } from "../../shared/controls/EmojiCheckbox"
+import { ConfirmationModal } from "../../shared/controls/ConfirmationModal"
 
 type ProjectProps = {
   project: ProjectDetails
@@ -60,12 +61,15 @@ export function Project({ project }: ProjectProps) {
         >
           <TickIcon width="20px" colour="var(--success-colour)" />
         </button>
-        <button
-          className="ghost"
-          onClick={() => storageContext.deleteItem(KEY, project)}
-        >
-          <XIcon width="20px" colour="var(--body-colour-light)" />
-        </button>
+        <ConfirmationModal
+          message={`Are you sure you want to delete ${project.description}`}
+          onConfirm={() => storageContext.deleteItem(KEY, project)}
+          trigger={(triggerProps) => (
+            <button {...triggerProps} className="ghost">
+              <XIcon width="20px" colour="var(--body-colour-light)" />
+            </button>
+          )}
+        />
       </div>
     </li>
   )

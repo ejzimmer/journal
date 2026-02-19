@@ -1,3 +1,7 @@
+ul.projects {
+  list-style-type: none;
+}
+
 .knitting-sewing {
   display: grid;
   grid-template-columns: auto min-content;
