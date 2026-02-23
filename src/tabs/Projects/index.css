@@ -35,8 +35,8 @@ ul.projects {
 .projects {
   padding: 0;
   display: flex;
-  flex-direction: column;
   flex-wrap: wrap;
   max-height: 100%;
   gap: 2px;
+  align-content: start;
 }
