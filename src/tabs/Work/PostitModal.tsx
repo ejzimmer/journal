@@ -1,6 +1,6 @@
 import {
   ConfirmationModal,
-  Props as ConfirmationModalProps,
+  ConfirmationModalProps,
 } from "../../shared/controls/ConfirmationModal"
 
 import "./PostitModal.css"

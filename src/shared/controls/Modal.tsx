@@ -14,9 +14,9 @@ export type ModalTriggerProps = {
   onClick: () => void
 }
 
-const ModalContext = createContext<{ closeModal: () => void } | undefined>(
-  undefined
-)
+export const ModalContext = createContext<
+  { closeModal: () => void } | undefined
+>(undefined)
 
 function Modal({ trigger: Trigger, onClose, children }: ModalProps) {
   const dialogRef = useRef<HTMLDialogElement>(null)
@@ -114,5 +114,6 @@ Modal.Body = Body
 Modal.Footer = Footer
 Modal.Action = Action
 Modal.Cancel = Cancel
+Modal.CloseButton = CloseButton
 
 export { Modal }

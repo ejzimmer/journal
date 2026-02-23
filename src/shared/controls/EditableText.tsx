@@ -20,6 +20,9 @@ export function EditableText({
 }: Props) {
   const [isEditing, setIsEditing] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
+  const outputRef = useRef<HTMLDivElement>(null)
+  const widthRef = useRef<number>(undefined)
+
   const startEditing = () => {
     setIsEditing(true)
   }
@@ -30,6 +33,12 @@ export function EditableText({
       inputRef.current?.focus()
     }
   }, [isEditing, inputRef])
+
+  useEffect(() => {
+    if (outputRef.current) {
+      widthRef.current = outputRef.current.clientWidth + 8
+    }
+  }, [children])
 
   const handleSubmit = () => {
     const value = inputRef.current?.value ?? ""
@@ -53,7 +62,7 @@ export function EditableText({
       size={size}
       defaultValue={children}
       aria-label={label}
-      style={{ fontSize: ".8em", ...style }}
+      style={{ fontSize: ".8em", width: `${widthRef.current}px`, ...style }}
     />
   ) : (
     <div
@@ -62,6 +71,7 @@ export function EditableText({
       onClick={startEditing}
       style={style}
       className={className}
+      ref={outputRef}
     >
       {children}
     </div>

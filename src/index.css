@@ -155,6 +155,7 @@ input.subtle {
   border: 0;
   border-block-end: 2px solid var(--border-colour);
   border-radius: 0;
+  background: transparent;
 }
 
 select.subtle {

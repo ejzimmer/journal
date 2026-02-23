@@ -1,17 +1,25 @@
 li.project {
+  --project-colour-light: color(from var(--project-colour) srgb r g b / 0.2);
   flex-shrink: 0;
   border: 1px solid var(--border-colour);
-  padding-block: 5px;
-  padding-inline: 10px;
-  display: flex;
-  gap: 12px;
-  align-items: center;
-  position: relative;
+  list-style-type: none;
+  background: var(--project-colour-light);
+  font-size: 18px;
+  align-self: start;
 
   &.done {
     filter: grayscale(0.5);
     opacity: 0.5;
     text-decoration: line-through;
+  }
+
+  .project-details {
+    display: flex;
+    gap: 4px;
+    align-items: center;
+    padding-inline: 10px;
+    padding-block: 5px;
+    background: var(--project-colour);
   }
 
   label.emoji-checkbox.done {
@@ -25,7 +33,113 @@ li.project {
     filter: contrast(200%);
   }
 
-  .actions {
-    margin-inline-start: auto;
+  button.expand:focus {
+    outline: 2px solid var(--project-colour-light);
+  }
+  button.expand path {
+    transform-origin: center;
+    transform-box: stroke-box;
+  }
+  button.expand.expanded path {
+    transform: rotate(0.5turn);
+  }
+  button.show-form {
+    padding: 6px;
+  }
+  button.show-form:focus {
+    outline: 2px solid var(--project-colour);
+  }
+  button.show-form.form-visible svg {
+    transform: rotate(45deg);
+  }
+  button path {
+    transition: all 0.2s;
+  }
+
+  .subtasks-section {
+    opacity: 0;
+    overflow: hidden;
+    transition:
+      height 0.2s ease-out,
+      opacity 0.1s 0.2s linear;
+
+    &.visible {
+      opacity: 1;
+      margin-block-end: 12px;
+    }
+  }
+
+  input {
+    border: 0;
+    border-radius: 0;
+
+    &:focus {
+      outline: 2px solid var(--project-colour);
+      outline-offset: -2px;
+    }
+  }
+
+  form.add-subtask-form {
+    opacity: 0;
+    overflow: hidden;
+    flex-direction: row;
+    margin-inline-start: 10px;
+    gap: 4px;
+    transition:
+      width 0.2s ease-out,
+      opacity 0.1s 0.2s linear;
+
+    &.visible {
+      opacity: 1;
+    }
+
+    input.subtle {
+      border-color: var(--body-colour-light);
+      flex-grow: 1;
+    }
+
+    button:focus {
+      outline: 2px solid var(--project-colour);
+      outline-offset: -2px;
+    }
+  }
+
+  ul.subtasks {
+    display: flex;
+    flex-direction: column;
+    list-style: none;
+    padding-block-start: 4px;
+    padding-block-end: 8px;
+
+    li {
+      padding-block: 2px;
+    }
+  }
+
+  ul.subtasks,
+  form.add-subtask-form.visible {
+    padding-inline-start: 24px;
+    padding-inline-end: 12px;
+  }
+
+  .subtask {
+    display: flex;
+    gap: 4px;
+    align-items: center;
+
+    label.checkbox .control {
+      width: 1.2em;
+      color: var(--body-colour-mid);
+      border: 2px solid;
+
+      &:has(+ :focus) {
+        border-color: var(--project-colour);
+      }
+    }
+
+    label:has(:checked) + div {
+      text-decoration: line-through;
+      opacity: 0.6;
+    }
   }
 }

@@ -15,7 +15,7 @@ export function Checkbox(props: CheckboxProps) {
         <svg
           viewBox="0 0 10 10"
           strokeWidth="1.5"
-          stroke="var(--body-colour-light)"
+          stroke="currentColor"
           fill="none"
           strokeLinecap="round"
         >

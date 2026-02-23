@@ -1,6 +1,6 @@
 import { useContext, useState } from "react"
 import { FormControl } from "../../shared/controls/FormControl"
-import { categories, Category, KEY, ProjectDetails } from "./type"
+import { categories, Category, KEY, ProjectDetails } from "./types"
 import { FirebaseContext } from "../../shared/FirebaseContext"
 import { TickIcon } from "../../shared/icons/Tick"
 

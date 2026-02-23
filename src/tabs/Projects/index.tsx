@@ -2,7 +2,7 @@ import { useContext, useEffect, useRef, useState } from "react"
 import { FirebaseContext } from "../../shared/FirebaseContext"
 
 import "./index.css"
-import { ProjectDetails, KEY, Category } from "./type"
+import { ProjectDetails, KEY, Category } from "./types"
 import { Project } from "./Project"
 import { AddProjectForm } from "./AddProjectForm"
 

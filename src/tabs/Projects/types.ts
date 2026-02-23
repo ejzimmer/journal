@@ -13,13 +13,20 @@ export type Category = keyof typeof COLOURS
 
 export const categories = Object.keys(COLOURS)
 
+type Status = "ready" | "in_progress" | "done"
+
+export type Task = {
+  id: string
+  description: string
+  status: Status
+}
+
 export type ProjectDetails = {
   id: string
   description: string
   category: Category
-  position?: number
-  lastUpdated?: number
-  status?: "ready" | "in_progress" | "done"
+  status?: Status
+  subtasks?: Record<string, Task>
 }
 
 export const KEY = "projects"

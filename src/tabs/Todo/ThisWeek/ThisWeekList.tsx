@@ -36,14 +36,14 @@ export function ThisWeekList() {
       : (Object.values(task.completed ?? {}) as number[])
     return completed.some(moreThanAWeekAgo)
   })
-  readyForReset.forEach((task) =>
+  readyForReset.forEach((task) => {
     storageContext.updateItem<WeeklyTask>(PARENT_LIST, {
       ...task,
       completed: task.completed?.map((date) =>
         moreThanAWeekAgo(date) ? null : date,
       ),
-    }),
-  )
+    })
+  })
 
   useDropTarget({
     dropTargetRef: listRef,
