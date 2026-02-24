@@ -6,7 +6,7 @@ import { DeleteButton } from "../DeleteButton"
 import { EmojiCheckbox } from "../../../shared/controls/EmojiCheckbox"
 
 import "./TodayTask.css"
-import { DailyTask, LIST_KEY } from "./types"
+import { DailyTask, DAILY_KEY } from "../../../shared/types"
 
 export function TodayTask({
   task,
@@ -53,7 +53,7 @@ export function TodayTask({
         </EditableText>
       </div>
       <DeleteButton
-        onDelete={() => storageContext.deleteItem<DailyTask>(LIST_KEY, task)}
+        onDelete={() => storageContext.deleteItem<DailyTask>(DAILY_KEY, task)}
       />
     </>
   )

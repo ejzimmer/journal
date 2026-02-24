@@ -2,7 +2,7 @@ import { TodayTask } from "./TodayTask"
 
 import { AddTodayTaskForm } from "./AddTodayTaskForm"
 import { isBefore, startOfDay } from "date-fns"
-import { DailyTask, LIST_KEY } from "./types"
+import { DailyTask, DAILY_KEY } from "../../../shared/types"
 import { useContext, useRef } from "react"
 import { FirebaseContext } from "../../../shared/FirebaseContext"
 import { DraggableListItem } from "../../../shared/drag-and-drop/DraggableListItem"
@@ -31,7 +31,7 @@ export function TodayList() {
   if (!storageContext) {
     throw new Error("Missing Firebase context provider")
   }
-  const { value } = storageContext.useValue<DailyTask>(LIST_KEY)
+  const { value } = storageContext.useValue<DailyTask>(DAILY_KEY)
   const tasks = sortByPosition(value ? Object.values(value) : [])
 
   const { day, month } = formatDate(new Date())
@@ -55,18 +55,18 @@ export function TodayList() {
   )
 
   finishedTasks.forEach((task) =>
-    storageContext.deleteItem<DailyTask>(LIST_KEY, task),
+    storageContext.deleteItem<DailyTask>(DAILY_KEY, task),
   )
   if (finishedTasks.length) {
     storageContext.updateList(
-      LIST_KEY,
+      DAILY_KEY,
       unfinishedTasks.map((task, index) => ({ ...task, position: index })),
     )
   }
 
   const readyToReset = tasks.filter((task) => updatedYesterday(task, "done"))
   readyToReset.forEach((task) =>
-    storageContext.updateItem<DailyTask>(LIST_KEY, {
+    storageContext.updateItem<DailyTask>(DAILY_KEY, {
       ...task,
       status: "ready",
       lastCompleted: new Date().getTime(),
@@ -76,10 +76,10 @@ export function TodayList() {
   useDropTarget({
     dropTargetRef: listRef,
     canDrop: ({ source }) => isDraggable(source.data),
-    getData: () => ({ listId: LIST_KEY }),
+    getData: () => ({ listId: DAILY_KEY }),
   })
   useDraggableList({
-    listId: LIST_KEY,
+    listId: DAILY_KEY,
     canDropSourceOnTarget: (source) => {
       return source[draggableTypeKey] === "日"
     },
@@ -98,7 +98,7 @@ export function TodayList() {
               getData={() => ({
                 [draggableTypeKey]: "日",
                 id: task.id,
-                parentId: LIST_KEY,
+                parentId: DAILY_KEY,
                 position: task.position,
               })}
               dragPreview={<DragPreview task={task} />}
@@ -109,7 +109,7 @@ export function TodayList() {
                   list={tasks}
                   index={index}
                   onReorder={(tasks: OrderedListItem[]) => {
-                    storageContext.updateList(LIST_KEY, tasks)
+                    storageContext.updateList(DAILY_KEY, tasks)
                   }}
                 />
               }
@@ -117,7 +117,7 @@ export function TodayList() {
               <TodayTask
                 task={task}
                 onChange={(task: DailyTask) => {
-                  storageContext.updateItem<DailyTask>(LIST_KEY, task)
+                  storageContext.updateItem<DailyTask>(DAILY_KEY, task)
 
                   if (!isHabit(task.category.emoji)) {
                     return

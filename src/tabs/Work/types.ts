@@ -1,8 +1,17 @@
-import { COLOURS } from "../../shared/types"
+export const COLOURS = [
+  "blue",
+  "yellow",
+  "purple",
+  "green",
+  "orange",
+  "red",
+] as const
+
+export type Colour = (typeof COLOURS)[number]
 
 export type Label = {
   value: string
-  colour: (typeof COLOURS)[number]
+  colour: Colour
 }
 
 export const STATUS_KEYS = ["not_started", "done"] as const

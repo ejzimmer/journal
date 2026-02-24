@@ -1,8 +1,9 @@
-import { useState } from "react"
+import { useContext, useState } from "react"
 import { Checkbox } from "../../shared/controls/Checkbox"
 import { ConfirmationModalDialog } from "../../shared/controls/ConfirmationModal"
 import { EditableText } from "../../shared/controls/EditableText"
 import { Task } from "./types"
+import { FirebaseContext } from "../../shared/FirebaseContext"
 
 type SubtaskProps = Task & {
   onUpdate: (task: Task) => void
@@ -11,6 +12,15 @@ type SubtaskProps = Task & {
 
 export function Subtask({ onUpdate, onDelete, ...task }: SubtaskProps) {
   const [confirmDeleteModalOpen, setConfirmDeleteModalOpen] = useState(false)
+
+  const storageContext = useContext(FirebaseContext)
+  if (!storageContext) {
+    throw new Error("Missing Firebase context provider")
+  }
+
+  // const onMoveToTodo = () => {
+  //   storageContext.addItem<>()
+  // }
 
   return (
     <li className="subtask">
@@ -37,6 +47,7 @@ export function Subtask({ onUpdate, onDelete, ...task }: SubtaskProps) {
       >
         {task.description}
       </EditableText>
+      <button>Add to todo</button>
       <ConfirmationModalDialog
         message={`Are you sure you want to delete ${task.description}`}
         onConfirm={onDelete}

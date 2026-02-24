@@ -1,7 +1,7 @@
 import { isBefore, subDays } from "date-fns"
 import { AddThisWeekTaskForm } from "./AddThisWeekTaskForm"
 import { ThisWeekTask } from "./ThisWeekTask"
-import { PARENT_LIST, WeeklyTask } from "./types"
+import { WEEKLY_KEY, WeeklyTask } from "../../../shared/types"
 import { useContext, useRef } from "react"
 import { FirebaseContext } from "../../../shared/FirebaseContext"
 import {
@@ -27,7 +27,7 @@ export function ThisWeekList() {
   if (!storageContext) {
     throw new Error("Missing Firebase context provider")
   }
-  const { value } = storageContext.useValue<WeeklyTask>(PARENT_LIST)
+  const { value } = storageContext.useValue<WeeklyTask>(WEEKLY_KEY)
   const tasks = sortByPosition(value ? Object.values(value) : [])
 
   const readyForReset = tasks.filter((task) => {
@@ -37,7 +37,7 @@ export function ThisWeekList() {
     return completed.some(moreThanAWeekAgo)
   })
   readyForReset.forEach((task) => {
-    storageContext.updateItem<WeeklyTask>(PARENT_LIST, {
+    storageContext.updateItem<WeeklyTask>(WEEKLY_KEY, {
       ...task,
       completed: task.completed?.map((date) =>
         moreThanAWeekAgo(date) ? null : date,
@@ -48,11 +48,11 @@ export function ThisWeekList() {
   useDropTarget({
     dropTargetRef: listRef,
     canDrop: ({ source }) => isDraggable(source.data),
-    getData: () => ({ listId: PARENT_LIST }),
+    getData: () => ({ listId: WEEKLY_KEY }),
   })
 
   useDraggableList({
-    listId: PARENT_LIST,
+    listId: WEEKLY_KEY,
     canDropSourceOnTarget: (source) => source[draggableTypeKey] === '"週"',
     getTargetListId: (source) => source.parentId,
     getAxis: () => "vertical",
@@ -68,7 +68,7 @@ export function ThisWeekList() {
               getData={() => ({
                 [draggableTypeKey]: "週",
                 id: task.id,
-                parentId: PARENT_LIST,
+                parentId: WEEKLY_KEY,
                 position: task.position,
               })}
               dragPreview={<DragPreview task={task} />}
@@ -80,7 +80,7 @@ export function ThisWeekList() {
                   list={tasks}
                   index={index}
                   onReorder={(tasks: OrderedListItem[]) => {
-                    storageContext.updateList(PARENT_LIST, tasks)
+                    storageContext.updateList(WEEKLY_KEY, tasks)
                   }}
                 />
               }

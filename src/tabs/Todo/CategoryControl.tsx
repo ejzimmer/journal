@@ -1,16 +1,16 @@
 import { useContext, useMemo } from "react"
 import { Combobox } from "../../shared/controls/combobox/Combobox"
-import { Category } from "./types"
+import { TodoCategory } from "../../shared/types"
 import { CategoriesContext } from "."
 
 import "./CategoryControl.css"
 
 export type CategoryControlProps = {
-  value?: Category
-  onChange: (value?: Category) => void
+  value?: TodoCategory
+  onChange: (value?: TodoCategory) => void
 }
 
-const categoryToOption = ({ text, emoji }: Category) => ({
+const categoryToOption = ({ text, emoji }: TodoCategory) => ({
   id: text + emoji,
   label: text.toLowerCase(),
   emoji: emoji,
@@ -27,9 +27,9 @@ export function CategoryControl({ value, onChange }: CategoryControlProps) {
       categories
         .map(categoryToOption)
         .sort((a, b) =>
-          a.label.toLowerCase() > b.label.toLowerCase() ? 1 : -1
+          a.label.toLowerCase() > b.label.toLowerCase() ? 1 : -1,
         ),
-    [categories]
+    [categories],
   )
 
   return (

@@ -1,10 +1,10 @@
 import { useState } from "react"
 import { Switch } from "../../../shared/controls/Switch"
 import { AddTaskForm } from "../AddTaskForm"
-import { Daily, LIST_KEY } from "./types"
+import { DailyTaskDetails, DAILY_KEY } from "../../../shared/types"
 
 export function AddTodayTaskForm() {
-  const [taskType, setTaskType] = useState<Daily["type"]>("一度")
+  const [taskType, setTaskType] = useState<DailyTaskDetails["type"]>("一度")
 
   const getAdditionalFieldValues = () => {
     return {
@@ -16,7 +16,7 @@ export function AddTodayTaskForm() {
 
   return (
     <AddTaskForm
-      listId={LIST_KEY}
+      listId={DAILY_KEY}
       getAdditionalFieldValues={getAdditionalFieldValues}
     >
       <fieldset>

@@ -2,7 +2,7 @@ import { useContext, useEffect, useRef, useState } from "react"
 import { PlusIcon } from "../../shared/icons/Plus"
 import { FirebaseContext } from "../../shared/FirebaseContext"
 import { CategoriesContext } from "."
-import { Category, Task } from "./types"
+import { TodoCategory, TodoTask } from "../../shared/types"
 import { FormControl } from "../../shared/controls/FormControl"
 import { CategoryControl } from "./CategoryControl"
 
@@ -21,7 +21,7 @@ export function AddTaskForm<T>({
   if (!storageContext) {
     throw new Error("Missing Firebase context provider")
   }
-  const { value } = storageContext.useValue<T & Task>(listId)
+  const { value } = storageContext.useValue<T & TodoTask>(listId)
 
   const categories = useContext(CategoriesContext)
   if (!categories) {
@@ -29,7 +29,9 @@ export function AddTaskForm<T>({
   }
 
   const [description, setDescription] = useState("")
-  const [category, setCategory] = useState<Category | undefined>(categories[0])
+  const [category, setCategory] = useState<TodoCategory | undefined>(
+    categories[0],
+  )
 
   const formRef = useRef<HTMLFormElement>(null)
   const formHeightRef = useRef(0)
@@ -54,12 +56,12 @@ export function AddTaskForm<T>({
       return
     }
 
-    storageContext.addItem<Task & T>(listId, {
+    storageContext.addItem<TodoTask & T>(listId, {
       description,
       category,
       position: value ? Object.keys(value).length : 0,
       ...additionalFields,
-    } as Task & T)
+    } as TodoTask & T)
 
     setDescription("")
     setCategory(categories[0])

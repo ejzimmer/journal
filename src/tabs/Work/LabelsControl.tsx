@@ -1,5 +1,5 @@
 import { ReactNode, useContext, useMemo } from "react"
-import { COLOURS, Colour } from "../../shared/types"
+import { COLOURS, Colour } from "./types"
 import { LabelsContext } from "./LabelsContext"
 import { Combobox } from "../../shared/controls/combobox/Combobox"
 import { Label } from "./types"
@@ -26,13 +26,16 @@ export function getNextColour(colours: Colour[]): Colour {
     return firstUnused
   }
 
-  const usageCount = colours.reduce((usages, colour) => {
-    usages[colour] = (usages[colour] ?? 0) + 1
-    return usages
-  }, {} as Record<(typeof COLOURS)[number], number>)
+  const usageCount = colours.reduce(
+    (usages, colour) => {
+      usages[colour] = (usages[colour] ?? 0) + 1
+      return usages
+    },
+    {} as Record<(typeof COLOURS)[number], number>,
+  )
   const lowestUsage = Math.min(...Object.values(usageCount))
   const lowestUsageColour = Object.entries(usageCount).find(
-    ([, count]) => count === lowestUsage
+    ([, count]) => count === lowestUsage,
   )?.[0]
 
   return isColour(lowestUsageColour) ? lowestUsageColour : COLOURS[0]
@@ -47,7 +50,7 @@ export function LabelsControl({ value, onChange, label }: LabelsControlProps) {
         label: value,
         colour,
       })) ?? [],
-    [labels]
+    [labels],
   )
 
   const selectedOptions: LabelOption[] = useMemo(
@@ -57,12 +60,12 @@ export function LabelsControl({ value, onChange, label }: LabelsControlProps) {
         label: l.value,
         colour: l.colour,
       })),
-    [value]
+    [value],
   )
 
   const createOption = (text: string): LabelOption => {
     const colour = getNextColour(
-      [...options, ...value].map((label) => label.colour)
+      [...options, ...value].map((label) => label.colour),
     )
     return {
       id: text + colour,

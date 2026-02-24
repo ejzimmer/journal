@@ -1,6 +1,6 @@
-import { Task } from "./types"
+import { TodoTask } from "../../shared/types"
 
-export function DragPreview({ task }: { task: Task }) {
+export function DragPreview({ task }: { task: TodoTask }) {
   return (
     <div
       style={{

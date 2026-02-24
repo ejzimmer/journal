@@ -3,7 +3,7 @@ import { EditableDate } from "../../../shared/controls/EditableDate"
 import { EditableText } from "../../../shared/controls/EditableText"
 import { DeleteButton } from "../DeleteButton"
 import { FirebaseContext } from "../../../shared/FirebaseContext"
-import { CalendarTask, PARENT_LIST, STATUSES } from "./types"
+import { CalendarTask, CALENDAR_KEY, STATUSES } from "../../../shared/types"
 import { differenceInDays, startOfDay } from "date-fns"
 import { Switch } from "../../../shared/controls/Switch"
 import { PlayButtonIcon } from "../../../shared/icons/PlayButton"
@@ -34,9 +34,10 @@ export function DueDateTask({ task }: { task: CalendarTask }) {
     throw new Error("Missing Firebase context provider")
   }
 
-  const onChange = (task: CalendarTask) => context.updateItem(PARENT_LIST, task)
+  const onChange = (task: CalendarTask) =>
+    context.updateItem(CALENDAR_KEY, task)
   const onDelete = () => {
-    context.deleteItem<CalendarTask>(PARENT_LIST, task)
+    context.deleteItem<CalendarTask>(CALENDAR_KEY, task)
   }
 
   return (

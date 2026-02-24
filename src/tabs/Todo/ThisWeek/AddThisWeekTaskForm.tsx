@@ -1,7 +1,7 @@
 import { useState } from "react"
 import { FormControl } from "../../../shared/controls/FormControl"
 import { AddTaskForm } from "../AddTaskForm"
-import { PARENT_LIST } from "./types"
+import { WEEKLY_KEY } from "../../../shared/types"
 
 export function AddThisWeekTaskForm() {
   const [frequency, setFrequency] = useState<string | undefined>("1")
@@ -21,7 +21,7 @@ export function AddThisWeekTaskForm() {
 
   return (
     <AddTaskForm
-      listId={PARENT_LIST}
+      listId={WEEKLY_KEY}
       getAdditionalFieldValues={getAdditionalFieldValues}
     >
       <FormControl

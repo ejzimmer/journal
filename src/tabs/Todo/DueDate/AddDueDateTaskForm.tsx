@@ -1,6 +1,6 @@
 import { useState } from "react"
 import { AddTaskForm } from "../AddTaskForm"
-import { PARENT_LIST } from "./types"
+import { CALENDAR_KEY } from "../../../shared/types"
 import { FormControl } from "../../../shared/controls/FormControl"
 
 export function AddDueDateTaskForm() {
@@ -18,7 +18,7 @@ export function AddDueDateTaskForm() {
 
   return (
     <AddTaskForm
-      listId={PARENT_LIST}
+      listId={CALENDAR_KEY}
       getAdditionalFieldValues={getAdditionalFieldValue}
     >
       <FormControl

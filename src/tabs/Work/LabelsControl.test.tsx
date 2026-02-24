@@ -5,7 +5,7 @@ import {
   LabelsControl,
   LabelsControlProps,
 } from "./LabelsControl"
-import { COLOURS } from "../../shared/types"
+import { COLOURS } from "./types"
 import { LabelsContext } from "./LabelsContext"
 import { Label } from "./types"
 
@@ -40,7 +40,7 @@ describe("LabelsControl", () => {
         <LabelsControl {...commonProps} value={[]} onChange={onChange} />,
         {
           wrapper: Wrapper,
-        }
+        },
       )
 
       const input = screen.getByRole("combobox")
@@ -55,11 +55,11 @@ describe("LabelsControl", () => {
           {...commonProps}
           onChange={onChange}
           value={[mockValues[0]]}
-        />
+        />,
       )
 
       expect(
-        screen.getByRole("button", { name: "Remove a11y" })
+        screen.getByRole("button", { name: "Remove a11y" }),
       ).toBeInTheDocument()
 
       await user.type(input, "i18n{Enter}")

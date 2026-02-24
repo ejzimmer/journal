@@ -4,7 +4,7 @@ import { DeleteButton } from "../DeleteButton"
 
 import "./ThisWeekTask.css"
 import { FirebaseContext } from "../../../shared/FirebaseContext"
-import { PARENT_LIST, WeeklyTask } from "./types"
+import { WEEKLY_KEY, WeeklyTask } from "../../../shared/types"
 import { formatDate } from "../../../shared/utils"
 import { DayData, Habit, HABITS, isHabit } from "../../ThisYear/Days/types"
 import { PATH as dailyPath } from "../../ThisYear/Days/Days"
@@ -16,7 +16,7 @@ export function ThisWeekTask({ task }: { task: WeeklyTask }) {
   }
 
   const onChange = (task: WeeklyTask) => {
-    storageContext.updateItem<WeeklyTask>(PARENT_LIST, task)
+    storageContext.updateItem<WeeklyTask>(WEEKLY_KEY, task)
   }
 
   const { day, month } = formatDate(new Date())
@@ -89,9 +89,7 @@ export function ThisWeekTask({ task }: { task: WeeklyTask }) {
         {remainder > 0 && <span className="remainder">+{remainder}</span>}
       </div>
       <DeleteButton
-        onDelete={() =>
-          storageContext.deleteItem<WeeklyTask>(PARENT_LIST, task)
-        }
+        onDelete={() => storageContext.deleteItem<WeeklyTask>(WEEKLY_KEY, task)}
       />
     </>
   )
