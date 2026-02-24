@@ -150,7 +150,11 @@ function Subtasks({ projectId, isVisible }: SubtasksProps) {
       </ul>
       <div
         ref={formContainerRef}
-        style={{ display: "flex", alignItems: "center" }}
+        style={{
+          display: "flex",
+          alignItems: "center",
+          paddingInlineStart: "12px",
+        }}
       >
         <AddSubtaskForm isFormVisible={formVisible} onAddSubtask={onAddTask} />
         <button
@@ -237,8 +241,9 @@ function AddSubtaskForm({ isFormVisible, onAddSubtask }: AddSubtaskFormProps) {
       <input
         value={description}
         onChange={(event) => setDescription(event.target.value)}
+        disabled={!isFormVisible}
       />
-      <button className="ghost">
+      <button className="ghost" disabled={!isFormVisible}>
         <TickIcon width="16px" colour="var(--action-colour)" />
       </button>
     </form>
