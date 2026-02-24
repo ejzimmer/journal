@@ -3,7 +3,7 @@ import { Day } from "./Day"
 import userEvent from "@testing-library/user-event"
 import { ContextType, FirebaseContext } from "../../../shared/FirebaseContext"
 import { ReactNode } from "react"
-import { HABITS } from "./types"
+import { HABITS } from "../../../shared/types"
 
 const Wrapper = ({
   children,

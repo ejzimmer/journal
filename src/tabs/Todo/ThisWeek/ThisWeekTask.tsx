@@ -4,10 +4,16 @@ import { DeleteButton } from "../DeleteButton"
 
 import "./ThisWeekTask.css"
 import { FirebaseContext } from "../../../shared/FirebaseContext"
-import { WEEKLY_KEY, WeeklyTask } from "../../../shared/types"
+import {
+  DAILY_PATH,
+  DayData,
+  Habit,
+  HABITS,
+  isHabit,
+  WEEKLY_KEY,
+  WeeklyTask,
+} from "../../../shared/types"
 import { formatDate } from "../../../shared/utils"
-import { DayData, Habit, HABITS, isHabit } from "../../ThisYear/Days/types"
-import { PATH as dailyPath } from "../../ThisYear/Days/Days"
 
 export function ThisWeekTask({ task }: { task: WeeklyTask }) {
   const storageContext = useContext(FirebaseContext)
@@ -21,7 +27,7 @@ export function ThisWeekTask({ task }: { task: WeeklyTask }) {
 
   const { day, month } = formatDate(new Date())
   const { value: today } = storageContext.useValue<DayData>(
-    `${dailyPath}/${day}${month}`,
+    `${DAILY_PATH}/${day}${month}`,
   )
 
   const handleClick = (event: React.MouseEvent) => {
@@ -47,7 +53,7 @@ export function ThisWeekTask({ task }: { task: WeeklyTask }) {
     }
     const habits =
       today?.habits ?? Object.fromEntries(HABITS.map((habit) => [habit, false]))
-    storageContext.updateItem<DayData>(dailyPath, {
+    storageContext.updateItem<DayData>(DAILY_PATH, {
       id: `${day}${month}`,
       habits: {
         ...habits,

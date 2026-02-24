@@ -1,26 +1,26 @@
+import React from "react"
 import { addDays, differenceInCalendarDays, startOfDay } from "date-fns"
 import { useContext, useMemo, useState } from "react"
 
 import "./Days.css"
 import { Day } from "./Day"
 import { FirebaseContext } from "../../../shared/FirebaseContext"
-import { DayData, HABITS, TrackerContext } from "./types"
+import { TrackerContext } from "./types"
 import { EmojiCheckbox } from "../../../shared/controls/EmojiCheckbox"
 import { toggleListItem } from "./utils"
 import { formatDate } from "../../../shared/utils"
-import React from "react"
+import { DAILY_PATH, DayData, HABITS } from "../../../shared/types"
 
-export const PATH = "2026/daily"
 const STARTING_BALANCE = 19687
 
-export function Days() {
+export function DayList() {
   const [filters, setFilters] = useState<string[]>([])
 
   const storageContext = useContext(FirebaseContext)
   if (!storageContext) {
     throw new Error("no storage context")
   }
-  const { value } = storageContext.useValue<DayData>(PATH)
+  const { value } = storageContext.useValue<DayData>(DAILY_PATH)
 
   const days = useMemo(() => setupDays(value), [value])
   const weeklyBalances = useMemo(() => getWeeklyBalance(days), [days])
@@ -53,7 +53,7 @@ export function Days() {
                 className={getDayClass({ filters, day: dayData, diff })}
               >
                 <Day
-                  path={PATH}
+                  path={DAILY_PATH}
                   date={{ day, month }}
                   balance={balance}
                   {...dayData}

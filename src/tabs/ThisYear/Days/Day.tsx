@@ -1,9 +1,10 @@
 import { useContext, useState } from "react"
 import { FirebaseContext } from "../../../shared/FirebaseContext"
 import { EmojiCheckbox } from "../../../shared/controls/EmojiCheckbox"
-import { DayData, DayMonth, HABITS } from "./types"
+import { DayMonth } from "./types"
 import { CalorieForm } from "./CalorieForm"
 import { Trackers } from "./Trackers"
+import { DayData, HABITS } from "../../../shared/types"
 
 type DayProps = DayData & { date: DayMonth; path: string; balance?: number }
 

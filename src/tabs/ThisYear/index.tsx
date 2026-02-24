@@ -1,4 +1,4 @@
-import { Days } from "./Days/Days"
+import { DayList } from "./Days/DayList"
 import { OtherGoals } from "./OtherGoals"
 import { StationRunning } from "./StationRunning/StationRunning"
 import { YarnTracking } from "./YarnTracking"
@@ -8,7 +8,7 @@ export function ThisYear() {
     <div style={{ display: "grid", gap: "36px" }}>
       <YarnTracking />
       <StationRunning />
-      <Days />
+      <DayList />
       <OtherGoals />
     </div>
   )

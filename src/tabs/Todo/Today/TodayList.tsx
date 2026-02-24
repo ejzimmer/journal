@@ -2,7 +2,15 @@ import { TodayTask } from "./TodayTask"
 
 import { AddTodayTaskForm } from "./AddTodayTaskForm"
 import { isBefore, startOfDay } from "date-fns"
-import { DailyTask, DAILY_KEY } from "../../../shared/types"
+import {
+  DailyTask,
+  DAILY_KEY,
+  DAILY_PATH,
+  DayData,
+  Habit,
+  HABITS,
+  isHabit,
+} from "../../../shared/types"
 import { useContext, useRef } from "react"
 import { FirebaseContext } from "../../../shared/FirebaseContext"
 import { DraggableListItem } from "../../../shared/drag-and-drop/DraggableListItem"
@@ -18,9 +26,7 @@ import {
   isDraggable,
   sortByPosition,
 } from "../../../shared/drag-and-drop/utils"
-import { DayData, Habit, HABITS, isHabit } from "../../ThisYear/Days/types"
 import { formatDate } from "../../../shared/utils"
-import { PATH as dailyPath } from "../../ThisYear/Days/Days"
 
 const updatedYesterday = (task: DailyTask, status: DailyTask["status"]) =>
   task.status === status && isBefore(task.lastCompleted, startOfDay(new Date()))
@@ -36,7 +42,7 @@ export function TodayList() {
 
   const { day, month } = formatDate(new Date())
   const { value: today } = storageContext.useValue<DayData>(
-    `${dailyPath}/${day}${month}`,
+    `${DAILY_PATH}/${day}${month}`,
   )
 
   const { finishedTasks, unfinishedTasks } = tasks.reduce(
@@ -135,7 +141,7 @@ export function TodayList() {
                   const habits =
                     today?.habits ??
                     Object.fromEntries(HABITS.map((habit) => [habit, false]))
-                  storageContext.updateItem<DayData>(dailyPath, {
+                  storageContext.updateItem<DayData>(DAILY_PATH, {
                     id: `${day}${month}`,
                     habits: {
                       ...habits,
