@@ -7,10 +7,20 @@ li.project {
   font-size: 18px;
   align-self: start;
 
+  &.in_progress {
+    outline: 2px solid var(--body-colour-light);
+    outline-offset: -2px;
+    filter: contrast(200%);
+  }
+
   &.done {
     filter: grayscale(0.5);
     opacity: 0.5;
     text-decoration: line-through;
+  }
+  label.emoji-checkbox.done {
+    filter: none;
+    text-shadow: 1px 1px 4px hsl(0 0 0 /0.4);
   }
 
   .project-details {
@@ -22,15 +32,8 @@ li.project {
     background: var(--project-colour);
   }
 
-  label.emoji-checkbox.done {
-    filter: none;
-    text-shadow: 1px 1px 4px hsl(0 0 0 /0.4);
-  }
-
-  &.in_progress {
-    outline: 2px solid var(--body-colour-light);
-    outline-offset: -2px;
-    filter: contrast(200%);
+  button path {
+    transition: all 0.2s;
   }
 
   button.expand:focus {
@@ -42,19 +45,6 @@ li.project {
   }
   button.expand.expanded path {
     transform: rotate(0.5turn);
-  }
-  button.show-form {
-    padding: 6px;
-  }
-  button.show-form:focus {
-    outline: 2px solid var(--project-colour);
-    outline-offset: -2px;
-  }
-  button.show-form.form-visible svg {
-    transform: rotate(45deg);
-  }
-  button path {
-    transition: all 0.2s;
   }
 
   .subtasks-section {
@@ -79,6 +69,17 @@ li.project {
       outline: 2px solid var(--project-colour);
       outline-offset: -2px;
     }
+  }
+
+  button.show-form {
+    padding: 6px;
+  }
+  button.show-form:focus {
+    outline: 2px solid var(--project-colour);
+    outline-offset: -2px;
+  }
+  button.show-form.form-visible svg {
+    transform: rotate(45deg);
   }
 
   form.add-subtask-form {
