@@ -24,9 +24,8 @@ export function Subtask({ onUpdate, onDelete, ...task }: SubtaskProps) {
     throw new Error("Missing Firebase context provider")
   }
 
-  const { value: linkedTask } = storageContext.useValue(
-    `${DAILY_KEY}/${task.linkedId}`,
-  )
+  const { value } = storageContext.useValue<DailyTask>(DAILY_KEY)
+  const linkedTask = task.linkedId && value?.[task.linkedId]
   if (task.linkedId && linkedTask && copyButtonVisible) {
     setCopyButtonVisible(false)
   }
@@ -44,23 +43,32 @@ export function Subtask({ onUpdate, onDelete, ...task }: SubtaskProps) {
 
     if (linkedId) onUpdate({ ...task, linkedId })
     setSuccessConfirmationVisible(true)
-    // don't show button if already added to todo. but check.
-    // when item is ticked off here, tick it off in todo
     // when item is ticked off in todo, tick it off here
     // add a project with subtasks to todo => just move all the subtasks
     // add a project without subtasks to todo => move the project as a single task
+  }
+
+  const handleChange = () => {
+    const status = task.status === "done" ? "ready" : "done"
+    onUpdate({
+      ...task,
+      status,
+    })
+
+    if (!linkedTask) return
+
+    storageContext.updateItem<DailyTask>(DAILY_KEY, {
+      ...linkedTask,
+      status,
+      lastCompleted: new Date().getTime(),
+    })
   }
 
   return (
     <li className="subtask">
       <Checkbox
         isChecked={task.status === "done"}
-        onChange={() => {
-          onUpdate({
-            ...task,
-            status: task.status === "done" ? "ready" : "done",
-          })
-        }}
+        onChange={handleChange}
         aria-label={`${task.description} ${task.status}`}
       />
       <EditableText
