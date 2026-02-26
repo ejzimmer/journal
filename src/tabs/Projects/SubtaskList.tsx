@@ -1,7 +1,7 @@
 import { useContext, useEffect, useMemo, useRef, useState } from "react"
 import { FirebaseContext } from "../../shared/FirebaseContext"
 import { PlusIcon } from "../../shared/icons/Plus"
-import { KEY, Task } from "./types"
+import { PROJECTS_KEY, ProjectDetails, Task } from "./types"
 import { Subtask } from "./Subtask"
 import { AddSubtaskForm } from "./AddSubtaskForm"
 
@@ -16,7 +16,7 @@ export function SubtaskList({ projectId, isVisible }: SubtasksProps) {
   const containerRef = useRef<HTMLDivElement>(null)
   const listRef = useRef<HTMLUListElement>(null)
   const formContainerRef = useRef<HTMLDivElement>(null)
-  const subtasksKey = `${KEY}/${projectId}/subtasks`
+  const subtasksKey = `${PROJECTS_KEY}/${projectId}/subtasks`
 
   const storageContext = useContext(FirebaseContext)
   if (!storageContext) {
@@ -24,6 +24,8 @@ export function SubtaskList({ projectId, isVisible }: SubtasksProps) {
   }
   const { value } = storageContext.useValue<Task>(subtasksKey)
   const subtasks = useMemo(() => (value ? Object.values(value) : []), [value])
+  const { value: projects } =
+    storageContext.useValue<ProjectDetails>(PROJECTS_KEY)
 
   const onUpdateTask = (task: Task) =>
     storageContext.updateItem<Task>(subtasksKey, task)
@@ -35,6 +37,7 @@ export function SubtaskList({ projectId, isVisible }: SubtasksProps) {
     storageContext.addItem<Task>(subtasksKey, {
       description,
       status: "ready",
+      category: projects?.[projectId].category ?? "",
     })
   }
 

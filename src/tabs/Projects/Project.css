@@ -58,6 +58,7 @@ li.project {
       opacity: 1;
       margin-block-end: 12px;
       margin-block-start: 8px;
+      overflow: visible;
     }
   }
 
@@ -118,6 +119,11 @@ li.project {
 
     li {
       padding-block: 2px;
+
+      &:not(:has(:checked)):hover .copy-button,
+      &:not(:has(:checked)):focus-within .copy-button {
+        opacity: 1;
+      }
     }
   }
 
@@ -146,5 +152,34 @@ li.project {
       text-decoration: line-through;
       opacity: 0.6;
     }
+  }
+
+  .copy-button {
+    opacity: 0;
+    margin-inline-start: 12px;
+    transition: all 0.2s;
+
+    &:focus {
+      outline: 2px solid var(--project-colour);
+      outline-offset: 6px;
+    }
+  }
+
+  .confirmation {
+    font-size: 0.8em;
+    color: white;
+    background: hsl(160 80% 30%);
+    border-radius: 4px;
+    padding-block: 4px;
+    padding-inline: 8px;
+    box-shadow: 2px 2px 8px hsl(0 0 0/0.4);
+    animation: drift 1s linear;
+  }
+}
+
+@keyframes drift {
+  to {
+    translate: 0 -400%;
+    opacity: 0;
   }
 }

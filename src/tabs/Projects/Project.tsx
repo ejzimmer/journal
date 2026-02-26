@@ -1,7 +1,7 @@
 import { CSSProperties, useContext, useState } from "react"
 import { EditableText } from "../../shared/controls/EditableText"
 import { FirebaseContext } from "../../shared/FirebaseContext"
-import { COLOURS, KEY, ProjectDetails } from "./types"
+import { COLOURS, PROJECTS_KEY, ProjectDetails } from "./types"
 
 import "./Project.css"
 import { EmojiCheckbox } from "../../shared/controls/EmojiCheckbox"
@@ -29,11 +29,14 @@ export function Project({ project }: ProjectProps) {
 
   const onChangeStatus = () => {
     if (project.status === "ready") {
-      storageContext.updateItem(KEY, { ...project, status: "in_progress" })
+      storageContext.updateItem(PROJECTS_KEY, {
+        ...project,
+        status: "in_progress",
+      })
     } else if (project.status === "in_progress") {
-      storageContext.updateItem(KEY, { ...project, status: "done" })
+      storageContext.updateItem(PROJECTS_KEY, { ...project, status: "done" })
     } else {
-      storageContext.updateItem(KEY, { ...project, status: "ready" })
+      storageContext.updateItem(PROJECTS_KEY, { ...project, status: "ready" })
     }
   }
 
@@ -53,7 +56,7 @@ export function Project({ project }: ProjectProps) {
               setConfirmDeleteModalOpen(true)
               return
             }
-            storageContext.updateItem<ProjectDetails>(KEY, {
+            storageContext.updateItem<ProjectDetails>(PROJECTS_KEY, {
               ...project,
               description,
             })
@@ -66,7 +69,7 @@ export function Project({ project }: ProjectProps) {
         </EditableText>
         <ConfirmationModalDialog
           message={`Are you sure you want to delete ${project.description}`}
-          onConfirm={() => storageContext.deleteItem(KEY, project)}
+          onConfirm={() => storageContext.deleteItem(PROJECTS_KEY, project)}
           isOpen={confirmDeleteModalOpen}
         />
         <button

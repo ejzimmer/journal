@@ -19,6 +19,8 @@ export type Task = {
   id: string
   description: string
   status: Status
+  category: string
+  linkedId?: string
 }
 
 export type ProjectDetails = {
@@ -29,4 +31,4 @@ export type ProjectDetails = {
   subtasks?: Record<string, Task>
 }
 
-export const KEY = "projects"
+export const PROJECTS_KEY = "projects"
