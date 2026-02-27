@@ -18,10 +18,11 @@ import {
 import { DragPreview } from "../DragPreview"
 import { DragHandle } from "../../../shared/drag-and-drop/DragHandle"
 
-const moreThanAWeekAgo = (date: number | null) =>
-  date && isBefore(date, subDays(new Date(), 7))
-
 export function ThisWeekList() {
+  const moreThanAWeekAgo = (date: number | null) =>
+    date && isBefore(date, subDays(new Date(), 7))
+  console.log("more than a week ago", moreThanAWeekAgo)
+
   const listRef = useRef<HTMLOListElement>(null)
   const storageContext = useContext(FirebaseContext)
   if (!storageContext) {
@@ -34,6 +35,12 @@ export function ThisWeekList() {
     const completed = Array.isArray(task.completed)
       ? task.completed
       : (Object.values(task.completed ?? {}) as number[])
+    console.log(
+      task.description,
+      task.completed?.map((d) => d && new Date(d)),
+      "needs updating",
+      completed.some(moreThanAWeekAgo),
+    )
     return completed.some(moreThanAWeekAgo)
   })
   readyForReset.forEach((task) => {

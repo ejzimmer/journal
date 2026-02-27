@@ -44,6 +44,9 @@ export function Subtask({ onUpdate, onDelete, ...task }: SubtaskProps) {
     if (linkedId) onUpdate({ ...task, linkedId })
     setSuccessConfirmationVisible(true)
     // when item is ticked off in todo, tick it off here
+    // - pass subtask path into subtask & move subtask updating into subtask component
+    // - when creating linked task, include the path
+    // - when updating todo, update linked task if it exists
     // add a project with subtasks to todo => just move all the subtasks
     // add a project without subtasks to todo => move the project as a single task
   }

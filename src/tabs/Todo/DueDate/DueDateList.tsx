@@ -9,14 +9,6 @@ import { CalendarTask, CALENDAR_KEY } from "../../../shared/types"
 
 const readyToDelete = (task: CalendarTask) => {
   const today = startOfDay(new Date())
-  console.log("Today: ", today)
-  console.log("Task", task.description, task.status, new Date(task.dueDate))
-  console.log("Due date is before today", isBefore(task.dueDate, today))
-  console.log(
-    "Was updated before today",
-    new Date(task.statusUpdateDate),
-    isBefore(task.statusUpdateDate, today),
-  )
   return (
     task.status === "finished" &&
     isBefore(task.dueDate, today) &&
