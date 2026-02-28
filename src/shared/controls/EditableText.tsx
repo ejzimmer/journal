@@ -57,6 +57,7 @@ export function EditableText({
       onKeyDown={(event) => {
         if (event.key === "Enter") {
           handleSubmit()
+          event.preventDefault()
         }
       }}
       size={size}

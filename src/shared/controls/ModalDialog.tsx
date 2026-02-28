@@ -1,18 +1,24 @@
-import { ReactNode, useRef } from "react"
+import { ReactNode, useEffect, useRef } from "react"
 import { Modal, ModalContext } from "./Modal"
 
 export function ModalDialog({
   isOpen,
+  onCancel,
   children,
 }: {
   isOpen: boolean
+  onCancel: () => void
   children: ReactNode
 }) {
+  const modalState = useRef<"open" | "closed">("closed")
   const dialogRef = useRef<HTMLDialogElement>(null)
 
-  const closeModal = () => {
-    dialogRef.current?.close()
-  }
+  useEffect(() => {
+    if (modalState.current === "closed" && isOpen) {
+      modalState.current = "open"
+      dialogRef.current?.showModal()
+    }
+  }, [isOpen])
 
   return (
     <dialog
@@ -20,10 +26,14 @@ export function ModalDialog({
       className="modal"
       // @ts-ignore closedby does exist really
       closedby="any"
-      open={isOpen}
-      onClose={closeModal}
+      onClose={() => {
+        modalState.current = "closed"
+        onCancel()
+      }}
     >
-      <ModalContext.Provider value={{ closeModal }}>
+      <ModalContext.Provider
+        value={{ closeModal: () => dialogRef.current?.close() }}
+      >
         <div className="close-button">
           <Modal.CloseButton />
         </div>

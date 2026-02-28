@@ -80,6 +80,7 @@ export function Subtask({ path, ...task }: SubtaskProps) {
       <ConfirmationModalDialog
         message={`Are you sure you want to delete ${task.description}`}
         onConfirm={() => storageContext.deleteItem(path, task)}
+        onCancel={() => setConfirmDeleteModalOpen(false)}
         isOpen={confirmDeleteModalOpen}
       />
     </li>

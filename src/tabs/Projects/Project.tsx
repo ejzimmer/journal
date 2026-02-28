@@ -128,6 +128,9 @@ export function Project({ project }: ProjectProps) {
         <ConfirmationModalDialog
           message={`Are you sure you want to delete ${project.description}`}
           onConfirm={() => storageContext.deleteItem(PROJECTS_KEY, project)}
+          onCancel={() => {
+            setConfirmDeleteModalOpen(false)
+          }}
           isOpen={confirmDeleteModalOpen}
         />
         <ButtonWithConfirmation

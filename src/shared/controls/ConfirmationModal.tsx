@@ -42,14 +42,18 @@ export function ConfirmationModal({
   )
 }
 
-type ConfirmationModalDialogProps = ModalContentsProps & { isOpen: boolean }
+type ConfirmationModalDialogProps = ModalContentsProps & {
+  isOpen: boolean
+  onCancel: () => void
+}
 
 export function ConfirmationModalDialog({
   isOpen,
+  onCancel,
   ...props
 }: ConfirmationModalDialogProps) {
   return (
-    <ModalDialog isOpen={isOpen}>
+    <ModalDialog isOpen={isOpen} onCancel={onCancel}>
       <ModalContents {...props} />
     </ModalDialog>
   )
