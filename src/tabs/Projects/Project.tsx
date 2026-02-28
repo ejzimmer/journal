@@ -99,7 +99,7 @@ export function Project({ project }: ProjectProps) {
   }
 
   return (
-    <li className={`project ${project.status}`} style={projectColour}>
+    <div className={`project ${project.status}`} style={projectColour}>
       <div className="project-details">
         <EmojiCheckbox
           emoji={project.category}
@@ -146,6 +146,6 @@ export function Project({ project }: ProjectProps) {
         </button>
       </div>
       <SubtaskList projectId={project.id} isVisible={subtasksVisible} />
-    </li>
+    </div>
   )
 }

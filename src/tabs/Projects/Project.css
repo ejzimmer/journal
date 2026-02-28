@@ -1,4 +1,4 @@
-li.project {
+.project {
   --project-colour-light: color(from var(--project-colour) srgb r g b / 0.2);
   flex-shrink: 0;
   border: 1px solid var(--border-colour);
