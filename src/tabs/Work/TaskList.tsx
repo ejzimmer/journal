@@ -57,12 +57,13 @@ export function TaskList({
     throw new Error("missing storage context")
   }
 
-  const { value: lists } = storageContext.useValue<WorkTask>(WORK_KEY)
+  const { value: lists } =
+    storageContext.useValue<Record<string, WorkTask>>(WORK_KEY)
   const list = lists?.[listId]
 
   const sortedList = useMemo(
     () => (list?.items ? sortByOrder(Object.values(list.items)) : []),
-    [list?.items]
+    [list?.items],
   )
 
   const dragState = useDropTarget({
@@ -133,7 +134,7 @@ export function TaskList({
                   onReorder={(reorderedList) =>
                     storageContext.updateList(
                       `${WORK_KEY}/${listId}/items`,
-                      reorderedList
+                      reorderedList,
                     )
                   }
                 />

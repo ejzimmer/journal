@@ -37,8 +37,9 @@ export function TodayList() {
   if (!storageContext) {
     throw new Error("Missing Firebase context provider")
   }
-  const { value } = storageContext.useValue<DailyTask>(DAILY_KEY)
-  const tasks = sortByPosition(value ? Object.values(value) : [])
+  const { value } =
+    storageContext.useValue<Record<string, DailyTask>>(DAILY_KEY)
+  const tasks = value ? sortByPosition(Object.values(value)) : []
 
   const { day, month } = formatDate(new Date())
   const { value: today } = storageContext.useValue<DayData>(

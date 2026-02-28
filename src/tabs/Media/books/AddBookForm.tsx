@@ -22,7 +22,8 @@ export function AddBookForm() {
     throw new Error("Missing storage context")
   }
 
-  const { value } = storageContext.useValue<ReadingItemDetails>(BOOKS_KEY)
+  const { value } =
+    storageContext.useValue<Record<string, ReadingItemDetails>>(BOOKS_KEY)
   const authorOptions = value
     ? Object.values(value)
         .filter((item) => item.type === "author")
@@ -47,10 +48,10 @@ export function AddBookForm() {
   }, [value, author])
 
   const createParentItem = <
-    T extends AuthorDetails | SeriesDetails<BookDetails>
+    T extends AuthorDetails | SeriesDetails<BookDetails>,
   >(
     item: T,
-    path: string
+    path: string,
   ) => {
     const id =
       item.id === ""
@@ -78,7 +79,7 @@ export function AddBookForm() {
           type: "author",
           name: author.label,
         },
-        path
+        path,
       )
     }
 
@@ -89,7 +90,7 @@ export function AddBookForm() {
           type: "series",
           name: series.label,
         },
-        path
+        path,
       )
     }
 

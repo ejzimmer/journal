@@ -15,6 +15,7 @@ export type DailyTaskDetails = {
   type: "毎日" | "一度"
   status: "ready" | "done" | "finished"
   lastCompleted: number
+  linkedTask?: string
 }
 export type DailyTask = DailyTaskDetails & TodoTask
 
@@ -49,3 +50,31 @@ export type DayData = {
 }
 export const isHabit = (emoji: string): emoji is Habit =>
   HABITS.includes(emoji as any)
+
+export const PROJECTS_KEY = "projects"
+export type ProjectSubtask = {
+  id: string
+  description: string
+  status: "ready" | "done"
+  linkedId?: string
+  category: Category
+}
+export const PROJECT_COLOURS = {
+  "🛒": "hsl(197 36% 70% /.3)",
+  "📓": "hsl(0  0% 49% / .3)",
+  "🖊️": "hsl(209 79% 48% /.3)",
+  "👩‍💻": "hsl(93 90% 45% / .3)",
+  "🧹": "hsl(45 100% 76% / .3)",
+  "🪡": "hsl(203 85% 77% / .3)",
+  "🧶": "hsl(339 78% 67% / .3)",
+  "🚚": "hsl(352 90% 45% / .3)",
+}
+export const categories = Object.keys(PROJECT_COLOURS)
+export type Category = keyof typeof PROJECT_COLOURS
+export type ProjectDetails = {
+  id: string
+  description: string
+  category: Category
+  status?: "ready" | "in_progress" | "done"
+  subtasks?: Record<string, ProjectSubtask>
+}

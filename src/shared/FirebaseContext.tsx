@@ -5,7 +5,7 @@ type Item = { id: string }
 
 export type ParentCrudFunction = <T extends Item>(
   parentId: string,
-  item: T
+  item: T,
 ) => void
 
 export interface ContextType {
@@ -13,7 +13,7 @@ export interface ContextType {
   updateItem: ParentCrudFunction
   deleteItem: ParentCrudFunction
   updateList: <T extends Item>(listName: string, list: T[]) => void
-  useValue: <T>(key: string) => { value?: Record<string, T>; loading: boolean }
+  useValue: <T>(key?: string) => { value?: T; loading: boolean }
 }
 
 export const FirebaseContext = createContext<ContextType | undefined>(undefined)
@@ -43,16 +43,21 @@ export function createFirebaseContext(database: Database): ContextType {
       remove(reference)
     },
     updateList: <T extends { id: string }>(listName: string, list: T[]) => {
-      const map = list.reduce((items, item) => {
-        items[item.id] = item
-        return items
-      }, {} as Record<string, T>)
+      const map = list.reduce(
+        (items, item) => {
+          items[item.id] = item
+          return items
+        },
+        {} as Record<string, T>,
+      )
       set(ref(database, listName), map)
     },
-    useValue: (key: string) => {
+    useValue: (key?: string) => {
       const [result, setResult] = useState<any>({ loading: true })
 
       useEffect(() => {
+        if (!key) return
+
         const reference = ref(database, key)
 
         onValue(reference, (snapshot) => {

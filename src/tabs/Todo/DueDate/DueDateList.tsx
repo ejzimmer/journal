@@ -23,7 +23,8 @@ export function DueDateList() {
   if (!storageContext) {
     throw new Error("Missing Firebase context provider")
   }
-  const { value } = storageContext.useValue<CalendarTask>(CALENDAR_KEY)
+  const { value } =
+    storageContext.useValue<Record<string, CalendarTask>>(CALENDAR_KEY)
   const tasks = value ? Object.values(value) : []
 
   const readyToReset = tasks.some(readyToDelete)

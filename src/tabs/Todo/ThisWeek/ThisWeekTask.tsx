@@ -26,7 +26,7 @@ export function ThisWeekTask({ task }: { task: WeeklyTask }) {
   }
 
   const { day, month } = formatDate(new Date())
-  const { value: today } = storageContext.useValue<DayData>(
+  const { value: today } = storageContext.useValue<Record<string, DayData>>(
     `${DAILY_PATH}/${day}${month}`,
   )
 

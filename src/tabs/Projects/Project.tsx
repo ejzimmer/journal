@@ -1,13 +1,17 @@
 import { CSSProperties, useContext, useState } from "react"
 import { EditableText } from "../../shared/controls/EditableText"
 import { FirebaseContext } from "../../shared/FirebaseContext"
-import { COLOURS, PROJECTS_KEY, ProjectDetails } from "./types"
 
 import "./Project.css"
 import { EmojiCheckbox } from "../../shared/controls/EmojiCheckbox"
 import { ConfirmationModalDialog } from "../../shared/controls/ConfirmationModal"
 import { ChevronDownIcon } from "../../shared/icons/ChevronDown"
 import { SubtaskList } from "./SubtaskList"
+import {
+  ProjectDetails,
+  PROJECT_COLOURS,
+  PROJECTS_KEY,
+} from "../../shared/types"
 
 type ProjectProps = {
   project: ProjectDetails
@@ -24,7 +28,9 @@ export function Project({ project }: ProjectProps) {
 
   const projectColour = {
     "--project-colour":
-      project.category in COLOURS ? COLOURS[project.category] : "white",
+      project.category in PROJECT_COLOURS
+        ? PROJECT_COLOURS[project.category]
+        : "white",
   } as CSSProperties
 
   const onChangeStatus = () => {

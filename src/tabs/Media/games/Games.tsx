@@ -20,7 +20,8 @@ export function Games() {
     throw new Error("Missing Firebase context provider")
   }
 
-  const { value } = storageContext.useValue<PlayingItemDetails>(GAMES_KEY)
+  const { value } =
+    storageContext.useValue<Record<string, PlayingItemDetails>>(GAMES_KEY)
   const items = value ? Object.values(value) : []
 
   return (

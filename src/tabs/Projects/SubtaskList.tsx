@@ -1,9 +1,13 @@
 import { useContext, useEffect, useMemo, useRef, useState } from "react"
 import { FirebaseContext } from "../../shared/FirebaseContext"
 import { PlusIcon } from "../../shared/icons/Plus"
-import { PROJECTS_KEY, ProjectDetails, Task } from "./types"
 import { Subtask } from "./Subtask"
 import { AddSubtaskForm } from "./AddSubtaskForm"
+import {
+  PROJECTS_KEY,
+  ProjectSubtask,
+  ProjectDetails,
+} from "../../shared/types"
 
 type SubtasksProps = {
   projectId: string
@@ -22,22 +26,20 @@ export function SubtaskList({ projectId, isVisible }: SubtasksProps) {
   if (!storageContext) {
     throw new Error("Missing Firebase context provider")
   }
-  const { value } = storageContext.useValue<Task>(subtasksKey)
+  const { value } =
+    storageContext.useValue<Record<string, ProjectSubtask>>(subtasksKey)
   const subtasks = useMemo(() => (value ? Object.values(value) : []), [value])
-  const { value: projects } =
-    storageContext.useValue<ProjectDetails>(PROJECTS_KEY)
-
-  const onUpdateTask = (task: Task) =>
-    storageContext.updateItem<Task>(subtasksKey, task)
-
-  const onDeleteTask = (task: Task) =>
-    storageContext.deleteItem<Task>(subtasksKey, task)
+  const { value: project } = storageContext.useValue<ProjectDetails>(
+    `${PROJECTS_KEY}/${projectId}`,
+  )
 
   const onAddTask = (description: string) => {
-    storageContext.addItem<Task>(subtasksKey, {
+    if (!project) return
+
+    storageContext.addItem<ProjectSubtask>(subtasksKey, {
       description,
       status: "ready",
-      category: projects?.[projectId].category ?? "",
+      category: project.category,
     })
   }
 
@@ -57,12 +59,7 @@ export function SubtaskList({ projectId, isVisible }: SubtasksProps) {
     >
       <ul className="subtasks" ref={listRef}>
         {subtasks.map((task) => (
-          <Subtask
-            key={task.id}
-            {...task}
-            onUpdate={onUpdateTask}
-            onDelete={() => onDeleteTask(task)}
-          />
+          <Subtask key={task.id} path={subtasksKey} {...task} />
         ))}
       </ul>
       <div

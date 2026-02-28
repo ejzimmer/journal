@@ -12,7 +12,7 @@ export function YarnState() {
     throw new Error("Missing Firebase context provider")
   }
 
-  const { value } = storageContext.useValue<YarnDetails>(KEY)
+  const { value } = storageContext.useValue<Record<string, YarnDetails>>(KEY)
   if (!value) {
     return <>Loading...</>
   }
@@ -21,7 +21,7 @@ export function YarnState() {
   const monthlyBalances = getMonthlyBalances(value)
   const maximumBalance = Math.max(
     initialBalances.total,
-    ...monthlyBalances.map((month) => month.total)
+    ...monthlyBalances.map((month) => month.total),
   )
 
   return (
@@ -64,7 +64,7 @@ function MonthLabel({
     "default",
     {
       month: "long",
-    }
+    },
   )
 
   return (

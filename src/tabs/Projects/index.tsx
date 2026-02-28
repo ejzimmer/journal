@@ -2,9 +2,9 @@ import { useContext, useEffect, useRef, useState } from "react"
 import { FirebaseContext } from "../../shared/FirebaseContext"
 
 import "./index.css"
-import { ProjectDetails, PROJECTS_KEY, Category } from "./types"
 import { Project } from "./Project"
 import { AddProjectForm } from "./AddProjectForm"
+import { ProjectDetails, PROJECTS_KEY, Category } from "../../shared/types"
 
 export function Projects() {
   const containerRef = useRef<HTMLUListElement>(null)
@@ -15,7 +15,8 @@ export function Projects() {
     throw new Error("Missing Firebase context provider")
   }
 
-  const { value } = storageContext.useValue<ProjectDetails>(PROJECTS_KEY)
+  const { value } =
+    storageContext.useValue<Record<string, ProjectDetails>>(PROJECTS_KEY)
   const projects = value ? Object.values(value) : []
 
   const { knittingProjects, sewingProjects, otherProjects } = projects.reduce<

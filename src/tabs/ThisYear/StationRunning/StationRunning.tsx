@@ -17,7 +17,7 @@ export function StationRunning() {
     throw new Error("missing storage context")
   }
 
-  const { value } = storageContext.useValue<StationDetails>(KEY)
+  const { value } = storageContext.useValue<Record<string, StationDetails>>(KEY)
   const stations = value && Object.values(value)
 
   return (

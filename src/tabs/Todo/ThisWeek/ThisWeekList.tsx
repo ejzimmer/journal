@@ -28,7 +28,8 @@ export function ThisWeekList() {
   if (!storageContext) {
     throw new Error("Missing Firebase context provider")
   }
-  const { value } = storageContext.useValue<WeeklyTask>(WEEKLY_KEY)
+  const { value } =
+    storageContext.useValue<Record<string, WeeklyTask>>(WEEKLY_KEY)
   const tasks = sortByPosition(value ? Object.values(value) : [])
 
   const readyForReset = tasks.filter((task) => {

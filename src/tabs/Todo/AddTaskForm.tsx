@@ -21,7 +21,8 @@ export function AddTaskForm<T>({
   if (!storageContext) {
     throw new Error("Missing Firebase context provider")
   }
-  const { value } = storageContext.useValue<T & TodoTask>(listId)
+  const { value } =
+    storageContext.useValue<Record<string, T & TodoTask>>(listId)
 
   const categories = useContext(CategoriesContext)
   if (!categories) {

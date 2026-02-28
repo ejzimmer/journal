@@ -20,7 +20,7 @@ export function DayList() {
   if (!storageContext) {
     throw new Error("no storage context")
   }
-  const { value } = storageContext.useValue<DayData>(DAILY_PATH)
+  const { value } = storageContext.useValue<Record<string, DayData>>(DAILY_PATH)
 
   const days = useMemo(() => setupDays(value), [value])
   const weeklyBalances = useMemo(() => getWeeklyBalance(days), [days])

@@ -1,8 +1,13 @@
 import { useContext, useState } from "react"
 import { FormControl } from "../../shared/controls/FormControl"
-import { categories, Category, PROJECTS_KEY, ProjectDetails } from "./types"
 import { FirebaseContext } from "../../shared/FirebaseContext"
 import { TickIcon } from "../../shared/icons/Tick"
+import {
+  categories,
+  Category,
+  ProjectDetails,
+  PROJECTS_KEY,
+} from "../../shared/types"
 
 export function AddProjectForm() {
   const [description, setDescription] = useState("")

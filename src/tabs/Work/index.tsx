@@ -22,7 +22,8 @@ export function Work() {
     throw new Error("Missing Firebase context provider")
   }
   const { addItem, useValue, updateItem, deleteItem } = context
-  const { value: lists, loading: listsLoading } = useValue<WorkTask>(WORK_KEY)
+  const { value: lists, loading: listsLoading } =
+    useValue<Record<string, WorkTask>>(WORK_KEY)
 
   const doneList = useMemo(() => {
     return (
@@ -34,15 +35,15 @@ export function Work() {
     (listName: string) => {
       addItem(WORK_KEY, { description: listName })
     },
-    [addItem]
+    [addItem],
   )
 
   const orderedLists = useMemo(
     () =>
       (lists ? sortByOrder(Object.values(lists)) : []).filter(
-        (list) => list.id !== doneList?.id
+        (list) => list.id !== doneList?.id,
       ),
-    [lists, doneList]
+    [lists, doneList],
   )
 
   const onUpdate = useCallback(() => {
@@ -156,7 +157,7 @@ export function Work() {
                       <TaskMenu
                         task={task}
                         moveDestinations={Object.values(lists).filter(
-                          ({ id }) => id !== list.id && id !== doneList?.id
+                          ({ id }) => id !== list.id && id !== doneList?.id,
                         )}
                         onDelete={() =>
                           deleteItem(`${WORK_KEY}/${list.id}/items`, task)
@@ -168,7 +169,7 @@ export function Work() {
                                   item.position
                                     ? Math.max(highest, item.position)
                                     : highest,
-                                0
+                                0,
                               )
                             : 0
                           addItem(`${WORK_KEY}/${destination.id}/items`, {
@@ -201,8 +202,8 @@ export function Work() {
                                 } else {
                                   return [id, { ...item, position: 0 }]
                                 }
-                              }
-                            )
+                              },
+                            ),
                           )
                           updateItem(WORK_KEY, {
                             ...list,
@@ -212,7 +213,7 @@ export function Work() {
                       />
                     )}
                   />
-                )
+                ),
             )}
           </ol>
         </LabelsContext.Provider>

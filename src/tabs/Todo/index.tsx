@@ -16,7 +16,8 @@ export function Todo() {
   if (!storageContext) {
     throw new Error("Missing Firebase context provider")
   }
-  const { value: lists } = storageContext.useValue<TodoTask[]>(TODO_KEY)
+  const { value: lists } =
+    storageContext.useValue<Record<string, TodoTask[]>>(TODO_KEY)
   if (!lists) {
     return null
   }

@@ -20,7 +20,8 @@ export function AddGameForm() {
     throw new Error("Missing storage context")
   }
 
-  const { value } = storageContext.useValue<ReadingItemDetails>(GAMES_KEY)
+  const { value } =
+    storageContext.useValue<Record<string, ReadingItemDetails>>(GAMES_KEY)
   const seriesOptions = value
     ? Object.values(value)
         .filter((item) => item.type === "series")
@@ -29,7 +30,7 @@ export function AddGameForm() {
 
   const createParentItem = <T extends SeriesDetails<GameDetails>>(
     item: T,
-    path: string
+    path: string,
   ) => {
     const id =
       item.id === ""
@@ -57,7 +58,7 @@ export function AddGameForm() {
           type: "series",
           name: series.label,
         },
-        path
+        path,
       )
     }
 

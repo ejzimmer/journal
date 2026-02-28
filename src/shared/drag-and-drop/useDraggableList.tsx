@@ -19,7 +19,7 @@ type UseDraggableArgs = {
 }
 
 export function useDraggableList<
-  T extends Omit<OrderedListItem, typeof draggableTypeKey>
+  T extends Omit<OrderedListItem, typeof draggableTypeKey>,
 >({
   listId,
   canDropSourceOnTarget,
@@ -32,7 +32,7 @@ export function useDraggableList<
   }
   const { useValue, updateList, addItem, deleteItem } = context
 
-  const { value } = useValue<T>(listId)
+  const { value } = useValue<Record<string, T>>(listId)
 
   const getDestinationIndex = useCallback((target?: DropTarget) => {
     if (!isDraggable(target)) {
@@ -59,7 +59,7 @@ export function useDraggableList<
 
       return target
     },
-    [listId]
+    [listId],
   )
 
   const updatePosition = useCallback(
@@ -91,7 +91,7 @@ export function useDraggableList<
 
       updateList(listId, reorderedList)
     },
-    [updateList, value, getItemByPath]
+    [updateList, value, getItemByPath],
   )
 
   useEffect(() => {
@@ -142,14 +142,14 @@ export function useDraggableList<
             sortedTarget.map((item) =>
               item.position < targetListIndex
                 ? item
-                : { ...item, position: item.position + 1 }
-            )
+                : { ...item, position: item.position + 1 },
+            ),
           )
 
           // Add the new item to the list
           const item = getItemByPath(
             `${sourceData.parentId}/${sourceData.id}`,
-            value
+            value,
           )
           addItem(targetListId, {
             ...item,

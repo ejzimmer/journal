@@ -11,7 +11,8 @@ export function Books() {
     throw new Error("Missing Firebase context provider")
   }
 
-  const { value } = storageContext.useValue<ReadingItemDetails>(BOOKS_KEY)
+  const { value } =
+    storageContext.useValue<Record<string, ReadingItemDetails>>(BOOKS_KEY)
   const items = value ? Object.values(value) : []
 
   return (

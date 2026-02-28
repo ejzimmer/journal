@@ -6,7 +6,7 @@ import { DeleteButton } from "../DeleteButton"
 import { EmojiCheckbox } from "../../../shared/controls/EmojiCheckbox"
 
 import "./TodayTask.css"
-import { DailyTask, DAILY_KEY } from "../../../shared/types"
+import { DailyTask, DAILY_KEY, ProjectSubtask } from "../../../shared/types"
 
 export function TodayTask({
   task,
@@ -20,6 +20,10 @@ export function TodayTask({
     throw new Error("Missing Firebase context provider")
   }
 
+  const { value: linkedTask } = storageContext.useValue<ProjectSubtask>(
+    task?.linkedTask,
+  )
+
   const handleStatusChange = () => {
     if (task.status !== "ready") {
       onChange({
@@ -32,6 +36,16 @@ export function TodayTask({
         ...task,
         status: task.type === "毎日" ? "done" : "finished",
         lastCompleted: new Date().getTime(),
+      })
+    }
+
+    if (task.linkedTask && linkedTask) {
+      const segments = task.linkedTask.split("/")
+      const path = segments.slice(0, segments.length - 1).join("/")
+
+      storageContext.updateItem<ProjectSubtask>(path, {
+        ...linkedTask,
+        status: task.status === "finished" ? "ready" : "done",
       })
     }
   }

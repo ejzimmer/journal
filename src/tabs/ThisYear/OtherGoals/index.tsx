@@ -26,7 +26,7 @@ export function OtherGoals() {
     throw new Error("missing storage context")
   }
 
-  const { value } = storageContext.useValue<Goal>(path)
+  const { value } = storageContext.useValue<Record<string, Goal>>(path)
   const goals = value ? Object.values(value) : []
 
   const onUpdate = (goal: Goal) => {

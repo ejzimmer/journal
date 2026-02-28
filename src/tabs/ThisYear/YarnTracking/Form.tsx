@@ -11,7 +11,7 @@ export function YarnTrackingForm() {
   if (!storageContext) {
     throw new Error("Missing Firebase context provider")
   }
-  const { value } = storageContext.useValue<YarnDetails>(KEY)
+  const { value } = storageContext.useValue<Record<string, YarnDetails>>(KEY)
 
   const yarnTypeRef = useRef<HTMLSelectElement>(null)
   const amountRef = useRef<HTMLInputElement>(null)
