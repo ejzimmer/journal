@@ -15,6 +15,25 @@ import {
 } from "../../../shared/types"
 import { formatDate } from "../../../shared/utils"
 
+const dateFormatter = Intl.DateTimeFormat("en-AU", {
+  weekday: "short",
+  day: "numeric",
+})
+const suffixes = ["th", "st", "nd", "3rd"]
+
+const dateToWeekday = (date: number) => {
+  const formatted = dateFormatter.format(new Date(date))
+  const secondLastDigit = formatted.at(-2)
+  const lastDigit = formatted.at(-1)
+  const suffixIndex = lastDigit ? Number.parseInt(lastDigit) : -1
+
+  if (secondLastDigit === "1") {
+    return `${formatted}th`
+  }
+
+  return `${formatted}${suffixes[suffixIndex] ?? "th"}`
+}
+
 export function ThisWeekTask({ task }: { task: WeeklyTask }) {
   const storageContext = useContext(FirebaseContext)
   if (!storageContext) {
@@ -86,13 +105,20 @@ export function ThisWeekTask({ task }: { task: WeeklyTask }) {
         <progress
           max={task.frequency}
           value={numberDone}
-          className={numberDone === task.frequency ? "full" : ""}
+          className={numberDone >= task.frequency ? "full" : ""}
           style={{
             backgroundColor: "#eee",
             backgroundImage: `repeating-linear-gradient(to right, transparent, transparent ${percent}%, var(--body-colour-light) ${percent}%, var(--body-colour-light) calc(${percent}% + 1px))`,
           }}
         />
         {remainder > 0 && <span className="remainder">+{remainder}</span>}
+        {Array.isArray(task.completed) && (
+          <ol className="dates-popover">
+            {task.completed.map(
+              (date) => date && <li>{dateToWeekday(date)}</li>,
+            )}
+          </ol>
+        )}
       </div>
       <DeleteButton
         onDelete={() => storageContext.deleteItem<WeeklyTask>(WEEKLY_KEY, task)}
