@@ -11,7 +11,11 @@ import {
   ProjectDetails,
   PROJECT_COLOURS,
   PROJECTS_KEY,
+  ProjectSubtask,
 } from "../../shared/types"
+import { ArrowRightIcon } from "../../shared/icons/ArrowRight"
+import { ButtonWithConfirmation } from "../../shared/controls/ButtonWithConfirmation"
+import { getSubtasksKey, useLinkedTasks } from "./utils"
 
 type ProjectProps = {
   project: ProjectDetails
@@ -25,6 +29,9 @@ export function Project({ project }: ProjectProps) {
   if (!storageContext) {
     throw new Error("Missing Firebase context provider")
   }
+
+  const { createLinkedTask: createDailyTask, updateLinkedTask } =
+    useLinkedTasks(project.linkedTaskId)
 
   const projectColour = {
     "--project-colour":
@@ -44,6 +51,51 @@ export function Project({ project }: ProjectProps) {
     } else {
       storageContext.updateItem(PROJECTS_KEY, { ...project, status: "ready" })
     }
+
+    updateLinkedTask({
+      status: project.status === "done" ? "ready" : "finished",
+      lastCompleted: new Date().getTime(),
+    })
+  }
+
+  const onAddToTodo = () => {
+    if (project.subtasks) {
+      Object.values(project.subtasks).forEach((task) => {
+        if (task.status === "done" || task.linkedId) {
+          return
+        }
+
+        const linkedId = createDailyTask({
+          description: task.description,
+          category: task.category,
+          linkedTaskId: getSubtasksKey(project.id, task.id),
+        })
+
+        if (linkedId) {
+          storageContext.updateItem<ProjectSubtask>(
+            getSubtasksKey(project.id),
+            {
+              ...task,
+              linkedId,
+            },
+          )
+        }
+      })
+    } else {
+      const linkedTaskId = createDailyTask({
+        description: project.description,
+        category: project.category,
+        linkedTaskId: `${PROJECTS_KEY}/${project.id}`,
+      })
+
+      if (linkedTaskId) {
+        storageContext.updateItem<ProjectDetails>(PROJECTS_KEY, {
+          ...project,
+          linkedTaskId,
+        })
+      }
+    }
+    return true
   }
 
   return (
@@ -78,6 +130,13 @@ export function Project({ project }: ProjectProps) {
           onConfirm={() => storageContext.deleteItem(PROJECTS_KEY, project)}
           isOpen={confirmDeleteModalOpen}
         />
+        <ButtonWithConfirmation
+          className="icon ghost copy-project-button"
+          onClick={onAddToTodo}
+        >
+          <ArrowRightIcon colour="var(--action-colour)" width="16px" />
+        </ButtonWithConfirmation>
+
         <button
           className={`ghost expand ${subtasksVisible ? "expanded" : ""}`}
           onClick={() => setSubtasksVisible(!subtasksVisible)}

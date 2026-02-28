@@ -3,18 +3,16 @@ import { Checkbox } from "../../shared/controls/Checkbox"
 import { ConfirmationModalDialog } from "../../shared/controls/ConfirmationModal"
 import { EditableText } from "../../shared/controls/EditableText"
 import { FirebaseContext } from "../../shared/FirebaseContext"
-import { DAILY_KEY, DailyTask, ProjectSubtask } from "../../shared/types"
-import { OrderedListItem } from "../../shared/drag-and-drop/types"
+import { ProjectSubtask } from "../../shared/types"
 import { ArrowRightIcon } from "../../shared/icons/ArrowRight"
+import { ButtonWithConfirmation } from "../../shared/controls/ButtonWithConfirmation"
+import { useLinkedTasks } from "./utils"
 
 type SubtaskProps = ProjectSubtask & {
   path: string
 }
 
 export function Subtask({ path, ...task }: SubtaskProps) {
-  const [copyButtonVisible, setCopyButtonVisible] = useState(true)
-  const [successConfirmationVisible, setSuccessConfirmationVisible] =
-    useState(false)
   const [confirmDeleteModalOpen, setConfirmDeleteModalOpen] = useState(false)
 
   const storageContext = useContext(FirebaseContext)
@@ -22,43 +20,32 @@ export function Subtask({ path, ...task }: SubtaskProps) {
     throw new Error("Missing Firebase context provider")
   }
 
-  const { value: linkedTask } = storageContext.useValue<DailyTask>(
-    task.linkedId && `${DAILY_KEY}/${task.linkedId}`,
-  )
-  if (linkedTask && copyButtonVisible) {
-    setCopyButtonVisible(false)
-  }
+  const {
+    linkedTask,
+    createLinkedTask: createDailyTask,
+    updateLinkedTask,
+  } = useLinkedTasks(task.linkedId)
 
   const updateTask = (task: ProjectSubtask) => {
     storageContext.updateItem<ProjectSubtask>(path, task)
   }
 
   const onAddToTodo = () => {
-    const linkedId = storageContext.addItem<
-      Omit<DailyTask, keyof OrderedListItem>
-    >(DAILY_KEY, {
-      category: { emoji: task.category, text: task.category },
+    const linkedId = createDailyTask({
       description: task.description,
-      status: task.status === "done" ? "finished" : task.status,
-      type: "一度",
-      lastCompleted: new Date().getTime(),
-      linkedTask: `${path}/${task.id}`,
+      category: task.category,
+      linkedTaskId: `${path}/${task.id}`,
     })
 
     if (linkedId) updateTask({ ...task, linkedId })
-    setSuccessConfirmationVisible(true)
-    // add a project with subtasks to todo => just move all the subtasks
-    // add a project without subtasks to todo => move the project as a single task
+    return !!linkedId
   }
 
   const handleChange = () => {
     const status = task.status === "done" ? "ready" : "done"
     updateTask({ ...task, status })
 
-    if (!linkedTask) return
-
-    storageContext.updateItem<DailyTask>(DAILY_KEY, {
-      ...linkedTask,
+    updateLinkedTask({
       status,
       lastCompleted: new Date().getTime(),
     })
@@ -84,19 +71,12 @@ export function Subtask({ path, ...task }: SubtaskProps) {
       >
         {task.description}
       </EditableText>
-      {copyButtonVisible && (
-        <button className="icon ghost copy-button" onClick={onAddToTodo}>
-          <ArrowRightIcon colour="var(--action-colour)" width="16px" />
-        </button>
-      )}
-      {successConfirmationVisible && (
-        <div
-          className="confirmation"
-          onAnimationEnd={() => setSuccessConfirmationVisible(false)}
-        >
-          Copied!
-        </div>
-      )}
+      <ButtonWithConfirmation
+        className={`icon ghost copy-button ${linkedTask ? "linked" : ""}`}
+        onClick={onAddToTodo}
+      >
+        <ArrowRightIcon colour="var(--action-colour)" width="16px" />
+      </ButtonWithConfirmation>
       <ConfirmationModalDialog
         message={`Are you sure you want to delete ${task.description}`}
         onConfirm={() => storageContext.deleteItem(path, task)}

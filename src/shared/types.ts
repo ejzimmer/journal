@@ -77,4 +77,5 @@ export type ProjectDetails = {
   category: Category
   status?: "ready" | "in_progress" | "done"
   subtasks?: Record<string, ProjectSubtask>
+  linkedTaskId?: string
 }

@@ -47,6 +47,21 @@ li.project {
     transform: rotate(0.5turn);
   }
 
+  .copy-project-button {
+    opacity: 0;
+    margin-inline: 8px;
+    transition: all 0.2s;
+  }
+
+  &:not(.done) {
+    &:hover,
+    &:focus-within {
+      .copy-project-button {
+        opacity: 1;
+      }
+    }
+  }
+
   .subtasks-section {
     opacity: 0;
     overflow: hidden;
@@ -120,8 +135,8 @@ li.project {
     li {
       padding-block: 2px;
 
-      &:not(:has(:checked)):hover .copy-button,
-      &:not(:has(:checked)):focus-within .copy-button {
+      &:not(:has(:checked)):hover .copy-button:not(.linked),
+      &:not(:has(:checked)):focus-within .copy-button:not(.linked) {
         opacity: 1;
       }
     }
@@ -163,23 +178,5 @@ li.project {
       outline: 2px solid var(--project-colour);
       outline-offset: 6px;
     }
-  }
-
-  .confirmation {
-    font-size: 0.8em;
-    color: white;
-    background: hsl(160 80% 30%);
-    border-radius: 4px;
-    padding-block: 4px;
-    padding-inline: 8px;
-    box-shadow: 2px 2px 8px hsl(0 0 0/0.4);
-    animation: drift 1s linear;
-  }
-}
-
-@keyframes drift {
-  to {
-    translate: 0 -400%;
-    opacity: 0;
   }
 }

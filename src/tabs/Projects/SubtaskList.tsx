@@ -8,6 +8,7 @@ import {
   ProjectSubtask,
   ProjectDetails,
 } from "../../shared/types"
+import { getSubtasksKey } from "./utils"
 
 type SubtasksProps = {
   projectId: string
@@ -20,7 +21,7 @@ export function SubtaskList({ projectId, isVisible }: SubtasksProps) {
   const containerRef = useRef<HTMLDivElement>(null)
   const listRef = useRef<HTMLUListElement>(null)
   const formContainerRef = useRef<HTMLDivElement>(null)
-  const subtasksKey = `${PROJECTS_KEY}/${projectId}/subtasks`
+  const subtasksKey = getSubtasksKey(projectId)
 
   const storageContext = useContext(FirebaseContext)
   if (!storageContext) {
