@@ -51,6 +51,7 @@ export function DueDateTask({ task }: { task: CalendarTask }) {
         {task.category.emoji}
         <EditableText
           label="description"
+          className="text"
           onChange={(description) => onChange({ ...task, description })}
         >
           {task.description}

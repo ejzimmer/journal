@@ -58,7 +58,7 @@ export function TodayTask({
         onChange={handleStatusChange}
         label={`${task.description} done`}
       />
-      <div style={{ flexGrow: 1 }}>
+      <div className="description" style={{ flexGrow: 1 }}>
         <EditableText
           label="description"
           onChange={(description) => onChange({ ...task, description })}

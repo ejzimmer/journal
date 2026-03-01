@@ -2,5 +2,9 @@
   &.status-done,
   &.status-finished {
     opacity: 0.4;
+
+    .description {
+      text-decoration: line-through;
+    }
   }
 }
