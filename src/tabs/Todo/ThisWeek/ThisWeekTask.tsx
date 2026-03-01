@@ -1,6 +1,4 @@
 import { useContext } from "react"
-import { EditableText } from "../../../shared/controls/EditableText"
-import { DeleteButton } from "../DeleteButton"
 
 import "./ThisWeekTask.css"
 import { FirebaseContext } from "../../../shared/FirebaseContext"
@@ -14,6 +12,7 @@ import {
   WeeklyTask,
 } from "../../../shared/types"
 import { formatDate } from "../../../shared/utils"
+import { EditableTextWithDelete } from "../../../shared/controls/EditableTextWithDelete"
 
 const dateFormatter = Intl.DateTimeFormat("en-AU", {
   weekday: "short",
@@ -94,12 +93,14 @@ export function ThisWeekTask({ task }: { task: WeeklyTask }) {
         {task.category.emoji}
       </button>
       <div style={{ flexGrow: 1 }}>
-        <EditableText
+        <EditableTextWithDelete
           label="description"
+          value={task.description}
           onChange={(description) => onChange({ ...task, description })}
-        >
-          {task.description}
-        </EditableText>
+          onDelete={() =>
+            storageContext.deleteItem<WeeklyTask>(WEEKLY_KEY, task)
+          }
+        />
       </div>
       <div className="indicators">
         <progress
@@ -120,9 +121,6 @@ export function ThisWeekTask({ task }: { task: WeeklyTask }) {
           </ol>
         )}
       </div>
-      <DeleteButton
-        onDelete={() => storageContext.deleteItem<WeeklyTask>(WEEKLY_KEY, task)}
-      />
     </>
   )
 }

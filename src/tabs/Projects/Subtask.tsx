@@ -1,12 +1,12 @@
 import { useContext, useState } from "react"
 import { Checkbox } from "../../shared/controls/Checkbox"
 import { ConfirmationModalDialog } from "../../shared/controls/ConfirmationModal"
-import { EditableText } from "../../shared/controls/EditableText"
 import { FirebaseContext } from "../../shared/FirebaseContext"
 import { ProjectSubtask } from "../../shared/types"
 import { ArrowRightIcon } from "../../shared/icons/ArrowRight"
 import { ButtonWithConfirmation } from "../../shared/controls/ButtonWithConfirmation"
 import { useLinkedTasks } from "./utils"
+import { EditableTextWithDelete } from "../../shared/controls/EditableTextWithDelete"
 
 type SubtaskProps = ProjectSubtask & {
   path: string
@@ -58,19 +58,15 @@ export function Subtask({ path, ...task }: SubtaskProps) {
         onChange={handleChange}
         aria-label={`${task.description} ${task.status}`}
       />
-      <EditableText
+      <EditableTextWithDelete
         label="project"
+        value={task.description}
         onChange={(description) => {
-          if (!description) {
-            setConfirmDeleteModalOpen(true)
-            return
-          }
           updateTask({ ...task, description })
         }}
+        onDelete={() => storageContext.deleteItem(path, task)}
         style={{ fontSize: "1em" }}
-      >
-        {task.description}
-      </EditableText>
+      />
       <ButtonWithConfirmation
         className={`icon ghost copy-button ${linkedTask ? "linked" : ""}`}
         onClick={onAddToTodo}

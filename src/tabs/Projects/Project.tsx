@@ -1,10 +1,8 @@
 import { CSSProperties, useContext, useState } from "react"
-import { EditableText } from "../../shared/controls/EditableText"
 import { FirebaseContext } from "../../shared/FirebaseContext"
 
 import "./Project.css"
 import { EmojiCheckbox } from "../../shared/controls/EmojiCheckbox"
-import { ConfirmationModalDialog } from "../../shared/controls/ConfirmationModal"
 import { ChevronDownIcon } from "../../shared/icons/ChevronDown"
 import { SubtaskList } from "./SubtaskList"
 import {
@@ -16,6 +14,7 @@ import {
 import { ArrowRightIcon } from "../../shared/icons/ArrowRight"
 import { ButtonWithConfirmation } from "../../shared/controls/ButtonWithConfirmation"
 import { getSubtasksKey, useLinkedTasks } from "./utils"
+import { EditableTextWithDelete } from "../../shared/controls/EditableTextWithDelete"
 
 type ProjectProps = {
   project: ProjectDetails
@@ -23,7 +22,6 @@ type ProjectProps = {
 
 export function Project({ project }: ProjectProps) {
   const [subtasksVisible, setSubtasksVisible] = useState(false)
-  const [confirmDeleteModalOpen, setConfirmDeleteModalOpen] = useState(false)
 
   const storageContext = useContext(FirebaseContext)
   if (!storageContext) {
@@ -107,31 +105,19 @@ export function Project({ project }: ProjectProps) {
           onChange={onChangeStatus}
           label={""}
         />
-        <EditableText
+        <EditableTextWithDelete
           label="project"
+          value={project.description}
           onChange={(description) => {
-            if (!description) {
-              setConfirmDeleteModalOpen(true)
-              return
-            }
             storageContext.updateItem<ProjectDetails>(PROJECTS_KEY, {
               ...project,
               description,
             })
           }}
+          onDelete={() => storageContext.deleteItem(PROJECTS_KEY, project)}
           style={{
             fontSize: "1em",
           }}
-        >
-          {project.description}
-        </EditableText>
-        <ConfirmationModalDialog
-          message={`Are you sure you want to delete ${project.description}`}
-          onConfirm={() => storageContext.deleteItem(PROJECTS_KEY, project)}
-          onCancel={() => {
-            setConfirmDeleteModalOpen(false)
-          }}
-          isOpen={confirmDeleteModalOpen}
         />
         <ButtonWithConfirmation
           className="icon ghost copy-project-button"

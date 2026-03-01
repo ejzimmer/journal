@@ -1,7 +1,7 @@
 import { CSSProperties, useEffect, useRef, useState } from "react"
 import "./EditableText.css"
 
-type Props = {
+export type EditableTextProps = {
   onChange: (text: string) => void
   label: string
   style?: CSSProperties
@@ -17,7 +17,7 @@ export function EditableText({
   style,
   className = "",
   size,
-}: Props) {
+}: EditableTextProps) {
   const [isEditing, setIsEditing] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
   const outputRef = useRef<HTMLDivElement>(null)

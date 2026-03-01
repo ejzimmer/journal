@@ -1,12 +1,11 @@
 import { useContext } from "react"
-import { EditableText } from "../../../shared/controls/EditableText"
 import { FirebaseContext } from "../../../shared/FirebaseContext"
-import { DeleteButton } from "../DeleteButton"
 
 import { EmojiCheckbox } from "../../../shared/controls/EmojiCheckbox"
 
 import "./TodayTask.css"
 import { DailyTask, DAILY_KEY, ProjectSubtask } from "../../../shared/types"
+import { EditableTextWithDelete } from "../../../shared/controls/EditableTextWithDelete"
 
 export function TodayTask({
   task,
@@ -59,16 +58,15 @@ export function TodayTask({
         label={`${task.description} done`}
       />
       <div className="description" style={{ flexGrow: 1 }}>
-        <EditableText
+        <EditableTextWithDelete
           label="description"
+          value={task.description}
           onChange={(description) => onChange({ ...task, description })}
-        >
-          {task.description}
-        </EditableText>
+          onDelete={() => {
+            storageContext.deleteItem<DailyTask>(DAILY_KEY, task)
+          }}
+        />
       </div>
-      <DeleteButton
-        onDelete={() => storageContext.deleteItem<DailyTask>(DAILY_KEY, task)}
-      />
     </>
   )
 }

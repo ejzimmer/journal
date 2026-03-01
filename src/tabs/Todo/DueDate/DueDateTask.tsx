@@ -1,7 +1,5 @@
 import { useContext } from "react"
 import { EditableDate } from "../../../shared/controls/EditableDate"
-import { EditableText } from "../../../shared/controls/EditableText"
-import { DeleteButton } from "../DeleteButton"
 import { FirebaseContext } from "../../../shared/FirebaseContext"
 import { CalendarTask, CALENDAR_KEY, STATUSES } from "../../../shared/types"
 import { differenceInDays, startOfDay } from "date-fns"
@@ -10,6 +8,7 @@ import { PlayButtonIcon } from "../../../shared/icons/PlayButton"
 import { PauseButtonIcon } from "../../../shared/icons/PauseButton"
 import { TickIcon } from "../../../shared/icons/Tick"
 import { IconProps } from "../../../shared/icons/types"
+import { EditableTextWithDelete } from "../../../shared/controls/EditableTextWithDelete"
 
 const getDateClass = (task: CalendarTask) => {
   const today = startOfDay(Date.now())
@@ -49,13 +48,13 @@ export function DueDateTask({ task }: { task: CalendarTask }) {
       />
       <div className="description">
         {task.category.emoji}
-        <EditableText
+        <EditableTextWithDelete
           label="description"
-          className="text"
+          value={task.description}
           onChange={(description) => onChange({ ...task, description })}
-        >
-          {task.description}
-        </EditableText>
+          onDelete={onDelete}
+          className="text"
+        />
       </div>
       <Switch
         options={[...STATUSES]}
@@ -66,7 +65,6 @@ export function DueDateTask({ task }: { task: CalendarTask }) {
         name={task.description}
         Option={StatusOption}
       />
-      <DeleteButton onDelete={onDelete} />
     </>
   )
 }
