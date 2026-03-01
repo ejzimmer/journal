@@ -2,7 +2,7 @@ import { useContext } from "react"
 import { EditableDate } from "../../../shared/controls/EditableDate"
 import { FirebaseContext } from "../../../shared/FirebaseContext"
 import { CalendarTask, CALENDAR_KEY, STATUSES } from "../../../shared/types"
-import { differenceInDays, startOfDay } from "date-fns"
+import { differenceInDays, isSameDay, startOfDay } from "date-fns"
 import { Switch } from "../../../shared/controls/Switch"
 import { PlayButtonIcon } from "../../../shared/icons/PlayButton"
 import { PauseButtonIcon } from "../../../shared/icons/PauseButton"
@@ -16,7 +16,7 @@ const getDateClass = (task: CalendarTask) => {
   if (dueDateDay < today) {
     return "past"
   }
-  if (dueDateDay === today) {
+  if (isSameDay(dueDateDay, today)) {
     return "now"
   }
 

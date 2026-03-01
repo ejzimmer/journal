@@ -31,7 +31,9 @@
     padding: 4px;
 
     &.now {
-      color: var(--success-colour);
+      border-color: var(--action-colour);
+      background: var(--action-colour);
+      color: white;
     }
     &.past {
       color: var(--error-colour);
