@@ -1,4 +1,4 @@
-import { isBefore, subDays } from "date-fns"
+import { endOfDay, isAfter, subDays } from "date-fns"
 import { AddThisWeekTaskForm } from "./AddThisWeekTaskForm"
 import { ThisWeekTask } from "./ThisWeekTask"
 import { WEEKLY_KEY, WeeklyTask } from "../../../shared/types"
@@ -18,11 +18,27 @@ import {
 import { DragPreview } from "../DragPreview"
 import { DragHandle } from "../../../shared/drag-and-drop/DragHandle"
 
-export function ThisWeekList() {
-  const moreThanAWeekAgo = (date: number | null) =>
-    date && isBefore(date, subDays(new Date(), 7))
-  console.log("more than a week ago", moreThanAWeekAgo)
+export function refreshTasks(
+  tasks: WeeklyTask[],
+  updateTask: (task: WeeklyTask) => void,
+) {
+  tasks.forEach((task) => {
+    if (!task.completed) return
 
+    const completed: (number | null)[] = Array.isArray(task.completed)
+      ? task.completed
+      : Object.values(task.completed)
+
+    const updatedCompleted = completed.filter((date) => {
+      return date && isAfter(date, endOfDay(subDays(new Date(), 7)))
+    })
+    if (updatedCompleted.length !== task.completed.length) {
+      updateTask({ ...task, completed: updatedCompleted })
+    }
+  })
+}
+
+export function ThisWeekList() {
   const listRef = useRef<HTMLOListElement>(null)
   const storageContext = useContext(FirebaseContext)
   if (!storageContext) {
@@ -32,25 +48,8 @@ export function ThisWeekList() {
     storageContext.useValue<Record<string, WeeklyTask>>(WEEKLY_KEY)
   const tasks = sortByPosition(value ? Object.values(value) : [])
 
-  const readyForReset = tasks.filter((task) => {
-    const completed = Array.isArray(task.completed)
-      ? task.completed
-      : (Object.values(task.completed ?? {}) as number[])
-    console.log(
-      task.description,
-      task.completed?.map((d) => d && new Date(d)),
-      "needs updating",
-      completed.some(moreThanAWeekAgo),
-    )
-    return completed.some(moreThanAWeekAgo)
-  })
-  readyForReset.forEach((task) => {
-    storageContext.updateItem<WeeklyTask>(WEEKLY_KEY, {
-      ...task,
-      completed: task.completed?.map((date) =>
-        moreThanAWeekAgo(date) ? null : date,
-      ),
-    })
+  refreshTasks(tasks, (task) => {
+    storageContext.updateItem<WeeklyTask>(WEEKLY_KEY, task)
   })
 
   useDropTarget({

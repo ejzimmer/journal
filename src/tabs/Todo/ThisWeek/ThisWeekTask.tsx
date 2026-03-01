@@ -115,7 +115,7 @@ export function ThisWeekTask({ task }: { task: WeeklyTask }) {
         {Array.isArray(task.completed) && (
           <ol className="dates-popover">
             {task.completed.map(
-              (date) => date && <li>{dateToWeekday(date)}</li>,
+              (date) => date && <li key={date}>{dateToWeekday(date)}</li>,
             )}
           </ol>
         )}
