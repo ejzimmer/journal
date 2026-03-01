@@ -13,13 +13,13 @@ export function getInitialBalances(yarnState: Record<YarnType, YarnDetails>) {
       yarnTypes.map((yarnType) => [
         yarnType,
         yarnState[yarnType].history[0].balance,
-      ])
+      ]),
     ),
   }
 }
 
 export function getMonthlyBalances(
-  yarnState: Record<YarnType, YarnDetails>
+  yarnState: Record<YarnType, YarnDetails>,
 ): MonthBalances[] {
   const months: MonthBalances[] = []
 
@@ -55,6 +55,11 @@ export function getMonthlyBalances(
       }
     })
   })
+
+  const thisMonth = new Date().getMonth()
+  if (!monthsWithTotals[thisMonth]) {
+    monthsWithTotals[thisMonth] = monthsWithTotals[thisMonth - 1]
+  }
 
   return monthsWithTotals
 }
