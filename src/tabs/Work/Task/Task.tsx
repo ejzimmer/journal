@@ -1,5 +1,5 @@
 import { EditableDate } from "../../../shared/controls/EditableDate"
-import { ReactElement, useContext } from "react"
+import { ReactElement, useContext, useState } from "react"
 import { isTask } from "../drag-utils"
 
 import { DraggableListItem } from "../../../shared/drag-and-drop/DraggableListItem"
@@ -10,6 +10,8 @@ import { WorkTask } from "../types"
 import { FirebaseContext } from "../../../shared/FirebaseContext"
 import { Labels } from "./Labels"
 import { UpdateLabels } from "./UpdateLabels"
+import { DueDate } from "./DueDate"
+import { PostitModalDialog } from "../PostitModal"
 
 type TaskProps = {
   task: WorkTask
@@ -19,6 +21,7 @@ type TaskProps = {
 }
 
 export function Task({ task, menu: Menu, path, dragHandle }: TaskProps) {
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false)
   const storageContext = useContext(FirebaseContext)
   if (!storageContext) {
     throw new Error("missing firebase context")
@@ -54,12 +57,16 @@ export function Task({ task, menu: Menu, path, dragHandle }: TaskProps) {
       </div>
       <div className="task-content">
         <EditableText
-          onChange={(description) =>
-            storageContext.updateItem(path, {
-              ...task,
-              description,
-            })
-          }
+          onChange={(description) => {
+            if (description) {
+              storageContext.updateItem(path, {
+                ...task,
+                description,
+              })
+            } else {
+              setDeleteModalOpen(true)
+            }
+          }}
           label={`Edit description ${task.description}`}
           className="inline"
           style={{
@@ -68,6 +75,14 @@ export function Task({ task, menu: Menu, path, dragHandle }: TaskProps) {
         >
           {task.description}
         </EditableText>
+        {deleteModalOpen && (
+          <PostitModalDialog
+            isOpen={deleteModalOpen}
+            message={`Are you sure you want to delete ${task.description}?`}
+            onConfirm={() => storageContext.deleteItem(path, task)}
+            onCancel={() => setDeleteModalOpen(false)}
+          />
+        )}
 
         <Labels
           labels={task.labels}
@@ -111,25 +126,4 @@ export function Task({ task, menu: Menu, path, dragHandle }: TaskProps) {
 
 function DragPreview({ task }: { task: WorkTask }) {
   return <div>{task.description}</div>
-}
-
-type DueDateProps = {
-  dueDate?: number
-  onChange: (dueDate: number) => void
-}
-
-function DueDate({ dueDate, onChange }: DueDateProps) {
-  return dueDate ? (
-    <div className="due-date">
-      <EditableDate value={dueDate} onChange={onChange} />
-    </div>
-  ) : (
-    <button
-      className="add-metadata ghost calendar"
-      style={{ fontSize: ".8em" }}
-      onClick={() => onChange(new Date().getTime())}
-    >
-      📅
-    </button>
-  )
 }

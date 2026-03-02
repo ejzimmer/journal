@@ -1,11 +1,8 @@
-import { useMemo, useState } from "react"
+import { useMemo } from "react"
 import { Menu } from "../../shared/controls/Menu"
 import { ArrowRightIcon } from "../../shared/icons/ArrowRight"
-import { RubbishBinIcon } from "../../shared/icons/RubbishBin"
 
 import "./TaskList.css"
-import { ModalTriggerProps } from "../../shared/controls/Modal"
-import { PostitModal } from "./PostitModal"
 import { EllipsisIcon } from "../../shared/icons/Ellipsis"
 import { WorkTask } from "./types"
 
@@ -39,12 +36,6 @@ export function TaskMenu({
       >
         {({ onClose }) => (
           <>
-            <PostitModal
-              message={`Are you sure you want to delete ${task.description}?`}
-              onConfirm={onDelete}
-              trigger={(triggerProps) => <DeleteButton {...triggerProps} />}
-            />
-
             {sortedMoveDestinations.map((destination) => (
               <Menu.Action
                 key={destination.description}
@@ -64,19 +55,5 @@ export function TaskMenu({
         )}
       </Menu>
     </>
-  )
-}
-
-function DeleteButton(props: ModalTriggerProps) {
-  const [isHovered, setHovered] = useState(false)
-
-  return (
-    <Menu.Action
-      {...props}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
-    >
-      <RubbishBinIcon width="16px" shouldAnimate={isHovered} /> Delete
-    </Menu.Action>
   )
 }
