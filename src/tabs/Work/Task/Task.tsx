@@ -79,24 +79,20 @@ export function Task({ task, menu: Menu, path, dragHandle }: TaskProps) {
           }}
         />
 
-        {task.dueDate && (
-          <div className="due-date">
-            <EditableDate
-              value={task.dueDate}
-              onChange={(date) => {
-                const { dueDate, ...taskWithoutDueDate } = task
-                if (date) {
-                  storageContext.updateItem(path, {
-                    ...task,
-                    dueDate: date,
-                  })
-                } else {
-                  storageContext.updateItem(path, taskWithoutDueDate)
-                }
-              }}
-            />
-          </div>
-        )}
+        <DueDate
+          dueDate={task.dueDate}
+          onChange={(date) => {
+            const { dueDate, ...taskWithoutDueDate } = task
+            if (date) {
+              storageContext.updateItem(path, {
+                ...task,
+                dueDate: date,
+              })
+            } else {
+              storageContext.updateItem(path, taskWithoutDueDate)
+            }
+          }}
+        />
 
         <UpdateLabels
           labels={task.labels}
@@ -115,4 +111,25 @@ export function Task({ task, menu: Menu, path, dragHandle }: TaskProps) {
 
 function DragPreview({ task }: { task: WorkTask }) {
   return <div>{task.description}</div>
+}
+
+type DueDateProps = {
+  dueDate?: number
+  onChange: (dueDate: number) => void
+}
+
+function DueDate({ dueDate, onChange }: DueDateProps) {
+  return dueDate ? (
+    <div className="due-date">
+      <EditableDate value={dueDate} onChange={onChange} />
+    </div>
+  ) : (
+    <button
+      className="add-metadata ghost calendar"
+      style={{ fontSize: ".8em" }}
+      onClick={() => onChange(new Date().getTime())}
+    >
+      📅
+    </button>
+  )
 }

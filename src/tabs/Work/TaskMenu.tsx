@@ -25,7 +25,7 @@ export function TaskMenu({
 }) {
   const sortedMoveDestinations = useMemo(
     () => moveDestinations.toSorted((a, b) => a.position - b.position),
-    [moveDestinations]
+    [moveDestinations],
   )
 
   return (
@@ -39,16 +39,6 @@ export function TaskMenu({
       >
         {({ onClose }) => (
           <>
-            {!task.dueDate && (
-              <Menu.Action
-                onClick={() =>
-                  onChange({ ...task, dueDate: new Date().getTime() })
-                }
-              >
-                📅 Add due date
-              </Menu.Action>
-            )}
-
             <PostitModal
               message={`Are you sure you want to delete ${task.description}?`}
               onConfirm={onDelete}
