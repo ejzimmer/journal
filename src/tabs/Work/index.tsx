@@ -2,7 +2,7 @@ import { useCallback, useContext, useEffect, useMemo, useRef } from "react"
 import { FirebaseContext } from "../../shared/FirebaseContext"
 import { NewListModal } from "./NewListModal"
 import { TaskList } from "./TaskList"
-import { hoursToMilliseconds, isSameDay } from "date-fns"
+import { hoursToMilliseconds, isBefore, startOfDay } from "date-fns"
 import { TaskMenu } from "./TaskMenu"
 import { Skeleton } from "../../shared/controls/Skeleton"
 import { sortByOrder } from "./drag-utils"
@@ -21,7 +21,7 @@ export function Work() {
   if (!context) {
     throw new Error("Missing Firebase context provider")
   }
-  const { addItem, useValue, updateItem, deleteItem } = context
+  const { addItem, useValue, updateItem, deleteItem, updateList } = context
   const { value: lists, loading: listsLoading } =
     useValue<Record<string, WorkTask>>(WORK_KEY)
 
@@ -47,7 +47,6 @@ export function Work() {
   )
 
   const onUpdate = useCallback(() => {
-    const today = new Date()
     if (!lists) return
 
     if (!doneList) {
@@ -59,21 +58,42 @@ export function Work() {
         return
       }
 
-      Object.values(list.items).forEach((task) => {
-        if (isSameDay(today, task.lastStatusUpdate)) {
-          return
-        }
+      const { done, notDone } = Object.values(list.items).reduce(
+        (
+          { done, notDone }: { done: WorkTask[]; notDone: WorkTask[] },
+          task,
+        ) => {
+          if (
+            task.status === "done" &&
+            isBefore(task.lastStatusUpdate, startOfDay(new Date()))
+          ) {
+            done.push(task)
+          } else {
+            notDone.push(task)
+          }
 
-        if (task.status === "done") {
-          addItem<WorkTask>(`${WORK_KEY}/${doneList.id}/items`, {
-            ...task,
-            lastStatusUpdate: new Date().getTime(),
-          })
-          deleteItem(`${WORK_KEY}/${list.id}/items`, task)
-        }
-      })
+          return { done, notDone }
+        },
+        {
+          done: [],
+          notDone: [],
+        },
+      )
+
+      done.forEach((task) =>
+        addItem<WorkTask>(`${WORK_KEY}/${doneList.id}/items`, {
+          ...task,
+          lastStatusUpdate: new Date().getTime(),
+        }),
+      )
+
+      const orderedNotDone = sortByOrder(notDone).map((task, index) => ({
+        ...task,
+        position: index,
+      }))
+      updateList<WorkTask>(`${WORK_KEY}/${list.id}/items`, orderedNotDone)
     })
-  }, [lists, addItem, deleteItem, orderedLists, doneList])
+  }, [lists, addItem, orderedLists, doneList, updateList])
 
   useEffect(() => {
     onUpdate()
