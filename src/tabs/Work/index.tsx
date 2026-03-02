@@ -21,7 +21,7 @@ export function Work() {
   if (!context) {
     throw new Error("Missing Firebase context provider")
   }
-  const { addItem, useValue, deleteItem, updateList } = context
+  const { addItem, useValue, updateList } = context
   const { value: lists, loading: listsLoading } =
     useValue<Record<string, WorkTask>>(WORK_KEY)
 
