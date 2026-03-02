@@ -40,7 +40,6 @@ ol.work-lists > li {
       position: relative;
       top: 10px;
       font-size: 1.8em;
-      flex-grow: 1;
     }
   }
 

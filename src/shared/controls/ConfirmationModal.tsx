@@ -42,7 +42,7 @@ export function ConfirmationModal({
   )
 }
 
-type ConfirmationModalDialogProps = ModalContentsProps & {
+export type ConfirmationModalDialogProps = ModalContentsProps & {
   isOpen: boolean
   onCancel: () => void
 }

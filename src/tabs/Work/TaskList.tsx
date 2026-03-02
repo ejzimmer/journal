@@ -12,12 +12,10 @@ import { Task } from "./Task/Task"
 import { isList, isTask, sortByOrder } from "./drag-utils"
 
 import "./TaskList.css"
-import { RubbishBinIcon } from "../../shared/icons/RubbishBin"
-import { ModalTriggerProps } from "../../shared/controls/Modal"
 import { DragHandle } from "../../shared/drag-and-drop/DragHandle"
 import { draggableTypeKey } from "../../shared/drag-and-drop/types"
 import { DraggableListItem } from "../../shared/drag-and-drop/DraggableListItem"
-import { PostitModal } from "./PostitModal"
+import { PostitModalDialog } from "./PostitModal"
 import { WorkTask, WORK_KEY } from "./types"
 import { FirebaseContext } from "../../shared/FirebaseContext"
 import { useDropTarget } from "../../shared/drag-and-drop/useDropTarget"
@@ -43,6 +41,7 @@ export function TaskList({
   menu?: React.FC<{ task: WorkTask }>
 }) {
   const listRef = useRef<HTMLOListElement>(null)
+  const [confirmDeleteModalOpen, setConfirmDeleteModalOpen] = useState(false)
 
   const [addTaskFormVisible, setAddTaskFormVisible] = useState(false)
   const showTaskForm = (event: MouseEvent | FocusEvent) => {
@@ -99,20 +98,23 @@ export function TaskList({
             <EditableText
               label={`Edit ${list.description} name`}
               onChange={(description) => {
-                storageContext.updateItem(WORK_KEY, { ...list, description })
+                if (description) {
+                  storageContext.updateItem(WORK_KEY, { ...list, description })
+                } else {
+                  setConfirmDeleteModalOpen(true)
+                }
               }}
             >
               {list.description}
             </EditableText>
           </h2>
-          <PostitModal
-            trigger={(props) => (
-              <DeleteButton label={list.description} {...props} />
-            )}
+          <PostitModalDialog
+            isOpen={confirmDeleteModalOpen}
             message={`Are you sure you want to delete list ${list.description}?`}
             onConfirm={() => {
               storageContext.deleteItem(WORK_KEY, list)
             }}
+            onCancel={() => setConfirmDeleteModalOpen(false)}
           />
         </div>
         <ol
@@ -156,25 +158,6 @@ export function TaskList({
         </ol>
       </div>
     </DraggableListItem>
-  )
-}
-
-function DeleteButton({
-  label,
-  ...props
-}: ModalTriggerProps & { label: string }) {
-  const [isHovered, setHovered] = useState(false)
-
-  return (
-    <button
-      {...props}
-      aria-label={`delete list ${label}`}
-      className="ghost"
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
-    >
-      <RubbishBinIcon width="16px" shouldAnimate={isHovered} />
-    </button>
   )
 }
 
