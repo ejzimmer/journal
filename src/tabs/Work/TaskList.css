@@ -79,14 +79,12 @@ ol.work-lists > li {
       opacity: 0.4;
     }
 
-    .drag-handle,
-    .task-menu {
+    .drag-handle {
       opacity: 0;
     }
 
     &:hover {
       .drag-handle,
-      .task-menu,
       .add-metadata {
         opacity: 0.4;
 

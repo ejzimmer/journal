@@ -3,7 +3,6 @@ import { FirebaseContext } from "../../shared/FirebaseContext"
 import { NewListModal } from "./NewListModal"
 import { TaskList } from "./TaskList"
 import { hoursToMilliseconds, isBefore, startOfDay } from "date-fns"
-import { TaskMenu } from "./TaskMenu"
 import { Skeleton } from "../../shared/controls/Skeleton"
 import { sortByOrder } from "./drag-utils"
 import { draggableTypeKey } from "../../shared/drag-and-drop/types"
@@ -14,6 +13,7 @@ import { isDraggable } from "../../shared/drag-and-drop/utils"
 import { useDropTarget } from "../../shared/drag-and-drop/useDropTarget"
 
 import "./index.css"
+import { MoveToOtherLists } from "./MoveToOtherLists"
 
 export function Work() {
   const dropTargetRef = useRef<HTMLOListElement>(null)
@@ -21,7 +21,7 @@ export function Work() {
   if (!context) {
     throw new Error("Missing Firebase context provider")
   }
-  const { addItem, useValue, updateItem, deleteItem, updateList } = context
+  const { addItem, useValue, deleteItem, updateList } = context
   const { value: lists, loading: listsLoading } =
     useValue<Record<string, WorkTask>>(WORK_KEY)
 
@@ -173,63 +173,12 @@ export function Work() {
                     listId={list.id}
                     index={index}
                     parentListId={WORK_KEY}
-                    menu={({ task }) => (
-                      <TaskMenu
+                    additionalMoveDestinations={(task: WorkTask) => (
+                      <MoveToOtherLists
+                        allLists={orderedLists}
+                        currentListId={list.id}
+                        doneListId={doneList?.id}
                         task={task}
-                        moveDestinations={Object.values(lists).filter(
-                          ({ id }) => id !== list.id && id !== doneList?.id,
-                        )}
-                        onDelete={() =>
-                          deleteItem(`${WORK_KEY}/${list.id}/items`, task)
-                        }
-                        onMove={(destination: WorkTask) => {
-                          const position = destination.items
-                            ? Object.values(destination.items).reduce(
-                                (highest, item) =>
-                                  item.position
-                                    ? Math.max(highest, item.position)
-                                    : highest,
-                                0,
-                              )
-                            : 0
-                          addItem(`${WORK_KEY}/${destination.id}/items`, {
-                            ...task,
-                            position,
-                            lastUpdated: new Date().getTime(),
-                          })
-                          deleteItem(`${WORK_KEY}/${list.id}/items`, task)
-                        }}
-                        onChange={(task: WorkTask) =>
-                          updateItem(`${WORK_KEY}/${list.id}/items`, {
-                            ...task,
-                            lastUpdated: new Date().getTime(),
-                          })
-                        }
-                        onMoveToTop={() => {
-                          if (!list.items) return
-
-                          const resortedList = Object.fromEntries(
-                            Object.entries(list.items).map(
-                              ([id, item], index) => {
-                                if (id !== task.id) {
-                                  return [
-                                    id,
-                                    {
-                                      ...item,
-                                      position: (item.position ?? index) + 1,
-                                    },
-                                  ]
-                                } else {
-                                  return [id, { ...item, position: 0 }]
-                                }
-                              },
-                            ),
-                          )
-                          updateItem(WORK_KEY, {
-                            ...list,
-                            items: resortedList,
-                          })
-                        }}
                       />
                     )}
                   />

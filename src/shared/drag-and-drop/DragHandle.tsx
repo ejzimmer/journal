@@ -6,13 +6,12 @@ import { DragHandleIcon } from "../icons/DragHandle"
 import { Menu } from "../controls/Menu"
 import { OrderedListItem } from "./types"
 import { getPosition, onChangePosition } from "./utils"
-import { CSSProperties } from "react"
 
 type DragHandleProps = {
   list: OrderedListItem[]
   index: number
   onReorder: (list: OrderedListItem[]) => void
-  style?: CSSProperties
+  additionalActions?: React.ReactNode
 }
 
 const iconProps = {
@@ -20,7 +19,12 @@ const iconProps = {
   colour: "var(--action-colour-dark)",
 }
 
-export function DragHandle({ list, index, onReorder, style }: DragHandleProps) {
+export function DragHandle({
+  list,
+  index,
+  onReorder,
+  additionalActions,
+}: DragHandleProps) {
   const position = getPosition(index, list.length)
   return (
     <Menu
@@ -62,6 +66,7 @@ export function DragHandle({ list, index, onReorder, style }: DragHandleProps) {
           >
             <ArrowToBottomIcon {...iconProps} /> Move to bottom
           </Menu.Action>
+          {additionalActions}
         </>
       )}
     </Menu>

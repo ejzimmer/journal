@@ -5,6 +5,7 @@ import {
   useRef,
   useMemo,
   useContext,
+  JSX,
 } from "react"
 import { EditableText } from "../../shared/controls/EditableText"
 import { AddTaskForm } from "./AddTaskForm"
@@ -33,12 +34,12 @@ export function TaskList({
   index,
   listId,
   parentListId,
-  menu: Menu,
+  additionalMoveDestinations,
 }: {
   index: number
   listId: string
   parentListId: string
-  menu?: React.FC<{ task: WorkTask }>
+  additionalMoveDestinations: (task: WorkTask) => JSX.Element
 }) {
   const listRef = useRef<HTMLOListElement>(null)
   const [confirmDeleteModalOpen, setConfirmDeleteModalOpen] = useState(false)
@@ -88,7 +89,6 @@ export function TaskList({
           onReorder={(reorderedList) => {
             storageContext.updateList(WORK_KEY, reorderedList)
           }}
-          style={{ position: "absolute" }}
         />
       }
     >
@@ -123,12 +123,11 @@ export function TaskList({
           onFocus={showTaskForm}
           className={`tasks ${dragState}`}
         >
-          {sortedList?.map((item, index) => (
+          {sortedList?.map((task, index) => (
             <Task
-              key={item.id}
+              key={task.id}
               path={`${WORK_KEY}/${listId}/items`}
-              task={item}
-              menu={() => (Menu ? <Menu task={item} /> : null)}
+              task={task}
               dragHandle={
                 <DragHandle
                   list={sortedList}
@@ -139,6 +138,7 @@ export function TaskList({
                       reorderedList,
                     )
                   }
+                  additionalActions={additionalMoveDestinations(task)}
                 />
               }
             />

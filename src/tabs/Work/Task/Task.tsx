@@ -1,4 +1,3 @@
-import { EditableDate } from "../../../shared/controls/EditableDate"
 import { ReactElement, useContext, useState } from "react"
 import { isTask } from "../drag-utils"
 
@@ -15,12 +14,11 @@ import { PostitModalDialog } from "../PostitModal"
 
 type TaskProps = {
   task: WorkTask
-  menu: React.FC
   path: string
   dragHandle: ReactElement
 }
 
-export function Task({ task, menu: Menu, path, dragHandle }: TaskProps) {
+export function Task({ task, path, dragHandle }: TaskProps) {
   const [deleteModalOpen, setDeleteModalOpen] = useState(false)
   const storageContext = useContext(FirebaseContext)
   if (!storageContext) {
@@ -119,7 +117,6 @@ export function Task({ task, menu: Menu, path, dragHandle }: TaskProps) {
           }}
         />
       </div>
-      <Menu />
     </DraggableListItem>
   )
 }
