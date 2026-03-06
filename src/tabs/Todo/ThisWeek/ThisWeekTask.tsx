@@ -18,7 +18,7 @@ const dateFormatter = Intl.DateTimeFormat("en-AU", {
   weekday: "short",
   day: "numeric",
 })
-const suffixes = ["th", "st", "nd", "3rd"]
+const suffixes = ["th", "st", "nd", "rd"]
 
 const dateToWeekday = (date: number) => {
   const formatted = dateFormatter.format(new Date(date))
@@ -86,6 +86,8 @@ export function ThisWeekTask({ task }: { task: WeeklyTask }) {
   const numberDone = (completed.filter((date) => !!date) ?? []).length
   const remainder = Math.max(numberDone - task.frequency, 0)
   const percent = (1 / task.frequency) * 100
+
+  console.log(task.description)
 
   return (
     <>
