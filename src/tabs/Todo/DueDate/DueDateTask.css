@@ -55,19 +55,18 @@
     overflow: hidden;
 
     label {
-      padding-block-start: 10px;
+      padding-block: 6px;
 
-      &:hover {
+      &:has(:checked):hover svg {
+        transform: scale(1.2);
+      }
+
+      &:hover:not(:has(:checked)) {
         color: var(--body-colour);
       }
     }
 
-    label:first-child {
-      padding-inline-start: 12px;
-    }
     label:last-of-type {
-      padding-inline-end: 12px;
-
       svg {
         stroke-width: 4;
       }
