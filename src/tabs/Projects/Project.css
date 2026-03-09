@@ -11,6 +11,10 @@
     outline: 2px solid var(--body-colour-light);
     outline-offset: -2px;
     filter: contrast(200%);
+
+    .subtasks-progress {
+      filter: contrast(50%);
+    }
   }
 
   &.done {
@@ -178,5 +182,16 @@
       outline: 2px solid var(--project-colour);
       outline-offset: 6px;
     }
+  }
+
+  .subtasks-progress {
+    margin-inline-start: 1em;
+    font-size: 0.9em;
+    border-radius: 1000px;
+    padding-block: 4px;
+    padding-inline: 8px;
+    background: hsl(0 0 100% /0.4);
+    --project-colour-shadow: color(from var(--project-colour) srgb r g b / 0.6);
+    box-shadow: inset 2px 2px 2px var(--project-colour-shadow);
   }
 }

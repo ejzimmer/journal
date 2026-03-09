@@ -39,19 +39,19 @@ export function Project({ project }: ProjectProps) {
   } as CSSProperties
 
   const onChangeStatus = () => {
-    if (project.status === "ready") {
+    if (project.status === "in_progress") {
+      storageContext.updateItem(PROJECTS_KEY, { ...project, status: "done" })
+    } else if (project.status === "done") {
+      storageContext.updateItem(PROJECTS_KEY, { ...project, status: "ready" })
+    } else {
       storageContext.updateItem(PROJECTS_KEY, {
         ...project,
         status: "in_progress",
       })
-    } else if (project.status === "in_progress") {
-      storageContext.updateItem(PROJECTS_KEY, { ...project, status: "done" })
-    } else {
-      storageContext.updateItem(PROJECTS_KEY, { ...project, status: "ready" })
     }
 
     updateLinkedTask({
-      status: project.status === "done" ? "ready" : "finished",
+      status: project.status === "in_progress" ? "finished" : "ready",
       lastCompleted: new Date().getTime(),
     })
   }
@@ -96,6 +96,9 @@ export function Project({ project }: ProjectProps) {
     return true
   }
 
+  const subtasks = Object.values(project.subtasks ?? {})
+  const doneSubtasks = subtasks.filter((subtask) => subtask.status === "done")
+
   return (
     <div className={`project ${project.status}`} style={projectColour}>
       <div className="project-details">
@@ -117,8 +120,14 @@ export function Project({ project }: ProjectProps) {
           onDelete={() => storageContext.deleteItem(PROJECTS_KEY, project)}
           style={{
             fontSize: "1em",
+            flexGrow: 1,
           }}
         />
+        {subtasks.length > 0 && (
+          <div className="subtasks-progress">
+            {doneSubtasks.length}/{subtasks.length}
+          </div>
+        )}
         <ButtonWithConfirmation
           className="icon ghost copy-project-button"
           onClick={onAddToTodo}
