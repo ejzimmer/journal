@@ -23,6 +23,22 @@ export function DayList() {
   const { value } = storageContext.useValue<Record<string, DayData>>(DAILY_PATH)
 
   const days = useMemo(() => setupDays(value), [value])
+  const lowestBalance = useMemo(
+    () =>
+      days.reduce((lowest, currentDay) => {
+        if (!currentDay.balance) {
+          return lowest
+        }
+
+        if (lowest === 0 || currentDay.balance < lowest) {
+          return currentDay.balance
+        }
+
+        return lowest
+      }, 0),
+    [days],
+  )
+
   const weeklyBalances = useMemo(() => getWeeklyBalance(days), [days])
   const trackers = useMemo(
     () =>
@@ -50,7 +66,12 @@ export function DayList() {
             return (
               <li
                 key={id}
-                className={getDayClass({ filters, day: dayData, diff })}
+                className={getDayClass({
+                  filters,
+                  day: dayData,
+                  diff,
+                  isLowest: balance === lowestBalance,
+                })}
               >
                 <Day
                   path={DAILY_PATH}
@@ -119,15 +140,21 @@ const getDayClass = ({
   day,
   filters,
   diff,
+  isLowest,
 }: {
   day: DayData
   filters: string[]
   diff?: number
+  isLowest: boolean
 }) => {
   let classes = ""
 
   if (typeof diff === "number") {
     classes = diff > 0 ? "balance-down" : "balance-up"
+  }
+
+  if (isLowest) {
+    classes += " lowest-balance"
   }
 
   if (

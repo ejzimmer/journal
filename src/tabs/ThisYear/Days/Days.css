@@ -118,6 +118,10 @@ ol.days {
     &.balance-down {
       --balance-colour: hsl(105, 65%, 47%);
     }
+
+    &.lowest-balance {
+      background: linear-gradient(transparent, hsl(105 65% 47% / 0.2));
+    }
   }
 
   h2 {
