@@ -69,8 +69,9 @@ const getComponent = (goal: Goal, onUpdate: (goal: Goal) => void) => {
                 emoji="✅"
                 isChecked={!!(times.completed && index < times.completed)}
                 onChange={() => {
-                  const isChecked = index <= (times.completed ?? 0) ? -1 : 1
-                  const completed = (times.completed ?? 0) + isChecked
+                  const isChecked = index < (times.completed ?? 0)
+                  const completed =
+                    (times.completed ?? 0) + (isChecked ? -1 : 1)
                   onUpdate({
                     ...goal,
                     times: goal.times.with(timesesIndex, {
