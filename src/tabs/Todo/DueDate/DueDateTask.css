@@ -55,7 +55,12 @@
     overflow: hidden;
 
     label {
-      padding-block: 6px;
+      padding-block: 4px;
+      padding-block-start: 6px;
+
+      &:first-of-type {
+        padding-inline-start: 12px;
+      }
 
       &:has(:checked):hover svg {
         transform: scale(1.2);

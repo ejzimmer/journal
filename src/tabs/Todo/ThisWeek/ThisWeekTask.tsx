@@ -87,8 +87,6 @@ export function ThisWeekTask({ task }: { task: WeeklyTask }) {
   const remainder = Math.max(numberDone - task.frequency, 0)
   const percent = (1 / task.frequency) * 100
 
-  console.log(task.description)
-
   return (
     <>
       <button onClick={handleClick} className="icon subtle">

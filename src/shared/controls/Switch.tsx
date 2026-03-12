@@ -26,7 +26,7 @@ export function Switch<T extends string>({
       return
     }
     const checkedOption = radioGroupRef.current.querySelector(
-      `input[value="${value}"]`
+      `input[value="${value}"]`,
     )
     if (!checkedOption) {
       return
@@ -48,18 +48,20 @@ export function Switch<T extends string>({
 
   return (
     <div ref={radioGroupRef} role="radiogroup" className="switch">
-      {options.map((option) => (
-        <label key={option}>
-          {Option ? <Option value={option} /> : option}
-          <input
-            type="radio"
-            value={option}
-            name={name}
-            checked={value === option}
-            onChange={() => onChange(option)}
-          />
-        </label>
-      ))}
+      {options.map((option) => {
+        return (
+          <label key={option}>
+            {Option ? <Option value={option} /> : option}
+            <input
+              type="radio"
+              value={option}
+              name={name}
+              checked={value === option}
+              onChange={() => onChange(option)}
+            />
+          </label>
+        )
+      })}
       <div
         className="indicator"
         style={{

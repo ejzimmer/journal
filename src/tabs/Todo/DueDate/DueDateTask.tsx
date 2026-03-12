@@ -62,7 +62,7 @@ export function DueDateTask({ task }: { task: CalendarTask }) {
         onChange={(status) =>
           onChange({ ...task, status, statusUpdateDate: new Date().getTime() })
         }
-        name={task.description}
+        name={task.id}
         Option={StatusOption}
       />
     </>
