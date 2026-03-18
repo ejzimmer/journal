@@ -129,7 +129,7 @@
     }
   }
 
-  ul.subtasks {
+  ol.subtasks {
     display: flex;
     flex-direction: column;
     list-style: none;
@@ -146,7 +146,7 @@
     }
   }
 
-  ul.subtasks,
+  ol.subtasks,
   form.add-subtask-form.visible {
     padding-inline-start: 24px;
     padding-inline-end: 12px;

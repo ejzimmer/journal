@@ -1,4 +1,4 @@
-import { useContext, useState } from "react"
+import { ReactElement, useContext, useState } from "react"
 import { Checkbox } from "../../shared/controls/Checkbox"
 import { ConfirmationModalDialog } from "../../shared/controls/ConfirmationModal"
 import { FirebaseContext } from "../../shared/FirebaseContext"
@@ -7,12 +7,15 @@ import { ArrowRightIcon } from "../../shared/icons/ArrowRight"
 import { ButtonWithConfirmation } from "../../shared/controls/ButtonWithConfirmation"
 import { useLinkedTasks } from "./utils"
 import { EditableTextWithDelete } from "../../shared/controls/EditableTextWithDelete"
+import { DraggableListItem } from "../../shared/drag-and-drop/DraggableListItem"
+import { draggableTypeKey } from "../../shared/drag-and-drop/types"
 
 type SubtaskProps = ProjectSubtask & {
   path: string
+  dragHandle: ReactElement
 }
 
-export function Subtask({ path, ...task }: SubtaskProps) {
+export function Subtask({ path, dragHandle, ...task }: SubtaskProps) {
   const [confirmDeleteModalOpen, setConfirmDeleteModalOpen] = useState(false)
 
   const storageContext = useContext(FirebaseContext)
@@ -52,7 +55,21 @@ export function Subtask({ path, ...task }: SubtaskProps) {
   }
 
   return (
-    <li className="subtask">
+    <DraggableListItem
+      getData={() => ({
+        [draggableTypeKey]: "project-subtask",
+        id: task.id,
+        parentId: path,
+        position: task.position ?? Infinity,
+      })}
+      dragPreview={<DragPreview task={task} />}
+      isDroppable={(data) =>
+        draggableTypeKey in data && data[draggableTypeKey] === "project-subtask"
+      }
+      allowedEdges={["top", "bottom"]}
+      dragHandle={dragHandle}
+      className="subtask"
+    >
       <Checkbox
         isChecked={task.status === "done"}
         onChange={handleChange}
@@ -79,6 +96,10 @@ export function Subtask({ path, ...task }: SubtaskProps) {
         onCancel={() => setConfirmDeleteModalOpen(false)}
         isOpen={confirmDeleteModalOpen}
       />
-    </li>
+    </DraggableListItem>
   )
+}
+
+function DragPreview({ task }: { task: ProjectSubtask }) {
+  return <div>{task.description}</div>
 }

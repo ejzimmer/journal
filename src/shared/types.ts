@@ -58,6 +58,7 @@ export type ProjectSubtask = {
   status: "ready" | "done"
   linkedId?: string
   category: Category
+  position?: number
 }
 export const PROJECT_COLOURS = {
   "🛒": "hsl(197 36% 70% /.3)",

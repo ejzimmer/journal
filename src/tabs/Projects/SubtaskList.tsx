@@ -9,6 +9,14 @@ import {
   ProjectDetails,
 } from "../../shared/types"
 import { getSubtasksKey } from "./utils"
+import { DragHandle } from "../../shared/drag-and-drop/DragHandle"
+import {
+  draggableTypeKey,
+  OrderedListItem,
+} from "../../shared/drag-and-drop/types"
+import { useDropTarget } from "../../shared/drag-and-drop/useDropTarget"
+import { isDraggable, sortByPosition } from "../../shared/drag-and-drop/utils"
+import { useDraggableList } from "../../shared/drag-and-drop/useDraggableList"
 
 type SubtasksProps = {
   projectId: string
@@ -19,7 +27,7 @@ export function SubtaskList({ projectId, isVisible }: SubtasksProps) {
   const [formVisible, setFormVisible] = useState(false)
   const [containerHeight, setContainerHeight] = useState(0)
   const containerRef = useRef<HTMLDivElement>(null)
-  const listRef = useRef<HTMLUListElement>(null)
+  const listRef = useRef<HTMLOListElement>(null)
   const formContainerRef = useRef<HTMLDivElement>(null)
   const subtasksKey = getSubtasksKey(projectId)
 
@@ -52,17 +60,56 @@ export function SubtaskList({ projectId, isVisible }: SubtasksProps) {
     }
   }, [subtasks])
 
+  useDropTarget({
+    dropTargetRef: listRef,
+    canDrop: ({ source }) => isDraggable(source.data),
+    getData: () => ({ listId: subtasksKey }),
+  })
+  useDraggableList({
+    listId: subtasksKey,
+    canDropSourceOnTarget: (source) => {
+      return source[draggableTypeKey] === "projects-subtask"
+    },
+    getTargetListId: (source) => source.parentId,
+    getAxis: () => "vertical",
+  })
+
+  const sortedTasks = useMemo(
+    () =>
+      sortByPosition(
+        subtasks.map((task) => ({
+          ...task,
+          parentId: projectId,
+          position: task.position ?? Infinity,
+        })),
+      ),
+    [projectId, subtasks],
+  )
+
   return (
     <div
       className={`subtasks-section ${isVisible ? "visible" : ""}`}
       style={{ height: isVisible ? containerHeight : 0 }}
       ref={containerRef}
     >
-      <ul className="subtasks" ref={listRef}>
-        {subtasks.map((task) => (
-          <Subtask key={task.id} path={subtasksKey} {...task} />
+      <ol className="subtasks" ref={listRef}>
+        {sortedTasks.map((task, index) => (
+          <Subtask
+            key={task.id}
+            path={subtasksKey}
+            {...task}
+            dragHandle={
+              <DragHandle
+                list={sortedTasks}
+                index={index}
+                onReorder={(tasks: OrderedListItem[]) => {
+                  storageContext.updateList(subtasksKey, tasks)
+                }}
+              />
+            }
+          />
         ))}
-      </ul>
+      </ol>
       <div
         ref={formContainerRef}
         style={{
