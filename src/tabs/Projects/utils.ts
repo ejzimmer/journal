@@ -4,6 +4,7 @@ import {
   Category,
   DAILY_KEY,
   DailyTask,
+  ProjectDetails,
   PROJECTS_KEY,
 } from "../../shared/types"
 import { OrderedListItem } from "../../shared/drag-and-drop/types"
@@ -57,4 +58,13 @@ export function useLinkedTasks(linkedId?: string) {
   }
 
   return { linkedTask, createLinkedTask, updateLinkedTask }
+}
+
+export function reorderProjects(
+  projects: ProjectDetails[],
+  indexToRemove: number,
+) {
+  return projects
+    .toSpliced(indexToRemove, 1)
+    .map((project, index) => ({ ...project, position: index }))
 }

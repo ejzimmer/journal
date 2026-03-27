@@ -17,6 +17,7 @@ export function AddProjectForm() {
   if (!storageContext) {
     throw new Error("Missing Firebase context provider")
   }
+  const { value } = storageContext.useValue(PROJECTS_KEY)
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
@@ -28,6 +29,8 @@ export function AddProjectForm() {
     storageContext.addItem<ProjectDetails>(PROJECTS_KEY, {
       description,
       category,
+      parentId: PROJECTS_KEY,
+      position: value ? Object.keys(value).length : 0,
     })
 
     setDescription("")

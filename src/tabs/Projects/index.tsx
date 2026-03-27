@@ -1,4 +1,4 @@
-import { useContext, useEffect, useRef, useState } from "react"
+import { useContext, useEffect, useMemo, useRef, useState } from "react"
 import { FirebaseContext } from "../../shared/FirebaseContext"
 
 import "./index.css"
@@ -12,6 +12,8 @@ import {
 } from "../../shared/types"
 import { EmojiCheckbox } from "../../shared/controls/EmojiCheckbox"
 import { XIcon } from "../../shared/icons/X"
+import { sortByPosition } from "../../shared/drag-and-drop/utils"
+import { reorderProjects } from "./utils"
 
 export function Projects() {
   const containerRef = useRef<HTMLUListElement>(null)
@@ -25,7 +27,14 @@ export function Projects() {
 
   const { value } =
     storageContext.useValue<Record<string, ProjectDetails>>(PROJECTS_KEY)
-  const projects = value ? Object.values(value) : []
+  const sortedProjects = useMemo(() => {
+    const projects = value ? Object.values(value) : []
+    return sortByPosition(projects).sort((a, b) => {
+      if (a.status === "done" && b.status !== "done") return 1
+      if (b.status === "done") return -1
+      return 0
+    })
+  }, [value])
 
   useEffect(() => {
     if (containerRef.current) {
@@ -73,8 +82,25 @@ export function Projects() {
         ref={containerRef}
         style={{ height: containerHeight }}
       >
-        {projects.map((project) => (
-          <ProjectFilter key={project.id} project={project} filter={filter} />
+        {sortedProjects.map((project, index) => (
+          <FilteredProject key={project.id} project={project} filter={filter}>
+            <Project
+              project={project}
+              onDelete={() => {
+                storageContext.updateList(
+                  PROJECTS_KEY,
+                  reorderProjects(sortedProjects, index),
+                )
+                storageContext.deleteItem(PROJECTS_KEY, project)
+              }}
+              onMoveToEnd={() =>
+                storageContext.updateList(PROJECTS_KEY, [
+                  ...reorderProjects(sortedProjects, index),
+                  { ...project, position: sortedProjects.length - 1 },
+                ])
+              }
+            />
+          </FilteredProject>
         ))}
         <li>
           <AddProjectForm />
@@ -84,12 +110,14 @@ export function Projects() {
   )
 }
 
-function ProjectFilter({
+function FilteredProject({
   filter,
   project,
+  children,
 }: {
   filter: Category[]
   project: ProjectDetails
+  children: React.ReactNode
 }) {
   const isVisible = !filter.length || filter.includes(project.category)
 
@@ -102,7 +130,7 @@ function ProjectFilter({
         height: isVisible ? "auto" : 0,
       }}
     >
-      <Project project={project} />
+      {children}
     </li>
   )
 }

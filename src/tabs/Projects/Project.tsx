@@ -11,16 +11,18 @@ import {
   PROJECTS_KEY,
   ProjectSubtask,
 } from "../../shared/types"
-import { ArrowRightIcon } from "../../shared/icons/ArrowRight"
 import { ButtonWithConfirmation } from "../../shared/controls/ButtonWithConfirmation"
 import { getSubtasksKey, useLinkedTasks } from "./utils"
 import { EditableTextWithDelete } from "../../shared/controls/EditableTextWithDelete"
+import { ArrowToEndIcon } from "../../shared/icons/ArrowToEnd"
 
 type ProjectProps = {
   project: ProjectDetails
+  onMoveToEnd: () => void
+  onDelete: () => void
 }
 
-export function Project({ project }: ProjectProps) {
+export function Project({ project, onMoveToEnd, onDelete }: ProjectProps) {
   const [subtasksVisible, setSubtasksVisible] = useState(false)
 
   const storageContext = useContext(FirebaseContext)
@@ -117,7 +119,7 @@ export function Project({ project }: ProjectProps) {
               description,
             })
           }}
-          onDelete={() => storageContext.deleteItem(PROJECTS_KEY, project)}
+          onDelete={onDelete}
           style={{
             fontSize: "1em",
             flexGrow: 1,
@@ -128,20 +130,30 @@ export function Project({ project }: ProjectProps) {
             {doneSubtasks.length}/{subtasks.length}
           </div>
         )}
-        <ButtonWithConfirmation
-          className="icon ghost copy-project-button"
-          onClick={onAddToTodo}
-        >
-          <ArrowRightIcon colour="var(--action-colour)" width="16px" />
-        </ButtonWithConfirmation>
 
-        <button
-          className={`ghost expand ${subtasksVisible ? "expanded" : ""}`}
-          onClick={() => setSubtasksVisible(!subtasksVisible)}
-          style={{ marginInlineStart: "auto" }}
-        >
-          <ChevronDownIcon width="20px" />
-        </button>
+        <div className="project-actions">
+          <ButtonWithConfirmation
+            className="icon ghost project-action-button"
+            onClick={onAddToTodo}
+          >
+            🔗
+          </ButtonWithConfirmation>
+
+          <button
+            className="icon ghost project-action-button"
+            onClick={onMoveToEnd}
+          >
+            <ArrowToEndIcon width="20px" colour="var(--action-colour)" />
+          </button>
+
+          <button
+            className={`ghost expand ${subtasksVisible ? "expanded" : ""}`}
+            onClick={() => setSubtasksVisible(!subtasksVisible)}
+            style={{ marginInlineStart: "auto" }}
+          >
+            <ChevronDownIcon width="20px" />
+          </button>
+        </div>
       </div>
       <SubtaskList projectId={project.id} isVisible={subtasksVisible} />
     </div>

@@ -72,8 +72,7 @@ export const PROJECT_COLOURS = {
 }
 export const categories = Object.keys(PROJECT_COLOURS)
 export type Category = keyof typeof PROJECT_COLOURS
-export type ProjectDetails = {
-  id: string
+export type ProjectDetails = OrderedListItem & {
   description: string
   category: Category
   status?: "ready" | "in_progress" | "done"
