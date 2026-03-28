@@ -87,6 +87,7 @@ export function Subtask({ path, dragHandle, ...task }: SubtaskProps) {
       <ButtonWithConfirmation
         className={`icon ghost copy-button ${linkedTask ? "linked" : ""}`}
         onClick={onAddToTodo}
+        confirmationMessage="Copied!"
       >
         <ArrowRightIcon colour="var(--action-colour)" width="16px" />
       </ButtonWithConfirmation>

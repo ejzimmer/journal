@@ -135,6 +135,7 @@ export function Project({ project, onMoveToEnd, onDelete }: ProjectProps) {
           <ButtonWithConfirmation
             className="icon ghost project-action-button"
             onClick={onAddToTodo}
+            confirmationMessage="Copied!"
           >
             🔗
           </ButtonWithConfirmation>
