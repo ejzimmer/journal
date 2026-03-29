@@ -1,5 +1,5 @@
 import React, { createContext, useContext } from "react"
-import { TodoCategory, TODO_KEY, TodoTask } from "../../shared/types"
+import { TODO_KEY, TodoTask } from "../../shared/types"
 import { TodayList } from "./Today/TodayList"
 import { ThisWeekList } from "./ThisWeek/ThisWeekList"
 import { DueDateList } from "./DueDate/DueDateList"
@@ -7,9 +7,7 @@ import { DueDateList } from "./DueDate/DueDateList"
 import "./index.css"
 import { FirebaseContext } from "../../shared/FirebaseContext"
 
-export const CategoriesContext = createContext<TodoCategory[] | undefined>(
-  undefined,
-)
+export const CategoriesContext = createContext<string[] | undefined>(undefined)
 
 export function Todo() {
   const storageContext = useContext(FirebaseContext)
@@ -23,15 +21,10 @@ export function Todo() {
   }
 
   const tasks = Object.values(lists).flatMap((list) => Object.values(list))
-
-  // For the categories dropdown
-  const categories = new Map<string, TodoCategory>()
-  tasks.forEach((task) => {
-    categories.set(task.category.text, task.category)
-  })
+  const categories = new Set(tasks.map((task) => task.category))
 
   return (
-    <CategoriesContext.Provider value={Array.from(categories.values())}>
+    <CategoriesContext.Provider value={Array.from(categories)}>
       <div style={{ display: "flex", flexWrap: "wrap", gap: "80px" }}>
         <TodayList />
         <ThisWeekList />

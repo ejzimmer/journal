@@ -52,7 +52,7 @@ export function TodayTask({
   return (
     <>
       <EmojiCheckbox
-        emoji={task.category.emoji}
+        emoji={task.category}
         isChecked={task.status !== "ready"}
         onChange={handleStatusChange}
         label={`${task.description} done`}

@@ -1,10 +1,11 @@
-import { useContext, useEffect, useRef, useState } from "react"
+import { useContext, useEffect, useMemo, useRef, useState } from "react"
 import { PlusIcon } from "../../shared/icons/Plus"
 import { FirebaseContext } from "../../shared/FirebaseContext"
 import { CategoriesContext } from "."
-import { TodoCategory, TodoTask } from "../../shared/types"
+import { TodoTask } from "../../shared/types"
 import { FormControl } from "../../shared/controls/FormControl"
-import { CategoryControl } from "./CategoryControl"
+import { Combobox } from "../../shared/controls/combobox/Combobox"
+import { OptionType } from "../../shared/controls/combobox/types"
 
 type AddTaskFormProps<T> = {
   listId: string
@@ -28,11 +29,13 @@ export function AddTaskForm<T>({
   if (!categories) {
     throw new Error("Missing categories context provider")
   }
+  const categoryOptions = useMemo(
+    () => categories.map((category) => ({ id: category, label: category })),
+    [categories],
+  )
 
   const [description, setDescription] = useState("")
-  const [category, setCategory] = useState<TodoCategory | undefined>(
-    categories[0],
-  )
+  const [category, setCategory] = useState<OptionType>(categoryOptions[0])
 
   const formRef = useRef<HTMLFormElement>(null)
   const formHeightRef = useRef(0)
@@ -59,13 +62,13 @@ export function AddTaskForm<T>({
 
     storageContext.addItem<TodoTask & T>(listId, {
       description,
-      category,
+      category: category.label,
       position: value ? Object.keys(value).length : 0,
       ...additionalFields,
     } as TodoTask & T)
 
     setDescription("")
-    setCategory(categories[0])
+    setCategory(categoryOptions[0])
     setFormVisible(false)
   }
 
@@ -79,18 +82,26 @@ export function AddTaskForm<T>({
       </button>
       <form
         ref={formRef}
-        className={formVisible ? "visible" : ""}
+        className={formVisible ? "today-form visible" : "today-form"}
         style={{ height: formVisible ? formHeightRef.current : 0 }}
         onSubmit={handleSubmit}
       >
-        <FormControl
-          label="Description"
-          value={description}
-          onChange={setDescription}
-        />
+        <div className="description">
+          <FormControl
+            label="Description"
+            value={description}
+            onChange={setDescription}
+          />
+        </div>
         <div>
-          <div className="label">Category</div>
-          <CategoryControl onChange={setCategory} value={category} />
+          <Combobox
+            label="Category"
+            value={category}
+            options={categoryOptions}
+            createOption={(value) => ({ id: value, label: value })}
+            onChange={(value) => setCategory(value)}
+            inputSize={2}
+          />
         </div>
 
         {children}

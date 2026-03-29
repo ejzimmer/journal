@@ -57,7 +57,9 @@
       opacity: 1;
     }
     &:not(.visible) {
-      transition: height 0.2s ease-out, opacity 0.1s 0.2s linear;
+      transition:
+        height 0.2s ease-out,
+        opacity 0.1s 0.2s linear;
     }
 
     .buttons {
@@ -87,5 +89,25 @@
   fieldset {
     border: 0;
     padding: 0;
+  }
+}
+
+form.today-form {
+  display: grid;
+  grid-template-columns: min-content 1fr 1fr;
+  grid-template-rows: min-content min-content;
+  align-content: start;
+  gap: 16px;
+
+  .description {
+    grid-column: span 3;
+  }
+
+  .combobox {
+    top: 10px;
+  }
+
+  .buttons {
+    align-self: end;
   }
 }

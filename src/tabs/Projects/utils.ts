@@ -37,7 +37,7 @@ export function useLinkedTasks(linkedId?: string) {
     const linkedId = storageContext.addItem<
       Omit<DailyTask, keyof OrderedListItem>
     >(DAILY_KEY, {
-      category: { emoji: category, text: category },
+      category,
       description,
       status: "ready",
       type: "一度",

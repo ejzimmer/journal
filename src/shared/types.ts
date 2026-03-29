@@ -1,13 +1,9 @@
 import { OrderedListItem } from "./drag-and-drop/types"
 
 export const TODO_KEY = "today"
-export type TodoCategory = {
-  text: string
-  emoji: string
-}
 export type TodoTask = OrderedListItem & {
   description: string
-  category: TodoCategory
+  category: string
 }
 
 export const DAILY_KEY = `${TODO_KEY}/日`

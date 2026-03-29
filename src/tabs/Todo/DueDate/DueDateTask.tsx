@@ -47,7 +47,7 @@ export function DueDateTask({ task }: { task: CalendarTask }) {
         className={`due-date ${getDateClass(task)}`}
       />
       <div className="description">
-        {task.category.emoji}
+        {task.category}
         <EditableTextWithDelete
           label="description"
           value={task.description}

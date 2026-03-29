@@ -8,6 +8,7 @@ export function SearchInput({
   onClick,
   popoverId,
   isPopoverOpen,
+  size,
 }: SearchInputProps) {
   return (
     <input
@@ -20,6 +21,7 @@ export function SearchInput({
       onChange={onChange}
       onClick={onClick}
       autoComplete="off"
+      size={size}
     />
   )
 }

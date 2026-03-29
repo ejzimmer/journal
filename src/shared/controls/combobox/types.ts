@@ -12,6 +12,7 @@ type BaseProps<T> = {
   Option?: React.FC<{ value: T }>
   Value?: MultiValueInputProps<T>["Value"]
   label?: string
+  inputSize?: number
 }
 type SingleValueProps<T> = BaseProps<T> & {
   isMultiValue?: false
@@ -49,6 +50,7 @@ export type SearchInputProps = {
   onKeyDown: (event: React.KeyboardEvent) => void
   onChange: (event: React.ChangeEvent<HTMLInputElement>) => void
   onClick: (event: React.MouseEvent) => void
+  size?: number
 }
 
 export type ComboboxProps<T extends OptionType> =

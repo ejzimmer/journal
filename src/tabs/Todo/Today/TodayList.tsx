@@ -126,14 +126,12 @@ export function TodayList() {
                 onChange={(task: DailyTask) => {
                   storageContext.updateItem<DailyTask>(DAILY_KEY, task)
 
-                  if (!isHabit(task.category.emoji)) {
+                  if (!isHabit(task.category)) {
                     return
                   }
 
                   const otherTasksInCategory = tasks.filter(
-                    (t) =>
-                      t.id !== task.id &&
-                      t.category.emoji === task.category.emoji,
+                    (t) => t.id !== task.id && t.category === task.category,
                   )
                   const allTasksDone =
                     otherTasksInCategory.every((t) => t.status === "done") &&
@@ -146,7 +144,7 @@ export function TodayList() {
                     id: `${day}${month}`,
                     habits: {
                       ...habits,
-                      [task.category.emoji]: allTasksDone,
+                      [task.category]: allTasksDone,
                     } as Record<Habit, boolean>,
                   })
                 }}

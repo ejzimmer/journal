@@ -5,7 +5,7 @@ import { refreshTasks } from "./ThisWeekList"
 const mockTask: WeeklyTask = {
   id: "2",
   description: "strength training",
-  category: { emoji: "e", text: "exercise" },
+  category: "e",
   parentId: "WEEKLY",
   frequency: 2,
   position: 4,

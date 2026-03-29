@@ -66,7 +66,7 @@ export function ThisWeekTask({ task }: { task: WeeklyTask }) {
       })
     }
 
-    if (!isHabit(task.category.emoji)) {
+    if (!isHabit(task.category)) {
       return
     }
     const habits =
@@ -75,7 +75,7 @@ export function ThisWeekTask({ task }: { task: WeeklyTask }) {
       id: `${day}${month}`,
       habits: {
         ...habits,
-        [task.category.emoji]: !event.shiftKey,
+        [task.category]: !event.shiftKey,
       } as Record<Habit, boolean>,
     })
   }
@@ -90,7 +90,7 @@ export function ThisWeekTask({ task }: { task: WeeklyTask }) {
   return (
     <>
       <button onClick={handleClick} className="icon subtle">
-        {task.category.emoji}
+        {task.category}
       </button>
       <div style={{ flexGrow: 1 }}>
         <EditableTextWithDelete
