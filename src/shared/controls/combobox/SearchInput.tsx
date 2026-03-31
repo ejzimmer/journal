@@ -9,6 +9,7 @@ export function SearchInput({
   popoverId,
   isPopoverOpen,
   size,
+  ariaLabel,
 }: SearchInputProps) {
   return (
     <input
@@ -22,6 +23,7 @@ export function SearchInput({
       onClick={onClick}
       autoComplete="off"
       size={size}
+      aria-label={ariaLabel}
     />
   )
 }

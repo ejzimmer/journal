@@ -9,10 +9,9 @@
     min-width: 100%;
   }
 
-  input {
-    width: 100%;
+  input[role="combobox"] {
+    padding-inline: 8px;
   }
-
   ul.options {
     list-style-type: none;
     padding: 0;

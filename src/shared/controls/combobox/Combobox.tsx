@@ -21,6 +21,7 @@ export function Combobox<T extends OptionType>({
   Value,
   label,
   inputSize,
+  ariaLabel,
 }: ComboboxProps<T>) {
   const inputId = useId()
   const containerRef = useRef<HTMLDivElement>(null)
@@ -140,6 +141,7 @@ export function Combobox<T extends OptionType>({
             onClick={togglePopover}
             Value={Value}
             size={inputSize}
+            ariaLabel={ariaLabel}
           />
         ) : (
           <SingleValueInput
@@ -161,6 +163,7 @@ export function Combobox<T extends OptionType>({
             onKeyDown={handleKeyDown}
             onClick={togglePopover}
             size={inputSize}
+            ariaLabel={ariaLabel}
           >
             {Value && value ? <Value value={value} /> : null}
           </SingleValueInput>
