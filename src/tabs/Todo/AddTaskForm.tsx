@@ -100,7 +100,7 @@ export function AddTaskForm<T>({
             options={categoryOptions}
             createOption={(value) => ({ id: value, label: value })}
             onChange={(value) => setCategory(value)}
-            inputSize={2}
+            inputSize={1}
           />
         </div>
 

@@ -1,11 +1,9 @@
 import { useContext } from "react"
 import { FirebaseContext } from "../../../shared/FirebaseContext"
 
-import { EmojiCheckbox } from "../../../shared/controls/EmojiCheckbox"
-
 import "./TodayTask.css"
 import { DailyTask, DAILY_KEY, ProjectSubtask } from "../../../shared/types"
-import { EditableTextWithDelete } from "../../../shared/controls/EditableTextWithDelete"
+import { EditableDescription } from "../../../shared/controls/EditableDescription"
 
 export function TodayTask({
   task,
@@ -51,22 +49,20 @@ export function TodayTask({
 
   return (
     <>
-      <EmojiCheckbox
-        emoji={task.category}
+      <EditableDescription
+        category={task.category}
+        description={task.description}
         isChecked={task.status !== "ready"}
-        onChange={handleStatusChange}
-        label={`${task.description} done`}
-      />
-      <div className="description" style={{ flexGrow: 1 }}>
-        <EditableTextWithDelete
-          label="description"
-          value={task.description}
-          onChange={(description) => onChange({ ...task, description })}
-          onDelete={() => {
+        onChange={(change) => {
+          if ("isChecked" in change) {
+            handleStatusChange()
+          } else if ("description" in change && change.description === "") {
             storageContext.deleteItem<DailyTask>(DAILY_KEY, task)
-          }}
-        />
-      </div>
+          } else {
+            onChange({ ...task, ...change })
+          }
+        }}
+      />
     </>
   )
 }
