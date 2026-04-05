@@ -89,7 +89,7 @@ export function Subtask({ path, dragHandle, ...task }: SubtaskProps) {
         onClick={onAddToTodo}
         confirmationMessage="Copied!"
       >
-        <ArrowRightIcon colour="var(--action-colour)" width="16px" />
+        <span style={{ fontSize: ".7em" }}>🔗</span>
       </ButtonWithConfirmation>
       <ConfirmationModalDialog
         message={`Are you sure you want to delete ${task.description}`}
