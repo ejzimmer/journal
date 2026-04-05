@@ -105,6 +105,14 @@ form.today-form {
 
   .combobox {
     top: 10px;
+
+    input {
+      padding-inline: 16px;
+    }
+    .value {
+      left: 16px;
+      pointer-events: none;
+    }
   }
 
   .buttons {
