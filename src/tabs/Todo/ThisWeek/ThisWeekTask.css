@@ -1,4 +1,5 @@
 .todo-task-list.weekly {
+  max-width: 600px;
   .remainder {
     position: absolute;
     font-size: 0.8em;
