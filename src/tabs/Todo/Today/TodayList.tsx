@@ -101,7 +101,7 @@ export function TodayList() {
           {tasks.map((task, index) => (
             <DraggableListItem
               key={task.id}
-              className={`today-task item status-${task.status}`}
+              className={`today-task item status-${task.status} type-${task.type}`}
               getData={() => ({
                 [draggableTypeKey]: "日",
                 id: task.id,
