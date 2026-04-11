@@ -64,6 +64,9 @@ function PagesRead({ totalPages, readPages, onChange }: PagesReadProps) {
         value={readPages}
         className={totalPages === readPages ? "done" : ""}
       />
+      <div className="hover-text">
+        {readPages}/{totalPages}
+      </div>
       <form onSubmit={handleUpdate}>
         {isEditing && (
           <input

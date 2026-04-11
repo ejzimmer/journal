@@ -16,6 +16,7 @@ ul.other-goals {
     .volume {
       display: flex;
       gap: 8px;
+      position: relative;
 
       progress {
         appearance: none;
@@ -40,6 +41,23 @@ ul.other-goals {
           --light: hsl(150 96% 54%);
           --dark: hsl(150 96% 34%);
           box-shadow: 0 0 4px var(--light);
+        }
+
+        & + .hover-text {
+          font-size: 0.8em;
+          background: hsl(50 90% 92%);
+          border: 1px solid var(--body-colour);
+          padding: 2px;
+          position: absolute;
+          inset-inline-end: 10px;
+          inset-block-start: -100%;
+          pointer-events: none;
+          opacity: 0;
+          transition: opacity 0.2s;
+        }
+
+        &:hover + .hover-text {
+          opacity: 1;
         }
       }
 
