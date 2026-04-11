@@ -59,7 +59,7 @@ export function DayList() {
       <TrackerContext.Provider value={trackers}>
         <Filters filters={filters} onChange={setFilters} />
         <ol className="days">
-          {days.map(({ day, month, balance, diff }) => {
+          {days.map(({ day, month, balance, diff, dayOfWeek }) => {
             const id = day + month
             const dayData = (value?.[id] as DayData) ?? { id }
 
@@ -72,6 +72,7 @@ export function DayList() {
                   diff,
                   isLowest: balance === lowestBalance,
                 })}
+                style={{ gridColumn: dayOfWeek }}
               >
                 <Day
                   path={DAILY_PATH}
@@ -88,7 +89,13 @@ export function DayList() {
   )
 }
 
-type Balance = { day: number; month: string; balance?: number; diff?: number }
+type Balance = {
+  day: number
+  month: string
+  dayOfWeek: number
+  balance?: number
+  diff?: number
+}
 
 function setupDays(dayData?: Record<string, DayData>): Balance[] {
   const today = startOfDay(new Date())
@@ -102,10 +109,12 @@ function setupDays(dayData?: Record<string, DayData>): Balance[] {
     const { day, month } = formatDate(date)
     const { consumed, expended } = dayData?.[day + month] ?? {}
     const diff = consumed && expended && expended - consumed
+
+    const daySummary = { day, month, dayOfWeek: date.getDay() }
     if (typeof previousBalance === "number" && typeof diff === "number") {
-      days[i] = { day, month, balance: previousBalance - diff, diff }
+      days[i] = { ...daySummary, balance: previousBalance - diff, diff }
     } else {
-      days[i] = { day, month }
+      days[i] = daySummary
     }
   }
 

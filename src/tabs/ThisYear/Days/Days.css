@@ -1,7 +1,4 @@
 .daily {
-  display: grid;
-  grid-template-columns: min-content 1fr;
-
   .weekly {
     grid-row: 2;
     width: 100px;
@@ -13,6 +10,7 @@
     padding-block: 6px;
     height: min-content;
     margin-block-start: 40px;
+    position: absolute;
 
     .week-container {
       anchor-scope: --label-text;
@@ -82,8 +80,10 @@
 ol.days {
   list-style-type: none;
   display: grid;
-  grid-template-columns: repeat(auto-fit, 150px);
+  grid-template-columns: repeat(7, 150px);
   gap: 4px;
+  width: fit-content;
+  margin-inline: auto;
 
   &:has(.highlight) > li:not(.highlight) {
     opacity: 0.3;

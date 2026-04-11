@@ -3,9 +3,21 @@ import { YarnState } from "./YarnState"
 
 export function YarnTracking() {
   return (
-    <div style={{ display: "flex", gap: "36px" }}>
+    <div
+      style={{
+        maxWidth: "1200px",
+        width: "800px",
+        display: "flex",
+        flexWrap: "wrap",
+        alignItems: "center",
+        gap: "24px",
+        marginInline: "auto",
+      }}
+    >
       <YarnState />
-      <YarnTrackingForm />
+      <div style={{ maxWidth: "400px", marginInline: "auto" }}>
+        <YarnTrackingForm />
+      </div>
     </div>
   )
 }
