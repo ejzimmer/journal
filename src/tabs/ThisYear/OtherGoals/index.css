@@ -36,6 +36,11 @@ ul.other-goals {
           border-radius: 4px;
           background: var(--border-colour);
         }
+        &.done {
+          --light: hsl(150 96% 54%);
+          --dark: hsl(150 96% 34%);
+          box-shadow: 0 0 4px var(--light);
+        }
       }
 
       form {

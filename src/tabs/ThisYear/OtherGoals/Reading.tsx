@@ -59,7 +59,11 @@ function PagesRead({ totalPages, readPages, onChange }: PagesReadProps) {
 
   return (
     <div className="volume">
-      <progress max={totalPages} value={readPages} />
+      <progress
+        max={totalPages}
+        value={readPages}
+        className={totalPages === readPages ? "done" : ""}
+      />
       <form onSubmit={handleUpdate}>
         {isEditing && (
           <input
