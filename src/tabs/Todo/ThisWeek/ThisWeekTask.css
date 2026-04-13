@@ -92,4 +92,13 @@
       flex-grow: 1;
     }
   }
+
+  form.add-task-form {
+    display: grid;
+    margin-inline: auto;
+
+    input[type="number"] {
+      width: fit-content;
+    }
+  }
 }
