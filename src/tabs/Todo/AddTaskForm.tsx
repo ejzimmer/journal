@@ -82,7 +82,7 @@ export function AddTaskForm<T>({
       </button>
       <form
         ref={formRef}
-        className={formVisible ? "today-form visible" : "today-form"}
+        className={formVisible ? "add-task-form visible" : "add-task-form"}
         style={{ height: formVisible ? formHeightRef.current : 0 }}
         onSubmit={handleSubmit}
       >

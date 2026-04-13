@@ -43,7 +43,7 @@
     transform: rotate(45deg);
   }
 
-  form {
+  form.add-task-form {
     transition: height 0.2s ease-out;
     opacity: 0;
     overflow: hidden;
@@ -93,7 +93,7 @@
   }
 }
 
-form.today-form {
+form.add-task-form {
   display: grid;
   grid-template-columns: min-content 1fr 1fr;
   grid-template-rows: min-content min-content;

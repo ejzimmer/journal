@@ -78,4 +78,18 @@
     opacity: 0;
     transition: opacity 0.4s;
   }
+
+  form.edit-this-week-task {
+    width: 100%;
+    flex-direction: row;
+    gap: 8px;
+
+    button:last-child {
+      display: none;
+    }
+
+    input:nth-last-of-type(2) {
+      flex-grow: 1;
+    }
+  }
 }

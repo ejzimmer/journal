@@ -1,4 +1,4 @@
-import { useContext } from "react"
+import { FormEvent, useContext, useMemo, useRef, useState } from "react"
 
 import "./ThisWeekTask.css"
 import { FirebaseContext } from "../../../shared/FirebaseContext"
@@ -12,36 +12,64 @@ import {
   WeeklyTask,
 } from "../../../shared/types"
 import { formatDate } from "../../../shared/utils"
-import { EditableTextWithDelete } from "../../../shared/controls/EditableTextWithDelete"
-
-const dateFormatter = Intl.DateTimeFormat("en-AU", {
-  weekday: "short",
-  day: "numeric",
-})
-const suffixes = ["th", "st", "nd", "rd"]
-
-const dateToWeekday = (date: number) => {
-  const formatted = dateFormatter.format(new Date(date))
-  const secondLastDigit = formatted.at(-2)
-  const lastDigit = formatted.at(-1)
-  const suffixIndex = lastDigit ? Number.parseInt(lastDigit) : -1
-
-  if (secondLastDigit === "1") {
-    return `${formatted}th`
-  }
-
-  return `${formatted}${suffixes[suffixIndex] ?? "th"}`
-}
+import { Combobox } from "../../../shared/controls/combobox/Combobox"
+import { CategoriesContext } from ".."
+import { ProgressIndicator } from "./ProgressIndicator"
 
 export function ThisWeekTask({ task }: { task: WeeklyTask }) {
+  const [inEditMode, setInEditMode] = useState(false)
+  const switchToViewMode = () => setInEditMode(false)
+  const switchToEditMode = () => setInEditMode(true)
+
+  const descriptionRef = useRef<HTMLInputElement>(null)
+  const frequencyRef = useRef<HTMLInputElement>(null)
+
   const storageContext = useContext(FirebaseContext)
   if (!storageContext) {
     throw new Error("Missing Firebase context provider")
   }
-
   const onChange = (task: WeeklyTask) => {
     storageContext.updateItem<WeeklyTask>(WEEKLY_KEY, task)
   }
+
+  const onSubmit = (event: FormEvent) => {
+    event.preventDefault()
+    if (!descriptionRef.current || !frequencyRef.current) {
+      return
+    }
+
+    const description = descriptionRef.current.value
+    if (!description) {
+      storageContext.deleteItem<WeeklyTask>(WEEKLY_KEY, task)
+      return
+    }
+
+    const frequency = Number.parseInt(frequencyRef.current.value)
+    if (
+      description === task.description &&
+      (frequency === task.frequency || isNaN(frequency))
+    ) {
+      switchToViewMode()
+      return
+    }
+
+    storageContext.updateItem<WeeklyTask>(WEEKLY_KEY, {
+      ...task,
+      description: descriptionRef.current.value,
+      frequency: isNaN(frequency) ? task.frequency : frequency,
+    })
+
+    switchToViewMode()
+  }
+
+  const categories = useContext(CategoriesContext)
+  if (!categories) {
+    throw new Error("Missing categories context provider")
+  }
+  const categoryOptions = useMemo(
+    () => categories.map((category) => ({ id: category, label: category })),
+    [categories],
+  )
 
   const { day, month } = formatDate(new Date())
   const { value: today } = storageContext.useValue<Record<string, DayData>>(
@@ -54,8 +82,7 @@ export function ThisWeekTask({ task }: { task: WeeklyTask }) {
     }
 
     if (event.shiftKey) {
-      task.completed.pop()
-      onChange({ ...task, completed: [...task.completed] })
+      onChange({ ...task, completed: task.completed.slice(0, -1) })
     } else {
       const completed = Array.isArray(task.completed)
         ? task.completed
@@ -80,12 +107,46 @@ export function ThisWeekTask({ task }: { task: WeeklyTask }) {
     })
   }
 
-  const completed = Array.isArray(task.completed)
-    ? task.completed
-    : (Object.values(task.completed ?? {}) as number[])
-  const numberDone = (completed.filter((date) => !!date) ?? []).length
-  const remainder = Math.max(numberDone - task.frequency, 0)
-  const percent = (1 / task.frequency) * 100
+  const handleClose = ({ key }: React.KeyboardEvent<HTMLFormElement>) => {
+    if (key === "Escape") {
+      switchToViewMode()
+    }
+  }
+
+  if (inEditMode) {
+    return (
+      <form
+        className="edit-this-week-task"
+        onSubmit={onSubmit}
+        onKeyDown={handleClose}
+      >
+        <Combobox
+          value={{ id: task.category, label: task.category }}
+          options={categoryOptions}
+          createOption={(value) => ({ id: value, label: value })}
+          onChange={(value) => {
+            onChange({ ...task, category: value.id })
+            switchToViewMode()
+          }}
+          inputSize={1}
+          ariaLabel="Category"
+        />
+        <input
+          ref={descriptionRef}
+          aria-label="Description"
+          defaultValue={task.description}
+        />
+        <input
+          ref={frequencyRef}
+          type="number"
+          aria-label="Frequency"
+          defaultValue={task.frequency}
+          size={2}
+        />
+        <button>submit</button>
+      </form>
+    )
+  }
 
   return (
     <>
@@ -93,34 +154,14 @@ export function ThisWeekTask({ task }: { task: WeeklyTask }) {
         {task.category}
       </button>
       <div style={{ flexGrow: 1 }}>
-        <EditableTextWithDelete
-          label="description"
-          value={task.description}
-          onChange={(description) => onChange({ ...task, description })}
-          onDelete={() =>
-            storageContext.deleteItem<WeeklyTask>(WEEKLY_KEY, task)
-          }
-        />
+        <div tabIndex={0} onClick={switchToEditMode}>
+          {task.description}
+        </div>
       </div>
-      <div className="indicators">
-        <progress
-          max={task.frequency}
-          value={numberDone}
-          className={numberDone >= task.frequency ? "full" : ""}
-          style={{
-            backgroundColor: "#eee",
-            backgroundImage: `repeating-linear-gradient(to right, transparent, transparent ${percent}%, var(--body-colour-light) ${percent}%, var(--body-colour-light) calc(${percent}% + 1px))`,
-          }}
-        />
-        {remainder > 0 && <span className="remainder">+{remainder}</span>}
-        {Array.isArray(task.completed) && (
-          <ol className="dates-popover">
-            {task.completed.map(
-              (date) => date && <li key={date}>{dateToWeekday(date)}</li>,
-            )}
-          </ol>
-        )}
-      </div>
+      <ProgressIndicator
+        completed={task.completed}
+        frequency={task.frequency}
+      />
     </>
   )
 }
