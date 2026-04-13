@@ -98,7 +98,7 @@
     margin-inline: auto;
 
     input[type="number"] {
-      width: fit-content;
+      width: 60px;
     }
   }
 }
