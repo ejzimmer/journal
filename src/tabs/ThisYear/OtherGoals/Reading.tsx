@@ -72,7 +72,7 @@ function PagesRead({ totalPages, readPages, onChange }: PagesReadProps) {
           <input
             type="number"
             size={4}
-            style={{ width: "fit-content" }}
+            style={{ width: "60px" }}
             defaultValue={readPages}
           />
         )}

@@ -3,7 +3,7 @@
   &.status-finished {
     opacity: 0.4;
 
-    .description {
+    .editable-description > div {
       text-decoration: line-through;
     }
   }
