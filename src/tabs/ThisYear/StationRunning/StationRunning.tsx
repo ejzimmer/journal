@@ -21,19 +21,29 @@ export function StationRunning() {
   const stations = value && Object.values(value)
 
   return (
-    <ol className="trainline">
-      {stations?.map((station) => (
-        <li
-          key={station.name}
-          className={station.name === "Watsonia" ? "home" : ""}
-        >
-          <Station
-            {...station}
-            onChange={(station) => storageContext.updateItem(KEY, station)}
-          />
-        </li>
-      ))}
-    </ol>
+    <div
+      style={{
+        maxWidth: "100vw",
+        overflow: "auto",
+        paddingBlockEnd: "4px",
+        marginInline: "auto",
+        paddingInlineEnd: "120px",
+      }}
+    >
+      <ol className="trainline">
+        {stations?.map((station) => (
+          <li
+            key={station.name}
+            className={station.name === "Watsonia" ? "home" : ""}
+          >
+            <Station
+              {...station}
+              onChange={(station) => storageContext.updateItem(KEY, station)}
+            />
+          </li>
+        ))}
+      </ol>
+    </div>
   )
 }
 
