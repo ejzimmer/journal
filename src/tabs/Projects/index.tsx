@@ -18,7 +18,8 @@ import { reorderProjects } from "./utils"
 export function Projects() {
   const containerRef = useRef<HTMLUListElement>(null)
   const [containerHeight, setContainerHeight] = useState<number>()
-  const [filter, setFilter] = useState<Category[]>([])
+  const [filterCategories, setFilterCategories] = useState<Category[]>([])
+  const [filterByInProgress, setFilterByInProgress] = useState(false)
 
   const storageContext = useContext(FirebaseContext)
   if (!storageContext) {
@@ -44,11 +45,14 @@ export function Projects() {
     }
   }, [])
 
-  const updateFilter = (filter: Category, action: "add" | "remove") => {
+  const updateFilterCategories = (
+    category: Category,
+    action: "add" | "remove",
+  ) => {
     if (action === "add") {
-      setFilter((prev) => [...prev, filter])
+      setFilterCategories((prev) => [...prev, category])
     } else {
-      setFilter((prev) => prev.filter((f) => f !== filter))
+      setFilterCategories((prev) => prev.filter((f) => f !== category))
     }
   }
 
@@ -59,20 +63,26 @@ export function Projects() {
           <EmojiCheckbox
             key={category}
             emoji={category}
-            isChecked={filter.includes(category)}
+            isChecked={filterCategories.includes(category)}
             onChange={() =>
-              updateFilter(
+              updateFilterCategories(
                 category,
-                filter.includes(category) ? "remove" : "add",
+                filterCategories.includes(category) ? "remove" : "add",
               )
             }
             label={`Filter by ${category}`}
           />
         ))}
+        <EmojiCheckbox
+          emoji="🔄"
+          isChecked={filterByInProgress}
+          onChange={() => setFilterByInProgress(!filterByInProgress)}
+          label="Show only in-progress"
+        />
         <button
           className="icon ghost"
           style={{ marginInlineEnd: "8px" }}
-          onClick={() => setFilter([])}
+          onClick={() => setFilterCategories([])}
         >
           <XIcon width=".6em" colour="var(--body-colour-mid)" />
         </button>
@@ -83,7 +93,11 @@ export function Projects() {
         style={{ height: containerHeight }}
       >
         {sortedProjects.map((project, index) => (
-          <FilteredProject key={project.id} project={project} filter={filter}>
+          <FilteredProject
+            key={project.id}
+            project={project}
+            filter={{ categories: filterCategories, filterByInProgress }}
+          >
             <Project
               project={project}
               onDelete={() => {
@@ -111,15 +125,17 @@ export function Projects() {
 }
 
 function FilteredProject({
-  filter,
+  filter: { categories, filterByInProgress },
   project,
   children,
 }: {
-  filter: Category[]
+  filter: { categories: Category[]; filterByInProgress: boolean }
   project: ProjectDetails
   children: React.ReactNode
 }) {
-  const isVisible = !filter.length || filter.includes(project.category)
+  const isVisible =
+    (!categories.length || categories.includes(project.category)) &&
+    (!filterByInProgress || project.status === "in_progress")
 
   return (
     <li
