@@ -1,5 +1,3 @@
-import { useState } from "react"
-import { ConfirmationModalDialog } from "./ConfirmationModal"
 import { EditableText, EditableTextProps } from "./EditableText"
 
 type EditableTextWithDeleteProps = Omit<EditableTextProps, "children"> & {
@@ -14,9 +12,6 @@ export function EditableTextWithDelete({
   onDelete,
   ...props
 }: EditableTextWithDeleteProps) {
-  const [confirmDeleteModalVisible, setConfirmDeleteModalVisible] =
-    useState(false)
-
   return (
     <>
       <EditableText
@@ -25,21 +20,13 @@ export function EditableTextWithDelete({
           if (text) {
             onChange(text)
           } else {
-            setConfirmDeleteModalVisible(true)
+            onDelete()
           }
         }}
         {...props}
       >
         {value}
       </EditableText>
-      {confirmDeleteModalVisible && (
-        <ConfirmationModalDialog
-          message={`Are you sure you want to delete ${value}`}
-          onConfirm={onDelete}
-          isOpen={confirmDeleteModalVisible}
-          onCancel={() => setConfirmDeleteModalVisible(false)}
-        />
-      )}
     </>
   )
 }

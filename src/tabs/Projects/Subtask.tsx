@@ -1,6 +1,5 @@
 import { ReactElement, useContext, useState } from "react"
 import { Checkbox } from "../../shared/controls/Checkbox"
-import { ConfirmationModalDialog } from "../../shared/controls/ConfirmationModal"
 import { FirebaseContext } from "../../shared/FirebaseContext"
 import { ProjectSubtask } from "../../shared/types"
 import { ButtonWithConfirmation } from "../../shared/controls/ButtonWithConfirmation"
@@ -15,8 +14,6 @@ type SubtaskProps = ProjectSubtask & {
 }
 
 export function Subtask({ path, dragHandle, ...task }: SubtaskProps) {
-  const [confirmDeleteModalOpen, setConfirmDeleteModalOpen] = useState(false)
-
   const storageContext = useContext(FirebaseContext)
   if (!storageContext) {
     throw new Error("Missing Firebase context provider")
@@ -90,12 +87,6 @@ export function Subtask({ path, dragHandle, ...task }: SubtaskProps) {
       >
         <span style={{ fontSize: ".7em" }}>🔗</span>
       </ButtonWithConfirmation>
-      <ConfirmationModalDialog
-        message={`Are you sure you want to delete ${task.description}`}
-        onConfirm={() => storageContext.deleteItem(path, task)}
-        onCancel={() => setConfirmDeleteModalOpen(false)}
-        isOpen={confirmDeleteModalOpen}
-      />
     </DraggableListItem>
   )
 }
