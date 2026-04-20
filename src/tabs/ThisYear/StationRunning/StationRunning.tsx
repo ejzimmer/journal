@@ -23,7 +23,7 @@ export function StationRunning() {
   return (
     <div
       style={{
-        maxWidth: "100vw",
+        maxWidth: "100%",
         overflow: "auto",
         paddingBlockEnd: "4px",
         marginInline: "auto",
