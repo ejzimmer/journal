@@ -1,4 +1,4 @@
-import { ReactElement, useContext, useState } from "react"
+import { ReactElement, useContext } from "react"
 import { Checkbox } from "../../shared/controls/Checkbox"
 import { FirebaseContext } from "../../shared/FirebaseContext"
 import { ProjectSubtask } from "../../shared/types"
