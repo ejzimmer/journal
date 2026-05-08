@@ -1,4 +1,4 @@
-import { useContext } from "react"
+import { useContext, useMemo } from "react"
 import { FirebaseContext } from "../../../shared/FirebaseContext"
 import { Book, Reading } from "./Reading"
 
@@ -27,7 +27,15 @@ export function OtherGoals() {
   }
 
   const { value } = storageContext.useValue<Record<string, Goal>>(path)
-  const goals = value ? Object.values(value) : []
+  const goals = useMemo(
+    () =>
+      value
+        ? Object.values(value).toSorted((a, b) =>
+            isDone(a) && isDone(b) ? 0 : isDone(a) ? 1 : -1,
+          )
+        : [],
+    [value],
+  )
 
   const onUpdate = (goal: Goal) => {
     if (hasId(goal)) {
@@ -93,4 +101,30 @@ const getComponent = (goal: Goal, onUpdate: (goal: Goal) => void) => {
   } else {
     return <BasicGoal goal={goal} onChange={onUpdate} />
   }
+}
+
+function isDone(task: any) {
+  if ("status" in task) {
+    return task.status === "done"
+  }
+
+  if ("times" in task && Array.isArray(task.times)) {
+    return task.times.every(
+      (time: { completed: number; total: number }) =>
+        time.completed === time.total,
+    )
+  }
+
+  if ("volumes" in task && Array.isArray(task.volumes)) {
+    return task.volumes.every(
+      (volume: { readPages: number; totalPages: number }) =>
+        volume.readPages === volume.totalPages,
+    )
+  }
+
+  if ("bikes" in task && Array.isArray(task.bikes)) {
+    return task.bikes.every((bike: { isDone: boolean }) => bike.isDone)
+  }
+  console.log(task)
+  return false
 }

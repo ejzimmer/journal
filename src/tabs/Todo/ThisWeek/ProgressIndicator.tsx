@@ -1,3 +1,4 @@
+import isSameDay from "date-fns/isSameDay"
 import { WeeklyTask } from "../../../shared/types"
 import { dateToWeekday } from "./utils"
 
@@ -13,12 +14,15 @@ export function ProgressIndicator({
   const remainder = Math.max(numberDone - frequency, 0)
   const percent = (1 / frequency) * 100
 
+  const mostRecentlyDone = completedList.at(-1)
+  const doneToday = mostRecentlyDone && isSameDay(mostRecentlyDone, new Date())
+
   return (
     <div className="indicators">
       <progress
         max={frequency}
         value={numberDone}
-        className={numberDone >= frequency ? "full" : ""}
+        className={`${numberDone >= frequency ? "full" : ""} ${doneToday ? "done-today" : ""}`}
         style={{
           backgroundColor: "#eee",
           backgroundImage: `repeating-linear-gradient(to right, transparent, transparent ${percent}%, var(--body-colour-light) ${percent}%, var(--body-colour-light) calc(${percent}% + 1px))`,

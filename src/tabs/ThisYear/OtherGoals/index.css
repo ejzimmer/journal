@@ -103,6 +103,7 @@ ul.other-goals {
     &.done {
       font-style: italic;
       text-decoration: line-through;
+      opacity: 0.5;
 
       .switch {
         .indicator {
