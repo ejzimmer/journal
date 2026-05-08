@@ -53,9 +53,6 @@
     background: hsla(150, 97%, 46%, 0.1);
   }
 
-  li.series > div:first-child {
-    font-style: italic;
-  }
   li.author > div:first-child {
     font-weight: bold;
   }

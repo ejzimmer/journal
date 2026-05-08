@@ -4,13 +4,16 @@ import { FirebaseContext } from "../../../shared/FirebaseContext"
 import { BookList } from "./BookList"
 import { BookDetails, SeriesDetails } from "../types"
 
-export function Series({
-  series,
-  path,
-}: {
+type SeriesProps = {
   series: SeriesDetails<BookDetails>
   path: string
-}) {
+  author?: {
+    name: string
+    onChange: (name: string) => void
+  }
+}
+
+export function Series({ series, path, author }: SeriesProps) {
   const storageContext = useContext(FirebaseContext)
   if (!storageContext) {
     throw new Error("Missing Firebase context provider")
@@ -25,10 +28,22 @@ export function Series({
 
   return (
     <li className="series">
-      <div>
-        <EditableText label="Series name" onChange={updateSeriesName}>
+      <div style={{ display: "flex", gap: "8px" }}>
+        <EditableText
+          label="Series name"
+          onChange={updateSeriesName}
+          style={{
+            textDecoration: author ? "" : "underline",
+            fontWeight: author ? "bold" : "",
+          }}
+        >
           {series.name}
         </EditableText>
+        {author && (
+          <EditableText onChange={author.onChange} label="Author's name">
+            {`(${author.name})`}
+          </EditableText>
+        )}
       </div>
       <BookList
         books={series.items as Record<string, BookDetails>}

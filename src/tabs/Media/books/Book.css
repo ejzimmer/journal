@@ -1,39 +1,33 @@
 .book {
-  .details {
-    flex-grow: 1;
-    display: flex;
-    align-items: center;
-    gap: 8px;
+  .done {
+    opacity: 0.4;
+    text-decoration: line-through;
+  }
+}
 
-    &.isDone {
-      opacity: 0.4;
-      text-decoration: line-through;
-    }
+button.medium {
+  padding: 0;
+  width: 24px;
+  height: 24px;
+  border: 0;
+  transition: all 0.2s;
+  display: inline-block;
+
+  &:hover {
+    background: none;
   }
 
-  button.medium {
-    padding: 0;
-    width: 24px;
-    height: 24px;
-    border: 0;
-    transition: all 0.2s;
+  &:hover:not(.empty) {
+    transform: scale(1.1);
+    text-shadow: 1px 1px hsl(0 0 0/0.1);
+  }
 
+  &.empty {
+    filter: grayscale(100%) contrast(0.5);
+    opacity: 0.4;
     &:hover {
-      background: none;
-    }
-
-    &:hover:not(.empty) {
-      transform: scale(1.1);
-      text-shadow: 1px 1px hsl(0 0 0/0.1);
-    }
-
-    &.empty {
-      filter: grayscale(100%) contrast(0.5);
-      opacity: 0.4;
-      &:hover {
-        filter: grayscale(0) contrast(1);
-        opacity: 1;
-      }
+      filter: grayscale(0) contrast(1);
+      opacity: 1;
     }
   }
 }

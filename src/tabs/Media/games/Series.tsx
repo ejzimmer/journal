@@ -26,7 +26,11 @@ export function Series({
   return (
     <li className="series">
       <div>
-        <EditableText label="Series name" onChange={updateSeriesName}>
+        <EditableText
+          label="Series name"
+          onChange={updateSeriesName}
+          style={{ fontWeight: "bold" }}
+        >
           {series.name}
         </EditableText>
       </div>

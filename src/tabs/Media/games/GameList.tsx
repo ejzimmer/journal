@@ -1,7 +1,7 @@
-import { useContext, useRef } from "react"
+import { useContext } from "react"
 import { FirebaseContext } from "../../../shared/FirebaseContext"
 import { Game } from "./Game"
-import { GameDetails, GAMES_KEY } from "../types"
+import { GameDetails } from "../types"
 
 export function GameList({
   games,
@@ -16,19 +16,6 @@ export function GameList({
   }
 
   const gameDetails = games ? Object.values(games) : undefined
-  const newGameRef = useRef<HTMLInputElement>(null)
-
-  const addGame = (event: React.FormEvent) => {
-    event.preventDefault()
-
-    if (newGameRef.current?.value) {
-      storageContext.addItem<GameDetails>(`${GAMES_KEY}/${path}/games`, {
-        title: newGameRef.current?.value,
-        type: "game",
-      })
-      newGameRef.current.form?.reset()
-    }
-  }
 
   return (
     gameDetails && (
@@ -36,9 +23,6 @@ export function GameList({
         {gameDetails.map((game) => (
           <Game key={game.id} game={game} path={path} />
         ))}
-        <form onSubmit={addGame}>
-          <input className="add-item-to-list" ref={newGameRef} />
-        </form>
       </ul>
     )
   )

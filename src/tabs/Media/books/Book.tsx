@@ -2,13 +2,22 @@ import { useContext } from "react"
 import { FirebaseContext } from "../../../shared/FirebaseContext"
 import { BookDetails } from "../types"
 
-import { XIcon } from "../../../shared/icons/X"
 import { EditableText } from "../../../shared/controls/EditableText"
 
 import "./Book.css"
 import { Checkbox } from "../../../shared/controls/Checkbox"
+import { EditableTextWithDelete } from "../../../shared/controls/EditableTextWithDelete"
 
-export function Book({ book, path }: { book: BookDetails; path: string }) {
+type BookProps = {
+  book: BookDetails
+  path: string
+  author?: {
+    name: string
+    onChange: (name: string) => void
+  }
+}
+
+export function Book({ book, path, author }: BookProps) {
   const storageContext = useContext(FirebaseContext)
   if (!storageContext) {
     throw new Error("Missing Firebase context provider")
@@ -49,21 +58,36 @@ export function Book({ book, path }: { book: BookDetails; path: string }) {
         onChange={toggleDone}
       />
 
-      <div className={`details ${book.isDone ? "isDone" : ""}`}>
-        <EditableText label="title" onChange={updateTitle}>
-          {book.title}
-        </EditableText>
+      <span className={book.isDone ? "done" : ""}>
+        <EditableTextWithDelete
+          label="title"
+          onChange={updateTitle}
+          style={{
+            fontStyle: "italic",
+            display: "inline",
+          }}
+          value={`${book.title}${author ? ", " : ""}`}
+          onDelete={deleteBook}
+        />
+        {author && (
+          <EditableText
+            onChange={author.onChange}
+            label="author name"
+            style={{ display: "inline" }}
+          >
+            {author.name}
+          </EditableText>
+        )}
+
         <button
           className={`medium ${book.medium ? "" : "empty"}`}
           aria-label="update medium"
           onClick={updateMedium}
+          style={{ marginInlineStart: "8px" }}
         >
           {book.medium ?? "📖"}
         </button>
-      </div>
-      <button className="emoji ghost" onClick={deleteBook}>
-        <XIcon width="16px" />
-      </button>
+      </span>
     </li>
   )
 }
