@@ -1,16 +1,15 @@
-import { ReactElement, useContext, useState } from "react"
+import { ReactElement, useContext } from "react"
 import { isTask } from "../drag-utils"
 
 import { DraggableListItem } from "../../../shared/drag-and-drop/DraggableListItem"
 import { draggableTypeKey } from "../../../shared/drag-and-drop/types"
 import { Checkbox } from "../../../shared/controls/Checkbox"
-import { EditableText } from "../../../shared/controls/EditableText"
 import { WorkTask } from "../types"
 import { FirebaseContext } from "../../../shared/FirebaseContext"
 import { Labels } from "./Labels"
 import { UpdateLabels } from "./UpdateLabels"
 import { DueDate } from "./DueDate"
-import { PostitModalDialog } from "../PostitModal"
+import { EditableTextWithDelete } from "../../../shared/controls/EditableTextWithDelete"
 
 type TaskProps = {
   task: WorkTask
@@ -19,7 +18,6 @@ type TaskProps = {
 }
 
 export function Task({ task, path, dragHandle }: TaskProps) {
-  const [deleteModalOpen, setDeleteModalOpen] = useState(false)
   const storageContext = useContext(FirebaseContext)
   if (!storageContext) {
     throw new Error("missing firebase context")
@@ -54,34 +52,21 @@ export function Task({ task, path, dragHandle }: TaskProps) {
         />
       </div>
       <div className="task-content">
-        <EditableText
-          onChange={(description) => {
-            if (description) {
-              storageContext.updateItem(path, {
-                ...task,
-                description,
-              })
-            } else {
-              setDeleteModalOpen(true)
-            }
-          }}
+        <EditableTextWithDelete
           label={`Edit description ${task.description}`}
+          value={task.description}
+          onChange={(description) => {
+            storageContext.updateItem(path, {
+              ...task,
+              description,
+            })
+          }}
+          onDelete={() => storageContext.deleteItem(path, task)}
           className="inline"
           style={{
             textDecoration: task.status === "done" ? "line-through" : "none",
           }}
-        >
-          {task.description}
-        </EditableText>
-        {deleteModalOpen && (
-          <PostitModalDialog
-            isOpen={deleteModalOpen}
-            message={`Are you sure you want to delete ${task.description}?`}
-            onConfirm={() => storageContext.deleteItem(path, task)}
-            onCancel={() => setDeleteModalOpen(false)}
-          />
-        )}
-
+        />
         <Labels
           labels={task.labels}
           onRemoveLabel={(label) => {

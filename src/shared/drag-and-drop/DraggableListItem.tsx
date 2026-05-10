@@ -1,4 +1,5 @@
 import { setCustomNativeDragPreview } from "@atlaskit/pragmatic-drag-and-drop/element/set-custom-native-drag-preview"
+import { preserveOffsetOnSource } from "@atlaskit/pragmatic-drag-and-drop/element/preserve-offset-on-source"
 import { combine } from "@atlaskit/pragmatic-drag-and-drop/combine"
 import { ReactNode, useRef, useState, useEffect, ReactElement } from "react"
 import { createPortal } from "react-dom"
@@ -7,13 +8,12 @@ import {
   draggable,
   dropTargetForElements,
 } from "@atlaskit/pragmatic-drag-and-drop/element/adapter"
-import { pointerOutsideOfPreview } from "@atlaskit/pragmatic-drag-and-drop/element/pointer-outside-of-preview"
 import {
   attachClosestEdge,
   extractClosestEdge,
 } from "@atlaskit/pragmatic-drag-and-drop-hitbox/closest-edge"
 import { Edge } from "@atlaskit/pragmatic-drag-and-drop-hitbox/dist/types/types"
-import { Draggable, DraggingState, IDLE } from "./types"
+import { Draggable, DraggingState, IDLE, draggableTypeKey } from "./types"
 
 import "./drag-and-drop.css"
 
@@ -38,26 +38,29 @@ export function DraggableListItem({
   className,
   style,
 }: DraggableListItemProps) {
-  const draggableRef = useRef<HTMLLIElement | null>(null)
+  const listItemRef = useRef<HTMLLIElement | null>(null)
+  const dragHandleMountRef = useRef<HTMLSpanElement | null>(null)
   const [draggingState, setDraggingState] = useState<DraggingState>(IDLE)
 
   useEffect(() => {
-    if (!draggableRef.current) return
+    const row = listItemRef.current
+    const dragSource = dragHandleMountRef.current
+    if (!row || !dragSource) return
 
-    const element = draggableRef.current
-    invariant(element)
+    invariant(row)
+    invariant(dragSource)
     return combine(
       draggable({
-        element,
+        element: dragSource,
         getInitialData() {
           return getData()
         },
-        onGenerateDragPreview({ nativeSetDragImage }) {
+        onGenerateDragPreview({ nativeSetDragImage, location }) {
           setCustomNativeDragPreview({
             nativeSetDragImage,
-            getOffset: pointerOutsideOfPreview({
-              x: "16px",
-              y: "8px",
+            getOffset: preserveOffsetOnSource({
+              element: row,
+              input: location.current.input,
             }),
             render({ container }) {
               setDraggingState({ type: "preview", container })
@@ -69,10 +72,15 @@ export function DraggableListItem({
         },
       }),
       dropTargetForElements({
-        element,
+        element: row,
         canDrop({ source }) {
-          // don't allow dropping on yourself
-          if (source.element === element) {
+          const sourceData = source.data as Draggable
+          const targetData = getData()
+          if (
+            sourceData.id === targetData.id &&
+            sourceData.parentId === targetData.parentId &&
+            sourceData[draggableTypeKey] === targetData[draggableTypeKey]
+          ) {
             return false
           }
           return isDroppable(source.data)
@@ -80,7 +88,7 @@ export function DraggableListItem({
         getData({ input }) {
           const data = getData()
           return attachClosestEdge(data, {
-            element,
+            element: row,
             input,
             allowedEdges,
           })
@@ -113,18 +121,20 @@ export function DraggableListItem({
         onDrop() {
           setDraggingState(IDLE)
         },
-      })
+      }),
     )
   }, [allowedEdges, getData, isDroppable])
 
   return (
     <>
       <li
-        ref={draggableRef}
+        ref={listItemRef}
         className={`${className ?? ""} draggable-item`}
         style={style}
       >
-        {dragHandle}
+        <span ref={dragHandleMountRef} className="drag-handle-mount">
+          {dragHandle}
+        </span>
         {children}
         {draggingState.type === "is-dragging-over" &&
         draggingState.closestEdge ? (

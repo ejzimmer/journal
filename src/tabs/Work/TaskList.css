@@ -3,7 +3,8 @@ ol.work-lists > li {
   margin-inline-start: -30px;
 
   & > :first-child {
-    translate: 80%;
+    translate: 80% 12px;
+    align-self: start;
   }
 }
 
