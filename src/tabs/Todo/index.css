@@ -1,3 +1,17 @@
+.today {
+  display: grid;
+  gap: 40px 80px;
+  grid-template-areas: "today" "week" "dates";
+
+  @media (width > 880px) {
+    grid-template-areas: "today week" "today dates";
+  }
+
+  @media (width > 1360px) {
+    grid-template-areas: "today week dates";
+  }
+}
+
 .todo-task-list {
   display: flex;
   flex-direction: column;
