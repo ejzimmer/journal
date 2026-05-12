@@ -1,6 +1,6 @@
 .today {
   display: grid;
-  gap: 40px 80px;
+  gap: 40px;
   grid-template-areas: "today" "week" "dates";
 
   @media (width > 880px) {
