@@ -27,6 +27,7 @@ export function NewListModal({
     }
 
     onCreate(listName)
+    setListName("")
     return true
   }
 
