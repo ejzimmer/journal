@@ -101,6 +101,20 @@ export function Project({ project, onMoveToEnd, onDelete }: ProjectProps) {
   const subtasks = Object.values(project.subtasks ?? {})
   const doneSubtasks = subtasks.filter((subtask) => subtask.status === "done")
 
+  if (
+    (!project.status || project.status === "ready") &&
+    doneSubtasks.length > 0
+  ) {
+    storageContext.updateItem<ProjectDetails>(PROJECTS_KEY, {
+      ...project,
+      status: "in_progress",
+    })
+  }
+
+  if (project.description === "unicorns knit") {
+    console.log(project)
+  }
+
   return (
     <div className={`project ${project.status}`} style={projectColour}>
       <div className="project-details">
