@@ -17,7 +17,7 @@ label.checkbox {
     width: 0;
     overflow: hidden;
     position: fixed;
-    top: -100%;
+    left: -100%;
   }
 
   &:focus-within .control {
