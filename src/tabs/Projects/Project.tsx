@@ -15,6 +15,7 @@ import { ButtonWithConfirmation } from "../../shared/controls/ButtonWithConfirma
 import { getSubtasksKey, useLinkedTasks } from "./utils"
 import { EditableTextWithDelete } from "../../shared/controls/EditableTextWithDelete"
 import { ArrowToEndIcon } from "../../shared/icons/ArrowToEnd"
+import { TickIcon } from "../../shared/icons/Tick"
 
 type ProjectProps = {
   project: ProjectDetails
@@ -135,12 +136,6 @@ export function Project({ project, onMoveToEnd, onDelete }: ProjectProps) {
             flexGrow: 1,
           }}
         />
-        {subtasks.length > 0 && (
-          <div className="subtasks-progress">
-            {doneSubtasks.length}/{subtasks.length}
-          </div>
-        )}
-
         <div className="project-actions">
           <ButtonWithConfirmation
             className="icon ghost project-action-button"
@@ -156,17 +151,53 @@ export function Project({ project, onMoveToEnd, onDelete }: ProjectProps) {
           >
             <ArrowToEndIcon width="20px" colour="var(--action-colour)" />
           </button>
-
-          <button
-            className={`ghost expand ${subtasksVisible ? "expanded" : ""}`}
-            onClick={() => setSubtasksVisible(!subtasksVisible)}
-            style={{ marginInlineStart: "auto" }}
-          >
-            <ChevronDownIcon width="20px" />
-          </button>
         </div>
+        <SubTasksStatus subtasks={subtasks} doneSubtasks={doneSubtasks} />
+
+        <button
+          className={`ghost expand ${subtasksVisible ? "expanded" : ""}`}
+          onClick={() => setSubtasksVisible(!subtasksVisible)}
+          style={{ marginInlineStart: "auto" }}
+        >
+          <ChevronDownIcon width="20px" />
+        </button>
       </div>
       <SubtaskList projectId={project.id} isVisible={subtasksVisible} />
+    </div>
+  )
+}
+
+type SubTasksStatusProps = {
+  subtasks: ProjectSubtask[]
+  doneSubtasks: ProjectSubtask[]
+}
+
+function SubTasksStatus({ subtasks, doneSubtasks }: SubTasksStatusProps) {
+  if (subtasks.length === 0) return null
+
+  if (subtasks.length > doneSubtasks.length) {
+    return (
+      <div className="subtasks-progress">
+        {doneSubtasks.length}/{subtasks.length}
+      </div>
+    )
+  }
+
+  return (
+    <div
+      style={{
+        backgroundColor: "var(--success-colour)",
+        width: "26px",
+        aspectRatio: 1,
+        borderRadius: "100%",
+        display: "flex",
+        alignContent: "center",
+        justifyContent: "center",
+        boxShadow:
+          "inset -1px -1px 6px hsl(0 0% 0%/.5), inset 1px 1px 6px hsl(0 0% 100% /.5), 1px 1px 2px hsl(0 0% 0%/.5)",
+      }}
+    >
+      <TickIcon colour="white" width="50%" strokeWidth="3" />
     </div>
   )
 }
