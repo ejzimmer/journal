@@ -19,7 +19,6 @@ export function Projects() {
   const containerRef = useRef<HTMLUListElement>(null)
   const [containerHeight, setContainerHeight] = useState<number>()
   const [filterCategories, setFilterCategories] = useState<Category[]>([])
-  const [filterByInProgress, setFilterByInProgress] = useState(false)
 
   const storageContext = useContext(FirebaseContext)
   if (!storageContext) {
@@ -74,12 +73,6 @@ export function Projects() {
             label={`Filter by ${category}`}
           />
         ))}
-        <EmojiCheckbox
-          emoji="🔄"
-          isChecked={filterByInProgress}
-          onChange={() => setFilterByInProgress(!filterByInProgress)}
-          label="Show only in-progress"
-        />
         <button
           className="icon ghost"
           style={{ marginInlineEnd: "8px" }}
@@ -97,7 +90,7 @@ export function Projects() {
           <FilteredProject
             key={project.id}
             project={project}
-            filter={{ categories: filterCategories, filterByInProgress }}
+            filter={filterCategories}
           >
             <Project
               project={project}
@@ -126,17 +119,15 @@ export function Projects() {
 }
 
 function FilteredProject({
-  filter: { categories, filterByInProgress },
+  filter: categories,
   project,
   children,
 }: {
-  filter: { categories: Category[]; filterByInProgress: boolean }
+  filter: Category[]
   project: ProjectDetails
   children: React.ReactNode
 }) {
-  const isVisible =
-    (!categories.length || categories.includes(project.category)) &&
-    (!filterByInProgress || project.status === "in_progress")
+  const isVisible = !categories.length || categories.includes(project.category)
 
   return (
     <li
