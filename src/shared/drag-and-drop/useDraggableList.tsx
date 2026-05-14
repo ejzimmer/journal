@@ -117,7 +117,6 @@ export function useDraggableList<
         const dropTargets = location.current.dropTargets
         const dropTargetData = dropTargets[0].data as DropTarget
         const targetListId = getTargetListId(sourceData, dropTargetData)
-
         if (sourceData.parentId === targetListId) {
           updatePosition({
             listId: targetListId,

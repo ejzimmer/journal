@@ -68,7 +68,7 @@ export function SubtaskList({ projectId, isVisible }: SubtasksProps) {
   useDraggableList({
     listId: subtasksKey,
     canDropSourceOnTarget: (source) => {
-      return source[draggableTypeKey] === "project-subtask"
+      return source[draggableTypeKey] === `subtask-${subtasksKey}`
     },
     getTargetListId: (source) => source.parentId,
     getAxis: () => "vertical",

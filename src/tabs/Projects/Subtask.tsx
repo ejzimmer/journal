@@ -53,14 +53,14 @@ export function Subtask({ path, dragHandle, ...task }: SubtaskProps) {
   return (
     <DraggableListItem
       getData={() => ({
-        [draggableTypeKey]: "project-subtask",
+        [draggableTypeKey]: `subtask-${path}`,
         id: task.id,
         parentId: path,
         position: task.position ?? Infinity,
       })}
       dragPreview={<DragPreview task={task} />}
       isDroppable={(data) =>
-        draggableTypeKey in data && data[draggableTypeKey] === "project-subtask"
+        draggableTypeKey in data && data[draggableTypeKey] === `subtask-${path}`
       }
       allowedEdges={["top", "bottom"]}
       dragHandle={dragHandle}
