@@ -2,9 +2,8 @@ import { endOfDay, isAfter, subDays } from "date-fns"
 import { AddThisWeekTaskForm } from "./AddThisWeekTaskForm"
 import { ThisWeekTask } from "./ThisWeekTask"
 import { WEEKLY_KEY, WeeklyTask } from "../../../shared/types"
-import { useContext, useMemo, useRef } from "react"
+import { useContext, useRef } from "react"
 import { FirebaseContext } from "../../../shared/FirebaseContext"
-import { sortByPosition } from "../../../shared/drag-and-drop/utils"
 
 export function refreshTasks(
   tasks: WeeklyTask[],
