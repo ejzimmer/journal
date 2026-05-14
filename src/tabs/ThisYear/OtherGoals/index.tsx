@@ -125,6 +125,5 @@ function isDone(task: any) {
   if ("bikes" in task && Array.isArray(task.bikes)) {
     return task.bikes.every((bike: { isDone: boolean }) => bike.isDone)
   }
-  console.log(task)
   return false
 }

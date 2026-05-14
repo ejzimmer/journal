@@ -111,10 +111,6 @@ export function Project({ project, onMoveToEnd, onDelete }: ProjectProps) {
     })
   }
 
-  if (project.description === "unicorns knit") {
-    console.log(project)
-  }
-
   return (
     <div className={`project ${project.status}`} style={projectColour}>
       <div className="project-details">
