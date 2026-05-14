@@ -39,6 +39,7 @@ export function AddTaskForm<T>({
 
   const formRef = useRef<HTMLFormElement>(null)
   const formHeightRef = useRef(0)
+  const descriptionRef = useRef<HTMLInputElement>(null)
 
   const [formVisible, setFormVisible] = useState(false)
 
@@ -68,8 +69,7 @@ export function AddTaskForm<T>({
     } as TodoTask & T)
 
     setDescription("")
-    setCategory(categoryOptions[0])
-    setFormVisible(false)
+    descriptionRef.current?.focus()
   }
 
   return (
@@ -91,6 +91,7 @@ export function AddTaskForm<T>({
             label="Description"
             value={description}
             onChange={setDescription}
+            ref={descriptionRef}
           />
         </div>
         <div>
