@@ -2,21 +2,9 @@ import { endOfDay, isAfter, subDays } from "date-fns"
 import { AddThisWeekTaskForm } from "./AddThisWeekTaskForm"
 import { ThisWeekTask } from "./ThisWeekTask"
 import { WEEKLY_KEY, WeeklyTask } from "../../../shared/types"
-import { useContext, useRef } from "react"
+import { useContext, useMemo, useRef } from "react"
 import { FirebaseContext } from "../../../shared/FirebaseContext"
-import {
-  isDraggable,
-  sortByPosition,
-} from "../../../shared/drag-and-drop/utils"
-import { useDraggableList } from "../../../shared/drag-and-drop/useDraggableList"
-import { useDropTarget } from "../../../shared/drag-and-drop/useDropTarget"
-import { DraggableListItem } from "../../../shared/drag-and-drop/DraggableListItem"
-import {
-  draggableTypeKey,
-  OrderedListItem,
-} from "../../../shared/drag-and-drop/types"
-import { DragPreview } from "../DragPreview"
-import { DragHandle } from "../../../shared/drag-and-drop/DragHandle"
+import { sortByPosition } from "../../../shared/drag-and-drop/utils"
 
 export function refreshTasks(
   tasks: WeeklyTask[],
@@ -46,23 +34,28 @@ export function ThisWeekList() {
   }
   const { value } =
     storageContext.useValue<Record<string, WeeklyTask>>(WEEKLY_KEY)
-  const tasks = sortByPosition(value ? Object.values(value) : [])
+
+  const taskOrder = useRef<string[]>([])
+
+  if (value && taskOrder.current.length !== Object.values(value).length) {
+    taskOrder.current = Object.values(value)
+      .toSorted((a, b) => {
+        const aUrgency = a.frequency - (a.completed?.length ?? 0)
+        const bUrgency = b.frequency - (b.completed?.length ?? 0)
+
+        if (aUrgency === bUrgency) {
+          return (a.completed?.at(-1) ?? 0) - (b.completed?.at(-1) ?? 0)
+        }
+
+        return bUrgency - aUrgency
+      })
+      .map((task) => task.id)
+  }
+
+  const tasks = value ? taskOrder.current.map((id) => value[id]) : []
 
   refreshTasks(tasks, (task) => {
     storageContext.updateItem<WeeklyTask>(WEEKLY_KEY, task)
-  })
-
-  useDropTarget({
-    dropTargetRef: listRef,
-    canDrop: ({ source }) => isDraggable(source.data),
-    getData: () => ({ listId: WEEKLY_KEY }),
-  })
-
-  useDraggableList({
-    listId: WEEKLY_KEY,
-    canDropSourceOnTarget: (source) => source[draggableTypeKey] === '"週"',
-    getTargetListId: (source) => source.parentId,
-    getAxis: () => "vertical",
   })
 
   return (
@@ -70,30 +63,9 @@ export function ThisWeekList() {
       {tasks.length ? (
         <ol ref={listRef}>
           {tasks.map((task, index) => (
-            <DraggableListItem
-              key={task.id}
-              getData={() => ({
-                [draggableTypeKey]: "週",
-                id: task.id,
-                parentId: WEEKLY_KEY,
-                position: task.position,
-              })}
-              dragPreview={<DragPreview task={task} />}
-              isDroppable={(data) => data[draggableTypeKey] === "週"}
-              allowedEdges={["bottom", "top"]}
-              className="item"
-              dragHandle={
-                <DragHandle
-                  list={tasks}
-                  index={index}
-                  onReorder={(tasks: OrderedListItem[]) => {
-                    storageContext.updateList(WEEKLY_KEY, tasks)
-                  }}
-                />
-              }
-            >
+            <li key={task.id} className="item">
               <ThisWeekTask task={task} />
-            </DraggableListItem>
+            </li>
           ))}
         </ol>
       ) : (
