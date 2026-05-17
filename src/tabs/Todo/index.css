@@ -5,6 +5,7 @@
 
   @media (width > 880px) {
     grid-template-areas: "today week" "today dates";
+    grid-template-rows: auto 1fr;
   }
 
   @media (width > 1360px) {
