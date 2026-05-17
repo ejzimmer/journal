@@ -15,6 +15,7 @@ import { formatDate } from "../../../shared/utils"
 import { Combobox } from "../../../shared/controls/combobox/Combobox"
 import { CategoriesContext } from ".."
 import { ProgressIndicator } from "./ProgressIndicator"
+import { subDays } from "date-fns"
 
 export function ThisWeekTask({ task }: { task: WeeklyTask }) {
   const [inEditMode, setInEditMode] = useState(false)
@@ -81,21 +82,26 @@ export function ThisWeekTask({ task }: { task: WeeklyTask }) {
       task.completed = []
     }
 
+    const completed = Array.isArray(task.completed)
+      ? task.completed
+      : (Object.values(task.completed ?? {}) as number[])
+    const completedDate = event.ctrlKey
+      ? subDays(new Date(), 1).getTime()
+      : Date.now()
+
     if (event.shiftKey) {
       onChange({ ...task, completed: task.completed.slice(0, -1) })
     } else {
-      const completed = Array.isArray(task.completed)
-        ? task.completed
-        : (Object.values(task.completed ?? {}) as number[])
       onChange({
         ...task,
-        completed: [...completed.filter(Boolean), Date.now()],
+        completed: [...completed.filter(Boolean), completedDate],
       })
     }
 
-    if (!isHabit(task.category)) {
+    if (!isHabit(task.category) || event.ctrlKey) {
       return
     }
+
     const habits =
       today?.habits ?? Object.fromEntries(HABITS.map((habit) => [habit, false]))
     storageContext.updateItem<DayData>(DAILY_PATH, {
