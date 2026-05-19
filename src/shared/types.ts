@@ -57,14 +57,14 @@ export type ProjectSubtask = {
   position?: number
 }
 export const PROJECT_COLOURS = {
-  "🛒": "hsl(197 36% 70% /.3)",
-  "📓": "hsl(0  0% 49% / .3)",
-  "🖊️": "hsl(209 79% 48% /.3)",
-  "👩‍💻": "hsl(93 90% 45% / .3)",
-  "🧹": "hsl(45 100% 76% / .3)",
-  "🪡": "hsl(203 85% 77% / .3)",
-  "🧶": "hsl(339 78% 67% / .3)",
-  "🚚": "hsl(352 90% 45% / .3)",
+  "🛒": "hsl(197 36% 70% /.5)",
+  "📓": "hsl(0  0% 49% / .5)",
+  "🖊️": "hsl(209 79% 48% /.5)",
+  "👩‍💻": "hsl(93 90% 45% / .5)",
+  "🧹": "hsl(45 100% 76% / .5)",
+  "🪡": "hsl(203 85% 77% / .5)",
+  "🧶": "hsl(339 78% 67% / .5)",
+  "🚚": "hsl(352 90% 45% / .5)",
 }
 export const categories = Object.keys(PROJECT_COLOURS)
 export type Category = keyof typeof PROJECT_COLOURS

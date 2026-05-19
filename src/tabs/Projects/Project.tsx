@@ -185,19 +185,21 @@ function SubTasksStatus({ subtasks, doneSubtasks }: SubTasksStatusProps) {
 
   return (
     <div
+      className="subtasks-progress"
       style={{
-        backgroundColor: "var(--success-colour)",
-        width: "26px",
-        aspectRatio: 1,
-        borderRadius: "100%",
+        width: "2.4em",
+        height: "1.5em",
         display: "flex",
         alignContent: "center",
         justifyContent: "center",
-        boxShadow:
-          "inset -1px -1px 6px hsl(0 0% 0%/.5), inset 1px 1px 6px hsl(0 0% 100% /.5), 1px 1px 2px hsl(0 0% 0%/.5)",
+        paddingInline: "4px",
       }}
     >
-      <TickIcon colour="white" width="50%" strokeWidth="3" />
+      <TickIcon
+        colour="color(from var(--project-colour) srgb r g b / 1)"
+        width="50%"
+        strokeWidth="3"
+      />
     </div>
   )
 }

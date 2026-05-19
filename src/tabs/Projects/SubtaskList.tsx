@@ -122,6 +122,7 @@ export function SubtaskList({ projectId, isVisible }: SubtasksProps) {
         <button
           className={`icon ghost show-form ${formVisible ? "form-visible" : ""}`}
           onClick={() => setFormVisible(!formVisible)}
+          style={{ alignSelf: "baseline", marginInlineEnd: "12px" }}
         >
           <PlusIcon width="16px" colour="var(--action-colour)" />
         </button>

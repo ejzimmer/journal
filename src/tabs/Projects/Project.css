@@ -8,13 +8,10 @@
   align-self: start;
 
   &.in_progress {
-    outline: 2px solid var(--body-colour-light);
+    outline: 2px solid color(from var(--project-colour) srgb r g b / 1);
     outline-offset: -2px;
-    filter: contrast(200%);
-
-    .subtasks-progress {
-      filter: contrast(50%);
-    }
+    background:
+      linear-gradient(45deg, white, transparent), var(--project-colour-light);
   }
 
   &.done {
@@ -114,11 +111,11 @@
     opacity: 0;
     overflow: hidden;
     flex-direction: row;
-    margin-inline-start: 10px;
     gap: 4px;
     transition:
-      width 0.2s ease-out,
+      min-width 0.2s ease-out,
       opacity 0.1s 0.2s linear;
+    max-width: 0;
 
     &.visible {
       opacity: 1;
@@ -157,7 +154,7 @@
   ol.subtasks,
   form.add-subtask-form.visible {
     padding-inline-start: 24px;
-    padding-inline-end: 12px;
+    padding-inline-end: 0px;
   }
 
   .subtask {

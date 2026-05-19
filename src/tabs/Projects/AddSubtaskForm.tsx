@@ -24,7 +24,10 @@ export function AddSubtaskForm({
     <form
       ref={formRef}
       className={`add-subtask-form ${isFormVisible ? "visible" : ""}`}
-      style={{ width: isFormVisible ? formWidthRef.current : 0 }}
+      style={{
+        minWidth: isFormVisible ? formWidthRef.current : 0,
+        maxWidth: isFormVisible && description.length ? "max-content" : 0,
+      }}
       onSubmit={(event) => {
         event.preventDefault()
 
@@ -36,6 +39,7 @@ export function AddSubtaskForm({
         value={description}
         onChange={(event) => setDescription(event.target.value)}
         disabled={!isFormVisible}
+        size={description.length * 0.7}
       />
       <button className="ghost" disabled={!isFormVisible}>
         <TickIcon width="16px" colour="var(--action-colour)" />
