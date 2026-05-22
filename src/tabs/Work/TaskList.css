@@ -112,12 +112,19 @@ ol.work-lists > li {
       }
 
       .due-date {
-        color: var(--error-colour);
+        color: var(--body-colour-light);
         border: 2px solid;
         font-weight: bold;
         font-size: 16px;
         font-family: sans-serif;
         padding: 4px;
+
+        &.due-this-week {
+          color: var(--action-colour);
+        }
+        &.due-today {
+          color: var(--error-colour);
+        }
       }
 
       .combobox .multi-value-container {

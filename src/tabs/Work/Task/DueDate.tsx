@@ -1,3 +1,5 @@
+import endOfDay from "date-fns/endOfDay"
+import isSameWeek from "date-fns/isSameWeek"
 import { EditableDate } from "../../../shared/controls/EditableDate"
 
 type DueDateProps = {
@@ -7,7 +9,7 @@ type DueDateProps = {
 
 export function DueDate({ dueDate, onChange }: DueDateProps) {
   return dueDate ? (
-    <div className="due-date">
+    <div className={`due-date ${dueToday(dueDate)} ${dueThisWeek(dueDate)}`}>
       <EditableDate value={dueDate} onChange={onChange} />
     </div>
   ) : (
@@ -20,3 +22,8 @@ export function DueDate({ dueDate, onChange }: DueDateProps) {
     </button>
   )
 }
+
+const dueToday = (dueDate: number) =>
+  dueDate < endOfDay(new Date()).getTime() ? "due-today" : ""
+const dueThisWeek = (dueDate: number) =>
+  isSameWeek(dueDate, new Date(), { weekStartsOn: 1 }) ? "due-this-week" : ""
