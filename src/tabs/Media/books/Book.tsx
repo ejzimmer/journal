@@ -6,7 +6,6 @@ import { EditableText } from "../../../shared/controls/EditableText"
 
 import "./Book.css"
 import { Checkbox } from "../../../shared/controls/Checkbox"
-import { EditableTextWithDelete } from "../../../shared/controls/EditableTextWithDelete"
 
 type BookProps = {
   book: BookDetails
@@ -59,7 +58,7 @@ export function Book({ book, path, author }: BookProps) {
       />
 
       <span className={book.isDone ? "done" : ""}>
-        <EditableTextWithDelete
+        <EditableText
           label="title"
           onChange={updateTitle}
           style={{
@@ -73,10 +72,9 @@ export function Book({ book, path, author }: BookProps) {
           <EditableText
             onChange={author.onChange}
             label="author name"
+            value={author.name}
             style={{ display: "inline" }}
-          >
-            {author.name}
-          </EditableText>
+          />
         )}
 
         <button

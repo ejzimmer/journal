@@ -97,6 +97,7 @@ export function TaskList({
           <h2>
             <EditableText
               label={`Edit ${list.description} name`}
+              value={list.description}
               onChange={(description) => {
                 if (description) {
                   storageContext.updateItem(WORK_KEY, { ...list, description })
@@ -104,9 +105,7 @@ export function TaskList({
                   setConfirmDeleteModalOpen(true)
                 }
               }}
-            >
-              {list.description}
-            </EditableText>
+            />
           </h2>
           <PostitModalDialog
             isOpen={confirmDeleteModalOpen}

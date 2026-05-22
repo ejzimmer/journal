@@ -46,9 +46,11 @@ export function Author({ author }: { author: AuthorDetails }) {
   return (
     <li className="author">
       <div>
-        <EditableText label="author name" onChange={updateAuthorName}>
-          {author.name}
-        </EditableText>
+        <EditableText
+          label="author name"
+          value={author.name}
+          onChange={updateAuthorName}
+        />
       </div>
       {items && (
         <ul>

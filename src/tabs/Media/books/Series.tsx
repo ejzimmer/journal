@@ -31,18 +31,23 @@ export function Series({ series, path, author }: SeriesProps) {
       <div style={{ display: "flex", gap: "8px" }}>
         <EditableText
           label="Series name"
+          value={series.name}
           onChange={updateSeriesName}
           style={{
             textDecoration: author ? "" : "underline",
             fontWeight: author ? "bold" : "",
           }}
-        >
-          {series.name}
-        </EditableText>
+        />
         {author && (
-          <EditableText onChange={author.onChange} label="Author's name">
-            {`(${author.name})`}
-          </EditableText>
+          <span style={{ display: "inline-flex" }}>
+            (
+            <EditableText
+              value={author.name}
+              onChange={author.onChange}
+              label="Author's name"
+            />
+            )
+          </span>
         )}
       </div>
       <BookList

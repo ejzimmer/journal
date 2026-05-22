@@ -319,16 +319,14 @@ function CountGoal({ icon, label, value, total, onChange }: CountGoalProps) {
         </span>
         <EditableText
           label={label}
-          size={2}
+          value={value.toString()}
           onChange={(value) => {
             const capacity = Number.parseInt(value)
             if (!isNaN(capacity)) {
               onChange(capacity)
             }
           }}
-        >
-          {value.toString()}
-        </EditableText>
+        />
         <span className="tooltip-anchor">/{total}</span>
         <div className="tooltip">{label}</div>
       </div>

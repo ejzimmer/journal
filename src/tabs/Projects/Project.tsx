@@ -13,9 +13,9 @@ import {
 } from "../../shared/types"
 import { ButtonWithConfirmation } from "../../shared/controls/ButtonWithConfirmation"
 import { getSubtasksKey, useLinkedTasks } from "./utils"
-import { EditableTextWithDelete } from "../../shared/controls/EditableTextWithDelete"
 import { ArrowToEndIcon } from "../../shared/icons/ArrowToEnd"
 import { TickIcon } from "../../shared/icons/Tick"
+import { EditableText } from "../../shared/controls/EditableText"
 
 type ProjectProps = {
   project: ProjectDetails
@@ -121,7 +121,7 @@ export function Project({ project, onMoveToEnd, onDelete }: ProjectProps) {
           onChange={onChangeStatus}
           label={""}
         />
-        <EditableTextWithDelete
+        <EditableText
           label="project"
           value={project.description}
           onChange={(description) => {

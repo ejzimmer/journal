@@ -2,26 +2,25 @@ import { CSSProperties, useEffect, useRef, useState } from "react"
 import "./EditableText.css"
 
 export type EditableTextProps = {
+  value: string
   onChange: (text: string) => void
+  onDelete?: () => void
   label: string
   style?: CSSProperties
   className?: string
-  children: string
-  size?: number
 }
 
 export function EditableText({
-  children,
+  value,
   onChange,
+  onDelete,
   label,
   style,
   className = "",
-  size,
 }: EditableTextProps) {
   const [isEditing, setIsEditing] = useState(false)
+  const [text, setText] = useState(value)
   const inputRef = useRef<HTMLInputElement>(null)
-  const outputRef = useRef<HTMLDivElement>(null)
-  const widthRef = useRef<number>(undefined)
 
   const startEditing = () => {
     setIsEditing(true)
@@ -34,16 +33,12 @@ export function EditableText({
     }
   }, [isEditing, inputRef])
 
-  useEffect(() => {
-    if (outputRef.current) {
-      widthRef.current = outputRef.current.clientWidth + 8
-    }
-  }, [children])
-
   const handleSubmit = () => {
-    const value = inputRef.current?.value ?? ""
-    if (value !== children) {
-      onChange(value)
+    if (value && !text) {
+      onDelete?.()
+    } else if (value !== text) {
+      onChange(text)
+      setText("")
     }
 
     stopEditing()
@@ -60,10 +55,11 @@ export function EditableText({
           event.preventDefault()
         }
       }}
-      size={size}
-      defaultValue={children}
+      onChange={(event) => setText(event.target.value)}
+      size={text.length}
+      value={text}
       aria-label={label}
-      style={{ fontSize: ".8em", width: `${widthRef.current}px`, ...style }}
+      style={{ fontSize: ".8em", ...style }}
     />
   ) : (
     <div
@@ -72,9 +68,8 @@ export function EditableText({
       onClick={startEditing}
       style={style}
       className={className}
-      ref={outputRef}
     >
-      {children}
+      {value}
     </div>
   )
 }

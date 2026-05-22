@@ -4,7 +4,7 @@ import { FirebaseContext } from "../../shared/FirebaseContext"
 import { ProjectSubtask } from "../../shared/types"
 import { ButtonWithConfirmation } from "../../shared/controls/ButtonWithConfirmation"
 import { useLinkedTasks } from "./utils"
-import { EditableTextWithDelete } from "../../shared/controls/EditableTextWithDelete"
+import { EditableText } from "../../shared/controls/EditableText"
 import { DraggableListItem } from "../../shared/drag-and-drop/DraggableListItem"
 import { draggableTypeKey } from "../../shared/drag-and-drop/types"
 
@@ -71,7 +71,7 @@ export function Subtask({ path, dragHandle, ...task }: SubtaskProps) {
         onChange={handleChange}
         aria-label={`${task.description} ${task.status}`}
       />
-      <EditableTextWithDelete
+      <EditableText
         label="project"
         value={task.description}
         onChange={(description) => {

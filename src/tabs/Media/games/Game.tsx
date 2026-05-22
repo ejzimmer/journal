@@ -40,9 +40,7 @@ export function Game({ game, path }: { game: GameDetails; path: string }) {
         aria-label="is played"
       />
       <div className={`details ${game.status}`}>
-        <EditableText label="title" onChange={updateTitle}>
-          {game.title}
-        </EditableText>
+        <EditableText label="title" value={game.title} onChange={updateTitle} />
         <button
           aria-label="update status to in progress"
           onClick={() =>

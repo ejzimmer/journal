@@ -28,11 +28,10 @@ export function Series({
       <div>
         <EditableText
           label="Series name"
+          value={series.name}
           onChange={updateSeriesName}
           style={{ fontWeight: "bold" }}
-        >
-          {series.name}
-        </EditableText>
+        />
       </div>
       <GameList
         games={series.items as Record<string, GameDetails>}

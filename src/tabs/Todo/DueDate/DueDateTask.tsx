@@ -8,7 +8,7 @@ import { PlayButtonIcon } from "../../../shared/icons/PlayButton"
 import { PauseButtonIcon } from "../../../shared/icons/PauseButton"
 import { TickIcon } from "../../../shared/icons/Tick"
 import { IconProps } from "../../../shared/icons/types"
-import { EditableTextWithDelete } from "../../../shared/controls/EditableTextWithDelete"
+import { EditableText } from "../../../shared/controls/EditableText"
 
 const getDateClass = (task: CalendarTask) => {
   const today = startOfDay(Date.now())
@@ -48,7 +48,7 @@ export function DueDateTask({ task }: { task: CalendarTask }) {
       />
       <div className="description">
         {task.category}
-        <EditableTextWithDelete
+        <EditableText
           label="description"
           value={task.description}
           onChange={(description) => onChange({ ...task, description })}

@@ -9,7 +9,7 @@ import { FirebaseContext } from "../../../shared/FirebaseContext"
 import { Labels } from "./Labels"
 import { UpdateLabels } from "./UpdateLabels"
 import { DueDate } from "./DueDate"
-import { EditableTextWithDelete } from "../../../shared/controls/EditableTextWithDelete"
+import { EditableText } from "../../../shared/controls/EditableText"
 
 type TaskProps = {
   task: WorkTask
@@ -52,7 +52,7 @@ export function Task({ task, path, dragHandle }: TaskProps) {
         />
       </div>
       <div className="task-content">
-        <EditableTextWithDelete
+        <EditableText
           label={`Edit description ${task.description}`}
           value={task.description}
           onChange={(description) => {
