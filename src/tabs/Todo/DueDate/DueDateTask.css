@@ -1,7 +1,6 @@
 .todo-task-list.calendar ol:first-child {
   display: grid;
   grid-template-columns: max-content max-content min-content;
-  margin-block-start: 0;
 
   & > li {
     display: grid;
