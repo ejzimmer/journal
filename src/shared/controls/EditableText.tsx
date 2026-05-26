@@ -34,11 +34,10 @@ export function EditableText({
   }, [isEditing, inputRef])
 
   const handleSubmit = () => {
-    if (value && !text) {
-      onDelete?.()
+    if (value && !text && onDelete) {
+      onDelete()
     } else if (value !== text) {
       onChange(text)
-      setText("")
     }
 
     stopEditing()
@@ -53,6 +52,9 @@ export function EditableText({
         if (event.key === "Enter") {
           handleSubmit()
           event.preventDefault()
+        } else if (event.key === "Escape") {
+          setText(value)
+          stopEditing()
         }
       }}
       onChange={(event) => setText(event.target.value)}
