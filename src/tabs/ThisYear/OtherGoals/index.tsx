@@ -66,7 +66,7 @@ const getComponent = (goal: Goal, onUpdate: (goal: Goal) => void) => {
     return <Reading book={goal} onChange={onUpdate} />
   } else if (isDiscreteTimesGoal(goal)) {
     return (
-      <div className="discrete-times-goal">
+      <div className={`discrete-times-goal ${isDone(goal) ? "done" : ""}`}>
         <div className="description">{goal.description}</div>
         {goal.times.map((times, timesesIndex) => (
           <div className="completions" key={times.id}>
