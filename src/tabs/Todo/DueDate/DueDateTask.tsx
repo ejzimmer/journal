@@ -8,7 +8,6 @@ import { PlayButtonIcon } from "../../../shared/icons/PlayButton"
 import { PauseButtonIcon } from "../../../shared/icons/PauseButton"
 import { TickIcon } from "../../../shared/icons/Tick"
 import { IconProps } from "../../../shared/icons/types"
-import { EditableText } from "../../../shared/controls/EditableText"
 import { EditableDescription } from "../../../shared/controls/EditableDescription"
 
 const getDateClass = (task: CalendarTask) => {
