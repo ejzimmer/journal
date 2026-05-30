@@ -8,6 +8,9 @@ import {
   ProjectDetails,
   PROJECTS_KEY,
 } from "../../shared/types"
+import { CATEGORIES } from "../../shared/utils"
+
+const allCategories = Array.from(new Set([...categories, ...CATEGORIES]))
 
 export function AddProjectForm() {
   const [description, setDescription] = useState("")
@@ -62,7 +65,7 @@ export function AddProjectForm() {
           onChange={(event) => setCategory(event.target.value as Category)}
           className="subtle"
         >
-          {categories.map((c) => (
+          {allCategories.map((c) => (
             <option key={c}>{c}</option>
           ))}
         </select>

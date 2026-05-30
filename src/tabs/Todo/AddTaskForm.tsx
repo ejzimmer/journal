@@ -6,6 +6,7 @@ import { TodoTask } from "../../shared/types"
 import { FormControl } from "../../shared/controls/FormControl"
 import { Combobox } from "../../shared/controls/combobox/Combobox"
 import { OptionType } from "../../shared/controls/combobox/types"
+import { CATEGORIES } from "../../shared/utils"
 
 type AddTaskFormProps<T> = {
   listId: string
@@ -30,7 +31,11 @@ export function AddTaskForm<T>({
     throw new Error("Missing categories context provider")
   }
   const categoryOptions = useMemo(
-    () => categories.map((category) => ({ id: category, label: category })),
+    () =>
+      Array.from(new Set([...CATEGORIES, ...categories])).map((category) => ({
+        id: category,
+        label: category,
+      })),
     [categories],
   )
 
