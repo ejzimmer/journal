@@ -9,6 +9,7 @@ import { PauseButtonIcon } from "../../../shared/icons/PauseButton"
 import { TickIcon } from "../../../shared/icons/Tick"
 import { IconProps } from "../../../shared/icons/types"
 import { EditableText } from "../../../shared/controls/EditableText"
+import { EditableDescription } from "../../../shared/controls/EditableDescription"
 
 const getDateClass = (task: CalendarTask) => {
   const today = startOfDay(Date.now())
@@ -47,13 +48,19 @@ export function DueDateTask({ task }: { task: CalendarTask }) {
         className={`due-date ${getDateClass(task)}`}
       />
       <div className="description">
-        {task.category}
-        <EditableText
-          label="description"
-          value={task.description}
-          onChange={(description) => onChange({ ...task, description })}
-          onDelete={onDelete}
-          className="text"
+        <EditableDescription
+          category={task.category}
+          description={task.description}
+          isChecked={false}
+          onChange={(change) => {
+            if ("description" in change && change.description === "") {
+              onDelete()
+            } else if ("description" in change) {
+              onChange({ ...task, description: task.description })
+            } else if ("category" in change) {
+              onChange({ ...task, category: change.category })
+            }
+          }}
         />
       </div>
       <Switch
