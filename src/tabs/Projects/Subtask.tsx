@@ -66,7 +66,6 @@ export function Subtask({ path, dragHandle, ...task }: SubtaskProps) {
       dragHandle={dragHandle}
       className="subtask"
     >
-      {task.position}
       <Checkbox
         isChecked={task.status === "done"}
         onChange={handleChange}
