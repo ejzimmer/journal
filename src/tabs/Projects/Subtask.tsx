@@ -80,7 +80,7 @@ export function Subtask({ path, dragHandle, ...task }: SubtaskProps) {
         onDelete={() => storageContext.deleteItem(path, task)}
         style={{ fontSize: "1em" }}
       />
-      {!task.linkedId ? (
+      {!linkedTask ? (
         <ButtonWithConfirmation
           className={`icon ghost copy-button ${linkedTask ? "linked" : ""}`}
           onClick={onAddToTodo}
