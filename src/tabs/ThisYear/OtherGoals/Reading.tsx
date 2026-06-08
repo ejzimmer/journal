@@ -10,10 +10,16 @@ export type Book = {
 type BookProps = { book: Book; onChange: (book: Book) => void }
 
 export function Reading({ book, onChange }: BookProps) {
+  const isDone = book.volumes.every(
+    (book) => book.totalPages === book.readPages,
+  )
+
   return (
     <>
-      <div>{book.title}</div>
-      <div>
+      <div className={isDone ? "book-title done" : "book-title"}>
+        {book.title}
+      </div>
+      <div className={isDone ? "book-volumes done" : "book-volumes"}>
         {book.volumes.map((pages, index) => (
           <PagesRead
             key={`volume-${index}`}
