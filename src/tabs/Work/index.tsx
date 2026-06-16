@@ -4,12 +4,11 @@ import { NewListModal } from "./NewListModal"
 import { TaskList } from "./TaskList"
 import { hoursToMilliseconds, isBefore, startOfDay } from "date-fns"
 import { Skeleton } from "../../shared/controls/Skeleton"
-import { sortByOrder } from "./drag-utils"
 import { draggableTypeKey } from "../../shared/drag-and-drop/types"
 import { LabelsContext } from "./LabelsContext"
 import { WorkTask, Label, WORK_KEY } from "./types"
 import { useDraggableList } from "../../shared/drag-and-drop/useDraggableList"
-import { isDraggable } from "../../shared/drag-and-drop/utils"
+import { isDraggable, sortByPosition } from "../../shared/drag-and-drop/utils"
 import { useDropTarget } from "../../shared/drag-and-drop/useDropTarget"
 
 import "./index.css"
@@ -40,7 +39,7 @@ export function Work() {
 
   const orderedLists = useMemo(
     () =>
-      (lists ? sortByOrder(Object.values(lists)) : []).filter(
+      (lists ? sortByPosition(Object.values(lists)) : []).filter(
         (list) => list.id !== doneList?.id,
       ),
     [lists, doneList],
@@ -87,7 +86,7 @@ export function Work() {
         }),
       )
 
-      const orderedNotDone = sortByOrder(notDone).map((task, index) => ({
+      const orderedNotDone = sortByPosition(notDone).map((task, index) => ({
         ...task,
         position: index,
       }))
@@ -166,12 +165,12 @@ export function Work() {
         <LabelsContext.Provider value={labels}>
           <ol ref={dropTargetRef} className="work-lists">
             {orderedLists.map(
-              (list, index) =>
+              (list) =>
                 list !== doneList && (
                   <TaskList
                     key={list.id}
                     listId={list.id}
-                    index={index}
+                    index={list.position}
                     parentListId={WORK_KEY}
                     additionalMoveDestinations={(task: WorkTask) => (
                       <MoveToOtherLists

@@ -1,7 +1,6 @@
 import { Edge } from "@atlaskit/pragmatic-drag-and-drop-hitbox/closest-edge"
 
 import { Destination, draggableTypeKey } from "../../shared/drag-and-drop/types"
-import { WorkTask } from "./types"
 
 export function isTask(data: any): boolean {
   return draggableTypeKey in data && data[draggableTypeKey] === "task"
@@ -12,12 +11,6 @@ export function isList(data: any): boolean {
 }
 export function isDroppable(data: any): boolean {
   return draggableTypeKey in data
-}
-
-export function sortByOrder(list: WorkTask[]) {
-  return list
-    .toSorted((a, b) => a.position - b.position)
-    .map((item, index) => ({ ...item, position: index }))
 }
 
 export function getPosition(index: number, listLength: number) {
@@ -34,7 +27,7 @@ export function getPosition(index: number, listLength: number) {
 export const getTarget = (
   originIndex: number,
   destination: Destination,
-  listLength: number
+  listLength: number,
 ): {
   indexOfTarget: number
   closestEdgeOfTarget: Edge

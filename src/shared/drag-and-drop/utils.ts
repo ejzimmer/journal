@@ -30,7 +30,7 @@ export function sortByPosition<T extends OrderedListItem>(list: T[]) {
 const getTarget = (
   originIndex: number,
   destination: Destination,
-  listLength: number
+  listLength: number,
 ): {
   indexOfTarget: number
   closestEdgeOfTarget: Edge
@@ -57,16 +57,15 @@ export const onChangePosition = (
   list: OrderedListItem[],
   originIndex: number,
   destination: Destination,
-  onReorder: (list: OrderedListItem[]) => void
+  onReorder: (list: OrderedListItem[]) => void,
 ) => {
   const sortedList = sortByPosition(list)
-
   onReorder(
     reorderWithEdge({
       list: sortedList,
       startIndex: originIndex,
       ...getTarget(originIndex, destination, list.length),
       axis: "vertical",
-    }).map((item, index) => ({ ...item, position: index }))
+    }).map((item, index) => ({ ...item, position: index })),
   )
 }

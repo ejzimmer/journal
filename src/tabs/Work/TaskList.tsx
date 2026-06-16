@@ -10,7 +10,7 @@ import {
 import { EditableText } from "../../shared/controls/EditableText"
 import { AddTaskForm } from "./AddTaskForm"
 import { Task } from "./Task/Task"
-import { isList, isTask, sortByOrder } from "./drag-utils"
+import { isList, isTask } from "./drag-utils"
 
 import "./TaskList.css"
 import { DragHandle } from "../../shared/drag-and-drop/DragHandle"
@@ -20,6 +20,7 @@ import { PostitModalDialog } from "./PostitModal"
 import { WorkTask, WORK_KEY } from "./types"
 import { FirebaseContext } from "../../shared/FirebaseContext"
 import { useDropTarget } from "../../shared/drag-and-drop/useDropTarget"
+import { sortByPosition } from "../../shared/drag-and-drop/utils"
 
 function getListData(list: WorkTask, parentId: string) {
   return {
@@ -62,7 +63,7 @@ export function TaskList({
   const list = lists?.[listId]
 
   const sortedList = useMemo(
-    () => (list?.items ? sortByOrder(Object.values(list.items)) : []),
+    () => (list?.items ? sortByPosition(Object.values(list.items)) : []),
     [list?.items],
   )
 

@@ -41,13 +41,13 @@ export function DragHandle({
               onChangePosition(list, index, "start", onReorder)
               onClose()
             }}
-            isDisabled={position === "start"}
+            // isDisabled={position === "start"}
           >
             <ArrowToTopIcon {...iconProps} /> Move to top
           </Menu.Action>
           <Menu.Action
             onClick={() => onChangePosition(list, index, "previous", onReorder)}
-            isDisabled={position === "start"}
+            // isDisabled={position === "start"}
           >
             <ArrowUpIcon {...iconProps} /> Move up
           </Menu.Action>
