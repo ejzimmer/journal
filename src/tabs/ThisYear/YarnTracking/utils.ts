@@ -23,14 +23,17 @@ export function getMonthlyBalances(
 ): MonthBalances[] {
   const months: MonthBalances[] = []
 
-  Object.values(yarnState).forEach((yarn) => {
-    yarn.history.forEach((update) => {
+  Object.values(yarnState).forEach((yarnType) => {
+    yarnType.history.forEach((update) => {
       const month = new Date(update.date).getMonth()
 
       if (months[month]) {
-        months[month].perYarnType[yarn.id] = update.balance
+        months[month].perYarnType[yarnType.id] = update.balance
       } else {
-        months[month] = { total: 0, perYarnType: { [yarn.id]: update.balance } }
+        months[month] = {
+          total: 0,
+          perYarnType: { [yarnType.id]: update.balance },
+        }
       }
     })
   })
@@ -57,8 +60,10 @@ export function getMonthlyBalances(
   })
 
   const thisMonth = new Date().getMonth()
-  if (!monthsWithTotals[thisMonth]) {
-    monthsWithTotals[thisMonth] = monthsWithTotals[thisMonth - 1]
+  let lastMonthWithTotal = monthsWithTotals.length - 1
+  while (lastMonthWithTotal < thisMonth) {
+    monthsWithTotals.push(monthsWithTotals[lastMonthWithTotal])
+    lastMonthWithTotal++
   }
 
   return monthsWithTotals
