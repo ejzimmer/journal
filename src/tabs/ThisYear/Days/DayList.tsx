@@ -126,8 +126,8 @@ const getWeeklyBalance = (balances: Balance[]): Required<Balance>[] => {
     (b, index) => index % 7 === 6 && b.balance,
   ) as Required<Balance>[]
   const finalBalance = balances.at(-2)
-  return balances.length % 7 !== 6 && typeof finalBalance === "number"
-    ? [...weeklyBalances, finalBalance]
+  return balances.length % 7 !== 6 && typeof finalBalance?.balance === "number"
+    ? [...weeklyBalances, finalBalance as Required<Balance>]
     : weeklyBalances
 }
 
