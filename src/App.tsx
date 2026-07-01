@@ -13,6 +13,7 @@ import { Work } from "./tabs/Work"
 import "./App.css"
 import { Media } from "./tabs/Media"
 import { ThisYear } from "./tabs/ThisYear"
+import { Loading } from "./shared/loading"
 
 const TABS = [
   { path: "todo", Element: Todo },
@@ -24,10 +25,12 @@ const TABS = [
 
 export function App() {
   const navListRef = useRef<HTMLUListElement>(null)
+  const [isLoading, setIsLoading] = useState(true)
   const [isLoggedIn, setLoggedIn] = useState(false)
   const auth = getAuth()
 
   onAuthStateChanged(auth, () => {
+    setIsLoading(false)
     setLoggedIn(!!auth.currentUser)
   })
 
@@ -72,6 +75,21 @@ export function App() {
 
     const { x, width } = hoveredTab.getBoundingClientRect()
     navListRef.current.style = `--hover-left: ${x}px; --hover-width: ${width}px`
+  }
+
+  if (isLoading) {
+    return (
+      <div
+        style={{
+          width: "fit-content",
+          height: "100vh",
+          alignContent: "center",
+          margin: "auto",
+        }}
+      >
+        <Loading />
+      </div>
+    )
   }
 
   if (!isLoggedIn) {
