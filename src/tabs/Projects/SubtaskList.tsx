@@ -86,6 +86,10 @@ export function SubtaskList({ projectId, isVisible }: SubtasksProps) {
     [projectId, subtasks],
   )
 
+  if (!project) {
+    return null
+  }
+
   return (
     <div
       className={`subtasks-section ${isVisible ? "visible" : ""}`}
@@ -97,6 +101,7 @@ export function SubtaskList({ projectId, isVisible }: SubtasksProps) {
           <Subtask
             key={task.id}
             path={subtasksKey}
+            project={project}
             {...task}
             dragHandle={
               <DragHandle

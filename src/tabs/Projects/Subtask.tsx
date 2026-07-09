@@ -1,7 +1,7 @@
 import { ReactElement, useContext } from "react"
 import { Checkbox } from "../../shared/controls/Checkbox"
 import { FirebaseContext } from "../../shared/FirebaseContext"
-import { ProjectSubtask } from "../../shared/types"
+import { ProjectDetails, ProjectSubtask } from "../../shared/types"
 import { ButtonWithConfirmation } from "../../shared/controls/ButtonWithConfirmation"
 import { useLinkedTasks } from "./utils"
 import { EditableText } from "../../shared/controls/EditableText"
@@ -9,11 +9,12 @@ import { DraggableListItem } from "../../shared/drag-and-drop/DraggableListItem"
 import { draggableTypeKey } from "../../shared/drag-and-drop/types"
 
 type SubtaskProps = ProjectSubtask & {
+  project: ProjectDetails
   path: string
   dragHandle: ReactElement
 }
 
-export function Subtask({ path, dragHandle, ...task }: SubtaskProps) {
+export function Subtask({ path, dragHandle, project, ...task }: SubtaskProps) {
   const storageContext = useContext(FirebaseContext)
   if (!storageContext) {
     throw new Error("Missing Firebase context provider")
@@ -31,7 +32,7 @@ export function Subtask({ path, dragHandle, ...task }: SubtaskProps) {
 
   const onAddToTodo = () => {
     const linkedId = createDailyTask({
-      description: task.description,
+      description: `${project.description}: ${task.description}`,
       category: task.category,
       linkedTaskId: `${path}/${task.id}`,
     })
