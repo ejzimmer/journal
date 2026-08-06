@@ -41,6 +41,7 @@ export function SubtaskList({ projectId, isVisible }: SubtasksProps) {
   const { value: project } = storageContext.useValue<ProjectDetails>(
     `${PROJECTS_KEY}/${projectId}`,
   )
+  const isProjectLoaded = Boolean(project)
 
   const onAddTask = (description: string) => {
     if (!project) return
@@ -49,6 +50,7 @@ export function SubtaskList({ projectId, isVisible }: SubtasksProps) {
       description,
       status: "ready",
       category: project.category,
+      position: subtasks.length,
     })
   }
 
@@ -58,7 +60,7 @@ export function SubtaskList({ projectId, isVisible }: SubtasksProps) {
         listRef.current.clientHeight + formContainerRef.current.clientHeight,
       )
     }
-  }, [subtasks])
+  }, [subtasks, isProjectLoaded])
 
   useDropTarget({
     dropTargetRef: listRef,
@@ -85,6 +87,16 @@ export function SubtaskList({ projectId, isVisible }: SubtasksProps) {
       ),
     [projectId, subtasks],
   )
+
+  useEffect(() => {
+    const isMissingAPosition = subtasks.some((task) => task.position == null)
+    if (isMissingAPosition) {
+      storageContext.updateList<ProjectSubtask>(
+        subtasksKey,
+        sortedTasks.map(({ parentId, ...task }) => task),
+      )
+    }
+  }, [subtasks, sortedTasks, subtasksKey, storageContext])
 
   if (!project) {
     return null
