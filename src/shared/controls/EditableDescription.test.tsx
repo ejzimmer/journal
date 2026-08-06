@@ -162,5 +162,81 @@ describe("EditableDescription", () => {
         })
       })
     })
+
+    describe("when the user updates the description then clicks outside", () => {
+      it("calls onChange and switches back to view mode", async () => {
+        const user = userEvent.setup()
+        const onChange = jest.fn()
+        render(
+          <div>
+            <EditableDescription {...commonProps} onChange={onChange} />
+            <button>elsewhere</button>
+          </div>,
+          { wrapper: Wrapper },
+        )
+        await user.click(screen.getByText("Brush teeth"))
+
+        const input = screen.getByRole("textbox", { name: "Description" })
+        await user.clear(input)
+        await user.type(input, "Floss teeth")
+        await user.click(screen.getByRole("button", { name: "elsewhere" }))
+
+        expect(onChange).toHaveBeenCalledWith({ description: "Floss teeth" })
+        expectToBeInViewMode()
+      })
+    })
+
+    describe("when the user doesn't update the description and clicks outside", () => {
+      it("switches back to view mode without calling onChange", async () => {
+        const user = userEvent.setup()
+        const onChange = jest.fn()
+        render(
+          <div>
+            <EditableDescription {...commonProps} onChange={onChange} />
+            <button>elsewhere</button>
+          </div>,
+          { wrapper: Wrapper },
+        )
+        await user.click(screen.getByText("Brush teeth"))
+
+        await user.click(screen.getByRole("button", { name: "elsewhere" }))
+
+        expect(onChange).not.toHaveBeenCalled()
+        expectToBeInViewMode()
+      })
+    })
+
+    describe("when the user selects a new category from the popover", () => {
+      it("does not also fire a spurious click-outside commit", async () => {
+        const user = userEvent.setup()
+        const onChange = jest.fn()
+        render(<EditableDescription {...commonProps} onChange={onChange} />, {
+          wrapper: Wrapper,
+        })
+        await user.click(screen.getByText("Brush teeth"))
+
+        await user.click(screen.getByRole("option", { name: "🧹" }))
+
+        expect(onChange).toHaveBeenCalledTimes(1)
+        expect(onChange).toHaveBeenCalledWith({ category: "🧹" })
+      })
+    })
+
+    describe("when the user types, presses Escape, then re-enters edit mode", () => {
+      it("does not carry over the discarded text", async () => {
+        const user = userEvent.setup()
+        render(<EditableDescription {...commonProps} />, { wrapper: Wrapper })
+        await user.click(screen.getByText("Brush teeth"))
+
+        const input = screen.getByRole("textbox", { name: "Description" })
+        await user.clear(input)
+        await user.type(input, "Floss teeth{Escape}")
+
+        await user.click(screen.getByText("Brush teeth"))
+        expect(
+          screen.getByRole("textbox", { name: "Description" }),
+        ).toHaveValue("Brush teeth")
+      })
+    })
   })
 })
