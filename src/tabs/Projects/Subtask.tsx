@@ -8,13 +8,21 @@ import { EditableText } from "../../shared/controls/EditableText"
 import { DraggableListItem } from "../../shared/drag-and-drop/DraggableListItem"
 import { draggableTypeKey } from "../../shared/drag-and-drop/types"
 
-type SubtaskProps = ProjectSubtask & {
+type SubtaskProps = {
+  task: ProjectSubtask
+  position: number
   project: ProjectDetails
   path: string
   dragHandle: ReactElement
 }
 
-export function Subtask({ path, dragHandle, project, ...task }: SubtaskProps) {
+export function Subtask({
+  path,
+  dragHandle,
+  project,
+  task,
+  position,
+}: SubtaskProps) {
   const storageContext = useContext(FirebaseContext)
   if (!storageContext) {
     throw new Error("Missing Firebase context provider")
@@ -57,7 +65,7 @@ export function Subtask({ path, dragHandle, project, ...task }: SubtaskProps) {
         [draggableTypeKey]: `subtask-${path}`,
         id: task.id,
         parentId: path,
-        position: task.position ?? Infinity,
+        position,
       })}
       dragPreview={<DragPreview task={task} />}
       isDroppable={(data) =>

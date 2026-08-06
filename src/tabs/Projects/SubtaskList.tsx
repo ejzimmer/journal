@@ -85,6 +85,10 @@ export function SubtaskList({ projectId, isVisible }: SubtasksProps) {
       ),
     [projectId, subtasks],
   )
+  const tasksById = useMemo(
+    () => new Map(subtasks.map((task) => [task.id, task])),
+    [subtasks],
+  )
 
   if (!project) {
     return null
@@ -102,7 +106,8 @@ export function SubtaskList({ projectId, isVisible }: SubtasksProps) {
             key={task.id}
             path={subtasksKey}
             project={project}
-            {...task}
+            task={tasksById.get(task.id)!}
+            position={index}
             dragHandle={
               <DragHandle
                 list={sortedTasks}
