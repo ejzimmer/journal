@@ -24,7 +24,6 @@ export function EditableDescription({
   onChange,
 }: EditableDescriptionProps) {
   const inputRef = useRef<HTMLInputElement>(null)
-  const containerRef = useRef<HTMLDivElement>(null)
   const [inEditMode, setInEditMode] = useState(false)
   const [inputValue, setInputValue] = useState(description)
 
@@ -46,30 +45,13 @@ export function EditableDescription({
     }
   }, [inEditMode])
 
-  const commitDescription = () => {
-    if (inputValue !== description) {
-      onChange({ description: inputValue })
-    }
-  }
-
   if (inEditMode) {
     return (
       <div
         className="editable-description"
-        ref={containerRef}
-        onBlur={(event) => {
-          if (!containerRef.current?.contains(event.relatedTarget as Node)) {
-            commitDescription()
-            stopEditing()
-          }
-        }}
         onKeyDown={({ key }) => {
-          if (key === "Enter") {
-            commitDescription()
-          }
-
-          if (key === "Escape") {
-            setInputValue(description)
+          if (key === "Enter" && inputValue !== description) {
+            onChange({ description: inputValue })
           }
 
           if (["Enter", "Escape"].includes(key)) {

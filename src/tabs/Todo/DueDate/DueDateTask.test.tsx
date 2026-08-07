@@ -54,30 +54,6 @@ describe("DueDateTask", () => {
     })
   })
 
-  describe("when the user edits the description and clicks away", () => {
-    it("saves the new description", async () => {
-      const user = userEvent.setup()
-      render(
-        <div>
-          <DueDateTask task={task} />
-          <button>elsewhere</button>
-        </div>,
-        { wrapper: Wrapper },
-      )
-
-      await user.click(screen.getByText("Pay rent"))
-      const input = screen.getByRole("textbox", { name: "Description" })
-      await user.clear(input)
-      await user.type(input, "Pay rent and bills")
-      await user.click(screen.getByRole("button", { name: "elsewhere" }))
-
-      expect(storageContext.updateItem).toHaveBeenCalledWith(
-        "today/暦",
-        expect.objectContaining({ description: "Pay rent and bills" }),
-      )
-    })
-  })
-
   describe("when the user clears the description", () => {
     it("deletes the task instead of saving an empty description", async () => {
       const user = userEvent.setup()
