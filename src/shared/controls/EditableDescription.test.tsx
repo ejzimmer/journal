@@ -163,7 +163,7 @@ describe("EditableDescription", () => {
       })
     })
 
-    describe("when the user updates the description then clicks outside", () => {
+    describe("when the user updates the description then clicks elsewhere on the page", () => {
       it("calls onChange and switches back to view mode", async () => {
         const user = userEvent.setup()
         const onChange = jest.fn()
@@ -186,7 +186,30 @@ describe("EditableDescription", () => {
       })
     })
 
-    describe("when the user doesn't update the description and clicks outside", () => {
+    describe("when the user updates the description then tabs away", () => {
+      it("calls onChange and switches back to view mode", async () => {
+        const user = userEvent.setup()
+        const onChange = jest.fn()
+        render(
+          <div>
+            <EditableDescription {...commonProps} onChange={onChange} />
+            <button>elsewhere</button>
+          </div>,
+          { wrapper: Wrapper },
+        )
+        await user.click(screen.getByText("Brush teeth"))
+
+        const input = screen.getByRole("textbox", { name: "Description" })
+        await user.clear(input)
+        await user.type(input, "Floss teeth")
+        await user.tab()
+
+        expect(onChange).toHaveBeenCalledWith({ description: "Floss teeth" })
+        expectToBeInViewMode()
+      })
+    })
+
+    describe("when the user doesn't update the description and clicks elsewhere on the page", () => {
       it("switches back to view mode without calling onChange", async () => {
         const user = userEvent.setup()
         const onChange = jest.fn()
@@ -206,8 +229,27 @@ describe("EditableDescription", () => {
       })
     })
 
+    describe("when the user tabs backwards from the description into the category combobox", () => {
+      it("stays in edit mode without calling onChange", async () => {
+        const user = userEvent.setup()
+        const onChange = jest.fn()
+        render(<EditableDescription {...commonProps} onChange={onChange} />, {
+          wrapper: Wrapper,
+        })
+        await user.click(screen.getByText("Brush teeth"))
+
+        await user.tab({ shift: true })
+
+        expect(onChange).not.toHaveBeenCalled()
+        expectToBeInEditMode()
+        expect(
+          screen.getByRole("combobox", { name: "Category" }),
+        ).toHaveFocus()
+      })
+    })
+
     describe("when the user selects a new category from the popover", () => {
-      it("does not also fire a spurious click-outside commit", async () => {
+      it("does not also fire a spurious commit from the description losing focus", async () => {
         const user = userEvent.setup()
         const onChange = jest.fn()
         render(<EditableDescription {...commonProps} onChange={onChange} />, {

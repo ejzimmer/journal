@@ -2,7 +2,6 @@ import { useContext, useEffect, useMemo, useRef, useState } from "react"
 import { EmojiCheckbox } from "./EmojiCheckbox"
 import { CategoriesContext } from "../../tabs/Todo"
 import { Combobox } from "./combobox/Combobox"
-import { useClickOutside } from "./useClickOutside"
 
 import "./EditableDescription.css"
 
@@ -53,20 +52,17 @@ export function EditableDescription({
     }
   }
 
-  useClickOutside({
-    elementRef: containerRef,
-    onClickOutside: () => {
-      commitDescription()
-      stopEditing()
-    },
-    shouldListen: inEditMode,
-  })
-
   if (inEditMode) {
     return (
       <div
         className="editable-description"
         ref={containerRef}
+        onBlur={(event) => {
+          if (!containerRef.current?.contains(event.relatedTarget as Node)) {
+            commitDescription()
+            stopEditing()
+          }
+        }}
         onKeyDown={({ key }) => {
           if (key === "Enter") {
             commitDescription()

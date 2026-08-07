@@ -7,7 +7,7 @@ import { MultiValueInput } from "./MultiValueInput"
 import "./Combobox.css"
 import { isSelected } from "./utils"
 import { Popover } from "./Popover"
-import { useClickOutside } from "../useClickOutside"
+import { useClickOutside } from "./useClickOutside"
 import { useKeyboardNavigation } from "./useKeyboardNavigation"
 
 export function Combobox<T extends OptionType>({

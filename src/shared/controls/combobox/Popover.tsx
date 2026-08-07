@@ -25,7 +25,15 @@ export function Popover<T extends OptionType>({
   return (
     <div ref={popoverRef} popover="manual" data-testid="popover" id={popoverId}>
       {options.length ? (
-        <ul className="options">
+        <ul
+          className="options"
+          onMouseDown={(event) => {
+            // options aren't focusable, so without this the browser would
+            // blur whatever's currently focused (e.g. the combobox input)
+            // before the click below can select the option
+            event.preventDefault()
+          }}
+        >
           {options.map((option) => (
             <li
               key={option.id}
