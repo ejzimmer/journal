@@ -55,7 +55,7 @@ export function DueDateTask({ task }: { task: CalendarTask }) {
             if ("description" in change && change.description === "") {
               onDelete()
             } else if ("description" in change) {
-              onChange({ ...task, description: task.description })
+              onChange({ ...task, description: change.description })
             } else if ("category" in change) {
               onChange({ ...task, category: change.category })
             }
