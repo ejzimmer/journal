@@ -14,6 +14,7 @@ import "./App.css"
 import { Media } from "./tabs/Media"
 import { ThisYear } from "./tabs/ThisYear"
 import { Loading } from "./shared/loading"
+import { isMockFirebaseEnabled } from "./shared/mockFirebase"
 
 const TABS = [
   { path: "todo", Element: Todo },
@@ -25,16 +26,22 @@ const TABS = [
 
 export function App() {
   const navListRef = useRef<HTMLUListElement>(null)
-  const [isLoading, setIsLoading] = useState(true)
-  const [isLoggedIn, setLoggedIn] = useState(false)
-  const auth = getAuth()
+  const [isLoading, setIsLoading] = useState(!isMockFirebaseEnabled())
+  const [isLoggedIn, setLoggedIn] = useState(isMockFirebaseEnabled())
 
-  onAuthStateChanged(auth, () => {
-    setIsLoading(false)
-    setLoggedIn(!!auth.currentUser)
-  })
+  if (!isMockFirebaseEnabled()) {
+    const auth = getAuth()
+
+    onAuthStateChanged(auth, () => {
+      setIsLoading(false)
+      setLoggedIn(!!auth.currentUser)
+    })
+  }
 
   const login = () => {
+    if (isMockFirebaseEnabled()) return
+
+    const auth = getAuth()
     const provider = new GoogleAuthProvider()
     signInWithPopup(auth, provider)
     // signInWithRedirect(auth, provider)

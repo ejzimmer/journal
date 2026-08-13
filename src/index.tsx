@@ -11,6 +11,8 @@ import {
   FirebaseContext,
 } from "./shared/FirebaseContext"
 import { BrowserRouter } from "react-router-dom"
+import { createMockFirebaseContext, isMockFirebaseEnabled } from "./shared/mockFirebase"
+import { mockSeedData } from "./shared/mockSeedData"
 
 const firebaseConfig = {
   apiKey: "AIzaSyAlKw5_aMOUlR3SdkbU6vHADLTUvXZHNJg",
@@ -23,10 +25,11 @@ const firebaseConfig = {
     "https://journal-50dcf-default-rtdb.asia-southeast1.firebasedatabase.app",
 }
 
-const app = initializeApp(firebaseConfig)
-const database = getDatabase(app)
-
-const contextValue = createFirebaseContext(database)
+// Mock mode never calls initializeApp/getDatabase, so it can't reach the
+// real Firebase project even by accident.
+const contextValue = isMockFirebaseEnabled()
+  ? createMockFirebaseContext(mockSeedData)
+  : createFirebaseContext(getDatabase(initializeApp(firebaseConfig)))
 
 const container = document.getElementById("root")
 const root = createRoot(container!)
