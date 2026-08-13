@@ -13,6 +13,9 @@ import { EditableText } from "../../../shared/controls/EditableText"
 import { WorktreeStamp } from "./WorktreeStamp"
 import { AddWorktree } from "./AddWorktree"
 import { Worktree } from "../types"
+import { Subtasks } from "./Subtasks"
+import { AddSubtask } from "./AddSubtask"
+import { StandardChecklistButton } from "./StandardChecklistButton"
 
 type TaskProps = {
   task: WorkTask
@@ -34,6 +37,8 @@ export function Task({ task, path, dragHandle }: TaskProps) {
       storageContext.updateItem(path, taskWithoutWorktree)
     }
   }
+
+  const subtasksPath = `${path}/${task.id}/subtasks`
 
   return (
     <DraggableListItem
@@ -84,6 +89,7 @@ export function Task({ task, path, dragHandle }: TaskProps) {
             textDecoration: task.status === "done" ? "line-through" : "none",
           }}
         />
+        <Subtasks subtasks={task.subtasks} path={subtasksPath} />
         <Labels
           labels={task.labels}
           onRemoveLabel={(label) => {
@@ -120,6 +126,11 @@ export function Task({ task, path, dragHandle }: TaskProps) {
         />
 
         {!task.worktree && <AddWorktree onChange={onChangeWorktree} />}
+        <AddSubtask subtasks={task.subtasks} path={subtasksPath} />
+        <StandardChecklistButton
+          subtasks={task.subtasks}
+          path={subtasksPath}
+        />
       </div>
     </DraggableListItem>
   )

@@ -152,6 +152,32 @@ ol.work-lists > li {
           top: 6px;
         }
       }
+
+      .subtasks {
+        color: var(--body-colour-light);
+
+        button.subtask {
+          font: inherit;
+          color: inherit;
+          text-decoration: underline dotted;
+          cursor: pointer;
+
+          &:hover {
+            color: var(--action-colour);
+          }
+        }
+      }
+
+      form.add-subtask input {
+        font: inherit;
+        border: none;
+        background: transparent;
+        width: 8em;
+
+        &:focus {
+          outline: none;
+        }
+      }
     }
 
     button.add-metadata {
