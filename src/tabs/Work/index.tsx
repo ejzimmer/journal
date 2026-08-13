@@ -13,6 +13,7 @@ import { useDropTarget } from "../../shared/drag-and-drop/useDropTarget"
 
 import "./index.css"
 import { MoveToOtherLists } from "./MoveToOtherLists"
+import { addSourceListLabel } from "./labelUtils"
 
 export function Work() {
   const dropTargetRef = useRef<HTMLOListElement>(null)
@@ -31,8 +32,11 @@ export function Work() {
   }, [lists])
 
   const onAddList = useCallback(
-    (listName: string) => {
-      addItem(WORK_KEY, { description: listName })
+    (listName: string, labels: Label[] = []) => {
+      addItem(WORK_KEY, {
+        description: listName,
+        ...(labels.length > 0 && { labels }),
+      })
     },
     [addItem],
   )
@@ -139,10 +143,18 @@ export function Work() {
     getAxis: (source) => {
       return source[draggableTypeKey] === "task" ? "vertical" : "horizontal"
     },
+    onMove: (item: WorkTask, sourceListId: string) => {
+      const [, sourceListKey] = sourceListId.split("/")
+      const sourceList = sourceListKey ? lists?.[sourceListKey] : undefined
+      return sourceList ? addSourceListLabel(item, sourceList) : item
+    },
   })
 
   const labels = useMemo(() => {
     const uniqueLabels = new Map<string, Label>()
+    orderedLists.forEach((list) => {
+      list.labels?.forEach((label) => uniqueLabels.set(label.value, label))
+    })
     orderedLists
       .flatMap(({ items }) => (items ? Object.values(items) : []))
       .flatMap(({ labels }) => labels)
@@ -157,37 +169,35 @@ export function Work() {
   }
 
   return (
-    <>
+    <LabelsContext.Provider value={labels}>
       <div className="new-list-modal-container">
         <NewListModal onCreate={onAddList} />
       </div>
       {lists ? (
-        <LabelsContext.Provider value={labels}>
-          <ol ref={dropTargetRef} className="work-lists">
-            {orderedLists.map(
-              (list) =>
-                list !== doneList && (
-                  <TaskList
-                    key={list.id}
-                    listId={list.id}
-                    index={list.position}
-                    parentListId={WORK_KEY}
-                    additionalMoveDestinations={(task: WorkTask) => (
-                      <MoveToOtherLists
-                        allLists={orderedLists}
-                        currentListId={list.id}
-                        doneListId={doneList?.id}
-                        task={task}
-                      />
-                    )}
-                  />
-                ),
-            )}
-          </ol>
-        </LabelsContext.Provider>
+        <ol ref={dropTargetRef} className="work-lists">
+          {orderedLists.map(
+            (list) =>
+              list !== doneList && (
+                <TaskList
+                  key={list.id}
+                  listId={list.id}
+                  index={list.position}
+                  parentListId={WORK_KEY}
+                  additionalMoveDestinations={(task: WorkTask) => (
+                    <MoveToOtherLists
+                      allLists={orderedLists}
+                      currentListId={list.id}
+                      doneListId={doneList?.id}
+                      task={task}
+                    />
+                  )}
+                />
+              ),
+          )}
+        </ol>
       ) : (
         <div style={{ marginInlineEnd: "30px" }}>No lists found.</div>
       )}
-    </>
+    </LabelsContext.Provider>
   )
 }

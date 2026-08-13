@@ -33,6 +33,7 @@ ol.work-lists > li {
   .heading {
     display: flex;
     align-items: end;
+    gap: 8px;
     border-bottom: 2px solid var(--line-colour);
 
     h2 {
@@ -41,6 +42,18 @@ ol.work-lists > li {
       position: relative;
       top: 10px;
       font-size: 1.8em;
+    }
+
+    .labels {
+      list-style-type: none;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      gap: 2px;
+    }
+
+    button.ghost {
+      padding: 4px;
     }
   }
 

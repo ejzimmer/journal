@@ -9,6 +9,7 @@ export type LabelsControlProps = {
   onChange: (value: Label[]) => void
   label: string
   hideLabel?: boolean
+  isMulti?: boolean
 }
 
 type LabelOption = {
@@ -41,7 +42,12 @@ export function getNextColour(colours: Colour[]): Colour {
   return isColour(lowestUsageColour) ? lowestUsageColour : COLOURS[0]
 }
 
-export function LabelsControl({ value, onChange, label }: LabelsControlProps) {
+export function LabelsControl({
+  value,
+  onChange,
+  label,
+  isMulti = true,
+}: LabelsControlProps) {
   const labels = useContext(LabelsContext)
   const options: LabelOption[] = useMemo(
     () =>
@@ -74,14 +80,29 @@ export function LabelsControl({ value, onChange, label }: LabelsControlProps) {
     }
   }
 
-  const handleChange = (value: LabelOption[]) => {
-    onChange(value.map((o) => ({ value: o.label, colour: o.colour })))
+  if (!isMulti) {
+    return (
+      <Combobox
+        value={selectedOptions[0]}
+        onChange={(option) =>
+          onChange([{ value: option.label, colour: option.colour }])
+        }
+        label={label}
+        options={options}
+        createOption={createOption}
+        Option={Option}
+        Value={Option}
+        hideSelectedOptions
+      />
+    )
   }
 
   return (
     <Combobox
       value={selectedOptions}
-      onChange={handleChange}
+      onChange={(value) =>
+        onChange(value.map((o) => ({ value: o.label, colour: o.colour })))
+      }
       label={label}
       options={options}
       createOption={createOption}

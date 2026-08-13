@@ -1,14 +1,17 @@
 import { useRef, useState } from "react"
 import { FormModal } from "../../shared/controls/FormModal"
 import { FormControl } from "../../shared/controls/FormControl"
+import { LabelsControl } from "./LabelsControl"
+import { Label } from "./types"
 
 export function NewListModal({
   onCreate,
 }: {
-  onCreate: (listName: string) => void
+  onCreate: (listName: string, labels?: Label[]) => void
 }) {
   const [showError, setShowError] = useState(false)
   const [listName, setListName] = useState("")
+  const [labels, setLabels] = useState<Label[]>([])
 
   const listNameRef = useRef<HTMLInputElement>(null)
 
@@ -26,8 +29,9 @@ export function NewListModal({
       return false
     }
 
-    onCreate(listName)
+    onCreate(listName, labels)
     setListName("")
+    setLabels([])
     return true
   }
 
@@ -50,6 +54,12 @@ export function NewListModal({
         value={listName}
         onChange={onChange}
         errors={showError && ["List name is required"]}
+      />
+      <LabelsControl
+        value={labels}
+        onChange={setLabels}
+        label="Label"
+        isMulti={false}
       />
     </FormModal>
   )

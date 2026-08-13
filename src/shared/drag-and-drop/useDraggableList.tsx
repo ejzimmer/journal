@@ -11,11 +11,12 @@ import {
 } from "./types"
 import { isDraggable, sortByPosition } from "./utils"
 
-type UseDraggableArgs = {
+type UseDraggableArgs<T> = {
   listId: string
   canDropSourceOnTarget: (source: Draggable, target: DropTarget) => boolean
   getTargetListId: (source: Draggable, target: DropTarget) => string
   getAxis: (source: Draggable) => "horizontal" | "vertical"
+  onMove?: (item: T, sourceListId: string, targetListId: string) => T
 }
 
 export function useDraggableList<
@@ -25,7 +26,8 @@ export function useDraggableList<
   canDropSourceOnTarget,
   getTargetListId,
   getAxis,
-}: UseDraggableArgs) {
+  onMove,
+}: UseDraggableArgs<T>) {
   const context = useContext(FirebaseContext)
   if (!context) {
     throw new Error("Missing Firebase context provider")
@@ -150,8 +152,11 @@ export function useDraggableList<
             `${sourceData.parentId}/${sourceData.id}`,
             value,
           )
+          const movedItem = onMove
+            ? onMove(item, sourceData.parentId, targetListId)
+            : item
           addItem(targetListId, {
-            ...item,
+            ...movedItem,
             position: targetListIndex,
           })
 
@@ -160,8 +165,11 @@ export function useDraggableList<
         } else {
           const list = getItemByPath(sourceData.parentId, value)
           const item = list[sourceData.id]
+          const movedItem = onMove
+            ? onMove(item, sourceData.parentId, targetListId)
+            : item
 
-          addItem(targetListId, item)
+          addItem(targetListId, movedItem)
           deleteItem(sourceData.parentId, item)
         }
       },
@@ -177,5 +185,6 @@ export function useDraggableList<
     getTargetListId,
     getAxis,
     getItemByPath,
+    onMove,
   ])
 }

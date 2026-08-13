@@ -3,6 +3,7 @@ import { Menu } from "../../shared/controls/Menu"
 import { FirebaseContext } from "../../shared/FirebaseContext"
 import { ArrowRightIcon } from "../../shared/icons/ArrowRight"
 import { WorkTask, WORK_KEY } from "./types"
+import { addSourceListLabel } from "./labelUtils"
 
 type MoveToOtherListsProps = {
   allLists: WorkTask[]
@@ -22,6 +23,7 @@ export function MoveToOtherLists({
     throw new Error("missing storage context")
   }
 
+  const currentList = allLists.find(({ id }) => id === currentListId)
   const otherLists = allLists.filter(
     ({ id }) => id !== currentListId && id !== doneListId,
   )
@@ -36,8 +38,11 @@ export function MoveToOtherLists({
               0,
             )
           : 0
+        const movedTask = currentList
+          ? addSourceListLabel(task, currentList)
+          : task
         storageContext.addItem(`${WORK_KEY}/${destination.id}/items`, {
-          ...task,
+          ...movedTask,
           position,
           lastUpdated: new Date().getTime(),
         })
