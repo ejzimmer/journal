@@ -80,6 +80,14 @@ ol.work-lists > li {
       opacity: 0.4;
     }
 
+    .worktree-marker {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 32px;
+      flex-shrink: 0;
+    }
+
     .drag-handle {
       opacity: 0;
     }

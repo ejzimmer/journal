@@ -1,0 +1,163 @@
+.worktree-menu-anchor {
+  position: relative;
+  display: inline-flex;
+}
+
+button.stamp-trigger {
+  border: 0;
+  padding: 0;
+  height: auto;
+  line-height: 1;
+  background: none;
+  border-radius: 50%;
+
+  &:focus-visible {
+    outline: 2px solid black;
+    outline-offset: 2px;
+  }
+}
+
+.worktree-menu {
+  --radius: 46px;
+  margin: 0;
+}
+
+/*
+ * Specificity bumped to (0,2,0) so this reliably wins over the generic
+ * `:popover-open` list-layout rule in Menu.css (0,1,0), regardless of CSS
+ * import order — that rule is written to target any open popover, not just
+ * the ones rendered by the shared Menu component.
+ */
+.worktree-menu:popover-open {
+  display: block;
+  border: none;
+  padding: 0;
+  background: none;
+  box-shadow: none;
+  overflow: visible;
+  inset: unset;
+  width: 0;
+  height: 0;
+  position: absolute;
+  top: anchor(center);
+  left: anchor(center);
+  translate: -50% -50%;
+}
+
+.worktree-menu-item {
+  position: absolute;
+  top: 0;
+  left: 0;
+  translate: -50% -50%;
+  border: 0;
+  padding: 0;
+  height: auto;
+  line-height: 1;
+  background: none;
+  border-radius: 50%;
+  opacity: 0.5;
+  transition: opacity 0.15s;
+
+  &:hover,
+  &:focus-visible {
+    opacity: 1;
+  }
+
+  &:focus-visible {
+    outline: 2px solid black;
+    outline-offset: 2px;
+  }
+
+  &.remove {
+    color: var(--body-colour-light);
+    padding: 4px;
+
+    &:hover,
+    &:focus-visible {
+      color: var(--danger-colour);
+    }
+
+    &:hover .lid,
+    &:focus-visible .lid {
+      transform: translate(-2px, -4px) rotate(-10deg);
+      transition: transform 0.2s ease-out;
+    }
+  }
+}
+
+@keyframes deal-to-slot-1 {
+  0% {
+    transform: rotate(-6deg) scale(0.6);
+  }
+  100% {
+    transform: rotate(0deg) translate(0, calc(-1 * var(--radius))) rotate(0deg)
+      scale(1);
+  }
+}
+
+@keyframes deal-to-slot-2 {
+  0% {
+    transform: rotate(4deg) scale(0.6);
+  }
+  50% {
+    transform: rotate(0deg) translate(0, calc(-1 * var(--radius))) rotate(0deg)
+      scale(1);
+  }
+  100% {
+    transform: rotate(90deg) translate(0, calc(-1 * var(--radius)))
+      rotate(-90deg) scale(1);
+  }
+}
+
+@keyframes deal-to-slot-3 {
+  0% {
+    transform: rotate(-3deg) scale(0.6);
+  }
+  33% {
+    transform: rotate(0deg) translate(0, calc(-1 * var(--radius))) rotate(0deg)
+      scale(1);
+  }
+  66% {
+    transform: rotate(90deg) translate(0, calc(-1 * var(--radius)))
+      rotate(-90deg) scale(1);
+  }
+  100% {
+    transform: rotate(180deg) translate(0, calc(-1 * var(--radius)))
+      rotate(-180deg) scale(1);
+  }
+}
+
+@keyframes deal-to-slot-4 {
+  0% {
+    transform: rotate(8deg) scale(0.6);
+  }
+  25% {
+    transform: rotate(0deg) translate(0, calc(-1 * var(--radius))) rotate(0deg)
+      scale(1);
+  }
+  50% {
+    transform: rotate(90deg) translate(0, calc(-1 * var(--radius)))
+      rotate(-90deg) scale(1);
+  }
+  75% {
+    transform: rotate(180deg) translate(0, calc(-1 * var(--radius)))
+      rotate(-180deg) scale(1);
+  }
+  100% {
+    transform: rotate(270deg) translate(0, calc(-1 * var(--radius)))
+      rotate(-270deg) scale(1);
+  }
+}
+
+.worktree-menu-item.slot-1 {
+  animation: deal-to-slot-1 120ms ease-out forwards;
+}
+.worktree-menu-item.slot-2 {
+  animation: deal-to-slot-2 240ms ease-out forwards;
+}
+.worktree-menu-item.slot-3 {
+  animation: deal-to-slot-3 360ms ease-out forwards;
+}
+.worktree-menu-item.slot-4 {
+  animation: deal-to-slot-4 480ms ease-out forwards;
+}
