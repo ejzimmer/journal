@@ -4,9 +4,11 @@ import { AppRoutes } from "../AppRoutes"
 
 export function App() {
   return (
-    <div className="main-content">
+    <>
       <TopNav />
-      <AppRoutes />
-    </div>
+      <div className="main-content">
+        <AppRoutes />
+      </div>
+    </>
   )
 }
