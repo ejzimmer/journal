@@ -75,10 +75,11 @@ function AddTracker({ onSubmit }: { onSubmit: (tracker: string) => void }) {
         onChange={(tracker) => {
           onSubmit(tracker.label)
         }}
+        ariaLabel="add tracker"
       />
     </div>
   ) : (
-    <button className="icon ghost" onClick={showCombobox}>
+    <button className="icon ghost" aria-label="add tracker" onClick={showCombobox}>
       <PlusIcon width="16px" />
     </button>
   )

@@ -59,7 +59,8 @@ describe("Day", () => {
   })
 
   describe("when the balance is available", () => {
-    it("shows the net calories & trackers", () => {
+    it("shows the net calories & trackers", async () => {
+      const user = userEvent.setup()
       render(<Day {...commonProps} />, { wrapper: Wrapper })
 
       expect(screen.queryByRole("textbox")).not.toBeInTheDocument()
@@ -76,6 +77,8 @@ describe("Day", () => {
       expect(screen.getAllByRole("button", { name: "delete 🥡" })).toHaveLength(
         2,
       )
+
+      await user.click(screen.getByRole("button", { name: "add tracker" }))
       expect(
         screen.getByRole("combobox", { name: "add tracker" }),
       ).toBeInTheDocument()
