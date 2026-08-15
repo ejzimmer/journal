@@ -22,12 +22,6 @@ button.stamp-trigger {
   margin: 0;
 }
 
-/*
- * Specificity bumped to (0,2,0) so this reliably wins over the generic
- * `:popover-open` list-layout rule in Menu.css (0,1,0), regardless of CSS
- * import order — that rule is written to target any open popover, not just
- * the ones rendered by the shared Menu component.
- */
 .worktree-menu:popover-open {
   display: block;
   border: none;
@@ -56,7 +50,8 @@ button.stamp-trigger {
   background: none;
   border-radius: 50%;
   opacity: 0.5;
-  transition: opacity 0.15s;
+  transition: opacity 300ms;
+  animation: deal-to-slot 480ms ease-out forwards;
 
   &:hover,
   &:focus-visible {
@@ -85,79 +80,33 @@ button.stamp-trigger {
   }
 }
 
-@keyframes deal-to-slot-1 {
+/*
+ * Each item's final resting spot is --angle around the circle (0/90/180/270deg).
+ * The min() clamps mean an item with a smaller --angle simply arrives at its
+ * spot on an earlier beat and then holds — so items dealt earlier settle
+ * sooner, without needing a different duration per item.
+ */
+@keyframes deal-to-slot {
   0% {
-    transform: rotate(-6deg) scale(0.6);
-  }
-  100% {
-    transform: rotate(0deg) translate(0, calc(-1 * var(--radius))) rotate(0deg)
-      scale(1);
-  }
-}
-
-@keyframes deal-to-slot-2 {
-  0% {
-    transform: rotate(4deg) scale(0.6);
-  }
-  50% {
-    transform: rotate(0deg) translate(0, calc(-1 * var(--radius))) rotate(0deg)
-      scale(1);
-  }
-  100% {
-    transform: rotate(90deg) translate(0, calc(-1 * var(--radius)))
-      rotate(-90deg) scale(1);
-  }
-}
-
-@keyframes deal-to-slot-3 {
-  0% {
-    transform: rotate(-3deg) scale(0.6);
-  }
-  33% {
-    transform: rotate(0deg) translate(0, calc(-1 * var(--radius))) rotate(0deg)
-      scale(1);
-  }
-  66% {
-    transform: rotate(90deg) translate(0, calc(-1 * var(--radius)))
-      rotate(-90deg) scale(1);
-  }
-  100% {
-    transform: rotate(180deg) translate(0, calc(-1 * var(--radius)))
-      rotate(-180deg) scale(1);
-  }
-}
-
-@keyframes deal-to-slot-4 {
-  0% {
-    transform: rotate(8deg) scale(0.6);
+    transform: rotate(var(--jitter)) scale(0.6);
   }
   25% {
-    transform: rotate(0deg) translate(0, calc(-1 * var(--radius))) rotate(0deg)
-      scale(1);
+    transform: rotate(min(var(--angle), 90deg))
+      translate(0, calc(-1 * var(--radius)))
+      rotate(calc(-1 * min(var(--angle), 90deg))) scale(1);
   }
   50% {
-    transform: rotate(90deg) translate(0, calc(-1 * var(--radius)))
-      rotate(-90deg) scale(1);
+    transform: rotate(min(var(--angle), 180deg))
+      translate(0, calc(-1 * var(--radius)))
+      rotate(calc(-1 * min(var(--angle), 180deg))) scale(1);
   }
   75% {
-    transform: rotate(180deg) translate(0, calc(-1 * var(--radius)))
-      rotate(-180deg) scale(1);
+    transform: rotate(min(var(--angle), 270deg))
+      translate(0, calc(-1 * var(--radius)))
+      rotate(calc(-1 * min(var(--angle), 270deg))) scale(1);
   }
   100% {
-    transform: rotate(270deg) translate(0, calc(-1 * var(--radius)))
-      rotate(-270deg) scale(1);
+    transform: rotate(var(--angle)) translate(0, calc(-1 * var(--radius)))
+      rotate(calc(-1 * var(--angle))) scale(1);
   }
-}
-
-.worktree-menu-item.slot-1 {
-  animation: deal-to-slot-1 120ms ease-out forwards;
-}
-.worktree-menu-item.slot-2 {
-  animation: deal-to-slot-2 240ms ease-out forwards;
-}
-.worktree-menu-item.slot-3 {
-  animation: deal-to-slot-3 360ms ease-out forwards;
-}
-.worktree-menu-item.slot-4 {
-  animation: deal-to-slot-4 480ms ease-out forwards;
 }

@@ -1,5 +1,8 @@
-import { ReactNode, useId, useRef } from "react"
+import { CSSProperties, ReactNode, useId, useRef } from "react"
 import "./WorktreeMenu.css"
+
+// A little rotation on each item so the fanned-out menu doesn't look too rigid.
+const JITTER_DEGREES = [-6, 4, -3, 8]
 
 export type WorktreeMenuOption = {
   key: string
@@ -31,7 +34,13 @@ export function WorktreeMenu({ trigger: Trigger, options }: WorktreeMenuProps) {
           <button
             key={key}
             aria-label={label}
-            className={`worktree-menu-item slot-${index + 1} ${className ?? ""}`}
+            className={`worktree-menu-item ${className ?? ""}`}
+            style={
+              {
+                "--angle": `${index * 90}deg`,
+                "--jitter": `${JITTER_DEGREES[index]}deg`,
+              } as CSSProperties
+            }
             onClick={() => {
               onSelect()
               close()

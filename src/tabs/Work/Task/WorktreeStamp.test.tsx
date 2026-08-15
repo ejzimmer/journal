@@ -3,16 +3,17 @@ import userEvent from "@testing-library/user-event"
 import { WorktreeStamp } from "./WorktreeStamp"
 
 describe("WorktreeStamp", () => {
-  it("shows the current worktree on the trigger", () => {
-    render(<WorktreeStamp worktree="wt-2" onChange={jest.fn()} />)
+  it("renders the trigger, shows the other worktrees and a remove option when clicked, and calls onChange when an option is chosen", async () => {
+    const user = userEvent.setup()
+    const onChange = jest.fn()
+    render(<WorktreeStamp worktree="wt-2" onChange={onChange} />)
 
-    expect(
-      screen.getByRole("button", { name: "Change worktree, currently WT-2" }),
-    ).toBeInTheDocument()
-  })
+    const trigger = screen.getByRole("button", {
+      name: "Change worktree, currently WT-2",
+    })
+    expect(trigger).toBeInTheDocument()
 
-  it("offers the other three worktrees and a remove option", () => {
-    render(<WorktreeStamp worktree="wt-2" onChange={jest.fn()} />)
+    await user.click(trigger)
 
     expect(
       screen.getByRole("button", { name: "Move to WT-1", hidden: true }),
@@ -32,12 +33,6 @@ describe("WorktreeStamp", () => {
         hidden: true,
       }),
     ).toBeInTheDocument()
-  })
-
-  it("calls onChange with the new worktree when an option is clicked", async () => {
-    const user = userEvent.setup()
-    const onChange = jest.fn()
-    render(<WorktreeStamp worktree="wt-2" onChange={onChange} />)
 
     await user.click(
       screen.getByRole("button", { name: "Move to WT-3", hidden: true }),
