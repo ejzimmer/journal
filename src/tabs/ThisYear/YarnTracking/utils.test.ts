@@ -42,6 +42,15 @@ describe("getInitialBalances", () => {
 })
 
 describe("getMonthlyBalances", () => {
+  beforeEach(() => {
+    jest.useFakeTimers()
+    jest.setSystemTime(new Date("2026-03-12"))
+  })
+
+  afterEach(() => {
+    jest.useRealTimers()
+  })
+
   it("returns the balances per month", () => {
     expect(getMonthlyBalances(yarnState)).toEqual([
       {

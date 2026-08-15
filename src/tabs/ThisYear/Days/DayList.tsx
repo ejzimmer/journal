@@ -58,7 +58,7 @@ export function DayList() {
       <WeeklyCalories balances={weeklyBalances} />
       <TrackerContext.Provider value={trackers}>
         <Filters filters={filters} onChange={setFilters} />
-        <ol className="days">
+        <ol className="days" aria-label="days">
           {days.map(({ day, month, balance, diff, dayOfWeek }) => {
             const id = day + month
             const dayData = (value?.[id] as DayData) ?? { id }
