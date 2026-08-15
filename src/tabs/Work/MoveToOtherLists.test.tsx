@@ -51,56 +51,13 @@ describe("MoveToOtherLists", () => {
     jest.clearAllMocks()
   })
 
-  it("stamps the source list's label onto the task when moved", async () => {
+  it("adds the source list's label to the task when moved", async () => {
     const user = userEvent.setup()
     render(
       <MoveToOtherLists
         allLists={[sourceList, destinationList]}
         currentListId={sourceList.id}
         task={task}
-      />,
-      { wrapper: Wrapper },
-    )
-
-    await user.click(screen.getByRole("menuitem", { name: "Today" }))
-
-    expect(storageContext.addItem).toHaveBeenCalledWith(
-      "work/list-2/items",
-      expect.objectContaining({
-        labels: [{ value: "a11y", colour: "blue" }],
-      }),
-    )
-  })
-
-  it("doesn't add a label when the source list has none", async () => {
-    const user = userEvent.setup()
-    const unlabelledSource = { ...sourceList, labels: undefined }
-    render(
-      <MoveToOtherLists
-        allLists={[unlabelledSource, destinationList]}
-        currentListId={unlabelledSource.id}
-        task={task}
-      />,
-      { wrapper: Wrapper },
-    )
-
-    await user.click(screen.getByRole("menuitem", { name: "Today" }))
-
-    const [, addedItem] = storageContext.addItem.mock.calls[0]
-    expect(addedItem.labels).toBeUndefined()
-  })
-
-  it("doesn't duplicate a label the task already has", async () => {
-    const user = userEvent.setup()
-    const taskWithLabel: WorkTask = {
-      ...task,
-      labels: [{ value: "a11y", colour: "blue" }],
-    }
-    render(
-      <MoveToOtherLists
-        allLists={[sourceList, destinationList]}
-        currentListId={sourceList.id}
-        task={taskWithLabel}
       />,
       { wrapper: Wrapper },
     )

@@ -80,35 +80,27 @@ export function LabelsControl({
     }
   }
 
-  if (!isMulti) {
-    return (
-      <Combobox
-        value={selectedOptions[0]}
-        onChange={(option) =>
-          onChange([{ value: option.label, colour: option.colour }])
-        }
-        label={label}
-        options={options}
-        createOption={createOption}
-        Option={Option}
-        Value={Option}
-        hideSelectedOptions
-      />
-    )
-  }
+  const valueProps = isMulti
+    ? {
+        isMultiValue: true as const,
+        value: selectedOptions,
+        onChange: (value: LabelOption[]) =>
+          onChange(value.map((o) => ({ value: o.label, colour: o.colour }))),
+      }
+    : {
+        value: selectedOptions[0],
+        onChange: (option: LabelOption) =>
+          onChange([{ value: option.label, colour: option.colour }]),
+      }
 
   return (
     <Combobox
-      value={selectedOptions}
-      onChange={(value) =>
-        onChange(value.map((o) => ({ value: o.label, colour: o.colour })))
-      }
+      {...valueProps}
       label={label}
       options={options}
       createOption={createOption}
       Option={Option}
       Value={Option}
-      isMultiValue
       hideSelectedOptions
     />
   )

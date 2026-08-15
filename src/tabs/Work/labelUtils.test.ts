@@ -21,32 +21,26 @@ const labelledList: WorkTask = {
 }
 
 describe("addSourceListLabel", () => {
-  it("adds the source list's label to the item", () => {
-    const result = addSourceListLabel(baseTask, labelledList)
+  it("adds the source list's label to the item, without duplicating it or losing other labels", () => {
+    expect(addSourceListLabel(baseTask, labelledList).labels).toEqual([
+      { value: "a11y", colour: "blue" },
+    ])
 
-    expect(result.labels).toEqual([{ value: "a11y", colour: "blue" }])
-  })
-
-  it("doesn't duplicate a label the item already has", () => {
-    const taskWithLabel = {
+    const taskWithSameLabel = {
       ...baseTask,
       labels: [{ value: "a11y", colour: "blue" as const }],
     }
+    expect(
+      addSourceListLabel(taskWithSameLabel, labelledList).labels,
+    ).toEqual([{ value: "a11y", colour: "blue" }])
 
-    const result = addSourceListLabel(taskWithLabel, labelledList)
-
-    expect(result.labels).toEqual([{ value: "a11y", colour: "blue" }])
-  })
-
-  it("keeps the item's other labels", () => {
-    const taskWithLabel = {
+    const taskWithOtherLabel = {
       ...baseTask,
       labels: [{ value: "urgent", colour: "red" as const }],
     }
-
-    const result = addSourceListLabel(taskWithLabel, labelledList)
-
-    expect(result.labels).toEqual([
+    expect(
+      addSourceListLabel(taskWithOtherLabel, labelledList).labels,
+    ).toEqual([
       { value: "urgent", colour: "red" },
       { value: "a11y", colour: "blue" },
     ])
