@@ -50,7 +50,7 @@ const doneTask = task(done.id, "task-done-1", "See how Done looks", 0, {
   status: "done",
 })
 
-export const mockSeedData = {
+export const seedData = {
   [WORK_KEY]: {
     [backlog.id]: { ...backlog, items: { [backlogTask.id]: backlogTask } },
     [today.id]: { ...today, items: { [todayTask.id]: todayTask } },

@@ -1,20 +1,8 @@
 import { useCallback, useEffect, useRef } from "react"
-import { Routes, Route, NavLink } from "react-router-dom"
-import { Todo } from "./tabs/Todo"
-import { Projects } from "./tabs/Projects"
-import { Work } from "./tabs/Work"
-import { Media } from "./tabs/Media"
-import { ThisYear } from "./tabs/ThisYear"
+import { NavLink } from "react-router-dom"
+import { TABS } from "./tabConfig"
 
-const TABS = [
-  { path: "todo", Element: Todo },
-  { path: "2026", Element: ThisYear },
-  { path: "projects", Element: Projects },
-  { path: "media", Element: Media },
-  { path: "work", Element: Work },
-]
-
-export function AppShell() {
+export function TopNav() {
   const navListRef = useRef<HTMLUListElement>(null)
 
   const hideHighlight = useCallback(() => {
@@ -55,30 +43,19 @@ export function AppShell() {
   }
 
   return (
-    <>
-      <nav className="tabs">
-        <ul ref={navListRef} onBlur={hideHighlight}>
-          {TABS.map(({ path }) => (
-            <NavItem
-              key={path}
-              to={path}
-              onFocus={(event) => moveHighlight(event.target.parentElement)}
-            >
-              {path}
-            </NavItem>
-          ))}
-        </ul>
-      </nav>
-
-      <div className="main-content">
-        <Routes>
-          {TABS.map(({ path, Element }) => (
-            <Route key={path} path={path} element={<Element />} />
-          ))}
-          <Route path="/" element={<Todo />} />
-        </Routes>
-      </div>
-    </>
+    <nav className="tabs">
+      <ul ref={navListRef} onBlur={hideHighlight}>
+        {TABS.map(({ path }) => (
+          <NavItem
+            key={path}
+            to={path}
+            onFocus={(event) => moveHighlight(event.target.parentElement)}
+          >
+            {path}
+          </NavItem>
+        ))}
+      </ul>
+    </nav>
   )
 }
 

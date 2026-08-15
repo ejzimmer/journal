@@ -8,7 +8,8 @@ import { useState } from "react"
 
 import "./App.css"
 import { Loading } from "./shared/loading"
-import { AppShell } from "./AppShell"
+import { TopNav } from "./TopNav"
+import { AppRoutes } from "./AppRoutes"
 
 export function App() {
   const [isLoading, setIsLoading] = useState(true)
@@ -49,5 +50,10 @@ export function App() {
     )
   }
 
-  return <AppShell />
+  return (
+    <div className="main-content">
+      <TopNav />
+      <AppRoutes />
+    </div>
+  )
 }
