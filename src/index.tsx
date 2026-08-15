@@ -3,6 +3,7 @@ import { createRoot } from "react-dom/client"
 
 import "./index.css"
 import { App } from "./App"
+import { MockApp } from "./MockApp"
 
 import { initializeApp } from "firebase/app"
 import { getDatabase } from "firebase/database"
@@ -38,7 +39,7 @@ root.render(
   <React.StrictMode>
     <FirebaseContext.Provider value={contextValue}>
       <BrowserRouter>
-        <App />
+        {isMockFirebaseEnabled() ? <MockApp /> : <App />}
       </BrowserRouter>
     </FirebaseContext.Provider>
   </React.StrictMode>

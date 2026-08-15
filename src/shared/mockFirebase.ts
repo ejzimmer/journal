@@ -21,15 +21,6 @@ function cloneDeep<T>(value: T): T {
   return JSON.parse(JSON.stringify(value))
 }
 
-/**
- * Returns a new root with `value` written at `path`, rebuilding (shallow
- * copying) every object along the way rather than mutating in place.
- * Consumers read the tree through React state, which compares by
- * reference (useMemo dependency arrays, etc.) — mutating nested objects in
- * place would leave `data.work`'s identity unchanged even after a write to
- * `data.work.someList`, so downstream memoization would never see the
- * update.
- */
 function setAtPath(
   root: Record<string, unknown>,
   path: string,
@@ -56,8 +47,9 @@ function setAtPath(
     node[last] = value
   }
 
-  // RTDB doesn't store empty nodes: an object left with no children after a
-  // delete disappears too, same as its parents, all the way up.
+  // Firebase's Realtime Database doesn't store empty nodes: an object left
+  // with no children after a delete disappears too, same as its parents,
+  // all the way up.
   for (let i = segments.length - 1; i >= 0; i--) {
     const parent = { ...chain[i] }
     if (isDelete && Object.keys(node).length === 0) {
@@ -71,13 +63,6 @@ function setAtPath(
   return node
 }
 
-/**
- * In-memory stand-in for FirebaseContext, so the app can be driven (locally
- * or in a browser test) without touching the real Firebase project. Mirrors
- * onValue's "listeners on an ancestor or descendant of the written path also
- * fire" behaviour, since several components subscribe at different depths
- * of the same tree.
- */
 export function createMockFirebaseContext(
   seed: Record<string, unknown> = {},
 ): ContextType {
@@ -139,12 +124,7 @@ export function createMockFirebaseContext(
         loading: true,
       })
       // Real Firebase's onValue only invokes its callback when the resolved
-      // value actually differs from what it last delivered — writing back
-      // data that resolves to the same value (as the Work tab's hourly
-      // reorder-in-place does) does not re-fire listeners. Without this,
-      // every write would produce a new object reference regardless of
-      // content, and effects that depend on that reference (and themselves
-      // write on every run) would loop forever.
+      // value actually differs from what it last delivered.
       const lastDelivered = useRef<{ initialized: boolean; json?: string }>({
         initialized: false,
       })

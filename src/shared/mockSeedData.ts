@@ -50,11 +50,6 @@ const doneTask = task(done.id, "task-done-1", "See how Done looks", 0, {
   status: "done",
 })
 
-/**
- * Seeds only the Work tab for now — other tabs start empty, same as a real
- * new account. Extend this as more tabs get exercised without hitting the
- * real Firebase project.
- */
 export const mockSeedData = {
   [WORK_KEY]: {
     [backlog.id]: { ...backlog, items: { [backlogTask.id]: backlogTask } },
