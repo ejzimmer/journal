@@ -28,8 +28,8 @@ describe("Subtasks", () => {
 
   it("renders subtask descriptions in order, separated by commas", () => {
     renderWithContext({
-      b: { id: "b", description: "create PR", position: 1 },
-      a: { id: "a", description: "test", position: 0 },
+      b: { id: "b", description: "create PR" },
+      a: { id: "a", description: "test" },
     })
 
     const list = screen.getByText("[", { exact: false })
@@ -38,7 +38,7 @@ describe("Subtasks", () => {
 
   it("deletes a subtask when it's clicked", async () => {
     const user = userEvent.setup()
-    const subtask = { id: "a", description: "test", position: 0 }
+    const subtask = { id: "a", description: "test" }
     renderWithContext({ a: subtask })
 
     await user.click(screen.getByRole("button", { name: "test" }))

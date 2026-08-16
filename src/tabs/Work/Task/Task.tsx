@@ -14,7 +14,7 @@ import { WorktreeStamp } from "./WorktreeStamp"
 import { AddWorktree } from "./AddWorktree"
 import { Worktree } from "../types"
 import { Subtasks } from "./Subtasks"
-import { SubtaskControls } from "./SubtaskControls"
+import { AddSubtask } from "./AddSubtask"
 
 type TaskProps = {
   task: WorkTask
@@ -125,7 +125,7 @@ export function Task({ task, path, dragHandle }: TaskProps) {
         />
 
         {!task.worktree && <AddWorktree onChange={onChangeWorktree} />}
-        <SubtaskControls subtasks={task.subtasks} path={subtasksPath} />
+        <AddSubtask subtasks={task.subtasks} path={subtasksPath} />
       </div>
     </DraggableListItem>
   )

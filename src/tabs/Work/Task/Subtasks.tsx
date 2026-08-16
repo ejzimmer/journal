@@ -17,8 +17,8 @@ export function Subtasks({ subtasks, path }: SubtasksProps) {
     return null
   }
 
-  const sorted = Object.values(subtasks).toSorted(
-    (a, b) => a.position - b.position,
+  const sorted = Object.values(subtasks).toSorted((a, b) =>
+    a.id.localeCompare(b.id),
   )
 
   return (

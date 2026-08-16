@@ -14,9 +14,6 @@ ol.work-lists > li {
   --line-colour: hsl(200 90% 80%);
   --line-gap: 39px;
   --line-width: 1px;
-  /* Shadows Into Light sits its baseline higher in its line box than the
-     line-height alone accounts for; this pulls text (and the controls that
-     need to match it) down so the baseline lands on the ruled line. */
   --baseline-nudge: -0.42em;
   display: flex;
   flex-direction: column;
@@ -190,14 +187,20 @@ ol.work-lists > li {
         }
       }
 
-      form.add-subtask input {
-        font: inherit;
-        border: none;
-        background: transparent;
-        width: 8em;
+      form.add-subtask {
+        display: flex;
+        align-items: center;
+        gap: 4px;
 
-        &:focus {
-          outline: none;
+        input {
+          font: inherit;
+          border: none;
+          background: transparent;
+          width: 8em;
+
+          &:focus {
+            outline: none;
+          }
         }
       }
     }

@@ -31,10 +31,10 @@ describe("StandardChecklistButton", () => {
     await user.click(screen.getByRole("button", { name: "Add standard checklist" }))
 
     expect(mockContext.addItem).toHaveBeenCalledTimes(STANDARD_CHECKLIST.length)
-    STANDARD_CHECKLIST.forEach((description, index) => {
+    STANDARD_CHECKLIST.forEach((description) => {
       expect(mockContext.addItem).toHaveBeenCalledWith(
         "work/list-1/items/task-1/subtasks",
-        { description, position: index },
+        { description },
       )
     })
   })
@@ -42,8 +42,8 @@ describe("StandardChecklistButton", () => {
   it("skips items that already exist, case-insensitively", async () => {
     const user = userEvent.setup()
     renderWithContext({
-      a: { id: "a", description: "Test", position: 0 },
-      b: { id: "b", description: "build", position: 1 },
+      a: { id: "a", description: "Test" },
+      b: { id: "b", description: "build" },
     })
 
     await user.click(screen.getByRole("button", { name: "Add standard checklist" }))
@@ -59,17 +59,17 @@ describe("StandardChecklistButton", () => {
     )
   })
 
-  it("is disabled once every standard item already exists", () => {
+  it("isn't rendered once every standard item already exists", () => {
     const subtasks = Object.fromEntries(
       STANDARD_CHECKLIST.map((description, index) => [
         `id-${index}`,
-        { id: `id-${index}`, description, position: index },
+        { id: `id-${index}`, description },
       ]),
     )
     renderWithContext(subtasks)
 
     expect(
-      screen.getByRole("button", { name: "Add standard checklist" }),
-    ).toBeDisabled()
+      screen.queryByRole("button", { name: "Add standard checklist" }),
+    ).not.toBeInTheDocument()
   })
 })
