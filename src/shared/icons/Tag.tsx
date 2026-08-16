@@ -9,7 +9,7 @@ export function TagIcon({
       <path
         fillRule="evenodd"
         clipRule="evenodd"
-        d="M2,9 L6,3 L22,3 L22,15 L6,15 Z M8.3,9 a1.8,1.8 0 1,0 -3.6,0 a1.8,1.8 0 1,0 3.6,0 Z"
+        d="M1.45,9 L5.45,3 L21.45,3 L21.45,15 L5.45,15 Z M7.75,9 a1.8,1.8 0 1,0 -3.6,0 a1.8,1.8 0 1,0 3.6,0 Z"
       />
     </svg>
   )
