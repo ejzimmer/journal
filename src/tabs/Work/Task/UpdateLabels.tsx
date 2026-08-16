@@ -33,7 +33,7 @@ export function UpdateLabels({
       aria-label="Add label"
       onClick={() => setAddingLabel(true)}
     >
-      <TagIcon width="20px" />
+      <TagIcon width="28px" />
     </button>
   )
 }
