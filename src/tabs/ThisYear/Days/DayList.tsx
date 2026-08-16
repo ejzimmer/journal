@@ -125,9 +125,16 @@ const getWeeklyBalance = (balances: Balance[]): Required<Balance>[] => {
   const weeklyBalances = balances.filter(
     (b, index) => index % 7 === 6 && b.balance,
   ) as Required<Balance>[]
-  const finalBalance = balances.at(-2)
-  return balances.length % 7 !== 6 && typeof finalBalance?.balance === "number"
-    ? [...weeklyBalances, finalBalance as Required<Balance>]
+
+  const lastCompleteIndex = balances.findLastIndex(
+    (b) => typeof b.balance === "number",
+  )
+  const lastComplete = balances[lastCompleteIndex] as
+    | Required<Balance>
+    | undefined
+
+  return lastComplete && lastCompleteIndex % 7 !== 6
+    ? [...weeklyBalances, lastComplete]
     : weeklyBalances
 }
 
@@ -201,12 +208,16 @@ function Filters({ filters, onChange }: FiltersProps) {
 }
 
 function WeeklyCalories({ balances }: { balances: Required<Balance>[] }) {
+  const weekBalances = balances.map((balance) => balance.balance)
+  const highestBalance = Math.max(...weekBalances)
+  const lowestBalance = Math.min(...weekBalances)
+
   return (
     <div className="weekly">
       {balances.map((balance, index) => (
         <div className="week-container" key={index}>
           <div
-            className="week"
+            className={getWeekClass({ balance, highestBalance, lowestBalance })}
             style={{ width: (balance.balance / STARTING_BALANCE) * 100 + "%" }}
           />
           <div className="week-hovertext">
@@ -216,4 +227,22 @@ function WeeklyCalories({ balances }: { balances: Required<Balance>[] }) {
       ))}
     </div>
   )
+}
+
+const getWeekClass = ({
+  balance,
+  highestBalance,
+  lowestBalance,
+}: {
+  balance: Required<Balance>
+  highestBalance: number
+  lowestBalance: number
+}) => {
+  if (balance.balance === highestBalance) {
+    return "week week-highest"
+  }
+  if (balance.balance === lowestBalance) {
+    return "week week-lowest"
+  }
+  return "week"
 }
