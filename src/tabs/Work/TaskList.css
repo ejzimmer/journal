@@ -80,6 +80,16 @@ ol.work-lists > li {
       opacity: 0.4;
     }
 
+    .worktree-marker {
+      position: absolute;
+      right: calc(100% + 4px);
+      top: 50%;
+      translate: 0 -50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
     .drag-handle {
       opacity: 0;
     }
@@ -93,6 +103,11 @@ ol.work-lists > li {
           opacity: 1;
         }
       }
+    }
+
+    /* the drag handle clutters the fanned-out menu, so hide it while one is open */
+    &:has(.worktree-menu:popover-open) .drag-handle {
+      opacity: 0;
     }
 
     .task-content {

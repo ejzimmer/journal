@@ -10,6 +10,9 @@ import { Labels } from "./Labels"
 import { UpdateLabels } from "./UpdateLabels"
 import { DueDate } from "./DueDate"
 import { EditableText } from "../../../shared/controls/EditableText"
+import { WorktreeStamp } from "./WorktreeStamp"
+import { AddWorktree } from "./AddWorktree"
+import { Worktree } from "../types"
 
 type TaskProps = {
   task: WorkTask
@@ -21,6 +24,15 @@ export function Task({ task, path, dragHandle }: TaskProps) {
   const storageContext = useContext(FirebaseContext)
   if (!storageContext) {
     throw new Error("missing firebase context")
+  }
+
+  const onChangeWorktree = (newWorktree?: Worktree) => {
+    if (newWorktree) {
+      storageContext.updateItem(path, { ...task, worktree: newWorktree })
+    } else {
+      const { worktree, ...taskWithoutWorktree } = task
+      storageContext.updateItem(path, taskWithoutWorktree)
+    }
   }
 
   return (
@@ -37,6 +49,11 @@ export function Task({ task, path, dragHandle }: TaskProps) {
       className={`task status-${task.status}`}
       dragHandle={dragHandle}
     >
+      {task.worktree && (
+        <div className="worktree-marker">
+          <WorktreeStamp worktree={task.worktree} onChange={onChangeWorktree} />
+        </div>
+      )}
       <div style={{ alignSelf: "start", marginBlockStart: "4px" }}>
         <Checkbox
           isChecked={task.status === "done"}
@@ -101,6 +118,8 @@ export function Task({ task, path, dragHandle }: TaskProps) {
             })
           }}
         />
+
+        {!task.worktree && <AddWorktree onChange={onChangeWorktree} />}
       </div>
     </DraggableListItem>
   )
