@@ -6,14 +6,20 @@ import { Subtask } from "../types"
 type AddSubtaskProps = {
   subtasks?: Record<string, Subtask>
   path: string
+  onToggle?: (adding: boolean) => void
 }
 
-export function AddSubtask({ subtasks, path }: AddSubtaskProps) {
+export function AddSubtask({ subtasks, path, onToggle }: AddSubtaskProps) {
   const [adding, setAdding] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
   const storageContext = useContext(FirebaseContext)
   if (!storageContext) {
     throw new Error("missing firebase context")
+  }
+
+  const updateAdding = (value: boolean) => {
+    setAdding(value)
+    onToggle?.(value)
   }
 
   const handleSubmit = (event: FormEvent) => {
@@ -23,20 +29,20 @@ export function AddSubtask({ subtasks, path }: AddSubtaskProps) {
       const position = Object.keys(subtasks ?? {}).length
       storageContext.addItem(path, { description, position })
     }
-    setAdding(false)
+    updateAdding(false)
   }
 
   const handleBlur = () => {
     requestAnimationFrame(() => {
       if (!inputRef.current?.value) {
-        setAdding(false)
+        updateAdding(false)
       }
     })
   }
 
   const handleKeyDown = (event: KeyboardEvent) => {
     if (event.key === "Escape") {
-      setAdding(false)
+      updateAdding(false)
     }
   }
 
@@ -46,7 +52,7 @@ export function AddSubtask({ subtasks, path }: AddSubtaskProps) {
         type="button"
         className="add-metadata ghost"
         aria-label="Add subtask"
-        onClick={() => setAdding(true)}
+        onClick={() => updateAdding(true)}
       >
         <PlusIcon width="16px" />
       </button>
