@@ -134,7 +134,8 @@ ol.work-lists > li {
       > button,
       > form,
       > .due-date,
-      > .subtasks {
+      > .subtasks,
+      > .worktree-menu-anchor {
         margin-block-end: var(--baseline-nudge);
       }
 
@@ -211,6 +212,10 @@ ol.work-lists > li {
       display: inline-flex;
       align-items: center;
       justify-content: center;
+    }
+
+    .worktree-menu-anchor {
+      margin-inline-start: -8px;
     }
   }
 
