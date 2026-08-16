@@ -32,6 +32,14 @@
       }
     }
 
+    .week-highest {
+      background: linear-gradient(hsl(4 90% 58%), hsl(4 90% 44%));
+    }
+
+    .week-lowest {
+      background: linear-gradient(hsl(210 90% 58%), hsl(210 90% 44%));
+    }
+
     .week-hovertext {
       position: absolute;
       opacity: 0;
