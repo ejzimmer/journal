@@ -14,6 +14,7 @@ ol.work-lists > li {
   --line-colour: hsl(200 90% 80%);
   --line-gap: 39px;
   --line-width: 1px;
+  --baseline-nudge: -0.42em;
   display: flex;
   flex-direction: column;
   min-width: 300px;
@@ -89,6 +90,10 @@ ol.work-lists > li {
       height: 40px;
     }
 
+    .checkbox-container {
+      margin-block-end: var(--baseline-nudge);
+    }
+
     &.status-done {
       opacity: 0.4;
     }
@@ -139,6 +144,14 @@ ol.work-lists > li {
         align-self: end;
       }
 
+      > button,
+      > form,
+      > .due-date,
+      > .subtasks,
+      > .worktree-menu-anchor {
+        margin-block-end: var(--baseline-nudge);
+      }
+
       .due-date {
         color: var(--body-colour-light);
         border: 2px solid;
@@ -165,11 +178,69 @@ ol.work-lists > li {
           top: 6px;
         }
       }
+
+      .subtasks {
+        color: var(--body-colour-mid);
+
+        button.subtask {
+          all: unset;
+          font: inherit;
+          color: inherit;
+          cursor: pointer;
+
+          &:hover,
+          &:focus-visible {
+            color: var(--action-colour);
+            text-decoration: underline dotted;
+          }
+
+          &:focus-visible {
+            outline: 1px solid currentColor;
+            outline-offset: 2px;
+          }
+        }
+      }
+
+      form.add-subtask {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+
+        input {
+          font: inherit;
+          border: none;
+          background: transparent;
+          width: 8em;
+
+          &:focus {
+            outline: none;
+          }
+        }
+      }
     }
 
     button.add-metadata {
       margin-inline-start: -8px;
       opacity: 0;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    button.add-metadata[aria-label="Add label"] {
+      margin-inline-start: -12px;
+    }
+
+    button.add-metadata[aria-label="Add subtask"] {
+      margin-inline-start: -10px;
+    }
+
+    .task-content .worktree-menu-anchor {
+      margin-inline-start: -8px;
+
+      button.stamp-trigger {
+        padding: 6px;
+      }
     }
   }
 
@@ -179,7 +250,7 @@ ol.work-lists > li {
 }
 
 .inline {
-  margin-block-end: -0.3em;
+  margin-block-end: var(--baseline-nudge, -0.3em);
 }
 
 input.inline {

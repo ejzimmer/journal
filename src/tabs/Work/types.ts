@@ -20,6 +20,11 @@ export type StatusKey = (typeof STATUS_KEYS)[number]
 export const WORKTREES = ["wt1", "wt2", "wt3", "wt4"] as const
 export type Worktree = (typeof WORKTREES)[number]
 
+export type Subtask = {
+  id: string
+  description: string
+}
+
 export type WorkTask = {
   id: string
   description: string
@@ -31,6 +36,17 @@ export type WorkTask = {
   position: number
   labels?: Label[]
   worktree?: Worktree
+  subtasks?: Record<string, Subtask>
 }
 
 export const WORK_KEY = "work"
+
+export const STANDARD_CHECKLIST = [
+  "test",
+  "review",
+  "PR",
+  "QA",
+  "build",
+  "mark PR ready",
+  "approvals",
+]

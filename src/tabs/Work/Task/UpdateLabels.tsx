@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { PlusIcon } from "../../../shared/icons/Plus"
+import { TagIcon } from "../../../shared/icons/Tag"
 import { LabelsControl } from "../LabelsControl"
 import { Label } from "../types"
 
@@ -28,8 +28,12 @@ export function UpdateLabels({
       label=""
     />
   ) : (
-    <button className="add-metadata ghost" onClick={() => setAddingLabel(true)}>
-      <PlusIcon width="16px" />
+    <button
+      className="add-metadata ghost"
+      aria-label="Add label"
+      onClick={() => setAddingLabel(true)}
+    >
+      <TagIcon width="28px" />
     </button>
   )
 }

@@ -13,6 +13,8 @@ import { EditableText } from "../../../shared/controls/EditableText"
 import { WorktreeStamp } from "./WorktreeStamp"
 import { AddWorktree } from "./AddWorktree"
 import { Worktree } from "../types"
+import { Subtasks } from "./Subtasks"
+import { AddSubtask } from "./AddSubtask"
 
 type TaskProps = {
   task: WorkTask
@@ -35,6 +37,8 @@ export function Task({ task, path, dragHandle }: TaskProps) {
     }
   }
 
+  const subtasksPath = `${path}/${task.id}/subtasks`
+
   return (
     <DraggableListItem
       getData={() => ({
@@ -54,7 +58,7 @@ export function Task({ task, path, dragHandle }: TaskProps) {
           <WorktreeStamp worktree={task.worktree} onChange={onChangeWorktree} />
         </div>
       )}
-      <div style={{ alignSelf: "start", marginBlockStart: "4px" }}>
+      <div className="checkbox-container">
         <Checkbox
           isChecked={task.status === "done"}
           onChange={(isChecked) => {
@@ -84,6 +88,7 @@ export function Task({ task, path, dragHandle }: TaskProps) {
             textDecoration: task.status === "done" ? "line-through" : "none",
           }}
         />
+        <Subtasks subtasks={task.subtasks} path={subtasksPath} />
         <Labels
           labels={task.labels}
           onRemoveLabel={(label) => {
@@ -120,6 +125,7 @@ export function Task({ task, path, dragHandle }: TaskProps) {
         />
 
         {!task.worktree && <AddWorktree onChange={onChangeWorktree} />}
+        <AddSubtask subtasks={task.subtasks} path={subtasksPath} />
       </div>
     </DraggableListItem>
   )
