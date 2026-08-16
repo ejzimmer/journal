@@ -25,10 +25,6 @@ export function Combobox<T extends OptionType>({
   autoFocus,
 }: ComboboxProps<T>) {
   const inputId = useId()
-  // A CSS anchor-name must be unique per combobox instance - reusing the
-  // same name across instances (which happens whenever more than one
-  // combobox is mounted on the page at once) makes the browser anchor the
-  // popover to an arbitrary one of them instead of its own trigger.
   const anchorName = `--combobox-${inputId.replace(/[^a-zA-Z0-9]/g, "")}`
   const containerRef = useRef<HTMLDivElement>(null)
 

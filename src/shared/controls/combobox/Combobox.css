@@ -8,11 +8,6 @@
   position: relative;
 
   [popover] {
-    /* The default UA position for a shown [popover] here computes as
-       absolute rather than fixed, which breaks position-anchor entirely
-       (it silently falls back to an unanchored position). An explicit
-       inset like `top` also overrides position-area's anchor-derived
-       value for that axis and falls back the same way - margin doesn't. */
     position: fixed;
     position-area: end center;
     margin-block-start: 4px;
@@ -43,9 +38,6 @@
       }
     }
 
-    /* Sits on top of the input so only one of the two is ever seen —
-       pointer-events pass through so clicking still focuses the input
-       underneath and opens the popover. */
     .value {
       position: absolute;
       top: 50%;
@@ -54,10 +46,6 @@
       pointer-events: none;
     }
 
-    /* Single-value mode commits on every keystroke rather than waiting for
-       the popover to open, so the input's own text can't be tied to
-       isPopoverOpen alone — hide it outright whenever the value overlay
-       above is the one being shown. */
     &.showing-value input[role="combobox"] {
       border-color: transparent;
       background: transparent;
