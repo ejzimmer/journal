@@ -10,6 +10,7 @@ export type LabelsControlProps = {
   label: string
   hideLabel?: boolean
   isMulti?: boolean
+  autoFocus?: boolean
 }
 
 type LabelOption = {
@@ -47,6 +48,7 @@ export function LabelsControl({
   onChange,
   label,
   isMulti = true,
+  autoFocus,
 }: LabelsControlProps) {
   const labels = useContext(LabelsContext)
   const options: LabelOption[] = useMemo(
@@ -102,6 +104,7 @@ export function LabelsControl({
       Option={Option}
       Value={Option}
       hideSelectedOptions
+      autoFocus={autoFocus}
     />
   )
 }

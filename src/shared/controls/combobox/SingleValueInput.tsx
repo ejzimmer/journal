@@ -9,17 +9,19 @@ export function SingleValueInput<T extends OptionType>({
   children,
   ...searchInputProps
 }: SingleValueInputProps<T>) {
+  const showsValue = !isPopoverOpen && !!(children || value)
+
   return (
-    <div className="single-value-container">
+    <div
+      className={`single-value-container${showsValue ? " showing-value" : ""}`}
+    >
       <SearchInput
         isPopoverOpen={isPopoverOpen}
         value={searchInputValue}
         onChange={onChangeSearchTerm}
         {...searchInputProps}
       />
-      {!isPopoverOpen && (
-        <div className="value">{children ?? value?.label}</div>
-      )}
+      {showsValue && <div className="value">{children ?? value?.label}</div>}
     </div>
   )
 }

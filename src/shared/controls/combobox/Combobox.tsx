@@ -1,4 +1,4 @@
-import React, { useCallback, useId, useRef, useState } from "react"
+import React, { useCallback, useEffect, useId, useRef, useState } from "react"
 import { OptionType, ComboboxProps } from "./types"
 import { usePopoverState } from "./usePopoverState"
 import { SingleValueInput } from "./SingleValueInput"
@@ -22,6 +22,7 @@ export function Combobox<T extends OptionType>({
   label,
   inputSize,
   ariaLabel,
+  autoFocus,
 }: ComboboxProps<T>) {
   const inputId = useId()
   const containerRef = useRef<HTMLDivElement>(null)
@@ -30,6 +31,11 @@ export function Combobox<T extends OptionType>({
   const popoverRef = useRef<HTMLDivElement>(null)
   const { popoverState, hidePopover, showPopover, togglePopover } =
     usePopoverState(popoverRef)
+
+  useEffect(() => {
+    if (autoFocus) showPopover()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   const [searchTerm, setSearchTerm] = useState("")
   const displayedOptions = (

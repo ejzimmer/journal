@@ -242,15 +242,19 @@ form.add-task {
 
     &.transient {
       width: 0;
+      padding: 0;
       overflow: hidden;
       margin-inline-start: 0;
-      transition: width 0.2s;
+      transition:
+        width 0.2s,
+        padding 0.2s;
     }
   }
 
   &:hover button.transient,
   button.transient:focus {
     width: 20px;
+    padding: 2px;
     margin-inline-start: 4px;
   }
 

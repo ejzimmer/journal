@@ -22,11 +22,39 @@
     position: relative;
     anchor-name: --combobox;
 
+    input[role="combobox"] {
+      border: 1px solid black;
+      font-size: inherit;
+      padding-block: 4px;
+      padding-inline: 2px;
+      border-radius: 4px;
+      background: hsl(0 0% 100% / 0.5);
+
+      &:focus-visible {
+        outline: none;
+      }
+    }
+
+    /* Sits on top of the input so only one of the two is ever seen —
+       pointer-events pass through so clicking still focuses the input
+       underneath and opens the popover. */
     .value {
       position: absolute;
       top: 50%;
       left: 8px;
       transform: translateY(-50%);
+      pointer-events: none;
+    }
+
+    /* Single-value mode commits on every keystroke rather than waiting for
+       the popover to open, so the input's own text can't be tied to
+       isPopoverOpen alone — hide it outright whenever the value overlay
+       above is the one being shown. */
+    &.showing-value input[role="combobox"] {
+      border-color: transparent;
+      background: transparent;
+      color: transparent;
+      caret-color: transparent;
     }
   }
 

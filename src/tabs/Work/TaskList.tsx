@@ -121,6 +121,7 @@ export function TaskList({
                 }}
                 label=""
                 isMulti={false}
+                autoFocus
               />
             ) : (
               <>

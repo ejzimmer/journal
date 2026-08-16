@@ -100,7 +100,6 @@ describe("TaskList label", () => {
     renderTaskList(labelledList.id, storageContext)
 
     await user.click(screen.getByRole("button", { name: "Change a11y label" }))
-    await user.click(screen.getByRole("combobox"))
     await user.click(screen.getByRole("option", { name: "urgent" }))
 
     expect(storageContext.updateItem).toHaveBeenCalledWith(
