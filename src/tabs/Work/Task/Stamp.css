@@ -5,36 +5,39 @@
   justify-content: center;
   width: var(--size);
   height: var(--size);
+  padding: 3px;
   border-radius: 50%;
   border: 2px solid var(--ink-colour);
   color: var(--ink-colour);
-  background: color-mix(in srgb, var(--ink-colour) 18%, white);
   font-family: "Special Elite", monospace;
   font-size: 0.65rem;
+  font-weight: 700;
   letter-spacing: 0.02em;
   text-transform: uppercase;
-  mix-blend-mode: multiply;
   user-select: none;
 
   &.wt-1 {
     --ink-colour: hsl(355 70% 40%);
-    rotate: -8deg;
+    --stamp-rotation: -8deg;
   }
   &.wt-2 {
     --ink-colour: hsl(211 75% 35%);
-    rotate: 5deg;
+    --stamp-rotation: 5deg;
   }
   &.wt-3 {
     --ink-colour: hsl(140 55% 28%);
-    rotate: -4deg;
+    --stamp-rotation: -4deg;
   }
   &.wt-4 {
     --ink-colour: hsl(280 50% 38%);
-    rotate: 7deg;
+    --stamp-rotation: 7deg;
   }
   &.blank {
     --ink-colour: hsl(0 0% 45%);
     border-style: dashed;
-    rotate: -3deg;
+  }
+
+  &.rotated {
+    rotate: var(--stamp-rotation, 0deg);
   }
 }

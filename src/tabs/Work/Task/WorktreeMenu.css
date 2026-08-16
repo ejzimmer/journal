@@ -36,9 +36,32 @@ button.stamp-trigger {
   top: anchor(center);
   left: anchor(center);
   translate: -50% -50%;
+
+  &::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    translate: -50% -50%;
+    width: 160px;
+    height: 160px;
+    border-radius: 50%;
+    background: radial-gradient(
+      circle,
+      rgb(255 255 255 / 0.5) 55%,
+      transparent 80%
+    );
+    pointer-events: none;
+  }
+
+  /* half-circle: items only fan out through the right side */
+  &[data-layout="half"] {
+    --angle-step: 60deg;
+  }
 }
 
 .worktree-menu-item {
+  --angle: calc(var(--index) * var(--angle-step, 90deg));
   position: absolute;
   top: 0;
   left: 0;

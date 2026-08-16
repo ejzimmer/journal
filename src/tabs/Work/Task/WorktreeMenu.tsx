@@ -1,8 +1,19 @@
-import { CSSProperties, ReactNode, useId, useRef } from "react"
+import {
+  CSSProperties,
+  ReactNode,
+  useEffect,
+  useId,
+  useRef,
+  useState,
+} from "react"
 import "./WorktreeMenu.css"
 
 // A little rotation on each item so the fanned-out menu doesn't look too rigid.
 const JITTER_DEGREES = [-6, 4, -3, 8]
+
+// Below this much space to the left, the full circle would spill off the
+// page, so the menu switches to a half-circle on the right instead.
+const LEFT_EDGE_THRESHOLD_PX = 90
 
 export type WorktreeMenuOption = {
   key: string
@@ -22,14 +33,37 @@ type WorktreeMenuProps = {
 
 export function WorktreeMenu({ trigger: Trigger, options }: WorktreeMenuProps) {
   const id = useId()
+  const anchorRef = useRef<HTMLSpanElement>(null)
   const popoverRef = useRef<HTMLDivElement>(null)
+  const [layout, setLayout] = useState<"full" | "half">("full")
 
   const close = () => popoverRef.current?.hidePopover()
 
+  useEffect(() => {
+    const popover = popoverRef.current
+    const anchor = anchorRef.current
+    if (!popover || !anchor) return
+
+    const onBeforeToggle = (event: Event) => {
+      if ((event as ToggleEvent).newState !== "open") return
+      const { left } = anchor.getBoundingClientRect()
+      setLayout(left < LEFT_EDGE_THRESHOLD_PX ? "half" : "full")
+    }
+
+    popover.addEventListener("beforetoggle", onBeforeToggle)
+    return () => popover.removeEventListener("beforetoggle", onBeforeToggle)
+  }, [])
+
   return (
-    <span className="worktree-menu-anchor">
+    <span className="worktree-menu-anchor" ref={anchorRef}>
       <Trigger popoverTarget={id} className="stamp-trigger" />
-      <div id={id} ref={popoverRef} className="worktree-menu" popover="auto">
+      <div
+        id={id}
+        ref={popoverRef}
+        className="worktree-menu"
+        data-layout={layout}
+        popover="auto"
+      >
         {options.map(({ key, label, content, className, onSelect }, index) => (
           <button
             key={key}
@@ -37,7 +71,7 @@ export function WorktreeMenu({ trigger: Trigger, options }: WorktreeMenuProps) {
             className={`worktree-menu-item ${className ?? ""}`}
             style={
               {
-                "--angle": `${index * 90}deg`,
+                "--index": index,
                 "--jitter": `${JITTER_DEGREES[index]}deg`,
               } as CSSProperties
             }
