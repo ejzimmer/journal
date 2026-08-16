@@ -1,3 +1,9 @@
+.combobox-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
 .combobox {
   position: relative;
 
@@ -26,10 +32,9 @@
     position: relative;
 
     input[role="combobox"] {
-      border: 1px solid black;
+      border: 1px solid var(--border-colour);
       font-size: inherit;
-      padding-block: 4px;
-      padding-inline: 2px;
+      padding: 8px;
       border-radius: 4px;
       background: hsl(0 0% 100% / 0.5);
 

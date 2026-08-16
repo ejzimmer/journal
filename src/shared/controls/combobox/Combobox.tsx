@@ -127,7 +127,7 @@ export function Combobox<T extends OptionType>({
   }
 
   return (
-    <div>
+    <div className="combobox-field">
       {label && (
         <label className="label" htmlFor={inputId}>
           {label}
