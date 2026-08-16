@@ -76,6 +76,10 @@ ol.work-lists > li {
       height: 40px;
     }
 
+    .checkbox-container {
+      margin-block-end: -0.3em;
+    }
+
     &.status-done {
       opacity: 0.4;
     }
@@ -124,6 +128,12 @@ ol.work-lists > li {
         display: flex;
         gap: 2px;
         align-self: end;
+      }
+
+      > button,
+      > form,
+      > .due-date {
+        margin-block-end: -0.3em;
       }
 
       .due-date {

@@ -59,7 +59,7 @@ export function Task({ task, path, dragHandle }: TaskProps) {
           <WorktreeStamp worktree={task.worktree} onChange={onChangeWorktree} />
         </div>
       )}
-      <div style={{ alignSelf: "start", marginBlockStart: "4px" }}>
+      <div className="checkbox-container">
         <Checkbox
           isChecked={task.status === "done"}
           onChange={(isChecked) => {
