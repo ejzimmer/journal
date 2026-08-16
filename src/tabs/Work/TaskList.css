@@ -104,6 +104,11 @@ ol.work-lists > li {
       }
     }
 
+    /* the drag handle clutters the fanned-out menu, so hide it while one is open */
+    &:has(.worktree-menu:popover-open) .drag-handle {
+      opacity: 0;
+    }
+
     .task-content {
       display: flex;
       flex-grow: 1;

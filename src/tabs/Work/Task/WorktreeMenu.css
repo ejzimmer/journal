@@ -4,12 +4,18 @@
 }
 
 button.stamp-trigger {
+  appearance: none;
   border: 0;
   padding: 0;
   height: auto;
   line-height: 1;
   background: none;
   border-radius: 50%;
+
+  &:hover,
+  &:focus-visible {
+    background: none;
+  }
 
   &:focus-visible {
     outline: 2px solid black;
@@ -48,7 +54,7 @@ button.stamp-trigger {
     border-radius: 50%;
     background: radial-gradient(
       circle,
-      rgb(255 255 255 / 0.5) 55%,
+      rgb(255 255 255 / 0.85) 55%,
       transparent 80%
     );
     pointer-events: none;
@@ -62,6 +68,7 @@ button.stamp-trigger {
 
 .worktree-menu-item {
   --angle: calc(var(--index) * var(--angle-step, 90deg));
+  appearance: none;
   position: absolute;
   top: 0;
   left: 0;
@@ -79,6 +86,7 @@ button.stamp-trigger {
   &:hover,
   &:focus-visible {
     opacity: 1;
+    background: none;
   }
 
   &:focus-visible {

@@ -49,11 +49,11 @@ export function Task({ task, path, dragHandle }: TaskProps) {
       className={`task status-${task.status}`}
       dragHandle={dragHandle}
     >
-      <div className="worktree-marker">
-        {task.worktree && (
+      {task.worktree && (
+        <div className="worktree-marker">
           <WorktreeStamp worktree={task.worktree} onChange={onChangeWorktree} />
-        )}
-      </div>
+        </div>
+      )}
       <div style={{ alignSelf: "start", marginBlockStart: "4px" }}>
         <Checkbox
           isChecked={task.status === "done"}
