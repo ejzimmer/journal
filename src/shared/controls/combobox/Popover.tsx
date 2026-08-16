@@ -4,6 +4,7 @@ import { isSelected } from "./utils"
 type PopoverProps<T> = {
   popoverRef: React.RefObject<HTMLDivElement | null>
   popoverId: string
+  anchorName: string
   options: T[]
   selected?: T | T[]
   onClick: (option: T) => void
@@ -16,6 +17,7 @@ type PopoverProps<T> = {
 export function Popover<T extends OptionType>({
   popoverRef,
   popoverId,
+  anchorName,
   options,
   selected,
   onClick,
@@ -23,7 +25,13 @@ export function Popover<T extends OptionType>({
   Option,
 }: PopoverProps<T>) {
   return (
-    <div ref={popoverRef} popover="manual" data-testid="popover" id={popoverId}>
+    <div
+      ref={popoverRef}
+      popover="manual"
+      data-testid="popover"
+      id={popoverId}
+      style={{ positionAnchor: anchorName } as React.CSSProperties}
+    >
       {options.length ? (
         <ul className="options">
           {options.map((option) => (

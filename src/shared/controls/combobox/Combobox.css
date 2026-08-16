@@ -1,11 +1,15 @@
 .combobox {
   position: relative;
-  anchor-scope: --combobox;
 
   [popover] {
-    position-anchor: --combobox;
+    /* The default UA position for a shown [popover] here computes as
+       absolute rather than fixed, which breaks position-anchor entirely
+       (it silently falls back to an unanchored position). An explicit
+       inset like `top` also overrides position-area's anchor-derived
+       value for that axis and falls back the same way - margin doesn't. */
+    position: fixed;
     position-area: end center;
-    top: 4px;
+    margin-block-start: 4px;
     min-width: 100%;
   }
 
@@ -20,7 +24,6 @@
 
   .single-value-container {
     position: relative;
-    anchor-name: --combobox;
 
     input[role="combobox"] {
       border: 1px solid black;
@@ -60,7 +63,6 @@
 
   .multi-value-container {
     position: relative;
-    anchor-name: --combobox;
 
     input {
       background: transparent;
