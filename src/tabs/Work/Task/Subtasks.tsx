@@ -28,7 +28,7 @@ export function Subtasks({ subtasks, path }: SubtasksProps) {
         <span key={subtask.id}>
           <button
             type="button"
-            className="subtask ghost"
+            className="subtask"
             onClick={() => storageContext.deleteItem(path, subtask)}
           >
             {subtask.description}
