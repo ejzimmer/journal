@@ -38,7 +38,7 @@ export function Book({ book, path, author }: BookProps) {
 
   const updateMedium = () => {
     const medium =
-      book.medium === "🎧" ? "📖" : book.medium === "📖" ? null : "🎧"
+      book.medium == null ? "📖" : book.medium === "📖" ? "🎧" : null
     storageContext.updateItem<BookDetails>(path, {
       ...book,
       medium,
