@@ -34,7 +34,7 @@ export function WorktreeStamp({ worktree, onChange }: WorktreeStampProps) {
           {...props}
           aria-label={`Change worktree, currently ${worktree.toUpperCase()}`}
         >
-          <Stamp worktree={worktree} rotated />
+          <Stamp worktree={worktree} />
         </button>
       )}
       options={options}

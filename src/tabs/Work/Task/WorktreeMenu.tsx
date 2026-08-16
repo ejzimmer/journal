@@ -8,7 +8,8 @@ import {
 } from "react"
 import "./WorktreeMenu.css"
 
-// A little rotation on each item so the fanned-out menu doesn't look too rigid.
+// Starting tilt for each item (by position), so they don't all fly out
+// from the same angle when the menu opens.
 const JITTER_DEGREES = [-6, 4, -3, 8]
 
 // Below this much space to the left, the full circle would spill off the

@@ -10,7 +10,7 @@ describe("AddWorktree", () => {
 
     await user.click(screen.getByRole("button", { name: "Add worktree stamp" }))
 
-    ;["WT-1", "WT-2", "WT-3", "WT-4"].forEach((worktree) => {
+    ;["WT1", "WT2", "WT3", "WT4"].forEach((worktree) => {
       expect(
         screen.getByRole("button", {
           name: `Add ${worktree} stamp`,
@@ -20,9 +20,9 @@ describe("AddWorktree", () => {
     })
 
     await user.click(
-      screen.getByRole("button", { name: "Add WT-3 stamp", hidden: true }),
+      screen.getByRole("button", { name: "Add WT3 stamp", hidden: true }),
     )
 
-    expect(onChange).toHaveBeenCalledWith("wt-3")
+    expect(onChange).toHaveBeenCalledWith("wt3")
   })
 })

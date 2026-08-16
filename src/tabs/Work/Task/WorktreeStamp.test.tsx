@@ -6,26 +6,26 @@ describe("WorktreeStamp", () => {
   it("renders the trigger, shows the other worktrees and a remove option when clicked, and calls onChange when an option is chosen", async () => {
     const user = userEvent.setup()
     const onChange = jest.fn()
-    render(<WorktreeStamp worktree="wt-2" onChange={onChange} />)
+    render(<WorktreeStamp worktree="wt2" onChange={onChange} />)
 
     const trigger = screen.getByRole("button", {
-      name: "Change worktree, currently WT-2",
+      name: "Change worktree, currently WT2",
     })
     expect(trigger).toBeInTheDocument()
 
     await user.click(trigger)
 
     expect(
-      screen.getByRole("button", { name: "Move to WT-1", hidden: true }),
+      screen.getByRole("button", { name: "Move to WT1", hidden: true }),
     ).toBeInTheDocument()
     expect(
-      screen.queryByRole("button", { name: "Move to WT-2", hidden: true }),
+      screen.queryByRole("button", { name: "Move to WT2", hidden: true }),
     ).not.toBeInTheDocument()
     expect(
-      screen.getByRole("button", { name: "Move to WT-3", hidden: true }),
+      screen.getByRole("button", { name: "Move to WT3", hidden: true }),
     ).toBeInTheDocument()
     expect(
-      screen.getByRole("button", { name: "Move to WT-4", hidden: true }),
+      screen.getByRole("button", { name: "Move to WT4", hidden: true }),
     ).toBeInTheDocument()
     expect(
       screen.getByRole("button", {
@@ -35,16 +35,16 @@ describe("WorktreeStamp", () => {
     ).toBeInTheDocument()
 
     await user.click(
-      screen.getByRole("button", { name: "Move to WT-3", hidden: true }),
+      screen.getByRole("button", { name: "Move to WT3", hidden: true }),
     )
 
-    expect(onChange).toHaveBeenCalledWith("wt-3")
+    expect(onChange).toHaveBeenCalledWith("wt3")
   })
 
   it("calls onChange with undefined when remove is clicked", async () => {
     const user = userEvent.setup()
     const onChange = jest.fn()
-    render(<WorktreeStamp worktree="wt-2" onChange={onChange} />)
+    render(<WorktreeStamp worktree="wt2" onChange={onChange} />)
 
     await user.click(
       screen.getByRole("button", {

@@ -17,7 +17,7 @@ export type Label = {
 export const STATUS_KEYS = ["not_started", "done"] as const
 export type StatusKey = (typeof STATUS_KEYS)[number]
 
-export const WORKTREES = ["wt-1", "wt-2", "wt-3", "wt-4"] as const
+export const WORKTREES = ["wt1", "wt2", "wt3", "wt4"] as const
 export type Worktree = (typeof WORKTREES)[number]
 
 export type WorkTask = {
