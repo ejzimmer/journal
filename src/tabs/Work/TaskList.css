@@ -214,8 +214,12 @@ ol.work-lists > li {
       justify-content: center;
     }
 
-    .worktree-menu-anchor {
+    .task-content .worktree-menu-anchor {
       margin-inline-start: -8px;
+
+      button.stamp-trigger {
+        padding: 6px;
+      }
     }
   }
 
