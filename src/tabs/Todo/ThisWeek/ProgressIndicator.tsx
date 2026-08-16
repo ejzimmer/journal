@@ -29,7 +29,7 @@ export function ProgressIndicator({
         }}
       />
       {remainder > 0 && <span className="remainder">+{remainder}</span>}
-      {completedList && (
+      {numberDone > 0 && (
         <ol className="dates-popover">
           {completedList.map(
             (date) => date && <li key={date}>{dateToWeekday(date)}</li>,
