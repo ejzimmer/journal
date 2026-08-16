@@ -50,6 +50,7 @@ ol.work-lists > li {
     list-style-type: none;
     margin-block: 0;
     padding: 0;
+    padding-inline-start: 40px;
     background: repeating-linear-gradient(
       transparent,
       transparent var(--line-gap),
@@ -81,12 +82,13 @@ ol.work-lists > li {
     }
 
     .worktree-marker {
-      order: -1;
+      position: absolute;
+      right: 100%;
+      top: 50%;
+      translate: 0 -50%;
       display: flex;
       align-items: center;
       justify-content: center;
-      width: 32px;
-      flex-shrink: 0;
     }
 
     .drag-handle {
