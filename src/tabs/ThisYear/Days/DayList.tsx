@@ -133,8 +133,6 @@ const getWeeklyBalance = (balances: Balance[]): Required<Balance>[] => {
     | Required<Balance>
     | undefined
 
-  // only add a bar for the current, incomplete week - if the most recent day
-  // with a balance falls on a week boundary, it's already in weeklyBalances
   return lastComplete && lastCompleteIndex % 7 !== 6
     ? [...weeklyBalances, lastComplete]
     : weeklyBalances

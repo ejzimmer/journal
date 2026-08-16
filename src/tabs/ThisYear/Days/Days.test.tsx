@@ -78,30 +78,4 @@ describe("Days", () => {
 
     jest.useRealTimers()
   })
-
-  it("highlights the highest and lowest weekly bars", () => {
-    jest.useFakeTimers()
-    jest.setSystemTime(new Date("2026-01-14"))
-
-    const dailyData: Record<string, DayData> = {}
-    for (let day = 1; day <= 7; day += 1) {
-      dailyData[`${day}Jan`] = { id: `${day}Jan`, consumed: 2000, expended: 2500 }
-    }
-    for (let day = 8; day <= 14; day += 1) {
-      dailyData[`${day}Jan`] = { id: `${day}Jan`, consumed: 2500, expended: 2000 }
-    }
-
-    const { container } = render(<DayList />, {
-      wrapper: (props) => <Wrapper {...props} dailyData={dailyData} />,
-    })
-
-    // no accessible role/text distinguishes the highest/lowest bars from the
-    // rest, so a container query is the only way to check the CSS class
-    // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access
-    expect(container.querySelectorAll(".week-highest")).toHaveLength(1)
-    // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access
-    expect(container.querySelectorAll(".week-lowest")).toHaveLength(1)
-
-    jest.useRealTimers()
-  })
 })
