@@ -214,6 +214,14 @@ ol.work-lists > li {
       justify-content: center;
     }
 
+    button.add-metadata[aria-label="Add label"] {
+      margin-inline-start: -12px;
+    }
+
+    button.add-metadata[aria-label="Add subtask"] {
+      margin-inline-start: -10px;
+    }
+
     .task-content .worktree-menu-anchor {
       margin-inline-start: -8px;
 
