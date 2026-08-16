@@ -1,11 +1,16 @@
+.combobox-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
 .combobox {
   position: relative;
-  anchor-scope: --combobox;
 
   [popover] {
-    position-anchor: --combobox;
+    position: fixed;
     position-area: end center;
-    top: 4px;
+    margin-block-start: 4px;
     min-width: 100%;
   }
 
@@ -20,19 +25,37 @@
 
   .single-value-container {
     position: relative;
-    anchor-name: --combobox;
+
+    input[role="combobox"] {
+      border: 1px solid var(--border-colour);
+      font-size: inherit;
+      padding: 8px;
+      border-radius: 4px;
+      background: hsl(0 0% 100% / 0.5);
+
+      &:focus-visible {
+        outline: none;
+      }
+    }
 
     .value {
       position: absolute;
       top: 50%;
       left: 8px;
       transform: translateY(-50%);
+      pointer-events: none;
+    }
+
+    &.showing-value input[role="combobox"] {
+      border-color: transparent;
+      background: transparent;
+      color: transparent;
+      caret-color: transparent;
     }
   }
 
   .multi-value-container {
     position: relative;
-    anchor-name: --combobox;
 
     input {
       background: transparent;

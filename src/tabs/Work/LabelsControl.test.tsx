@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react"
+import { fireEvent, render, screen } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 import {
   getNextColour,
@@ -151,6 +151,57 @@ describe("LabelsControl", () => {
         { value: "apex", colour: "red" },
       ])
     })
+  })
+})
+
+describe("LabelsControl when isMulti is false", () => {
+  const singleProps: LabelsControlProps = {
+    value: [],
+    onChange: jest.fn(),
+    label: "List label",
+    isMulti: false,
+  }
+
+  it("selects an option with the mouse, replacing any existing value", async () => {
+    const user = userEvent.setup()
+    const onChange = jest.fn()
+    render(
+      <LabelsControl
+        {...singleProps}
+        value={[mockValues[0]]}
+        onChange={onChange}
+      />,
+      { wrapper: Wrapper },
+    )
+
+    await user.click(screen.getByRole("combobox"))
+    await user.click(screen.getByRole("option", { name: "dev prod" }))
+
+    expect(onChange).toHaveBeenCalledWith([
+      expect.objectContaining({ value: "dev prod" }),
+    ])
+  })
+
+  it("creates a new label from typed text", () => {
+    const onChange = jest.fn()
+    render(<LabelsControl {...singleProps} onChange={onChange} />, {
+      wrapper: Wrapper,
+    })
+
+    const input = screen.getByRole("combobox")
+    fireEvent.change(input, { target: { value: "apex" } })
+
+    expect(onChange).toHaveBeenCalledWith([{ value: "apex", colour: "red" }])
+  })
+
+  it("doesn't show a remove button for the selected value", () => {
+    render(<LabelsControl {...singleProps} value={[mockValues[0]]} />, {
+      wrapper: Wrapper,
+    })
+
+    expect(
+      screen.queryByRole("button", { name: "Remove a11y" }),
+    ).not.toBeInTheDocument()
   })
 })
 

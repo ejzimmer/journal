@@ -21,6 +21,8 @@ import { WorkTask, WORK_KEY } from "./types"
 import { FirebaseContext } from "../../shared/FirebaseContext"
 import { useDropTarget } from "../../shared/drag-and-drop/useDropTarget"
 import { sortByPosition } from "../../shared/drag-and-drop/utils"
+import { Labels } from "./Task/Labels"
+import { LabelsControl } from "./LabelsControl"
 
 function getListData(list: WorkTask, parentId: string) {
   return {
@@ -44,6 +46,7 @@ export function TaskList({
 }) {
   const listRef = useRef<HTMLOListElement>(null)
   const [confirmDeleteModalOpen, setConfirmDeleteModalOpen] = useState(false)
+  const [editingLabel, setEditingLabel] = useState(false)
 
   const [addTaskFormVisible, setAddTaskFormVisible] = useState(false)
   const showTaskForm = (event: MouseEvent | FocusEvent) => {
@@ -108,6 +111,38 @@ export function TaskList({
               }}
             />
           </h2>
+          {list.labels?.[0] &&
+            (editingLabel ? (
+              <LabelsControl
+                value={list.labels}
+                onChange={(labels) => {
+                  storageContext.updateItem(WORK_KEY, { ...list, labels })
+                  setEditingLabel(false)
+                }}
+                label=""
+                isMulti={false}
+                autoFocus
+              />
+            ) : (
+              <>
+                <Labels
+                  labels={list.labels}
+                  onRemoveLabel={(label) =>
+                    storageContext.updateItem(WORK_KEY, {
+                      ...list,
+                      labels: list.labels?.filter((l) => l !== label),
+                    })
+                  }
+                />
+                <button
+                  className="ghost"
+                  aria-label={`Change ${list.labels[0].value} label`}
+                  onClick={() => setEditingLabel(true)}
+                >
+                  ✏️
+                </button>
+              </>
+            ))}
           <PostitModalDialog
             isOpen={confirmDeleteModalOpen}
             message={`Are you sure you want to delete list ${list.description}?`}

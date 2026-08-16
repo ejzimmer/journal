@@ -1,4 +1,4 @@
-import React, { useCallback, useId, useRef, useState } from "react"
+import React, { useCallback, useEffect, useId, useRef, useState } from "react"
 import { OptionType, ComboboxProps } from "./types"
 import { usePopoverState } from "./usePopoverState"
 import { SingleValueInput } from "./SingleValueInput"
@@ -22,14 +22,21 @@ export function Combobox<T extends OptionType>({
   label,
   inputSize,
   ariaLabel,
+  autoFocus,
 }: ComboboxProps<T>) {
   const inputId = useId()
+  const anchorName = `--combobox-${inputId.replace(/[^a-zA-Z0-9]/g, "")}`
   const containerRef = useRef<HTMLDivElement>(null)
 
   const popoverId = useId()
   const popoverRef = useRef<HTMLDivElement>(null)
   const { popoverState, hidePopover, showPopover, togglePopover } =
     usePopoverState(popoverRef)
+
+  useEffect(() => {
+    if (autoFocus) showPopover()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   const [searchTerm, setSearchTerm] = useState("")
   const displayedOptions = (
@@ -116,14 +123,18 @@ export function Combobox<T extends OptionType>({
   }
 
   return (
-    <div>
+    <div className="combobox-field">
       {label && (
         <label className="label" htmlFor={inputId}>
           {label}
         </label>
       )}
 
-      <div ref={containerRef} className="combobox">
+      <div
+        ref={containerRef}
+        className="combobox"
+        style={{ anchorName } as React.CSSProperties}
+      >
         {isMultiValue ? (
           <MultiValueInput
             value={value}
@@ -171,6 +182,7 @@ export function Combobox<T extends OptionType>({
         <Popover
           popoverRef={popoverRef}
           popoverId={popoverId}
+          anchorName={anchorName}
           options={displayedOptions}
           selected={value}
           onClick={(option) => {

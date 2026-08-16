@@ -14,6 +14,7 @@ type BaseProps<T> = {
   label?: string
   inputSize?: number
   ariaLabel?: string
+  autoFocus?: boolean
 }
 type SingleValueProps<T> = BaseProps<T> & {
   isMultiValue?: false
