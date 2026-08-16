@@ -1,17 +1,19 @@
 import { useContext, useRef, useState } from "react"
 import { FirebaseContext } from "../../../shared/FirebaseContext"
-import { KEY, YarnDetails, yarnTypes } from "./types"
+import { KEY, Yarn, YarnType } from "./types"
 import { Switch } from "../../../shared/controls/Switch"
 
 import "./Form.css"
 import { TickIcon } from "../../../shared/icons/Tick"
+import { getMonthId } from "./utils"
 
 export function YarnTrackingForm() {
   const storageContext = useContext(FirebaseContext)
   if (!storageContext) {
     throw new Error("Missing Firebase context provider")
   }
-  const { value } = storageContext.useValue<Record<string, YarnDetails>>(KEY)
+  const { value } = storageContext.useValue<Yarn>(KEY)
+  const yarnTypes = Object.keys(value ?? {})
 
   const yarnTypeRef = useRef<HTMLSelectElement>(null)
   const amountRef = useRef<HTMLInputElement>(null)
@@ -33,19 +35,21 @@ export function YarnTrackingForm() {
     }
 
     const yarnDetails = value[yarnType]
-    const currentBalance = yarnDetails.history.at(-1)?.balance ?? 0
+    const currentBalance = Object.values(yarnDetails.history).at(-1) ?? 0
 
     // eslint-disable-next-line no-eval
     const newBalance = eval(`${currentBalance}${operation}${amount}`)
 
-    storageContext.updateItem<YarnDetails>(KEY, {
+    const today = new Date()
+    const key = getMonthId(today.getFullYear(), today.getMonth())
+
+    storageContext.updateItem<YarnType>(`${KEY}`, {
       id: yarnType,
-      history: [
+      history: {
         ...yarnDetails.history,
-        { balance: newBalance, date: new Date().getTime() },
-      ],
+        [key]: newBalance,
+      },
     })
-    ;(event.target as HTMLFormElement).reset()
   }
 
   return (

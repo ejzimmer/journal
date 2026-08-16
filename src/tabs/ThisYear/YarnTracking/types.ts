@@ -1,20 +1,12 @@
-export const yarnTypes = ["sock yarn", "wool", "acrylic", "cotton"]
-
-export type YarnType = (typeof yarnTypes)[number]
-
-export type Update = {
-  balance: number
-  date: number
-}
-
-export type YarnDetails = {
-  id: YarnType
-  history: Update[]
-}
-
-export type MonthBalances = {
-  total: number
-  perYarnType: Record<YarnType, number>
-}
-
 export const KEY = "2026/yarn"
+
+export type Yarn = Record<string, YarnType>
+export type YarnType = { id: string; history: Record<string, number> } // Record<month, balance>
+
+export type History = Record<string, Month>
+export type Month = {
+  month: string
+  total: number
+  subTotals: TotalsByType
+}
+export type TotalsByType = Record<string, number> // Record<yarnType, amount>

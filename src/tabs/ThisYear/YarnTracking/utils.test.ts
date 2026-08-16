@@ -1,85 +1,124 @@
-import { getInitialBalances, getMonthlyBalances } from "./utils"
+import { getHistoryByMonth } from "./utils"
 
-const yarnState = {
-  acrylic: {
-    history: [{ balance: 189, date: new Date("2026-01-01").getTime() }],
-    id: "acrylic",
-  },
-  cotton: {
-    history: [{ balance: 850, date: new Date("2026-01-01").getTime() }],
-    id: "cotton",
-  },
-  "sock yarn": {
-    history: [
-      { balance: 2519, date: new Date("2026-01-01").getTime() },
-      { balance: 2471, date: new Date("2026-01-21").getTime() },
-      { balance: 1121, date: new Date("2026-02-01").getTime() },
-      { balance: 957, date: new Date("2026-02-16").getTime() },
-    ],
-    id: "sock yarn",
-  },
-  wool: {
-    history: [
-      { balance: 3347, date: new Date("2026-01-01").getTime() },
-      { balance: 3547, date: new Date("2026-03-07").getTime() },
-    ],
-    id: "wool",
-  },
-}
-
-describe("getInitialBalances", () => {
-  it("gets initial balances", () => {
-    expect(getInitialBalances(yarnState)).toEqual({
-      total: 6905,
-      perYarnType: {
-        acrylic: 189,
-        cotton: 850,
-        "sock yarn": 2519,
-        wool: 3347,
-      },
-    })
-  })
-})
-
-describe("getMonthlyBalances", () => {
+describe("getHistoryByMonth", () => {
   beforeEach(() => {
     jest.useFakeTimers()
-    jest.setSystemTime(new Date("2026-03-12"))
   })
 
   afterEach(() => {
     jest.useRealTimers()
   })
 
-  it("returns the balances per month", () => {
-    expect(getMonthlyBalances(yarnState)).toEqual([
-      {
-        perYarnType: {
-          acrylic: 189,
-          cotton: 850,
-          "sock yarn": 2471,
-          wool: 3347,
+  it("returns returns the total of each yarn type per month", () => {
+    jest.setSystemTime(new Date("2026-03-11"))
+
+    const yarnState = {
+      sockYarn: {
+        id: "sockYarn",
+        history: {
+          "26-01": 123,
+          "26-02": 544,
+          "26-03": 487,
         },
-        total: 6857,
       },
-      {
-        perYarnType: {
-          acrylic: 189,
-          cotton: 850,
-          "sock yarn": 957,
-          wool: 3347,
+      wool: {
+        id: "wool",
+        history: {
+          "26-01": 222,
+          "26-02": 566,
+          "26-03": 444,
         },
-        total: 5343,
       },
-      {
-        perYarnType: {
-          acrylic: 189,
-          cotton: 850,
-          "sock yarn": 957,
-          wool: 3547,
+    }
+
+    expect(getHistoryByMonth(yarnState)).toEqual({
+      "26-01": {
+        month: "26-01",
+        total: 345,
+        subTotals: { sockYarn: 123, wool: 222 },
+      },
+      "26-02": {
+        month: "26-02",
+        total: 1110,
+        subTotals: { sockYarn: 544, wool: 566 },
+      },
+      "26-03": {
+        month: "26-03",
+        total: 931,
+        subTotals: { sockYarn: 487, wool: 444 },
+      },
+    })
+  })
+
+  describe("when there is no data for a specific month", () => {
+    it("returns the data for the previous month", () => {
+      jest.setSystemTime(new Date("2026-09-04"))
+      const yarnState = {
+        sockYarn: {
+          id: "sockYarn",
+          history: {
+            "26-01": 123,
+            "26-02": 544,
+            "26-08": 487,
+          },
         },
-        total: 5543,
-      },
-    ])
+        wool: {
+          id: "wool",
+          history: {
+            "26-01": 222,
+            "26-02": 566,
+            "26-07": 444,
+          },
+        },
+      }
+
+      expect(getHistoryByMonth(yarnState)).toEqual({
+        "26-01": {
+          month: "26-01",
+          total: 345,
+          subTotals: { sockYarn: 123, wool: 222 },
+        },
+        "26-02": {
+          month: "26-02",
+          total: 1110,
+          subTotals: { sockYarn: 544, wool: 566 },
+        },
+        "26-03": {
+          month: "26-03",
+          total: 1110,
+          subTotals: { sockYarn: 544, wool: 566 },
+        },
+        "26-04": {
+          month: "26-04",
+          total: 1110,
+          subTotals: { sockYarn: 544, wool: 566 },
+        },
+        "26-05": {
+          month: "26-05",
+          total: 1110,
+          subTotals: { sockYarn: 544, wool: 566 },
+        },
+        "26-06": {
+          month: "26-06",
+          total: 1110,
+          subTotals: { sockYarn: 544, wool: 566 },
+        },
+        "26-07": {
+          month: "26-07",
+          total: 988,
+          subTotals: { sockYarn: 544, wool: 444 },
+        },
+        "26-08": {
+          month: "26-08",
+          total: 931,
+          subTotals: { sockYarn: 487, wool: 444 },
+        },
+        "26-09": {
+          month: "26-09",
+          total: 931,
+          subTotals: { sockYarn: 487, wool: 444 },
+        },
+      })
+    })
   })
 })

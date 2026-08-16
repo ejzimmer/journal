@@ -1,70 +1,83 @@
-import { MonthBalances, YarnDetails, YarnType, yarnTypes } from "./types"
+import { Yarn, History, Month, TotalsByType } from "./types"
 
-export const sum = (total: number, current?: number) => total + (current ?? 0)
-export const percent = (numerator: number, denominator: number) =>
-  `${Math.round((numerator / denominator) * 1000) / 10}%`
+// Takes state by type, returns state by month
+export function getHistoryByMonth(yarnState: Yarn): History {
+  const today = new Date()
+  const months = setupMonths(today.getMonth(), today.getFullYear())
 
-export function getInitialBalances(yarnState: Record<YarnType, YarnDetails>) {
-  return {
-    total: Object.values(yarnState)
-      .map((yarn) => yarn.history.at(0)?.balance ?? 0)
-      .reduce(sum, 0),
-    perYarnType: Object.fromEntries(
-      yarnTypes.map((yarnType) => [
-        yarnType,
-        yarnState[yarnType].history[0].balance,
-      ]),
-    ),
-  }
-}
-
-export function getMonthlyBalances(
-  yarnState: Record<YarnType, YarnDetails>,
-): MonthBalances[] {
-  const months: MonthBalances[] = []
-
-  Object.values(yarnState).forEach((yarnType) => {
-    yarnType.history.forEach((update) => {
-      const month = new Date(update.date).getMonth()
-
-      if (months[month]) {
-        months[month].perYarnType[yarnType.id] = update.balance
-      } else {
+  Object.values(yarnState).forEach(({ id, history }) => {
+    Object.entries(history).forEach(([month, balance]) => {
+      if (!months[month]) {
         months[month] = {
+          month,
           total: 0,
-          perYarnType: { [yarnType.id]: update.balance },
+          subTotals: {},
         }
       }
+
+      months[month].subTotals[id] = balance
+      months[month].total = months[month].total + balance
     })
   })
 
-  const monthsWithTotals = months.map((month) => {
-    return {
-      ...month,
-      total: Object.values(month.perYarnType).reduce(sum, 0),
+  const filledInMonths = fillInMonths(months, Object.keys(yarnState))
+
+  const thisMonth = getMonthId(today.getFullYear(), today.getMonth())
+  if (!filledInMonths[thisMonth]) {
+    const lastMonth = Object.values(filledInMonths).at(-1) ?? {
+      month: thisMonth,
+      total: 0,
+      subTotals: {},
     }
-  })
-
-  monthsWithTotals.forEach((month, index) => {
-    const lastMonth = monthsWithTotals[index - 1]
-    if (!month) {
-      monthsWithTotals[index] = lastMonth
-    }
-
-    yarnTypes.forEach((yarnType) => {
-      if (!month.perYarnType[yarnType]) {
-        month.perYarnType[yarnType] = lastMonth.perYarnType[yarnType]
-        month.total = Object.values(month.perYarnType).reduce(sum, 0)
-      }
-    })
-  })
-
-  const thisMonth = new Date().getMonth()
-  let lastMonthWithTotal = monthsWithTotals.length - 1
-  while (lastMonthWithTotal < thisMonth) {
-    monthsWithTotals.push(monthsWithTotals[lastMonthWithTotal])
-    lastMonthWithTotal++
+    filledInMonths[thisMonth] = { ...lastMonth, month: thisMonth }
   }
 
-  return monthsWithTotals
+  return filledInMonths
 }
+
+const setupMonths = (
+  numberOfMonths: number,
+  year: number,
+): Record<string, Month> => {
+  const months: Record<string, Month> = {}
+
+  for (let month = 0; month < numberOfMonths; month++) {
+    const id = getMonthId(year, month)
+    months[id] = { month: id, total: 0, subTotals: {} }
+  }
+
+  return months
+}
+
+const fillInMonths = (history: History, yarnTypes: string[]): History => {
+  const updatedHistory: Month[] = []
+
+  Object.values(history).forEach((month, index) => {
+    const thisMonthYarnTypes = Object.keys(month.subTotals)
+    if (thisMonthYarnTypes.length === yarnTypes.length) {
+      updatedHistory.push(month)
+      return
+    }
+
+    const previousSubTotals = updatedHistory[index - 1]?.subTotals ?? {}
+    const newSubTotals = Object.fromEntries(
+      yarnTypes.map((type) => [
+        type,
+        month.subTotals[type] ?? previousSubTotals[type] ?? 0,
+      ]),
+    )
+    updatedHistory.push({
+      ...month,
+      total: sumSubTotals(newSubTotals),
+      subTotals: newSubTotals,
+    })
+  })
+
+  return Object.fromEntries(updatedHistory.map((month) => [month.month, month]))
+}
+
+const sumSubTotals = (subTotals: TotalsByType) =>
+  Object.values(subTotals).reduce((current, total) => total + current, 0)
+
+export const getMonthId = (year: number, month: number) =>
+  `${year}`.substring(2) + "-" + `${month + 1}`.padStart(2, "0")

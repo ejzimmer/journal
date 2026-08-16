@@ -1,9 +1,9 @@
 import { useContext } from "react"
-import { KEY, YarnDetails } from "./types"
+import { KEY, Yarn } from "./types"
 
 import "./YarnState.css"
 import { FirebaseContext } from "../../../shared/FirebaseContext"
-import { getInitialBalances, getMonthlyBalances, percent } from "./utils"
+import { getHistoryByMonth } from "./utils"
 import { MonthlyBalance } from "./MonthlyBalance"
 
 export function YarnState() {
@@ -12,36 +12,26 @@ export function YarnState() {
     throw new Error("Missing Firebase context provider")
   }
 
-  const { value } = storageContext.useValue<Record<string, YarnDetails>>(KEY)
+  const { value } = storageContext.useValue<Yarn>(KEY)
+
   if (!value) {
     return <>Loading...</>
   }
 
-  const initialBalances = getInitialBalances(value)
-  const monthlyBalances = getMonthlyBalances(value)
-  const maximumBalance = Math.max(
-    initialBalances.total,
-    ...monthlyBalances.map((month) => month.total),
+  const months = getHistoryByMonth(value)
+  const maxTotal = Math.max(
+    ...Object.values(months).map((month) => month.total),
   )
 
   return (
     <div className="yarn-state">
       <ol>
-        <li style={{ width: percent(initialBalances.total, maximumBalance) }}>
-          <div className="label">
-            Initial: {initialBalances.total.toLocaleString()}g
-          </div>
-          <MonthlyBalance {...initialBalances} />
-        </li>
-        {monthlyBalances.map((month, index) => (
-          <li
-            key={index}
-            style={{ width: percent(month.total, maximumBalance) }}
-          >
+        {Object.entries(months).map(([id, month]) => (
+          <li key={id} style={{ width: `${(month.total / maxTotal) * 100}%` }}>
             <MonthLabel
-              monthNumber={index + 1}
+              monthNumber={id.split("-")[1]}
               monthTotal={month.total}
-              isLastMonth={index === monthlyBalances.length - 1}
+              isLastMonth={false}
             />
             <MonthlyBalance {...month} />
           </li>
@@ -56,7 +46,7 @@ function MonthLabel({
   monthTotal,
   isLastMonth,
 }: {
-  monthNumber: number
+  monthNumber: string
   monthTotal: number
   isLastMonth: boolean
 }) {
