@@ -1,0 +1,62 @@
+.weekly-calories {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-items: flex-end;
+  gap: 3px;
+  height: 200px;
+  width: 100%;
+  max-width: 100%;
+  overflow-x: auto;
+  overflow-y: visible;
+  border-block-end: 4px solid var(--border-colour);
+  padding-block-start: 40px;
+  padding-inline: 6px;
+  box-sizing: content-box;
+
+  .week-container {
+    anchor-scope: --label-text;
+    display: contents;
+  }
+
+  .week {
+    flex: 1 1 0;
+    min-width: 12px;
+    align-self: flex-end;
+    background: linear-gradient(90deg, hsl(283 96% 44%), hsl(283 96% 34%));
+    border-top-left-radius: 4px;
+    border-top-right-radius: 4px;
+    box-shadow:
+      inset 3px 0 hsl(0 100% 100% /0.3),
+      1px 1px 8px hsl(0 0% 0% /0.3);
+    anchor-name: --label-text;
+
+    &:hover + .week-hovertext {
+      opacity: 1;
+    }
+  }
+
+  .week-highest {
+    background: linear-gradient(90deg, hsl(3.1 96.4% 43.9%), hsl(3.1 96.5% 33.9%));
+  }
+
+  .week-lowest {
+    background: linear-gradient(90deg, hsl(203.1 96.4% 43.9%), hsl(203.1 96.5% 33.9%));
+  }
+
+  .week-hovertext {
+    position: absolute;
+    opacity: 0;
+    transition: opacity 0.2s;
+    position-anchor: --label-text;
+    position-area: top;
+    margin-block-end: 8px;
+    z-index: 1;
+    background: var(--body-colour);
+    color: white;
+    padding: 6px 8px;
+    font-size: 0.8em;
+    border-radius: 4px;
+    white-space: nowrap;
+  }
+}
