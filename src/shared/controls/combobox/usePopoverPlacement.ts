@@ -76,7 +76,7 @@ export function usePopoverPlacement(
       window.removeEventListener("scroll", measure, true)
       window.removeEventListener("resize", measure)
     }
-  }, [popoverState, anchorRef, popoverRef])
+  }, [popoverState, anchorRef, popoverRef, onAnchorHidden])
 
   return { placement, maxHeight }
 }
