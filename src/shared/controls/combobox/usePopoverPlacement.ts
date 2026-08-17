@@ -24,24 +24,12 @@ export function usePopoverPlacement(
 
       const anchorRect = anchorEl.getBoundingClientRect()
 
-      // Environments without real layout (e.g. jsdom in tests) report every
-      // element as a zero rect at the origin. There's nothing meaningful to
-      // measure or reposition against, so leave the default placement as-is.
-      if (anchorRect.width === 0 && anchorRect.height === 0) return
-
-      // If the anchor has scrolled out of view entirely, a positioned
-      // popover would be left floating with nothing to point at, so close
-      // it instead of trying to place it relative to an invisible anchor.
+      // Close the popover when the anchor is scrolled out of view
       if (anchorRect.bottom <= 0 || anchorRect.top >= window.innerHeight) {
         onAnchorHidden()
         return
       }
 
-      // The browser's actual anchor->popover gap (position-area + margin)
-      // can't be reliably predicted from the CSS alone, so probe both
-      // placements directly via the DOM. Only the near edge (the one
-      // pinned to the anchor) is read from each probe, which stays
-      // accurate regardless of any max-height already applied.
       const wasAbove = popoverEl.classList.contains("open-above")
 
       popoverEl.classList.remove("open-above")
