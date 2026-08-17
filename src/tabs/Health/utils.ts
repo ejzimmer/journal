@@ -34,8 +34,6 @@ export function setupDays(dayData?: Record<string, DayData>): Balance[] {
       dayOfWeek: date.getDay(),
       diff: typeof diff === "number" ? diff : undefined,
     }
-    // the running balance can only be calculated while every day since
-    // the start of the year has a diff - a day's own diff doesn't need that
     days[i] =
       typeof previousBalance === "number" && typeof diff === "number"
         ? { ...daySummary, balance: previousBalance - diff }
