@@ -6,7 +6,8 @@ import { hoursToMilliseconds, isBefore, startOfDay } from "date-fns"
 import { Skeleton } from "../../shared/controls/Skeleton"
 import { draggableTypeKey } from "../../shared/drag-and-drop/types"
 import { LabelsProvider } from "./LabelsProvider"
-import { WorkTask, WORK_KEY } from "./types"
+import { WorkTask, Label, LABELS_KEY, WORK_KEY } from "./types"
+import { migrateLegacyLabels } from "./migrateLegacyLabels"
 import { useDraggableList } from "../../shared/drag-and-drop/useDraggableList"
 import { isDraggable, sortByPosition } from "../../shared/drag-and-drop/utils"
 import { useDropTarget } from "../../shared/drag-and-drop/useDropTarget"
@@ -21,9 +22,32 @@ export function Work() {
   if (!context) {
     throw new Error("Missing Firebase context provider")
   }
-  const { addItem, useValue, updateList } = context
+  const { addItem, updateItem, useValue, updateList } = context
   const { value: lists, loading: listsLoading } =
     useValue<Record<string, WorkTask>>(WORK_KEY)
+  const { value: existingLabelsById, loading: labelsLoading } =
+    useValue<Record<string, Label>>(LABELS_KEY)
+
+  const hasMigratedLegacyLabels = useRef(false)
+  useEffect(() => {
+    if (hasMigratedLegacyLabels.current || listsLoading || labelsLoading) {
+      return
+    }
+    hasMigratedLegacyLabels.current = true
+    if (lists) {
+      migrateLegacyLabels(lists, Object.values(existingLabelsById ?? {}), {
+        addItem,
+        updateItem,
+      })
+    }
+  }, [
+    lists,
+    listsLoading,
+    existingLabelsById,
+    labelsLoading,
+    addItem,
+    updateItem,
+  ])
 
   const doneList = useMemo(() => {
     return (

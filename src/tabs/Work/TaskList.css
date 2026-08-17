@@ -302,7 +302,8 @@ form.add-task {
   }
 }
 
-.label-tag {
+.label-tag,
+.colour-swatch {
   &.blue {
     --colour: hsl(200 80% 50% / 0.3);
   }
@@ -321,7 +322,9 @@ form.add-task {
   &.red {
     --colour: hsla(303, 80%, 50%, 0.3);
   }
+}
 
+.label-tag {
   button {
     padding: 2px;
     margin-inline-start: 4px;
@@ -363,14 +366,14 @@ form.add-task {
   inset-inline-start: 0;
   z-index: 10;
   display: flex;
-  gap: 4px;
-  padding: 6px;
   margin: 4px 0 0;
+  padding: 0;
   list-style: none;
   background: white;
   border: 1px solid var(--border-colour);
   border-radius: 4px;
   box-shadow: 0 2px 8px hsl(0 0% 0% / 0.15);
+  overflow: hidden;
 
   li {
     display: contents;
@@ -378,34 +381,21 @@ form.add-task {
 }
 
 .colour-swatch {
-  width: 20px;
-  height: 20px;
+  width: 28px;
+  height: 28px;
   padding: 0;
-  border: 2px solid transparent;
-  border-radius: 50%;
+  border: 0;
+  border-radius: 0;
   background-color: var(--colour);
   cursor: pointer;
 
-  &[aria-pressed="true"] {
-    border-color: var(--body-colour);
+  &:hover,
+  &:focus-visible {
+    background-color: var(--colour);
   }
 
-  &.blue {
-    --colour: hsl(200 80% 50%);
-  }
-  &.yellow {
-    --colour: hsl(59 95% 63%);
-  }
-  &.purple {
-    --colour: hsl(280 80% 50%);
-  }
-  &.green {
-    --colour: hsl(125 80% 50%);
-  }
-  &.orange {
-    --colour: hsl(25 94% 52%);
-  }
-  &.red {
-    --colour: hsl(303 80% 50%);
+  &[aria-pressed="true"] {
+    outline: 2px solid var(--body-colour);
+    outline-offset: -2px;
   }
 }
