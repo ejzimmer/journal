@@ -15,6 +15,9 @@ import { useDropTarget } from "../../shared/drag-and-drop/useDropTarget"
 import "./index.css"
 import { MoveToOtherLists } from "./MoveToOtherLists"
 import { addSourceListLabel } from "./labelUtils"
+import { moveTaskBetweenLists } from "./moveTaskBetweenLists"
+import { getAdjacentListIndex } from "./adjacentList"
+import { AdjacentListDestination } from "../../shared/drag-and-drop/types"
 
 export function Work() {
   const dropTargetRef = useRef<HTMLOListElement>(null)
@@ -71,6 +74,41 @@ export function Work() {
         (list) => list.id !== doneList?.id,
       ),
     [lists, doneList],
+  )
+
+  const moveTaskToAdjacentList = useCallback(
+    (
+      task: WorkTask,
+      currentListId: string,
+      destination: AdjacentListDestination,
+    ) => {
+      const currentIndex = orderedLists.findIndex(
+        (list) => list.id === currentListId,
+      )
+      if (currentIndex === -1) {
+        return
+      }
+
+      const targetIndex = getAdjacentListIndex(
+        currentIndex,
+        orderedLists.length,
+        destination,
+      )
+
+      const targetList = orderedLists[targetIndex]
+      if (!targetList || targetList.id === currentListId) {
+        return
+      }
+
+      moveTaskBetweenLists(
+        context,
+        task,
+        currentListId,
+        orderedLists[currentIndex],
+        targetList,
+      )
+    },
+    [orderedLists, context],
   )
 
   const onUpdate = useCallback(() => {
@@ -212,6 +250,9 @@ export function Work() {
                       task={task}
                     />
                   )}
+                  onMoveTaskToAdjacentList={(task, destination) =>
+                    moveTaskToAdjacentList(task, list.id, destination)
+                  }
                 />
               ),
           )}

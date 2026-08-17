@@ -14,7 +14,10 @@ import { isList, isTask } from "./drag-utils"
 
 import "./TaskList.css"
 import { DragHandle } from "../../shared/drag-and-drop/DragHandle"
-import { draggableTypeKey } from "../../shared/drag-and-drop/types"
+import {
+  AdjacentListDestination,
+  draggableTypeKey,
+} from "../../shared/drag-and-drop/types"
 import { DraggableListItem } from "../../shared/drag-and-drop/DraggableListItem"
 import { PostitModalDialog } from "./PostitModal"
 import { WorkTask, WORK_KEY } from "./types"
@@ -39,11 +42,16 @@ export function TaskList({
   listId,
   parentListId,
   additionalMoveDestinations,
+  onMoveTaskToAdjacentList,
 }: {
   index: number
   listId: string
   parentListId: string
   additionalMoveDestinations: (task: WorkTask) => JSX.Element
+  onMoveTaskToAdjacentList?: (
+    task: WorkTask,
+    destination: AdjacentListDestination,
+  ) => void
 }) {
   const listRef = useRef<HTMLOListElement>(null)
   const [confirmDeleteModalOpen, setConfirmDeleteModalOpen] = useState(false)
@@ -182,6 +190,12 @@ export function TaskList({
                     )
                   }
                   additionalActions={additionalMoveDestinations(task)}
+                  onMoveToAdjacentList={
+                    onMoveTaskToAdjacentList
+                      ? (destination) =>
+                          onMoveTaskToAdjacentList(task, destination)
+                      : undefined
+                  }
                 />
               }
             />

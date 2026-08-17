@@ -2,8 +2,8 @@ import { useContext } from "react"
 import { Menu } from "../../shared/controls/Menu"
 import { FirebaseContext } from "../../shared/FirebaseContext"
 import { ArrowRightIcon } from "../../shared/icons/ArrowRight"
-import { WorkTask, WORK_KEY } from "./types"
-import { addSourceListLabel } from "./labelUtils"
+import { WorkTask } from "./types"
+import { moveTaskBetweenLists } from "./moveTaskBetweenLists"
 
 type MoveToOtherListsProps = {
   allLists: WorkTask[]
@@ -31,22 +31,13 @@ export function MoveToOtherLists({
   return otherLists.map((destination) => (
     <Menu.Action
       onClick={() => {
-        const position = destination.items
-          ? Object.values(destination.items).reduce(
-              (highest, item) =>
-                item.position ? Math.max(highest, item.position) : highest,
-              0,
-            )
-          : 0
-        const movedTask = currentList
-          ? addSourceListLabel(task, currentList)
-          : task
-        storageContext.addItem(`${WORK_KEY}/${destination.id}/items`, {
-          ...movedTask,
-          position,
-          lastUpdated: new Date().getTime(),
-        })
-        storageContext.deleteItem(`${WORK_KEY}/${currentListId}/items`, task)
+        moveTaskBetweenLists(
+          storageContext,
+          task,
+          currentListId,
+          currentList,
+          destination,
+        )
       }}
       key={destination.id}
     >

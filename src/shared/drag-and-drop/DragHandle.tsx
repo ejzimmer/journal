@@ -4,7 +4,7 @@ import { ArrowToTopIcon } from "../icons/ArrowToTop"
 import { ArrowUpIcon } from "../icons/ArrowUp"
 import { DragHandleIcon } from "../icons/DragHandle"
 import { Menu } from "../controls/Menu"
-import { OrderedListItem } from "./types"
+import { AdjacentListDestination, OrderedListItem } from "./types"
 import { getPosition, onChangePosition } from "./utils"
 
 type DragHandleProps = {
@@ -12,6 +12,7 @@ type DragHandleProps = {
   index: number
   onReorder: (list: OrderedListItem[]) => void
   additionalActions?: React.ReactNode
+  onMoveToAdjacentList?: (destination: AdjacentListDestination) => void
 }
 
 const iconProps = {
@@ -24,10 +25,57 @@ export function DragHandle({
   index,
   onReorder,
   additionalActions,
+  onMoveToAdjacentList,
 }: DragHandleProps) {
   const position = getPosition(index, list.length)
+  const isFirst = index === 0
+  const isLast = index === list.length - 1
+
+  const handleKeyDown = (
+    event: React.KeyboardEvent<HTMLDivElement>,
+    { onClose }: { onClose: () => void },
+  ) => {
+    switch (event.key) {
+      case "ArrowUp":
+        if (!isFirst) {
+          event.preventDefault()
+          if (event.shiftKey) {
+            onChangePosition(list, index, "start", onReorder)
+            onClose()
+          } else {
+            onChangePosition(list, index, "previous", onReorder)
+          }
+        }
+        break
+      case "ArrowDown":
+        if (!isLast) {
+          event.preventDefault()
+          if (event.shiftKey) {
+            onChangePosition(list, index, "end", onReorder)
+            onClose()
+          } else {
+            onChangePosition(list, index, "next", onReorder)
+          }
+        }
+        break
+      case "ArrowLeft":
+        if (onMoveToAdjacentList) {
+          event.preventDefault()
+          onMoveToAdjacentList(event.shiftKey ? "first" : "previous")
+        }
+        break
+      case "ArrowRight":
+        if (onMoveToAdjacentList) {
+          event.preventDefault()
+          onMoveToAdjacentList(event.shiftKey ? "last" : "next")
+        }
+        break
+    }
+  }
+
   return (
     <Menu
+      onKeyDown={handleKeyDown}
       trigger={(props) => (
         <button {...props} className="drag-handle ghost" aria-label="drag menu">
           <DragHandleIcon width="24px" />

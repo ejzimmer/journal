@@ -2,6 +2,7 @@ import { Edge } from "@atlaskit/pragmatic-drag-and-drop-hitbox/dist/types/types"
 
 export type Position = "start" | "middle" | "end"
 export type Destination = "start" | "previous" | "next" | "end"
+export type AdjacentListDestination = "previous" | "next" | "first" | "last"
 
 export type DraggingState =
   | { type: "idle" }

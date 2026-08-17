@@ -10,13 +10,17 @@ type MenuChildrenProps = {
 export type MenuProps = {
   trigger: (props: MenuTriggerProps) => JSX.Element
   children: (props: MenuChildrenProps) => React.ReactNode
+  onKeyDown?: (
+    event: React.KeyboardEvent<HTMLDivElement>,
+    helpers: MenuChildrenProps,
+  ) => void
 }
 
 export type MenuTriggerProps = {
   popoverTarget: string
 }
 
-function Menu({ trigger: Trigger, children }: MenuProps) {
+function Menu({ trigger: Trigger, children, onKeyDown }: MenuProps) {
   const id = useId()
   const dialogRef = useRef<HTMLDivElement>(null)
 
@@ -25,7 +29,10 @@ function Menu({ trigger: Trigger, children }: MenuProps) {
   }
 
   return (
-    <div style={{ position: "relative" }}>
+    <div
+      style={{ position: "relative" }}
+      onKeyDown={(event) => onKeyDown?.(event, { onClose: closeMenu })}
+    >
       <Trigger popoverTarget={id} />
       <div id={id} ref={dialogRef} className="menu" popover="auto">
         {children({ onClose: closeMenu })}
