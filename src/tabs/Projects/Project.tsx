@@ -25,6 +25,7 @@ type ProjectProps = {
 
 export function Project({ project, onMoveToEnd, onDelete }: ProjectProps) {
   const [subtasksVisible, setSubtasksVisible] = useState(false)
+  const [hasOpenedSubtasks, setHasOpenedSubtasks] = useState(false)
 
   const storageContext = useContext(FirebaseContext)
   if (!storageContext) {
@@ -156,13 +157,18 @@ export function Project({ project, onMoveToEnd, onDelete }: ProjectProps) {
 
         <button
           className={`ghost expand ${subtasksVisible ? "expanded" : ""}`}
-          onClick={() => setSubtasksVisible(!subtasksVisible)}
+          onClick={() => {
+            setSubtasksVisible(!subtasksVisible)
+            setHasOpenedSubtasks(true)
+          }}
           style={{ marginInlineStart: "auto" }}
         >
           <ChevronDownIcon width="20px" />
         </button>
       </div>
-      <SubtaskList projectId={project.id} isVisible={subtasksVisible} />
+      {hasOpenedSubtasks && (
+        <SubtaskList projectId={project.id} isVisible={subtasksVisible} />
+      )}
     </div>
   )
 }
