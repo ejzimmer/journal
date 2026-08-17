@@ -380,9 +380,10 @@ form.add-task {
   }
 }
 
-.colour-swatch {
+.colour-swatches .colour-swatch {
   width: 28px;
   height: 28px;
+  margin: 0;
   padding: 0;
   border: 0;
   border-radius: 0;
