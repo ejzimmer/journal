@@ -6,9 +6,9 @@ import { createWorkStorageContext } from "../workStorageTestUtils"
 import { AddSubtask } from "./AddSubtask"
 import { STANDARD_CHECKLIST, Subtask } from "../types"
 
-// Mimics Firebase's real-time updates: addSubtask writes into real state, so
-// the component tree re-renders (and the standard checklist button can
-// unmount itself) the same way it does against the real backend.
+// Mimics Firebase's real-time updates: writes go into real state, so the
+// component tree re-renders (and the standard checklist button can unmount
+// itself) the same way it does against the real backend.
 function AddSubtaskWithLiveBackend({
   addSubtaskSpy,
 }: {
@@ -16,12 +16,17 @@ function AddSubtaskWithLiveBackend({
 }) {
   const [subtasks, setSubtasks] = useState<Record<string, Subtask>>({})
 
-  const addSubtask = (listId: string, taskId: string, description: string) => {
-    addSubtaskSpy(listId, taskId, description)
-    const id = `id-${Math.random()}`
+  const addSubtask = (
+    listId: string,
+    taskId: string,
+    description: string,
+    id?: string,
+  ) => {
+    addSubtaskSpy(listId, taskId, description, id)
+    const resolvedId = id ?? `id-${Math.random()}`
     setSubtasks((current) => ({
       ...current,
-      [id]: { id, description },
+      [resolvedId]: { id: resolvedId, description },
     }))
   }
 

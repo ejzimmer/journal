@@ -123,6 +123,10 @@ ol.work-lists > li {
       }
     }
 
+    &:has(form.add-subtask:focus-within) .add-metadata {
+      opacity: 0.4;
+    }
+
     /* the drag handle clutters the fanned-out menu, so hide it while one is open */
     &:has(.worktree-menu:popover-open) .drag-handle {
       opacity: 0;
@@ -203,12 +207,18 @@ ol.work-lists > li {
 
       form.add-subtask {
         display: flex;
+        flex-direction: row;
         align-items: center;
         gap: 4px;
+
+        > button {
+          margin-block-end: var(--baseline-nudge);
+        }
 
         input {
           font: inherit;
           border: none;
+          border-bottom: 1px solid var(--body-colour-light);
           background: transparent;
           width: 8em;
 
