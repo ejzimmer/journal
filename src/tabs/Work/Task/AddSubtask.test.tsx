@@ -2,30 +2,9 @@ import { useState } from "react"
 import { render, screen } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 import { WorkStorageContext, WorkStorageContextType } from "../WorkStorageContext"
+import { createWorkStorageContext } from "../workStorageTestUtils"
 import { AddSubtask } from "./AddSubtask"
 import { STANDARD_CHECKLIST, Subtask } from "../types"
-
-function createStorageContext(
-  overrides: Partial<WorkStorageContextType> = {},
-): WorkStorageContextType {
-  return {
-    lists: undefined,
-    loading: false,
-    addList: jest.fn(),
-    updateList: jest.fn(),
-    deleteList: jest.fn(),
-    reorderLists: jest.fn(),
-    addTask: jest.fn(),
-    updateTask: jest.fn(),
-    deleteTask: jest.fn(),
-    reorderTasks: jest.fn(),
-    addSubtask: jest.fn(),
-    deleteSubtask: jest.fn(),
-    getList: () => undefined,
-    getTask: () => undefined,
-    ...overrides,
-  }
-}
 
 // Mimics Firebase's real-time updates: addSubtask writes into real state, so
 // the component tree re-renders (and the standard checklist button can
@@ -47,7 +26,7 @@ function AddSubtaskWithLiveBackend({
   }
 
   return (
-    <WorkStorageContext.Provider value={createStorageContext({ addSubtask })}>
+    <WorkStorageContext.Provider value={createWorkStorageContext({ addSubtask })}>
       <AddSubtask listId="list-1" taskId="task-1" subtasks={subtasks} />
     </WorkStorageContext.Provider>
   )
@@ -64,7 +43,7 @@ function renderWithContext(storageContext: WorkStorageContextType) {
 describe("AddSubtask", () => {
   it("adds a subtask on enter", async () => {
     const user = userEvent.setup()
-    const storageContext = createStorageContext()
+    const storageContext = createWorkStorageContext()
     renderWithContext(storageContext)
 
     await user.click(screen.getByRole("button", { name: "Add subtask" }))
@@ -82,7 +61,7 @@ describe("AddSubtask", () => {
 
   it("doesn't add a subtask with no description", async () => {
     const user = userEvent.setup()
-    const storageContext = createStorageContext()
+    const storageContext = createWorkStorageContext()
     renderWithContext(storageContext)
 
     await user.click(screen.getByRole("button", { name: "Add subtask" }))
@@ -93,7 +72,7 @@ describe("AddSubtask", () => {
 
   it("cancels without adding when Escape is pressed", async () => {
     const user = userEvent.setup()
-    const storageContext = createStorageContext()
+    const storageContext = createWorkStorageContext()
     renderWithContext(storageContext)
 
     await user.click(screen.getByRole("button", { name: "Add subtask" }))
@@ -111,7 +90,7 @@ describe("AddSubtask", () => {
 
   it("doesn't show the standard checklist button until the form is open", async () => {
     const user = userEvent.setup()
-    renderWithContext(createStorageContext())
+    renderWithContext(createWorkStorageContext())
 
     expect(
       screen.queryByRole("button", { name: "Add standard checklist" }),
@@ -126,7 +105,7 @@ describe("AddSubtask", () => {
 
   it("adds the standard checklist without closing the form", async () => {
     const user = userEvent.setup()
-    const storageContext = createStorageContext()
+    const storageContext = createWorkStorageContext()
     renderWithContext(storageContext)
 
     await user.click(screen.getByRole("button", { name: "Add subtask" }))

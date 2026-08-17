@@ -2,6 +2,7 @@ import { render, screen, within } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 import { TaskList } from "./TaskList"
 import { WorkStorageContext, WorkStorageContextType } from "./WorkStorageContext"
+import { createWorkStorageContext } from "./workStorageTestUtils"
 import { LabelsContext } from "./LabelsContext"
 import { WorkTask, Label } from "./types"
 
@@ -55,22 +56,11 @@ function renderTaskList(
 }
 
 function createStorageContext(): WorkStorageContextType {
-  return {
+  return createWorkStorageContext({
     lists,
-    loading: false,
-    addList: jest.fn(),
-    updateList: jest.fn(),
-    deleteList: jest.fn(),
-    reorderLists: jest.fn(),
-    addTask: jest.fn(),
-    updateTask: jest.fn(),
-    deleteTask: jest.fn(),
-    reorderTasks: jest.fn(),
-    addSubtask: jest.fn(),
-    deleteSubtask: jest.fn(),
     getList: (listId) => lists[listId],
     getTask: (listId, taskId) => lists[listId]?.items?.[taskId],
-  }
+  })
 }
 
 describe("TaskList label", () => {

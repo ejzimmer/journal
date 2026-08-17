@@ -70,7 +70,7 @@ describe("WorkStorageContext", () => {
     const workStorage = getWorkStorage(firebaseContext)
 
     expect(workStorage?.lists).toEqual({ [list.id]: list })
-    expect(workStorage?.loading).toBe(false)
+    expect(workStorage?.isLoading).toBe(false)
   })
 
   it("addList writes a new list under the work key", () => {

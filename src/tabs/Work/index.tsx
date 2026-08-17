@@ -25,8 +25,13 @@ export function Work() {
 
 function WorkContent() {
   const dropTargetRef = useRef<HTMLOListElement>(null)
-  const { lists, loading: listsLoading, addList, addTask, reorderTasks } =
-    useWorkStorage()
+  const {
+    lists,
+    isLoading: listsLoading,
+    addList,
+    addTask,
+    reorderTasks,
+  } = useWorkStorage()
 
   const doneList = useMemo(() => {
     return (

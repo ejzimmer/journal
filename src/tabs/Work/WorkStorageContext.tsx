@@ -4,7 +4,7 @@ import { Label, Subtask, WorkTask, WORK_KEY } from "./types"
 
 export type WorkStorageContextType = {
   lists?: Record<string, WorkTask>
-  loading: boolean
+  isLoading: boolean
 
   addList: (listName: string, labels?: Label[]) => void
   updateList: (list: WorkTask) => void
@@ -43,12 +43,12 @@ export function WorkStorageProvider({ children }: { children: ReactNode }) {
     useValue,
   } = firebase
 
-  const { value: lists, loading } =
+  const { value: lists, loading: isLoading } =
     useValue<Record<string, WorkTask>>(WORK_KEY)
 
   const value: WorkStorageContextType = {
     lists,
-    loading,
+    isLoading,
 
     addList: (listName, labels = []) => {
       addItem(WORK_KEY, {

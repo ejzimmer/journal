@@ -1,7 +1,8 @@
 import { render, screen } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 import { MoveToOtherLists } from "./MoveToOtherLists"
-import { WorkStorageContext, WorkStorageContextType } from "./WorkStorageContext"
+import { WorkStorageContext } from "./WorkStorageContext"
+import { createWorkStorageContext } from "./workStorageTestUtils"
 import { WorkTask } from "./types"
 
 const task: WorkTask = {
@@ -32,29 +33,10 @@ const destinationList: WorkTask = {
   position: 1,
 }
 
-function createStorageContext(): WorkStorageContextType {
-  return {
-    lists: undefined,
-    loading: false,
-    addList: jest.fn(),
-    updateList: jest.fn(),
-    deleteList: jest.fn(),
-    reorderLists: jest.fn(),
-    addTask: jest.fn(),
-    updateTask: jest.fn(),
-    deleteTask: jest.fn(),
-    reorderTasks: jest.fn(),
-    addSubtask: jest.fn(),
-    deleteSubtask: jest.fn(),
-    getList: () => undefined,
-    getTask: () => undefined,
-  }
-}
-
 describe("MoveToOtherLists", () => {
   it("adds the source list's label to the task when moved", async () => {
     const user = userEvent.setup()
-    const storageContext = createStorageContext()
+    const storageContext = createWorkStorageContext()
     render(
       <WorkStorageContext.Provider value={storageContext}>
         <MoveToOtherLists

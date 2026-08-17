@@ -2,30 +2,12 @@ import { render, screen } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 import { StandardChecklistButton } from "./StandardChecklistButton"
 import { WorkStorageContext, WorkStorageContextType } from "../WorkStorageContext"
+import { createWorkStorageContext } from "../workStorageTestUtils"
 import { STANDARD_CHECKLIST, Subtask } from "../types"
-
-function createStorageContext(): WorkStorageContextType {
-  return {
-    lists: undefined,
-    loading: false,
-    addList: jest.fn(),
-    updateList: jest.fn(),
-    deleteList: jest.fn(),
-    reorderLists: jest.fn(),
-    addTask: jest.fn(),
-    updateTask: jest.fn(),
-    deleteTask: jest.fn(),
-    reorderTasks: jest.fn(),
-    addSubtask: jest.fn(),
-    deleteSubtask: jest.fn(),
-    getList: () => undefined,
-    getTask: () => undefined,
-  }
-}
 
 function renderWithContext(
   subtasks?: Record<string, Subtask>,
-  storageContext: WorkStorageContextType = createStorageContext(),
+  storageContext: WorkStorageContextType = createWorkStorageContext(),
 ) {
   return render(
     <WorkStorageContext.Provider value={storageContext}>
@@ -41,7 +23,7 @@ function renderWithContext(
 describe("StandardChecklistButton", () => {
   it("adds all the standard checklist items when there are no existing subtasks", async () => {
     const user = userEvent.setup()
-    const storageContext = createStorageContext()
+    const storageContext = createWorkStorageContext()
     renderWithContext(undefined, storageContext)
 
     await user.click(
@@ -62,7 +44,7 @@ describe("StandardChecklistButton", () => {
 
   it("skips items that already exist, case-insensitively", async () => {
     const user = userEvent.setup()
-    const storageContext = createStorageContext()
+    const storageContext = createWorkStorageContext()
     renderWithContext(
       {
         a: { id: "a", description: "Test" },
