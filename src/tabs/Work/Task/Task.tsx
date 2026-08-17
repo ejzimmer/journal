@@ -1,11 +1,11 @@
-import { ReactElement, useContext } from "react"
+import { ReactElement } from "react"
 import { isTask } from "../drag-utils"
 
 import { DraggableListItem } from "../../../shared/drag-and-drop/DraggableListItem"
 import { draggableTypeKey } from "../../../shared/drag-and-drop/types"
 import { Checkbox } from "../../../shared/controls/Checkbox"
-import { WorkTask } from "../types"
-import { FirebaseContext } from "../../../shared/FirebaseContext"
+import { WorkTask, WORK_KEY } from "../types"
+import { useWorkStorage } from "../WorkStorageContext"
 import { Labels } from "./Labels"
 import { UpdateLabels } from "./UpdateLabels"
 import { DueDate } from "./DueDate"
@@ -18,33 +18,28 @@ import { AddSubtask } from "./AddSubtask"
 
 type TaskProps = {
   task: WorkTask
-  path: string
+  listId: string
   dragHandle: ReactElement
 }
 
-export function Task({ task, path, dragHandle }: TaskProps) {
-  const storageContext = useContext(FirebaseContext)
-  if (!storageContext) {
-    throw new Error("missing firebase context")
-  }
+export function Task({ task, listId, dragHandle }: TaskProps) {
+  const { updateTask, deleteTask } = useWorkStorage()
 
   const onChangeWorktree = (newWorktree?: Worktree) => {
     if (newWorktree) {
-      storageContext.updateItem(path, { ...task, worktree: newWorktree })
+      updateTask(listId, { ...task, worktree: newWorktree })
     } else {
       const { worktree, ...taskWithoutWorktree } = task
-      storageContext.updateItem(path, taskWithoutWorktree)
+      updateTask(listId, taskWithoutWorktree)
     }
   }
-
-  const subtasksPath = `${path}/${task.id}/subtasks`
 
   return (
     <DraggableListItem
       getData={() => ({
         [draggableTypeKey]: "task",
         id: task.id,
-        parentId: path,
+        parentId: `${WORK_KEY}/${listId}/items`,
         position: task.position,
       })}
       dragPreview={<DragPreview task={task} />}
@@ -63,7 +58,7 @@ export function Task({ task, path, dragHandle }: TaskProps) {
           isChecked={task.status === "done"}
           onChange={(isChecked) => {
             const status = isChecked ? "done" : "not_started"
-            storageContext.updateItem(path, {
+            updateTask(listId, {
               ...task,
               status,
               lastStatusUpdate: new Date().getTime(),
@@ -77,22 +72,26 @@ export function Task({ task, path, dragHandle }: TaskProps) {
           label={`Edit description ${task.description}`}
           value={task.description}
           onChange={(description) => {
-            storageContext.updateItem(path, {
+            updateTask(listId, {
               ...task,
               description,
             })
           }}
-          onDelete={() => storageContext.deleteItem(path, task)}
+          onDelete={() => deleteTask(listId, task)}
           className="inline"
           style={{
             textDecoration: task.status === "done" ? "line-through" : "none",
           }}
         />
-        <Subtasks subtasks={task.subtasks} path={subtasksPath} />
+        <Subtasks
+          subtasks={task.subtasks}
+          listId={listId}
+          taskId={task.id}
+        />
         <Labels
           labels={task.labels}
           onRemoveLabel={(label) => {
-            storageContext.updateItem(path, {
+            updateTask(listId, {
               ...task,
               labels: task.labels?.filter((l) => l !== label),
             })
@@ -104,12 +103,12 @@ export function Task({ task, path, dragHandle }: TaskProps) {
           onChange={(date) => {
             const { dueDate, ...taskWithoutDueDate } = task
             if (date) {
-              storageContext.updateItem(path, {
+              updateTask(listId, {
                 ...task,
                 dueDate: date,
               })
             } else {
-              storageContext.updateItem(path, taskWithoutDueDate)
+              updateTask(listId, taskWithoutDueDate)
             }
           }}
         />
@@ -117,7 +116,7 @@ export function Task({ task, path, dragHandle }: TaskProps) {
         <UpdateLabels
           labels={task.labels}
           onUpdateLabels={(labels) => {
-            storageContext.updateItem(path, {
+            updateTask(listId, {
               ...task,
               labels: Array.from(labels.values()),
             })
@@ -125,7 +124,7 @@ export function Task({ task, path, dragHandle }: TaskProps) {
         />
 
         {!task.worktree && <AddWorktree onChange={onChangeWorktree} />}
-        <AddSubtask subtasks={task.subtasks} path={subtasksPath} />
+        <AddSubtask subtasks={task.subtasks} listId={listId} taskId={task.id} />
       </div>
     </DraggableListItem>
   )
