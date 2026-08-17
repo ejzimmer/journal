@@ -4,7 +4,6 @@ import {
   FocusEvent,
   useRef,
   useMemo,
-  useContext,
   JSX,
 } from "react"
 import { EditableText } from "../../shared/controls/EditableText"
@@ -17,8 +16,8 @@ import { DragHandle } from "../../shared/drag-and-drop/DragHandle"
 import { draggableTypeKey } from "../../shared/drag-and-drop/types"
 import { DraggableListItem } from "../../shared/drag-and-drop/DraggableListItem"
 import { PostitModalDialog } from "./PostitModal"
-import { WorkTask, WORK_KEY } from "./types"
-import { FirebaseContext } from "../../shared/FirebaseContext"
+import { WorkTask } from "./types"
+import { useWorkStorage } from "./WorkStorageContext"
 import { useDropTarget } from "../../shared/drag-and-drop/useDropTarget"
 import { sortByPosition } from "../../shared/drag-and-drop/utils"
 import { Labels } from "./Task/Labels"
@@ -56,14 +55,17 @@ export function TaskList({
     }
   }
 
-  const storageContext = useContext(FirebaseContext)
-  if (!storageContext) {
-    throw new Error("missing storage context")
-  }
+  const {
+    lists,
+    getList,
+    updateList,
+    deleteList,
+    reorderLists,
+    reorderTasks,
+    addTask,
+  } = useWorkStorage()
 
-  const { value: lists } =
-    storageContext.useValue<Record<string, WorkTask>>(WORK_KEY)
-  const list = lists?.[listId]
+  const list = getList(listId)
 
   const sortedList = useMemo(
     () => (list?.items ? sortByPosition(Object.values(list.items)) : []),
@@ -88,10 +90,10 @@ export function TaskList({
       allowedEdges={["left", "right"]}
       dragHandle={
         <DragHandle
-          list={Object.values(lists)}
+          list={Object.values(lists ?? {})}
           index={index}
           onReorder={(reorderedList) => {
-            storageContext.updateList(WORK_KEY, reorderedList)
+            reorderLists(reorderedList)
           }}
         />
       }
@@ -104,7 +106,7 @@ export function TaskList({
               value={list.description}
               onChange={(description) => {
                 if (description) {
-                  storageContext.updateItem(WORK_KEY, { ...list, description })
+                  updateList({ ...list, description })
                 } else {
                   setConfirmDeleteModalOpen(true)
                 }
@@ -116,7 +118,7 @@ export function TaskList({
               <LabelsControl
                 value={list.labels}
                 onChange={(labels) => {
-                  storageContext.updateItem(WORK_KEY, { ...list, labels })
+                  updateList({ ...list, labels })
                   setEditingLabel(false)
                 }}
                 label=""
@@ -128,7 +130,7 @@ export function TaskList({
                 <Labels
                   labels={list.labels}
                   onRemoveLabel={(label) =>
-                    storageContext.updateItem(WORK_KEY, {
+                    updateList({
                       ...list,
                       labels: list.labels?.filter((l) => l !== label),
                     })
@@ -147,7 +149,7 @@ export function TaskList({
             isOpen={confirmDeleteModalOpen}
             message={`Are you sure you want to delete list ${list.description}?`}
             onConfirm={() => {
-              storageContext.deleteItem(WORK_KEY, list)
+              deleteList(list)
             }}
             onCancel={() => setConfirmDeleteModalOpen(false)}
           />
@@ -161,17 +163,14 @@ export function TaskList({
           {sortedList?.map((task, index) => (
             <Task
               key={task.id}
-              path={`${WORK_KEY}/${listId}/items`}
+              listId={listId}
               task={task}
               dragHandle={
                 <DragHandle
                   list={sortedList}
                   index={index}
                   onReorder={(reorderedList) =>
-                    storageContext.updateList(
-                      `${WORK_KEY}/${listId}/items`,
-                      reorderedList,
-                    )
+                    reorderTasks(listId, reorderedList)
                   }
                   additionalActions={additionalMoveDestinations(task)}
                 />
@@ -181,9 +180,7 @@ export function TaskList({
           {addTaskFormVisible && (
             <li style={{ paddingInlineStart: "var(--margin-width)" }}>
               <AddTaskForm
-                onSubmit={(newTask) =>
-                  storageContext.addItem(`${WORK_KEY}/${listId}/items`, newTask)
-                }
+                onSubmit={(newTask) => addTask(listId, newTask)}
                 onClose={() => {
                   setAddTaskFormVisible(false)
                 }}

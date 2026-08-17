@@ -1,61 +1,92 @@
 import { render, screen } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
-import { FirebaseContext } from "../../../shared/FirebaseContext"
 import { StandardChecklistButton } from "./StandardChecklistButton"
+import { WorkStorageContext, WorkStorageContextType } from "../WorkStorageContext"
 import { STANDARD_CHECKLIST, Subtask } from "../types"
 
-const mockContext = {
-  addItem: jest.fn(),
-  updateItem: jest.fn(),
-  deleteItem: jest.fn(),
-  updateList: jest.fn(),
-  useValue: jest.fn(),
+function createStorageContext(): WorkStorageContextType {
+  return {
+    lists: undefined,
+    loading: false,
+    addList: jest.fn(),
+    updateList: jest.fn(),
+    deleteList: jest.fn(),
+    reorderLists: jest.fn(),
+    addTask: jest.fn(),
+    updateTask: jest.fn(),
+    deleteTask: jest.fn(),
+    reorderTasks: jest.fn(),
+    addSubtask: jest.fn(),
+    deleteSubtask: jest.fn(),
+    getList: () => undefined,
+    getTask: () => undefined,
+  }
 }
 
-function renderWithContext(subtasks?: Record<string, Subtask>) {
+function renderWithContext(
+  subtasks?: Record<string, Subtask>,
+  storageContext: WorkStorageContextType = createStorageContext(),
+) {
   return render(
-    <FirebaseContext.Provider value={mockContext}>
+    <WorkStorageContext.Provider value={storageContext}>
       <StandardChecklistButton
         subtasks={subtasks}
-        path="work/list-1/items/task-1/subtasks"
+        listId="list-1"
+        taskId="task-1"
       />
-    </FirebaseContext.Provider>,
+    </WorkStorageContext.Provider>,
   )
 }
 
 describe("StandardChecklistButton", () => {
   it("adds all the standard checklist items when there are no existing subtasks", async () => {
     const user = userEvent.setup()
-    renderWithContext()
+    const storageContext = createStorageContext()
+    renderWithContext(undefined, storageContext)
 
-    await user.click(screen.getByRole("button", { name: "Add standard checklist" }))
+    await user.click(
+      screen.getByRole("button", { name: "Add standard checklist" }),
+    )
 
-    expect(mockContext.addItem).toHaveBeenCalledTimes(STANDARD_CHECKLIST.length)
+    expect(storageContext.addSubtask).toHaveBeenCalledTimes(
+      STANDARD_CHECKLIST.length,
+    )
     STANDARD_CHECKLIST.forEach((description) => {
-      expect(mockContext.addItem).toHaveBeenCalledWith(
-        "work/list-1/items/task-1/subtasks",
-        { description },
+      expect(storageContext.addSubtask).toHaveBeenCalledWith(
+        "list-1",
+        "task-1",
+        description,
       )
     })
   })
 
   it("skips items that already exist, case-insensitively", async () => {
     const user = userEvent.setup()
-    renderWithContext({
-      a: { id: "a", description: "Test" },
-      b: { id: "b", description: "build" },
-    })
-
-    await user.click(screen.getByRole("button", { name: "Add standard checklist" }))
-
-    expect(mockContext.addItem).toHaveBeenCalledTimes(STANDARD_CHECKLIST.length - 2)
-    expect(mockContext.addItem).not.toHaveBeenCalledWith(
-      expect.anything(),
-      expect.objectContaining({ description: "test" }),
+    const storageContext = createStorageContext()
+    renderWithContext(
+      {
+        a: { id: "a", description: "Test" },
+        b: { id: "b", description: "build" },
+      },
+      storageContext,
     )
-    expect(mockContext.addItem).not.toHaveBeenCalledWith(
-      expect.anything(),
-      expect.objectContaining({ description: "build" }),
+
+    await user.click(
+      screen.getByRole("button", { name: "Add standard checklist" }),
+    )
+
+    expect(storageContext.addSubtask).toHaveBeenCalledTimes(
+      STANDARD_CHECKLIST.length - 2,
+    )
+    expect(storageContext.addSubtask).not.toHaveBeenCalledWith(
+      "list-1",
+      "task-1",
+      "test",
+    )
+    expect(storageContext.addSubtask).not.toHaveBeenCalledWith(
+      "list-1",
+      "task-1",
+      "build",
     )
   })
 

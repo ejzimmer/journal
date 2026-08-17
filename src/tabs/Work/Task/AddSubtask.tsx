@@ -2,34 +2,31 @@ import {
   FocusEvent,
   FormEvent,
   KeyboardEvent,
-  useContext,
   useRef,
   useState,
 } from "react"
 import { PlusIcon } from "../../../shared/icons/Plus"
-import { FirebaseContext } from "../../../shared/FirebaseContext"
+import { useWorkStorage } from "../WorkStorageContext"
 import { Subtask } from "../types"
 import { StandardChecklistButton } from "./StandardChecklistButton"
 
 type AddSubtaskProps = {
   subtasks?: Record<string, Subtask>
-  path: string
+  listId: string
+  taskId: string
 }
 
-export function AddSubtask({ subtasks, path }: AddSubtaskProps) {
+export function AddSubtask({ subtasks, listId, taskId }: AddSubtaskProps) {
   const [formIsVisible, setFormVisible] = useState(false)
   const formRef = useRef<HTMLFormElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
-  const storageContext = useContext(FirebaseContext)
-  if (!storageContext) {
-    throw new Error("missing firebase context")
-  }
+  const { addSubtask } = useWorkStorage()
 
   const handleSubmit = (event: FormEvent) => {
     event.preventDefault()
     const description = inputRef.current?.value.trim()
     if (description) {
-      storageContext.addItem(path, { description })
+      addSubtask(listId, taskId, description)
     }
     setFormVisible(false)
   }
@@ -77,7 +74,8 @@ export function AddSubtask({ subtasks, path }: AddSubtaskProps) {
       />
       <StandardChecklistButton
         subtasks={subtasks}
-        path={path}
+        listId={listId}
+        taskId={taskId}
         onAdd={() => inputRef.current?.focus()}
       />
     </form>

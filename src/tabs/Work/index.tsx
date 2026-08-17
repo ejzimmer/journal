@@ -1,5 +1,4 @@
-import { useCallback, useContext, useEffect, useMemo, useRef } from "react"
-import { FirebaseContext } from "../../shared/FirebaseContext"
+import { useCallback, useEffect, useMemo, useRef } from "react"
 import { NewListModal } from "./NewListModal"
 import { TaskList } from "./TaskList"
 import { hoursToMilliseconds, isBefore, startOfDay } from "date-fns"
@@ -10,36 +9,30 @@ import { WorkTask, Label, WORK_KEY } from "./types"
 import { useDraggableList } from "../../shared/drag-and-drop/useDraggableList"
 import { isDraggable, sortByPosition } from "../../shared/drag-and-drop/utils"
 import { useDropTarget } from "../../shared/drag-and-drop/useDropTarget"
+import { WorkStorageProvider, useWorkStorage } from "./WorkStorageContext"
 
 import "./index.css"
 import { MoveToOtherLists } from "./MoveToOtherLists"
 import { addSourceListLabel } from "./labelUtils"
 
 export function Work() {
+  return (
+    <WorkStorageProvider>
+      <WorkContent />
+    </WorkStorageProvider>
+  )
+}
+
+function WorkContent() {
   const dropTargetRef = useRef<HTMLOListElement>(null)
-  const context = useContext(FirebaseContext)
-  if (!context) {
-    throw new Error("Missing Firebase context provider")
-  }
-  const { addItem, useValue, updateList } = context
-  const { value: lists, loading: listsLoading } =
-    useValue<Record<string, WorkTask>>(WORK_KEY)
+  const { lists, loading: listsLoading, addList, addTask, reorderTasks } =
+    useWorkStorage()
 
   const doneList = useMemo(() => {
     return (
       lists && Object.values(lists).find((list) => list.description === "Done")
     )
   }, [lists])
-
-  const onAddList = useCallback(
-    (listName: string, labels: Label[] = []) => {
-      addItem(WORK_KEY, {
-        description: listName,
-        ...(labels.length > 0 && { labels }),
-      })
-    },
-    [addItem],
-  )
 
   const orderedLists = useMemo(
     () =>
@@ -84,7 +77,7 @@ export function Work() {
       )
 
       done.forEach((task) =>
-        addItem<WorkTask>(`${WORK_KEY}/${doneList.id}/items`, {
+        addTask(doneList.id, {
           ...task,
           lastStatusUpdate: new Date().getTime(),
         }),
@@ -94,9 +87,9 @@ export function Work() {
         ...task,
         position: index,
       }))
-      updateList<WorkTask>(`${WORK_KEY}/${list.id}/items`, orderedNotDone)
+      reorderTasks(list.id, orderedNotDone)
     })
-  }, [lists, addItem, orderedLists, doneList, updateList])
+  }, [lists, addTask, orderedLists, doneList, reorderTasks])
 
   useEffect(() => {
     onUpdate()
@@ -171,7 +164,7 @@ export function Work() {
   return (
     <LabelsContext.Provider value={labels}>
       <div className="new-list-modal-container">
-        <NewListModal onCreate={onAddList} />
+        <NewListModal onCreate={addList} />
       </div>
       {lists ? (
         <ol ref={dropTargetRef} className="work-lists">

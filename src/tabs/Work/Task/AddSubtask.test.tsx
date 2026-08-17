@@ -1,100 +1,117 @@
 import { useState } from "react"
 import { render, screen } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
-import { FirebaseContext } from "../../../shared/FirebaseContext"
+import { WorkStorageContext, WorkStorageContextType } from "../WorkStorageContext"
 import { AddSubtask } from "./AddSubtask"
 import { STANDARD_CHECKLIST, Subtask } from "../types"
 
-// Mimics Firebase's real-time updates: addItem writes into real state, so
+function createStorageContext(
+  overrides: Partial<WorkStorageContextType> = {},
+): WorkStorageContextType {
+  return {
+    lists: undefined,
+    loading: false,
+    addList: jest.fn(),
+    updateList: jest.fn(),
+    deleteList: jest.fn(),
+    reorderLists: jest.fn(),
+    addTask: jest.fn(),
+    updateTask: jest.fn(),
+    deleteTask: jest.fn(),
+    reorderTasks: jest.fn(),
+    addSubtask: jest.fn(),
+    deleteSubtask: jest.fn(),
+    getList: () => undefined,
+    getTask: () => undefined,
+    ...overrides,
+  }
+}
+
+// Mimics Firebase's real-time updates: addSubtask writes into real state, so
 // the component tree re-renders (and the standard checklist button can
 // unmount itself) the same way it does against the real backend.
 function AddSubtaskWithLiveBackend({
-  addItemSpy,
+  addSubtaskSpy,
 }: {
-  addItemSpy: jest.Mock
+  addSubtaskSpy: jest.Mock
 }) {
   const [subtasks, setSubtasks] = useState<Record<string, Subtask>>({})
 
-  const addItem = <T,>(path: string, item: Omit<T, "id">) => {
-    addItemSpy(path, item)
+  const addSubtask = (listId: string, taskId: string, description: string) => {
+    addSubtaskSpy(listId, taskId, description)
     const id = `id-${Math.random()}`
     setSubtasks((current) => ({
       ...current,
-      [id]: { id, ...item } as unknown as Subtask,
+      [id]: { id, description },
     }))
-    return id
   }
 
   return (
-    <FirebaseContext.Provider
-      value={{
-        addItem,
-        updateItem: jest.fn(),
-        deleteItem: jest.fn(),
-        updateList: jest.fn(),
-        useValue: jest.fn(),
-      }}
-    >
-      <AddSubtask path="work/list-1/items/task-1/subtasks" subtasks={subtasks} />
-    </FirebaseContext.Provider>
+    <WorkStorageContext.Provider value={createStorageContext({ addSubtask })}>
+      <AddSubtask listId="list-1" taskId="task-1" subtasks={subtasks} />
+    </WorkStorageContext.Provider>
   )
 }
 
-const mockContext = {
-  addItem: jest.fn(),
-  updateItem: jest.fn(),
-  deleteItem: jest.fn(),
-  updateList: jest.fn(),
-  useValue: jest.fn(),
-}
-
-function renderWithContext() {
+function renderWithContext(storageContext: WorkStorageContextType) {
   return render(
-    <FirebaseContext.Provider value={mockContext}>
-      <AddSubtask path="work/list-1/items/task-1/subtasks" />
-    </FirebaseContext.Provider>,
+    <WorkStorageContext.Provider value={storageContext}>
+      <AddSubtask listId="list-1" taskId="task-1" />
+    </WorkStorageContext.Provider>,
   )
 }
 
 describe("AddSubtask", () => {
   it("adds a subtask on enter", async () => {
     const user = userEvent.setup()
-    renderWithContext()
+    const storageContext = createStorageContext()
+    renderWithContext(storageContext)
 
     await user.click(screen.getByRole("button", { name: "Add subtask" }))
-    await user.type(screen.getByRole("textbox", { name: "New subtask" }), "test{Enter}")
+    await user.type(
+      screen.getByRole("textbox", { name: "New subtask" }),
+      "test{Enter}",
+    )
 
-    expect(mockContext.addItem).toHaveBeenCalledWith(
-      "work/list-1/items/task-1/subtasks",
-      { description: "test" },
+    expect(storageContext.addSubtask).toHaveBeenCalledWith(
+      "list-1",
+      "task-1",
+      "test",
     )
   })
 
   it("doesn't add a subtask with no description", async () => {
     const user = userEvent.setup()
-    renderWithContext()
+    const storageContext = createStorageContext()
+    renderWithContext(storageContext)
 
     await user.click(screen.getByRole("button", { name: "Add subtask" }))
     await user.keyboard("{Enter}")
 
-    expect(mockContext.addItem).not.toHaveBeenCalled()
+    expect(storageContext.addSubtask).not.toHaveBeenCalled()
   })
 
   it("cancels without adding when Escape is pressed", async () => {
     const user = userEvent.setup()
-    renderWithContext()
+    const storageContext = createStorageContext()
+    renderWithContext(storageContext)
 
     await user.click(screen.getByRole("button", { name: "Add subtask" }))
-    await user.type(screen.getByRole("textbox", { name: "New subtask" }), "test")
+    await user.type(
+      screen.getByRole("textbox", { name: "New subtask" }),
+      "test",
+    )
     await user.keyboard("{Escape}")
 
-    expect(mockContext.addItem).not.toHaveBeenCalled()
-    expect(screen.getByRole("button", { name: "Add subtask" })).toBeInTheDocument()
+    expect(storageContext.addSubtask).not.toHaveBeenCalled()
+    expect(
+      screen.getByRole("button", { name: "Add subtask" }),
+    ).toBeInTheDocument()
   })
 
   it("doesn't show the standard checklist button until the form is open", async () => {
     const user = userEvent.setup()
-    renderWithContext()
+    renderWithContext(createStorageContext())
 
     expect(
       screen.queryByRole("button", { name: "Add standard checklist" }),
@@ -109,14 +126,17 @@ describe("AddSubtask", () => {
 
   it("adds the standard checklist without closing the form", async () => {
     const user = userEvent.setup()
-    renderWithContext()
+    const storageContext = createStorageContext()
+    renderWithContext(storageContext)
 
     await user.click(screen.getByRole("button", { name: "Add subtask" }))
     await user.click(
       screen.getByRole("button", { name: "Add standard checklist" }),
     )
 
-    expect(mockContext.addItem).toHaveBeenCalledTimes(STANDARD_CHECKLIST.length)
+    expect(storageContext.addSubtask).toHaveBeenCalledTimes(
+      STANDARD_CHECKLIST.length,
+    )
     expect(
       screen.getByRole("textbox", { name: "New subtask" }),
     ).toBeInTheDocument()
@@ -124,8 +144,8 @@ describe("AddSubtask", () => {
 
   it("keeps the form open and focused after the checklist button removes itself", async () => {
     const user = userEvent.setup()
-    const addItemSpy = jest.fn()
-    render(<AddSubtaskWithLiveBackend addItemSpy={addItemSpy} />)
+    const addSubtaskSpy = jest.fn()
+    render(<AddSubtaskWithLiveBackend addSubtaskSpy={addSubtaskSpy} />)
 
     await user.click(screen.getByRole("button", { name: "Add subtask" }))
     // Once every standard item exists this button hides itself (see
@@ -142,9 +162,6 @@ describe("AddSubtask", () => {
     expect(input).toHaveFocus()
 
     await user.type(input, "one more{Enter}")
-    expect(addItemSpy).toHaveBeenCalledWith(
-      "work/list-1/items/task-1/subtasks",
-      { description: "one more" },
-    )
+    expect(addSubtaskSpy).toHaveBeenCalledWith("list-1", "task-1", "one more")
   })
 })

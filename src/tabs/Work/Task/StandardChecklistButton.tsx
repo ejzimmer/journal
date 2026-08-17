@@ -1,23 +1,21 @@
-import { useContext } from "react"
 import { ChecklistIcon } from "../../../shared/icons/Checklist"
-import { FirebaseContext } from "../../../shared/FirebaseContext"
+import { useWorkStorage } from "../WorkStorageContext"
 import { STANDARD_CHECKLIST, Subtask } from "../types"
 
 type StandardChecklistButtonProps = {
   subtasks?: Record<string, Subtask>
-  path: string
+  listId: string
+  taskId: string
   onAdd?: () => void
 }
 
 export function StandardChecklistButton({
   subtasks,
-  path,
+  listId,
+  taskId,
   onAdd,
 }: StandardChecklistButtonProps) {
-  const storageContext = useContext(FirebaseContext)
-  if (!storageContext) {
-    throw new Error("missing firebase context")
-  }
+  const { addSubtask } = useWorkStorage()
 
   const existingDescriptions = Object.values(subtasks ?? {}).map((subtask) =>
     subtask.description.toLowerCase(),
@@ -36,7 +34,7 @@ export function StandardChecklistButton({
     )
     STANDARD_CHECKLIST.forEach((description) => {
       if (!existing.includes(description.toLowerCase())) {
-        storageContext.addItem(path, { description })
+        addSubtask(listId, taskId, description)
       }
     })
     onAdd?.()

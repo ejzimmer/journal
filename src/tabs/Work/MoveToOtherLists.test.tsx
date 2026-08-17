@@ -1,7 +1,7 @@
 import { render, screen } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 import { MoveToOtherLists } from "./MoveToOtherLists"
-import { FirebaseContext } from "../../shared/FirebaseContext"
+import { WorkStorageContext, WorkStorageContextType } from "./WorkStorageContext"
 import { WorkTask } from "./types"
 
 const task: WorkTask = {
@@ -32,43 +32,47 @@ const destinationList: WorkTask = {
   position: 1,
 }
 
-const storageContext = {
-  addItem: jest.fn(),
-  updateItem: jest.fn(),
-  deleteItem: jest.fn(),
-  updateList: jest.fn(),
-  useValue: () => ({ value: undefined, loading: false }),
+function createStorageContext(): WorkStorageContextType {
+  return {
+    lists: undefined,
+    loading: false,
+    addList: jest.fn(),
+    updateList: jest.fn(),
+    deleteList: jest.fn(),
+    reorderLists: jest.fn(),
+    addTask: jest.fn(),
+    updateTask: jest.fn(),
+    deleteTask: jest.fn(),
+    reorderTasks: jest.fn(),
+    addSubtask: jest.fn(),
+    deleteSubtask: jest.fn(),
+    getList: () => undefined,
+    getTask: () => undefined,
+  }
 }
 
-const Wrapper = ({ children }: { children: React.ReactNode }) => (
-  <FirebaseContext.Provider value={storageContext}>
-    {children}
-  </FirebaseContext.Provider>
-)
-
 describe("MoveToOtherLists", () => {
-  beforeEach(() => {
-    jest.clearAllMocks()
-  })
-
   it("adds the source list's label to the task when moved", async () => {
     const user = userEvent.setup()
+    const storageContext = createStorageContext()
     render(
-      <MoveToOtherLists
-        allLists={[sourceList, destinationList]}
-        currentListId={sourceList.id}
-        task={task}
-      />,
-      { wrapper: Wrapper },
+      <WorkStorageContext.Provider value={storageContext}>
+        <MoveToOtherLists
+          allLists={[sourceList, destinationList]}
+          currentListId={sourceList.id}
+          task={task}
+        />
+      </WorkStorageContext.Provider>,
     )
 
     await user.click(screen.getByRole("menuitem", { name: "Today" }))
 
-    expect(storageContext.addItem).toHaveBeenCalledWith(
-      "work/list-2/items",
+    expect(storageContext.addTask).toHaveBeenCalledWith(
+      "list-2",
       expect.objectContaining({
         labels: [{ value: "a11y", colour: "blue" }],
       }),
     )
+    expect(storageContext.deleteTask).toHaveBeenCalledWith("list-1", task)
   })
 })
