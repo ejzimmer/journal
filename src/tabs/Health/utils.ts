@@ -8,6 +8,8 @@ export const STARTING_BALANCE = 19687
 export type Balance = {
   day: number
   month: string
+  monthNumber: number
+  dayOfWeek: number
   balance?: number
   diff?: number
 }
@@ -25,12 +27,19 @@ export function setupDays(dayData?: Record<string, DayData>): Balance[] {
     const { consumed, expended } = dayData?.[day + month] ?? {}
     const diff = consumed && expended && expended - consumed
 
-    const daySummary = { day, month }
-    if (typeof previousBalance === "number" && typeof diff === "number") {
-      days[i] = { ...daySummary, balance: previousBalance - diff, diff }
-    } else {
-      days[i] = daySummary
+    const daySummary = {
+      day,
+      month,
+      monthNumber: date.getMonth() + 1,
+      dayOfWeek: date.getDay(),
+      diff: typeof diff === "number" ? diff : undefined,
     }
+    // the running balance can only be calculated while every day since
+    // the start of the year has a diff - a day's own diff doesn't need that
+    days[i] =
+      typeof previousBalance === "number" && typeof diff === "number"
+        ? { ...daySummary, balance: previousBalance - diff }
+        : daySummary
   }
 
   return days
