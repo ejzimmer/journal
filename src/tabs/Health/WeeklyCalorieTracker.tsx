@@ -18,9 +18,6 @@ export function WeeklyCalorieTracker() {
   const weekBalances = weeklyBalances.map((balance) => balance.balance)
   const highestBalance = Math.max(...weekBalances)
   const lowestBalance = Math.min(...weekBalances)
-  // a surplus week can push the balance above STARTING_BALANCE - scale
-  // against whichever is bigger so the tallest bar never exceeds 100%
-  // (and doesn't get clipped by the container)
   const heightScale = Math.max(highestBalance, STARTING_BALANCE)
 
   return (
