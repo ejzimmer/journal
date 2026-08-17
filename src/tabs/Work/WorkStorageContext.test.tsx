@@ -223,6 +223,172 @@ describe("WorkStorageContext", () => {
   })
 })
 
+describe("WorkStorageContext labels", () => {
+  const secondTask: WorkTask = {
+    id: "task-2",
+    description: "Fix contrast in dark mode",
+    status: "not_started",
+    parentId: "list-1/items",
+    lastStatusUpdate: 0,
+    position: 1,
+  }
+
+  const labelledTask: WorkTask = {
+    ...task,
+    labels: [{ value: "a11y", colour: "blue" }],
+  }
+
+  const labelledList: WorkTask = {
+    ...list,
+    labels: [{ value: "a11y", colour: "blue" }],
+    items: {
+      [labelledTask.id]: labelledTask,
+      [secondTask.id]: secondTask,
+    },
+  }
+
+  const otherList: WorkTask = {
+    id: "list-2",
+    description: "Today",
+    status: "not_started",
+    parentId: "work",
+    lastStatusUpdate: 0,
+    position: 1,
+  }
+
+  const twoLists = { [labelledList.id]: labelledList, [otherList.id]: otherList }
+
+  it("returns every distinct label used across all lists and tasks", () => {
+    const firebaseContext = createFirebaseContext(twoLists)
+    const workStorage = getWorkStorage(firebaseContext)
+
+    expect(workStorage?.labels).toEqual([{ value: "a11y", colour: "blue" }])
+  })
+
+  it("createLabel attaches a new label to a task, picking an unused colour", () => {
+    const firebaseContext = createFirebaseContext(twoLists)
+    const workStorage = getWorkStorage(firebaseContext)
+
+    const created = workStorage?.createLabel(
+      { listId: labelledList.id, taskId: labelledTask.id },
+      "urgent",
+    )
+
+    expect(created).toEqual({ value: "urgent", colour: "yellow" })
+    expect(firebaseContext.updateItem).toHaveBeenCalledWith(
+      "work/list-1/items",
+      {
+        ...labelledTask,
+        labels: [
+          { value: "a11y", colour: "blue" },
+          { value: "urgent", colour: "yellow" },
+        ],
+      },
+    )
+  })
+
+  it("createLabel attaches a new label to a list when no taskId is given", () => {
+    const firebaseContext = createFirebaseContext(twoLists)
+    const workStorage = getWorkStorage(firebaseContext)
+
+    const created = workStorage?.createLabel(
+      { listId: otherList.id },
+      "urgent",
+    )
+
+    expect(created).toEqual({ value: "urgent", colour: "yellow" })
+    expect(firebaseContext.updateItem).toHaveBeenCalledWith("work", {
+      ...otherList,
+      labels: [{ value: "urgent", colour: "yellow" }],
+    })
+  })
+
+  it("editLabel updates every list and task using the old label, and nothing else", () => {
+    const firebaseContext = createFirebaseContext(twoLists)
+    const workStorage = getWorkStorage(firebaseContext)
+
+    workStorage?.editLabel(
+      { value: "a11y", colour: "blue" },
+      { value: "accessibility", colour: "green" },
+    )
+
+    expect(firebaseContext.updateItem).toHaveBeenCalledWith("work", {
+      ...labelledList,
+      labels: [{ value: "accessibility", colour: "green" }],
+    })
+    expect(firebaseContext.updateItem).toHaveBeenCalledWith(
+      "work/list-1/items",
+      {
+        ...labelledTask,
+        labels: [{ value: "accessibility", colour: "green" }],
+      },
+    )
+    expect(firebaseContext.updateItem).toHaveBeenCalledTimes(2)
+  })
+
+  it("deleteLabel removes the label from a single task only", () => {
+    const firebaseContext = createFirebaseContext(twoLists)
+    const workStorage = getWorkStorage(firebaseContext)
+
+    workStorage?.deleteLabel(
+      { listId: labelledList.id, taskId: labelledTask.id },
+      labelledTask.labels![0],
+    )
+
+    expect(firebaseContext.updateItem).toHaveBeenCalledWith(
+      "work/list-1/items",
+      { ...labelledTask, labels: [] },
+    )
+    expect(firebaseContext.updateItem).toHaveBeenCalledTimes(1)
+  })
+
+  it("deleteLabel removes the label from a single list only", () => {
+    const firebaseContext = createFirebaseContext(twoLists)
+    const workStorage = getWorkStorage(firebaseContext)
+
+    workStorage?.deleteLabel(
+      { listId: labelledList.id },
+      labelledList.labels![0],
+    )
+
+    expect(firebaseContext.updateItem).toHaveBeenCalledWith("work", {
+      ...labelledList,
+      labels: [],
+    })
+    expect(firebaseContext.updateItem).toHaveBeenCalledTimes(1)
+  })
+
+  it("addTask normalizes a label's colour to match the existing label with the same value", () => {
+    const firebaseContext = createFirebaseContext(twoLists)
+    const workStorage = getWorkStorage(firebaseContext)
+
+    workStorage?.addTask(otherList.id, {
+      description: "New task",
+      labels: [{ value: "a11y", colour: "red" }],
+    })
+
+    expect(firebaseContext.addItem).toHaveBeenCalledWith(
+      "work/list-2/items",
+      {
+        description: "New task",
+        labels: [{ value: "a11y", colour: "blue" }],
+      },
+    )
+  })
+
+  it("addList normalizes a label's colour to match the existing label with the same value", () => {
+    const firebaseContext = createFirebaseContext(twoLists)
+    const workStorage = getWorkStorage(firebaseContext)
+
+    workStorage?.addList("New list", [{ value: "a11y", colour: "red" }])
+
+    expect(firebaseContext.addItem).toHaveBeenCalledWith("work", {
+      description: "New list",
+      labels: [{ value: "a11y", colour: "blue" }],
+    })
+  })
+})
+
 describe("Work storage screen render smoke test", () => {
   it("renders children once lists have loaded", () => {
     const firebaseContext = createFirebaseContext({ [list.id]: list })

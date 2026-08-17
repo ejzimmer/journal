@@ -90,8 +90,9 @@ describe("TaskList label", () => {
     const labelItem = screen.getByText("a11y").closest("li")
     await user.click(within(labelItem!).getByRole("button"))
 
-    expect(storageContext.updateList).toHaveBeenCalledWith(
-      expect.objectContaining({ labels: [] }),
+    expect(storageContext.deleteLabel).toHaveBeenCalledWith(
+      { listId: labelledList.id },
+      { value: "a11y", colour: "blue" },
     )
   })
 

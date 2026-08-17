@@ -18,6 +18,10 @@ export function createWorkStorageContext(
     deleteSubtask: jest.fn(),
     getList: () => undefined,
     getTask: () => undefined,
+    labels: [],
+    createLabel: jest.fn((_target, value) => ({ value, colour: "blue" })),
+    editLabel: jest.fn(),
+    deleteLabel: jest.fn(),
     ...overrides,
   }
 }
