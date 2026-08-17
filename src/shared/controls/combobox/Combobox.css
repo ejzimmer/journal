@@ -12,6 +12,8 @@
     position-area: end center;
     margin-block-start: 4px;
     min-width: 100%;
+    max-height: min(300px, 50vh);
+    overflow-y: auto;
   }
 
   input[role="combobox"] {
