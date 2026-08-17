@@ -18,6 +18,10 @@ export function WeeklyCalorieTracker() {
   const weekBalances = weeklyBalances.map((balance) => balance.balance)
   const highestBalance = Math.max(...weekBalances)
   const lowestBalance = Math.min(...weekBalances)
+  // a surplus week can push the balance above STARTING_BALANCE - scale
+  // against whichever is bigger so the tallest bar never exceeds 100%
+  // (and doesn't get clipped by the container)
+  const heightScale = Math.max(highestBalance, STARTING_BALANCE)
 
   return (
     <div className="weekly-calories">
@@ -25,7 +29,7 @@ export function WeeklyCalorieTracker() {
         <div className="week-container" key={index}>
           <div
             className={getWeekClass({ balance, highestBalance, lowestBalance })}
-            style={{ height: (balance.balance / STARTING_BALANCE) * 100 + "%" }}
+            style={{ height: (balance.balance / heightScale) * 100 + "%" }}
             role="img"
             aria-label={`${balance.day} ${balance.month}: ${balance.balance.toLocaleString()}`}
           />

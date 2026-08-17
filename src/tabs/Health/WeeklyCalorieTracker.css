@@ -8,9 +8,8 @@
   width: 100%;
   max-width: 100%;
   overflow-x: auto;
-  overflow-y: visible;
   border-block-end: 4px solid var(--border-colour);
-  padding-block-start: 40px;
+  padding-block-start: 8px;
   padding-inline: 6px;
   box-sizing: content-box;
 
@@ -20,7 +19,10 @@
   }
 
   .week {
-    flex: 1 1 0;
+    /* sized so a full year (53 weeks, 52 gaps of 3px) fits across the
+       container - bars don't stretch to fill the row when there are
+       fewer weeks than that yet, they just leave the rest of the row empty */
+    flex: 0 0 calc((100% - 156px) / 53);
     min-width: 12px;
     align-self: flex-end;
     background: linear-gradient(90deg, hsl(283 96% 44%), hsl(283 96% 34%));
