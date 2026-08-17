@@ -31,7 +31,12 @@ export function AddSubtaskForm({
       onSubmit={(event) => {
         event.preventDefault()
 
-        onAddSubtask(description)
+        const trimmedDescription = description.trim()
+        if (!trimmedDescription) {
+          return
+        }
+
+        onAddSubtask(trimmedDescription)
         setDescription("")
       }}
     >
@@ -40,6 +45,7 @@ export function AddSubtaskForm({
         onChange={(event) => setDescription(event.target.value)}
         disabled={!isFormVisible}
         size={description.length * 0.7}
+        required
       />
       <button className="ghost" disabled={!isFormVisible}>
         <TickIcon width="16px" colour="var(--action-colour)" />
