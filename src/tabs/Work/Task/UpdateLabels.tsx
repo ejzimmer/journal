@@ -1,22 +1,16 @@
 import { useState } from "react"
 import { TagIcon } from "../../../shared/icons/Tag"
 import { LabelsControl } from "../LabelsControl"
-import { useWorkStorage } from "../WorkStorageContext"
 import { Label } from "../types"
 
 export function UpdateLabels({
-  listId,
-  taskId,
   labels,
   onUpdateLabels,
 }: {
-  listId: string
-  taskId: string
   labels?: Label[]
   onUpdateLabels: (labels: Label[]) => void
 }) {
   const [addingLabel, setAddingLabel] = useState(false)
-  const { createLabel } = useWorkStorage()
 
   return addingLabel ? (
     <LabelsControl
@@ -31,7 +25,6 @@ export function UpdateLabels({
         onUpdateLabels(Array.from(uniqueLabels.values()))
         setAddingLabel(false)
       }}
-      onCreateLabel={(value) => createLabel({ listId, taskId }, value)}
       label=""
     />
   ) : (

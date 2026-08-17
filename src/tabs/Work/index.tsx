@@ -5,7 +5,7 @@ import { hoursToMilliseconds, isBefore, startOfDay } from "date-fns"
 import { Skeleton } from "../../shared/controls/Skeleton"
 import { draggableTypeKey } from "../../shared/drag-and-drop/types"
 import { LabelsContext } from "./LabelsContext"
-import { WorkTask, WORK_KEY } from "./types"
+import { WorkTask, Label, WORK_KEY } from "./types"
 import { useDraggableList } from "../../shared/drag-and-drop/useDraggableList"
 import { isDraggable, sortByPosition } from "../../shared/drag-and-drop/utils"
 import { useDropTarget } from "../../shared/drag-and-drop/useDropTarget"
@@ -31,7 +31,6 @@ function WorkContent() {
     addList,
     addTask,
     reorderTasks,
-    labels,
   } = useWorkStorage()
 
   const doneList = useMemo(() => {
@@ -148,6 +147,20 @@ function WorkContent() {
       return sourceList ? addSourceListLabel(item, sourceList) : item
     },
   })
+
+  const labels = useMemo(() => {
+    const uniqueLabels = new Map<string, Label>()
+    orderedLists.forEach((list) => {
+      list.labels?.forEach((label) => uniqueLabels.set(label.value, label))
+    })
+    orderedLists
+      .flatMap(({ items }) => (items ? Object.values(items) : []))
+      .flatMap(({ labels }) => labels)
+      .filter((label) => label !== undefined)
+      .forEach((label) => uniqueLabels.set(label.value, label))
+
+    return Array.from(uniqueLabels.values())
+  }, [orderedLists])
 
   if (listsLoading) {
     return <Skeleton numRows={3} />

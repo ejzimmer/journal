@@ -63,8 +63,6 @@ export function TaskList({
     reorderLists,
     reorderTasks,
     addTask,
-    createLabel,
-    deleteLabel,
   } = useWorkStorage()
 
   const list = getList(listId)
@@ -123,7 +121,6 @@ export function TaskList({
                   updateList({ ...list, labels })
                   setEditingLabel(false)
                 }}
-                onCreateLabel={(value) => createLabel({ listId }, value)}
                 label=""
                 isMulti={false}
                 autoFocus
@@ -132,7 +129,12 @@ export function TaskList({
               <>
                 <Labels
                   labels={list.labels}
-                  onRemoveLabel={(label) => deleteLabel({ listId }, label)}
+                  onRemoveLabel={(label) =>
+                    updateList({
+                      ...list,
+                      labels: list.labels?.filter((l) => l !== label),
+                    })
+                  }
                 />
                 <button
                   className="ghost"

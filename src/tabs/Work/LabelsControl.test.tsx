@@ -1,6 +1,11 @@
 import { fireEvent, render, screen } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
-import { LabelsControl, LabelsControlProps } from "./LabelsControl"
+import {
+  getNextColour,
+  LabelsControl,
+  LabelsControlProps,
+} from "./LabelsControl"
+import { COLOURS } from "./types"
 import { LabelsContext } from "./LabelsContext"
 import { Label } from "./types"
 
@@ -200,29 +205,48 @@ describe("LabelsControl when isMulti is false", () => {
   })
 })
 
-describe("when onCreateLabel is provided", () => {
-  it("delegates label creation to it instead of creating locally", async () => {
-    const user = userEvent.setup()
-    const onChange = jest.fn()
-    const onCreateLabel = jest.fn(
-      (value: string): Label => ({ value, colour: "green" }),
-    )
-    render(
-      <LabelsControl
-        {...commonProps}
-        onChange={onChange}
-        onCreateLabel={onCreateLabel}
-      />,
-      { wrapper: Wrapper },
-    )
+describe("getNextColour", () => {
+  describe("when there are no existing options", () => {
+    it("returns the first colour in the list", () => {
+      const nextColour = getNextColour([])
 
-    const input = screen.getByRole("combobox")
-    await user.type(input, "apex{Enter}")
+      expect(nextColour).toBe(COLOURS[0])
+    })
+  })
 
-    expect(onCreateLabel).toHaveBeenCalledWith("apex")
-    expect(onChange).toHaveBeenCalledWith([
-      ...mockValues,
-      { value: "apex", colour: "green" },
-    ])
+  describe("when some colours have been used", () => {
+    it("returns the first unused colour", () => {
+      let nextColour = getNextColour([COLOURS[5]])
+      expect(nextColour).toBe(COLOURS[0])
+
+      nextColour = getNextColour([COLOURS[0], COLOURS[1], COLOURS[4]])
+      expect(nextColour).toBe(COLOURS[2])
+    })
+  })
+
+  describe("when all the colours have been used at least once", () => {
+    it("returns the first colour used the least number of times", () => {
+      let nextColour = getNextColour([...COLOURS])
+      expect(nextColour).toBe(COLOURS[0])
+
+      nextColour = getNextColour([
+        ...COLOURS,
+        COLOURS[0],
+        COLOURS[1],
+        COLOURS[4],
+      ])
+      expect(nextColour).toBe(COLOURS[2])
+
+      nextColour = getNextColour([
+        ...COLOURS,
+        ...COLOURS,
+        COLOURS[1],
+        COLOURS[2],
+        COLOURS[5],
+        COLOURS[0],
+        COLOURS[0],
+      ])
+      expect(nextColour).toBe(COLOURS[3])
+    })
   })
 })

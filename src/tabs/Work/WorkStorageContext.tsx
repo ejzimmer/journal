@@ -1,7 +1,7 @@
 import { createContext, ReactNode, useContext, useMemo } from "react"
 import { FirebaseContext } from "../../shared/FirebaseContext"
 import { Label, Subtask, WorkTask, WORK_KEY } from "./types"
-import { getNextColour } from "./labelUtils"
+import { getNextColour } from "./LabelsControl"
 
 export type LabelTarget = { listId: string; taskId?: string }
 
