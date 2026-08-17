@@ -351,3 +351,61 @@ form.add-task {
   font-size: 1.2rem;
   padding: 4px;
 }
+
+.label-colour-picker {
+  position: relative;
+  display: inline-block;
+}
+
+.colour-swatches {
+  position: absolute;
+  top: 100%;
+  inset-inline-start: 0;
+  z-index: 10;
+  display: flex;
+  gap: 4px;
+  padding: 6px;
+  margin: 4px 0 0;
+  list-style: none;
+  background: white;
+  border: 1px solid var(--border-colour);
+  border-radius: 4px;
+  box-shadow: 0 2px 8px hsl(0 0% 0% / 0.15);
+
+  li {
+    display: contents;
+  }
+}
+
+.colour-swatch {
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  border: 2px solid transparent;
+  border-radius: 50%;
+  background-color: var(--colour);
+  cursor: pointer;
+
+  &[aria-pressed="true"] {
+    border-color: var(--body-colour);
+  }
+
+  &.blue {
+    --colour: hsl(200 80% 50%);
+  }
+  &.yellow {
+    --colour: hsl(59 95% 63%);
+  }
+  &.purple {
+    --colour: hsl(280 80% 50%);
+  }
+  &.green {
+    --colour: hsl(125 80% 50%);
+  }
+  &.orange {
+    --colour: hsl(25 94% 52%);
+  }
+  &.red {
+    --colour: hsl(303 80% 50%);
+  }
+}
