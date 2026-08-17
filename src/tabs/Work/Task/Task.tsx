@@ -90,11 +90,11 @@ export function Task({ task, path, dragHandle }: TaskProps) {
         />
         <Subtasks subtasks={task.subtasks} path={subtasksPath} />
         <Labels
-          labels={task.labels}
-          onRemoveLabel={(label) => {
+          labelIds={task.labelIds}
+          onRemoveLabel={(id) => {
             storageContext.updateItem(path, {
               ...task,
-              labels: task.labels?.filter((l) => l !== label),
+              labelIds: task.labelIds?.filter((existing) => existing !== id),
             })
           }}
         />
@@ -115,11 +115,11 @@ export function Task({ task, path, dragHandle }: TaskProps) {
         />
 
         <UpdateLabels
-          labels={task.labels}
-          onUpdateLabels={(labels) => {
+          labelIds={task.labelIds}
+          onUpdateLabels={(labelIds) => {
             storageContext.updateItem(path, {
               ...task,
-              labels: Array.from(labels.values()),
+              labelIds,
             })
           }}
         />

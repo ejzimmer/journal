@@ -12,7 +12,7 @@ const labelledList: WorkTask = {
   parentId: "work",
   lastStatusUpdate: 0,
   position: 0,
-  labels: [{ value: "a11y", colour: "blue" }],
+  labelIds: ["label-a11y"],
 }
 
 const unlabelledList: WorkTask = {
@@ -30,8 +30,8 @@ const lists: Record<string, WorkTask> = {
 }
 
 const mockLabels: Label[] = [
-  { value: "a11y", colour: "blue" },
-  { value: "urgent", colour: "yellow" },
+  { id: "label-a11y", value: "a11y", colour: "blue" },
+  { id: "label-urgent", value: "urgent", colour: "yellow" },
 ]
 
 const noop = () => <></>
@@ -86,11 +86,13 @@ describe("TaskList label", () => {
     renderTaskList(labelledList.id, storageContext)
 
     const labelItem = screen.getByText("a11y").closest("li")
-    await user.click(within(labelItem!).getByRole("button"))
+    await user.click(
+      within(labelItem!).getByRole("button", { name: "Remove a11y" }),
+    )
 
     expect(storageContext.updateItem).toHaveBeenCalledWith(
       "work",
-      expect.objectContaining({ labels: [] }),
+      expect.objectContaining({ labelIds: [] }),
     )
   })
 
@@ -105,7 +107,7 @@ describe("TaskList label", () => {
     expect(storageContext.updateItem).toHaveBeenCalledWith(
       "work",
       expect.objectContaining({
-        labels: [{ value: "urgent", colour: "yellow" }],
+        labelIds: ["label-urgent"],
       }),
     )
   })

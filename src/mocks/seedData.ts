@@ -1,4 +1,4 @@
-import { WorkTask, WORK_KEY } from "../tabs/Work/types"
+import { WorkTask, WORK_KEY, Label, LABELS_KEY } from "../tabs/Work/types"
 
 const now = Date.now()
 
@@ -42,8 +42,10 @@ const backlogTask = task(
   0,
 )
 
+const demoLabel: Label = { id: "label-demo", value: "demo", colour: "blue" }
+
 const todayTask = task(today.id, "task-today-1", "Try dragging this task", 0, {
-  labels: [{ value: "demo", colour: "blue" }],
+  labelIds: [demoLabel.id],
 })
 
 const doneTask = task(done.id, "task-done-1", "See how Done looks", 0, {
@@ -55,5 +57,8 @@ export const seedData = {
     [backlog.id]: { ...backlog, items: { [backlogTask.id]: backlogTask } },
     [today.id]: { ...today, items: { [todayTask.id]: todayTask } },
     [done.id]: { ...done, items: { [doneTask.id]: doneTask } },
+  },
+  [LABELS_KEY]: {
+    [demoLabel.id]: demoLabel,
   },
 }
