@@ -23,7 +23,6 @@ import { useDropTarget } from "../../shared/drag-and-drop/useDropTarget"
 import { sortByPosition } from "../../shared/drag-and-drop/utils"
 import { Labels } from "./Task/Labels"
 import { LabelsControl } from "./LabelsControl"
-import { LabelsContext } from "./LabelsContext"
 
 function getListData(list: WorkTask, parentId: string) {
   return {
@@ -65,11 +64,6 @@ export function TaskList({
   const { value: lists } =
     storageContext.useValue<Record<string, WorkTask>>(WORK_KEY)
   const list = lists?.[listId]
-
-  const allLabels = useContext(LabelsContext)
-  const listLabelValue = allLabels?.find(
-    (l) => l.id === list?.labelIds?.[0],
-  )?.value
 
   const sortedList = useMemo(
     () => (list?.items ? sortByPosition(Object.values(list.items)) : []),
@@ -117,12 +111,12 @@ export function TaskList({
               }}
             />
           </h2>
-          {list.labelIds?.[0] &&
+          {list.labels?.[0] &&
             (editingLabel ? (
               <LabelsControl
-                value={list.labelIds}
-                onChange={(labelIds) => {
-                  storageContext.updateItem(WORK_KEY, { ...list, labelIds })
+                value={list.labels}
+                onChange={(labels) => {
+                  storageContext.updateItem(WORK_KEY, { ...list, labels })
                   setEditingLabel(false)
                 }}
                 label=""
@@ -132,19 +126,17 @@ export function TaskList({
             ) : (
               <>
                 <Labels
-                  labelIds={list.labelIds}
-                  onRemoveLabel={(id) =>
+                  labels={list.labels}
+                  onRemoveLabel={(label) =>
                     storageContext.updateItem(WORK_KEY, {
                       ...list,
-                      labelIds: list.labelIds?.filter(
-                        (existing) => existing !== id,
-                      ),
+                      labels: list.labels?.filter((l) => l !== label),
                     })
                   }
                 />
                 <button
                   className="ghost"
-                  aria-label={`Change ${listLabelValue} label`}
+                  aria-label={`Change ${list.labels[0].value} label`}
                   onClick={() => setEditingLabel(true)}
                 >
                   ✏️

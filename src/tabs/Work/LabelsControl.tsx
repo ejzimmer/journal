@@ -1,13 +1,12 @@
-import { ReactNode, useContext, useEffect, useMemo } from "react"
-import { subDays } from "date-fns"
-import { COLOURS, Colour, Label, LABELS_KEY } from "./types"
+import { ReactNode, useContext, useMemo } from "react"
+import { COLOURS, Colour } from "./types"
 import { LabelsContext } from "./LabelsContext"
-import { FirebaseContext } from "../../shared/FirebaseContext"
 import { Combobox } from "../../shared/controls/combobox/Combobox"
+import { Label } from "./types"
 
 export type LabelsControlProps = {
-  value: string[]
-  onChange: (value: string[]) => void
+  value: Label[]
+  onChange: (value: Label[]) => void
   label: string
   hideLabel?: boolean
   isMulti?: boolean
@@ -44,8 +43,6 @@ export function getNextColour(colours: Colour[]): Colour {
   return isColour(lowestUsageColour) ? lowestUsageColour : COLOURS[0]
 }
 
-const STALE_AFTER_DAYS = 7
-
 export function LabelsControl({
   value,
   onChange,
@@ -54,30 +51,10 @@ export function LabelsControl({
   autoFocus,
 }: LabelsControlProps) {
   const labels = useContext(LabelsContext)
-  const storageContext = useContext(FirebaseContext)
-  if (!storageContext) {
-    throw new Error("missing storage context")
-  }
-  const { addItem, deleteItem } = storageContext
-
-  useEffect(() => {
-    const staleBefore = subDays(new Date(), STALE_AFTER_DAYS).getTime()
-    labels?.forEach((storedLabel) => {
-      if (storedLabel.lastRemoved && storedLabel.lastRemoved < staleBefore) {
-        deleteItem(LABELS_KEY, storedLabel)
-      }
-    })
-  }, [labels, deleteItem])
-
-  const labelsById = useMemo(
-    () => new Map(labels?.map((l) => [l.id, l] as const)),
-    [labels],
-  )
-
   const options: LabelOption[] = useMemo(
     () =>
-      labels?.map(({ id, value, colour }) => ({
-        id,
+      labels?.map(({ value, colour }) => ({
+        id: value + colour,
         label: value,
         colour,
       })) ?? [],
@@ -86,20 +63,20 @@ export function LabelsControl({
 
   const selectedOptions: LabelOption[] = useMemo(
     () =>
-      value
-        .map((id) => labelsById.get(id))
-        .filter((l): l is Label => !!l)
-        .map((l) => ({ id: l.id, label: l.value, colour: l.colour })),
-    [value, labelsById],
+      value.map((l) => ({
+        id: l.value + l.colour,
+        label: l.value,
+        colour: l.colour,
+      })),
+    [value],
   )
 
   const createOption = (text: string): LabelOption => {
     const colour = getNextColour(
-      [...options, ...selectedOptions].map((option) => option.colour),
+      [...options, ...value].map((label) => label.colour),
     )
-    const id = addItem<Label>(LABELS_KEY, { value: text, colour })
     return {
-      id: id ?? text,
+      id: text + colour,
       label: text,
       colour,
     }
@@ -109,11 +86,13 @@ export function LabelsControl({
     ? {
         isMultiValue: true as const,
         value: selectedOptions,
-        onChange: (value: LabelOption[]) => onChange(value.map((o) => o.id)),
+        onChange: (value: LabelOption[]) =>
+          onChange(value.map((o) => ({ value: o.label, colour: o.colour }))),
       }
     : {
         value: selectedOptions[0],
-        onChange: (option: LabelOption) => onChange([option.id]),
+        onChange: (option: LabelOption) =>
+          onChange([{ value: option.label, colour: option.colour }]),
       }
 
   return (

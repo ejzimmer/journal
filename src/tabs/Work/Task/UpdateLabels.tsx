@@ -1,22 +1,28 @@
 import { useState } from "react"
 import { TagIcon } from "../../../shared/icons/Tag"
 import { LabelsControl } from "../LabelsControl"
+import { Label } from "../types"
 
 export function UpdateLabels({
-  labelIds,
+  labels,
   onUpdateLabels,
 }: {
-  labelIds?: string[]
-  onUpdateLabels: (labelIds: string[]) => void
+  labels?: Label[]
+  onUpdateLabels: (labels: Label[]) => void
 }) {
   const [addingLabel, setAddingLabel] = useState(false)
 
   return addingLabel ? (
     <LabelsControl
       value={[]}
-      onChange={(newIds) => {
-        const merged = Array.from(new Set([...(labelIds ?? []), ...newIds]))
-        onUpdateLabels(merged)
+      onChange={(value) => {
+        const uniqueLabels = new Map<string, Label>(
+          labels?.map((label) => [label.value, label])
+        )
+        value.forEach((label) => {
+          uniqueLabels.set(label.value, label)
+        })
+        onUpdateLabels(Array.from(uniqueLabels.values()))
         setAddingLabel(false)
       }}
       label=""
