@@ -10,13 +10,9 @@ export const COLOURS = [
 export type Colour = (typeof COLOURS)[number]
 
 export type Label = {
-  id: string
   value: string
   colour: Colour
-  lastRemoved?: number
 }
-
-export const LABELS_KEY = "work-labels"
 
 export const STATUS_KEYS = ["not_started", "done"] as const
 export type StatusKey = (typeof STATUS_KEYS)[number]
@@ -38,7 +34,7 @@ export type WorkTask = {
   lastStatusUpdate: number
   dueDate?: number
   position: number
-  labelIds?: string[]
+  labels?: Label[]
   worktree?: Worktree
   subtasks?: Record<string, Subtask>
 }

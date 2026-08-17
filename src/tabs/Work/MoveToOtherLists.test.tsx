@@ -20,7 +20,7 @@ const sourceList: WorkTask = {
   parentId: "work",
   lastStatusUpdate: 0,
   position: 0,
-  labelIds: ["label-a11y"],
+  labels: [{ value: "a11y", colour: "blue" }],
 }
 
 const destinationList: WorkTask = {
@@ -67,7 +67,7 @@ describe("MoveToOtherLists", () => {
     expect(storageContext.addItem).toHaveBeenCalledWith(
       "work/list-2/items",
       expect.objectContaining({
-        labelIds: ["label-a11y"],
+        labels: [{ value: "a11y", colour: "blue" }],
       }),
     )
   })

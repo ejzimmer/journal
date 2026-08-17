@@ -2,32 +2,17 @@ import { fireEvent, render, screen } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 import { NewListModal } from "./NewListModal"
 import { LabelsContext } from "./LabelsContext"
-import { FirebaseContext } from "../../shared/FirebaseContext"
 import { Label } from "./types"
 
 const mockLabels: Label[] = [
-  { id: "label-a11y", value: "a11y", colour: "blue" },
-  { id: "label-i18n", value: "i18n", colour: "yellow" },
+  { value: "a11y", colour: "blue" },
+  { value: "i18n", colour: "yellow" },
 ]
 
-let storageContext: ReturnType<typeof createStorageContext>
-
-function createStorageContext() {
-  return {
-    addItem: jest.fn(() => "new-label-id"),
-    updateItem: jest.fn(),
-    deleteItem: jest.fn(),
-    updateList: jest.fn(),
-    useValue: () => ({ value: undefined, loading: false }),
-  }
-}
-
 const Wrapper = ({ children }: { children: React.ReactNode }) => (
-  <FirebaseContext.Provider value={storageContext}>
-    <LabelsContext.Provider value={mockLabels}>
-      {children}
-    </LabelsContext.Provider>
-  </FirebaseContext.Provider>
+  <LabelsContext.Provider value={mockLabels}>
+    {children}
+  </LabelsContext.Provider>
 )
 
 const openModal = async (user: ReturnType<typeof userEvent.setup>) => {
@@ -35,10 +20,6 @@ const openModal = async (user: ReturnType<typeof userEvent.setup>) => {
 }
 
 describe("NewListModal", () => {
-  beforeEach(() => {
-    storageContext = createStorageContext()
-  })
-
   it("creates a list with just a name", async () => {
     const user = userEvent.setup()
     const onCreate = jest.fn()
@@ -69,7 +50,7 @@ describe("NewListModal", () => {
     })
     await user.click(screen.getByRole("button", { name: "Create" }))
 
-    expect(onCreate).toHaveBeenCalledWith("Backlog", [mockLabels[0].id])
+    expect(onCreate).toHaveBeenCalledWith("Backlog", [mockLabels[0]])
   })
 
   it("creates a list with a new label", async () => {
@@ -87,11 +68,9 @@ describe("NewListModal", () => {
     })
     await user.click(screen.getByRole("button", { name: "Create" }))
 
-    expect(storageContext.addItem).toHaveBeenCalledWith("work-labels", {
-      value: "urgent",
-      colour: "purple",
-    })
-    expect(onCreate).toHaveBeenCalledWith("Backlog", ["new-label-id"])
+    expect(onCreate).toHaveBeenCalledWith("Backlog", [
+      { value: "urgent", colour: "purple" },
+    ])
   })
 
   it("doesn't create a list without a name", async () => {

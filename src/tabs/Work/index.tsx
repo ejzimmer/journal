@@ -5,9 +5,8 @@ import { TaskList } from "./TaskList"
 import { hoursToMilliseconds, isBefore, startOfDay } from "date-fns"
 import { Skeleton } from "../../shared/controls/Skeleton"
 import { draggableTypeKey } from "../../shared/drag-and-drop/types"
-import { LabelsProvider } from "./LabelsProvider"
-import { WorkTask, Label, LABELS_KEY, WORK_KEY } from "./types"
-import { migrateLegacyLabels } from "./migrateLegacyLabels"
+import { LabelsContext } from "./LabelsContext"
+import { WorkTask, Label, WORK_KEY } from "./types"
 import { useDraggableList } from "../../shared/drag-and-drop/useDraggableList"
 import { isDraggable, sortByPosition } from "../../shared/drag-and-drop/utils"
 import { useDropTarget } from "../../shared/drag-and-drop/useDropTarget"
@@ -22,32 +21,9 @@ export function Work() {
   if (!context) {
     throw new Error("Missing Firebase context provider")
   }
-  const { addItem, updateItem, useValue, updateList } = context
+  const { addItem, useValue, updateList } = context
   const { value: lists, loading: listsLoading } =
     useValue<Record<string, WorkTask>>(WORK_KEY)
-  const { value: existingLabelsById, loading: labelsLoading } =
-    useValue<Record<string, Label>>(LABELS_KEY)
-
-  const hasMigratedLegacyLabels = useRef(false)
-  useEffect(() => {
-    if (hasMigratedLegacyLabels.current || listsLoading || labelsLoading) {
-      return
-    }
-    hasMigratedLegacyLabels.current = true
-    if (lists) {
-      migrateLegacyLabels(lists, Object.values(existingLabelsById ?? {}), {
-        addItem,
-        updateItem,
-      })
-    }
-  }, [
-    lists,
-    listsLoading,
-    existingLabelsById,
-    labelsLoading,
-    addItem,
-    updateItem,
-  ])
 
   const doneList = useMemo(() => {
     return (
@@ -56,10 +32,10 @@ export function Work() {
   }, [lists])
 
   const onAddList = useCallback(
-    (listName: string, labelIds: string[] = []) => {
+    (listName: string, labels: Label[] = []) => {
       addItem(WORK_KEY, {
         description: listName,
-        ...(labelIds.length > 0 && { labelIds }),
+        ...(labels.length > 0 && { labels }),
       })
     },
     [addItem],
@@ -174,15 +150,18 @@ export function Work() {
     },
   })
 
-  const usedLabelIds = useMemo(() => {
-    const ids = new Set<string>()
+  const labels = useMemo(() => {
+    const uniqueLabels = new Map<string, Label>()
     orderedLists.forEach((list) => {
-      list.labelIds?.forEach((id) => ids.add(id))
-      Object.values(list.items ?? {}).forEach((task) => {
-        task.labelIds?.forEach((id) => ids.add(id))
-      })
+      list.labels?.forEach((label) => uniqueLabels.set(label.value, label))
     })
-    return ids
+    orderedLists
+      .flatMap(({ items }) => (items ? Object.values(items) : []))
+      .flatMap(({ labels }) => labels)
+      .filter((label) => label !== undefined)
+      .forEach((label) => uniqueLabels.set(label.value, label))
+
+    return Array.from(uniqueLabels.values())
   }, [orderedLists])
 
   if (listsLoading) {
@@ -190,7 +169,7 @@ export function Work() {
   }
 
   return (
-    <LabelsProvider usedLabelIds={usedLabelIds}>
+    <LabelsContext.Provider value={labels}>
       <div className="new-list-modal-container">
         <NewListModal onCreate={onAddList} />
       </div>
@@ -219,6 +198,6 @@ export function Work() {
       ) : (
         <div style={{ marginInlineEnd: "30px" }}>No lists found.</div>
       )}
-    </LabelsProvider>
+    </LabelsContext.Provider>
   )
 }

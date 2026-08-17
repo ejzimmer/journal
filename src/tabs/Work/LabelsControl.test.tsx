@@ -7,41 +7,28 @@ import {
 } from "./LabelsControl"
 import { COLOURS } from "./types"
 import { LabelsContext } from "./LabelsContext"
-import { FirebaseContext } from "../../shared/FirebaseContext"
 import { Label } from "./types"
 
 const mockOptions: Label[] = [
-  { id: "label-a11y", value: "a11y", colour: "blue" },
-  { id: "label-i18n", value: "i18n", colour: "yellow" },
-  { id: "label-dev-prod", value: "dev prod", colour: "purple" },
-  { id: "label-feature-flag", value: "feature flag", colour: "green" },
-  { id: "label-pr", value: "PR", colour: "orange" },
+  { value: "a11y", colour: "blue" },
+  { value: "i18n", colour: "yellow" },
+  { value: "dev prod", colour: "purple" },
+  { value: "feature flag", colour: "green" },
+  { value: "PR", colour: "orange" },
 ]
 
 const mockValues: Label[] = [mockOptions[0], mockOptions[1]]
 
 const commonProps: LabelsControlProps = {
-  value: mockValues.map((l) => l.id),
+  value: mockValues,
   onChange: jest.fn(),
   label: "Things",
 }
 
-function createStorageContext() {
-  return {
-    addItem: jest.fn(() => "new-label-id"),
-    updateItem: jest.fn(),
-    deleteItem: jest.fn(),
-    updateList: jest.fn(),
-    useValue: () => ({ value: undefined, loading: false }),
-  }
-}
-
 const Wrapper = ({ children }: { children: React.ReactNode }) => (
-  <FirebaseContext.Provider value={createStorageContext()}>
-    <LabelsContext.Provider value={mockOptions}>
-      {children}
-    </LabelsContext.Provider>
-  </FirebaseContext.Provider>
+  <LabelsContext.Provider value={mockOptions}>
+    {children}
+  </LabelsContext.Provider>
 )
 
 describe("LabelsControl", () => {
@@ -60,14 +47,14 @@ describe("LabelsControl", () => {
       await user.type(input, "a11y{Enter}")
 
       expect(onChange).toHaveBeenCalledTimes(1)
-      expect(onChange).toHaveBeenCalledWith([mockValues[0].id])
+      expect(onChange).toHaveBeenCalledWith([mockValues[0]])
       expect(input).toHaveValue("")
 
       rerender(
         <LabelsControl
           {...commonProps}
           onChange={onChange}
-          value={[mockValues[0].id]}
+          value={[mockValues[0]]}
         />,
       )
 
@@ -77,7 +64,7 @@ describe("LabelsControl", () => {
 
       await user.type(input, "i18n{Enter}")
 
-      expect(onChange).toHaveBeenCalledWith([mockValues[0].id, mockValues[1].id])
+      expect(onChange).toHaveBeenCalledWith([mockValues[0], mockValues[1]])
     })
   })
 
@@ -91,7 +78,7 @@ describe("LabelsControl", () => {
 
       await user.click(screen.getByRole("button", { name: "Remove a11y" }))
 
-      expect(onChange).toHaveBeenCalledWith([mockValues[1].id])
+      expect(onChange).toHaveBeenCalledWith([mockValues[1]])
     })
   })
 
@@ -124,8 +111,8 @@ describe("LabelsControl", () => {
       await user.click(screen.getByRole("option", { name: "dev prod" }))
 
       expect(onChange).toHaveBeenCalledWith([
-        ...mockValues.map((l) => l.id),
-        mockOptions[2].id,
+        ...mockValues,
+        expect.objectContaining({ value: "dev prod" }),
       ])
       expect(input).toHaveValue("")
     })
@@ -144,82 +131,25 @@ describe("LabelsControl", () => {
       await user.type(input, selectedOption.value)
       await user.type(input, "{Enter}")
 
-      expect(onChange).toHaveBeenCalledWith([
-        ...mockValues.map((l) => l.id),
-        selectedOption.id,
-      ])
+      expect(onChange).toHaveBeenCalledWith([...mockValues, selectedOption])
     })
   })
 
   describe("when a new option is added", () => {
-    it("persists it to the database and is assigned a colour based on the total number of options", async () => {
+    it("is assigned a colour based on the total number of options", async () => {
       const user = userEvent.setup()
       const onChange = jest.fn()
-      const storageContext = createStorageContext()
-      render(
-        <FirebaseContext.Provider value={storageContext}>
-          <LabelsContext.Provider value={mockOptions}>
-            <LabelsControl {...commonProps} onChange={onChange} />
-          </LabelsContext.Provider>
-        </FirebaseContext.Provider>,
-      )
+      render(<LabelsControl {...commonProps} onChange={onChange} />, {
+        wrapper: Wrapper,
+      })
 
       const input = screen.getByRole("combobox")
       await user.type(input, "apex{Enter}")
 
-      expect(storageContext.addItem).toHaveBeenCalledWith("work-labels", {
-        value: "apex",
-        colour: "red",
-      })
       expect(onChange).toHaveBeenCalledWith([
-        ...mockValues.map((l) => l.id),
-        "new-label-id",
+        ...mockValues,
+        { value: "apex", colour: "red" },
       ])
-    })
-  })
-
-  describe("when a label was removed more than a week ago", () => {
-    it("deletes it from the database", () => {
-      const staleLabel: Label = {
-        id: "label-stale",
-        value: "stale",
-        colour: "red",
-        lastRemoved: Date.now() - 8 * 24 * 60 * 60 * 1000,
-      }
-      const storageContext = createStorageContext()
-      render(
-        <FirebaseContext.Provider value={storageContext}>
-          <LabelsContext.Provider value={[...mockOptions, staleLabel]}>
-            <LabelsControl {...commonProps} onChange={jest.fn()} />
-          </LabelsContext.Provider>
-        </FirebaseContext.Provider>,
-      )
-
-      expect(storageContext.deleteItem).toHaveBeenCalledWith(
-        "work-labels",
-        staleLabel,
-      )
-    })
-  })
-
-  describe("when a label was removed less than a week ago", () => {
-    it("doesn't delete it", () => {
-      const recentLabel: Label = {
-        id: "label-recent",
-        value: "recent",
-        colour: "red",
-        lastRemoved: Date.now() - 2 * 24 * 60 * 60 * 1000,
-      }
-      const storageContext = createStorageContext()
-      render(
-        <FirebaseContext.Provider value={storageContext}>
-          <LabelsContext.Provider value={[...mockOptions, recentLabel]}>
-            <LabelsControl {...commonProps} onChange={jest.fn()} />
-          </LabelsContext.Provider>
-        </FirebaseContext.Provider>,
-      )
-
-      expect(storageContext.deleteItem).not.toHaveBeenCalled()
     })
   })
 })
@@ -238,7 +168,7 @@ describe("LabelsControl when isMulti is false", () => {
     render(
       <LabelsControl
         {...singleProps}
-        value={[mockValues[0].id]}
+        value={[mockValues[0]]}
         onChange={onChange}
       />,
       { wrapper: Wrapper },
@@ -247,37 +177,27 @@ describe("LabelsControl when isMulti is false", () => {
     await user.click(screen.getByRole("combobox"))
     await user.click(screen.getByRole("option", { name: "dev prod" }))
 
-    expect(onChange).toHaveBeenCalledWith([mockOptions[2].id])
+    expect(onChange).toHaveBeenCalledWith([
+      expect.objectContaining({ value: "dev prod" }),
+    ])
   })
 
   it("creates a new label from typed text", () => {
     const onChange = jest.fn()
-    const storageContext = createStorageContext()
-    render(
-      <FirebaseContext.Provider value={storageContext}>
-        <LabelsContext.Provider value={mockOptions}>
-          <LabelsControl {...singleProps} onChange={onChange} />
-        </LabelsContext.Provider>
-      </FirebaseContext.Provider>,
-    )
+    render(<LabelsControl {...singleProps} onChange={onChange} />, {
+      wrapper: Wrapper,
+    })
 
     const input = screen.getByRole("combobox")
     fireEvent.change(input, { target: { value: "apex" } })
 
-    expect(storageContext.addItem).toHaveBeenCalledWith("work-labels", {
-      value: "apex",
-      colour: "red",
-    })
-    expect(onChange).toHaveBeenCalledWith(["new-label-id"])
+    expect(onChange).toHaveBeenCalledWith([{ value: "apex", colour: "red" }])
   })
 
   it("doesn't show a remove button for the selected value", () => {
-    render(
-      <LabelsControl {...singleProps} value={[mockValues[0].id]} />,
-      {
-        wrapper: Wrapper,
-      },
-    )
+    render(<LabelsControl {...singleProps} value={[mockValues[0]]} />, {
+      wrapper: Wrapper,
+    })
 
     expect(
       screen.queryByRole("button", { name: "Remove a11y" }),

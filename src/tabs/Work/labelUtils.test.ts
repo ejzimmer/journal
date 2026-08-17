@@ -17,34 +17,37 @@ const labelledList: WorkTask = {
   parentId: "work",
   lastStatusUpdate: 0,
   position: 0,
-  labelIds: ["label-a11y"],
+  labels: [{ value: "a11y", colour: "blue" }],
 }
 
 describe("addSourceListLabel", () => {
   it("adds the source list's label to the item, without duplicating it or losing other labels", () => {
-    expect(addSourceListLabel(baseTask, labelledList).labelIds).toEqual([
-      "label-a11y",
+    expect(addSourceListLabel(baseTask, labelledList).labels).toEqual([
+      { value: "a11y", colour: "blue" },
     ])
 
     const taskWithSameLabel = {
       ...baseTask,
-      labelIds: ["label-a11y"],
+      labels: [{ value: "a11y", colour: "blue" as const }],
     }
     expect(
-      addSourceListLabel(taskWithSameLabel, labelledList).labelIds,
-    ).toEqual(["label-a11y"])
+      addSourceListLabel(taskWithSameLabel, labelledList).labels,
+    ).toEqual([{ value: "a11y", colour: "blue" }])
 
     const taskWithOtherLabel = {
       ...baseTask,
-      labelIds: ["label-urgent"],
+      labels: [{ value: "urgent", colour: "red" as const }],
     }
     expect(
-      addSourceListLabel(taskWithOtherLabel, labelledList).labelIds,
-    ).toEqual(["label-urgent", "label-a11y"])
+      addSourceListLabel(taskWithOtherLabel, labelledList).labels,
+    ).toEqual([
+      { value: "urgent", colour: "red" },
+      { value: "a11y", colour: "blue" },
+    ])
   })
 
   it("leaves the item unchanged when the source list has no label", () => {
-    const unlabelledList = { ...labelledList, labelIds: undefined }
+    const unlabelledList = { ...labelledList, labels: undefined }
 
     const result = addSourceListLabel(baseTask, unlabelledList)
 
