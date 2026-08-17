@@ -20,3 +20,22 @@ HTMLElement.prototype.hidePopover = function mock(this: HTMLElement) {
 HTMLElement.prototype.showPopover = function mock(this: HTMLElement) {
   this.style.visibility = "visible"
 }
+
+// jsdom doesn't do layout, so every element reports a zero rect at the
+// origin. Return a plausible on-screen rect instead so code that measures
+// element position (e.g. popover placement) behaves sensibly in tests.
+Element.prototype.getBoundingClientRect = function mock(this: Element) {
+  return {
+    x: 0,
+    y: 0,
+    top: 0,
+    left: 0,
+    right: 100,
+    bottom: 40,
+    width: 100,
+    height: 40,
+    toJSON() {
+      return this
+    },
+  }
+}

@@ -1,10 +1,13 @@
 import { OptionType } from "./types"
 import { isSelected } from "./utils"
+import { PopoverPlacement } from "./usePopoverPlacement"
 
 type PopoverProps<T> = {
   popoverRef: React.RefObject<HTMLDivElement | null>
   popoverId: string
   anchorName: string
+  placement: PopoverPlacement
+  maxHeight?: number
   options: T[]
   selected?: T | T[]
   onClick: (option: T) => void
@@ -18,6 +21,8 @@ export function Popover<T extends OptionType>({
   popoverRef,
   popoverId,
   anchorName,
+  placement,
+  maxHeight,
   options,
   selected,
   onClick,
@@ -30,7 +35,13 @@ export function Popover<T extends OptionType>({
       popover="manual"
       data-testid="popover"
       id={popoverId}
-      style={{ positionAnchor: anchorName } as React.CSSProperties}
+      className={placement === "above" ? "open-above" : ""}
+      style={
+        {
+          positionAnchor: anchorName,
+          maxHeight: maxHeight !== undefined ? `${maxHeight}px` : undefined,
+        } as React.CSSProperties
+      }
     >
       {options.length ? (
         <ul className="options">

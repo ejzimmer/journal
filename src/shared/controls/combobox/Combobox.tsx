@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useId, useRef, useState } from "react"
 import { OptionType, ComboboxProps } from "./types"
 import { usePopoverState } from "./usePopoverState"
+import { usePopoverPlacement } from "./usePopoverPlacement"
 import { SingleValueInput } from "./SingleValueInput"
 import { MultiValueInput } from "./MultiValueInput"
 
@@ -32,6 +33,12 @@ export function Combobox<T extends OptionType>({
   const popoverRef = useRef<HTMLDivElement>(null)
   const { popoverState, hidePopover, showPopover, togglePopover } =
     usePopoverState(popoverRef)
+  const { placement, maxHeight } = usePopoverPlacement(
+    popoverState,
+    containerRef,
+    popoverRef,
+    hidePopover
+  )
 
   useEffect(() => {
     if (autoFocus) showPopover()
@@ -183,6 +190,8 @@ export function Combobox<T extends OptionType>({
           popoverRef={popoverRef}
           popoverId={popoverId}
           anchorName={anchorName}
+          placement={placement}
+          maxHeight={maxHeight}
           options={displayedOptions}
           selected={value}
           onClick={(option) => {
