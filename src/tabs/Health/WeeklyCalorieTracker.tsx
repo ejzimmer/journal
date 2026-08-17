@@ -26,6 +26,8 @@ export function WeeklyCalorieTracker() {
           <div
             className={getWeekClass({ balance, highestBalance, lowestBalance })}
             style={{ height: (balance.balance / STARTING_BALANCE) * 100 + "%" }}
+            role="img"
+            aria-label={`${balance.day} ${balance.month}: ${balance.balance.toLocaleString()}`}
           />
           <div className="week-hovertext">
             {balance.day} {balance.month}: {balance.balance.toLocaleString()}
