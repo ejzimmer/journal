@@ -37,8 +37,8 @@ export function DragHandle({
   const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
     switch (event.key) {
       case "ArrowUp":
+        event.preventDefault()
         if (!isFirst) {
-          event.preventDefault()
           onChangePosition(
             list,
             index,
@@ -48,8 +48,8 @@ export function DragHandle({
         }
         break
       case "ArrowDown":
+        event.preventDefault()
         if (!isLast) {
-          event.preventDefault()
           onChangePosition(
             list,
             index,
