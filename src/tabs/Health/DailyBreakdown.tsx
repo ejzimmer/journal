@@ -28,9 +28,9 @@ export function DailyBreakdown() {
     <details className="daily-breakdown">
       <summary>
         <ChevronDownIcon width="16px" />
-        daily breakdown
+        by day
       </summary>
-      <ol className="day-grid" aria-label="daily breakdown">
+      <ol className="day-grid" aria-label="by day">
         {days.map((day) => (
           <li
             key={`${day.day}-${day.month}`}
