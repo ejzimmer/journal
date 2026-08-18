@@ -1,9 +1,9 @@
-export type AdjacentListDestination = "previous" | "next" | "first" | "last"
+export type ListDestination = "previous" | "next" | "first" | "last"
 
-export function getAdjacentListIndex(
+export function getDestinationListIndex(
   currentIndex: number,
   listLength: number,
-  destination: AdjacentListDestination,
+  destination: ListDestination,
 ): number {
   switch (destination) {
     case "previous":

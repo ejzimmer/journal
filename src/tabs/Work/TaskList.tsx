@@ -16,7 +16,7 @@ import "./TaskList.css"
 import { DragHandle } from "../../shared/drag-and-drop/DragHandle"
 import { draggableTypeKey } from "../../shared/drag-and-drop/types"
 import { DraggableListItem } from "../../shared/drag-and-drop/DraggableListItem"
-import { AdjacentListDestination } from "./adjacentList"
+import { ListDestination } from "./listDestination"
 import { PostitModalDialog } from "./PostitModal"
 import { WorkTask, WORK_KEY } from "./types"
 import { FirebaseContext } from "../../shared/FirebaseContext"
@@ -40,16 +40,13 @@ export function TaskList({
   listId,
   parentListId,
   additionalMoveDestinations,
-  onMoveTaskToAdjacentList,
+  onMoveTaskToList,
 }: {
   index: number
   listId: string
   parentListId: string
   additionalMoveDestinations: (task: WorkTask) => JSX.Element
-  onMoveTaskToAdjacentList?: (
-    task: WorkTask,
-    destination: AdjacentListDestination,
-  ) => void
+  onMoveTaskToList?: (task: WorkTask, destination: ListDestination) => void
 }) {
   const listRef = useRef<HTMLOListElement>(null)
   const [confirmDeleteModalOpen, setConfirmDeleteModalOpen] = useState(false)
@@ -189,19 +186,19 @@ export function TaskList({
                   }
                   additionalActions={{
                     menuItems: additionalMoveDestinations(task),
-                    onKeyDown: onMoveTaskToAdjacentList
+                    onKeyDown: onMoveTaskToList
                       ? (event) => {
                           switch (event.key) {
                             case "ArrowLeft":
                               event.preventDefault()
-                              onMoveTaskToAdjacentList(
+                              onMoveTaskToList(
                                 task,
                                 event.shiftKey ? "first" : "previous",
                               )
                               break
                             case "ArrowRight":
                               event.preventDefault()
-                              onMoveTaskToAdjacentList(
+                              onMoveTaskToList(
                                 task,
                                 event.shiftKey ? "last" : "next",
                               )

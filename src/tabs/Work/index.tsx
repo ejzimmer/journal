@@ -16,10 +16,7 @@ import "./index.css"
 import { MoveToOtherLists } from "./MoveToOtherLists"
 import { addSourceListLabel } from "./labelUtils"
 import { moveTaskBetweenLists } from "./moveTaskBetweenLists"
-import {
-  AdjacentListDestination,
-  getAdjacentListIndex,
-} from "./adjacentList"
+import { ListDestination, getDestinationListIndex } from "./listDestination"
 
 export function Work() {
   const dropTargetRef = useRef<HTMLOListElement>(null)
@@ -78,12 +75,8 @@ export function Work() {
     [lists, doneList],
   )
 
-  const moveTaskToAdjacentList = useCallback(
-    (
-      task: WorkTask,
-      currentListId: string,
-      destination: AdjacentListDestination,
-    ) => {
+  const moveTaskToList = useCallback(
+    (task: WorkTask, currentListId: string, destination: ListDestination) => {
       const currentIndex = orderedLists.findIndex(
         (list) => list.id === currentListId,
       )
@@ -91,7 +84,7 @@ export function Work() {
         return
       }
 
-      const targetIndex = getAdjacentListIndex(
+      const targetIndex = getDestinationListIndex(
         currentIndex,
         orderedLists.length,
         destination,
@@ -252,8 +245,8 @@ export function Work() {
                       task={task}
                     />
                   )}
-                  onMoveTaskToAdjacentList={(task, destination) =>
-                    moveTaskToAdjacentList(task, list.id, destination)
+                  onMoveTaskToList={(task, destination) =>
+                    moveTaskToList(task, list.id, destination)
                   }
                 />
               ),
