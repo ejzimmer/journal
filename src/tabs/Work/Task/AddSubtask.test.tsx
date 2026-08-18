@@ -14,7 +14,7 @@ function AddSubtaskWithLiveBackend({
 }: {
   addSubtaskSpy: jest.Mock
 }) {
-  const [subtasks, setSubtasks] = useState<Record<string, Subtask>>({})
+  const [subtasks, setSubtasksState] = useState<Record<string, Subtask>>({})
 
   const addSubtask = (
     listId: string,
@@ -24,14 +24,26 @@ function AddSubtaskWithLiveBackend({
   ) => {
     addSubtaskSpy(listId, taskId, description, id)
     const resolvedId = id ?? `id-${Math.random()}`
-    setSubtasks((current) => ({
+    setSubtasksState((current) => ({
       ...current,
-      [resolvedId]: { id: resolvedId, description },
+      [resolvedId]: { id: resolvedId, description, position: 0 },
     }))
   }
 
+  const setSubtasks = (
+    _listId: string,
+    _taskId: string,
+    newSubtasks: Subtask[],
+  ) => {
+    setSubtasksState(
+      Object.fromEntries(newSubtasks.map((subtask) => [subtask.id, subtask])),
+    )
+  }
+
   return (
-    <WorkStorageContext.Provider value={createWorkStorageContext({ addSubtask })}>
+    <WorkStorageContext.Provider
+      value={createWorkStorageContext({ addSubtask, setSubtasks })}
+    >
       <AddSubtask listId="list-1" taskId="task-1" subtasks={subtasks} />
     </WorkStorageContext.Provider>
   )
@@ -118,8 +130,14 @@ describe("AddSubtask", () => {
       screen.getByRole("button", { name: "Add standard checklist" }),
     )
 
-    expect(storageContext.addSubtask).toHaveBeenCalledTimes(
-      STANDARD_CHECKLIST.length,
+    expect(storageContext.setSubtasks).toHaveBeenCalledWith(
+      "list-1",
+      "task-1",
+      STANDARD_CHECKLIST.map((description, index) => ({
+        id: `standard-${description.toLowerCase().replace(/\s+/g, "-")}`,
+        description,
+        position: index,
+      })),
     )
     expect(
       screen.getByRole("textbox", { name: "New subtask" }),

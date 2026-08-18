@@ -203,6 +203,42 @@ ol.work-lists > li {
             outline-offset: 2px;
           }
         }
+
+        button.subtask-gap {
+          all: unset;
+          font: inherit;
+          color: inherit;
+          cursor: pointer;
+          white-space: pre;
+
+          &:hover,
+          &:focus-visible {
+            color: var(--action-colour);
+          }
+
+          &:focus-visible {
+            outline: 1px solid currentColor;
+            outline-offset: 2px;
+          }
+        }
+
+        form.insert-subtask {
+          display: inline-flex;
+          align-items: center;
+
+          input {
+            font: inherit;
+            color: var(--body-colour);
+            border: none;
+            border-bottom: 1px solid var(--body-colour-light);
+            background: transparent;
+            width: 6em;
+
+            &:focus {
+              outline: none;
+            }
+          }
+        }
       }
 
       form.add-subtask {

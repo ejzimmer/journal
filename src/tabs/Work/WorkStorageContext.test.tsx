@@ -192,14 +192,67 @@ describe("WorkStorageContext", () => {
 
     expect(firebaseContext.addItem).toHaveBeenCalledWith(
       "work/list-1/items/task-1/subtasks",
-      { description: "Write tests" },
+      { description: "Write tests", position: 0 },
+    )
+  })
+
+  it("addSubtask appends after the highest existing position", () => {
+    const taskWithSubtasks: WorkTask = {
+      ...task,
+      subtasks: {
+        a: { id: "a", description: "test", position: 0 },
+        b: { id: "b", description: "review", position: 3 },
+      },
+    }
+    const listWithSubtasks: WorkTask = {
+      ...list,
+      items: { [task.id]: taskWithSubtasks },
+    }
+    const firebaseContext = createFirebaseContext({
+      [list.id]: listWithSubtasks,
+    })
+    const workStorage = getWorkStorage(firebaseContext)
+
+    workStorage?.addSubtask(list.id, task.id, "PR")
+
+    expect(firebaseContext.addItem).toHaveBeenCalledWith(
+      "work/list-1/items/task-1/subtasks",
+      { description: "PR", position: 4 },
+    )
+  })
+
+  it("addSubtask writes a caller-supplied id idempotently, with a position", () => {
+    const firebaseContext = createFirebaseContext({ [list.id]: list })
+    const workStorage = getWorkStorage(firebaseContext)
+
+    workStorage?.addSubtask(list.id, task.id, "Write tests", "standard-test")
+
+    expect(firebaseContext.updateItem).toHaveBeenCalledWith(
+      "work/list-1/items/task-1/subtasks",
+      { id: "standard-test", description: "Write tests", position: 0 },
+    )
+  })
+
+  it("setSubtasks writes the full subtasks list back to the task", () => {
+    const firebaseContext = createFirebaseContext({ [list.id]: list })
+    const workStorage = getWorkStorage(firebaseContext)
+    const subtasks = [
+      { id: "a", description: "test", position: 0 },
+      { id: "b", description: "review", position: 1 },
+    ]
+
+    workStorage?.setSubtasks(list.id, task.id, subtasks)
+
+    expect(firebaseContext.updateList).toHaveBeenCalledWith(
+      "work/list-1/items/task-1/subtasks",
+      subtasks,
     )
   })
 
   it("deleteSubtask removes the subtask from the task", () => {
     const firebaseContext = createFirebaseContext({ [list.id]: list })
     const workStorage = getWorkStorage(firebaseContext)
-    const subtask = { id: "sub-1", description: "Write tests" }
+    const subtask = { id: "sub-1", description: "Write tests", position: 0 }
 
     workStorage?.deleteSubtask(list.id, task.id, subtask)
 

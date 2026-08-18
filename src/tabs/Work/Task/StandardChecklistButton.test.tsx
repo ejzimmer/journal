@@ -24,7 +24,7 @@ const idFor = (description: string) =>
   `standard-${description.toLowerCase().replace(/\s+/g, "-")}`
 
 describe("StandardChecklistButton", () => {
-  it("adds all the standard checklist items when there are no existing subtasks", async () => {
+  it("adds all the standard checklist items, in the declared order, when there are no existing subtasks", async () => {
     const user = userEvent.setup()
     const storageContext = createWorkStorageContext()
     renderWithContext(undefined, storageContext)
@@ -33,27 +33,25 @@ describe("StandardChecklistButton", () => {
       screen.getByRole("button", { name: "Add standard checklist" }),
     )
 
-    expect(storageContext.addSubtask).toHaveBeenCalledTimes(
-      STANDARD_CHECKLIST.length,
-    )
-    STANDARD_CHECKLIST.forEach((description) => {
-      expect(storageContext.addSubtask).toHaveBeenCalledWith(
-        "list-1",
-        "task-1",
+    expect(storageContext.setSubtasks).toHaveBeenCalledTimes(1)
+    expect(storageContext.setSubtasks).toHaveBeenCalledWith(
+      "list-1",
+      "task-1",
+      STANDARD_CHECKLIST.map((description, index) => ({
+        id: idFor(description),
         description,
-        idFor(description),
-      )
-    })
+        position: index,
+      })),
+    )
   })
 
-  it("skips items that already exist, case-insensitively", async () => {
+  it("skips items that already exist, case-insensitively, and appends the rest after them", async () => {
     const user = userEvent.setup()
     const storageContext = createWorkStorageContext()
+    const existingTest = { id: "a", description: "Test", position: 0 }
+    const existingBuild = { id: "b", description: "build", position: 1 }
     renderWithContext(
-      {
-        a: { id: "a", description: "Test" },
-        b: { id: "b", description: "build" },
-      },
+      { a: existingTest, b: existingBuild },
       storageContext,
     )
 
@@ -61,46 +59,41 @@ describe("StandardChecklistButton", () => {
       screen.getByRole("button", { name: "Add standard checklist" }),
     )
 
-    expect(storageContext.addSubtask).toHaveBeenCalledTimes(
-      STANDARD_CHECKLIST.length - 2,
+    const missing = STANDARD_CHECKLIST.filter(
+      (description) => !["test", "build"].includes(description.toLowerCase()),
     )
-    expect(storageContext.addSubtask).not.toHaveBeenCalledWith(
-      "list-1",
-      "task-1",
-      "test",
-      expect.anything(),
-    )
-    expect(storageContext.addSubtask).not.toHaveBeenCalledWith(
-      "list-1",
-      "task-1",
-      "build",
-      expect.anything(),
-    )
+    expect(storageContext.setSubtasks).toHaveBeenCalledWith("list-1", "task-1", [
+      existingTest,
+      existingBuild,
+      ...missing.map((description, index) => ({
+        id: idFor(description),
+        description,
+        position: 2 + index,
+      })),
+    ])
   })
 
-  it("writes the same deterministic id when clicked twice in a row, instead of duplicating", async () => {
+  it("writes the same result when clicked twice in a row, instead of duplicating", async () => {
     const user = userEvent.setup()
     const storageContext = createWorkStorageContext()
     // subtasks prop stays the same across both clicks, simulating a second
-    // click landing before the first click's writes have synced back down.
+    // click landing before the first click's write has synced back down.
     renderWithContext(undefined, storageContext)
 
     const button = screen.getByRole("button", { name: "Add standard checklist" })
     await user.click(button)
     await user.click(button)
 
-    const addSubtask = storageContext.addSubtask as jest.Mock
-    const idsWritten = addSubtask.mock.calls.map((call) => call[3])
-    const uniqueIds = new Set(idsWritten)
-    expect(uniqueIds.size).toBe(STANDARD_CHECKLIST.length)
-    expect(idsWritten.length).toBe(STANDARD_CHECKLIST.length * 2)
+    const setSubtasks = storageContext.setSubtasks as jest.Mock
+    expect(setSubtasks).toHaveBeenCalledTimes(2)
+    expect(setSubtasks.mock.calls[0]).toEqual(setSubtasks.mock.calls[1])
   })
 
   it("isn't rendered once every standard item already exists", () => {
     const subtasks = Object.fromEntries(
       STANDARD_CHECKLIST.map((description, index) => [
         `id-${index}`,
-        { id: `id-${index}`, description },
+        { id: `id-${index}`, description, position: index },
       ]),
     )
     renderWithContext(subtasks)

@@ -30,6 +30,7 @@ export type Worktree = (typeof WORKTREES)[number]
 export type Subtask = {
   id: string
   description: string
+  position: number
 }
 
 export type WorkTask = {

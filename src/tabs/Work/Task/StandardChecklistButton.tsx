@@ -24,9 +24,10 @@ export function StandardChecklistButton({
   taskId,
   onAdd,
 }: StandardChecklistButtonProps) {
-  const { addSubtask } = useWorkStorage()
+  const { setSubtasks } = useWorkStorage()
 
-  const existingDescriptions = Object.values(subtasks ?? {}).map((subtask) =>
+  const existing = Object.values(subtasks ?? {})
+  const existingDescriptions = existing.map((subtask) =>
     subtask.description.toLowerCase(),
   )
   const allAdded = STANDARD_CHECKLIST.every((description) =>
@@ -38,11 +39,23 @@ export function StandardChecklistButton({
   }
 
   const addStandardChecklist = () => {
-    STANDARD_CHECKLIST.forEach((description) => {
-      if (!existingDescriptions.includes(description.toLowerCase())) {
-        addSubtask(listId, taskId, description, idFor(description))
-      }
-    })
+    // Written as one atomic list, in STANDARD_CHECKLIST order, so the
+    // missing items always end up in the same relative order regardless of
+    // write timing, and a second click before this one's write has synced
+    // back down just rewrites the same thing instead of racing it.
+    const highestPosition = existing.reduce(
+      (max, subtask) => Math.max(max, subtask.position),
+      -1,
+    )
+    const missing = STANDARD_CHECKLIST.filter(
+      (description) => !existingDescriptions.includes(description.toLowerCase()),
+    )
+    const newSubtasks = missing.map((description, index) => ({
+      id: idFor(description),
+      description,
+      position: highestPosition + 1 + index,
+    }))
+    setSubtasks(listId, taskId, [...existing, ...newSubtasks])
     onAdd?.()
   }
 
