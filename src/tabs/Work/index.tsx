@@ -13,6 +13,8 @@ import { WorkStorageProvider, useWorkStorage } from "./WorkStorageContext"
 import "./index.css"
 import { MoveToOtherLists } from "./MoveToOtherLists"
 import { addSourceListLabel } from "./labelUtils"
+import { moveTaskBetweenLists } from "./moveTaskBetweenLists"
+import { ListDestination, getDestinationListIndex } from "./listDestination"
 
 export function Work() {
   return (
@@ -29,6 +31,7 @@ function WorkContent() {
     isLoading: listsLoading,
     addList,
     addTask,
+    deleteTask,
     reorderTasks,
   } = useWorkStorage()
 
@@ -44,6 +47,37 @@ function WorkContent() {
         (list) => list.id !== doneList?.id,
       ),
     [lists, doneList],
+  )
+
+  const moveTaskToList = useCallback(
+    (task: WorkTask, currentListId: string, destination: ListDestination) => {
+      const currentIndex = orderedLists.findIndex(
+        (list) => list.id === currentListId,
+      )
+      if (currentIndex === -1) {
+        return
+      }
+
+      const targetIndex = getDestinationListIndex(
+        currentIndex,
+        orderedLists.length,
+        destination,
+      )
+
+      const targetList = orderedLists[targetIndex]
+      if (!targetList || targetList.id === currentListId) {
+        return
+      }
+
+      moveTaskBetweenLists(
+        { addTask, deleteTask },
+        task,
+        currentListId,
+        orderedLists[currentIndex],
+        targetList,
+      )
+    },
+    [orderedLists, addTask, deleteTask],
   )
 
   const onUpdate = useCallback(() => {
@@ -175,6 +209,9 @@ function WorkContent() {
                       task={task}
                     />
                   )}
+                  onMoveTaskToList={(task, destination) =>
+                    moveTaskToList(task, list.id, destination)
+                  }
                 />
               ),
           )}

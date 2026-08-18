@@ -15,6 +15,7 @@ import "./TaskList.css"
 import { DragHandle } from "../../shared/drag-and-drop/DragHandle"
 import { draggableTypeKey } from "../../shared/drag-and-drop/types"
 import { DraggableListItem } from "../../shared/drag-and-drop/DraggableListItem"
+import { ListDestination } from "./listDestination"
 import { PostitModalDialog } from "./PostitModal"
 import { WorkTask } from "./types"
 import { useWorkStorage } from "./WorkStorageContext"
@@ -37,11 +38,13 @@ export function TaskList({
   listId,
   parentListId,
   additionalMoveDestinations,
+  onMoveTaskToList,
 }: {
   index: number
   listId: string
   parentListId: string
   additionalMoveDestinations: (task: WorkTask) => JSX.Element
+  onMoveTaskToList?: (task: WorkTask, destination: ListDestination) => void
 }) {
   const listRef = useRef<HTMLOListElement>(null)
   const [confirmDeleteModalOpen, setConfirmDeleteModalOpen] = useState(false)
@@ -179,7 +182,29 @@ export function TaskList({
                   onReorder={(reorderedList) =>
                     reorderTasks(listId, reorderedList)
                   }
-                  additionalActions={additionalMoveDestinations(task)}
+                  additionalActions={{
+                    menuItems: additionalMoveDestinations(task),
+                    onKeyDown: onMoveTaskToList
+                      ? (event) => {
+                          switch (event.key) {
+                            case "ArrowLeft":
+                              event.preventDefault()
+                              onMoveTaskToList(
+                                task,
+                                event.shiftKey ? "first" : "previous",
+                              )
+                              break
+                            case "ArrowRight":
+                              event.preventDefault()
+                              onMoveTaskToList(
+                                task,
+                                event.shiftKey ? "last" : "next",
+                              )
+                              break
+                          }
+                        }
+                      : undefined,
+                  }}
                 />
               }
             />
