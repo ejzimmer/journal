@@ -45,11 +45,14 @@ describe("StandardChecklistButton", () => {
     )
   })
 
-  it("skips items that already exist, case-insensitively, and appends the rest after them", async () => {
+  it("reuses items that already exist, case-insensitively, keeping the whole standard set in declared order", async () => {
     const user = userEvent.setup()
     const storageContext = createWorkStorageContext()
-    const existingTest = { id: "a", description: "Test", position: 0 }
-    const existingBuild = { id: "b", description: "build", position: 1 }
+    // "build" already exists ahead of "test" - out of declared order - to
+    // prove the button corrects the whole standard block, not just the
+    // newly added items.
+    const existingBuild = { id: "b", description: "build", position: 0 }
+    const existingTest = { id: "a", description: "Test", position: 1 }
     renderWithContext(
       { a: existingTest, b: existingBuild },
       storageContext,
@@ -59,18 +62,43 @@ describe("StandardChecklistButton", () => {
       screen.getByRole("button", { name: "Add standard checklist" }),
     )
 
-    const missing = STANDARD_CHECKLIST.filter(
-      (description) => !["test", "build"].includes(description.toLowerCase()),
+    expect(storageContext.setSubtasks).toHaveBeenCalledWith(
+      "list-1",
+      "task-1",
+      STANDARD_CHECKLIST.map((description, index) => {
+        if (description.toLowerCase() === "test") {
+          return { ...existingTest, position: index }
+        }
+        if (description.toLowerCase() === "build") {
+          return { ...existingBuild, position: index }
+        }
+        return { id: idFor(description), description, position: index }
+      }),
     )
-    expect(storageContext.setSubtasks).toHaveBeenCalledWith("list-1", "task-1", [
-      existingTest,
-      existingBuild,
-      ...missing.map((description, index) => ({
-        id: idFor(description),
-        description,
-        position: 2 + index,
-      })),
-    ])
+  })
+
+  it("keeps custom subtasks ahead of the standard block", async () => {
+    const user = userEvent.setup()
+    const storageContext = createWorkStorageContext()
+    const custom = { id: "c", description: "write design doc", position: 0 }
+    renderWithContext({ c: custom }, storageContext)
+
+    await user.click(
+      screen.getByRole("button", { name: "Add standard checklist" }),
+    )
+
+    expect(storageContext.setSubtasks).toHaveBeenCalledWith(
+      "list-1",
+      "task-1",
+      [
+        { ...custom, position: 0 },
+        ...STANDARD_CHECKLIST.map((description, index) => ({
+          id: idFor(description),
+          description,
+          position: index + 1,
+        })),
+      ],
+    )
   })
 
   it("writes the same result when clicked twice in a row, instead of duplicating", async () => {

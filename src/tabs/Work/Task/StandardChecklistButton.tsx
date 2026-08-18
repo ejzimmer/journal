@@ -39,23 +39,29 @@ export function StandardChecklistButton({
   }
 
   const addStandardChecklist = () => {
-    // Written as one atomic list, in STANDARD_CHECKLIST order, so the
-    // missing items always end up in the same relative order regardless of
-    // write timing, and a second click before this one's write has synced
-    // back down just rewrites the same thing instead of racing it.
-    const highestPosition = existing.reduce(
-      (max, subtask) => Math.max(max, subtask.position),
-      -1,
+    // Written as one atomic list: every standard-checklist item - whether
+    // it already existed or is being added now - is laid out in
+    // STANDARD_CHECKLIST's declared order, so the preset order always
+    // holds regardless of which items existed beforehand or write timing.
+    // Custom (non-standard) subtasks keep their existing relative order,
+    // ahead of the standard block.
+    const custom = existing.filter(
+      (subtask) =>
+        !STANDARD_CHECKLIST.some(
+          (description) => description.toLowerCase() === subtask.description.toLowerCase(),
+        ),
     )
-    const missing = STANDARD_CHECKLIST.filter(
-      (description) => !existingDescriptions.includes(description.toLowerCase()),
-    )
-    const newSubtasks = missing.map((description, index) => ({
-      id: idFor(description),
-      description,
-      position: highestPosition + 1 + index,
+    const standardBlock = STANDARD_CHECKLIST.map((description) => {
+      const existingItem = existing.find(
+        (subtask) => subtask.description.toLowerCase() === description.toLowerCase(),
+      )
+      return existingItem ?? { id: idFor(description), description }
+    })
+    const newSubtasks = [...custom, ...standardBlock].map((subtask, index) => ({
+      ...subtask,
+      position: index,
     }))
-    setSubtasks(listId, taskId, [...existing, ...newSubtasks])
+    setSubtasks(listId, taskId, newSubtasks)
     onAdd?.()
   }
 

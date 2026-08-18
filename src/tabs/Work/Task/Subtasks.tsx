@@ -50,9 +50,37 @@ export function Subtasks({ subtasks, listId, taskId }: SubtasksProps) {
     }
   }
 
+  const insertForm = (
+    <form
+      ref={formRef}
+      onSubmit={handleSubmit}
+      onBlur={handleBlur}
+      className="insert-subtask"
+    >
+      <input
+        ref={inputRef}
+        autoFocus
+        aria-label="Insert subtask"
+        className="inline"
+        onKeyDown={handleKeyDown}
+      />
+    </form>
+  )
+
   return (
     <span className="subtasks">
-      [
+      {insertingAt === 0 ? (
+        insertForm
+      ) : (
+        <button
+          type="button"
+          className="subtask-gap"
+          aria-label="Insert subtask at start"
+          onClick={() => setInsertingAt(0)}
+        >
+          [
+        </button>
+      )}
       {sorted.map((subtask, index) => (
         <span key={subtask.id}>
           <button
@@ -64,20 +92,7 @@ export function Subtasks({ subtasks, listId, taskId }: SubtasksProps) {
           </button>
           {index < sorted.length - 1 &&
             (insertingAt === index + 1 ? (
-              <form
-                ref={formRef}
-                onSubmit={handleSubmit}
-                onBlur={handleBlur}
-                className="insert-subtask"
-              >
-                <input
-                  ref={inputRef}
-                  autoFocus
-                  aria-label="Insert subtask"
-                  className="inline"
-                  onKeyDown={handleKeyDown}
-                />
-              </form>
+              insertForm
             ) : (
               <button
                 type="button"
@@ -90,7 +105,18 @@ export function Subtasks({ subtasks, listId, taskId }: SubtasksProps) {
             ))}
         </span>
       ))}
-      ]
+      {insertingAt === sorted.length ? (
+        insertForm
+      ) : (
+        <button
+          type="button"
+          className="subtask-gap"
+          aria-label="Insert subtask at end"
+          onClick={() => setInsertingAt(sorted.length)}
+        >
+          ]
+        </button>
+      )}
     </span>
   )
 }
