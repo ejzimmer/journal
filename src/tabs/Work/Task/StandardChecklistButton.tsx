@@ -9,6 +9,15 @@ type StandardChecklistButtonProps = {
   onAdd?: () => void
 }
 
+// Deterministic per-description ids for standard checklist items. Clicking
+// this button writes the same id/description pairs every time, so repeat
+// clicks - or a click landing before an earlier one's writes have synced
+// back down - just rewrite the same keys with the same values instead of
+// racing a "does this already exist" check against in-flight writes and
+// creating duplicates or clobbering data.
+const idFor = (description: string) =>
+  `standard-${description.toLowerCase().replace(/\s+/g, "-")}`
+
 export function StandardChecklistButton({
   subtasks,
   listId,
@@ -29,12 +38,9 @@ export function StandardChecklistButton({
   }
 
   const addStandardChecklist = () => {
-    const existing = Object.values(subtasks ?? {}).map((subtask) =>
-      subtask.description.toLowerCase(),
-    )
     STANDARD_CHECKLIST.forEach((description) => {
-      if (!existing.includes(description.toLowerCase())) {
-        addSubtask(listId, taskId, description)
+      if (!existingDescriptions.includes(description.toLowerCase())) {
+        addSubtask(listId, taskId, description, idFor(description))
       }
     })
     onAdd?.()

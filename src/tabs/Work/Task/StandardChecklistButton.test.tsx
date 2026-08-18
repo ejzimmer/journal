@@ -20,6 +20,9 @@ function renderWithContext(
   )
 }
 
+const idFor = (description: string) =>
+  `standard-${description.toLowerCase().replace(/\s+/g, "-")}`
+
 describe("StandardChecklistButton", () => {
   it("adds all the standard checklist items when there are no existing subtasks", async () => {
     const user = userEvent.setup()
@@ -38,6 +41,7 @@ describe("StandardChecklistButton", () => {
         "list-1",
         "task-1",
         description,
+        idFor(description),
       )
     })
   })
@@ -64,12 +68,32 @@ describe("StandardChecklistButton", () => {
       "list-1",
       "task-1",
       "test",
+      expect.anything(),
     )
     expect(storageContext.addSubtask).not.toHaveBeenCalledWith(
       "list-1",
       "task-1",
       "build",
+      expect.anything(),
     )
+  })
+
+  it("writes the same deterministic id when clicked twice in a row, instead of duplicating", async () => {
+    const user = userEvent.setup()
+    const storageContext = createWorkStorageContext()
+    // subtasks prop stays the same across both clicks, simulating a second
+    // click landing before the first click's writes have synced back down.
+    renderWithContext(undefined, storageContext)
+
+    const button = screen.getByRole("button", { name: "Add standard checklist" })
+    await user.click(button)
+    await user.click(button)
+
+    const addSubtask = storageContext.addSubtask as jest.Mock
+    const idsWritten = addSubtask.mock.calls.map((call) => call[3])
+    const uniqueIds = new Set(idsWritten)
+    expect(uniqueIds.size).toBe(STANDARD_CHECKLIST.length)
+    expect(idsWritten.length).toBe(STANDARD_CHECKLIST.length * 2)
   })
 
   it("isn't rendered once every standard item already exists", () => {
