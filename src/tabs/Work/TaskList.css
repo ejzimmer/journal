@@ -282,11 +282,16 @@ ol.work-lists > li {
     }
 
     .task-content .worktree-menu-anchor {
-      margin-inline-start: -8px;
-
       button.stamp-trigger {
         padding: 6px;
       }
+    }
+
+    /* Icon buttons carry their own padding, so the flex gap needs cancelling
+       to sit tight next to them - but the due-date badge doesn't, so it
+       keeps the full gap when that's what precedes the worktree stamp. */
+    .task-content button.add-metadata + .worktree-menu-anchor {
+      margin-inline-start: -8px;
     }
   }
 
