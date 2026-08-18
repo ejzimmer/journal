@@ -14,6 +14,13 @@ export type Label = {
   colour: Colour
 }
 
+export type StoredLabel = Label & {
+  id: string
+  lastRemoved?: number
+}
+
+export const LABELS_KEY = "work-labels"
+
 export const STATUS_KEYS = ["not_started", "done"] as const
 export type StatusKey = (typeof STATUS_KEYS)[number]
 
@@ -35,6 +42,7 @@ export type WorkTask = {
   dueDate?: number
   position: number
   labels?: Label[]
+  labelIds?: string[]
   worktree?: Worktree
   subtasks?: Record<string, Subtask>
 }

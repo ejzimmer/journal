@@ -1,9 +1,23 @@
-import { createContext, ReactNode, useContext, useMemo } from "react"
+import {
+  createContext,
+  ReactNode,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+} from "react"
 import { FirebaseContext } from "../../shared/FirebaseContext"
-import { Label, Subtask, WorkTask, WORK_KEY } from "./types"
-import { getNextColour } from "./LabelsControl"
+import {
+  Colour,
+  Label,
+  LABELS_KEY,
+  StoredLabel,
+  Subtask,
+  WorkTask,
+  WORK_KEY,
+} from "./types"
 
-export type LabelTarget = { listId: string; taskId?: string }
+const STALE_AFTER_MS = 7 * 24 * 60 * 60 * 1000
 
 export type WorkStorageContextType = {
   lists?: Record<string, WorkTask>
@@ -28,10 +42,13 @@ export type WorkStorageContextType = {
   getList: (listId: string) => WorkTask | undefined
   getTask: (listId: string, taskId: string) => WorkTask | undefined
 
-  labels: Label[]
-  createLabel: (target: LabelTarget, value: string) => Label
-  editLabel: (oldLabel: Label, newLabel: Label) => void
-  deleteLabel: (target: LabelTarget, label: Label) => void
+  labels: StoredLabel[]
+  getLabel: (id: string) => StoredLabel | undefined
+  addLabelToTask: (label: Label, task: WorkTask, list: WorkTask) => void
+  removeLabelFromTask: (id: string, task: WorkTask, list: WorkTask) => void
+  addLabelToList: (label: Label, list: WorkTask) => void
+  removeLabelFromList: (id: string, list: WorkTask) => void
+  updateLabel: (id: string, colour: Colour) => void
 }
 
 export const WorkStorageContext = createContext<
@@ -54,24 +71,64 @@ export function WorkStorageProvider({ children }: { children: ReactNode }) {
   const { value: lists, loading: isLoading } =
     useValue<Record<string, WorkTask>>(WORK_KEY)
 
-  const labels = useMemo(() => {
-    const uniqueLabels = new Map<string, Label>()
+  const { value: storedLabelsById, loading: labelsLoading } =
+    useValue<Record<string, StoredLabel>>(LABELS_KEY)
+
+  const labels = useMemo(
+    () => Object.values(storedLabelsById ?? {}),
+    [storedLabelsById],
+  )
+
+  // One-off sweep when the label store first loads: labels unused for more
+  // than a week (lastRemoved set long enough ago) are purged for good.
+  const hasSweptStaleLabels = useRef(false)
+  useEffect(() => {
+    if (labelsLoading || hasSweptStaleLabels.current) return
+    hasSweptStaleLabels.current = true
+
+    const staleBefore = Date.now() - STALE_AFTER_MS
+    labels.forEach((label) => {
+      if (label.lastRemoved !== undefined && label.lastRemoved < staleBefore) {
+        deleteItem(LABELS_KEY, label)
+      }
+    })
+  }, [labelsLoading, labels, deleteItem])
+
+  const countLabelUsage = (id: string) => {
+    let count = 0
     Object.values(lists ?? {}).forEach((list) => {
-      list.labels?.forEach((label) => uniqueLabels.set(label.value, label))
+      if (list.labelIds?.includes(id)) count++
       Object.values(list.items ?? {}).forEach((task) => {
-        task.labels?.forEach((label) => uniqueLabels.set(label.value, label))
+        if (task.labelIds?.includes(id)) count++
       })
     })
-    return Array.from(uniqueLabels.values())
-  }, [lists])
+    return count
+  }
 
-  // Keeps duplicated label copies visually consistent: a label added to a
-  // task/list picks up the colour of any existing label with the same
-  // value, rather than trusting whatever colour the caller happened to have.
-  const normalizeLabels = (taskLabels?: Label[]): Label[] | undefined =>
-    taskLabels?.map(
-      (label) => labels.find((l) => l.value === label.value) ?? label,
-    )
+  // Reuses an existing stored label with the same value if there is one
+  // (reviving it if it was pending removal), otherwise creates a new one.
+  const resolveLabelId = (label: Label): string => {
+    const existing = labels.find((l) => l.value === label.value)
+    if (existing) {
+      if (existing.lastRemoved !== undefined) {
+        const { lastRemoved: _lastRemoved, ...withoutLastRemoved } = existing
+        updateItem(LABELS_KEY, withoutLastRemoved)
+      }
+      return existing.id
+    }
+    return addItem<StoredLabel>(LABELS_KEY, label) ?? ""
+  }
+
+  // Marks a label as pending removal once nothing references it any more,
+  // rather than deleting it immediately, so it can still be reused for a
+  // while without recreating it from scratch.
+  const markUnusedIfOrphaned = (id: string) => {
+    if (countLabelUsage(id) > 1) return
+    const storedLabel = storedLabelsById?.[id]
+    if (storedLabel && storedLabel.lastRemoved === undefined) {
+      updateItem(LABELS_KEY, { ...storedLabel, lastRemoved: Date.now() })
+    }
+  }
 
   const updateList = (list: WorkTask) => {
     updateItem(WORK_KEY, list)
@@ -80,32 +137,14 @@ export function WorkStorageProvider({ children }: { children: ReactNode }) {
     updateItem(`${WORK_KEY}/${listId}/items`, task)
   }
 
-  const getLabelTarget = (target: LabelTarget) =>
-    target.taskId
-      ? lists?.[target.listId]?.items?.[target.taskId]
-      : lists?.[target.listId]
-
-  const setLabelsForTarget = (target: LabelTarget, updatedLabels: Label[]) => {
-    const item = getLabelTarget(target)
-    if (!item) return
-    if (target.taskId) {
-      updateTask(target.listId, { ...item, labels: updatedLabels })
-    } else {
-      updateList({ ...item, labels: updatedLabels })
-    }
-  }
-
   const value: WorkStorageContextType = {
     lists,
     isLoading,
-    labels,
 
-    addList: (listName, newLabels = []) => {
+    addList: (listName, labels = []) => {
       addItem(WORK_KEY, {
         description: listName,
-        ...(newLabels.length > 0 && {
-          labels: normalizeLabels(newLabels),
-        }),
+        ...(labels.length > 0 && { labels }),
       })
     },
     updateList,
@@ -117,10 +156,7 @@ export function WorkStorageProvider({ children }: { children: ReactNode }) {
     },
 
     addTask: (listId, task) => {
-      addItem(`${WORK_KEY}/${listId}/items`, {
-        ...task,
-        ...(task.labels && { labels: normalizeLabels(task.labels) }),
-      })
+      addItem(`${WORK_KEY}/${listId}/items`, task)
     },
     updateTask,
     deleteTask: (listId, task) => {
@@ -142,41 +178,39 @@ export function WorkStorageProvider({ children }: { children: ReactNode }) {
     getList: (listId) => lists?.[listId],
     getTask: (listId, taskId) => lists?.[listId]?.items?.[taskId],
 
-    createLabel: (target, labelValue) => {
-      const colour = getNextColour(labels.map((l) => l.colour))
-      const newLabel: Label = { value: labelValue, colour }
-      const existingLabels = getLabelTarget(target)?.labels ?? []
-      setLabelsForTarget(target, [...existingLabels, newLabel])
-      return newLabel
+    labels,
+    getLabel: (id) => storedLabelsById?.[id],
+
+    addLabelToTask: (label, task, list) => {
+      const id = resolveLabelId(label)
+      const labelIds = Array.from(new Set([...(task.labelIds ?? []), id]))
+      updateTask(list.id, { ...task, labelIds })
     },
-    editLabel: (oldLabel, newLabel) => {
-      Object.values(lists ?? {}).forEach((list) => {
-        if (list.labels?.some((l) => l.value === oldLabel.value)) {
-          updateList({
-            ...list,
-            labels: list.labels.map((l) =>
-              l.value === oldLabel.value ? newLabel : l,
-            ),
-          })
-        }
-        Object.values(list.items ?? {}).forEach((task) => {
-          if (task.labels?.some((l) => l.value === oldLabel.value)) {
-            updateTask(list.id, {
-              ...task,
-              labels: task.labels.map((l) =>
-                l.value === oldLabel.value ? newLabel : l,
-              ),
-            })
-          }
-        })
-      })
-    },
-    deleteLabel: (target, label) => {
-      const existingLabels = getLabelTarget(target)?.labels ?? []
-      setLabelsForTarget(
-        target,
-        existingLabels.filter((l) => l !== label),
+    removeLabelFromTask: (id, task, list) => {
+      const labelIds = (task.labelIds ?? []).filter(
+        (labelId) => labelId !== id,
       )
+      updateTask(list.id, { ...task, labelIds })
+      markUnusedIfOrphaned(id)
+    },
+
+    addLabelToList: (label, list) => {
+      const id = resolveLabelId(label)
+      const labelIds = Array.from(new Set([...(list.labelIds ?? []), id]))
+      updateList({ ...list, labelIds })
+    },
+    removeLabelFromList: (id, list) => {
+      const labelIds = (list.labelIds ?? []).filter(
+        (labelId) => labelId !== id,
+      )
+      updateList({ ...list, labelIds })
+      markUnusedIfOrphaned(id)
+    },
+
+    updateLabel: (id, colour) => {
+      const storedLabel = storedLabelsById?.[id]
+      if (!storedLabel) return
+      updateItem(LABELS_KEY, { ...storedLabel, colour })
     },
   }
 

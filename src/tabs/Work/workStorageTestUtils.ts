@@ -19,9 +19,12 @@ export function createWorkStorageContext(
     getList: () => undefined,
     getTask: () => undefined,
     labels: [],
-    createLabel: jest.fn((_target, value) => ({ value, colour: "blue" })),
-    editLabel: jest.fn(),
-    deleteLabel: jest.fn(),
+    getLabel: () => undefined,
+    addLabelToTask: jest.fn(),
+    removeLabelFromTask: jest.fn(),
+    addLabelToList: jest.fn(),
+    removeLabelFromList: jest.fn(),
+    updateLabel: jest.fn(),
     ...overrides,
   }
 }
