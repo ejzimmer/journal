@@ -4,7 +4,6 @@ import {
   FocusEvent,
   useRef,
   useMemo,
-  useContext,
   JSX,
 } from "react"
 import { EditableText } from "../../shared/controls/EditableText"
@@ -18,13 +17,12 @@ import { draggableTypeKey } from "../../shared/drag-and-drop/types"
 import { DraggableListItem } from "../../shared/drag-and-drop/DraggableListItem"
 import { ListDestination } from "./listDestination"
 import { PostitModalDialog } from "./PostitModal"
-import { WorkTask, WORK_KEY } from "./types"
-import { FirebaseContext } from "../../shared/FirebaseContext"
+import { WorkTask } from "./types"
+import { useWorkStorage } from "./WorkStorageContext"
 import { useDropTarget } from "../../shared/drag-and-drop/useDropTarget"
 import { sortByPosition } from "../../shared/drag-and-drop/utils"
 import { Labels } from "./Task/Labels"
 import { LabelsControl } from "./LabelsControl"
-import { LabelsContext } from "./LabelsContext"
 
 function getListData(list: WorkTask, parentId: string) {
   return {
@@ -60,19 +58,17 @@ export function TaskList({
     }
   }
 
-  const storageContext = useContext(FirebaseContext)
-  if (!storageContext) {
-    throw new Error("missing storage context")
-  }
+  const {
+    lists,
+    getList,
+    updateList,
+    deleteList,
+    reorderLists,
+    reorderTasks,
+    addTask,
+  } = useWorkStorage()
 
-  const { value: lists } =
-    storageContext.useValue<Record<string, WorkTask>>(WORK_KEY)
-  const list = lists?.[listId]
-
-  const allLabels = useContext(LabelsContext)
-  const listLabelValue = allLabels?.find(
-    (l) => l.id === list?.labelIds?.[0],
-  )?.value
+  const list = getList(listId)
 
   const sortedList = useMemo(
     () => (list?.items ? sortByPosition(Object.values(list.items)) : []),
@@ -97,10 +93,10 @@ export function TaskList({
       allowedEdges={["left", "right"]}
       dragHandle={
         <DragHandle
-          list={Object.values(lists)}
+          list={Object.values(lists ?? {})}
           index={index}
           onReorder={(reorderedList) => {
-            storageContext.updateList(WORK_KEY, reorderedList)
+            reorderLists(reorderedList)
           }}
         />
       }
@@ -113,19 +109,19 @@ export function TaskList({
               value={list.description}
               onChange={(description) => {
                 if (description) {
-                  storageContext.updateItem(WORK_KEY, { ...list, description })
+                  updateList({ ...list, description })
                 } else {
                   setConfirmDeleteModalOpen(true)
                 }
               }}
             />
           </h2>
-          {list.labelIds?.[0] &&
+          {list.labels?.[0] &&
             (editingLabel ? (
               <LabelsControl
-                value={list.labelIds}
-                onChange={(labelIds) => {
-                  storageContext.updateItem(WORK_KEY, { ...list, labelIds })
+                value={list.labels}
+                onChange={(labels) => {
+                  updateList({ ...list, labels })
                   setEditingLabel(false)
                 }}
                 label=""
@@ -135,19 +131,17 @@ export function TaskList({
             ) : (
               <>
                 <Labels
-                  labelIds={list.labelIds}
-                  onRemoveLabel={(id) =>
-                    storageContext.updateItem(WORK_KEY, {
+                  labels={list.labels}
+                  onRemoveLabel={(label) =>
+                    updateList({
                       ...list,
-                      labelIds: list.labelIds?.filter(
-                        (existing) => existing !== id,
-                      ),
+                      labels: list.labels?.filter((l) => l !== label),
                     })
                   }
                 />
                 <button
                   className="ghost"
-                  aria-label={`Change ${listLabelValue} label`}
+                  aria-label={`Change ${list.labels[0].value} label`}
                   onClick={() => setEditingLabel(true)}
                 >
                   ✏️
@@ -158,7 +152,7 @@ export function TaskList({
             isOpen={confirmDeleteModalOpen}
             message={`Are you sure you want to delete list ${list.description}?`}
             onConfirm={() => {
-              storageContext.deleteItem(WORK_KEY, list)
+              deleteList(list)
             }}
             onCancel={() => setConfirmDeleteModalOpen(false)}
           />
@@ -172,17 +166,14 @@ export function TaskList({
           {sortedList?.map((task, index) => (
             <Task
               key={task.id}
-              path={`${WORK_KEY}/${listId}/items`}
+              listId={listId}
               task={task}
               dragHandle={
                 <DragHandle
                   list={sortedList}
                   index={index}
                   onReorder={(reorderedList) =>
-                    storageContext.updateList(
-                      `${WORK_KEY}/${listId}/items`,
-                      reorderedList,
-                    )
+                    reorderTasks(listId, reorderedList)
                   }
                   additionalActions={{
                     menuItems: additionalMoveDestinations(task),
@@ -214,9 +205,7 @@ export function TaskList({
           {addTaskFormVisible && (
             <li style={{ paddingInlineStart: "var(--margin-width)" }}>
               <AddTaskForm
-                onSubmit={(newTask) =>
-                  storageContext.addItem(`${WORK_KEY}/${listId}/items`, newTask)
-                }
+                onSubmit={(newTask) => addTask(listId, newTask)}
                 onClose={() => {
                   setAddTaskFormVisible(false)
                 }}

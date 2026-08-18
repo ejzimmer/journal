@@ -1,9 +1,16 @@
-import { ContextType } from "../../shared/FirebaseContext"
 import { addSourceListLabel } from "./labelUtils"
-import { WorkTask, WORK_KEY } from "./types"
+import { WorkTask } from "./types"
+
+type MoveTaskStorage = {
+  addTask: (
+    listId: string,
+    task: Partial<WorkTask> & { description: string },
+  ) => void
+  deleteTask: (listId: string, task: WorkTask) => void
+}
 
 export function moveTaskBetweenLists(
-  storageContext: Pick<ContextType, "addItem" | "deleteItem">,
+  storage: MoveTaskStorage,
   task: WorkTask,
   currentListId: string,
   currentList: WorkTask | undefined,
@@ -20,10 +27,10 @@ export function moveTaskBetweenLists(
     ? addSourceListLabel(task, currentList)
     : task
 
-  storageContext.addItem(`${WORK_KEY}/${destinationList.id}/items`, {
+  storage.addTask(destinationList.id, {
     ...movedTask,
     position,
-    lastUpdated: new Date().getTime(),
+    lastStatusUpdate: new Date().getTime(),
   })
-  storageContext.deleteItem(`${WORK_KEY}/${currentListId}/items`, task)
+  storage.deleteTask(currentListId, task)
 }

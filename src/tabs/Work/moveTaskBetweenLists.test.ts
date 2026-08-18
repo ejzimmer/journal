@@ -17,7 +17,7 @@ const sourceList: WorkTask = {
   parentId: "work",
   lastStatusUpdate: 0,
   position: 0,
-  labelIds: ["label-a11y"],
+  labels: [{ value: "a11y", colour: "blue" }],
 }
 
 const destinationList: WorkTask = {
@@ -31,45 +31,30 @@ const destinationList: WorkTask = {
 
 describe("moveTaskBetweenLists", () => {
   it("adds the task to the destination list and removes it from the source list", () => {
-    const storageContext = { addItem: jest.fn(), deleteItem: jest.fn() }
+    const storage = { addTask: jest.fn(), deleteTask: jest.fn() }
 
-    moveTaskBetweenLists(
-      storageContext,
-      task,
-      sourceList.id,
-      sourceList,
-      destinationList,
-    )
+    moveTaskBetweenLists(storage, task, sourceList.id, sourceList, destinationList)
 
-    expect(storageContext.addItem).toHaveBeenCalledWith(
-      "work/list-2/items",
+    expect(storage.addTask).toHaveBeenCalledWith(
+      "list-2",
       expect.objectContaining({ id: "task-1", position: 0 }),
     )
-    expect(storageContext.deleteItem).toHaveBeenCalledWith(
-      "work/list-1/items",
-      task,
-    )
+    expect(storage.deleteTask).toHaveBeenCalledWith("list-1", task)
   })
 
   it("adds the source list's label to the moved task", () => {
-    const storageContext = { addItem: jest.fn(), deleteItem: jest.fn() }
+    const storage = { addTask: jest.fn(), deleteTask: jest.fn() }
 
-    moveTaskBetweenLists(
-      storageContext,
-      task,
-      sourceList.id,
-      sourceList,
-      destinationList,
-    )
+    moveTaskBetweenLists(storage, task, sourceList.id, sourceList, destinationList)
 
-    expect(storageContext.addItem).toHaveBeenCalledWith(
-      "work/list-2/items",
-      expect.objectContaining({ labelIds: ["label-a11y"] }),
+    expect(storage.addTask).toHaveBeenCalledWith(
+      "list-2",
+      expect.objectContaining({ labels: [{ value: "a11y", colour: "blue" }] }),
     )
   })
 
   it("places the task after the highest positioned item in the destination list", () => {
-    const storageContext = { addItem: jest.fn(), deleteItem: jest.fn() }
+    const storage = { addTask: jest.fn(), deleteTask: jest.fn() }
     const destinationWithItems: WorkTask = {
       ...destinationList,
       items: {
@@ -78,15 +63,15 @@ describe("moveTaskBetweenLists", () => {
     }
 
     moveTaskBetweenLists(
-      storageContext,
+      storage,
       task,
       sourceList.id,
       sourceList,
       destinationWithItems,
     )
 
-    expect(storageContext.addItem).toHaveBeenCalledWith(
-      "work/list-2/items",
+    expect(storage.addTask).toHaveBeenCalledWith(
+      "list-2",
       expect.objectContaining({ position: 3 }),
     )
   })

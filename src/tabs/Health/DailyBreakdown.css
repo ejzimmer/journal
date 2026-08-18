@@ -1,0 +1,52 @@
+.daily-breakdown {
+  margin-block-start: 24px;
+
+  summary {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    width: fit-content;
+    cursor: pointer;
+    font-weight: bold;
+
+    &::marker,
+    &::-webkit-details-marker {
+      content: "";
+      display: none;
+    }
+
+    svg {
+      transition: transform 0.2s;
+    }
+  }
+
+  &[open] summary svg {
+    transform: rotate(0.5turn);
+  }
+
+  .day-grid {
+    grid-template-columns: repeat(7, 32px);
+    display: grid;
+    gap: 6px;
+    list-style-type: none;
+    margin-block-start: 12px;
+    padding: 0;
+  }
+
+  .day-circle {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    font-weight: 600;
+    line-height: 1;
+    color: var(--body-colour);
+    background: var(--day-colour, hsl(200 90% 96% / 0.4));
+    box-shadow:
+      inset 2px 2px 3px hsl(0 100% 100% / 0.5),
+      inset -2px -2px 3px hsl(0 0% 0% / 0.3);
+  }
+}

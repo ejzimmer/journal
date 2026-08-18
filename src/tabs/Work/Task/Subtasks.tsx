@@ -1,17 +1,14 @@
-import { useContext } from "react"
-import { FirebaseContext } from "../../../shared/FirebaseContext"
+import { useWorkStorage } from "../WorkStorageContext"
 import { Subtask } from "../types"
 
 type SubtasksProps = {
   subtasks?: Record<string, Subtask>
-  path: string
+  listId: string
+  taskId: string
 }
 
-export function Subtasks({ subtasks, path }: SubtasksProps) {
-  const storageContext = useContext(FirebaseContext)
-  if (!storageContext) {
-    throw new Error("missing firebase context")
-  }
+export function Subtasks({ subtasks, listId, taskId }: SubtasksProps) {
+  const { deleteSubtask } = useWorkStorage()
 
   if (!subtasks || Object.keys(subtasks).length === 0) {
     return null
@@ -29,7 +26,7 @@ export function Subtasks({ subtasks, path }: SubtasksProps) {
           <button
             type="button"
             className="subtask"
-            onClick={() => storageContext.deleteItem(path, subtask)}
+            onClick={() => deleteSubtask(listId, taskId, subtask)}
           >
             {subtask.description}
           </button>

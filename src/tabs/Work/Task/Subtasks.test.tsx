@@ -1,22 +1,18 @@
 import { render, screen } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
-import { FirebaseContext } from "../../../shared/FirebaseContext"
 import { Subtasks } from "./Subtasks"
+import { WorkStorageContext, WorkStorageContextType } from "../WorkStorageContext"
+import { createWorkStorageContext } from "../workStorageTestUtils"
 import { Subtask } from "../types"
 
-const mockContext = {
-  addItem: jest.fn(),
-  updateItem: jest.fn(),
-  deleteItem: jest.fn(),
-  updateList: jest.fn(),
-  useValue: jest.fn(),
-}
-
-function renderWithContext(subtasks: Record<string, Subtask> | undefined) {
+function renderWithContext(
+  subtasks: Record<string, Subtask> | undefined,
+  storageContext: WorkStorageContextType = createWorkStorageContext(),
+) {
   return render(
-    <FirebaseContext.Provider value={mockContext}>
-      <Subtasks subtasks={subtasks} path="work/list-1/items/task-1/subtasks" />
-    </FirebaseContext.Provider>,
+    <WorkStorageContext.Provider value={storageContext}>
+      <Subtasks subtasks={subtasks} listId="list-1" taskId="task-1" />
+    </WorkStorageContext.Provider>,
   )
 }
 
@@ -39,12 +35,14 @@ describe("Subtasks", () => {
   it("deletes a subtask when it's clicked", async () => {
     const user = userEvent.setup()
     const subtask = { id: "a", description: "test" }
-    renderWithContext({ a: subtask })
+    const storageContext = createWorkStorageContext()
+    renderWithContext({ a: subtask }, storageContext)
 
     await user.click(screen.getByRole("button", { name: "test" }))
 
-    expect(mockContext.deleteItem).toHaveBeenCalledWith(
-      "work/list-1/items/task-1/subtasks",
+    expect(storageContext.deleteSubtask).toHaveBeenCalledWith(
+      "list-1",
+      "task-1",
       subtask,
     )
   })

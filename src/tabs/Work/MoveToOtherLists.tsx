@@ -1,6 +1,5 @@
-import { useContext } from "react"
 import { Menu } from "../../shared/controls/Menu"
-import { FirebaseContext } from "../../shared/FirebaseContext"
+import { useWorkStorage } from "./WorkStorageContext"
 import { ArrowRightIcon } from "../../shared/icons/ArrowRight"
 import { WorkTask } from "./types"
 import { moveTaskBetweenLists } from "./moveTaskBetweenLists"
@@ -18,10 +17,7 @@ export function MoveToOtherLists({
   doneListId,
   task,
 }: MoveToOtherListsProps) {
-  const storageContext = useContext(FirebaseContext)
-  if (!storageContext) {
-    throw new Error("missing storage context")
-  }
+  const { addTask, deleteTask } = useWorkStorage()
 
   const currentList = allLists.find(({ id }) => id === currentListId)
   const otherLists = allLists.filter(
@@ -32,7 +28,7 @@ export function MoveToOtherLists({
     <Menu.Action
       onClick={() => {
         moveTaskBetweenLists(
-          storageContext,
+          { addTask, deleteTask },
           task,
           currentListId,
           currentList,

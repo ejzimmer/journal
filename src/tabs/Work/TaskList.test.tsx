@@ -1,7 +1,8 @@
 import { render, screen, within } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 import { TaskList } from "./TaskList"
-import { FirebaseContext } from "../../shared/FirebaseContext"
+import { WorkStorageContext, WorkStorageContextType } from "./WorkStorageContext"
+import { createWorkStorageContext } from "./workStorageTestUtils"
 import { LabelsContext } from "./LabelsContext"
 import { WorkTask, Label } from "./types"
 
@@ -12,7 +13,7 @@ const labelledList: WorkTask = {
   parentId: "work",
   lastStatusUpdate: 0,
   position: 0,
-  labelIds: ["label-a11y"],
+  labels: [{ value: "a11y", colour: "blue" }],
 }
 
 const unlabelledList: WorkTask = {
@@ -30,15 +31,18 @@ const lists: Record<string, WorkTask> = {
 }
 
 const mockLabels: Label[] = [
-  { id: "label-a11y", value: "a11y", colour: "blue" },
-  { id: "label-urgent", value: "urgent", colour: "yellow" },
+  { value: "a11y", colour: "blue" },
+  { value: "urgent", colour: "yellow" },
 ]
 
 const noop = () => <></>
 
-function renderTaskList(listId: string, storageContext: any) {
+function renderTaskList(
+  listId: string,
+  storageContext: WorkStorageContextType,
+) {
   return render(
-    <FirebaseContext.Provider value={storageContext}>
+    <WorkStorageContext.Provider value={storageContext}>
       <LabelsContext.Provider value={mockLabels}>
         <TaskList
           listId={listId}
@@ -47,18 +51,16 @@ function renderTaskList(listId: string, storageContext: any) {
           additionalMoveDestinations={noop}
         />
       </LabelsContext.Provider>
-    </FirebaseContext.Provider>,
+    </WorkStorageContext.Provider>,
   )
 }
 
-function createStorageContext() {
-  return {
-    addItem: jest.fn(),
-    updateItem: jest.fn(),
-    deleteItem: jest.fn(),
-    updateList: jest.fn(),
-    useValue: () => ({ value: lists, loading: false }),
-  }
+function createStorageContext(): WorkStorageContextType {
+  return createWorkStorageContext({
+    lists,
+    getList: (listId) => lists[listId],
+    getTask: (listId, taskId) => lists[listId]?.items?.[taskId],
+  })
 }
 
 describe("TaskList label", () => {
@@ -86,13 +88,10 @@ describe("TaskList label", () => {
     renderTaskList(labelledList.id, storageContext)
 
     const labelItem = screen.getByText("a11y").closest("li")
-    await user.click(
-      within(labelItem!).getByRole("button", { name: "Remove a11y" }),
-    )
+    await user.click(within(labelItem!).getByRole("button"))
 
-    expect(storageContext.updateItem).toHaveBeenCalledWith(
-      "work",
-      expect.objectContaining({ labelIds: [] }),
+    expect(storageContext.updateList).toHaveBeenCalledWith(
+      expect.objectContaining({ labels: [] }),
     )
   })
 
@@ -104,10 +103,9 @@ describe("TaskList label", () => {
     await user.click(screen.getByRole("button", { name: "Change a11y label" }))
     await user.click(screen.getByRole("option", { name: "urgent" }))
 
-    expect(storageContext.updateItem).toHaveBeenCalledWith(
-      "work",
+    expect(storageContext.updateList).toHaveBeenCalledWith(
       expect.objectContaining({
-        labelIds: ["label-urgent"],
+        labels: [{ value: "urgent", colour: "yellow" }],
       }),
     )
   })

@@ -1,16 +1,15 @@
-import { useCallback, useContext, useEffect, useMemo, useRef } from "react"
-import { FirebaseContext } from "../../shared/FirebaseContext"
+import { useCallback, useEffect, useMemo, useRef } from "react"
 import { NewListModal } from "./NewListModal"
 import { TaskList } from "./TaskList"
 import { hoursToMilliseconds, isBefore, startOfDay } from "date-fns"
 import { Skeleton } from "../../shared/controls/Skeleton"
 import { draggableTypeKey } from "../../shared/drag-and-drop/types"
-import { LabelsProvider } from "./LabelsProvider"
-import { WorkTask, Label, LABELS_KEY, WORK_KEY } from "./types"
-import { migrateLegacyLabels } from "./migrateLegacyLabels"
+import { LabelsContext } from "./LabelsContext"
+import { WorkTask, Label, WORK_KEY } from "./types"
 import { useDraggableList } from "../../shared/drag-and-drop/useDraggableList"
 import { isDraggable, sortByPosition } from "../../shared/drag-and-drop/utils"
 import { useDropTarget } from "../../shared/drag-and-drop/useDropTarget"
+import { WorkStorageProvider, useWorkStorage } from "./WorkStorageContext"
 
 import "./index.css"
 import { MoveToOtherLists } from "./MoveToOtherLists"
@@ -19,53 +18,29 @@ import { moveTaskBetweenLists } from "./moveTaskBetweenLists"
 import { ListDestination, getDestinationListIndex } from "./listDestination"
 
 export function Work() {
-  const dropTargetRef = useRef<HTMLOListElement>(null)
-  const context = useContext(FirebaseContext)
-  if (!context) {
-    throw new Error("Missing Firebase context provider")
-  }
-  const { addItem, updateItem, useValue, updateList } = context
-  const { value: lists, loading: listsLoading } =
-    useValue<Record<string, WorkTask>>(WORK_KEY)
-  const { value: existingLabelsById, loading: labelsLoading } =
-    useValue<Record<string, Label>>(LABELS_KEY)
+  return (
+    <WorkStorageProvider>
+      <WorkContent />
+    </WorkStorageProvider>
+  )
+}
 
-  const hasMigratedLegacyLabels = useRef(false)
-  useEffect(() => {
-    if (hasMigratedLegacyLabels.current || listsLoading || labelsLoading) {
-      return
-    }
-    hasMigratedLegacyLabels.current = true
-    if (lists) {
-      migrateLegacyLabels(lists, Object.values(existingLabelsById ?? {}), {
-        addItem,
-        updateItem,
-      })
-    }
-  }, [
+function WorkContent() {
+  const dropTargetRef = useRef<HTMLOListElement>(null)
+  const {
     lists,
-    listsLoading,
-    existingLabelsById,
-    labelsLoading,
-    addItem,
-    updateItem,
-  ])
+    isLoading: listsLoading,
+    addList,
+    addTask,
+    deleteTask,
+    reorderTasks,
+  } = useWorkStorage()
 
   const doneList = useMemo(() => {
     return (
       lists && Object.values(lists).find((list) => list.description === "Done")
     )
   }, [lists])
-
-  const onAddList = useCallback(
-    (listName: string, labelIds: string[] = []) => {
-      addItem(WORK_KEY, {
-        description: listName,
-        ...(labelIds.length > 0 && { labelIds }),
-      })
-    },
-    [addItem],
-  )
 
   const orderedLists = useMemo(
     () =>
@@ -96,14 +71,14 @@ export function Work() {
       }
 
       moveTaskBetweenLists(
-        context,
+        { addTask, deleteTask },
         task,
         currentListId,
         orderedLists[currentIndex],
         targetList,
       )
     },
-    [orderedLists, context],
+    [orderedLists, addTask, deleteTask],
   )
 
   const onUpdate = useCallback(() => {
@@ -141,7 +116,7 @@ export function Work() {
       )
 
       done.forEach((task) =>
-        addItem<WorkTask>(`${WORK_KEY}/${doneList.id}/items`, {
+        addTask(doneList.id, {
           ...task,
           lastStatusUpdate: new Date().getTime(),
         }),
@@ -151,9 +126,9 @@ export function Work() {
         ...task,
         position: index,
       }))
-      updateList<WorkTask>(`${WORK_KEY}/${list.id}/items`, orderedNotDone)
+      reorderTasks(list.id, orderedNotDone)
     })
-  }, [lists, addItem, orderedLists, doneList, updateList])
+  }, [lists, addTask, orderedLists, doneList, reorderTasks])
 
   useEffect(() => {
     onUpdate()
@@ -188,10 +163,11 @@ export function Work() {
       return false
     },
     getTargetListId: (source, target) => {
-      if (
-        isDraggable(target) &&
-        source[draggableTypeKey] === target[draggableTypeKey]
-      ) {
+      if (!isDraggable(target)) {
+        return WORK_KEY
+      }
+
+      if (source[draggableTypeKey] === target[draggableTypeKey]) {
         return target.parentId
       }
 
@@ -207,15 +183,18 @@ export function Work() {
     },
   })
 
-  const usedLabelIds = useMemo(() => {
-    const ids = new Set<string>()
+  const labels = useMemo(() => {
+    const uniqueLabels = new Map<string, Label>()
     orderedLists.forEach((list) => {
-      list.labelIds?.forEach((id) => ids.add(id))
-      Object.values(list.items ?? {}).forEach((task) => {
-        task.labelIds?.forEach((id) => ids.add(id))
-      })
+      list.labels?.forEach((label) => uniqueLabels.set(label.value, label))
     })
-    return ids
+    orderedLists
+      .flatMap(({ items }) => (items ? Object.values(items) : []))
+      .flatMap(({ labels }) => labels)
+      .filter((label) => label !== undefined)
+      .forEach((label) => uniqueLabels.set(label.value, label))
+
+    return Array.from(uniqueLabels.values())
   }, [orderedLists])
 
   if (listsLoading) {
@@ -223,9 +202,9 @@ export function Work() {
   }
 
   return (
-    <LabelsProvider usedLabelIds={usedLabelIds}>
+    <LabelsContext.Provider value={labels}>
       <div className="new-list-modal-container">
-        <NewListModal onCreate={onAddList} />
+        <NewListModal onCreate={addList} />
       </div>
       {lists ? (
         <ol ref={dropTargetRef} className="work-lists">
@@ -255,6 +234,6 @@ export function Work() {
       ) : (
         <div style={{ marginInlineEnd: "30px" }}>No lists found.</div>
       )}
-    </LabelsProvider>
+    </LabelsContext.Provider>
   )
 }
