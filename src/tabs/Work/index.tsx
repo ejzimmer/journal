@@ -129,10 +129,11 @@ function WorkContent() {
       return false
     },
     getTargetListId: (source, target) => {
-      if (
-        isDraggable(target) &&
-        source[draggableTypeKey] === target[draggableTypeKey]
-      ) {
+      if (!isDraggable(target)) {
+        return WORK_KEY
+      }
+
+      if (source[draggableTypeKey] === target[draggableTypeKey]) {
         return target.parentId
       }
 
