@@ -63,9 +63,14 @@ export function TaskList({
     reorderLists,
     reorderTasks,
     addTask,
+    getLabel,
+    removeLabelFromList,
   } = useWorkStorage()
 
   const list = getList(listId)
+  const listLabel = list?.labelIds?.[0]
+    ? getLabel(list.labelIds[0])
+    : undefined
 
   const sortedList = useMemo(
     () => (list?.items ? sortByPosition(Object.values(list.items)) : []),
@@ -113,12 +118,19 @@ export function TaskList({
               }}
             />
           </h2>
-          {list.labels?.[0] &&
+          {listLabel &&
             (editingLabel ? (
               <LabelsControl
-                value={list.labels}
-                onChange={(labels) => {
-                  updateList({ ...list, labels })
+                value={list.labelIds ?? []}
+                onChange={(labelIds) => {
+                  const oldId = list.labelIds?.[0]
+                  if (oldId && oldId !== labelIds[0]) {
+                    // Mark the previous label as pending removal (it's
+                    // being replaced, not just filtered out) before
+                    // writing the new one.
+                    removeLabelFromList(oldId, list)
+                  }
+                  updateList({ ...list, labelIds })
                   setEditingLabel(false)
                 }}
                 label=""
@@ -128,17 +140,12 @@ export function TaskList({
             ) : (
               <>
                 <Labels
-                  labels={list.labels}
-                  onRemoveLabel={(label) =>
-                    updateList({
-                      ...list,
-                      labels: list.labels?.filter((l) => l !== label),
-                    })
-                  }
+                  labelIds={list.labelIds}
+                  onRemoveLabel={(id) => removeLabelFromList(id, list)}
                 />
                 <button
                   className="ghost"
-                  aria-label={`Change ${list.labels[0].value} label`}
+                  aria-label={`Change ${listLabel.value} label`}
                   onClick={() => setEditingLabel(true)}
                 >
                   ✏️

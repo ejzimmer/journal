@@ -3,8 +3,14 @@ import userEvent from "@testing-library/user-event"
 import { TaskList } from "./TaskList"
 import { WorkStorageContext, WorkStorageContextType } from "./WorkStorageContext"
 import { createWorkStorageContext } from "./workStorageTestUtils"
-import { LabelsContext } from "./LabelsContext"
-import { WorkTask, Label } from "./types"
+import { WorkTask, StoredLabel } from "./types"
+
+const a11yLabel: StoredLabel = { id: "id-a11y", value: "a11y", colour: "blue" }
+const urgentLabel: StoredLabel = {
+  id: "id-urgent",
+  value: "urgent",
+  colour: "yellow",
+}
 
 const labelledList: WorkTask = {
   id: "list-1",
@@ -13,7 +19,7 @@ const labelledList: WorkTask = {
   parentId: "work",
   lastStatusUpdate: 0,
   position: 0,
-  labels: [{ value: "a11y", colour: "blue" }],
+  labelIds: [a11yLabel.id],
 }
 
 const unlabelledList: WorkTask = {
@@ -30,10 +36,7 @@ const lists: Record<string, WorkTask> = {
   [unlabelledList.id]: unlabelledList,
 }
 
-const mockLabels: Label[] = [
-  { value: "a11y", colour: "blue" },
-  { value: "urgent", colour: "yellow" },
-]
+const mockLabels: StoredLabel[] = [a11yLabel, urgentLabel]
 
 const noop = () => <></>
 
@@ -43,14 +46,12 @@ function renderTaskList(
 ) {
   return render(
     <WorkStorageContext.Provider value={storageContext}>
-      <LabelsContext.Provider value={mockLabels}>
-        <TaskList
-          listId={listId}
-          index={0}
-          parentListId="work"
-          additionalMoveDestinations={noop}
-        />
-      </LabelsContext.Provider>
+      <TaskList
+        listId={listId}
+        index={0}
+        parentListId="work"
+        additionalMoveDestinations={noop}
+      />
     </WorkStorageContext.Provider>,
   )
 }
@@ -60,6 +61,10 @@ function createStorageContext(): WorkStorageContextType {
     lists,
     getList: (listId) => lists[listId],
     getTask: (listId, taskId) => lists[listId]?.items?.[taskId],
+    labels: mockLabels,
+    getLabel: (id) => mockLabels.find((l) => l.id === id),
+    resolveLabel: ({ value, colour }) =>
+      mockLabels.find((l) => l.value === value)?.id ?? `id-${value}-${colour}`,
   })
 }
 
@@ -88,10 +93,11 @@ describe("TaskList label", () => {
     renderTaskList(labelledList.id, storageContext)
 
     const labelItem = screen.getByText("a11y").closest("li")
-    await user.click(within(labelItem!).getByRole("button"))
+    await user.click(within(labelItem!).getByRole("button", { name: "Remove a11y" }))
 
-    expect(storageContext.updateList).toHaveBeenCalledWith(
-      expect.objectContaining({ labels: [] }),
+    expect(storageContext.removeLabelFromList).toHaveBeenCalledWith(
+      a11yLabel.id,
+      labelledList,
     )
   })
 
@@ -103,10 +109,13 @@ describe("TaskList label", () => {
     await user.click(screen.getByRole("button", { name: "Change a11y label" }))
     await user.click(screen.getByRole("option", { name: "urgent" }))
 
-    expect(storageContext.updateList).toHaveBeenCalledWith(
-      expect.objectContaining({
-        labels: [{ value: "urgent", colour: "yellow" }],
-      }),
+    expect(storageContext.removeLabelFromList).toHaveBeenCalledWith(
+      a11yLabel.id,
+      labelledList,
     )
+    expect(storageContext.updateList).toHaveBeenCalledWith({
+      ...labelledList,
+      labelIds: [urgentLabel.id],
+    })
   })
 })

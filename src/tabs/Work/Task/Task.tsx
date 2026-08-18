@@ -23,7 +23,9 @@ type TaskProps = {
 }
 
 export function Task({ task, listId, dragHandle }: TaskProps) {
-  const { updateTask, deleteTask } = useWorkStorage()
+  const { updateTask, deleteTask, getList, removeLabelFromTask } =
+    useWorkStorage()
+  const list = getList(listId)
 
   const onChangeWorktree = (newWorktree?: Worktree) => {
     if (newWorktree) {
@@ -89,13 +91,8 @@ export function Task({ task, listId, dragHandle }: TaskProps) {
           taskId={task.id}
         />
         <Labels
-          labels={task.labels}
-          onRemoveLabel={(label) => {
-            updateTask(listId, {
-              ...task,
-              labels: task.labels?.filter((l) => l !== label),
-            })
-          }}
+          labelIds={task.labelIds}
+          onRemoveLabel={(id) => list && removeLabelFromTask(id, task, list)}
         />
 
         <DueDate
@@ -114,12 +111,9 @@ export function Task({ task, listId, dragHandle }: TaskProps) {
         />
 
         <UpdateLabels
-          labels={task.labels}
-          onUpdateLabels={(labels) => {
-            updateTask(listId, {
-              ...task,
-              labels: Array.from(labels.values()),
-            })
+          labelIds={task.labelIds}
+          onUpdateLabels={(labelIds) => {
+            updateTask(listId, { ...task, labelIds })
           }}
         />
 
