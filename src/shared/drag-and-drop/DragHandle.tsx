@@ -4,15 +4,19 @@ import { ArrowToTopIcon } from "../icons/ArrowToTop"
 import { ArrowUpIcon } from "../icons/ArrowUp"
 import { DragHandleIcon } from "../icons/DragHandle"
 import { Menu } from "../controls/Menu"
-import { AdjacentListDestination, OrderedListItem } from "./types"
+import { OrderedListItem } from "./types"
 import { getPosition, onChangePosition } from "./utils"
+
+export type AdditionalActions = {
+  menuItems?: React.ReactNode
+  onKeyDown?: (event: React.KeyboardEvent<HTMLDivElement>) => void
+}
 
 type DragHandleProps = {
   list: OrderedListItem[]
   index: number
   onReorder: (list: OrderedListItem[]) => void
-  additionalActions?: React.ReactNode
-  onMoveToAdjacentList?: (destination: AdjacentListDestination) => void
+  additionalActions?: AdditionalActions
 }
 
 const iconProps = {
@@ -25,51 +29,37 @@ export function DragHandle({
   index,
   onReorder,
   additionalActions,
-  onMoveToAdjacentList,
 }: DragHandleProps) {
   const position = getPosition(index, list.length)
   const isFirst = index === 0
   const isLast = index === list.length - 1
 
-  const handleKeyDown = (
-    event: React.KeyboardEvent<HTMLDivElement>,
-    { onClose }: { onClose: () => void },
-  ) => {
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
     switch (event.key) {
       case "ArrowUp":
         if (!isFirst) {
           event.preventDefault()
-          if (event.shiftKey) {
-            onChangePosition(list, index, "start", onReorder)
-            onClose()
-          } else {
-            onChangePosition(list, index, "previous", onReorder)
-          }
+          onChangePosition(
+            list,
+            index,
+            event.shiftKey ? "start" : "previous",
+            onReorder,
+          )
         }
         break
       case "ArrowDown":
         if (!isLast) {
           event.preventDefault()
-          if (event.shiftKey) {
-            onChangePosition(list, index, "end", onReorder)
-            onClose()
-          } else {
-            onChangePosition(list, index, "next", onReorder)
-          }
+          onChangePosition(
+            list,
+            index,
+            event.shiftKey ? "end" : "next",
+            onReorder,
+          )
         }
         break
-      case "ArrowLeft":
-        if (onMoveToAdjacentList) {
-          event.preventDefault()
-          onMoveToAdjacentList(event.shiftKey ? "first" : "previous")
-        }
-        break
-      case "ArrowRight":
-        if (onMoveToAdjacentList) {
-          event.preventDefault()
-          onMoveToAdjacentList(event.shiftKey ? "last" : "next")
-        }
-        break
+      default:
+        additionalActions?.onKeyDown?.(event)
     }
   }
 
@@ -114,7 +104,7 @@ export function DragHandle({
           >
             <ArrowToBottomIcon {...iconProps} /> Move to bottom
           </Menu.Action>
-          {additionalActions}
+          {additionalActions?.menuItems}
         </>
       )}
     </Menu>

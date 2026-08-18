@@ -1,4 +1,4 @@
-import { AdjacentListDestination } from "../../shared/drag-and-drop/types"
+export type AdjacentListDestination = "previous" | "next" | "first" | "last"
 
 export function getAdjacentListIndex(
   currentIndex: number,

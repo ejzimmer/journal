@@ -16,8 +16,10 @@ import "./index.css"
 import { MoveToOtherLists } from "./MoveToOtherLists"
 import { addSourceListLabel } from "./labelUtils"
 import { moveTaskBetweenLists } from "./moveTaskBetweenLists"
-import { getAdjacentListIndex } from "./adjacentList"
-import { AdjacentListDestination } from "../../shared/drag-and-drop/types"
+import {
+  AdjacentListDestination,
+  getAdjacentListIndex,
+} from "./adjacentList"
 
 export function Work() {
   const dropTargetRef = useRef<HTMLOListElement>(null)

@@ -108,8 +108,8 @@ describe("DragHandle keyboard shortcuts", () => {
     })
   })
 
-  describe("ArrowLeft / ArrowRight", () => {
-    it("does nothing when onMoveToAdjacentList isn't provided", async () => {
+  describe("keys DragHandle doesn't itself handle", () => {
+    it("does nothing when additionalActions isn't provided", async () => {
       const user = userEvent.setup()
       const onReorder = jest.fn()
       render(<DragHandle list={list} index={1} onReorder={onReorder} />)
@@ -121,76 +121,83 @@ describe("DragHandle keyboard shortcuts", () => {
       expect(onReorder).not.toHaveBeenCalled()
     })
 
-    it("calls onMoveToAdjacentList with 'previous' on ArrowLeft", async () => {
+    it("forwards ArrowLeft to additionalActions.onKeyDown", async () => {
       const user = userEvent.setup()
-      const onMoveToAdjacentList = jest.fn()
+      const onKeyDown = jest.fn()
       render(
         <DragHandle
           list={list}
           index={1}
           onReorder={jest.fn()}
-          onMoveToAdjacentList={onMoveToAdjacentList}
+          additionalActions={{ onKeyDown }}
         />,
       )
 
       focusHandle()
       await user.keyboard("{ArrowLeft}")
 
-      expect(onMoveToAdjacentList).toHaveBeenCalledWith("previous")
-    })
-
-    it("calls onMoveToAdjacentList with 'next' on ArrowRight", async () => {
-      const user = userEvent.setup()
-      const onMoveToAdjacentList = jest.fn()
-      render(
-        <DragHandle
-          list={list}
-          index={1}
-          onReorder={jest.fn()}
-          onMoveToAdjacentList={onMoveToAdjacentList}
-        />,
+      expect(onKeyDown).toHaveBeenCalledTimes(1)
+      expect(onKeyDown.mock.calls[0][0]).toEqual(
+        expect.objectContaining({ key: "ArrowLeft", shiftKey: false }),
       )
-
-      focusHandle()
-      await user.keyboard("{ArrowRight}")
-
-      expect(onMoveToAdjacentList).toHaveBeenCalledWith("next")
     })
 
-    it("calls onMoveToAdjacentList with 'first' on Shift+ArrowLeft", async () => {
+    it("forwards Shift+ArrowRight to additionalActions.onKeyDown", async () => {
       const user = userEvent.setup()
-      const onMoveToAdjacentList = jest.fn()
+      const onKeyDown = jest.fn()
       render(
         <DragHandle
           list={list}
           index={1}
           onReorder={jest.fn()}
-          onMoveToAdjacentList={onMoveToAdjacentList}
-        />,
-      )
-
-      focusHandle()
-      await user.keyboard("{Shift>}{ArrowLeft}{/Shift}")
-
-      expect(onMoveToAdjacentList).toHaveBeenCalledWith("first")
-    })
-
-    it("calls onMoveToAdjacentList with 'last' on Shift+ArrowRight", async () => {
-      const user = userEvent.setup()
-      const onMoveToAdjacentList = jest.fn()
-      render(
-        <DragHandle
-          list={list}
-          index={1}
-          onReorder={jest.fn()}
-          onMoveToAdjacentList={onMoveToAdjacentList}
+          additionalActions={{ onKeyDown }}
         />,
       )
 
       focusHandle()
       await user.keyboard("{Shift>}{ArrowRight}{/Shift}")
 
-      expect(onMoveToAdjacentList).toHaveBeenCalledWith("last")
+      const arrowRightCall = onKeyDown.mock.calls.find(
+        ([event]) => event.key === "ArrowRight",
+      )
+      expect(arrowRightCall?.[0]).toEqual(
+        expect.objectContaining({ key: "ArrowRight", shiftKey: true }),
+      )
     })
+
+    it("doesn't forward ArrowUp/ArrowDown, which it handles itself", async () => {
+      const user = userEvent.setup()
+      const onKeyDown = jest.fn()
+      render(
+        <DragHandle
+          list={list}
+          index={1}
+          onReorder={jest.fn()}
+          additionalActions={{ onKeyDown }}
+        />,
+      )
+
+      focusHandle()
+      await user.keyboard("{ArrowUp}")
+      await user.keyboard("{ArrowDown}")
+
+      expect(onKeyDown).not.toHaveBeenCalled()
+    })
+  })
+
+  it("doesn't close the menu after a keyboard move", async () => {
+    const user = userEvent.setup()
+    const { container } = render(
+      <DragHandle list={list} index={2} onReorder={jest.fn()} />,
+    )
+
+    await user.click(screen.getByRole("button", { name: "drag menu" }))
+    const popover = container.querySelector(".menu") as HTMLElement
+    const hideSpy = jest.spyOn(popover, "hidePopover")
+
+    focusHandle()
+    await user.keyboard("{Shift>}{ArrowUp}{/Shift}")
+
+    expect(hideSpy).not.toHaveBeenCalled()
   })
 })

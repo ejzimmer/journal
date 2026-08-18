@@ -14,11 +14,9 @@ import { isList, isTask } from "./drag-utils"
 
 import "./TaskList.css"
 import { DragHandle } from "../../shared/drag-and-drop/DragHandle"
-import {
-  AdjacentListDestination,
-  draggableTypeKey,
-} from "../../shared/drag-and-drop/types"
+import { draggableTypeKey } from "../../shared/drag-and-drop/types"
 import { DraggableListItem } from "../../shared/drag-and-drop/DraggableListItem"
+import { AdjacentListDestination } from "./adjacentList"
 import { PostitModalDialog } from "./PostitModal"
 import { WorkTask, WORK_KEY } from "./types"
 import { FirebaseContext } from "../../shared/FirebaseContext"
@@ -189,13 +187,29 @@ export function TaskList({
                       reorderedList,
                     )
                   }
-                  additionalActions={additionalMoveDestinations(task)}
-                  onMoveToAdjacentList={
-                    onMoveTaskToAdjacentList
-                      ? (destination) =>
-                          onMoveTaskToAdjacentList(task, destination)
-                      : undefined
-                  }
+                  additionalActions={{
+                    menuItems: additionalMoveDestinations(task),
+                    onKeyDown: onMoveTaskToAdjacentList
+                      ? (event) => {
+                          switch (event.key) {
+                            case "ArrowLeft":
+                              event.preventDefault()
+                              onMoveTaskToAdjacentList(
+                                task,
+                                event.shiftKey ? "first" : "previous",
+                              )
+                              break
+                            case "ArrowRight":
+                              event.preventDefault()
+                              onMoveTaskToAdjacentList(
+                                task,
+                                event.shiftKey ? "last" : "next",
+                              )
+                              break
+                          }
+                        }
+                      : undefined,
+                  }}
                 />
               }
             />
