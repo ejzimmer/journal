@@ -18,6 +18,13 @@ export function createWorkStorageContext(
     deleteSubtask: jest.fn(),
     getList: () => undefined,
     getTask: () => undefined,
+    labels: [],
+    getLabel: () => undefined,
+    addLabelToTask: jest.fn(),
+    removeLabelFromTask: jest.fn(),
+    addLabelToList: jest.fn(),
+    removeLabelFromList: jest.fn(),
+    updateLabel: jest.fn(),
     ...overrides,
   }
 }
