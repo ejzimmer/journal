@@ -1,12 +1,11 @@
-import { ReactNode, useContext, useMemo } from "react"
-import { COLOURS, Colour } from "./types"
-import { LabelsContext } from "./LabelsContext"
+import { ReactNode, useMemo } from "react"
+import { COLOURS, Colour, StoredLabel } from "./types"
 import { Combobox } from "../../shared/controls/combobox/Combobox"
-import { Label } from "./types"
+import { useWorkStorage } from "./WorkStorageContext"
 
 export type LabelsControlProps = {
-  value: Label[]
-  onChange: (value: Label[]) => void
+  value: string[]
+  onChange: (value: string[]) => void
   label: string
   hideLabel?: boolean
   isMulti?: boolean
@@ -50,49 +49,57 @@ export function LabelsControl({
   isMulti = true,
   autoFocus,
 }: LabelsControlProps) {
-  const labels = useContext(LabelsContext)
+  const { labels, resolveLabel } = useWorkStorage()
+
+  const labelsById = useMemo(
+    () => new Map(labels.map((l) => [l.id, l] as const)),
+    [labels],
+  )
+
   const options: LabelOption[] = useMemo(
     () =>
-      labels?.map(({ value, colour }) => ({
-        id: value + colour,
+      labels.map(({ id, value, colour }) => ({
+        id,
         label: value,
         colour,
-      })) ?? [],
+      })),
     [labels],
   )
 
   const selectedOptions: LabelOption[] = useMemo(
     () =>
-      value.map((l) => ({
-        id: l.value + l.colour,
-        label: l.value,
-        colour: l.colour,
-      })),
-    [value],
+      value
+        .map((id) => labelsById.get(id))
+        .filter((l): l is StoredLabel => !!l)
+        .map((l) => ({ id: l.id, label: l.value, colour: l.colour })),
+    [value, labelsById],
   )
 
   const createOption = (text: string): LabelOption => {
-    const colour = getNextColour(
-      [...options, ...value].map((label) => label.colour),
-    )
+    const colour = getNextColour(options.map((option) => option.colour))
+    const id = resolveLabel({ value: text, colour })
     return {
-      id: text + colour,
+      id,
       label: text,
       colour,
     }
   }
 
+  // Resolves every reported selection (not just newly-created ones) so that
+  // picking an existing label that's pending removal revives it, clearing
+  // its lastRemoved flag before the id is reported upward.
+  const resolveOption = (option: LabelOption) =>
+    resolveLabel({ value: option.label, colour: option.colour })
+
   const valueProps = isMulti
     ? {
         isMultiValue: true as const,
         value: selectedOptions,
-        onChange: (value: LabelOption[]) =>
-          onChange(value.map((o) => ({ value: o.label, colour: o.colour }))),
+        onChange: (value: LabelOption[]) => onChange(value.map(resolveOption)),
       }
     : {
         value: selectedOptions[0],
-        onChange: (option: LabelOption) =>
-          onChange([{ value: option.label, colour: option.colour }]),
+        onChange: (option: LabelOption) => onChange([resolveOption(option)]),
       }
 
   return (

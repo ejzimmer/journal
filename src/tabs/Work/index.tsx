@@ -4,8 +4,7 @@ import { TaskList } from "./TaskList"
 import { hoursToMilliseconds, isBefore, startOfDay } from "date-fns"
 import { Skeleton } from "../../shared/controls/Skeleton"
 import { draggableTypeKey } from "../../shared/drag-and-drop/types"
-import { LabelsContext } from "./LabelsContext"
-import { WorkTask, Label, WORK_KEY } from "./types"
+import { WorkTask, WORK_KEY } from "./types"
 import { useDraggableList } from "../../shared/drag-and-drop/useDraggableList"
 import { isDraggable, sortByPosition } from "../../shared/drag-and-drop/utils"
 import { useDropTarget } from "../../shared/drag-and-drop/useDropTarget"
@@ -149,26 +148,12 @@ function WorkContent() {
     },
   })
 
-  const labels = useMemo(() => {
-    const uniqueLabels = new Map<string, Label>()
-    orderedLists.forEach((list) => {
-      list.labels?.forEach((label) => uniqueLabels.set(label.value, label))
-    })
-    orderedLists
-      .flatMap(({ items }) => (items ? Object.values(items) : []))
-      .flatMap(({ labels }) => labels)
-      .filter((label) => label !== undefined)
-      .forEach((label) => uniqueLabels.set(label.value, label))
-
-    return Array.from(uniqueLabels.values())
-  }, [orderedLists])
-
   if (listsLoading) {
     return <Skeleton numRows={3} />
   }
 
   return (
-    <LabelsContext.Provider value={labels}>
+    <>
       <div className="new-list-modal-container">
         <NewListModal onCreate={addList} />
       </div>
@@ -197,6 +182,6 @@ function WorkContent() {
       ) : (
         <div style={{ marginInlineEnd: "30px" }}>No lists found.</div>
       )}
-    </LabelsContext.Provider>
+    </>
   )
 }

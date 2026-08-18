@@ -1,18 +1,31 @@
 import { fireEvent, render, screen } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 import { AddTaskForm } from "./AddTaskForm"
+import { WorkStorageContext } from "./WorkStorageContext"
+import { createWorkStorageContext } from "./workStorageTestUtils"
+
+const resolveLabel = ({ value }: { value: string }) => `id-${value}`
+
+const Wrapper = ({ children }: { children: React.ReactNode }) => (
+  <WorkStorageContext.Provider
+    value={createWorkStorageContext({ resolveLabel })}
+  >
+    {children}
+  </WorkStorageContext.Provider>
+)
 
 const commonProps = {
   onSubmit: jest.fn(),
   onClose: jest.fn(),
-  existingLabels: [],
 }
 
 describe("AddTaskForm", () => {
   it("adds a task with just a description", async () => {
     const user = userEvent.setup()
     const onSubmit = jest.fn()
-    render(<AddTaskForm {...commonProps} onSubmit={onSubmit} />)
+    render(<AddTaskForm {...commonProps} onSubmit={onSubmit} />, {
+      wrapper: Wrapper,
+    })
 
     const descriptionInput = screen.getByRole("textbox", {
       name: "Description",
@@ -22,14 +35,16 @@ describe("AddTaskForm", () => {
 
     expect(onSubmit).toHaveBeenCalledWith({
       description: "Approve PR",
-      labels: [],
+      labelIds: [],
     })
   })
 
   it("doesn't add a task with no description", async () => {
     const user = userEvent.setup()
     const onSubmit = jest.fn()
-    render(<AddTaskForm {...commonProps} onSubmit={onSubmit} />)
+    render(<AddTaskForm {...commonProps} onSubmit={onSubmit} />, {
+      wrapper: Wrapper,
+    })
 
     // Testing library doesn't handle date inputs well
     const dateInput = screen.getByLabelText("Due date")
@@ -43,7 +58,9 @@ describe("AddTaskForm", () => {
   it("adds a task with a due date and a description", async () => {
     const user = userEvent.setup()
     const onSubmit = jest.fn()
-    render(<AddTaskForm {...commonProps} onSubmit={onSubmit} />)
+    render(<AddTaskForm {...commonProps} onSubmit={onSubmit} />, {
+      wrapper: Wrapper,
+    })
 
     const descriptionInput = screen.getByRole("textbox", {
       name: "Description",
@@ -57,14 +74,16 @@ describe("AddTaskForm", () => {
     expect(onSubmit).toHaveBeenCalledWith({
       description: "Approve PR",
       dueDate: new Date("2026-01-01").getTime(),
-      labels: [],
+      labelIds: [],
     })
   })
 
   it("adds a task with labels", async () => {
     const user = userEvent.setup()
     const onSubmit = jest.fn()
-    render(<AddTaskForm {...commonProps} onSubmit={onSubmit} />)
+    render(<AddTaskForm {...commonProps} onSubmit={onSubmit} />, {
+      wrapper: Wrapper,
+    })
 
     const descriptionInput = screen.getByRole("textbox", {
       name: "Description",
@@ -76,7 +95,7 @@ describe("AddTaskForm", () => {
 
     expect(onSubmit).toHaveBeenCalledWith({
       description: "Approve PR",
-      labels: [expect.objectContaining({ value: "PR" })],
+      labelIds: ["id-PR"],
     })
   })
 
@@ -84,7 +103,9 @@ describe("AddTaskForm", () => {
     it("call onCancel", async () => {
       const user = userEvent.setup()
       const onCancel = jest.fn()
-      render(<AddTaskForm {...commonProps} onClose={onCancel} />)
+      render(<AddTaskForm {...commonProps} onClose={onCancel} />, {
+        wrapper: Wrapper,
+      })
 
       const descriptionInput = screen.getByRole("textbox", {
         name: "Description",

@@ -16,6 +16,7 @@ import {
   WorkTask,
   WORK_KEY,
 } from "./types"
+import { migrateLegacyLabels } from "./migrateLegacyLabels"
 
 const STALE_AFTER_MS = 7 * 24 * 60 * 60 * 1000
 
@@ -23,7 +24,7 @@ export type WorkStorageContextType = {
   lists?: Record<string, WorkTask>
   isLoading: boolean
 
-  addList: (listName: string, labels?: Label[]) => void
+  addList: (listName: string, labelIds?: string[]) => void
   updateList: (list: WorkTask) => void
   deleteList: (list: WorkTask) => void
   reorderLists: <T extends { id: string }>(lists: T[]) => void
@@ -49,6 +50,7 @@ export type WorkStorageContextType = {
 
   labels: StoredLabel[]
   getLabel: (id: string) => StoredLabel | undefined
+  resolveLabel: (label: Label) => string
   addLabelToTask: (label: Label, task: WorkTask, list: WorkTask) => void
   removeLabelFromTask: (id: string, task: WorkTask, list: WorkTask) => void
   addLabelToList: (label: Label, list: WorkTask) => void
@@ -99,6 +101,19 @@ export function WorkStorageProvider({ children }: { children: ReactNode }) {
     })
   }, [labelsLoading, labels, deleteItem])
 
+  // One-off migration for labels created before the id-based store
+  // existed: rewrites any item still carrying the old embedded `labels`
+  // array to use labelIds instead, creating/reusing store entries as
+  // needed. Runs once both the task tree and the label store have loaded.
+  const hasMigratedLegacyLabels = useRef(false)
+  useEffect(() => {
+    if (hasMigratedLegacyLabels.current || isLoading || labelsLoading) return
+    hasMigratedLegacyLabels.current = true
+    if (lists) {
+      migrateLegacyLabels(lists, labels, { addItem, updateItem })
+    }
+  }, [lists, isLoading, labels, labelsLoading, addItem, updateItem])
+
   const countLabelUsage = (id: string) => {
     let count = 0
     Object.values(lists ?? {}).forEach((list) => {
@@ -146,10 +161,10 @@ export function WorkStorageProvider({ children }: { children: ReactNode }) {
     lists,
     isLoading,
 
-    addList: (listName, labels = []) => {
+    addList: (listName, labelIds = []) => {
       addItem(WORK_KEY, {
         description: listName,
-        ...(labels.length > 0 && { labels }),
+        ...(labelIds.length > 0 && { labelIds }),
       })
     },
     updateList,
@@ -191,6 +206,7 @@ export function WorkStorageProvider({ children }: { children: ReactNode }) {
 
     labels,
     getLabel: (id) => storedLabelsById?.[id],
+    resolveLabel: resolveLabelId,
 
     addLabelToTask: (label, task, list) => {
       const id = resolveLabelId(label)
