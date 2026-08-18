@@ -23,9 +23,16 @@ type ProjectProps = {
   onDelete: () => void
 }
 
+// Module-level so it survives the tab switching that unmounts Project
+const openProjectIds = new Set<string>()
+
 export function Project({ project, onMoveToEnd, onDelete }: ProjectProps) {
-  const [subtasksVisible, setSubtasksVisible] = useState(false)
-  const [hasOpenedSubtasks, setHasOpenedSubtasks] = useState(false)
+  const [subtasksVisible, setSubtasksVisible] = useState(() =>
+    openProjectIds.has(project.id),
+  )
+  const [hasOpenedSubtasks, setHasOpenedSubtasks] = useState(() =>
+    openProjectIds.has(project.id),
+  )
 
   const storageContext = useContext(FirebaseContext)
   if (!storageContext) {
@@ -158,8 +165,14 @@ export function Project({ project, onMoveToEnd, onDelete }: ProjectProps) {
         <button
           className={`ghost expand ${subtasksVisible ? "expanded" : ""}`}
           onClick={() => {
-            setSubtasksVisible(!subtasksVisible)
+            const nextVisible = !subtasksVisible
+            setSubtasksVisible(nextVisible)
             setHasOpenedSubtasks(true)
+            if (nextVisible) {
+              openProjectIds.add(project.id)
+            } else {
+              openProjectIds.delete(project.id)
+            }
           }}
           style={{ marginInlineStart: "auto" }}
         >
