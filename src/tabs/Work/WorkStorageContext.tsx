@@ -16,7 +16,6 @@ import {
   WorkTask,
   WORK_KEY,
 } from "./types"
-import { migrateLegacyLabels } from "./migrateLegacyLabels"
 
 const STALE_AFTER_MS = 7 * 24 * 60 * 60 * 1000
 
@@ -100,19 +99,6 @@ export function WorkStorageProvider({ children }: { children: ReactNode }) {
       }
     })
   }, [labelsLoading, labels, deleteItem])
-
-  // One-off migration for labels created before the id-based store
-  // existed: rewrites any item still carrying the old embedded `labels`
-  // array to use labelIds instead, creating/reusing store entries as
-  // needed. Runs once both the task tree and the label store have loaded.
-  const hasMigratedLegacyLabels = useRef(false)
-  useEffect(() => {
-    if (hasMigratedLegacyLabels.current || isLoading || labelsLoading) return
-    hasMigratedLegacyLabels.current = true
-    if (lists) {
-      migrateLegacyLabels(lists, labels, { addItem, updateItem })
-    }
-  }, [lists, isLoading, labels, labelsLoading, addItem, updateItem])
 
   const countLabelUsage = (id: string) => {
     let count = 0
