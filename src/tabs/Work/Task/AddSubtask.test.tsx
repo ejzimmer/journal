@@ -146,6 +146,11 @@ describe("AddSubtask", () => {
     expect(input).toHaveFocus()
 
     await user.type(input, "one more{Enter}")
-    expect(addSubtaskSpy).toHaveBeenCalledWith("list-1", "task-1", "one more")
+    expect(addSubtaskSpy).toHaveBeenCalledWith(
+      "list-1",
+      "task-1",
+      "one more",
+      undefined,
+    )
   })
 })
