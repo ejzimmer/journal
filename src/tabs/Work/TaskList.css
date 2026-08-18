@@ -123,6 +123,10 @@ ol.work-lists > li {
       }
     }
 
+    &:focus-within .drag-handle {
+      opacity: 1;
+    }
+
     &:has(form.add-subtask:focus-within) .add-metadata {
       opacity: 0.4;
     }

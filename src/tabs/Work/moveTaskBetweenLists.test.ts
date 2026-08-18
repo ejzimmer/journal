@@ -17,7 +17,7 @@ const sourceList: WorkTask = {
   parentId: "work",
   lastStatusUpdate: 0,
   position: 0,
-  labels: [{ value: "a11y", colour: "blue" }],
+  labelIds: ["label-a11y"],
 }
 
 const destinationList: WorkTask = {
@@ -49,7 +49,7 @@ describe("moveTaskBetweenLists", () => {
 
     expect(storage.addTask).toHaveBeenCalledWith(
       "list-2",
-      expect.objectContaining({ labels: [{ value: "a11y", colour: "blue" }] }),
+      expect.objectContaining({ labelIds: ["label-a11y"] }),
     )
   })
 

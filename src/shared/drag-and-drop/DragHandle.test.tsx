@@ -70,6 +70,36 @@ describe("DragHandle keyboard shortcuts", () => {
 
       expect(onReorder).not.toHaveBeenCalled()
     })
+
+    it("still prevents the page from scrolling when ArrowUp is a no-op at the top", () => {
+      render(<DragHandle list={list} index={0} onReorder={jest.fn()} />)
+
+      const button = screen.getByRole("button", { name: "drag menu" })
+      button.focus()
+      const event = new KeyboardEvent("keydown", {
+        key: "ArrowUp",
+        bubbles: true,
+        cancelable: true,
+      })
+      button.dispatchEvent(event)
+
+      expect(event.defaultPrevented).toBe(true)
+    })
+
+    it("still prevents the page from scrolling when ArrowDown is a no-op at the bottom", () => {
+      render(<DragHandle list={list} index={2} onReorder={jest.fn()} />)
+
+      const button = screen.getByRole("button", { name: "drag menu" })
+      button.focus()
+      const event = new KeyboardEvent("keydown", {
+        key: "ArrowDown",
+        bubbles: true,
+        cancelable: true,
+      })
+      button.dispatchEvent(event)
+
+      expect(event.defaultPrevented).toBe(true)
+    })
   })
 
   describe("Shift+ArrowUp / Shift+ArrowDown", () => {
