@@ -132,6 +132,53 @@ describe("LabelsControl", () => {
       ])
       expect(input).toHaveValue("")
     })
+
+    it("doesn't resolve the label again, since it's already active", async () => {
+      const user = userEvent.setup()
+      const onChange = jest.fn()
+      render(<LabelsControl {...commonProps} onChange={onChange} />, {
+        wrapper: Wrapper,
+      })
+
+      const input = screen.getByRole("combobox")
+      await user.type(input, "dev")
+      await user.click(screen.getByRole("option", { name: "dev prod" }))
+
+      expect(resolveLabel).not.toHaveBeenCalled()
+    })
+  })
+
+  describe("when the user selects a label that's pending removal", () => {
+    it("revives it, clearing its lastRemoved flag", async () => {
+      const pendingLabel: StoredLabel = {
+        id: "id-pending",
+        value: "pending",
+        colour: "red",
+        lastRemoved: Date.now(),
+      }
+      const user = userEvent.setup()
+      const onChange = jest.fn()
+      render(
+        <WorkStorageContext.Provider
+          value={createWorkStorageContext({
+            labels: [...mockOptions, pendingLabel],
+            resolveLabel,
+          })}
+        >
+          <LabelsControl {...commonProps} onChange={onChange} />
+        </WorkStorageContext.Provider>,
+      )
+
+      const input = screen.getByRole("combobox")
+      await user.type(input, "pending")
+      await user.click(screen.getByRole("option", { name: "pending" }))
+
+      expect(resolveLabel).toHaveBeenCalledWith({
+        value: "pending",
+        colour: "red",
+      })
+      expect(onChange).toHaveBeenCalledWith([...mockValues, "id-pending"])
+    })
   })
 
   describe("when the user types a tag that's in the list of options and presses enter", () => {
@@ -170,6 +217,19 @@ describe("LabelsControl", () => {
         colour: "red",
       })
       expect(onChange).toHaveBeenCalledWith([...mockValues, "id-apex"])
+    })
+
+    it("only resolves it once, instead of creating a duplicate when the combobox reports the selection back", async () => {
+      const user = userEvent.setup()
+      const onChange = jest.fn()
+      render(<LabelsControl {...commonProps} onChange={onChange} />, {
+        wrapper: Wrapper,
+      })
+
+      const input = screen.getByRole("combobox")
+      await user.type(input, "apex{Enter}")
+
+      expect(resolveLabel).toHaveBeenCalledTimes(1)
     })
   })
 })

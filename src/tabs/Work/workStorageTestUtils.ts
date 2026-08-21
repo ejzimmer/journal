@@ -26,6 +26,8 @@ export function createWorkStorageContext(
     addLabelToList: jest.fn(),
     removeLabelFromList: jest.fn(),
     updateLabel: jest.fn(),
+    markLabelUnusedIfOrphaned: jest.fn(),
+    reviveLabel: jest.fn(),
     ...overrides,
   }
 }

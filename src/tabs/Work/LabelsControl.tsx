@@ -85,21 +85,31 @@ export function LabelsControl({
     }
   }
 
-  // Resolves every reported selection (not just newly-created ones) so that
-  // picking an existing label that's pending removal revives it, clearing
-  // its lastRemoved flag before the id is reported upward.
-  const resolveOption = (option: LabelOption) =>
-    resolveLabel({ value: option.label, colour: option.colour })
+  // Revives a selected label that's pending removal, clearing its
+  // lastRemoved flag so it doesn't get swept away while back in use.
+  // Options that are already active, or were just created by createOption
+  // (which has already resolved them), are passed through untouched —
+  // re-resolving those too would race the label store's own state update
+  // and create a duplicate, since resolveLabel can't yet see an entry it
+  // created moments ago in this same synchronous call.
+  const reviveIfPending = (option: LabelOption): string => {
+    const existing = labelsById.get(option.id)
+    if (existing?.lastRemoved !== undefined) {
+      return resolveLabel({ value: option.label, colour: option.colour })
+    }
+    return option.id
+  }
 
   const valueProps = isMulti
     ? {
         isMultiValue: true as const,
         value: selectedOptions,
-        onChange: (value: LabelOption[]) => onChange(value.map(resolveOption)),
+        onChange: (value: LabelOption[]) =>
+          onChange(value.map(reviveIfPending)),
       }
     : {
         value: selectedOptions[0],
-        onChange: (option: LabelOption) => onChange([resolveOption(option)]),
+        onChange: (option: LabelOption) => onChange([reviveIfPending(option)]),
       }
 
   return (

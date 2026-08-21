@@ -362,7 +362,7 @@ describe("WorkStorageContext labels", () => {
 
     expect(firebaseContext.updateItem).not.toHaveBeenCalledWith(
       LABELS_KEY,
-      expect.anything(),
+      expect.objectContaining({ id: a11yLabel.id }),
     )
   })
 
@@ -415,7 +415,7 @@ describe("WorkStorageContext labels", () => {
     // labelledTask still references a11yLabel, so it isn't orphaned yet
     expect(firebaseContext.updateItem).not.toHaveBeenCalledWith(
       LABELS_KEY,
-      expect.anything(),
+      expect.objectContaining({ id: a11yLabel.id }),
     )
   })
 
@@ -450,10 +450,11 @@ describe("WorkStorageContext labels", () => {
   it("updateLabel does nothing when the label doesn't exist", () => {
     const firebaseContext = createFirebaseContext(twoLists, storedLabels)
     const workStorage = getWorkStorage(firebaseContext)
+    const callsBeforehand = firebaseContext.updateItem.mock.calls.length
 
     workStorage?.updateLabel("missing", "green")
 
-    expect(firebaseContext.updateItem).not.toHaveBeenCalled()
+    expect(firebaseContext.updateItem.mock.calls.length).toBe(callsBeforehand)
   })
 
   it("deletes labels whose lastRemoved is more than a week old once the store loads", () => {
@@ -495,6 +496,101 @@ describe("WorkStorageContext labels", () => {
     expect(firebaseContext.addItem).not.toHaveBeenCalledWith(
       LABELS_KEY,
       expect.anything(),
+    )
+  })
+
+  it("removeLabelFromTask marks the label removed even though a done task still references it", () => {
+    const activeUser: WorkTask = {
+      ...task,
+      id: "task-active",
+      labelIds: [urgentLabel.id],
+    }
+    const doneUser: WorkTask = {
+      ...secondTask,
+      status: "done",
+      labelIds: [urgentLabel.id],
+    }
+    const listWithBoth: WorkTask = {
+      ...otherList,
+      items: { [activeUser.id]: activeUser, [doneUser.id]: doneUser },
+    }
+    const firebaseContext = createFirebaseContext(
+      { [listWithBoth.id]: listWithBoth },
+      storedLabels,
+    )
+    const workStorage = getWorkStorage(firebaseContext)
+
+    // Without excluding done tasks from the usage count, doneUser would
+    // still "protect" the label from being marked orphaned here.
+    workStorage?.removeLabelFromTask(urgentLabel.id, activeUser, listWithBoth)
+
+    expect(firebaseContext.updateItem).toHaveBeenCalledWith(LABELS_KEY, {
+      ...urgentLabel,
+      lastRemoved: expect.any(Number),
+    })
+  })
+
+  it("markLabelUnusedIfOrphaned marks a label removed once its only references are done tasks", () => {
+    const doneUser: WorkTask = {
+      ...secondTask,
+      status: "done",
+      labelIds: [urgentLabel.id],
+    }
+    const listWithDoneUser: WorkTask = {
+      ...otherList,
+      items: { [doneUser.id]: doneUser },
+    }
+    const firebaseContext = createFirebaseContext(
+      { [listWithDoneUser.id]: listWithDoneUser },
+      storedLabels,
+    )
+    const workStorage = getWorkStorage(firebaseContext)
+
+    workStorage?.markLabelUnusedIfOrphaned(urgentLabel.id)
+
+    expect(firebaseContext.updateItem).toHaveBeenCalledWith(LABELS_KEY, {
+      ...urgentLabel,
+      lastRemoved: expect.any(Number),
+    })
+  })
+
+  it("markLabelUnusedIfOrphaned leaves a label alone while an active task still uses it", () => {
+    const firebaseContext = createFirebaseContext(twoLists, storedLabels)
+    const workStorage = getWorkStorage(firebaseContext)
+
+    workStorage?.markLabelUnusedIfOrphaned(a11yLabel.id)
+
+    expect(firebaseContext.updateItem).not.toHaveBeenCalledWith(
+      LABELS_KEY,
+      expect.objectContaining({ id: a11yLabel.id }),
+    )
+  })
+
+  it("reviveLabel clears lastRemoved on a pending-removal label", () => {
+    const pendingLabel = { ...urgentLabel, lastRemoved: Date.now() }
+    const firebaseContext = createFirebaseContext(twoLists, {
+      [a11yLabel.id]: a11yLabel,
+      [pendingLabel.id]: pendingLabel,
+    })
+    const workStorage = getWorkStorage(firebaseContext)
+
+    workStorage?.reviveLabel(pendingLabel.id)
+
+    expect(firebaseContext.updateItem).toHaveBeenCalledWith(
+      LABELS_KEY,
+      urgentLabel,
+    )
+  })
+
+  it("reviveLabel does nothing to a label that isn't pending removal", () => {
+    const firebaseContext = createFirebaseContext(twoLists, storedLabels)
+    const workStorage = getWorkStorage(firebaseContext)
+
+    workStorage?.reviveLabel(a11yLabel.id)
+
+    expect(firebaseContext.updateItem).not.toHaveBeenCalledWith(
+      LABELS_KEY,
+      expect.objectContaining({ id: a11yLabel.id }),
     )
   })
 })

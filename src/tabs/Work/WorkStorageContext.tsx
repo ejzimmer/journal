@@ -16,6 +16,7 @@ import {
   WorkTask,
   WORK_KEY,
 } from "./types"
+import { cleanupDoneOnlyLabels } from "./cleanupDoneOnlyLabels"
 
 const STALE_AFTER_MS = 7 * 24 * 60 * 60 * 1000
 
@@ -55,6 +56,8 @@ export type WorkStorageContextType = {
   addLabelToList: (label: Label, list: WorkTask) => void
   removeLabelFromList: (id: string, list: WorkTask) => void
   updateLabel: (id: string, colour: Colour) => void
+  markLabelUnusedIfOrphaned: (id: string) => void
+  reviveLabel: (id: string) => void
 }
 
 export const WorkStorageContext = createContext<
@@ -100,15 +103,39 @@ export function WorkStorageProvider({ children }: { children: ReactNode }) {
     })
   }, [labelsLoading, labels, deleteItem])
 
+  // TEMPORARY one-off cleanup, run once when both the task tree and label
+  // store have loaded: see cleanupDoneOnlyLabels for why this exists. Safe
+  // to remove (along with cleanupDoneOnlyLabels) once it's run once in
+  // production.
+  const hasCleanedDoneOnlyLabels = useRef(false)
+  useEffect(() => {
+    if (hasCleanedDoneOnlyLabels.current || isLoading || labelsLoading) return
+    hasCleanedDoneOnlyLabels.current = true
+    if (lists) {
+      cleanupDoneOnlyLabels(lists, labels, { updateItem })
+    }
+  }, [lists, isLoading, labels, labelsLoading, updateItem])
+
+  // Done tasks are never deleted, so a label only ever attached to done
+  // tasks would otherwise look "in use" forever. Treat done tasks as if
+  // they didn't reference the label at all.
   const countLabelUsage = (id: string) => {
     let count = 0
     Object.values(lists ?? {}).forEach((list) => {
       if (list.labelIds?.includes(id)) count++
       Object.values(list.items ?? {}).forEach((task) => {
-        if (task.labelIds?.includes(id)) count++
+        if (task.status !== "done" && task.labelIds?.includes(id)) count++
       })
     })
     return count
+  }
+
+  const reviveLabelById = (id: string) => {
+    const storedLabel = storedLabelsById?.[id]
+    if (storedLabel?.lastRemoved !== undefined) {
+      const { lastRemoved: _lastRemoved, ...withoutLastRemoved } = storedLabel
+      updateItem(LABELS_KEY, withoutLastRemoved)
+    }
   }
 
   // Reuses an existing stored label with the same value if there is one
@@ -116,10 +143,7 @@ export function WorkStorageProvider({ children }: { children: ReactNode }) {
   const resolveLabelId = (label: Label): string => {
     const existing = labels.find((l) => l.value === label.value)
     if (existing) {
-      if (existing.lastRemoved !== undefined) {
-        const { lastRemoved: _lastRemoved, ...withoutLastRemoved } = existing
-        updateItem(LABELS_KEY, withoutLastRemoved)
-      }
+      reviveLabelById(existing.id)
       return existing.id
     }
     return addItem<StoredLabel>(LABELS_KEY, label) ?? ""
@@ -225,6 +249,9 @@ export function WorkStorageProvider({ children }: { children: ReactNode }) {
       if (!storedLabel) return
       updateItem(LABELS_KEY, { ...storedLabel, colour })
     },
+
+    markLabelUnusedIfOrphaned: markUnusedIfOrphaned,
+    reviveLabel: reviveLabelById,
   }
 
   return (
