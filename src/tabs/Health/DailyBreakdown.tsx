@@ -2,7 +2,6 @@ import { CSSProperties, useContext, useMemo } from "react"
 
 import "./DailyBreakdown.css"
 import { FirebaseContext } from "../../shared/FirebaseContext"
-import { ChevronDownIcon } from "../../shared/icons/ChevronDown"
 import { DAILY_PATH, DayData } from "../../shared/types"
 import { setupDays } from "./utils"
 
@@ -23,32 +22,29 @@ export function DailyBreakdown() {
       ),
     [days],
   )
+  const popDelays = useMemo(() => days.map(() => Math.random() * 0.3), [days])
 
   return (
-    <details className="daily-breakdown">
-      <summary>
-        <ChevronDownIcon width="16px" />
-        by day
-      </summary>
-      <ol className="day-grid" aria-label="by day">
-        {days.map((day) => (
-          <li
-            key={`${day.day}-${day.month}`}
-            className="day-circle"
-            style={
-              {
-                gridColumn: day.dayOfWeek + 1,
-                ...(typeof day.diff === "number"
-                  ? { "--day-colour": getDayColour(day.diff, maxDiff) }
-                  : {}),
-              } as CSSProperties
-            }
-          >
-            {day.day}/{day.monthNumber}
-          </li>
-        ))}
-      </ol>
-    </details>
+    <ol className="day-grid" aria-label="by day">
+      {days.map((day, index) => (
+        <li
+          key={`${day.day}-${day.month}`}
+          className="day-circle"
+          style={
+            {
+              gridColumn: Math.floor(index / 7) + 1,
+              gridRow: day.dayOfWeek + 1,
+              animationDelay: `${popDelays[index]}s`,
+              ...(typeof day.diff === "number"
+                ? { "--day-colour": getDayColour(day.diff, maxDiff) }
+                : {}),
+            } as CSSProperties
+          }
+        >
+          {day.day}/{day.monthNumber}
+        </li>
+      ))}
+    </ol>
   )
 }
 

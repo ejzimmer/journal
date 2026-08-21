@@ -25,6 +25,7 @@
       inset 3px 0 hsl(0 100% 100% /0.3),
       1px 1px 8px hsl(0 0% 0% /0.3);
     anchor-name: --label-text;
+    transform-origin: bottom;
 
     &:hover + .week-hovertext {
       opacity: 1;
@@ -53,5 +54,14 @@
     font-size: 0.8em;
     border-radius: 4px;
     white-space: nowrap;
+  }
+}
+
+@keyframes grow-bar {
+  from {
+    transform: scaleY(0);
+  }
+  to {
+    transform: scaleY(1);
   }
 }

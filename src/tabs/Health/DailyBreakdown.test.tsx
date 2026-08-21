@@ -50,10 +50,26 @@ describe("DailyBreakdown", () => {
 
     renderWithData()
 
-    // 1 Jan 2026 is a Thursday, 4 Jan is a Sunday
-    expect(screen.getByText("1/1")).toHaveStyle({ gridColumn: "5" })
-    expect(screen.getByText("3/1")).toHaveStyle({ gridColumn: "7" })
+    // 1 Jan 2026 is a Thursday, 3 Jan a Saturday, 4 Jan a Sunday
+    expect(screen.getByText("1/1")).toHaveStyle({ gridRow: "5" })
+    expect(screen.getByText("3/1")).toHaveStyle({ gridRow: "7" })
+    expect(screen.getByText("4/1")).toHaveStyle({ gridRow: "1" })
+
+    jest.useRealTimers()
+  })
+
+  it("groups days into a column per week", () => {
+    jest.useFakeTimers()
+    jest.setSystemTime(new Date("2026-01-21"))
+
+    renderWithData()
+
+    // 1-4 Jan are in the first week, 8 Jan starts the second, 15-21 Jan the third
+    expect(screen.getByText("1/1")).toHaveStyle({ gridColumn: "1" })
     expect(screen.getByText("4/1")).toHaveStyle({ gridColumn: "1" })
+    expect(screen.getByText("8/1")).toHaveStyle({ gridColumn: "2" })
+    expect(screen.getByText("15/1")).toHaveStyle({ gridColumn: "3" })
+    expect(screen.getByText("21/1")).toHaveStyle({ gridColumn: "3" })
 
     jest.useRealTimers()
   })
