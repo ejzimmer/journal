@@ -8,9 +8,6 @@
       color: var(--action-colour-dark);
     }
 
-    /* the indicator's width/left still track the selected label (set
-       inline by the component) so the round mark slides between options -
-       it just draws as a centred circle instead of filling the label */
     .indicator {
       background: none;
       display: flex;

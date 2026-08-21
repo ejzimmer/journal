@@ -3,12 +3,6 @@ import userEvent from "@testing-library/user-event"
 import { ReactNode } from "react"
 import { Health } from "."
 import { FirebaseContext } from "../../shared/FirebaseContext"
-import { DayData } from "../../shared/types"
-
-const dailyData: Record<string, DayData> = {}
-for (let day = 1; day <= 7; day += 1) {
-  dailyData[`${day}Jan`] = { id: `${day}Jan`, consumed: 2000, expended: 2500 }
-}
 
 function Wrapper({ children }: { children: ReactNode }) {
   return (
@@ -18,7 +12,7 @@ function Wrapper({ children }: { children: ReactNode }) {
         updateItem: jest.fn(),
         deleteItem: jest.fn(),
         updateList: jest.fn(),
-        useValue: jest.fn().mockReturnValue({ loading: false, value: dailyData }),
+        useValue: jest.fn().mockReturnValue({ loading: false, value: undefined }),
       }}
     >
       {children}
@@ -40,11 +34,13 @@ describe("Health", () => {
     const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime })
     render(<Health />, { wrapper: Wrapper })
 
-    expect(screen.queryAllByRole("img").length).toBeGreaterThan(0)
+    expect(screen.getByTestId("weekly-pane")).toHaveAttribute("aria-hidden", "false")
+    expect(screen.getByTestId("daily-pane")).toHaveAttribute("aria-hidden", "true")
 
     await user.click(screen.getByRole("radio", { name: "日" }))
 
-    expect(screen.queryAllByRole("img")).toHaveLength(0)
+    expect(screen.getByTestId("weekly-pane")).toHaveAttribute("aria-hidden", "true")
+    expect(screen.getByTestId("daily-pane")).toHaveAttribute("aria-hidden", "false")
   })
 
   it("switches back to the weekly view", async () => {
@@ -54,6 +50,7 @@ describe("Health", () => {
     await user.click(screen.getByRole("radio", { name: "日" }))
     await user.click(screen.getByRole("radio", { name: "週" }))
 
-    expect(screen.queryAllByRole("img").length).toBeGreaterThan(0)
+    expect(screen.getByTestId("weekly-pane")).toHaveAttribute("aria-hidden", "false")
+    expect(screen.getByTestId("daily-pane")).toHaveAttribute("aria-hidden", "true")
   })
 })

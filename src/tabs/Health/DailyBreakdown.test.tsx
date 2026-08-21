@@ -44,19 +44,13 @@ describe("DailyBreakdown", () => {
     jest.useRealTimers()
   })
 
-  // day-of-week/week-column placement itself is delegated to CSS grid
-  // auto-placement (grid-auto-flow: column + a --starting-index anchor on
-  // the first day) rather than computed per-item in JS, so jsdom - which
-  // doesn't apply the stylesheet - can't observe the resulting layout.
-  // This is verified in a real browser instead; here we just check the
-  // one JS-computed value CSS relies on.
-  it("anchors the grid to 1 January's weekday, Monday-indexed", () => {
+  it("anchors the grid to 1 January's weekday", () => {
     jest.useFakeTimers()
     jest.setSystemTime(new Date("2026-01-21"))
 
     renderWithData()
 
-    // 1 Jan 2026 is a Thursday - the 4th day of a Monday-starting week
+    // 1 Jan 2026 is a Thursday
     expect(screen.getByRole("list", { name: "by day" })).toHaveStyle({
       "--starting-index": "4",
     })

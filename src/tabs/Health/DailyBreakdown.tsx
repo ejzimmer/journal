@@ -52,8 +52,6 @@ export function DailyBreakdown() {
   )
 }
 
-// the week starts Monday - Temporal's dayOfWeek is already 1 (Monday) to 7
-// (Sunday), so it doubles as the 1-indexed grid row with no conversion
 const weekday = (day: Balance) =>
   Temporal.PlainDate.from({ year: 2026, month: day.monthNumber, day: day.day })
     .dayOfWeek

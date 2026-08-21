@@ -24,12 +24,14 @@ export function Health() {
         <div
           className={`tracker-pane ${view === "週" ? "active" : ""}`}
           aria-hidden={view !== "週"}
+          data-testid="weekly-pane"
         >
           <WeeklyCalorieTracker />
         </div>
         <div
           className={`tracker-pane ${view === "日" ? "active" : ""}`}
           aria-hidden={view !== "日"}
+          data-testid="daily-pane"
         >
           <DailyBreakdown />
         </div>

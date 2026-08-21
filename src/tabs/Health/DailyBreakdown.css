@@ -35,9 +35,6 @@
     inset -1px -1px 2px hsl(0 0% 0% / 0.3);
 }
 
-/* everything after the first day auto-flows down each column (7 rows,
-   then wraps to the next); this just anchors where the first day (which
-   may not be a Monday) starts within its column */
 .day-circle:first-child {
   grid-row: var(--starting-index);
 }
