@@ -1,4 +1,4 @@
-import { FocusEvent, FormEvent, KeyboardEvent, useRef, useState } from "react"
+import { FormEvent, KeyboardEvent, useRef, useState } from "react"
 import { sortByPosition } from "../../../shared/drag-and-drop/utils"
 import { useWorkStorage } from "../WorkStorageContext"
 import { Subtask } from "../types"
@@ -10,7 +10,7 @@ type SubtasksProps = {
 }
 
 export function Subtasks({ subtasks, listId, taskId }: SubtasksProps) {
-  const { deleteSubtask, setSubtasks } = useWorkStorage()
+  const { deleteSubtask, updateSubtasksList } = useWorkStorage()
   const [isEditing, setIsEditing] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
   const finishedRef = useRef(false)
@@ -28,23 +28,22 @@ export function Subtasks({ subtasks, listId, taskId }: SubtasksProps) {
       .map((description) => description.trim())
       .filter(Boolean)
 
-    const claimed = new Set<string>()
+    const remaining = [...sorted]
     const newSubtasks = descriptions.map((description, index) => {
-      const existing = sorted.find(
-        (subtask) =>
-          subtask.description === description && !claimed.has(subtask.id),
+      const existingIndex = remaining.findIndex(
+        (subtask) => subtask.description === description,
       )
-      if (existing) claimed.add(existing.id)
+      const [existing] = existingIndex === -1 ? [] : remaining.splice(existingIndex, 1)
       return {
         id: existing?.id ?? crypto.randomUUID(),
         description,
         position: index,
       }
     })
-    setSubtasks(listId, taskId, newSubtasks)
+    updateSubtasksList(listId, taskId, newSubtasks)
   }
 
-  const finish = (shouldSave: boolean) => {
+  const stopEditing = (shouldSave: boolean) => {
     finishedRef.current = true
     if (shouldSave) save()
     setIsEditing(false)
@@ -52,22 +51,20 @@ export function Subtasks({ subtasks, listId, taskId }: SubtasksProps) {
 
   const handleSubmit = (event: FormEvent) => {
     event.preventDefault()
-    finish(true)
+    stopEditing(true)
   }
 
-  const handleBlur = (event: FocusEvent) => {
+  const handleBlur = () => {
     if (finishedRef.current) {
       finishedRef.current = false
       return
     }
-    if (!event.currentTarget.contains(event.relatedTarget as Node | null)) {
-      finish(true)
-    }
+    stopEditing(true)
   }
 
   const handleKeyDown = (event: KeyboardEvent) => {
     if (event.key === "Escape") {
-      finish(false)
+      stopEditing(false)
     }
   }
 

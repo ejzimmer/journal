@@ -81,7 +81,7 @@ describe("Subtasks", () => {
     await user.clear(input)
     await user.type(input, "test, review, build{Enter}")
 
-    expect(storageContext.setSubtasks).toHaveBeenCalledWith("list-1", "task-1", [
+    expect(storageContext.updateSubtasksList).toHaveBeenCalledWith("list-1", "task-1", [
       { id: "a", description: "test", position: 0 },
       { id: expect.any(String), description: "review", position: 1 },
       { id: "b", description: "build", position: 2 },
@@ -102,7 +102,7 @@ describe("Subtasks", () => {
     await user.type(input, "test, extra")
     await user.tab()
 
-    expect(storageContext.setSubtasks).toHaveBeenCalledWith("list-1", "task-1", [
+    expect(storageContext.updateSubtasksList).toHaveBeenCalledWith("list-1", "task-1", [
       { id: "a", description: "test", position: 0 },
       { id: expect.any(String), description: "extra", position: 1 },
     ])
@@ -121,7 +121,7 @@ describe("Subtasks", () => {
     await user.clear(input)
     await user.type(input, "test, , build,{Enter}")
 
-    expect(storageContext.setSubtasks).toHaveBeenCalledWith("list-1", "task-1", [
+    expect(storageContext.updateSubtasksList).toHaveBeenCalledWith("list-1", "task-1", [
       { id: "a", description: "test", position: 0 },
       { id: expect.any(String), description: "build", position: 1 },
     ])
@@ -142,7 +142,7 @@ describe("Subtasks", () => {
     )
     await user.keyboard("{Escape}")
 
-    expect(storageContext.setSubtasks).not.toHaveBeenCalled()
+    expect(storageContext.updateSubtasksList).not.toHaveBeenCalled()
     expect(
       screen.queryByRole("textbox", { name: "Edit subtasks" }),
     ).not.toBeInTheDocument()

@@ -123,7 +123,7 @@ export function Task({ task, listId, dragHandle }: TaskProps) {
         )}
 
         {!task.worktree && <AddWorktree onChange={onChangeWorktree} />}
-        <AddSubtask subtasks={task.subtasks} listId={listId} taskId={task.id} />
+        <AddSubtask listId={listId} taskId={task.id} />
       </div>
     </DraggableListItem>
   )

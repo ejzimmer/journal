@@ -4,7 +4,7 @@ import userEvent from "@testing-library/user-event"
 import { WorkStorageContext, WorkStorageContextType } from "../WorkStorageContext"
 import { createWorkStorageContext } from "../workStorageTestUtils"
 import { AddSubtask } from "./AddSubtask"
-import { STANDARD_CHECKLIST, Subtask } from "../types"
+import { STANDARD_CHECKLIST, Subtask, WorkTask } from "../types"
 
 // Mimics Firebase's real-time updates: writes go into real state, so the
 // component tree re-renders (and the standard checklist button can unmount
@@ -14,32 +14,36 @@ function AddSubtaskWithLiveBackend({
 }: {
   addSubtaskSpy: jest.Mock
 }) {
-  const [subtasks, setSubtasksState] = useState<Record<string, Subtask>>({})
+  const [subtasks, setSubtasks] = useState<Record<string, Subtask>>({})
 
   const addSubtask = (listId: string, taskId: string, description: string) => {
     addSubtaskSpy(listId, taskId, description)
     const resolvedId = `id-${Math.random()}`
-    setSubtasksState((current) => ({
+    setSubtasks((current) => ({
       ...current,
       [resolvedId]: { id: resolvedId, description, position: 0 },
     }))
   }
 
-  const setSubtasks = (
+  const updateSubtasksList = (
     _listId: string,
     _taskId: string,
     newSubtasks: Subtask[],
   ) => {
-    setSubtasksState(
+    setSubtasks(
       Object.fromEntries(newSubtasks.map((subtask) => [subtask.id, subtask])),
     )
   }
 
   return (
     <WorkStorageContext.Provider
-      value={createWorkStorageContext({ addSubtask, setSubtasks })}
+      value={createWorkStorageContext({
+        addSubtask,
+        updateSubtasksList,
+        getTask: () => ({ subtasks }) as WorkTask,
+      })}
     >
-      <AddSubtask listId="list-1" taskId="task-1" subtasks={subtasks} />
+      <AddSubtask listId="list-1" taskId="task-1" />
     </WorkStorageContext.Provider>
   )
 }
@@ -125,7 +129,7 @@ describe("AddSubtask", () => {
       screen.getByRole("button", { name: "Add standard checklist" }),
     )
 
-    expect(storageContext.setSubtasks).toHaveBeenCalledWith(
+    expect(storageContext.updateSubtasksList).toHaveBeenCalledWith(
       "list-1",
       "task-1",
       STANDARD_CHECKLIST.map((description, index) => ({

@@ -192,36 +192,11 @@ describe("WorkStorageContext", () => {
 
     expect(firebaseContext.addItem).toHaveBeenCalledWith(
       "work/list-1/items/task-1/subtasks",
-      { description: "Write tests", position: 0 },
+      { description: "Write tests" },
     )
   })
 
-  it("addSubtask appends after the highest existing position", () => {
-    const taskWithSubtasks: WorkTask = {
-      ...task,
-      subtasks: {
-        a: { id: "a", description: "test", position: 0 },
-        b: { id: "b", description: "review", position: 3 },
-      },
-    }
-    const listWithSubtasks: WorkTask = {
-      ...list,
-      items: { [task.id]: taskWithSubtasks },
-    }
-    const firebaseContext = createFirebaseContext({
-      [list.id]: listWithSubtasks,
-    })
-    const workStorage = getWorkStorage(firebaseContext)
-
-    workStorage?.addSubtask(list.id, task.id, "PR")
-
-    expect(firebaseContext.addItem).toHaveBeenCalledWith(
-      "work/list-1/items/task-1/subtasks",
-      { description: "PR", position: 4 },
-    )
-  })
-
-  it("setSubtasks writes the full subtasks list back to the task", () => {
+  it("updateSubtasksList writes the full subtasks list back to the task", () => {
     const firebaseContext = createFirebaseContext({ [list.id]: list })
     const workStorage = getWorkStorage(firebaseContext)
     const subtasks = [
@@ -229,7 +204,7 @@ describe("WorkStorageContext", () => {
       { id: "b", description: "review", position: 1 },
     ]
 
-    workStorage?.setSubtasks(list.id, task.id, subtasks)
+    workStorage?.updateSubtasksList(list.id, task.id, subtasks)
 
     expect(firebaseContext.updateList).toHaveBeenCalledWith(
       "work/list-1/items/task-1/subtasks",
