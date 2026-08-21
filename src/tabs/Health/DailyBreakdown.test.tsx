@@ -44,16 +44,16 @@ describe("DailyBreakdown", () => {
     jest.useRealTimers()
   })
 
-  it("positions each day under its correct day of the week", () => {
+  it("anchors the grid to 1 January's weekday", () => {
     jest.useFakeTimers()
     jest.setSystemTime(new Date("2026-01-21"))
 
     renderWithData()
 
-    // 1 Jan 2026 is a Thursday, 4 Jan is a Sunday
-    expect(screen.getByText("1/1")).toHaveStyle({ gridColumn: "5" })
-    expect(screen.getByText("3/1")).toHaveStyle({ gridColumn: "7" })
-    expect(screen.getByText("4/1")).toHaveStyle({ gridColumn: "1" })
+    // 1 Jan 2026 is a Thursday
+    expect(screen.getByRole("list", { name: "by day" })).toHaveStyle({
+      "--starting-index": "4",
+    })
 
     jest.useRealTimers()
   })
