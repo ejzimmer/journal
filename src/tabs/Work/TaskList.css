@@ -187,8 +187,9 @@ ol.work-lists > li {
         }
       }
 
-      .subtasks {
+      span.subtasks {
         color: var(--body-colour-mid);
+        cursor: text;
 
         button.subtask {
           all: unset;
@@ -207,40 +208,19 @@ ol.work-lists > li {
             outline-offset: 2px;
           }
         }
+      }
 
-        button.subtask-gap {
-          all: unset;
+      form.subtasks.editing {
+        input {
           font: inherit;
-          color: inherit;
-          cursor: pointer;
-          white-space: pre;
+          color: var(--body-colour);
+          border: none;
+          border-bottom: 1px solid var(--body-colour-light);
+          background: transparent;
+          width: 16em;
 
-          &:hover,
-          &:focus-visible {
-            color: var(--action-colour);
-          }
-
-          &:focus-visible {
-            outline: 1px solid currentColor;
-            outline-offset: 2px;
-          }
-        }
-
-        form.insert-subtask {
-          display: inline-flex;
-          align-items: center;
-
-          input {
-            font: inherit;
-            color: var(--body-colour);
-            border: none;
-            border-bottom: 1px solid var(--body-colour-light);
-            background: transparent;
-            width: 6em;
-
-            &:focus {
-              outline: none;
-            }
+          &:focus {
+            outline: none;
           }
         }
       }
@@ -286,16 +266,15 @@ ol.work-lists > li {
     }
 
     .task-content .worktree-menu-anchor {
+      margin-inline-start: -8px;
+
       button.stamp-trigger {
         padding: 6px;
       }
     }
 
-    /* Icon buttons carry their own padding, so the flex gap needs cancelling
-       to sit tight next to them - but the due-date badge doesn't, so it
-       keeps the full gap when that's what precedes the worktree stamp. */
-    .task-content button.add-metadata + .worktree-menu-anchor {
-      margin-inline-start: -8px;
+    .due-date + .worktree-menu-anchor {
+      margin-inline-start: 0;
     }
   }
 

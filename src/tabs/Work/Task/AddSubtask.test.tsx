@@ -16,14 +16,9 @@ function AddSubtaskWithLiveBackend({
 }) {
   const [subtasks, setSubtasksState] = useState<Record<string, Subtask>>({})
 
-  const addSubtask = (
-    listId: string,
-    taskId: string,
-    description: string,
-    id?: string,
-  ) => {
-    addSubtaskSpy(listId, taskId, description, id)
-    const resolvedId = id ?? `id-${Math.random()}`
+  const addSubtask = (listId: string, taskId: string, description: string) => {
+    addSubtaskSpy(listId, taskId, description)
+    const resolvedId = `id-${Math.random()}`
     setSubtasksState((current) => ({
       ...current,
       [resolvedId]: { id: resolvedId, description, position: 0 },
@@ -164,11 +159,6 @@ describe("AddSubtask", () => {
     expect(input).toHaveFocus()
 
     await user.type(input, "one more{Enter}")
-    expect(addSubtaskSpy).toHaveBeenCalledWith(
-      "list-1",
-      "task-1",
-      "one more",
-      undefined,
-    )
+    expect(addSubtaskSpy).toHaveBeenCalledWith("list-1", "task-1", "one more")
   })
 })

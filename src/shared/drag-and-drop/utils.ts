@@ -21,7 +21,7 @@ export function getPosition(index: number, listLength: number) {
   return "middle"
 }
 
-export function sortByPosition<T extends OrderedListItem>(list: T[]) {
+export function sortByPosition<T extends { position: number }>(list: T[]) {
   return list
     .toSorted((a, b) => a.position - b.position)
     .map((item, index) => ({ ...item, position: index }))

@@ -36,12 +36,7 @@ export type WorkStorageContextType = {
   deleteTask: (listId: string, task: WorkTask) => void
   reorderTasks: <T extends { id: string }>(listId: string, tasks: T[]) => void
 
-  addSubtask: (
-    listId: string,
-    taskId: string,
-    description: string,
-    id?: string,
-  ) => void
+  addSubtask: (listId: string, taskId: string, description: string) => void
   deleteSubtask: (listId: string, taskId: string, subtask: Subtask) => void
   setSubtasks: (listId: string, taskId: string, subtasks: Subtask[]) => void
 
@@ -173,7 +168,7 @@ export function WorkStorageProvider({ children }: { children: ReactNode }) {
       updateItemsList(`${WORK_KEY}/${listId}/items`, tasks)
     },
 
-    addSubtask: (listId, taskId, description, id) => {
+    addSubtask: (listId, taskId, description) => {
       const path = `${WORK_KEY}/${listId}/items/${taskId}/subtasks`
       const existing = Object.values(
         lists?.[listId]?.items?.[taskId]?.subtasks ?? {},
@@ -182,14 +177,7 @@ export function WorkStorageProvider({ children }: { children: ReactNode }) {
         existing.length === 0
           ? 0
           : Math.max(...existing.map((subtask) => subtask.position)) + 1
-      if (id) {
-        // A caller-supplied id makes the write idempotent: rewriting the
-        // same id/description pair (e.g. a retried or racing call) just
-        // overwrites itself instead of creating a duplicate entry.
-        updateItem(path, { id, description, position })
-      } else {
-        addItem(path, { description, position })
-      }
+      addItem(path, { description, position })
     },
     deleteSubtask: (listId, taskId, subtask) => {
       deleteItem(`${WORK_KEY}/${listId}/items/${taskId}/subtasks`, subtask)

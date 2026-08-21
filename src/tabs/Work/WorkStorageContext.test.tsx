@@ -221,18 +221,6 @@ describe("WorkStorageContext", () => {
     )
   })
 
-  it("addSubtask writes a caller-supplied id idempotently, with a position", () => {
-    const firebaseContext = createFirebaseContext({ [list.id]: list })
-    const workStorage = getWorkStorage(firebaseContext)
-
-    workStorage?.addSubtask(list.id, task.id, "Write tests", "standard-test")
-
-    expect(firebaseContext.updateItem).toHaveBeenCalledWith(
-      "work/list-1/items/task-1/subtasks",
-      { id: "standard-test", description: "Write tests", position: 0 },
-    )
-  })
-
   it("setSubtasks writes the full subtasks list back to the task", () => {
     const firebaseContext = createFirebaseContext({ [list.id]: list })
     const workStorage = getWorkStorage(firebaseContext)
