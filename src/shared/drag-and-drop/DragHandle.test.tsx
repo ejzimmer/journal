@@ -1,3 +1,4 @@
+import { useState } from "react"
 import { render, screen } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 import { DragHandle } from "./DragHandle"
@@ -229,5 +230,65 @@ describe("DragHandle keyboard shortcuts", () => {
     await user.keyboard("{Shift>}{ArrowUp}{/Shift}")
 
     expect(hideSpy).not.toHaveBeenCalled()
+  })
+
+  describe("focus after a real reorder", () => {
+    function ReorderableList({
+      initialList,
+    }: {
+      initialList: OrderedListItem[]
+    }) {
+      const [items, setItems] = useState(initialList)
+      return (
+        <ul>
+          {items.map((item, index) => (
+            <li key={item.id}>
+              {item.id}
+              <DragHandle list={items} index={index} onReorder={setItems} />
+            </li>
+          ))}
+        </ul>
+      )
+    }
+
+    it("keeps focus on the moved item's drag handle after moving down", async () => {
+      const user = userEvent.setup()
+      render(<ReorderableList initialList={list} />)
+
+      // "b" starts at index 1
+      screen.getAllByRole("button", { name: "drag menu" })[1].focus()
+      await user.keyboard("{ArrowDown}")
+
+      // "b" is now at index 2
+      const handlesAfter = screen.getAllByRole("button", { name: "drag menu" })
+      expect(handlesAfter[2]).toHaveFocus()
+    })
+
+    it("keeps focus on the moved item's drag handle after Shift+ArrowUp to the top", async () => {
+      const user = userEvent.setup()
+      render(<ReorderableList initialList={list} />)
+
+      // "c" starts at index 2
+      screen.getAllByRole("button", { name: "drag menu" })[2].focus()
+      await user.keyboard("{Shift>}{ArrowUp}{/Shift}")
+
+      // "c" is now at index 0
+      const handlesAfter = screen.getAllByRole("button", { name: "drag menu" })
+      expect(handlesAfter[0]).toHaveFocus()
+    })
+
+    it("keeps focus after moving several positions in a row", async () => {
+      const user = userEvent.setup()
+      render(<ReorderableList initialList={list} />)
+
+      // "a" starts at index 0
+      screen.getAllByRole("button", { name: "drag menu" })[0].focus()
+      await user.keyboard("{ArrowDown}")
+      await user.keyboard("{ArrowDown}")
+
+      // "a" is now at index 2, and still focused throughout
+      const handlesAfter = screen.getAllByRole("button", { name: "drag menu" })
+      expect(handlesAfter[2]).toHaveFocus()
+    })
   })
 })
