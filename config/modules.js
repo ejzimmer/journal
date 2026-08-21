@@ -4,7 +4,7 @@ const fs = require('fs');
 const path = require('path');
 const paths = require('./paths');
 const chalk = require('react-dev-utils/chalk');
-const resolve = require('resolve');
+const { parse: parseJsonc } = require('jsonc-parser');
 
 /**
  * Get additional module paths based on the baseUrl of a compilerOptions object.
@@ -108,10 +108,10 @@ function getModules() {
   // TypeScript project and set up the config
   // based on tsconfig.json
   if (hasTsConfig) {
-    const ts = require(resolve.sync('typescript', {
-      basedir: paths.appNodeModules,
-    }));
-    config = ts.readConfigFile(paths.appTsConfig, ts.sys.readFile).config;
+    // Parsed with jsonc-parser (rather than the `typescript` package's
+    // own ts.readConfigFile/ts.sys) so this doesn't depend on
+    // TypeScript's Node API, which newer major versions may not expose.
+    config = parseJsonc(fs.readFileSync(paths.appTsConfig, 'utf8'));
     // Otherwise we'll check if there is jsconfig.json
     // for non TS projects.
   } else if (hasJsConfig) {
