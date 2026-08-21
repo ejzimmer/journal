@@ -20,14 +20,11 @@ export function createWorkStorageContext(
     getTask: () => undefined,
     labels: [],
     getLabel: () => undefined,
-    resolveLabel: jest.fn(() => "new-label-id"),
     addLabelToTask: jest.fn(),
     removeLabelFromTask: jest.fn(),
     addLabelToList: jest.fn(),
     removeLabelFromList: jest.fn(),
     updateLabel: jest.fn(),
-    markLabelUnusedIfOrphaned: jest.fn(),
-    reviveLabel: jest.fn(),
     ...overrides,
   }
 }

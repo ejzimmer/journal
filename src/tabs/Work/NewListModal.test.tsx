@@ -10,12 +10,9 @@ const mockLabels: StoredLabel[] = [
   { id: "id-i18n", value: "i18n", colour: "yellow" },
 ]
 
-const resolveLabel = ({ value }: { value: string }) =>
-  mockLabels.find((l) => l.value === value)?.id ?? `id-${value}`
-
 const Wrapper = ({ children }: { children: React.ReactNode }) => (
   <WorkStorageContext.Provider
-    value={createWorkStorageContext({ labels: mockLabels, resolveLabel })}
+    value={createWorkStorageContext({ labels: mockLabels })}
   >
     {children}
   </WorkStorageContext.Provider>
@@ -56,7 +53,9 @@ describe("NewListModal", () => {
     })
     await user.click(screen.getByRole("button", { name: "Create" }))
 
-    expect(onCreate).toHaveBeenCalledWith("Backlog", [mockLabels[0].id])
+    expect(onCreate).toHaveBeenCalledWith("Backlog", [
+      { value: "a11y", colour: "blue" },
+    ])
   })
 
   it("creates a list with a new label", async () => {
@@ -74,7 +73,9 @@ describe("NewListModal", () => {
     })
     await user.click(screen.getByRole("button", { name: "Create" }))
 
-    expect(onCreate).toHaveBeenCalledWith("Backlog", ["id-urgent"])
+    expect(onCreate).toHaveBeenCalledWith("Backlog", [
+      { value: "urgent", colour: "purple" },
+    ])
   })
 
   it("doesn't create a list without a name", async () => {

@@ -24,14 +24,14 @@ export type WorkStorageContextType = {
   lists?: Record<string, WorkTask>
   isLoading: boolean
 
-  addList: (listName: string, labelIds?: string[]) => void
+  addList: (listName: string, labels?: Label[]) => void
   updateList: (list: WorkTask) => void
   deleteList: (list: WorkTask) => void
   reorderLists: <T extends { id: string }>(lists: T[]) => void
 
   addTask: (
     listId: string,
-    task: Partial<WorkTask> & { description: string },
+    task: Partial<WorkTask> & { description: string; labels?: Label[] },
   ) => void
   updateTask: (listId: string, task: WorkTask) => void
   deleteTask: (listId: string, task: WorkTask) => void
@@ -50,14 +50,11 @@ export type WorkStorageContextType = {
 
   labels: StoredLabel[]
   getLabel: (id: string) => StoredLabel | undefined
-  resolveLabel: (label: Label) => string
   addLabelToTask: (label: Label, task: WorkTask, list: WorkTask) => void
   removeLabelFromTask: (id: string, task: WorkTask, list: WorkTask) => void
   addLabelToList: (label: Label, list: WorkTask) => void
   removeLabelFromList: (id: string, list: WorkTask) => void
   updateLabel: (id: string, colour: Colour) => void
-  markLabelUnusedIfOrphaned: (id: string) => void
-  reviveLabel: (id: string) => void
 }
 
 export const WorkStorageContext = createContext<
@@ -116,9 +113,6 @@ export function WorkStorageProvider({ children }: { children: ReactNode }) {
     }
   }, [lists, isLoading, labels, labelsLoading, updateItem])
 
-  // Done tasks are never deleted, so a label only ever attached to done
-  // tasks would otherwise look "in use" forever. Treat done tasks as if
-  // they didn't reference the label at all.
   const countLabelUsage = (id: string) => {
     let count = 0
     Object.values(lists ?? {}).forEach((list) => {
@@ -164,6 +158,14 @@ export function WorkStorageProvider({ children }: { children: ReactNode }) {
     updateItem(WORK_KEY, list)
   }
   const updateTask = (listId: string, task: WorkTask) => {
+    const previous = lists?.[listId]?.items?.[task.id]
+    if (previous && previous.status !== task.status) {
+      if (task.status === "done") {
+        task.labelIds?.forEach((id) => markUnusedIfOrphaned(id))
+      } else if (previous.status === "done") {
+        task.labelIds?.forEach((id) => reviveLabelById(id))
+      }
+    }
     updateItem(`${WORK_KEY}/${listId}/items`, task)
   }
 
@@ -171,7 +173,8 @@ export function WorkStorageProvider({ children }: { children: ReactNode }) {
     lists,
     isLoading,
 
-    addList: (listName, labelIds = []) => {
+    addList: (listName, labels = []) => {
+      const labelIds = labels.map(resolveLabelId)
       addItem(WORK_KEY, {
         description: listName,
         ...(labelIds.length > 0 && { labelIds }),
@@ -185,8 +188,13 @@ export function WorkStorageProvider({ children }: { children: ReactNode }) {
       updateItemsList(WORK_KEY, reorderedLists)
     },
 
-    addTask: (listId, task) => {
-      addItem(`${WORK_KEY}/${listId}/items`, task)
+    addTask: (listId, { labels: newLabels, ...task }) => {
+      const resolvedIds = newLabels?.map(resolveLabelId) ?? []
+      const labelIds = [...(task.labelIds ?? []), ...resolvedIds]
+      addItem(`${WORK_KEY}/${listId}/items`, {
+        ...task,
+        ...(labelIds.length > 0 && { labelIds }),
+      })
     },
     updateTask,
     deleteTask: (listId, task) => {
@@ -216,7 +224,6 @@ export function WorkStorageProvider({ children }: { children: ReactNode }) {
 
     labels,
     getLabel: (id) => storedLabelsById?.[id],
-    resolveLabel: resolveLabelId,
 
     addLabelToTask: (label, task, list) => {
       const id = resolveLabelId(label)
@@ -249,9 +256,6 @@ export function WorkStorageProvider({ children }: { children: ReactNode }) {
       if (!storedLabel) return
       updateItem(LABELS_KEY, { ...storedLabel, colour })
     },
-
-    markLabelUnusedIfOrphaned: markUnusedIfOrphaned,
-    reviveLabel: reviveLabelById,
   }
 
   return (

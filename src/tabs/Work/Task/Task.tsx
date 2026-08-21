@@ -23,14 +23,8 @@ type TaskProps = {
 }
 
 export function Task({ task, listId, dragHandle }: TaskProps) {
-  const {
-    updateTask,
-    deleteTask,
-    getList,
-    removeLabelFromTask,
-    markLabelUnusedIfOrphaned,
-    reviveLabel,
-  } = useWorkStorage()
+  const { updateTask, deleteTask, getList, addLabelToTask, removeLabelFromTask } =
+    useWorkStorage()
   const list = getList(listId)
 
   const onChangeWorktree = (newWorktree?: Worktree) => {
@@ -71,11 +65,6 @@ export function Task({ task, listId, dragHandle }: TaskProps) {
               status,
               lastStatusUpdate: new Date().getTime(),
             })
-            // Done tasks don't count towards a label's usage, so becoming
-            // done can orphan a label; becoming active again can revive one
-            // that was pending removal.
-            const onLabel = isChecked ? markLabelUnusedIfOrphaned : reviveLabel
-            task.labelIds?.forEach((id) => onLabel(id))
           }}
           aria-label={`${task.description}`}
         />
@@ -122,10 +111,7 @@ export function Task({ task, listId, dragHandle }: TaskProps) {
         />
 
         <UpdateLabels
-          labelIds={task.labelIds}
-          onUpdateLabels={(labelIds) => {
-            updateTask(listId, { ...task, labelIds })
-          }}
+          onAddLabel={(label) => list && addLabelToTask(label, task, list)}
         />
 
         {!task.worktree && <AddWorktree onChange={onChangeWorktree} />}

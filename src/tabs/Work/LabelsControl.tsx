@@ -1,17 +1,20 @@
 import { ReactNode, useMemo } from "react"
-import { COLOURS, Colour, StoredLabel } from "./types"
+import { COLOURS, Colour, Label } from "./types"
 import { Combobox } from "../../shared/controls/combobox/Combobox"
 import { useWorkStorage } from "./WorkStorageContext"
 
 export type LabelsControlProps = {
-  value: string[]
-  onChange: (value: string[]) => void
+  value: Label[]
+  onChange: (value: Label[]) => void
   label: string
   hideLabel?: boolean
   isMulti?: boolean
   autoFocus?: boolean
 }
 
+// A label's value is unique within the store, so it doubles as a stable
+// local id for the combobox — no need to know a label's real (or not yet
+// created) database id just to display and pick from a list of them.
 type LabelOption = {
   id: string
   label: string
@@ -42,6 +45,16 @@ export function getNextColour(colours: Colour[]): Colour {
   return isColour(lowestUsageColour) ? lowestUsageColour : COLOURS[0]
 }
 
+const toOption = ({ value, colour }: Label): LabelOption => ({
+  id: value,
+  label: value,
+  colour,
+})
+const toLabel = (option: LabelOption): Label => ({
+  value: option.label,
+  colour: option.colour,
+})
+
 export function LabelsControl({
   value,
   onChange,
@@ -49,67 +62,29 @@ export function LabelsControl({
   isMulti = true,
   autoFocus,
 }: LabelsControlProps) {
-  const { labels, resolveLabel } = useWorkStorage()
+  const { labels } = useWorkStorage()
 
-  const labelsById = useMemo(
-    () => new Map(labels.map((l) => [l.id, l] as const)),
-    [labels],
-  )
-
-  const options: LabelOption[] = useMemo(
-    () =>
-      labels.map(({ id, value, colour }) => ({
-        id,
-        label: value,
-        colour,
-      })),
-    [labels],
-  )
-
+  const options: LabelOption[] = useMemo(() => labels.map(toOption), [labels])
   const selectedOptions: LabelOption[] = useMemo(
-    () =>
-      value
-        .map((id) => labelsById.get(id))
-        .filter((l): l is StoredLabel => !!l)
-        .map((l) => ({ id: l.id, label: l.value, colour: l.colour })),
-    [value, labelsById],
+    () => value.map(toOption),
+    [value],
   )
 
-  const createOption = (text: string): LabelOption => {
-    const colour = getNextColour(options.map((option) => option.colour))
-    const id = resolveLabel({ value: text, colour })
-    return {
-      id,
-      label: text,
-      colour,
-    }
-  }
-
-  // Revives a selected label that's pending removal, clearing its
-  // lastRemoved flag so it doesn't get swept away while back in use.
-  // Options that are already active, or were just created by createOption
-  // (which has already resolved them), are passed through untouched —
-  // re-resolving those too would race the label store's own state update
-  // and create a duplicate, since resolveLabel can't yet see an entry it
-  // created moments ago in this same synchronous call.
-  const reviveIfPending = (option: LabelOption): string => {
-    const existing = labelsById.get(option.id)
-    if (existing?.lastRemoved !== undefined) {
-      return resolveLabel({ value: option.label, colour: option.colour })
-    }
-    return option.id
-  }
+  const createOption = (text: string): LabelOption => ({
+    id: text,
+    label: text,
+    colour: getNextColour(options.map((option) => option.colour)),
+  })
 
   const valueProps = isMulti
     ? {
         isMultiValue: true as const,
         value: selectedOptions,
-        onChange: (value: LabelOption[]) =>
-          onChange(value.map(reviveIfPending)),
+        onChange: (value: LabelOption[]) => onChange(value.map(toLabel)),
       }
     : {
         value: selectedOptions[0],
-        onChange: (option: LabelOption) => onChange([reviveIfPending(option)]),
+        onChange: (option: LabelOption) => onChange([toLabel(option)]),
       }
 
   return (
