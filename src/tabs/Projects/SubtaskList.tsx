@@ -1,6 +1,7 @@
 import { useContext, useEffect, useMemo, useRef, useState } from "react"
 import { FirebaseContext } from "../../shared/FirebaseContext"
 import { PlusIcon } from "../../shared/icons/Plus"
+import { ArrowToEndIcon } from "../../shared/icons/ArrowToEnd"
 import { Subtask } from "./Subtask"
 import { AddSubtaskForm } from "./AddSubtaskForm"
 import {
@@ -88,6 +89,19 @@ export function SubtaskList({ projectId, isVisible }: SubtasksProps) {
     [projectId, subtasks],
   )
 
+  const onSortDoneToEnd = () => {
+    const reordered = sortedTasks
+      .toSorted(
+        (a, b) => Number(a.status === "done") - Number(b.status === "done"),
+      )
+      .map((task, index) => ({ ...task, position: index }))
+
+    storageContext.updateList<ProjectSubtask>(
+      subtasksKey,
+      reordered.map(({ parentId, ...task }) => task),
+    )
+  }
+
   useEffect(() => {
     const isMissingAPosition = subtasks.some((task) => task.position == null)
     if (isMissingAPosition) {
@@ -143,6 +157,17 @@ export function SubtaskList({ projectId, isVisible }: SubtasksProps) {
         >
           <PlusIcon width="16px" colour="var(--action-colour)" />
         </button>
+        {sortedTasks.length > 1 && (
+          <button
+            className="icon ghost sort-done-to-end"
+            onClick={onSortDoneToEnd}
+            title="Move done subtasks to the end"
+            aria-label="Move done subtasks to the end"
+            style={{ alignSelf: "baseline", marginInlineStart: "auto" }}
+          >
+            <ArrowToEndIcon width="16px" colour="var(--action-colour)" />
+          </button>
+        )}
       </div>
     </div>
   )
