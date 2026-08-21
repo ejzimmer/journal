@@ -5,7 +5,6 @@ import { ArrowToTopIcon } from "../icons/ArrowToTop"
 import { ArrowUpIcon } from "../icons/ArrowUp"
 import { DragHandleIcon } from "../icons/DragHandle"
 import { Menu, MenuHandle } from "../controls/Menu"
-import { requestFocusAfterMove, takePendingFocus } from "./pendingFocus"
 import { Destination, OrderedListItem } from "./types"
 import { getPosition, onChangePosition } from "./utils"
 
@@ -35,31 +34,30 @@ export function DragHandle({
   const position = getPosition(index, list.length)
   const isFirst = index === 0
   const isLast = index === list.length - 1
-  const id = list[index]?.id
 
   const buttonRef = useRef<HTMLButtonElement>(null)
   const menuRef = useRef<MenuHandle>(null)
+  // React keeps this same component instance across a reorder (the list
+  // is keyed by item id one level up), so a plain ref survives the move.
+  // Reordering can otherwise drop focus and desync the popover's anchored
+  // position, so after every move we explicitly restore focus - and, if
+  // requested, reopen the menu fresh at its new position - rather than
+  // relying on the browser to carry that state across the move on its own.
+  const pendingFocusRef = useRef<{ reopenMenu: boolean } | null>(null)
 
-  // Reordering can drop focus and desync the popover's anchored position
-  // (even when the underlying DOM node survives), so after every move we
-  // explicitly restore focus - and, if requested, reopen the menu fresh
-  // at its new position - rather than relying on the browser to carry
-  // that state across the move on its own.
   useEffect(() => {
-    if (!id) return
-    const pending = takePendingFocus(id)
-    if (!pending) return
+    if (!pendingFocusRef.current) return
+    const { reopenMenu } = pendingFocusRef.current
+    pendingFocusRef.current = null
 
     buttonRef.current?.focus()
-    if (pending.reopenMenu) {
+    if (reopenMenu) {
       menuRef.current?.reopen()
     }
   })
 
   const move = (destination: Destination, reopenMenu: boolean) => {
-    if (id) {
-      requestFocusAfterMove(id, reopenMenu)
-    }
+    pendingFocusRef.current = { reopenMenu }
     onChangePosition(list, index, destination, onReorder)
   }
 

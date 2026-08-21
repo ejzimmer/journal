@@ -21,6 +21,20 @@ HTMLElement.prototype.showPopover = function mock(this: HTMLElement) {
   this.style.visibility = "visible"
 }
 
+// jsdom doesn't implement the Popover API, so it doesn't recognise the
+// :popover-open pseudo-class either. Route it to the visibility the mocks
+// above set, so code that checks popover open state can be tested here too.
+const originalMatches = Element.prototype.matches
+Element.prototype.matches = function mock(
+  this: HTMLElement,
+  selector: string,
+): boolean {
+  if (selector === ":popover-open") {
+    return this.style.visibility === "visible"
+  }
+  return originalMatches.call(this, selector)
+} as typeof Element.prototype.matches
+
 // jsdom doesn't do layout, so every element reports a zero rect at the
 // origin. Return a plausible on-screen rect instead so code that measures
 // element position (e.g. popover placement) behaves sensibly in tests.

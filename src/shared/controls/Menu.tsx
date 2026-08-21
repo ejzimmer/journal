@@ -43,29 +43,14 @@ const MenuBase = forwardRef<MenuHandle, MenuProps>(function Menu(
   }
 
   useImperativeHandle(ref, () => ({
-    isOpen: () => {
-      try {
-        return dialogRef.current?.matches(":popover-open") ?? false
-      } catch {
-        // :popover-open isn't recognised in some test environments (jsdom)
-        return false
-      }
-    },
+    isOpen: () => dialogRef.current?.matches(":popover-open") ?? false,
     reopen: () => {
       // Force a fresh show so the anchored position is recomputed against
       // the element's current (post-move) location, rather than trusting
       // a popover that may already be open but stale, or was closed by
       // the move, to reposition or reappear on its own.
-      try {
-        dialogRef.current?.hidePopover()
-      } catch {
-        // already hidden
-      }
-      try {
-        dialogRef.current?.showPopover()
-      } catch {
-        // already showing, or not connected yet
-      }
+      dialogRef.current?.hidePopover()
+      dialogRef.current?.showPopover()
     },
   }))
 
