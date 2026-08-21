@@ -15,7 +15,7 @@
   &.active {
     opacity: 1;
     pointer-events: auto;
-    /* jump straight in - the bars/dots animate themselves, no fade-in needed */
+    /* enter transition is handled by contents instead of container */
     transition: none;
   }
 }

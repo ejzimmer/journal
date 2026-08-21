@@ -1,5 +1,6 @@
 .day-grid {
   display: grid;
+  grid-auto-flow: column;
   grid-template-columns: repeat(53, minmax(12px, 1fr));
   grid-template-rows: repeat(7, 1fr);
   gap: 3px;
@@ -32,6 +33,13 @@
   box-shadow:
     inset 1px 1px 2px hsl(0 100% 100% / 0.5),
     inset -1px -1px 2px hsl(0 0% 0% / 0.3);
+}
+
+/* everything after the first day auto-flows down each column (7 rows,
+   then wraps to the next); this just anchors where the first day (which
+   may not be a Monday) starts within its column */
+.day-circle:first-child {
+  grid-row: var(--starting-index);
 }
 
 @keyframes pop-in {

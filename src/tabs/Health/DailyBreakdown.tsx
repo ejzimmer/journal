@@ -1,9 +1,10 @@
 import { CSSProperties, useContext, useMemo } from "react"
+import { Temporal } from "temporal-polyfill"
 
 import "./DailyBreakdown.css"
 import { FirebaseContext } from "../../shared/FirebaseContext"
 import { DAILY_PATH, DayData } from "../../shared/types"
-import { setupDays } from "./utils"
+import { Balance, setupDays } from "./utils"
 
 export function DailyBreakdown() {
   const storageContext = useContext(FirebaseContext)
@@ -23,21 +24,20 @@ export function DailyBreakdown() {
     [days],
   )
   const popDelays = useMemo(() => days.map(() => Math.random() * 0.3), [days])
-  // days[0] is always 1 Jan - how far into its (Monday-starting) week that
-  // falls, so the grid lines up with real calendar weeks rather than just
-  // chunking every 7 elapsed days from New Year's Day
-  const jan1MondayIndex = days[0] ? toMondayIndex(days[0].dayOfWeek) : 0
+  const startingIndex = days[0] ? weekday(days[0]) : 1
 
   return (
-    <ol className="day-grid" aria-label="by day">
+    <ol
+      className="day-grid"
+      aria-label="by day"
+      style={{ "--starting-index": startingIndex } as CSSProperties}
+    >
       {days.map((day, index) => (
         <li
           key={`${day.day}-${day.month}`}
           className="day-circle"
           style={
             {
-              gridColumn: Math.floor((index + jan1MondayIndex) / 7) + 1,
-              gridRow: toMondayIndex(day.dayOfWeek) + 1,
               animationDelay: `${popDelays[index]}s`,
               ...(typeof day.diff === "number"
                 ? { "--day-colour": getDayColour(day.diff, maxDiff) }
@@ -52,8 +52,11 @@ export function DailyBreakdown() {
   )
 }
 
-// JS's Date#getDay is Sunday-indexed (0=Sun..6=Sat); this app's weeks start Monday
-const toMondayIndex = (jsDayOfWeek: number) => (jsDayOfWeek + 6) % 7
+// the week starts Monday - Temporal's dayOfWeek is already 1 (Monday) to 7
+// (Sunday), so it doubles as the 1-indexed grid row with no conversion
+const weekday = (day: Balance) =>
+  Temporal.PlainDate.from({ year: 2026, month: day.monthNumber, day: day.day })
+    .dayOfWeek
 
 function getDayColour(diff: number, maxDiff: number) {
   const intensity = maxDiff === 0 ? 1 : Math.min(Math.abs(diff) / maxDiff, 1)
