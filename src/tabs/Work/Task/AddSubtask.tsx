@@ -7,16 +7,14 @@ import {
 } from "react"
 import { PlusIcon } from "../../../shared/icons/Plus"
 import { useWorkStorage } from "../WorkStorageContext"
-import { Subtask } from "../types"
 import { StandardChecklistButton } from "./StandardChecklistButton"
 
 type AddSubtaskProps = {
-  subtasks?: Record<string, Subtask>
   listId: string
   taskId: string
 }
 
-export function AddSubtask({ subtasks, listId, taskId }: AddSubtaskProps) {
+export function AddSubtask({ listId, taskId }: AddSubtaskProps) {
   const [formIsVisible, setFormVisible] = useState(false)
   const formRef = useRef<HTMLFormElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
@@ -73,7 +71,6 @@ export function AddSubtask({ subtasks, listId, taskId }: AddSubtaskProps) {
         onKeyDown={handleKeyDown}
       />
       <StandardChecklistButton
-        subtasks={subtasks}
         listId={listId}
         taskId={taskId}
         onAdd={() => inputRef.current?.focus()}

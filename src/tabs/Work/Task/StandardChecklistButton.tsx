@@ -1,36 +1,24 @@
 import { ChecklistIcon } from "../../../shared/icons/Checklist"
 import { useWorkStorage } from "../WorkStorageContext"
-import { STANDARD_CHECKLIST, Subtask } from "../types"
+import { STANDARD_CHECKLIST } from "../types"
 
 type StandardChecklistButtonProps = {
-  subtasks?: Record<string, Subtask>
   listId: string
   taskId: string
   onAdd?: () => void
 }
 
-// Deterministic per-description ids for standard checklist items. Clicking
-// this button writes the same id/description pairs every time, so repeat
-// clicks - or a click landing before an earlier one's writes have synced
-// back down - just rewrite the same keys with the same values instead of
-// racing a "does this already exist" check against in-flight writes and
-// creating duplicates or clobbering data.
-const idFor = (description: string) =>
-  `standard-${description.toLowerCase().replace(/\s+/g, "-")}`
-
 export function StandardChecklistButton({
-  subtasks,
   listId,
   taskId,
   onAdd,
 }: StandardChecklistButtonProps) {
-  const { addSubtask } = useWorkStorage()
+  const { getTask, updateSubtasksList } = useWorkStorage()
 
-  const existingDescriptions = Object.values(subtasks ?? {}).map((subtask) =>
-    subtask.description.toLowerCase(),
-  )
-  const allAdded = STANDARD_CHECKLIST.every((description) =>
-    existingDescriptions.includes(description.toLowerCase()),
+  const existing = Object.values(getTask(listId, taskId)?.subtasks ?? {})
+  const existingIds = new Set(existing.map((subtask) => subtask.id))
+  const allAdded = STANDARD_CHECKLIST.keys().every((id) =>
+    existingIds.has(id),
   )
 
   if (allAdded) {
@@ -38,11 +26,20 @@ export function StandardChecklistButton({
   }
 
   const addStandardChecklist = () => {
-    STANDARD_CHECKLIST.forEach((description) => {
-      if (!existingDescriptions.includes(description.toLowerCase())) {
-        addSubtask(listId, taskId, description, idFor(description))
-      }
-    })
+    const highestPosition = existing.reduce(
+      (max, subtask) => Math.max(max, subtask.position ?? -1),
+      -1,
+    )
+    const newSubtasks = [
+      ...STANDARD_CHECKLIST.entries()
+        .filter(([id]) => !existingIds.has(id))
+        .map(([id, description], index) => ({
+          id,
+          description,
+          position: highestPosition + 1 + index,
+        })),
+    ]
+    updateSubtasksList(listId, taskId, [...existing, ...newSubtasks])
     onAdd?.()
   }
 

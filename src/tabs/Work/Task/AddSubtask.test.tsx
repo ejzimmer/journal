@@ -4,7 +4,7 @@ import userEvent from "@testing-library/user-event"
 import { WorkStorageContext, WorkStorageContextType } from "../WorkStorageContext"
 import { createWorkStorageContext } from "../workStorageTestUtils"
 import { AddSubtask } from "./AddSubtask"
-import { STANDARD_CHECKLIST, Subtask } from "../types"
+import { STANDARD_CHECKLIST, Subtask, WorkTask } from "../types"
 
 // Mimics Firebase's real-time updates: writes go into real state, so the
 // component tree re-renders (and the standard checklist button can unmount
@@ -16,23 +16,34 @@ function AddSubtaskWithLiveBackend({
 }) {
   const [subtasks, setSubtasks] = useState<Record<string, Subtask>>({})
 
-  const addSubtask = (
-    listId: string,
-    taskId: string,
-    description: string,
-    id?: string,
-  ) => {
-    addSubtaskSpy(listId, taskId, description, id)
-    const resolvedId = id ?? `id-${Math.random()}`
+  const addSubtask = (listId: string, taskId: string, description: string) => {
+    addSubtaskSpy(listId, taskId, description)
+    const resolvedId = `id-${Math.random()}`
     setSubtasks((current) => ({
       ...current,
-      [resolvedId]: { id: resolvedId, description },
+      [resolvedId]: { id: resolvedId, description, position: 0 },
     }))
   }
 
+  const updateSubtasksList = (
+    _listId: string,
+    _taskId: string,
+    newSubtasks: Subtask[],
+  ) => {
+    setSubtasks(
+      Object.fromEntries(newSubtasks.map((subtask) => [subtask.id, subtask])),
+    )
+  }
+
   return (
-    <WorkStorageContext.Provider value={createWorkStorageContext({ addSubtask })}>
-      <AddSubtask listId="list-1" taskId="task-1" subtasks={subtasks} />
+    <WorkStorageContext.Provider
+      value={createWorkStorageContext({
+        addSubtask,
+        updateSubtasksList,
+        getTask: () => ({ subtasks }) as WorkTask,
+      })}
+    >
+      <AddSubtask listId="list-1" taskId="task-1" />
     </WorkStorageContext.Provider>
   )
 }
@@ -118,8 +129,14 @@ describe("AddSubtask", () => {
       screen.getByRole("button", { name: "Add standard checklist" }),
     )
 
-    expect(storageContext.addSubtask).toHaveBeenCalledTimes(
-      STANDARD_CHECKLIST.length,
+    expect(storageContext.updateSubtasksList).toHaveBeenCalledWith(
+      "list-1",
+      "task-1",
+      [...STANDARD_CHECKLIST.entries()].map(([id, description], index) => ({
+        id,
+        description,
+        position: index,
+      })),
     )
     expect(
       screen.getByRole("textbox", { name: "New subtask" }),
@@ -146,11 +163,6 @@ describe("AddSubtask", () => {
     expect(input).toHaveFocus()
 
     await user.type(input, "one more{Enter}")
-    expect(addSubtaskSpy).toHaveBeenCalledWith(
-      "list-1",
-      "task-1",
-      "one more",
-      undefined,
-    )
+    expect(addSubtaskSpy).toHaveBeenCalledWith("list-1", "task-1", "one more")
   })
 })

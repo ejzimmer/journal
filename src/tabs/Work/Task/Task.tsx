@@ -26,6 +26,7 @@ export function Task({ task, listId, dragHandle }: TaskProps) {
   const { updateTask, deleteTask, getList, removeLabelFromTask } =
     useWorkStorage()
   const list = getList(listId)
+  const hasLabels = (task.labelIds?.length ?? 0) > 0
 
   const onChangeWorktree = (newWorktree?: Worktree) => {
     if (newWorktree) {
@@ -33,6 +34,15 @@ export function Task({ task, listId, dragHandle }: TaskProps) {
     } else {
       const { worktree, ...taskWithoutWorktree } = task
       updateTask(listId, taskWithoutWorktree)
+    }
+  }
+
+  const onChangeDueDate = (date?: number) => {
+    const { dueDate, ...taskWithoutDueDate } = task
+    if (date) {
+      updateTask(listId, { ...task, dueDate: date })
+    } else {
+      updateTask(listId, taskWithoutDueDate)
     }
   }
 
@@ -90,25 +100,16 @@ export function Task({ task, listId, dragHandle }: TaskProps) {
           listId={listId}
           taskId={task.id}
         />
-        <Labels
-          labelIds={task.labelIds}
-          onRemoveLabel={(id) => list && removeLabelFromTask(id, task, list)}
-        />
+        {hasLabels && (
+          <Labels
+            labelIds={task.labelIds}
+            onRemoveLabel={(id) => list && removeLabelFromTask(id, task, list)}
+          />
+        )}
 
-        <DueDate
-          dueDate={task.dueDate}
-          onChange={(date) => {
-            const { dueDate, ...taskWithoutDueDate } = task
-            if (date) {
-              updateTask(listId, {
-                ...task,
-                dueDate: date,
-              })
-            } else {
-              updateTask(listId, taskWithoutDueDate)
-            }
-          }}
-        />
+        {!hasLabels && (
+          <DueDate dueDate={task.dueDate} onChange={onChangeDueDate} />
+        )}
 
         <UpdateLabels
           labelIds={task.labelIds}
@@ -117,8 +118,12 @@ export function Task({ task, listId, dragHandle }: TaskProps) {
           }}
         />
 
+        {hasLabels && (
+          <DueDate dueDate={task.dueDate} onChange={onChangeDueDate} />
+        )}
+
         {!task.worktree && <AddWorktree onChange={onChangeWorktree} />}
-        <AddSubtask subtasks={task.subtasks} listId={listId} taskId={task.id} />
+        <AddSubtask listId={listId} taskId={task.id} />
       </div>
     </DraggableListItem>
   )
