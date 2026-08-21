@@ -44,32 +44,49 @@ describe("DailyBreakdown", () => {
     jest.useRealTimers()
   })
 
-  it("positions each day under its correct day of the week", () => {
+  it("positions each day under its correct day of the week, week starting Monday", () => {
     jest.useFakeTimers()
     jest.setSystemTime(new Date("2026-01-21"))
 
     renderWithData()
 
-    // 1 Jan 2026 is a Thursday, 3 Jan a Saturday, 4 Jan a Sunday
-    expect(screen.getByText("1/1")).toHaveStyle({ gridRow: "5" })
-    expect(screen.getByText("3/1")).toHaveStyle({ gridRow: "7" })
-    expect(screen.getByText("4/1")).toHaveStyle({ gridRow: "1" })
+    // 1 Jan 2026 is a Thursday, 4 Jan a Sunday (last row), 5 Jan a Monday (first row)
+    expect(screen.getByText("1/1")).toHaveStyle({ gridRow: "4" })
+    expect(screen.getByText("4/1")).toHaveStyle({ gridRow: "7" })
+    expect(screen.getByText("5/1")).toHaveStyle({ gridRow: "1" })
 
     jest.useRealTimers()
   })
 
-  it("groups days into a column per week", () => {
+  it("groups days into a column per calendar week", () => {
     jest.useFakeTimers()
     jest.setSystemTime(new Date("2026-01-21"))
 
     renderWithData()
 
-    // 1-4 Jan are in the first week, 8 Jan starts the second, 15-21 Jan the third
+    // 1 Jan falls partway into its (Monday-starting) week, so 1-4 Jan share
+    // a column with the days immediately before New Year's Day that don't
+    // exist in the data; 5 Jan (a Monday) starts a fresh column
     expect(screen.getByText("1/1")).toHaveStyle({ gridColumn: "1" })
     expect(screen.getByText("4/1")).toHaveStyle({ gridColumn: "1" })
-    expect(screen.getByText("8/1")).toHaveStyle({ gridColumn: "2" })
-    expect(screen.getByText("15/1")).toHaveStyle({ gridColumn: "3" })
-    expect(screen.getByText("21/1")).toHaveStyle({ gridColumn: "3" })
+    expect(screen.getByText("5/1")).toHaveStyle({ gridColumn: "2" })
+    expect(screen.getByText("11/1")).toHaveStyle({ gridColumn: "2" })
+    expect(screen.getByText("12/1")).toHaveStyle({ gridColumn: "3" })
+    expect(screen.getByText("21/1")).toHaveStyle({ gridColumn: "4" })
+
+    jest.useRealTimers()
+  })
+
+  it("starts a partial trailing week at the top of its column instead of mid-column", () => {
+    jest.useFakeTimers()
+    // 21 Jan 2026 is a Wednesday, so the current week only has Mon-Wed so far
+    jest.setSystemTime(new Date("2026-01-21"))
+
+    renderWithData()
+
+    expect(screen.getByText("19/1")).toHaveStyle({ gridRow: "1" }) // Monday
+    expect(screen.getByText("20/1")).toHaveStyle({ gridRow: "2" }) // Tuesday
+    expect(screen.getByText("21/1")).toHaveStyle({ gridRow: "3" }) // Wednesday - today
 
     jest.useRealTimers()
   })

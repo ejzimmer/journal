@@ -23,6 +23,10 @@ export function DailyBreakdown() {
     [days],
   )
   const popDelays = useMemo(() => days.map(() => Math.random() * 0.3), [days])
+  // days[0] is always 1 Jan - how far into its (Monday-starting) week that
+  // falls, so the grid lines up with real calendar weeks rather than just
+  // chunking every 7 elapsed days from New Year's Day
+  const jan1MondayIndex = days[0] ? toMondayIndex(days[0].dayOfWeek) : 0
 
   return (
     <ol className="day-grid" aria-label="by day">
@@ -32,8 +36,8 @@ export function DailyBreakdown() {
           className="day-circle"
           style={
             {
-              gridColumn: Math.floor(index / 7) + 1,
-              gridRow: day.dayOfWeek + 1,
+              gridColumn: Math.floor((index + jan1MondayIndex) / 7) + 1,
+              gridRow: toMondayIndex(day.dayOfWeek) + 1,
               animationDelay: `${popDelays[index]}s`,
               ...(typeof day.diff === "number"
                 ? { "--day-colour": getDayColour(day.diff, maxDiff) }
@@ -47,6 +51,9 @@ export function DailyBreakdown() {
     </ol>
   )
 }
+
+// JS's Date#getDay is Sunday-indexed (0=Sun..6=Sat); this app's weeks start Monday
+const toMondayIndex = (jsDayOfWeek: number) => (jsDayOfWeek + 6) % 7
 
 function getDayColour(diff: number, maxDiff: number) {
   const intensity = maxDiff === 0 ? 1 : Math.min(Math.abs(diff) / maxDiff, 1)
