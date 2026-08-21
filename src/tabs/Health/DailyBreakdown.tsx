@@ -1,5 +1,4 @@
 import { CSSProperties, useContext, useMemo } from "react"
-import { Temporal } from "temporal-polyfill"
 
 import "./DailyBreakdown.css"
 import { FirebaseContext } from "../../shared/FirebaseContext"
