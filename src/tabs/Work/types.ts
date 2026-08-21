@@ -49,19 +49,17 @@ export type WorkTask = {
 
 export const WORK_KEY = "work"
 
-const STANDARD_CHECKLIST = [
-  "test",
-  "review",
-  "PR",
-  "QA",
-  "build",
-  "mark PR ready",
-  "approvals",
-]
-
 const idFor = (description: string) =>
   `standard-${description.toLowerCase().replace(/\s+/g, "-")}`
 
-export const STANDARD_DESCRIPTIONS = new Map(
-  STANDARD_CHECKLIST.map((description) => [idFor(description), description]),
+export const STANDARD_CHECKLIST = new Map(
+  [
+    "test",
+    "review",
+    "PR",
+    "QA",
+    "build",
+    "mark PR ready",
+    "approvals",
+  ].map((description) => [idFor(description), description]),
 )

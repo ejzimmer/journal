@@ -1,6 +1,6 @@
 import { ChecklistIcon } from "../../../shared/icons/Checklist"
 import { useWorkStorage } from "../WorkStorageContext"
-import { STANDARD_DESCRIPTIONS } from "../types"
+import { STANDARD_CHECKLIST } from "../types"
 
 type StandardChecklistButtonProps = {
   listId: string
@@ -17,7 +17,7 @@ export function StandardChecklistButton({
 
   const existing = Object.values(getTask(listId, taskId)?.subtasks ?? {})
   const existingIds = new Set(existing.map((subtask) => subtask.id))
-  const allAdded = STANDARD_DESCRIPTIONS.keys().every((id) =>
+  const allAdded = STANDARD_CHECKLIST.keys().every((id) =>
     existingIds.has(id),
   )
 
@@ -31,7 +31,7 @@ export function StandardChecklistButton({
       -1,
     )
     const newSubtasks = [
-      ...STANDARD_DESCRIPTIONS.entries()
+      ...STANDARD_CHECKLIST.entries()
         .filter(([id]) => !existingIds.has(id))
         .map(([id, description], index) => ({
           id,

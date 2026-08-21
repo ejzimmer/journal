@@ -4,7 +4,7 @@ import userEvent from "@testing-library/user-event"
 import { WorkStorageContext, WorkStorageContextType } from "../WorkStorageContext"
 import { createWorkStorageContext } from "../workStorageTestUtils"
 import { AddSubtask } from "./AddSubtask"
-import { STANDARD_DESCRIPTIONS, Subtask, WorkTask } from "../types"
+import { STANDARD_CHECKLIST, Subtask, WorkTask } from "../types"
 
 // Mimics Firebase's real-time updates: writes go into real state, so the
 // component tree re-renders (and the standard checklist button can unmount
@@ -132,7 +132,7 @@ describe("AddSubtask", () => {
     expect(storageContext.updateSubtasksList).toHaveBeenCalledWith(
       "list-1",
       "task-1",
-      [...STANDARD_DESCRIPTIONS.entries()].map(([id, description], index) => ({
+      [...STANDARD_CHECKLIST.entries()].map(([id, description], index) => ({
         id,
         description,
         position: index,

@@ -3,7 +3,7 @@ import userEvent from "@testing-library/user-event"
 import { StandardChecklistButton } from "./StandardChecklistButton"
 import { WorkStorageContext, WorkStorageContextType } from "../WorkStorageContext"
 import { createWorkStorageContext } from "../workStorageTestUtils"
-import { STANDARD_DESCRIPTIONS, Subtask, WorkTask } from "../types"
+import { STANDARD_CHECKLIST, Subtask, WorkTask } from "../types"
 
 function renderWithContext(
   subtasks?: Record<string, Subtask>,
@@ -21,7 +21,7 @@ function renderWithContext(
   return storageContext
 }
 
-const standardEntries = [...STANDARD_DESCRIPTIONS.entries()]
+const standardEntries = [...STANDARD_CHECKLIST.entries()]
 
 describe("StandardChecklistButton", () => {
   it("adds all the standard checklist items, in the declared order, when there are no existing subtasks", async () => {
