@@ -67,6 +67,7 @@ export function TaskList({
     reorderTasks,
     addTask,
     getLabel,
+    addLabelToList,
     removeLabelFromList,
   } = useWorkStorage()
 
@@ -124,16 +125,16 @@ export function TaskList({
           {listLabel &&
             (editingLabel ? (
               <LabelsControl
-                value={list.labelIds ?? []}
-                onChange={(labelIds) => {
+                value={listLabel ? [listLabel] : []}
+                onChange={(labels) => {
                   const oldId = list.labelIds?.[0]
-                  if (oldId && oldId !== labelIds[0]) {
-                    // Mark the previous label as pending removal (it's
-                    // being replaced, not just filtered out) before
-                    // writing the new one.
+                  if (oldId) {
                     removeLabelFromList(oldId, list)
                   }
-                  updateList({ ...list, labelIds })
+                  const newLabel = labels[0]
+                  if (newLabel) {
+                    addLabelToList(newLabel, list)
+                  }
                   setEditingLabel(false)
                 }}
                 label=""

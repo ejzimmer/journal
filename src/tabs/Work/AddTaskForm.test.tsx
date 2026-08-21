@@ -4,12 +4,8 @@ import { AddTaskForm } from "./AddTaskForm"
 import { WorkStorageContext } from "./WorkStorageContext"
 import { createWorkStorageContext } from "./workStorageTestUtils"
 
-const resolveLabel = ({ value }: { value: string }) => `id-${value}`
-
 const Wrapper = ({ children }: { children: React.ReactNode }) => (
-  <WorkStorageContext.Provider
-    value={createWorkStorageContext({ resolveLabel })}
-  >
+  <WorkStorageContext.Provider value={createWorkStorageContext()}>
     {children}
   </WorkStorageContext.Provider>
 )
@@ -35,7 +31,7 @@ describe("AddTaskForm", () => {
 
     expect(onSubmit).toHaveBeenCalledWith({
       description: "Approve PR",
-      labelIds: [],
+      labels: [],
     })
   })
 
@@ -74,7 +70,7 @@ describe("AddTaskForm", () => {
     expect(onSubmit).toHaveBeenCalledWith({
       description: "Approve PR",
       dueDate: new Date("2026-01-01").getTime(),
-      labelIds: [],
+      labels: [],
     })
   })
 
@@ -95,7 +91,7 @@ describe("AddTaskForm", () => {
 
     expect(onSubmit).toHaveBeenCalledWith({
       description: "Approve PR",
-      labelIds: ["id-PR"],
+      labels: [{ value: "PR", colour: "blue" }],
     })
   })
 

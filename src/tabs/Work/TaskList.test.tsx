@@ -63,8 +63,6 @@ function createStorageContext(): WorkStorageContextType {
     getTask: (listId, taskId) => lists[listId]?.items?.[taskId],
     labels: mockLabels,
     getLabel: (id) => mockLabels.find((l) => l.id === id),
-    resolveLabel: ({ value, colour }) =>
-      mockLabels.find((l) => l.value === value)?.id ?? `id-${value}-${colour}`,
   })
 }
 
@@ -113,9 +111,9 @@ describe("TaskList label", () => {
       a11yLabel.id,
       labelledList,
     )
-    expect(storageContext.updateList).toHaveBeenCalledWith({
-      ...labelledList,
-      labelIds: [urgentLabel.id],
-    })
+    expect(storageContext.addLabelToList).toHaveBeenCalledWith(
+      { value: urgentLabel.value, colour: urgentLabel.colour },
+      labelledList,
+    )
   })
 })

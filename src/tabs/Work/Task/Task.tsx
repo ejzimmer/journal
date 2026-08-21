@@ -23,7 +23,7 @@ type TaskProps = {
 }
 
 export function Task({ task, listId, dragHandle }: TaskProps) {
-  const { updateTask, deleteTask, getList, removeLabelFromTask } =
+  const { updateTask, deleteTask, getList, addLabelToTask, removeLabelFromTask } =
     useWorkStorage()
   const list = getList(listId)
 
@@ -111,10 +111,7 @@ export function Task({ task, listId, dragHandle }: TaskProps) {
         />
 
         <UpdateLabels
-          labelIds={task.labelIds}
-          onUpdateLabels={(labelIds) => {
-            updateTask(listId, { ...task, labelIds })
-          }}
+          onAddLabel={(label) => list && addLabelToTask(label, task, list)}
         />
 
         {!task.worktree && <AddWorktree onChange={onChangeWorktree} />}
