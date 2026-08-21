@@ -1,3 +1,23 @@
+.tracker-switch {
+  [role="radiogroup"].switch {
+    border-radius: 999px;
+    font-family: "Yuji Syuku", serif;
+    font-size: 1.15em;
+
+    label:has(input:checked) {
+      color: var(--action-colour-dark);
+    }
+
+    .indicator {
+      background: hsl(211 81% 60% / 0.15);
+      box-shadow:
+        0 0 4px 1px hsl(211 81% 55% / 0.6),
+        0 0 14px 6px hsl(211 81% 55% / 0.45),
+        inset 0 0 6px hsl(211 81% 55% / 0.3);
+    }
+  }
+}
+
 .tracker-stage {
   position: relative;
   height: 212px;

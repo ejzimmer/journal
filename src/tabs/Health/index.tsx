@@ -12,12 +12,14 @@ export function Health() {
 
   return (
     <div>
-      <Switch
-        options={["週", "日"]}
-        value={view}
-        onChange={setView}
-        name="tracker-view"
-      />
+      <div className="tracker-switch">
+        <Switch
+          options={["週", "日"]}
+          value={view}
+          onChange={setView}
+          name="tracker-view"
+        />
+      </div>
       <div className="tracker-stage">
         <div
           className={`tracker-pane ${view === "週" ? "active" : ""}`}
