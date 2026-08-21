@@ -13,7 +13,6 @@ export function Subtasks({ subtasks, listId, taskId }: SubtasksProps) {
   const { deleteSubtask, updateSubtasksList } = useWorkStorage()
   const [isEditing, setIsEditing] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
-  const finishedRef = useRef(false)
 
   if (!subtasks || Object.keys(subtasks).length === 0) {
     return null
@@ -44,7 +43,6 @@ export function Subtasks({ subtasks, listId, taskId }: SubtasksProps) {
   }
 
   const stopEditing = (shouldSave: boolean) => {
-    finishedRef.current = true
     if (shouldSave) save()
     setIsEditing(false)
   }
@@ -55,10 +53,6 @@ export function Subtasks({ subtasks, listId, taskId }: SubtasksProps) {
   }
 
   const handleBlur = () => {
-    if (finishedRef.current) {
-      finishedRef.current = false
-      return
-    }
     stopEditing(true)
   }
 

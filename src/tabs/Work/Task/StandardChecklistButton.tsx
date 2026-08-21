@@ -1,15 +1,12 @@
 import { ChecklistIcon } from "../../../shared/icons/Checklist"
 import { useWorkStorage } from "../WorkStorageContext"
-import { STANDARD_CHECKLIST } from "../types"
+import { STANDARD_DESCRIPTIONS } from "../types"
 
 type StandardChecklistButtonProps = {
   listId: string
   taskId: string
   onAdd?: () => void
 }
-
-const idFor = (description: string) =>
-  `standard-${description.toLowerCase().replace(/\s+/g, "-")}`
 
 export function StandardChecklistButton({
   listId,
@@ -20,8 +17,8 @@ export function StandardChecklistButton({
 
   const existing = Object.values(getTask(listId, taskId)?.subtasks ?? {})
   const existingIds = new Set(existing.map((subtask) => subtask.id))
-  const allAdded = STANDARD_CHECKLIST.every((description) =>
-    existingIds.has(idFor(description)),
+  const allAdded = STANDARD_DESCRIPTIONS.keys().every((id) =>
+    existingIds.has(id),
   )
 
   if (allAdded) {
@@ -33,14 +30,15 @@ export function StandardChecklistButton({
       (max, subtask) => Math.max(max, subtask.position ?? -1),
       -1,
     )
-    const missing = STANDARD_CHECKLIST.filter(
-      (description) => !existingIds.has(idFor(description)),
-    )
-    const newSubtasks = missing.map((description, index) => ({
-      id: idFor(description),
-      description,
-      position: highestPosition + 1 + index,
-    }))
+    const newSubtasks = [
+      ...STANDARD_DESCRIPTIONS.entries()
+        .filter(([id]) => !existingIds.has(id))
+        .map(([id, description], index) => ({
+          id,
+          description,
+          position: highestPosition + 1 + index,
+        })),
+    ]
     updateSubtasksList(listId, taskId, [...existing, ...newSubtasks])
     onAdd?.()
   }

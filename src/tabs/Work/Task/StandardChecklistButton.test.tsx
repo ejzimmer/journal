@@ -3,7 +3,7 @@ import userEvent from "@testing-library/user-event"
 import { StandardChecklistButton } from "./StandardChecklistButton"
 import { WorkStorageContext, WorkStorageContextType } from "../WorkStorageContext"
 import { createWorkStorageContext } from "../workStorageTestUtils"
-import { STANDARD_CHECKLIST, Subtask, WorkTask } from "../types"
+import { STANDARD_DESCRIPTIONS, Subtask, WorkTask } from "../types"
 
 function renderWithContext(
   subtasks?: Record<string, Subtask>,
@@ -21,8 +21,7 @@ function renderWithContext(
   return storageContext
 }
 
-const idFor = (description: string) =>
-  `standard-${description.toLowerCase().replace(/\s+/g, "-")}`
+const standardEntries = [...STANDARD_DESCRIPTIONS.entries()]
 
 describe("StandardChecklistButton", () => {
   it("adds all the standard checklist items, in the declared order, when there are no existing subtasks", async () => {
@@ -37,8 +36,8 @@ describe("StandardChecklistButton", () => {
     expect(storageContext.updateSubtasksList).toHaveBeenCalledWith(
       "list-1",
       "task-1",
-      STANDARD_CHECKLIST.map((description, index) => ({
-        id: idFor(description),
+      standardEntries.map(([id, description], index) => ({
+        id,
         description,
         position: index,
       })),
@@ -47,16 +46,17 @@ describe("StandardChecklistButton", () => {
 
   it("skips items whose standard id already exists, and appends the missing ones in declared order", async () => {
     const user = userEvent.setup()
-    const existingTest = { id: idFor("test"), description: "test", position: 0 }
-    const existingBuild = { id: idFor("build"), description: "build", position: 1 }
+    const [testEntry, , , , buildEntry] = standardEntries
+    const existingTest = { id: testEntry[0], description: testEntry[1], position: 0 }
+    const existingBuild = { id: buildEntry[0], description: buildEntry[1], position: 1 }
     const storageContext = renderWithContext({ a: existingTest, b: existingBuild })
 
     await user.click(
       screen.getByRole("button", { name: "Add standard checklist" }),
     )
 
-    const missing = STANDARD_CHECKLIST.filter(
-      (description) => !["test", "build"].includes(description.toLowerCase()),
+    const missing = standardEntries.filter(
+      ([id]) => id !== testEntry[0] && id !== buildEntry[0],
     )
     expect(storageContext.updateSubtasksList).toHaveBeenCalledWith(
       "list-1",
@@ -64,8 +64,8 @@ describe("StandardChecklistButton", () => {
       [
         existingTest,
         existingBuild,
-        ...missing.map((description, index) => ({
-          id: idFor(description),
+        ...missing.map(([id, description], index) => ({
+          id,
           description,
           position: 2 + index,
         })),
@@ -75,7 +75,8 @@ describe("StandardChecklistButton", () => {
 
   it("adds a standard item again, with its standard id, even if a custom subtask already has the same description", async () => {
     const user = userEvent.setup()
-    const custom = { id: "custom-1", description: "test", position: 0 }
+    const [testEntry] = standardEntries
+    const custom = { id: "custom-1", description: testEntry[1], position: 0 }
     const storageContext = renderWithContext({ a: custom })
 
     await user.click(
@@ -87,8 +88,8 @@ describe("StandardChecklistButton", () => {
       "task-1",
       [
         custom,
-        ...STANDARD_CHECKLIST.map((description, index) => ({
-          id: idFor(description),
+        ...standardEntries.map(([id, description], index) => ({
+          id,
           description,
           position: 1 + index,
         })),
@@ -113,9 +114,9 @@ describe("StandardChecklistButton", () => {
 
   it("isn't rendered once every standard item already exists", () => {
     const subtasks = Object.fromEntries(
-      STANDARD_CHECKLIST.map((description) => [
-        idFor(description),
-        { id: idFor(description), description, position: 0 },
+      standardEntries.map(([id, description]) => [
+        id,
+        { id, description, position: 0 },
       ]),
     )
     renderWithContext(subtasks)
