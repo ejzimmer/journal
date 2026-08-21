@@ -8,12 +8,26 @@
       color: var(--action-colour-dark);
     }
 
+    /* the indicator's width/left still track the selected label (set
+       inline by the component) so the round mark slides between options -
+       it just draws as a centred circle instead of filling the label */
     .indicator {
-      background: hsl(211 81% 60% / 0.15);
-      box-shadow:
-        0 0 4px 1px hsl(211 81% 55% / 0.6),
-        0 0 14px 6px hsl(211 81% 55% / 0.45),
-        inset 0 0 6px hsl(211 81% 55% / 0.3);
+      background: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      &::after {
+        content: "";
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        background: hsl(211 81% 60% / 0.15);
+        box-shadow:
+          0 0 4px 1px hsl(211 81% 55% / 0.6),
+          0 0 14px 6px hsl(211 81% 55% / 0.45),
+          inset 0 0 6px hsl(211 81% 55% / 0.3);
+      }
     }
   }
 }
