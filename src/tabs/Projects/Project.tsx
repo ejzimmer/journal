@@ -23,16 +23,39 @@ type ProjectProps = {
   onDelete: () => void
 }
 
-// Module-level so it survives the tab switching that unmounts Project
-const openProjectIds = new Set<string>()
+const OPEN_PROJECTS_STORAGE_KEY = "openProjectIds"
+
+function getOpenProjectIds(): Set<string> {
+  try {
+    const stored = localStorage.getItem(OPEN_PROJECTS_STORAGE_KEY)
+    return new Set(stored ? JSON.parse(stored) : [])
+  } catch {
+    return new Set()
+  }
+}
+
+function setProjectOpen(projectId: string, isOpen: boolean) {
+  const openProjectIds = getOpenProjectIds()
+  if (isOpen) {
+    openProjectIds.add(projectId)
+  } else {
+    openProjectIds.delete(projectId)
+  }
+  try {
+    localStorage.setItem(
+      OPEN_PROJECTS_STORAGE_KEY,
+      JSON.stringify([...openProjectIds]),
+    )
+  } catch {
+    // Ignore storage errors, e.g. private browsing or a full quota
+  }
+}
 
 export function Project({ project, onMoveToEnd, onDelete }: ProjectProps) {
   const [subtasksVisible, setSubtasksVisible] = useState(() =>
-    openProjectIds.has(project.id),
+    getOpenProjectIds().has(project.id),
   )
-  const [hasOpenedSubtasks, setHasOpenedSubtasks] = useState(() =>
-    openProjectIds.has(project.id),
-  )
+  const [hasOpenedSubtasks, setHasOpenedSubtasks] = useState(subtasksVisible)
 
   const storageContext = useContext(FirebaseContext)
   if (!storageContext) {
@@ -168,11 +191,7 @@ export function Project({ project, onMoveToEnd, onDelete }: ProjectProps) {
             const nextVisible = !subtasksVisible
             setSubtasksVisible(nextVisible)
             setHasOpenedSubtasks(true)
-            if (nextVisible) {
-              openProjectIds.add(project.id)
-            } else {
-              openProjectIds.delete(project.id)
-            }
+            setProjectOpen(project.id, nextVisible)
           }}
           style={{ marginInlineStart: "auto" }}
         >
