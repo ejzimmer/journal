@@ -4,8 +4,7 @@ import { TaskList } from "./TaskList"
 import { hoursToMilliseconds, isBefore, startOfDay } from "date-fns"
 import { Skeleton } from "../../shared/controls/Skeleton"
 import { draggableTypeKey } from "../../shared/drag-and-drop/types"
-import { LabelsContext } from "./LabelsContext"
-import { WorkTask, Label, WORK_KEY } from "./types"
+import { WorkTask, WORK_KEY } from "./types"
 import { useDraggableList } from "../../shared/drag-and-drop/useDraggableList"
 import { isDraggable, sortByPosition } from "../../shared/drag-and-drop/utils"
 import { useDropTarget } from "../../shared/drag-and-drop/useDropTarget"
@@ -14,6 +13,8 @@ import { WorkStorageProvider, useWorkStorage } from "./WorkStorageContext"
 import "./index.css"
 import { MoveToOtherLists } from "./MoveToOtherLists"
 import { addSourceListLabel } from "./labelUtils"
+import { moveTaskBetweenLists } from "./moveTaskBetweenLists"
+import { ListDestination, getDestinationListIndex } from "./listDestination"
 
 export function Work() {
   return (
@@ -30,6 +31,7 @@ function WorkContent() {
     isLoading: listsLoading,
     addList,
     addTask,
+    deleteTask,
     reorderTasks,
   } = useWorkStorage()
 
@@ -45,6 +47,37 @@ function WorkContent() {
         (list) => list.id !== doneList?.id,
       ),
     [lists, doneList],
+  )
+
+  const moveTaskToList = useCallback(
+    (task: WorkTask, currentListId: string, destination: ListDestination) => {
+      const currentIndex = orderedLists.findIndex(
+        (list) => list.id === currentListId,
+      )
+      if (currentIndex === -1) {
+        return
+      }
+
+      const targetIndex = getDestinationListIndex(
+        currentIndex,
+        orderedLists.length,
+        destination,
+      )
+
+      const targetList = orderedLists[targetIndex]
+      if (!targetList || targetList.id === currentListId) {
+        return
+      }
+
+      moveTaskBetweenLists(
+        { addTask, deleteTask },
+        task,
+        currentListId,
+        orderedLists[currentIndex],
+        targetList,
+      )
+    },
+    [orderedLists, addTask, deleteTask],
   )
 
   const onUpdate = useCallback(() => {
@@ -149,26 +182,12 @@ function WorkContent() {
     },
   })
 
-  const labels = useMemo(() => {
-    const uniqueLabels = new Map<string, Label>()
-    orderedLists.forEach((list) => {
-      list.labels?.forEach((label) => uniqueLabels.set(label.value, label))
-    })
-    orderedLists
-      .flatMap(({ items }) => (items ? Object.values(items) : []))
-      .flatMap(({ labels }) => labels)
-      .filter((label) => label !== undefined)
-      .forEach((label) => uniqueLabels.set(label.value, label))
-
-    return Array.from(uniqueLabels.values())
-  }, [orderedLists])
-
   if (listsLoading) {
     return <Skeleton numRows={3} />
   }
 
   return (
-    <LabelsContext.Provider value={labels}>
+    <>
       <div className="new-list-modal-container">
         <NewListModal onCreate={addList} />
       </div>
@@ -190,6 +209,9 @@ function WorkContent() {
                       task={task}
                     />
                   )}
+                  onMoveTaskToList={(task, destination) =>
+                    moveTaskToList(task, list.id, destination)
+                  }
                 />
               ),
           )}
@@ -197,6 +219,6 @@ function WorkContent() {
       ) : (
         <div style={{ marginInlineEnd: "30px" }}>No lists found.</div>
       )}
-    </LabelsContext.Provider>
+    </>
   )
 }

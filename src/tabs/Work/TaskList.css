@@ -123,6 +123,10 @@ ol.work-lists > li {
       }
     }
 
+    &:focus-within .drag-handle {
+      opacity: 1;
+    }
+
     &:has(form.add-subtask:focus-within) .add-metadata {
       opacity: 0.4;
     }
@@ -353,7 +357,8 @@ form.add-task {
   }
 }
 
-.label-tag {
+.label-tag,
+.colour-swatch {
   &.blue {
     --colour: hsl(200 80% 50% / 0.3);
   }
@@ -372,7 +377,9 @@ form.add-task {
   &.red {
     --colour: hsla(303, 80%, 50%, 0.3);
   }
+}
 
+.label-tag {
   button {
     padding: 2px;
     margin-inline-start: 4px;
@@ -401,4 +408,50 @@ form.add-task {
   width: max-content;
   font-size: 1.2rem;
   padding: 4px;
+}
+
+.label-colour-picker {
+  position: relative;
+  display: inline-block;
+}
+
+.colour-swatches {
+  position: absolute;
+  top: 100%;
+  inset-inline-start: 0;
+  z-index: 10;
+  display: flex;
+  margin: 4px 0 0;
+  padding: 0;
+  list-style: none;
+  background: white;
+  border: 1px solid var(--border-colour);
+  border-radius: 4px;
+  box-shadow: 0 2px 8px hsl(0 0% 0% / 0.15);
+  overflow: hidden;
+
+  li {
+    display: contents;
+  }
+}
+
+.colour-swatches .colour-swatch {
+  width: 28px;
+  height: 28px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background-color: var(--colour);
+  cursor: pointer;
+
+  &:hover,
+  &:focus-visible {
+    background-color: var(--colour);
+  }
+
+  &[aria-pressed="true"] {
+    outline: 2px solid var(--body-colour);
+    outline-offset: -2px;
+  }
 }

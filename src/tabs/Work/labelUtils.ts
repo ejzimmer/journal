@@ -4,14 +4,14 @@ export function addSourceListLabel(
   item: WorkTask,
   sourceList: WorkTask,
 ): WorkTask {
-  const listLabel = sourceList.labels?.[0]
-  if (!listLabel) {
+  const listLabelId = sourceList.labelIds?.[0]
+  if (!listLabelId) {
     return item
   }
 
-  if (item.labels?.some((label) => label.value === listLabel.value)) {
+  if (item.labelIds?.includes(listLabelId)) {
     return item
   }
 
-  return { ...item, labels: [...(item.labels ?? []), listLabel] }
+  return { ...item, labelIds: [...(item.labelIds ?? []), listLabelId] }
 }

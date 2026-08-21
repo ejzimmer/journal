@@ -1,18 +1,24 @@
 import { fireEvent, render, screen } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 import { NewListModal } from "./NewListModal"
-import { LabelsContext } from "./LabelsContext"
-import { Label } from "./types"
+import { WorkStorageContext } from "./WorkStorageContext"
+import { createWorkStorageContext } from "./workStorageTestUtils"
+import { StoredLabel } from "./types"
 
-const mockLabels: Label[] = [
-  { value: "a11y", colour: "blue" },
-  { value: "i18n", colour: "yellow" },
+const mockLabels: StoredLabel[] = [
+  { id: "id-a11y", value: "a11y", colour: "blue" },
+  { id: "id-i18n", value: "i18n", colour: "yellow" },
 ]
 
+const resolveLabel = ({ value }: { value: string }) =>
+  mockLabels.find((l) => l.value === value)?.id ?? `id-${value}`
+
 const Wrapper = ({ children }: { children: React.ReactNode }) => (
-  <LabelsContext.Provider value={mockLabels}>
+  <WorkStorageContext.Provider
+    value={createWorkStorageContext({ labels: mockLabels, resolveLabel })}
+  >
     {children}
-  </LabelsContext.Provider>
+  </WorkStorageContext.Provider>
 )
 
 const openModal = async (user: ReturnType<typeof userEvent.setup>) => {
@@ -50,7 +56,7 @@ describe("NewListModal", () => {
     })
     await user.click(screen.getByRole("button", { name: "Create" }))
 
-    expect(onCreate).toHaveBeenCalledWith("Backlog", [mockLabels[0]])
+    expect(onCreate).toHaveBeenCalledWith("Backlog", [mockLabels[0].id])
   })
 
   it("creates a list with a new label", async () => {
@@ -68,9 +74,7 @@ describe("NewListModal", () => {
     })
     await user.click(screen.getByRole("button", { name: "Create" }))
 
-    expect(onCreate).toHaveBeenCalledWith("Backlog", [
-      { value: "urgent", colour: "purple" },
-    ])
+    expect(onCreate).toHaveBeenCalledWith("Backlog", ["id-urgent"])
   })
 
   it("doesn't create a list without a name", async () => {

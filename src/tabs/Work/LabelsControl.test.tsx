@@ -5,19 +5,19 @@ import {
   LabelsControl,
   LabelsControlProps,
 } from "./LabelsControl"
-import { COLOURS } from "./types"
-import { LabelsContext } from "./LabelsContext"
-import { Label } from "./types"
+import { COLOURS, Label, StoredLabel } from "./types"
+import { WorkStorageContext } from "./WorkStorageContext"
+import { createWorkStorageContext } from "./workStorageTestUtils"
 
-const mockOptions: Label[] = [
-  { value: "a11y", colour: "blue" },
-  { value: "i18n", colour: "yellow" },
-  { value: "dev prod", colour: "purple" },
-  { value: "feature flag", colour: "green" },
-  { value: "PR", colour: "orange" },
+const mockOptions: StoredLabel[] = [
+  { id: "id-a11y", value: "a11y", colour: "blue" },
+  { id: "id-i18n", value: "i18n", colour: "yellow" },
+  { id: "id-dev-prod", value: "dev prod", colour: "purple" },
+  { id: "id-feature-flag", value: "feature flag", colour: "green" },
+  { id: "id-PR", value: "PR", colour: "orange" },
 ]
 
-const mockValues: Label[] = [mockOptions[0], mockOptions[1]]
+const mockValues = [mockOptions[0].id, mockOptions[1].id]
 
 const commonProps: LabelsControlProps = {
   value: mockValues,
@@ -25,10 +25,23 @@ const commonProps: LabelsControlProps = {
   label: "Things",
 }
 
+// resetMocks clears jest.fn() implementations between tests, so this is
+// reassigned fresh in beforeEach rather than defined once at module scope.
+let resolveLabel: jest.Mock
+
+beforeEach(() => {
+  resolveLabel = jest.fn(
+    ({ value }: Label) =>
+      mockOptions.find((o) => o.value === value)?.id ?? `id-${value}`,
+  )
+})
+
 const Wrapper = ({ children }: { children: React.ReactNode }) => (
-  <LabelsContext.Provider value={mockOptions}>
+  <WorkStorageContext.Provider
+    value={createWorkStorageContext({ labels: mockOptions, resolveLabel })}
+  >
     {children}
-  </LabelsContext.Provider>
+  </WorkStorageContext.Provider>
 )
 
 describe("LabelsControl", () => {
@@ -47,14 +60,14 @@ describe("LabelsControl", () => {
       await user.type(input, "a11y{Enter}")
 
       expect(onChange).toHaveBeenCalledTimes(1)
-      expect(onChange).toHaveBeenCalledWith([mockValues[0]])
+      expect(onChange).toHaveBeenCalledWith([mockOptions[0].id])
       expect(input).toHaveValue("")
 
       rerender(
         <LabelsControl
           {...commonProps}
           onChange={onChange}
-          value={[mockValues[0]]}
+          value={[mockOptions[0].id]}
         />,
       )
 
@@ -64,7 +77,10 @@ describe("LabelsControl", () => {
 
       await user.type(input, "i18n{Enter}")
 
-      expect(onChange).toHaveBeenCalledWith([mockValues[0], mockValues[1]])
+      expect(onChange).toHaveBeenCalledWith([
+        mockOptions[0].id,
+        mockOptions[1].id,
+      ])
     })
   })
 
@@ -78,7 +94,7 @@ describe("LabelsControl", () => {
 
       await user.click(screen.getByRole("button", { name: "Remove a11y" }))
 
-      expect(onChange).toHaveBeenCalledWith([mockValues[1]])
+      expect(onChange).toHaveBeenCalledWith([mockOptions[1].id])
     })
   })
 
@@ -92,8 +108,8 @@ describe("LabelsControl", () => {
       const options = screen.getAllByRole("option")
       expect(options).toHaveLength(mockOptions.length - mockValues.length)
       options.forEach((option) => {
-        expect(option).not.toHaveTextContent(mockValues[0].value)
-        expect(option).not.toHaveTextContent(mockValues[1].value)
+        expect(option).not.toHaveTextContent(mockOptions[0].value)
+        expect(option).not.toHaveTextContent(mockOptions[1].value)
       })
     })
   })
@@ -112,14 +128,14 @@ describe("LabelsControl", () => {
 
       expect(onChange).toHaveBeenCalledWith([
         ...mockValues,
-        expect.objectContaining({ value: "dev prod" }),
+        mockOptions[2].id,
       ])
       expect(input).toHaveValue("")
     })
   })
 
   describe("when the user types a tag that's in the list of options and presses enter", () => {
-    it("updates the value, using the value in the list of options", async () => {
+    it("updates the value, using the id of the label in the list of options", async () => {
       const user = userEvent.setup()
       const onChange = jest.fn()
       render(<LabelsControl {...commonProps} onChange={onChange} />, {
@@ -131,7 +147,10 @@ describe("LabelsControl", () => {
       await user.type(input, selectedOption.value)
       await user.type(input, "{Enter}")
 
-      expect(onChange).toHaveBeenCalledWith([...mockValues, selectedOption])
+      expect(onChange).toHaveBeenCalledWith([
+        ...mockValues,
+        selectedOption.id,
+      ])
     })
   })
 
@@ -146,10 +165,11 @@ describe("LabelsControl", () => {
       const input = screen.getByRole("combobox")
       await user.type(input, "apex{Enter}")
 
-      expect(onChange).toHaveBeenCalledWith([
-        ...mockValues,
-        { value: "apex", colour: "red" },
-      ])
+      expect(resolveLabel).toHaveBeenCalledWith({
+        value: "apex",
+        colour: "red",
+      })
+      expect(onChange).toHaveBeenCalledWith([...mockValues, "id-apex"])
     })
   })
 })
@@ -168,7 +188,7 @@ describe("LabelsControl when isMulti is false", () => {
     render(
       <LabelsControl
         {...singleProps}
-        value={[mockValues[0]]}
+        value={[mockOptions[0].id]}
         onChange={onChange}
       />,
       { wrapper: Wrapper },
@@ -177,9 +197,7 @@ describe("LabelsControl when isMulti is false", () => {
     await user.click(screen.getByRole("combobox"))
     await user.click(screen.getByRole("option", { name: "dev prod" }))
 
-    expect(onChange).toHaveBeenCalledWith([
-      expect.objectContaining({ value: "dev prod" }),
-    ])
+    expect(onChange).toHaveBeenCalledWith([mockOptions[2].id])
   })
 
   it("creates a new label from typed text", () => {
@@ -191,13 +209,14 @@ describe("LabelsControl when isMulti is false", () => {
     const input = screen.getByRole("combobox")
     fireEvent.change(input, { target: { value: "apex" } })
 
-    expect(onChange).toHaveBeenCalledWith([{ value: "apex", colour: "red" }])
+    expect(onChange).toHaveBeenCalledWith(["id-apex"])
   })
 
   it("doesn't show a remove button for the selected value", () => {
-    render(<LabelsControl {...singleProps} value={[mockValues[0]]} />, {
-      wrapper: Wrapper,
-    })
+    render(
+      <LabelsControl {...singleProps} value={[mockOptions[0].id]} />,
+      { wrapper: Wrapper },
+    )
 
     expect(
       screen.queryByRole("button", { name: "Remove a11y" }),

@@ -42,7 +42,6 @@ export type WorkTask = {
   lastStatusUpdate: number
   dueDate?: number
   position: number
-  labels?: Label[]
   labelIds?: string[]
   worktree?: Worktree
   subtasks?: Record<string, Subtask>

@@ -88,15 +88,15 @@ describe("WorkStorageContext", () => {
     const firebaseContext = createFirebaseContext({})
     const workStorage = getWorkStorage(firebaseContext)
 
-    workStorage?.addList("Backlog", [{ value: "a11y", colour: "blue" }])
+    workStorage?.addList("Backlog", ["label-a11y"])
 
     expect(firebaseContext.addItem).toHaveBeenCalledWith("work", {
       description: "Backlog",
-      labels: [{ value: "a11y", colour: "blue" }],
+      labelIds: ["label-a11y"],
     })
   })
 
-  it("addList omits labels when none are given", () => {
+  it("addList omits labelIds when none are given", () => {
     const firebaseContext = createFirebaseContext({})
     const workStorage = getWorkStorage(firebaseContext)
 

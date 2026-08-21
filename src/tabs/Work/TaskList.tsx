@@ -15,6 +15,7 @@ import "./TaskList.css"
 import { DragHandle } from "../../shared/drag-and-drop/DragHandle"
 import { draggableTypeKey } from "../../shared/drag-and-drop/types"
 import { DraggableListItem } from "../../shared/drag-and-drop/DraggableListItem"
+import { ListDestination } from "./listDestination"
 import { PostitModalDialog } from "./PostitModal"
 import { WorkTask } from "./types"
 import { useWorkStorage } from "./WorkStorageContext"
@@ -37,11 +38,13 @@ export function TaskList({
   listId,
   parentListId,
   additionalMoveDestinations,
+  onMoveTaskToList,
 }: {
   index: number
   listId: string
   parentListId: string
   additionalMoveDestinations: (task: WorkTask) => JSX.Element
+  onMoveTaskToList?: (task: WorkTask, destination: ListDestination) => void
 }) {
   const listRef = useRef<HTMLOListElement>(null)
   const [confirmDeleteModalOpen, setConfirmDeleteModalOpen] = useState(false)
@@ -63,9 +66,14 @@ export function TaskList({
     reorderLists,
     reorderTasks,
     addTask,
+    getLabel,
+    removeLabelFromList,
   } = useWorkStorage()
 
   const list = getList(listId)
+  const listLabel = list?.labelIds?.[0]
+    ? getLabel(list.labelIds[0])
+    : undefined
 
   const sortedList = useMemo(
     () => (list?.items ? sortByPosition(Object.values(list.items)) : []),
@@ -113,12 +121,19 @@ export function TaskList({
               }}
             />
           </h2>
-          {list.labels?.[0] &&
+          {listLabel &&
             (editingLabel ? (
               <LabelsControl
-                value={list.labels}
-                onChange={(labels) => {
-                  updateList({ ...list, labels })
+                value={list.labelIds ?? []}
+                onChange={(labelIds) => {
+                  const oldId = list.labelIds?.[0]
+                  if (oldId && oldId !== labelIds[0]) {
+                    // Mark the previous label as pending removal (it's
+                    // being replaced, not just filtered out) before
+                    // writing the new one.
+                    removeLabelFromList(oldId, list)
+                  }
+                  updateList({ ...list, labelIds })
                   setEditingLabel(false)
                 }}
                 label=""
@@ -128,17 +143,12 @@ export function TaskList({
             ) : (
               <>
                 <Labels
-                  labels={list.labels}
-                  onRemoveLabel={(label) =>
-                    updateList({
-                      ...list,
-                      labels: list.labels?.filter((l) => l !== label),
-                    })
-                  }
+                  labelIds={list.labelIds}
+                  onRemoveLabel={(id) => removeLabelFromList(id, list)}
                 />
                 <button
                   className="ghost"
-                  aria-label={`Change ${list.labels[0].value} label`}
+                  aria-label={`Change ${listLabel.value} label`}
                   onClick={() => setEditingLabel(true)}
                 >
                   ✏️
@@ -172,7 +182,29 @@ export function TaskList({
                   onReorder={(reorderedList) =>
                     reorderTasks(listId, reorderedList)
                   }
-                  additionalActions={additionalMoveDestinations(task)}
+                  additionalActions={{
+                    menuItems: additionalMoveDestinations(task),
+                    onKeyDown: onMoveTaskToList
+                      ? (event) => {
+                          switch (event.key) {
+                            case "ArrowLeft":
+                              event.preventDefault()
+                              onMoveTaskToList(
+                                task,
+                                event.shiftKey ? "first" : "previous",
+                              )
+                              break
+                            case "ArrowRight":
+                              event.preventDefault()
+                              onMoveTaskToList(
+                                task,
+                                event.shiftKey ? "last" : "next",
+                              )
+                              break
+                          }
+                        }
+                      : undefined,
+                  }}
                 />
               }
             />

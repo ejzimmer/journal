@@ -44,7 +44,8 @@
         }
       }
 
-      &:hover {
+      &:hover,
+      &:focus-within {
         .drag-handle {
           opacity: 1;
         }

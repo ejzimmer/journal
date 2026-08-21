@@ -7,11 +7,16 @@ import { Menu } from "../controls/Menu"
 import { OrderedListItem } from "./types"
 import { getPosition, onChangePosition } from "./utils"
 
+export type AdditionalActions = {
+  menuItems?: React.ReactNode
+  onKeyDown?: (event: React.KeyboardEvent<HTMLDivElement>) => void
+}
+
 type DragHandleProps = {
   list: OrderedListItem[]
   index: number
   onReorder: (list: OrderedListItem[]) => void
-  additionalActions?: React.ReactNode
+  additionalActions?: AdditionalActions
 }
 
 const iconProps = {
@@ -26,8 +31,41 @@ export function DragHandle({
   additionalActions,
 }: DragHandleProps) {
   const position = getPosition(index, list.length)
+  const isFirst = index === 0
+  const isLast = index === list.length - 1
+
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
+    switch (event.key) {
+      case "ArrowUp":
+        event.preventDefault()
+        if (!isFirst) {
+          onChangePosition(
+            list,
+            index,
+            event.shiftKey ? "start" : "previous",
+            onReorder,
+          )
+        }
+        break
+      case "ArrowDown":
+        event.preventDefault()
+        if (!isLast) {
+          onChangePosition(
+            list,
+            index,
+            event.shiftKey ? "end" : "next",
+            onReorder,
+          )
+        }
+        break
+      default:
+        additionalActions?.onKeyDown?.(event)
+    }
+  }
+
   return (
     <Menu
+      onKeyDown={handleKeyDown}
       trigger={(props) => (
         <button {...props} className="drag-handle ghost" aria-label="drag menu">
           <DragHandleIcon width="24px" />
@@ -66,7 +104,7 @@ export function DragHandle({
           >
             <ArrowToBottomIcon {...iconProps} /> Move to bottom
           </Menu.Action>
-          {additionalActions}
+          {additionalActions?.menuItems}
         </>
       )}
     </Menu>
