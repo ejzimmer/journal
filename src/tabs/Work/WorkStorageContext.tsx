@@ -24,7 +24,7 @@ export type WorkStorageContextType = {
   lists?: Record<string, WorkTask>
   isLoading: boolean
 
-  addList: (listName: string, labels?: Label[]) => void
+  addList: (listName: string, label?: Label) => void
   updateList: (list: WorkTask) => void
   deleteList: (list: WorkTask) => void
   reorderLists: <T extends { id: string }>(lists: T[]) => void
@@ -50,10 +50,8 @@ export type WorkStorageContextType = {
 
   labels: StoredLabel[]
   getLabel: (id: string) => StoredLabel | undefined
-  addLabelToTask: (label: Label, task: WorkTask, list: WorkTask) => void
-  removeLabelFromTask: (id: string, task: WorkTask, list: WorkTask) => void
-  addLabelToList: (label: Label, list: WorkTask) => void
-  removeLabelFromList: (id: string, list: WorkTask) => void
+  addLabel: (label: Label, entity: WorkTask) => void
+  removeLabel: (id: string, entity: WorkTask) => void
   updateLabel: (id: string, colour: Colour) => void
 }
 
@@ -74,8 +72,33 @@ export function WorkStorageProvider({ children }: { children: ReactNode }) {
     useValue,
   } = firebase
 
-  const { value: lists, loading: isLoading } =
+  const { value: rawLists, loading: isLoading } =
     useValue<Record<string, WorkTask>>(WORK_KEY)
+
+  // parentId is only ever written into seed data, never by addList/addTask
+  // — derive it here instead of trusting whatever's actually stored, so
+  // every list/task can be updated (e.g. by addLabel/removeLabel) purely
+  // from the object itself, without the caller needing to pass a listId.
+  const lists = useMemo(() => {
+    if (!rawLists) return rawLists
+    const normalized: Record<string, WorkTask> = {}
+    Object.entries(rawLists).forEach(([listId, list]) => {
+      const items =
+        list.items &&
+        Object.fromEntries(
+          Object.entries(list.items).map(([taskId, task]) => [
+            taskId,
+            { ...task, parentId: `${WORK_KEY}/${listId}/items` },
+          ]),
+        )
+      normalized[listId] = {
+        ...list,
+        parentId: WORK_KEY,
+        ...(items && { items }),
+      }
+    })
+    return normalized
+  }, [rawLists])
 
   const { value: storedLabelsById, loading: labelsLoading } =
     useValue<Record<string, StoredLabel>>(LABELS_KEY)
@@ -143,9 +166,6 @@ export function WorkStorageProvider({ children }: { children: ReactNode }) {
     return addItem<StoredLabel>(LABELS_KEY, label) ?? ""
   }
 
-  // Marks a label as pending removal once nothing references it any more,
-  // rather than deleting it immediately, so it can still be reused for a
-  // while without recreating it from scratch.
   const markUnusedIfOrphaned = (id: string) => {
     if (countLabelUsage(id) > 1) return
     const storedLabel = storedLabelsById?.[id]
@@ -157,14 +177,24 @@ export function WorkStorageProvider({ children }: { children: ReactNode }) {
   const updateList = (list: WorkTask) => {
     updateItem(WORK_KEY, list)
   }
+
   const updateTask = (listId: string, task: WorkTask) => {
     const previous = lists?.[listId]?.items?.[task.id]
-    if (previous && previous.status !== task.status) {
-      if (task.status === "done") {
-        task.labelIds?.forEach((id) => markUnusedIfOrphaned(id))
-      } else if (previous.status === "done") {
-        task.labelIds?.forEach((id) => reviveLabelById(id))
+    if (previous) {
+      const oldIds = previous.labelIds ?? []
+      const newIds = task.labelIds ?? []
+      const toCheck = new Set(oldIds.filter((id) => !newIds.includes(id)))
+      const toRevive = new Set(newIds.filter((id) => !oldIds.includes(id)))
+
+      if (previous.status !== "done" && task.status === "done") {
+        newIds.forEach((id) => toCheck.add(id))
       }
+      if (previous.status === "done" && task.status !== "done") {
+        newIds.forEach((id) => toRevive.add(id))
+      }
+
+      toCheck.forEach((id) => markUnusedIfOrphaned(id))
+      toRevive.forEach((id) => reviveLabelById(id))
     }
     updateItem(`${WORK_KEY}/${listId}/items`, task)
   }
@@ -173,16 +203,17 @@ export function WorkStorageProvider({ children }: { children: ReactNode }) {
     lists,
     isLoading,
 
-    addList: (listName, labels = []) => {
-      const labelIds = labels.map(resolveLabelId)
+    addList: (listName, label) => {
+      const labelId = label && resolveLabelId(label)
       addItem(WORK_KEY, {
         description: listName,
-        ...(labelIds.length > 0 && { labelIds }),
+        ...(labelId && { labelIds: [labelId] }),
       })
     },
     updateList,
     deleteList: (list) => {
       deleteItem(WORK_KEY, list)
+      list.labelIds?.forEach((id) => markUnusedIfOrphaned(id))
     },
     reorderLists: (reorderedLists) => {
       updateItemsList(WORK_KEY, reorderedLists)
@@ -199,6 +230,7 @@ export function WorkStorageProvider({ children }: { children: ReactNode }) {
     updateTask,
     deleteTask: (listId, task) => {
       deleteItem(`${WORK_KEY}/${listId}/items`, task)
+      task.labelIds?.forEach((id) => markUnusedIfOrphaned(id))
     },
     reorderTasks: (listId, tasks) => {
       updateItemsList(`${WORK_KEY}/${listId}/items`, tasks)
@@ -225,29 +257,16 @@ export function WorkStorageProvider({ children }: { children: ReactNode }) {
     labels,
     getLabel: (id) => storedLabelsById?.[id],
 
-    addLabelToTask: (label, task, list) => {
+    addLabel: (label, entity) => {
       const id = resolveLabelId(label)
-      const labelIds = Array.from(new Set([...(task.labelIds ?? []), id]))
-      updateTask(list.id, { ...task, labelIds })
+      const labelIds = Array.from(new Set([...(entity.labelIds ?? []), id]))
+      updateItem(entity.parentId, { ...entity, labelIds })
     },
-    removeLabelFromTask: (id, task, list) => {
-      const labelIds = (task.labelIds ?? []).filter(
+    removeLabel: (id, entity) => {
+      const labelIds = (entity.labelIds ?? []).filter(
         (labelId) => labelId !== id,
       )
-      updateTask(list.id, { ...task, labelIds })
-      markUnusedIfOrphaned(id)
-    },
-
-    addLabelToList: (label, list) => {
-      const id = resolveLabelId(label)
-      const labelIds = Array.from(new Set([...(list.labelIds ?? []), id]))
-      updateList({ ...list, labelIds })
-    },
-    removeLabelFromList: (id, list) => {
-      const labelIds = (list.labelIds ?? []).filter(
-        (labelId) => labelId !== id,
-      )
-      updateList({ ...list, labelIds })
+      updateItem(entity.parentId, { ...entity, labelIds })
       markUnusedIfOrphaned(id)
     },
 

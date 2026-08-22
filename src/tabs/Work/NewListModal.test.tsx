@@ -35,7 +35,7 @@ describe("NewListModal", () => {
     )
     await user.click(screen.getByRole("button", { name: "Create" }))
 
-    expect(onCreate).toHaveBeenCalledWith("Backlog", [])
+    expect(onCreate).toHaveBeenCalledWith("Backlog", undefined)
   })
 
   it("creates a list with an existing label", async () => {
@@ -53,9 +53,10 @@ describe("NewListModal", () => {
     })
     await user.click(screen.getByRole("button", { name: "Create" }))
 
-    expect(onCreate).toHaveBeenCalledWith("Backlog", [
-      { value: "a11y", colour: "blue" },
-    ])
+    expect(onCreate).toHaveBeenCalledWith("Backlog", {
+      value: "a11y",
+      colour: "blue",
+    })
   })
 
   it("creates a list with a new label", async () => {
@@ -73,9 +74,10 @@ describe("NewListModal", () => {
     })
     await user.click(screen.getByRole("button", { name: "Create" }))
 
-    expect(onCreate).toHaveBeenCalledWith("Backlog", [
-      { value: "urgent", colour: "purple" },
-    ])
+    expect(onCreate).toHaveBeenCalledWith("Backlog", {
+      value: "urgent",
+      colour: "purple",
+    })
   })
 
   it("doesn't create a list without a name", async () => {

@@ -93,7 +93,7 @@ describe("TaskList label", () => {
     const labelItem = screen.getByText("a11y").closest("li")
     await user.click(within(labelItem!).getByRole("button", { name: "Remove a11y" }))
 
-    expect(storageContext.removeLabelFromList).toHaveBeenCalledWith(
+    expect(storageContext.removeLabel).toHaveBeenCalledWith(
       a11yLabel.id,
       labelledList,
     )
@@ -107,11 +107,11 @@ describe("TaskList label", () => {
     await user.click(screen.getByRole("button", { name: "Change a11y label" }))
     await user.click(screen.getByRole("option", { name: "urgent" }))
 
-    expect(storageContext.removeLabelFromList).toHaveBeenCalledWith(
+    expect(storageContext.removeLabel).toHaveBeenCalledWith(
       a11yLabel.id,
       labelledList,
     )
-    expect(storageContext.addLabelToList).toHaveBeenCalledWith(
+    expect(storageContext.addLabel).toHaveBeenCalledWith(
       { value: urgentLabel.value, colour: urgentLabel.colour },
       labelledList,
     )

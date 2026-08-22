@@ -67,8 +67,8 @@ export function TaskList({
     reorderTasks,
     addTask,
     getLabel,
-    addLabelToList,
-    removeLabelFromList,
+    addLabel,
+    removeLabel,
   } = useWorkStorage()
 
   const list = getList(listId)
@@ -129,11 +129,11 @@ export function TaskList({
                 onChange={(labels) => {
                   const oldId = list.labelIds?.[0]
                   if (oldId) {
-                    removeLabelFromList(oldId, list)
+                    removeLabel(oldId, list)
                   }
                   const newLabel = labels[0]
                   if (newLabel) {
-                    addLabelToList(newLabel, list)
+                    addLabel(newLabel, list)
                   }
                   setEditingLabel(false)
                 }}
@@ -145,7 +145,7 @@ export function TaskList({
               <>
                 <Labels
                   labelIds={list.labelIds}
-                  onRemoveLabel={(id) => removeLabelFromList(id, list)}
+                  onRemoveLabel={(id) => removeLabel(id, list)}
                 />
                 <button
                   className="ghost"

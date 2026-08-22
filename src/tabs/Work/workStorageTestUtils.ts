@@ -20,10 +20,8 @@ export function createWorkStorageContext(
     getTask: () => undefined,
     labels: [],
     getLabel: () => undefined,
-    addLabelToTask: jest.fn(),
-    removeLabelFromTask: jest.fn(),
-    addLabelToList: jest.fn(),
-    removeLabelFromList: jest.fn(),
+    addLabel: jest.fn(),
+    removeLabel: jest.fn(),
     updateLabel: jest.fn(),
     ...overrides,
   }

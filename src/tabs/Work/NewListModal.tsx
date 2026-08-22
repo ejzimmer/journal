@@ -7,11 +7,11 @@ import { Label } from "./types"
 export function NewListModal({
   onCreate,
 }: {
-  onCreate: (listName: string, labels?: Label[]) => void
+  onCreate: (listName: string, label?: Label) => void
 }) {
   const [showError, setShowError] = useState(false)
   const [listName, setListName] = useState("")
-  const [labels, setLabels] = useState<Label[]>([])
+  const [label, setLabel] = useState<Label | undefined>(undefined)
 
   const listNameRef = useRef<HTMLInputElement>(null)
 
@@ -29,9 +29,9 @@ export function NewListModal({
       return false
     }
 
-    onCreate(listName, labels)
+    onCreate(listName, label)
     setListName("")
-    setLabels([])
+    setLabel(undefined)
     return true
   }
 
@@ -56,8 +56,8 @@ export function NewListModal({
         errors={showError && ["List name is required"]}
       />
       <LabelsControl
-        value={labels}
-        onChange={setLabels}
+        value={label ? [label] : []}
+        onChange={(labels) => setLabel(labels[0])}
         label="Label"
         isMulti={false}
       />
