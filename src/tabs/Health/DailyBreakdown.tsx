@@ -2,9 +2,8 @@ import { CSSProperties, useContext, useMemo } from "react"
 
 import "./DailyBreakdown.css"
 import { FirebaseContext } from "../../shared/FirebaseContext"
-import { ChevronDownIcon } from "../../shared/icons/ChevronDown"
 import { DAILY_PATH, DayData } from "../../shared/types"
-import { setupDays } from "./utils"
+import { Balance, setupDays } from "./utils"
 
 export function DailyBreakdown() {
   const storageContext = useContext(FirebaseContext)
@@ -23,34 +22,38 @@ export function DailyBreakdown() {
       ),
     [days],
   )
+  const popDelays = useMemo(() => days.map(() => Math.random() * 0.3), [days])
+  const startingIndex = days[0] ? weekday(days[0]) : 1
 
   return (
-    <details className="daily-breakdown">
-      <summary>
-        <ChevronDownIcon width="16px" />
-        by day
-      </summary>
-      <ol className="day-grid" aria-label="by day">
-        {days.map((day) => (
-          <li
-            key={`${day.day}-${day.month}`}
-            className="day-circle"
-            style={
-              {
-                gridColumn: day.dayOfWeek + 1,
-                ...(typeof day.diff === "number"
-                  ? { "--day-colour": getDayColour(day.diff, maxDiff) }
-                  : {}),
-              } as CSSProperties
-            }
-          >
-            {day.day}/{day.monthNumber}
-          </li>
-        ))}
-      </ol>
-    </details>
+    <ol
+      className="day-grid"
+      aria-label="by day"
+      style={{ "--starting-index": startingIndex } as CSSProperties}
+    >
+      {days.map((day, index) => (
+        <li
+          key={`${day.day}-${day.month}`}
+          className="day-circle"
+          style={
+            {
+              animationDelay: `${popDelays[index]}s`,
+              ...(typeof day.diff === "number"
+                ? { "--day-colour": getDayColour(day.diff, maxDiff) }
+                : {}),
+            } as CSSProperties
+          }
+        >
+          {day.day}/{day.monthNumber}
+        </li>
+      ))}
+    </ol>
   )
 }
+
+const weekday = (day: Balance) =>
+  Temporal.PlainDate.from({ year: 2026, month: day.monthNumber, day: day.day })
+    .dayOfWeek
 
 function getDayColour(diff: number, maxDiff: number) {
   const intensity = maxDiff === 0 ? 1 : Math.min(Math.abs(diff) / maxDiff, 1)

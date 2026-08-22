@@ -30,6 +30,7 @@ export type Worktree = (typeof WORKTREES)[number]
 export type Subtask = {
   id: string
   description: string
+  position: number
 }
 
 export type WorkTask = {
@@ -48,12 +49,17 @@ export type WorkTask = {
 
 export const WORK_KEY = "work"
 
-export const STANDARD_CHECKLIST = [
-  "test",
-  "review",
-  "PR",
-  "QA",
-  "build",
-  "mark PR ready",
-  "approvals",
-]
+const idFor = (description: string) =>
+  `standard-${description.toLowerCase().replace(/\s+/g, "-")}`
+
+export const STANDARD_CHECKLIST = new Map(
+  [
+    "test",
+    "review",
+    "PR",
+    "QA",
+    "build",
+    "mark PR ready",
+    "approvals",
+  ].map((description) => [idFor(description), description]),
+)

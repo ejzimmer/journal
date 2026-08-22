@@ -199,10 +199,26 @@ describe("WorkStorageContext", () => {
     )
   })
 
+  it("updateSubtasksList writes the full subtasks list back to the task", () => {
+    const firebaseContext = createFirebaseContext({ [list.id]: list })
+    const workStorage = getWorkStorage(firebaseContext)
+    const subtasks = [
+      { id: "a", description: "test", position: 0 },
+      { id: "b", description: "review", position: 1 },
+    ]
+
+    workStorage?.updateSubtasksList(list.id, task.id, subtasks)
+
+    expect(firebaseContext.updateList).toHaveBeenCalledWith(
+      "work/list-1/items/task-1/subtasks",
+      subtasks,
+    )
+  })
+
   it("deleteSubtask removes the subtask from the task", () => {
     const firebaseContext = createFirebaseContext({ [list.id]: list })
     const workStorage = getWorkStorage(firebaseContext)
-    const subtask = { id: "sub-1", description: "Write tests" }
+    const subtask = { id: "sub-1", description: "Write tests", position: 0 }
 
     workStorage?.deleteSubtask(list.id, task.id, subtask)
 

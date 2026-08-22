@@ -187,8 +187,9 @@ ol.work-lists > li {
         }
       }
 
-      .subtasks {
+      span.subtasks {
         color: var(--body-colour-mid);
+        cursor: text;
 
         button.subtask {
           all: unset;
@@ -205,6 +206,21 @@ ol.work-lists > li {
           &:focus-visible {
             outline: 1px solid currentColor;
             outline-offset: 2px;
+          }
+        }
+      }
+
+      form.subtasks.editing {
+        input {
+          font: inherit;
+          color: var(--body-colour);
+          border: none;
+          border-bottom: 1px solid var(--body-colour-light);
+          background: transparent;
+          width: 16em;
+
+          &:focus {
+            outline: none;
           }
         }
       }
@@ -255,6 +271,10 @@ ol.work-lists > li {
       button.stamp-trigger {
         padding: 6px;
       }
+    }
+
+    .due-date + .worktree-menu-anchor {
+      margin-inline-start: 0;
     }
   }
 

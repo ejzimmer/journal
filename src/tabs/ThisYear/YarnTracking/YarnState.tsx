@@ -18,20 +18,18 @@ export function YarnState() {
     return <>Loading...</>
   }
 
-  const months = getHistoryByMonth(value)
-  const maxTotal = Math.max(
-    ...Object.values(months).map((month) => month.total),
-  )
+  const monthEntries = Object.entries(getHistoryByMonth(value))
+  const maxTotal = Math.max(...monthEntries.map(([, month]) => month.total))
 
   return (
     <div className="yarn-state">
       <ol>
-        {Object.entries(months).map(([id, month]) => (
+        {monthEntries.map(([id, month], index) => (
           <li key={id} style={{ width: `${(month.total / maxTotal) * 100}%` }}>
             <MonthLabel
               monthNumber={id.split("-")[1]}
               monthTotal={month.total}
-              isLastMonth={false}
+              isLastMonth={index === monthEntries.length - 1}
             />
             <MonthlyBalance {...month} />
           </li>
