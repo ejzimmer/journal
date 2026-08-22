@@ -12,9 +12,6 @@ export type LabelsControlProps = {
   autoFocus?: boolean
 }
 
-// A label's value is unique within the store, so it doubles as a stable
-// local id for the combobox — no need to know a label's real (or not yet
-// created) database id just to display and pick from a list of them.
 type LabelOption = {
   id: string
   label: string

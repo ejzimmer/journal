@@ -92,6 +92,7 @@ describe("WorkStorageContext", () => {
 
     expect(firebaseContext.addItem).toHaveBeenCalledWith("work", {
       description: "Backlog",
+      parentId: "work",
       labelIds: ["new-id"],
     })
   })
@@ -104,6 +105,7 @@ describe("WorkStorageContext", () => {
 
     expect(firebaseContext.addItem).toHaveBeenCalledWith("work", {
       description: "Backlog",
+      parentId: "work",
     })
   })
 
@@ -145,6 +147,7 @@ describe("WorkStorageContext", () => {
 
     expect(firebaseContext.addItem).toHaveBeenCalledWith("work/list-1/items", {
       description: "New task",
+      parentId: "work/list-1/items",
     })
   })
 
@@ -513,6 +516,7 @@ describe("WorkStorageContext labels", () => {
       })
       expect(firebaseContext.addItem).toHaveBeenCalledWith("work", {
         description: "Blocked",
+        parentId: "work",
         labelIds: ["new-id"],
       })
     })
@@ -529,6 +533,7 @@ describe("WorkStorageContext labels", () => {
       )
       expect(firebaseContext.addItem).toHaveBeenCalledWith("work", {
         description: "Today",
+        parentId: "work",
         labelIds: [urgentLabel.id],
       })
     })
@@ -632,6 +637,7 @@ describe("WorkStorageContext labels", () => {
 
     expect(firebaseContext.addItem).toHaveBeenCalledWith("work/list-2/items", {
       description: "New task",
+      parentId: "work/list-2/items",
       labelIds: [urgentLabel.id],
     })
   })

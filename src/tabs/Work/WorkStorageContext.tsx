@@ -75,10 +75,9 @@ export function WorkStorageProvider({ children }: { children: ReactNode }) {
   const { value: rawLists, loading: isLoading } =
     useValue<Record<string, WorkTask>>(WORK_KEY)
 
-  // parentId is only ever written into seed data, never by addList/addTask
-  // — derive it here instead of trusting whatever's actually stored, so
-  // every list/task can be updated (e.g. by addLabel/removeLabel) purely
-  // from the object itself, without the caller needing to pass a listId.
+  // Backfills parentId onto lists/tasks written before addList/addTask
+  // started setting it, so addLabel/removeLabel can rely on it always
+  // being there.
   const lists = useMemo(() => {
     if (!rawLists) return rawLists
     const normalized: Record<string, WorkTask> = {}
@@ -147,7 +146,7 @@ export function WorkStorageProvider({ children }: { children: ReactNode }) {
     return count
   }
 
-  const reviveLabelById = (id: string) => {
+  const markLabelAsUsed = (id: string) => {
     const storedLabel = storedLabelsById?.[id]
     if (storedLabel?.lastRemoved !== undefined) {
       const { lastRemoved: _lastRemoved, ...withoutLastRemoved } = storedLabel
@@ -155,18 +154,16 @@ export function WorkStorageProvider({ children }: { children: ReactNode }) {
     }
   }
 
-  // Reuses an existing stored label with the same value if there is one
-  // (reviving it if it was pending removal), otherwise creates a new one.
   const resolveLabelId = (label: Label): string => {
     const existing = labels.find((l) => l.value === label.value)
     if (existing) {
-      reviveLabelById(existing.id)
+      markLabelAsUsed(existing.id)
       return existing.id
     }
     return addItem<StoredLabel>(LABELS_KEY, label) ?? ""
   }
 
-  const markUnusedIfOrphaned = (id: string) => {
+  const markUnusedLabel = (id: string) => {
     if (countLabelUsage(id) > 1) return
     const storedLabel = storedLabelsById?.[id]
     if (storedLabel && storedLabel.lastRemoved === undefined) {
@@ -193,8 +190,8 @@ export function WorkStorageProvider({ children }: { children: ReactNode }) {
         newIds.forEach((id) => toRevive.add(id))
       }
 
-      toCheck.forEach((id) => markUnusedIfOrphaned(id))
-      toRevive.forEach((id) => reviveLabelById(id))
+      toCheck.forEach((id) => markUnusedLabel(id))
+      toRevive.forEach((id) => markLabelAsUsed(id))
     }
     updateItem(`${WORK_KEY}/${listId}/items`, task)
   }
@@ -207,13 +204,14 @@ export function WorkStorageProvider({ children }: { children: ReactNode }) {
       const labelId = label && resolveLabelId(label)
       addItem(WORK_KEY, {
         description: listName,
+        parentId: WORK_KEY,
         ...(labelId && { labelIds: [labelId] }),
       })
     },
     updateList,
     deleteList: (list) => {
       deleteItem(WORK_KEY, list)
-      list.labelIds?.forEach((id) => markUnusedIfOrphaned(id))
+      list.labelIds?.forEach((id) => markUnusedLabel(id))
     },
     reorderLists: (reorderedLists) => {
       updateItemsList(WORK_KEY, reorderedLists)
@@ -224,13 +222,14 @@ export function WorkStorageProvider({ children }: { children: ReactNode }) {
       const labelIds = [...(task.labelIds ?? []), ...resolvedIds]
       addItem(`${WORK_KEY}/${listId}/items`, {
         ...task,
+        parentId: `${WORK_KEY}/${listId}/items`,
         ...(labelIds.length > 0 && { labelIds }),
       })
     },
     updateTask,
     deleteTask: (listId, task) => {
       deleteItem(`${WORK_KEY}/${listId}/items`, task)
-      task.labelIds?.forEach((id) => markUnusedIfOrphaned(id))
+      task.labelIds?.forEach((id) => markUnusedLabel(id))
     },
     reorderTasks: (listId, tasks) => {
       updateItemsList(`${WORK_KEY}/${listId}/items`, tasks)
@@ -239,9 +238,6 @@ export function WorkStorageProvider({ children }: { children: ReactNode }) {
     addSubtask: (listId, taskId, description, id) => {
       const path = `${WORK_KEY}/${listId}/items/${taskId}/subtasks`
       if (id) {
-        // A caller-supplied id makes the write idempotent: rewriting the
-        // same id/description pair (e.g. a retried or racing call) just
-        // overwrites itself instead of creating a duplicate entry.
         updateItem(path, { id, description })
       } else {
         addItem(path, { description })
@@ -267,7 +263,7 @@ export function WorkStorageProvider({ children }: { children: ReactNode }) {
         (labelId) => labelId !== id,
       )
       updateItem(entity.parentId, { ...entity, labelIds })
-      markUnusedIfOrphaned(id)
+      markUnusedLabel(id)
     },
 
     updateLabel: (id, colour) => {
