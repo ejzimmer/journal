@@ -3,9 +3,22 @@
     border-radius: 999px;
     font-family: "Yuji Syuku", serif;
     font-size: 1.15em;
+    box-shadow: inset 2px 2px 4px hsl(0 0 0 / 0.2);
 
-    label:has(input:checked) {
-      color: var(--action-colour-dark);
+    label {
+      padding-block: 4px;
+
+      &:not(:last-of-type) {
+        border-inline-end: none;
+      }
+
+      &:has(input:not(:checked)) {
+        box-shadow: none;
+      }
+
+      &:has(input:checked) {
+        color: var(--action-colour-dark);
+      }
     }
 
     .indicator {
