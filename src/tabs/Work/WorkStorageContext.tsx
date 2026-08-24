@@ -154,7 +154,7 @@ export function WorkStorageProvider({ children }: { children: ReactNode }) {
     }
   }
 
-  const resolveLabelId = (label: Label): string => {
+  const upsertLabel = (label: Label): string => {
     const existing = labels.find((l) => l.value === label.value)
     if (existing) {
       markLabelAsUsed(existing.id)
@@ -176,24 +176,28 @@ export function WorkStorageProvider({ children }: { children: ReactNode }) {
   }
 
   const updateTask = (listId: string, task: WorkTask) => {
-    const previous = lists?.[listId]?.items?.[task.id]
-    if (previous) {
-      const oldIds = previous.labelIds ?? []
-      const newIds = task.labelIds ?? []
-      const toCheck = new Set(oldIds.filter((id) => !newIds.includes(id)))
-      const toRevive = new Set(newIds.filter((id) => !oldIds.includes(id)))
-
-      if (previous.status !== "done" && task.status === "done") {
-        newIds.forEach((id) => toCheck.add(id))
-      }
-      if (previous.status === "done" && task.status !== "done") {
-        newIds.forEach((id) => toRevive.add(id))
-      }
-
-      toCheck.forEach((id) => markUnusedLabel(id))
-      toRevive.forEach((id) => markLabelAsUsed(id))
-    }
+    const previousTask = lists?.[listId]?.items?.[task.id]
     updateItem(`${WORK_KEY}/${listId}/items`, task)
+    if (!previousTask) return
+
+    const oldLabelIds = previousTask.labelIds ?? []
+    const newLabelIds = task.labelIds ?? []
+    const removedLabelIds = new Set(
+      oldLabelIds.filter((id) => !newLabelIds.includes(id)),
+    )
+    const addedLabelIds = new Set(
+      newLabelIds.filter((id) => !oldLabelIds.includes(id)),
+    )
+
+    if (previousTask.status !== "done" && task.status === "done") {
+      newLabelIds.forEach((id) => removedLabelIds.add(id))
+    }
+    if (previousTask.status === "done" && task.status !== "done") {
+      newLabelIds.forEach((id) => addedLabelIds.add(id))
+    }
+
+    removedLabelIds.forEach((id) => markUnusedLabel(id))
+    addedLabelIds.forEach((id) => markLabelAsUsed(id))
   }
 
   const value: WorkStorageContextType = {
@@ -201,7 +205,7 @@ export function WorkStorageProvider({ children }: { children: ReactNode }) {
     isLoading,
 
     addList: (listName, label) => {
-      const labelId = label && resolveLabelId(label)
+      const labelId = label && upsertLabel(label)
       addItem(WORK_KEY, {
         description: listName,
         parentId: WORK_KEY,
@@ -218,7 +222,7 @@ export function WorkStorageProvider({ children }: { children: ReactNode }) {
     },
 
     addTask: (listId, { labels: newLabels, ...task }) => {
-      const resolvedIds = newLabels?.map(resolveLabelId) ?? []
+      const resolvedIds = newLabels?.map(upsertLabel) ?? []
       const labelIds = [...(task.labelIds ?? []), ...resolvedIds]
       addItem(`${WORK_KEY}/${listId}/items`, {
         ...task,
@@ -255,7 +259,7 @@ export function WorkStorageProvider({ children }: { children: ReactNode }) {
     getLabel: (id) => storedLabelsById?.[id],
 
     addLabel: (label, entity) => {
-      const id = resolveLabelId(label)
+      const id = upsertLabel(label)
       const labelIds = Array.from(new Set([...(entity.labelIds ?? []), id]))
       updateItem(entity.parentId, { ...entity, labelIds })
     },
