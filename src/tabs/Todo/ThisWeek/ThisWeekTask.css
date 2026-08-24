@@ -98,7 +98,6 @@
   }
 
   form.add-task-form {
-    display: grid;
     margin-inline: auto;
 
     input[type="number"] {
