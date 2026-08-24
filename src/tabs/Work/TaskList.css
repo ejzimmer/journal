@@ -155,8 +155,7 @@ ol.work-lists > li {
       > button,
       > form,
       > .due-date,
-      > .subtasks,
-      > .worktree-menu-anchor {
+      > .subtasks {
         margin-block-end: var(--baseline-nudge);
       }
 
@@ -263,18 +262,6 @@ ol.work-lists > li {
 
     button.add-metadata[aria-label="Add subtask"] {
       margin-inline-start: -10px;
-    }
-
-    .task-content .worktree-menu-anchor {
-      margin-inline-start: -8px;
-
-      button.stamp-trigger {
-        padding: 6px;
-      }
-    }
-
-    .due-date + .worktree-menu-anchor {
-      margin-inline-start: 0;
     }
   }
 

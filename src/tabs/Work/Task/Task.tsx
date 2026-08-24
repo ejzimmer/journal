@@ -60,11 +60,13 @@ export function Task({ task, listId, dragHandle }: TaskProps) {
       className={`task status-${task.status}`}
       dragHandle={dragHandle}
     >
-      {task.worktree && (
-        <div className="worktree-marker">
+      <div className="worktree-marker">
+        {task.worktree ? (
           <WorktreeStamp worktree={task.worktree} onChange={onChangeWorktree} />
-        </div>
-      )}
+        ) : (
+          <AddWorktree onChange={onChangeWorktree} />
+        )}
+      </div>
       <div className="checkbox-container">
         <Checkbox
           isChecked={task.status === "done"}
@@ -122,7 +124,6 @@ export function Task({ task, listId, dragHandle }: TaskProps) {
           <DueDate dueDate={task.dueDate} onChange={onChangeDueDate} />
         )}
 
-        {!task.worktree && <AddWorktree onChange={onChangeWorktree} />}
         <AddSubtask listId={listId} taskId={task.id} />
       </div>
     </DraggableListItem>
