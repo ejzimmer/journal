@@ -23,9 +23,7 @@ type TaskProps = {
 }
 
 export function Task({ task, listId, dragHandle }: TaskProps) {
-  const { updateTask, deleteTask, getList, removeLabelFromTask } =
-    useWorkStorage()
-  const list = getList(listId)
+  const { updateTask, deleteTask, addLabel, removeLabel } = useWorkStorage()
   const hasLabels = (task.labelIds?.length ?? 0) > 0
 
   const onChangeWorktree = (newWorktree?: Worktree) => {
@@ -105,7 +103,7 @@ export function Task({ task, listId, dragHandle }: TaskProps) {
         {hasLabels && (
           <Labels
             labelIds={task.labelIds}
-            onRemoveLabel={(id) => list && removeLabelFromTask(id, task, list)}
+            onRemoveLabel={(id) => removeLabel(id, task)}
           />
         )}
 
@@ -113,12 +111,7 @@ export function Task({ task, listId, dragHandle }: TaskProps) {
           <DueDate dueDate={task.dueDate} onChange={onChangeDueDate} />
         )}
 
-        <UpdateLabels
-          labelIds={task.labelIds}
-          onUpdateLabels={(labelIds) => {
-            updateTask(listId, { ...task, labelIds })
-          }}
-        />
+        <UpdateLabels onAddLabel={(label) => addLabel(label, task)} />
 
         {hasLabels && (
           <DueDate dueDate={task.dueDate} onChange={onChangeDueDate} />

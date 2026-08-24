@@ -12,7 +12,7 @@ const task: WorkTask = {
   id: "task-1",
   description: "Fix contrast",
   status: "not_started",
-  parentId: "list-1/items",
+  parentId: "work/list-1/items",
   lastStatusUpdate: 0,
   position: 0,
 }
@@ -88,11 +88,12 @@ describe("WorkStorageContext", () => {
     const firebaseContext = createFirebaseContext({})
     const workStorage = getWorkStorage(firebaseContext)
 
-    workStorage?.addList("Backlog", ["label-a11y"])
+    workStorage?.addList("Backlog", { value: "a11y", colour: "blue" })
 
     expect(firebaseContext.addItem).toHaveBeenCalledWith("work", {
       description: "Backlog",
-      labelIds: ["label-a11y"],
+      parentId: "work",
+      labelIds: ["new-id"],
     })
   })
 
@@ -104,6 +105,7 @@ describe("WorkStorageContext", () => {
 
     expect(firebaseContext.addItem).toHaveBeenCalledWith("work", {
       description: "Backlog",
+      parentId: "work",
     })
   })
 
@@ -145,6 +147,7 @@ describe("WorkStorageContext", () => {
 
     expect(firebaseContext.addItem).toHaveBeenCalledWith("work/list-1/items", {
       description: "New task",
+      parentId: "work/list-1/items",
     })
   })
 
@@ -257,202 +260,194 @@ describe("WorkStorageContext labels", () => {
     value: "urgent",
     colour: "yellow",
   }
+  const storedLabels = { [a11yLabel.id]: a11yLabel, [urgentLabel.id]: urgentLabel }
 
-  const labelledTask: WorkTask = { ...task, labelIds: [a11yLabel.id] }
-  const secondTask: WorkTask = {
-    id: "task-2",
-    description: "Fix contrast in dark mode",
+  const makeTask = (
+    listId: string,
+    overrides: Partial<WorkTask> = {},
+  ): WorkTask => ({
+    id: "task-1",
+    description: "Fix contrast",
     status: "not_started",
-    parentId: "list-1/items",
+    parentId: `work/${listId}/items`,
     lastStatusUpdate: 0,
-    position: 1,
-  }
-  const labelledList: WorkTask = {
-    ...list,
-    labelIds: [a11yLabel.id],
-    items: { [labelledTask.id]: labelledTask, [secondTask.id]: secondTask },
-  }
-  const otherList: WorkTask = {
-    id: "list-2",
-    description: "Today",
+    position: 0,
+    ...overrides,
+  })
+
+  const makeList = (id: string, overrides: Partial<WorkTask> = {}): WorkTask => ({
+    id,
+    description: "List",
     status: "not_started",
     parentId: "work",
     lastStatusUpdate: 0,
-    position: 1,
-  }
-  const twoLists = {
-    [labelledList.id]: labelledList,
-    [otherList.id]: otherList,
-  }
-  const storedLabels = { [a11yLabel.id]: a11yLabel, [urgentLabel.id]: urgentLabel }
+    position: 0,
+    ...overrides,
+  })
 
-  it("returns every stored label, not a value derived from lists or tasks", () => {
-    const firebaseContext = createFirebaseContext(twoLists, storedLabels)
+  // The plain task/list pairing most tests below start from; only build a
+  // different one when a test actually needs different labelIds, status, or
+  // list membership.
+  const task = makeTask("list-1")
+  const list = makeList("list-1", { items: { [task.id]: task } })
+
+  it("returns the stored labels", () => {
+    const firebaseContext = createFirebaseContext({ [list.id]: list }, storedLabels)
     const workStorage = getWorkStorage(firebaseContext)
 
     expect(workStorage?.labels).toEqual([a11yLabel, urgentLabel])
   })
 
-  it("getLabel looks up a stored label by id", () => {
-    const firebaseContext = createFirebaseContext(twoLists, storedLabels)
-    const workStorage = getWorkStorage(firebaseContext)
+  describe("getLabel", () => {
+    it("looks up a stored label by id", () => {
+      const firebaseContext = createFirebaseContext({ [list.id]: list }, storedLabels)
+      const workStorage = getWorkStorage(firebaseContext)
 
-    expect(workStorage?.getLabel(a11yLabel.id)).toEqual(a11yLabel)
-    expect(workStorage?.getLabel("missing")).toBeUndefined()
-  })
-
-  it("addLabelToTask creates a new stored label and attaches its id to the task", () => {
-    const firebaseContext = createFirebaseContext(twoLists, storedLabels)
-    const workStorage = getWorkStorage(firebaseContext)
-
-    workStorage?.addLabelToTask(
-      { value: "blocked", colour: "red" },
-      secondTask,
-      labelledList,
-    )
-
-    expect(firebaseContext.addItem).toHaveBeenCalledWith(LABELS_KEY, {
-      value: "blocked",
-      colour: "red",
-    })
-    expect(firebaseContext.updateItem).toHaveBeenCalledWith(
-      "work/list-1/items",
-      { ...secondTask, labelIds: ["new-id"] },
-    )
-  })
-
-  it("addLabelToTask reuses an existing stored label with the same value", () => {
-    const firebaseContext = createFirebaseContext(twoLists, storedLabels)
-    const workStorage = getWorkStorage(firebaseContext)
-
-    workStorage?.addLabelToTask(
-      { value: "urgent", colour: "yellow" },
-      secondTask,
-      labelledList,
-    )
-
-    expect(firebaseContext.addItem).not.toHaveBeenCalled()
-    expect(firebaseContext.updateItem).toHaveBeenCalledWith(
-      "work/list-1/items",
-      { ...secondTask, labelIds: [urgentLabel.id] },
-    )
-  })
-
-  it("addLabelToTask clears lastRemoved when reusing a pending-removal label", () => {
-    const pendingLabel = { ...urgentLabel, lastRemoved: Date.now() }
-    const firebaseContext = createFirebaseContext(twoLists, {
-      [a11yLabel.id]: a11yLabel,
-      [pendingLabel.id]: pendingLabel,
-    })
-    const workStorage = getWorkStorage(firebaseContext)
-
-    workStorage?.addLabelToTask(
-      { value: "urgent", colour: "yellow" },
-      secondTask,
-      labelledList,
-    )
-
-    expect(firebaseContext.updateItem).toHaveBeenCalledWith(
-      LABELS_KEY,
-      urgentLabel,
-    )
-  })
-
-  it("removeLabelFromTask removes the id from the task's labelIds", () => {
-    const firebaseContext = createFirebaseContext(twoLists, storedLabels)
-    const workStorage = getWorkStorage(firebaseContext)
-
-    workStorage?.removeLabelFromTask(a11yLabel.id, labelledTask, labelledList)
-
-    expect(firebaseContext.updateItem).toHaveBeenCalledWith(
-      "work/list-1/items",
-      { ...labelledTask, labelIds: [] },
-    )
-  })
-
-  it("removeLabelFromTask does not mark the label removed while another task or list still uses it", () => {
-    const firebaseContext = createFirebaseContext(twoLists, storedLabels)
-    const workStorage = getWorkStorage(firebaseContext)
-
-    workStorage?.removeLabelFromTask(a11yLabel.id, labelledTask, labelledList)
-
-    expect(firebaseContext.updateItem).not.toHaveBeenCalledWith(
-      LABELS_KEY,
-      expect.anything(),
-    )
-  })
-
-  it("removeLabelFromTask marks the label lastRemoved once nothing else uses it", () => {
-    const onlyUser: WorkTask = { ...secondTask, labelIds: [urgentLabel.id] }
-    const listWithOnlyUser: WorkTask = {
-      ...otherList,
-      items: { [onlyUser.id]: onlyUser },
-    }
-    const firebaseContext = createFirebaseContext(
-      { [listWithOnlyUser.id]: listWithOnlyUser },
-      storedLabels,
-    )
-    const workStorage = getWorkStorage(firebaseContext)
-
-    workStorage?.removeLabelFromTask(urgentLabel.id, onlyUser, listWithOnlyUser)
-
-    expect(firebaseContext.updateItem).toHaveBeenCalledWith(LABELS_KEY, {
-      ...urgentLabel,
-      lastRemoved: expect.any(Number),
+      expect(workStorage?.getLabel(a11yLabel.id)).toEqual(a11yLabel)
+      expect(workStorage?.getLabel("missing")).toBeUndefined()
     })
   })
 
-  it("addLabelToList creates a new stored label and attaches its id to the list", () => {
-    const firebaseContext = createFirebaseContext(twoLists, storedLabels)
-    const workStorage = getWorkStorage(firebaseContext)
+  describe("addLabel", () => {
+    it("creates a new stored label and attaches its id to a task", () => {
+      const firebaseContext = createFirebaseContext({ [list.id]: list }, storedLabels)
+      const workStorage = getWorkStorage(firebaseContext)
 
-    workStorage?.addLabelToList({ value: "blocked", colour: "red" }, otherList)
+      workStorage?.addLabel({ value: "blocked", colour: "red" }, task)
 
-    expect(firebaseContext.addItem).toHaveBeenCalledWith(LABELS_KEY, {
-      value: "blocked",
-      colour: "red",
+      expect(firebaseContext.addItem).toHaveBeenCalledWith(LABELS_KEY, {
+        value: "blocked",
+        colour: "red",
+      })
+      expect(firebaseContext.updateItem).toHaveBeenCalledWith(
+        "work/list-1/items",
+        { ...task, labelIds: ["new-id"] },
+      )
     })
-    expect(firebaseContext.updateItem).toHaveBeenCalledWith("work", {
-      ...otherList,
-      labelIds: ["new-id"],
+
+    it("reuses an existing stored label with the same value", () => {
+      const firebaseContext = createFirebaseContext({ [list.id]: list }, storedLabels)
+      const workStorage = getWorkStorage(firebaseContext)
+
+      workStorage?.addLabel({ value: "urgent", colour: "yellow" }, task)
+
+      expect(firebaseContext.addItem).not.toHaveBeenCalledWith(
+        LABELS_KEY,
+        expect.anything(),
+      )
+      expect(firebaseContext.updateItem).toHaveBeenCalledWith(
+        "work/list-1/items",
+        { ...task, labelIds: [urgentLabel.id] },
+      )
+    })
+
+    it("revives a pending-removal label when reused", () => {
+      const pendingLabel = { ...urgentLabel, lastRemoved: Date.now() }
+      const firebaseContext = createFirebaseContext(
+        { [list.id]: list },
+        { [a11yLabel.id]: a11yLabel, [pendingLabel.id]: pendingLabel },
+      )
+      const workStorage = getWorkStorage(firebaseContext)
+
+      workStorage?.addLabel({ value: "urgent", colour: "yellow" }, task)
+
+      expect(firebaseContext.updateItem).toHaveBeenCalledWith(
+        LABELS_KEY,
+        urgentLabel,
+      )
+    })
+
+    it("creates a new label and attaches its id to a list", () => {
+      const firebaseContext = createFirebaseContext({ [list.id]: list }, storedLabels)
+      const workStorage = getWorkStorage(firebaseContext)
+
+      workStorage?.addLabel({ value: "blocked", colour: "red" }, list)
+
+      expect(firebaseContext.addItem).toHaveBeenCalledWith(LABELS_KEY, {
+        value: "blocked",
+        colour: "red",
+      })
+      expect(firebaseContext.updateItem).toHaveBeenCalledWith("work", {
+        ...list,
+        labelIds: ["new-id"],
+      })
     })
   })
 
-  it("removeLabelFromList removes the id from the list's labelIds", () => {
-    const firebaseContext = createFirebaseContext(twoLists, storedLabels)
-    const workStorage = getWorkStorage(firebaseContext)
+  describe("removeLabel", () => {
+    it("removes the id from the entity's labelIds", () => {
+      const task = makeTask("list-1", { labelIds: [a11yLabel.id] })
+      const list = makeList("list-1", { items: { [task.id]: task } })
+      const firebaseContext = createFirebaseContext({ [list.id]: list }, storedLabels)
+      const workStorage = getWorkStorage(firebaseContext)
 
-    workStorage?.removeLabelFromList(a11yLabel.id, labelledList)
+      workStorage?.removeLabel(a11yLabel.id, task)
 
-    expect(firebaseContext.updateItem).toHaveBeenCalledWith("work", {
-      ...labelledList,
-      labelIds: [],
+      expect(firebaseContext.updateItem).toHaveBeenCalledWith(
+        "work/list-1/items",
+        { ...task, labelIds: [] },
+      )
     })
-    // labelledTask still references a11yLabel, so it isn't orphaned yet
-    expect(firebaseContext.updateItem).not.toHaveBeenCalledWith(
-      LABELS_KEY,
-      expect.anything(),
-    )
-  })
 
-  it("removeLabelFromList marks the label lastRemoved once nothing else uses it", () => {
-    const soloLabelList: WorkTask = { ...otherList, labelIds: [urgentLabel.id] }
-    const firebaseContext = createFirebaseContext(
-      { [soloLabelList.id]: soloLabelList },
-      storedLabels,
-    )
-    const workStorage = getWorkStorage(firebaseContext)
+    it("does not mark the label removed while another task or list still uses it", () => {
+      const task1 = makeTask("list-1", { labelIds: [a11yLabel.id] })
+      const task2 = makeTask("list-1", { id: "task-2", labelIds: [a11yLabel.id] })
+      const list = makeList("list-1", {
+        items: { [task1.id]: task1, [task2.id]: task2 },
+      })
+      const firebaseContext = createFirebaseContext({ [list.id]: list }, storedLabels)
+      const workStorage = getWorkStorage(firebaseContext)
 
-    workStorage?.removeLabelFromList(urgentLabel.id, soloLabelList)
+      workStorage?.removeLabel(a11yLabel.id, task1)
 
-    expect(firebaseContext.updateItem).toHaveBeenCalledWith(LABELS_KEY, {
-      ...urgentLabel,
-      lastRemoved: expect.any(Number),
+      expect(firebaseContext.updateItem).not.toHaveBeenCalledWith(
+        LABELS_KEY,
+        expect.objectContaining({ id: a11yLabel.id }),
+      )
+    })
+
+    it("marks the label lastRemoved once nothing else uses it", () => {
+      const task = makeTask("list-1", { labelIds: [urgentLabel.id] })
+      const list = makeList("list-1", { items: { [task.id]: task } })
+      const firebaseContext = createFirebaseContext({ [list.id]: list }, storedLabels)
+      const workStorage = getWorkStorage(firebaseContext)
+
+      workStorage?.removeLabel(urgentLabel.id, task)
+
+      expect(firebaseContext.updateItem).toHaveBeenCalledWith(LABELS_KEY, {
+        ...urgentLabel,
+        lastRemoved: expect.any(Number),
+      })
+    })
+
+    it("marks the label removed even though a done task still references it", () => {
+      const activeTask = makeTask("list-1", {
+        id: "task-active",
+        labelIds: [urgentLabel.id],
+      })
+      const doneTask = makeTask("list-1", {
+        id: "task-done",
+        status: "done",
+        labelIds: [urgentLabel.id],
+      })
+      const list = makeList("list-1", {
+        items: { [activeTask.id]: activeTask, [doneTask.id]: doneTask },
+      })
+      const firebaseContext = createFirebaseContext({ [list.id]: list }, storedLabels)
+      const workStorage = getWorkStorage(firebaseContext)
+
+      workStorage?.removeLabel(urgentLabel.id, activeTask)
+
+      expect(firebaseContext.updateItem).toHaveBeenCalledWith(LABELS_KEY, {
+        ...urgentLabel,
+        lastRemoved: expect.any(Number),
+      })
     })
   })
 
   it("updateLabel updates the stored label's colour", () => {
-    const firebaseContext = createFirebaseContext(twoLists, storedLabels)
+    const list = makeList("list-1")
+    const firebaseContext = createFirebaseContext({ [list.id]: list }, storedLabels)
     const workStorage = getWorkStorage(firebaseContext)
 
     workStorage?.updateLabel(a11yLabel.id, "green")
@@ -464,12 +459,13 @@ describe("WorkStorageContext labels", () => {
   })
 
   it("updateLabel does nothing when the label doesn't exist", () => {
-    const firebaseContext = createFirebaseContext(twoLists, storedLabels)
+    const firebaseContext = createFirebaseContext({ [list.id]: list }, storedLabels)
     const workStorage = getWorkStorage(firebaseContext)
+    const callsBeforehand = firebaseContext.updateItem.mock.calls.length
 
     workStorage?.updateLabel("missing", "green")
 
-    expect(firebaseContext.updateItem).not.toHaveBeenCalled()
+    expect(firebaseContext.updateItem.mock.calls.length).toBe(callsBeforehand)
   })
 
   it("deletes labels whose lastRemoved is more than a week old once the store loads", () => {
@@ -486,7 +482,7 @@ describe("WorkStorageContext labels", () => {
       colour: "orange",
       lastRemoved: Date.now() - dayMs,
     }
-    const firebaseContext = createFirebaseContext(twoLists, {
+    const firebaseContext = createFirebaseContext({ [list.id]: list }, {
       [a11yLabel.id]: a11yLabel,
       [staleLabel.id]: staleLabel,
       [recentlyRemovedLabel.id]: recentlyRemovedLabel,
@@ -501,17 +497,255 @@ describe("WorkStorageContext labels", () => {
     expect(firebaseContext.deleteItem).toHaveBeenCalledTimes(1)
   })
 
-  it("addTask and addList do not touch the label store", () => {
-    const firebaseContext = createFirebaseContext(twoLists, storedLabels)
+  describe("addList", () => {
+    it("creates a label and attaches it when given one that doesn't exist yet", () => {
+      const firebaseContext = createFirebaseContext({}, storedLabels)
+      const workStorage = getWorkStorage(firebaseContext)
+
+      workStorage?.addList("Blocked", { value: "blocked", colour: "red" })
+
+      expect(firebaseContext.addItem).toHaveBeenCalledWith(LABELS_KEY, {
+        value: "blocked",
+        colour: "red",
+      })
+      expect(firebaseContext.addItem).toHaveBeenCalledWith("work", {
+        description: "Blocked",
+        parentId: "work",
+        labelIds: ["new-id"],
+      })
+    })
+
+    it("reuses an existing label instead of creating a duplicate", () => {
+      const firebaseContext = createFirebaseContext({}, storedLabels)
+      const workStorage = getWorkStorage(firebaseContext)
+
+      workStorage?.addList("Today", { value: "urgent", colour: "yellow" })
+
+      expect(firebaseContext.addItem).not.toHaveBeenCalledWith(
+        LABELS_KEY,
+        expect.anything(),
+      )
+      expect(firebaseContext.addItem).toHaveBeenCalledWith("work", {
+        description: "Today",
+        parentId: "work",
+        labelIds: [urgentLabel.id],
+      })
+    })
+
+    it("revives an existing label that was pending removal", () => {
+      const pendingLabel = { ...urgentLabel, lastRemoved: Date.now() }
+      const firebaseContext = createFirebaseContext(
+        {},
+        { [a11yLabel.id]: a11yLabel, [pendingLabel.id]: pendingLabel },
+      )
+      const workStorage = getWorkStorage(firebaseContext)
+
+      workStorage?.addList("Today", { value: "urgent", colour: "yellow" })
+
+      expect(firebaseContext.updateItem).toHaveBeenCalledWith(
+        LABELS_KEY,
+        urgentLabel,
+      )
+    })
+  })
+
+  describe("deleteList", () => {
+    it("marks the list's label unused once nothing else references it", () => {
+      const list = makeList("list-1", { labelIds: [urgentLabel.id] })
+      const firebaseContext = createFirebaseContext({ [list.id]: list }, storedLabels)
+      const workStorage = getWorkStorage(firebaseContext)
+
+      workStorage?.deleteList(list)
+
+      expect(firebaseContext.deleteItem).toHaveBeenCalledWith("work", list)
+      expect(firebaseContext.updateItem).toHaveBeenCalledWith(LABELS_KEY, {
+        ...urgentLabel,
+        lastRemoved: expect.any(Number),
+      })
+    })
+
+    it("leaves the label alone while another list still references it", () => {
+      const list = makeList("list-1", { labelIds: [a11yLabel.id] })
+      const otherList = makeList("list-2", { labelIds: [a11yLabel.id] })
+      const firebaseContext = createFirebaseContext(
+        { [list.id]: list, [otherList.id]: otherList },
+        storedLabels,
+      )
+      const workStorage = getWorkStorage(firebaseContext)
+
+      workStorage?.deleteList(list)
+
+      expect(firebaseContext.updateItem).not.toHaveBeenCalledWith(
+        LABELS_KEY,
+        expect.objectContaining({ id: a11yLabel.id }),
+      )
+    })
+  })
+
+  describe("deleteTask", () => {
+    it("marks the task's labels unused once nothing else references them", () => {
+      const task = makeTask("list-1", { labelIds: [urgentLabel.id] })
+      const list = makeList("list-1", { items: { [task.id]: task } })
+      const firebaseContext = createFirebaseContext({ [list.id]: list }, storedLabels)
+      const workStorage = getWorkStorage(firebaseContext)
+
+      workStorage?.deleteTask(list.id, task)
+
+      expect(firebaseContext.deleteItem).toHaveBeenCalledWith(
+        "work/list-1/items",
+        task,
+      )
+      expect(firebaseContext.updateItem).toHaveBeenCalledWith(LABELS_KEY, {
+        ...urgentLabel,
+        lastRemoved: expect.any(Number),
+      })
+    })
+
+    it("does not mark a label unused while another task still references it", () => {
+      const task1 = makeTask("list-1", { labelIds: [a11yLabel.id] })
+      const task2 = makeTask("list-1", { id: "task-2", labelIds: [a11yLabel.id] })
+      const list = makeList("list-1", {
+        items: { [task1.id]: task1, [task2.id]: task2 },
+      })
+      const firebaseContext = createFirebaseContext({ [list.id]: list }, storedLabels)
+      const workStorage = getWorkStorage(firebaseContext)
+
+      workStorage?.deleteTask(list.id, task1)
+
+      expect(firebaseContext.updateItem).not.toHaveBeenCalledWith(
+        LABELS_KEY,
+        expect.objectContaining({ id: a11yLabel.id }),
+      )
+    })
+  })
+
+  it("creates database items for the given labels and adds their ids to the new task", () => {
+    const firebaseContext = createFirebaseContext({ [list.id]: list }, storedLabels)
     const workStorage = getWorkStorage(firebaseContext)
 
-    workStorage?.addTask(otherList.id, { description: "New task" })
+    workStorage?.addTask(list.id, {
+      description: "New task",
+      labels: [{ value: "urgent", colour: "yellow" }],
+    })
+
+    expect(firebaseContext.addItem).toHaveBeenCalledWith("work/list-1/items", {
+      description: "New task",
+      parentId: "work/list-1/items",
+      labelIds: [urgentLabel.id],
+    })
+  })
+
+  it("addTask and addList do not touch the label store when given no labels", () => {
+    const firebaseContext = createFirebaseContext({ [list.id]: list }, storedLabels)
+    const workStorage = getWorkStorage(firebaseContext)
+
+    workStorage?.addTask(list.id, { description: "New task" })
     workStorage?.addList("New list")
 
     expect(firebaseContext.addItem).not.toHaveBeenCalledWith(
       LABELS_KEY,
       expect.anything(),
     )
+  })
+
+  describe("updateTask label handling", () => {
+    it("marks a task's labels orphaned once it becomes done", () => {
+      const task = makeTask("list-2", { labelIds: [urgentLabel.id] })
+      const list = makeList("list-2", { items: { [task.id]: task } })
+      const firebaseContext = createFirebaseContext({ [list.id]: list }, storedLabels)
+      const workStorage = getWorkStorage(firebaseContext)
+
+      workStorage?.updateTask(list.id, { ...task, status: "done" })
+
+      expect(firebaseContext.updateItem).toHaveBeenCalledWith(LABELS_KEY, {
+        ...urgentLabel,
+        lastRemoved: expect.any(Number),
+      })
+    })
+
+    it("revives a task's labels when it moves back off done", () => {
+      const pendingLabel = { ...urgentLabel, lastRemoved: Date.now() }
+      const doneTask = makeTask("list-2", {
+        status: "done",
+        labelIds: [pendingLabel.id],
+      })
+      const list = makeList("list-2", { items: { [doneTask.id]: doneTask } })
+      const firebaseContext = createFirebaseContext(
+        { [list.id]: list },
+        { [a11yLabel.id]: a11yLabel, [pendingLabel.id]: pendingLabel },
+      )
+      const workStorage = getWorkStorage(firebaseContext)
+
+      workStorage?.updateTask(list.id, { ...doneTask, status: "not_started" })
+
+      expect(firebaseContext.updateItem).toHaveBeenCalledWith(
+        LABELS_KEY,
+        urgentLabel,
+      )
+    })
+
+    it("does not update labels when neither status nor labels change", () => {
+      const task = makeTask("list-1", { labelIds: [a11yLabel.id] })
+      const list = makeList("list-1", { items: { [task.id]: task } })
+      const firebaseContext = createFirebaseContext({ [list.id]: list }, storedLabels)
+      const workStorage = getWorkStorage(firebaseContext)
+
+      workStorage?.updateTask(list.id, { ...task, description: "Updated" })
+
+      expect(firebaseContext.updateItem).not.toHaveBeenCalledWith(
+        LABELS_KEY,
+        expect.objectContaining({ id: a11yLabel.id }),
+      )
+    })
+
+    it("marks a label unused when it's dropped from the task's labelIds", () => {
+      const task = makeTask("list-1", { labelIds: [urgentLabel.id] })
+      const list = makeList("list-1", { items: { [task.id]: task } })
+      const firebaseContext = createFirebaseContext({ [list.id]: list }, storedLabels)
+      const workStorage = getWorkStorage(firebaseContext)
+
+      workStorage?.updateTask(list.id, { ...task, labelIds: [] })
+
+      expect(firebaseContext.updateItem).toHaveBeenCalledWith(LABELS_KEY, {
+        ...urgentLabel,
+        lastRemoved: expect.any(Number),
+      })
+    })
+
+    it("revives a label when it's added back to the task's labelIds", () => {
+      const pendingLabel = { ...urgentLabel, lastRemoved: Date.now() }
+      const task = makeTask("list-1")
+      const list = makeList("list-1", { items: { [task.id]: task } })
+      const firebaseContext = createFirebaseContext(
+        { [list.id]: list },
+        { [a11yLabel.id]: a11yLabel, [pendingLabel.id]: pendingLabel },
+      )
+      const workStorage = getWorkStorage(firebaseContext)
+
+      workStorage?.updateTask(list.id, { ...task, labelIds: [pendingLabel.id] })
+
+      expect(firebaseContext.updateItem).toHaveBeenCalledWith(
+        LABELS_KEY,
+        urgentLabel,
+      )
+    })
+
+    it("does not mark a label unused when it's dropped from one task but another still uses it", () => {
+      const task1 = makeTask("list-1", { labelIds: [a11yLabel.id] })
+      const task2 = makeTask("list-1", { id: "task-2", labelIds: [a11yLabel.id] })
+      const list = makeList("list-1", {
+        items: { [task1.id]: task1, [task2.id]: task2 },
+      })
+      const firebaseContext = createFirebaseContext({ [list.id]: list }, storedLabels)
+      const workStorage = getWorkStorage(firebaseContext)
+
+      workStorage?.updateTask(list.id, { ...task1, labelIds: [] })
+
+      expect(firebaseContext.updateItem).not.toHaveBeenCalledWith(
+        LABELS_KEY,
+        expect.objectContaining({ id: a11yLabel.id }),
+      )
+    })
   })
 })
 

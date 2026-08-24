@@ -2,11 +2,12 @@ import { useEffect, useRef, useState } from "react"
 import { TickIcon } from "../../shared/icons/Tick"
 import { XIcon } from "../../shared/icons/X"
 import { LabelsControl } from "./LabelsControl"
+import { Label } from "./types"
 
 type NewTask = {
   description: string
   dueDate?: number
-  labelIds: string[]
+  labels: Label[]
 }
 
 type AddTaskFormProps = {
@@ -18,7 +19,7 @@ export function AddTaskForm({ onSubmit, onClose }: AddTaskFormProps) {
   const formRef = useRef<HTMLFormElement>(null)
   const descriptionRef = useRef<HTMLInputElement>(null)
   const dateRef = useRef<HTMLInputElement>(null)
-  const [labelIds, setLabelIds] = useState<string[]>([])
+  const [labels, setLabels] = useState<Label[]>([])
 
   const handleCancel = (event: React.KeyboardEvent) => {
     if (event.key === "Escape") {
@@ -35,7 +36,7 @@ export function AddTaskForm({ onSubmit, onClose }: AddTaskFormProps) {
 
     const task: NewTask = {
       description,
-      labelIds,
+      labels,
     }
 
     const dateValue = dateRef.current?.value
@@ -108,7 +109,7 @@ export function AddTaskForm({ onSubmit, onClose }: AddTaskFormProps) {
         className="inline"
         style={{ color: "var(--body-colour-mid)", marginBlockStart: "-4px" }}
       />
-      <LabelsControl value={labelIds} onChange={setLabelIds} label="Labels" />
+      <LabelsControl value={labels} onChange={setLabels} label="Labels" />
       <div className="button-container">
         <button
           aria-label="submit"
