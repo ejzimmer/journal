@@ -19,11 +19,7 @@ export function AddWorktree({ onChange }: AddWorktreeProps) {
   return (
     <WorktreeMenu
       trigger={(props) => (
-        <button
-          {...props}
-          className={`${props.className} add-metadata`}
-          aria-label="Add worktree stamp"
-        >
+        <button {...props} aria-label="Add worktree stamp">
           <Stamp />
         </button>
       )}
