@@ -65,9 +65,11 @@
     transition: height 0.2s ease-out;
     opacity: 0;
     overflow: hidden;
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
+    display: grid;
+    grid-template-columns: min-content 1fr 1fr;
+    grid-template-rows: min-content min-content;
+    align-content: start;
+    gap: 16px;
     padding-inline: 2px;
     padding-block-end: 12px;
     max-width: 400px;
@@ -81,7 +83,24 @@
         opacity 0.1s 0.2s linear;
     }
 
+    .description {
+      grid-column: span 3;
+    }
+
+    .combobox {
+      top: 10px;
+
+      input {
+        padding-inline: 16px;
+      }
+      .value {
+        left: 16px;
+        pointer-events: none;
+      }
+    }
+
     .buttons {
+      align-self: end;
       display: flex;
       justify-content: end;
       gap: 4px;
@@ -108,33 +127,5 @@
   fieldset {
     border: 0;
     padding: 0;
-  }
-}
-
-form.add-task-form {
-  display: grid;
-  grid-template-columns: min-content 1fr 1fr;
-  grid-template-rows: min-content min-content;
-  align-content: start;
-  gap: 16px;
-
-  .description {
-    grid-column: span 3;
-  }
-
-  .combobox {
-    top: 10px;
-
-    input {
-      padding-inline: 16px;
-    }
-    .value {
-      left: 16px;
-      pointer-events: none;
-    }
-  }
-
-  .buttons {
-    align-self: end;
   }
 }
