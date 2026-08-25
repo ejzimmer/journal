@@ -1,3 +1,4 @@
+import { useEffect, useRef } from "react"
 import { OptionType } from "./types"
 import { isSelected } from "./utils"
 import { PopoverPlacement } from "./usePopoverPlacement"
@@ -29,6 +30,12 @@ export function Popover<T extends OptionType>({
   highlightedOption,
   Option,
 }: PopoverProps<T>) {
+  const highlightedRef = useRef<HTMLLIElement>(null)
+
+  useEffect(() => {
+    highlightedRef.current?.scrollIntoView({ block: "nearest" })
+  }, [highlightedOption])
+
   return (
     <div
       ref={popoverRef}
@@ -45,19 +52,23 @@ export function Popover<T extends OptionType>({
     >
       {options.length ? (
         <ul className="options">
-          {options.map((option) => (
-            <li
-              key={option.id}
-              role="option"
-              aria-selected={
-                isSelected({ value: selected, option }) ? "true" : "false"
-              }
-              onClick={() => onClick(option)}
-              className={option === highlightedOption ? "highlighted" : ""}
-            >
-              {Option ? <Option value={option} /> : option.label}
-            </li>
-          ))}
+          {options.map((option) => {
+            const isHighlighted = option === highlightedOption
+            return (
+              <li
+                key={option.id}
+                ref={isHighlighted ? highlightedRef : undefined}
+                role="option"
+                aria-selected={
+                  isSelected({ value: selected, option }) ? "true" : "false"
+                }
+                onClick={() => onClick(option)}
+                className={isHighlighted ? "highlighted" : ""}
+              >
+                {Option ? <Option value={option} /> : option.label}
+              </li>
+            )
+          })}
         </ul>
       ) : (
         <div style={{ padding: "20px 30px" }}>No options</div>
