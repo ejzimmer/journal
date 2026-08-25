@@ -115,7 +115,7 @@ export function AddTaskForm<T>({
         {children}
         <div className="buttons">
           <button type="submit" className="icon primary-clear" aria-label="Create">
-            <TickIcon colour="var(--success-colour)" width="20px" />
+            <TickIcon width="20px" />
           </button>
           <button
             type="reset"
