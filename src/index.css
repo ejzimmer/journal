@@ -103,8 +103,9 @@ button {
         ),
         radial-gradient(
           circle at center,
-          color-mix(in srgb, var(--success-colour) 95%, transparent) 0%,
-          color-mix(in srgb, var(--success-colour) 45%, transparent) 35%,
+          var(--success-colour) 0%,
+          color-mix(in srgb, var(--success-colour) 90%, transparent) 20%,
+          color-mix(in srgb, var(--success-colour) 40%, transparent) 45%,
           transparent 85%
         );
       border-color: color-mix(in srgb, var(--success-colour) 75%, transparent);

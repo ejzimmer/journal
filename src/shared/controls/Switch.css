@@ -58,8 +58,9 @@
       ),
       radial-gradient(
         circle at center,
-        color-mix(in srgb, var(--led) 95%, transparent) 0%,
-        color-mix(in srgb, var(--led) 45%, transparent) 35%,
+        var(--led) 0%,
+        color-mix(in srgb, var(--led) 90%, transparent) 20%,
+        color-mix(in srgb, var(--led) 40%, transparent) 45%,
         transparent 85%
       );
     box-shadow:
