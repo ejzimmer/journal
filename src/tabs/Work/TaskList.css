@@ -155,8 +155,7 @@ ol.work-lists > li {
       > button,
       > form,
       > .due-date,
-      > .subtasks,
-      > .worktree-menu-anchor {
+      > .subtasks {
         margin-block-end: var(--baseline-nudge);
       }
 
@@ -257,24 +256,16 @@ ol.work-lists > li {
       justify-content: center;
     }
 
+    .worktree-marker button.add-metadata {
+      margin-inline-start: 0;
+    }
+
     button.add-metadata[aria-label="Add label"] {
       margin-inline-start: -12px;
     }
 
     button.add-metadata[aria-label="Add subtask"] {
       margin-inline-start: -10px;
-    }
-
-    .task-content .worktree-menu-anchor {
-      margin-inline-start: -8px;
-
-      button.stamp-trigger {
-        padding: 6px;
-      }
-    }
-
-    .due-date + .worktree-menu-anchor {
-      margin-inline-start: 0;
     }
   }
 
@@ -387,6 +378,7 @@ form.add-task {
   width: max-content;
   font-size: 1.2rem;
   padding: 4px;
+  font-family: "Shadows Into Light", sans-serif;
 }
 
 .label-colour-picker {
