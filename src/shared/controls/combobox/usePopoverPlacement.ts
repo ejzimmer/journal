@@ -1,7 +1,6 @@
 import { useLayoutEffect, useState } from "react"
 
 const EDGE_BUFFER = 4
-const FALLBACK_GAP = 4
 
 export type PopoverPlacement = "below" | "above"
 
@@ -30,22 +29,26 @@ export function usePopoverPlacement(
         return
       }
 
+      // Measure the popover's own true edge in each placement state - not a
+      // reconstructed "gap" from the anchor, which silently goes wrong (and
+      // stops matching where the popover actually renders) if that gap ever
+      // comes out zero or negative. This doesn't need a max-height reset
+      // first: "below" grows downward from a top anchored to the trigger, and
+      // "above" grows upward from a bottom anchored to the trigger, so the
+      // edge each state cares about is stable regardless of any max-height
+      // already applied from a previous measurement.
       const wasAbove = popoverEl.classList.contains("open-above")
 
       popoverEl.classList.remove("open-above")
-      const belowGap = popoverEl.getBoundingClientRect().top - anchorRect.bottom
+      const belowTop = popoverEl.getBoundingClientRect().top
 
       popoverEl.classList.add("open-above")
-      const aboveGap = anchorRect.top - popoverEl.getBoundingClientRect().bottom
+      const aboveBottom = popoverEl.getBoundingClientRect().bottom
 
       popoverEl.classList.toggle("open-above", wasAbove)
 
-      const resolvedBelowGap = belowGap > 0 ? belowGap : FALLBACK_GAP
-      const resolvedAboveGap = aboveGap > 0 ? aboveGap : FALLBACK_GAP
-
-      const spaceBelow =
-        window.innerHeight - anchorRect.bottom - resolvedBelowGap - EDGE_BUFFER
-      const spaceAbove = anchorRect.top - resolvedAboveGap - EDGE_BUFFER
+      const spaceBelow = window.innerHeight - belowTop - EDGE_BUFFER
+      const spaceAbove = aboveBottom - EDGE_BUFFER
       const contentHeight = popoverEl.scrollHeight
 
       if (contentHeight <= spaceBelow || spaceBelow >= spaceAbove) {
