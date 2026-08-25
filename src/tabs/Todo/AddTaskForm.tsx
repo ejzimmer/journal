@@ -1,5 +1,7 @@
 import { useContext, useEffect, useMemo, useRef, useState } from "react"
 import { PlusIcon } from "../../shared/icons/Plus"
+import { TickIcon } from "../../shared/icons/Tick"
+import { XIcon } from "../../shared/icons/X"
 import { FirebaseContext } from "../../shared/FirebaseContext"
 import { CategoriesContext } from "."
 import { TodoTask } from "../../shared/types"
@@ -112,15 +114,16 @@ export function AddTaskForm<T>({
 
         {children}
         <div className="buttons">
-          <button type="submit" className="primary">
-            Create
+          <button type="submit" className="icon primary-clear" aria-label="Create">
+            <TickIcon colour="var(--success-colour)" width="20px" />
           </button>
           <button
             type="reset"
-            className="white outline"
+            className="icon secondary"
             onClick={() => setFormVisible(false)}
+            aria-label="Cancel"
           >
-            Cancel
+            <XIcon colour="var(--error-colour)" width="20px" />
           </button>
         </div>
       </form>
