@@ -11,7 +11,7 @@
     position: fixed;
     position-area: end center;
     margin-block-start: 4px;
-    min-width: 100%;
+    min-width: max(100%, 200px);
     overflow-y: auto;
 
     &.open-above {
