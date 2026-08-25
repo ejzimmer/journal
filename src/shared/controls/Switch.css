@@ -1,6 +1,6 @@
 [role="radiogroup"].switch {
   border: 1px solid var(--body-colour-light);
-  border-radius: 6px;
+  border-radius: 999px;
   width: fit-content;
   display: flex;
   position: relative;
@@ -48,9 +48,18 @@
     position: absolute;
     --light: var(--action-colour);
     --dark: var(--action-colour-dark);
-    background: linear-gradient(var(--dark), var(--light) 5%, var(--dark) 95%);
-    box-shadow: inset 2px 2px 8px var(--dark);
-    transition-property: left, box-shadow, border-radius;
+    background: linear-gradient(
+      to bottom,
+      color-mix(in srgb, white 45%, var(--light)) 0%,
+      var(--light) 35%,
+      var(--dark) 100%
+    );
+    box-shadow:
+      inset 2px 2px 8px var(--dark),
+      inset 0 1px 1px color-mix(in srgb, white 55%, transparent),
+      0 0 18px color-mix(in srgb, var(--light) 70%, transparent);
+    backdrop-filter: blur(4px);
+    transition-property: left, box-shadow, border-radius, background;
     transition-duration: 0.2s;
     transition-timing-function: ease-out;
   }
