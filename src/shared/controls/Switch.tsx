@@ -8,6 +8,7 @@ type SwitchProps<T extends string> = {
   onChange: (value: T) => void
   name: string
   Option?: React.FC<{ value: T }>
+  className?: string
 }
 
 export function Switch<T extends string>({
@@ -16,6 +17,7 @@ export function Switch<T extends string>({
   onChange,
   name,
   Option,
+  className,
 }: SwitchProps<T>) {
   const radioGroupRef = useRef<HTMLDivElement>(null)
   const [width, setWidth] = useState<number>()
@@ -47,7 +49,11 @@ export function Switch<T extends string>({
     value === options[options.length - 1] ? "inherit" : undefined
 
   return (
-    <div ref={radioGroupRef} role="radiogroup" className="switch">
+    <div
+      ref={radioGroupRef}
+      role="radiogroup"
+      className={`switch ${className ?? ""}`.trim()}
+    >
       {options.map((option) => {
         return (
           <label key={option}>
