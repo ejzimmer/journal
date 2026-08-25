@@ -1,7 +1,6 @@
 import { useLayoutEffect, useState } from "react"
 
 const EDGE_BUFFER = 4
-const FALLBACK_GAP = 4
 
 export type PopoverPlacement = "below" | "above"
 
@@ -30,22 +29,21 @@ export function usePopoverPlacement(
         return
       }
 
+      // "below" grows down from a top edge anchored to the trigger, "above"
+      // grows up from a bottom edge anchored to the trigger - either edge is
+      // stable regardless of the box's current height, so read it directly.
       const wasAbove = popoverEl.classList.contains("open-above")
 
       popoverEl.classList.remove("open-above")
-      const belowGap = popoverEl.getBoundingClientRect().top - anchorRect.bottom
+      const belowTop = popoverEl.getBoundingClientRect().top
 
       popoverEl.classList.add("open-above")
-      const aboveGap = anchorRect.top - popoverEl.getBoundingClientRect().bottom
+      const aboveBottom = popoverEl.getBoundingClientRect().bottom
 
       popoverEl.classList.toggle("open-above", wasAbove)
 
-      const resolvedBelowGap = belowGap > 0 ? belowGap : FALLBACK_GAP
-      const resolvedAboveGap = aboveGap > 0 ? aboveGap : FALLBACK_GAP
-
-      const spaceBelow =
-        window.innerHeight - anchorRect.bottom - resolvedBelowGap - EDGE_BUFFER
-      const spaceAbove = anchorRect.top - resolvedAboveGap - EDGE_BUFFER
+      const spaceBelow = window.innerHeight - belowTop - EDGE_BUFFER
+      const spaceAbove = aboveBottom - EDGE_BUFFER
       const contentHeight = popoverEl.scrollHeight
 
       if (contentHeight <= spaceBelow || spaceBelow >= spaceAbove) {
