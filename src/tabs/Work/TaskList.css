@@ -256,6 +256,10 @@ ol.work-lists > li {
       justify-content: center;
     }
 
+    .worktree-marker button.add-metadata {
+      margin-inline-start: 0;
+    }
+
     button.add-metadata[aria-label="Add label"] {
       margin-inline-start: -12px;
     }
