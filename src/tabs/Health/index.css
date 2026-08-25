@@ -3,7 +3,9 @@
     border-radius: 999px;
     font-family: "Yuji Syuku", serif;
     font-size: 1.15em;
-    box-shadow: inset 2px 2px 4px hsl(0 0 0 / 0.2);
+    box-shadow:
+      inset 2px 2px 5px hsl(0 0% 0% / 0.35),
+      inset -1px -1px 2px hsl(0 0% 100% / 0.6);
 
     label {
       padding-block: 4px;
@@ -23,6 +25,7 @@
 
     .indicator {
       background: none;
+      box-shadow: none;
     }
 
     &::before {
