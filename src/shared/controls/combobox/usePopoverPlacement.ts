@@ -29,14 +29,9 @@ export function usePopoverPlacement(
         return
       }
 
-      // Measure the popover's own true edge in each placement state - not a
-      // reconstructed "gap" from the anchor, which silently goes wrong (and
-      // stops matching where the popover actually renders) if that gap ever
-      // comes out zero or negative. This doesn't need a max-height reset
-      // first: "below" grows downward from a top anchored to the trigger, and
-      // "above" grows upward from a bottom anchored to the trigger, so the
-      // edge each state cares about is stable regardless of any max-height
-      // already applied from a previous measurement.
+      // "below" grows down from a top edge anchored to the trigger, "above"
+      // grows up from a bottom edge anchored to the trigger - either edge is
+      // stable regardless of the box's current height, so read it directly.
       const wasAbove = popoverEl.classList.contains("open-above")
 
       popoverEl.classList.remove("open-above")
