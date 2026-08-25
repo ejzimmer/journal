@@ -75,9 +75,9 @@ button {
   }
 
   &.primary-clear {
-    border-color: color-mix(in srgb, var(--success-colour) 50%, transparent);
-    background: color-mix(in srgb, var(--success-colour) 18%, transparent);
-    box-shadow: 0 0 16px color-mix(in srgb, var(--success-colour) 35%, transparent);
+    border-color: color-mix(in srgb, var(--success-colour) 22%, transparent);
+    background: color-mix(in srgb, var(--success-colour) 7%, transparent);
+    box-shadow: 0 0 6px color-mix(in srgb, var(--success-colour) 12%, transparent);
     backdrop-filter: blur(6px);
     transition:
       background 0.2s ease,
