@@ -69,11 +69,12 @@ export const getWeekClass = ({
   highestBalance: number
   lowestBalance: number
 }) => {
+  const className = "week hovertext-anchor"
   if (balance.balance === highestBalance) {
-    return "week week-highest"
+    return `${className} week-highest`
   }
   if (balance.balance === lowestBalance) {
-    return "week week-lowest"
+    return `${className} week-lowest`
   }
-  return "week"
+  return className
 }

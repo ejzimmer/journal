@@ -34,7 +34,7 @@ export function Days() {
       {days.map((day, index) => (
         <li
           key={`${day.day}-${day.month}`}
-          className="day-circle"
+          className="day-circle hovertext-anchor"
           style={
             {
               animationDelay: `${popDelays[index]}s`,
@@ -44,7 +44,13 @@ export function Days() {
             } as CSSProperties
           }
         >
-          {day.day}/{day.monthNumber}
+          <div className="hovertext" style={{ textAlign: "center" }}>
+            <i>
+              {day.day}/{day.monthNumber}
+            </i>
+            <br />
+            {day.balance?.toLocaleString()}
+          </div>
         </li>
       ))}
     </ol>
