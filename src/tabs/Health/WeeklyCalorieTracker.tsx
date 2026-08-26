@@ -3,7 +3,12 @@ import { useContext, useMemo } from "react"
 import "./WeeklyCalorieTracker.css"
 import { FirebaseContext } from "../../shared/FirebaseContext"
 import { DAILY_PATH, DayData } from "../../shared/types"
-import { STARTING_BALANCE, getWeekClass, getWeeklyBalance, setupDays } from "./utils"
+import {
+  STARTING_BALANCE,
+  getWeekClass,
+  getWeeklyBalance,
+  setupDays,
+} from "./utils"
 
 export function WeeklyCalorieTracker() {
   const storageContext = useContext(FirebaseContext)
@@ -30,7 +35,7 @@ export function WeeklyCalorieTracker() {
             role="img"
             aria-label={`${balance.day} ${balance.month}: ${balance.balance.toLocaleString()}`}
           />
-          <div className="week-hovertext">
+          <div className="hovertext">
             {balance.day} {balance.month}: {balance.balance.toLocaleString()}
           </div>
         </div>

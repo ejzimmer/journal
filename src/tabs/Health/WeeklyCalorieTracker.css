@@ -27,33 +27,25 @@
     anchor-name: --label-text;
     transform-origin: bottom;
 
-    &:hover + .week-hovertext {
+    &:hover + .hovertext {
       opacity: 1;
     }
   }
 
   .week-highest {
-    background: linear-gradient(90deg, hsl(3.1 96.4% 43.9%), hsl(3.1 96.5% 33.9%));
+    background: linear-gradient(
+      90deg,
+      hsl(3.1 96.4% 43.9%),
+      hsl(3.1 96.5% 33.9%)
+    );
   }
 
   .week-lowest {
-    background: linear-gradient(90deg, hsl(203.1 96.4% 43.9%), hsl(203.1 96.5% 33.9%));
-  }
-
-  .week-hovertext {
-    position: absolute;
-    opacity: 0;
-    transition: opacity 0.2s;
-    position-anchor: --label-text;
-    position-area: top;
-    margin-block-end: 8px;
-    z-index: 1;
-    background: var(--body-colour);
-    color: white;
-    padding: 6px 8px;
-    font-size: 0.8em;
-    border-radius: 4px;
-    white-space: nowrap;
+    background: linear-gradient(
+      90deg,
+      hsl(203.1 96.4% 43.9%),
+      hsl(203.1 96.5% 33.9%)
+    );
   }
 }
 

@@ -1,12 +1,9 @@
 .day-grid {
   display: grid;
   grid-auto-flow: column;
-  grid-template-columns: repeat(53, minmax(12px, 1fr));
+  grid-template-columns: repeat(53, minmax(40px, 1fr));
   grid-template-rows: repeat(7, 1fr);
   gap: 3px;
-  height: 200px;
-  width: 100%;
-  max-width: 100%;
   overflow-x: auto;
   overflow-y: hidden;
   border-block-end: 4px solid var(--border-colour);
@@ -18,14 +15,14 @@
 }
 
 .day-circle {
-  width: 100%;
+  padding: 8px;
   aspect-ratio: 1;
   align-self: center;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 7px;
+  font-size: 14px;
   font-weight: 600;
   line-height: 1;
   color: var(--body-colour);

@@ -1,7 +1,7 @@
 import { useState } from "react"
 
 import "./index.css"
-import { DailyBreakdown } from "./DailyBreakdown"
+import { Days } from "./Days"
 import { WeeklyCalorieTracker } from "./WeeklyCalorieTracker"
 import { Switch } from "../../shared/controls/Switch"
 
@@ -33,7 +33,7 @@ export function Health() {
           aria-hidden={view !== "日"}
           data-testid="daily-pane"
         >
-          <DailyBreakdown />
+          <Days />
         </div>
       </div>
     </div>

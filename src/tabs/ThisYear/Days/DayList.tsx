@@ -220,7 +220,7 @@ function WeeklyCalories({ balances }: { balances: Required<Balance>[] }) {
             className={getWeekClass({ balance, highestBalance, lowestBalance })}
             style={{ width: (balance.balance / STARTING_BALANCE) * 100 + "%" }}
           />
-          <div className="week-hovertext">
+          <div className="hovertext">
             {balance.day} {balance.month}: {balance.balance.toLocaleString()}
           </div>
         </div>

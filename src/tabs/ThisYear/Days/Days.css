@@ -33,10 +33,7 @@
     }
 
     .week-highest {
-      background: linear-gradient(
-        hsl(3.1 96.4% 43.9%),
-        hsl(3.1 96.5% 33.9%)
-      );
+      background: linear-gradient(hsl(3.1 96.4% 43.9%), hsl(3.1 96.5% 33.9%));
     }
 
     .week-lowest {

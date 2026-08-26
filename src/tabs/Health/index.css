@@ -82,3 +82,19 @@
 .tracker-pane.active .day-grid .day-circle {
   animation: pop-in 0.4s ease-out both;
 }
+
+.hovertext {
+  position: absolute;
+  opacity: 0;
+  transition: opacity 0.2s;
+  position-anchor: --label-text;
+  position-area: top;
+  margin-block-end: 8px;
+  z-index: 1;
+  background: var(--body-colour);
+  color: white;
+  padding: 6px 8px;
+  font-size: 0.8em;
+  border-radius: 4px;
+  white-space: nowrap;
+}

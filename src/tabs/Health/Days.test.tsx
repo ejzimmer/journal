@@ -1,6 +1,6 @@
 import { render, screen } from "@testing-library/react"
 import { ReactNode } from "react"
-import { DailyBreakdown } from "./DailyBreakdown"
+import { Days } from "./Days"
 import { FirebaseContext } from "../../shared/FirebaseContext"
 import { DayData } from "../../shared/types"
 
@@ -18,7 +18,9 @@ function Wrapper({
         updateItem: jest.fn(),
         deleteItem: jest.fn(),
         updateList: jest.fn(),
-        useValue: jest.fn().mockReturnValue({ loading: false, value: dailyData }),
+        useValue: jest
+          .fn()
+          .mockReturnValue({ loading: false, value: dailyData }),
       }}
     >
       {children}
@@ -27,12 +29,12 @@ function Wrapper({
 }
 
 function renderWithData(dailyData?: Record<string, DayData>) {
-  return render(<DailyBreakdown />, {
+  return render(<Days />, {
     wrapper: (props) => <Wrapper {...props} dailyData={dailyData} />,
   })
 }
 
-describe("DailyBreakdown", () => {
+describe("Days", () => {
   it("shows a circle for every day so far this year", () => {
     jest.useFakeTimers()
     jest.setSystemTime(new Date("2026-01-21"))
@@ -81,15 +83,22 @@ describe("DailyBreakdown", () => {
     }
     renderWithData(dailyData)
 
-    const bigDeficit = screen.getByText("5/1").style.getPropertyValue("--day-colour")
-    const smallSurplus = screen.getByText("10/1").style.getPropertyValue("--day-colour")
-    const bigSurplus = screen.getByText("15/1").style.getPropertyValue("--day-colour")
+    const bigDeficit = screen
+      .getByText("5/1")
+      .style.getPropertyValue("--day-colour")
+    const smallSurplus = screen
+      .getByText("10/1")
+      .style.getPropertyValue("--day-colour")
+    const bigSurplus = screen
+      .getByText("15/1")
+      .style.getPropertyValue("--day-colour")
 
     expect(bigDeficit).toMatch(/^hsl\(105 /)
     expect(smallSurplus).toMatch(/^hsl\(32 /)
     expect(bigSurplus).toMatch(/^hsl\(32 /)
 
-    const saturationOf = (hsl: string) => Number(hsl.split(" ")[1].replace("%", ""))
+    const saturationOf = (hsl: string) =>
+      Number(hsl.split(" ")[1].replace("%", ""))
     expect(saturationOf(bigSurplus)).toBeGreaterThan(saturationOf(smallSurplus))
 
     jest.useRealTimers()
