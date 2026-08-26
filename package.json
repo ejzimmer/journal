@@ -38,7 +38,7 @@
     "fs-extra": "^10.0.0",
     "html-webpack-plugin": "^5.5.0",
     "identity-obj-proxy": "^3.0.0",
-    "jest": "^30.0.5",
+    "jest": "30.4",
     "jest-resolve": "^30.0.5",
     "jest-watch-typeahead": "^3.0.1",
     "jsdom": "^26.1.0",

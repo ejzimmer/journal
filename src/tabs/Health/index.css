@@ -34,8 +34,8 @@
       position: absolute;
       top: 50%;
       left: 25%;
-      width: 28px;
-      height: 28px;
+      width: 36px;
+      aspect-ratio: 1;
       border-radius: 50%;
       background: hsl(211 81% 60% / 0.15);
       box-shadow:
