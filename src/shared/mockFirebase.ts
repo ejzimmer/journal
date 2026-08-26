@@ -1,15 +1,12 @@
 import { useEffect, useRef, useState } from "react"
 import { ContextType } from "./FirebaseContext"
 
-export function isMockFirebaseEnabled(): boolean {
-  return process.env.REACT_APP_USE_MOCK_FIREBASE === "true"
-}
-
 function getAtPath(root: Record<string, unknown>, path: string): unknown {
   return path
     .split("/")
     .reduce<unknown>(
-      (node, segment) => (node as Record<string, unknown> | undefined)?.[segment],
+      (node, segment) =>
+        (node as Record<string, unknown> | undefined)?.[segment],
       root,
     )
 }
