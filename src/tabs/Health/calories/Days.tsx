@@ -1,18 +1,13 @@
-import { CSSProperties, useContext, useMemo } from "react"
+import { CSSProperties, useMemo } from "react"
 
 import "./Days.css"
-import { FirebaseContext } from "../../shared/FirebaseContext"
-import { DAILY_PATH, DayData } from "../../shared/types"
-import { Balance, setupDays } from "./utils"
+import { Balance } from "../utils"
 
-export function Days() {
-  const storageContext = useContext(FirebaseContext)
-  if (!storageContext) {
-    throw new Error("no storage context")
-  }
-  const { value } = storageContext.useValue<Record<string, DayData>>(DAILY_PATH)
+type DaysProps = {
+  days: Balance[]
+}
 
-  const days = useMemo(() => setupDays(value), [value])
+export function Days({ days }: DaysProps) {
   const maxDiff = useMemo(
     () =>
       days.reduce(
@@ -34,7 +29,7 @@ export function Days() {
       {days.map((day, index) => (
         <li
           key={`${day.day}-${day.month}`}
-          className="day-circle hovertext-anchor"
+          className="day-circle"
           style={
             {
               animationDelay: `${popDelays[index]}s`,
@@ -44,12 +39,11 @@ export function Days() {
             } as CSSProperties
           }
         >
-          <div className="hovertext" style={{ textAlign: "center" }}>
-            <i>
-              {day.day}/{day.monthNumber}
-            </i>
-            <br />
-            {day.balance?.toLocaleString()}
+          <div className="day-details" style={{ textAlign: "center" }}>
+            <b>
+              {day.day} {day.month}
+            </b>
+            <div>{day.balance?.toLocaleString()}</div>
           </div>
         </li>
       ))}

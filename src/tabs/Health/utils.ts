@@ -17,7 +17,7 @@ export type Balance = {
 export function setupDays(dayData?: Record<string, DayData>): Balance[] {
   const today = startOfDay(new Date())
   const newYearsDay = startOfDay(new Date("2026-01-01"))
-  const numberOfDays = differenceInCalendarDays(today, newYearsDay)
+  const numberOfDays = differenceInCalendarDays(today, newYearsDay) - 1
   const days = new Array<Balance>(numberOfDays)
 
   for (let i = 0; i <= numberOfDays; i += 1) {

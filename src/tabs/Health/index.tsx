@@ -1,41 +1,37 @@
 import { useState } from "react"
 
 import "./index.css"
-import { Days } from "./Days"
-import { WeeklyCalorieTracker } from "./WeeklyCalorieTracker"
+import { Days } from "./calories/Days"
+import { WeeklyCalorieTracker } from "./calories/WeeklyCalorieTracker"
 import { Switch } from "../../shared/controls/Switch"
+import { ExerciseTracker } from "./ExerciseTracker"
+import { Calories } from "./calories/Calories"
 
-type View = "週" | "日"
+const exercises = [
+  {
+    name: "Box pistol squat",
+    updates: [
+      {
+        date: new Date("2026-08-12"),
+        update:
+          "2 x 5 x 3 mats + 1 low yoga block + 1 high yoga block, 1 x 5 3 mats + 2 low yoga blocks (eccentric only)",
+      },
+    ],
+  },
+  {
+    name: "Bulgarian split squat",
+    updates: [{ date: new Date("2026-08-12"), update: "3 x 10 x 8kg" }],
+  },
+  {
+    name: "B-stance RDL",
+    updates: [{ date: new Date("2026-08-12"), update: "3 x 10 x 16kg" }],
+  },
+]
 
 export function Health() {
-  const [view, setView] = useState<View>("週")
-
   return (
     <div>
-      <div className="tracker-switch">
-        <Switch
-          options={["週", "日"]}
-          value={view}
-          onChange={setView}
-          name="tracker-view"
-        />
-      </div>
-      <div className="tracker-stage">
-        <div
-          className={`tracker-pane ${view === "週" ? "active" : ""}`}
-          aria-hidden={view !== "週"}
-          data-testid="weekly-pane"
-        >
-          <WeeklyCalorieTracker />
-        </div>
-        <div
-          className={`tracker-pane ${view === "日" ? "active" : ""}`}
-          aria-hidden={view !== "日"}
-          data-testid="daily-pane"
-        >
-          <Days />
-        </div>
-      </div>
+      <Calories />
     </div>
   )
 }

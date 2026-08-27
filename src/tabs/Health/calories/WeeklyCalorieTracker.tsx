@@ -1,23 +1,18 @@
-import { useContext, useMemo } from "react"
+import { useMemo } from "react"
 
 import "./WeeklyCalorieTracker.css"
-import { FirebaseContext } from "../../shared/FirebaseContext"
-import { DAILY_PATH, DayData } from "../../shared/types"
 import {
+  Balance,
   STARTING_BALANCE,
   getWeekClass,
   getWeeklyBalance,
-  setupDays,
-} from "./utils"
+} from "../utils"
 
-export function WeeklyCalorieTracker() {
-  const storageContext = useContext(FirebaseContext)
-  if (!storageContext) {
-    throw new Error("no storage context")
-  }
-  const { value } = storageContext.useValue<Record<string, DayData>>(DAILY_PATH)
+type WeeklyCalorieTrackerProps = {
+  days: Balance[]
+}
 
-  const days = useMemo(() => setupDays(value), [value])
+export function WeeklyCalorieTracker({ days }: WeeklyCalorieTrackerProps) {
   const weeklyBalances = useMemo(() => getWeeklyBalance(days), [days])
 
   const weekBalances = weeklyBalances.map((balance) => balance.balance)
