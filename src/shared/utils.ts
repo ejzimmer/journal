@@ -8,8 +8,9 @@ export const formatDate = (date: Date) => {
     .formatToParts(date)
     .find((part) => part.type === "month")!
     .value.substring(0, 3)
+  const year = date.getFullYear().toString().substring(2)
 
-  return { day, month }
+  return { day, month, year }
 }
 
 export const CATEGORIES = [
