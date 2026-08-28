@@ -15,7 +15,7 @@ export type EditableDescriptionProps = {
   description: string
   isChecked: boolean
   onChange: (change: Change) => void
-  doneIcon?: React.ReactElement
+  useTickForDone?: boolean
 }
 
 export function EditableDescription({
@@ -23,7 +23,7 @@ export function EditableDescription({
   description,
   isChecked,
   onChange,
-  doneIcon,
+  useTickForDone,
 }: EditableDescriptionProps) {
   const inputRef = useRef<HTMLInputElement>(null)
   const [inEditMode, setInEditMode] = useState(false)
@@ -91,7 +91,7 @@ export function EditableDescription({
         isChecked={isChecked}
         label={`${description} done`}
         onChange={() => onChange({ isChecked: !isChecked })}
-        doneIcon={doneIcon}
+        useTickForDone={useTickForDone}
       />
       <div tabIndex={0} onFocus={startEditing} onClick={startEditing}>
         {description}

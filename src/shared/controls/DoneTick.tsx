@@ -1,4 +1,4 @@
-import { TickIcon } from "../../../shared/icons/Tick"
+import { TickIcon } from "../icons/Tick"
 
 import "./DoneTick.css"
 
