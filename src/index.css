@@ -85,7 +85,8 @@ button {
     );
     box-shadow:
       inset 0 1px 1px color-mix(in srgb, white 65%, transparent),
-      inset 0 -2px 3px color-mix(in srgb, var(--success-colour) 28%, transparent),
+      inset 0 -2px 3px
+        color-mix(in srgb, var(--success-colour) 28%, transparent),
       0 0 6px color-mix(in srgb, var(--success-colour) 12%, transparent);
     backdrop-filter: blur(6px);
     transition:
@@ -97,25 +98,25 @@ button {
     &:hover,
     &:focus-visible {
       color: white;
-      background:
-        linear-gradient(
-          to bottom,
-          color-mix(in srgb, var(--success-colour) 14%, transparent) 0%,
-          color-mix(in srgb, var(--success-colour) 4%, transparent) 50%,
-          color-mix(in srgb, var(--success-colour) 11%, transparent) 100%
-        ),
-        radial-gradient(
-          circle at center,
-          var(--success-colour) 0%,
-          color-mix(in srgb, var(--success-colour) 90%, transparent) 20%,
-          color-mix(in srgb, var(--success-colour) 40%, transparent) 45%,
-          transparent 85%
-        );
-      border-color: color-mix(in srgb, var(--success-colour) 75%, transparent);
+      background: color-mix(in srgb, var(--success-colour) 30%, transparent);
       box-shadow:
         inset 0 1px 1px color-mix(in srgb, white 65%, transparent),
-        inset 0 -2px 3px color-mix(in srgb, var(--success-colour) 28%, transparent),
+        inset 0 -2px 3px
+          color-mix(in srgb, var(--success-colour) 28%, transparent),
         0 0 10px color-mix(in srgb, var(--success-colour) 30%, transparent);
+      text-shadow: 1px 1px 4px var(--success-colour);
+
+      svg {
+        filter: drop-shadow(1px 1px 4px var(--success-colour));
+      }
+    }
+
+    &:active {
+      box-shadow:
+        inset 0 1px 1px color-mix(in srgb, white 65%, transparent),
+        inset 0 3px -2px
+          color-mix(in srgb, var(--success-colour) 28%, transparent),
+        0 0 6px color-mix(in srgb, var(--success-colour) 12%, transparent);
     }
   }
 
@@ -128,6 +129,26 @@ button {
     &:focus-visible {
       opacity: 1;
       background: none;
+    }
+  }
+
+  &.secondary-clear {
+    border: 0;
+    background: none;
+    opacity: 0.6;
+    text-shadow: 1px 1px 2px currentColor;
+    svg {
+      filter: drop-shadow(1px 1px 2px currentColor);
+    }
+
+    &:hover,
+    &:focus-visible {
+      opacity: 1;
+      text-shadow: 1px 1px 4px currentColor;
+
+      svg {
+        filter: drop-shadow(1px 1px 4px currentColor);
+      }
     }
   }
 
@@ -197,6 +218,11 @@ button {
     &:focus-visible {
       background: var(--border-colour);
     }
+  }
+
+  &.icon {
+    padding: 0;
+    aspect-ratio: 1;
   }
 }
 
