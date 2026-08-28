@@ -97,7 +97,7 @@ describe("ThisWeekTask", () => {
           screen.queryByRole("button", { name: task.category }),
         ).not.toBeInTheDocument()
         expect(
-          screen.getByRole("option", { name: task.category }),
+          screen.getByRole("option", { name: task.category, hidden: true }),
         ).toHaveAttribute("aria-selected", "true")
 
         expect(screen.queryByText(task.description)).not.toBeInTheDocument()

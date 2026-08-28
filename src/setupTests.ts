@@ -15,25 +15,60 @@ HTMLDialogElement.prototype.close = function mock(this: HTMLDialogElement) {
 }
 
 HTMLElement.prototype.hidePopover = function mock(this: HTMLElement) {
-  this.style.visibility = "hidden"
+  this.style.display = "none"
 }
 HTMLElement.prototype.showPopover = function mock(this: HTMLElement) {
-  this.style.visibility = "visible"
+  this.style.removeProperty("display")
 }
 
-// jsdom doesn't implement the Popover API, so it doesn't recognise the
-// :popover-open pseudo-class either. Route it to the visibility the mocks
-// above set, so code that checks popover open state can be tested here too.
 const originalMatches = Element.prototype.matches
 Element.prototype.matches = function mock(
   this: HTMLElement,
   selector: string,
 ): boolean {
   if (selector === ":popover-open") {
-    return this.style.visibility === "visible"
+    return this.style.display !== "none"
   }
   return originalMatches.call(this, selector)
 } as typeof Element.prototype.matches
+
+// Ensure pop-ups are hidden when first rendered
+const popoverDefaultApplied = new WeakSet<Element>()
+const originalSetAttribute = Element.prototype.setAttribute
+Element.prototype.setAttribute = function mock(
+  this: HTMLElement,
+  name: string,
+  value: string,
+) {
+  originalSetAttribute.call(this, name, value)
+  if (name === "popover" && !popoverDefaultApplied.has(this)) {
+    popoverDefaultApplied.add(this)
+    this.style.display = "none"
+  }
+} as typeof Element.prototype.setAttribute
+
+document.addEventListener("click", (event) => {
+  const trigger = (event.target as Element | null)?.closest?.(
+    "[popovertarget]",
+  )
+  if (!trigger) {
+    return
+  }
+
+  const targetId = trigger.getAttribute("popovertarget")
+  const target = targetId && document.getElementById(targetId)
+  if (!target) {
+    return
+  }
+
+  const action = trigger.getAttribute("popovertargetaction") ?? "toggle"
+  const isOpen = target.matches(":popover-open")
+  if (action === "show" || (action === "toggle" && !isOpen)) {
+    target.showPopover()
+  } else if (action === "hide" || (action === "toggle" && isOpen)) {
+    target.hidePopover()
+  }
+})
 
 // jsdom doesn't implement scrollIntoView.
 Element.prototype.scrollIntoView = function mock() {}
