@@ -1,6 +1,5 @@
 import { FormEvent, useEffect, useId, useRef } from "react"
 import { FormControl } from "../../../shared/controls/FormControl"
-import { TickIcon } from "../../../shared/icons/Tick"
 import { XIcon } from "../../../shared/icons/X"
 
 type CalorieFormProps = {
@@ -84,9 +83,7 @@ export function CalorieForm({
           defaultValue={`${expended ?? ""}`}
           size={4}
         />
-        <button type="submit" className="icon ghost">
-          <TickIcon width="20px" colour="var(--success-colour)" />
-        </button>
+        <button type="submit" />
       </form>
     </div>
   )
