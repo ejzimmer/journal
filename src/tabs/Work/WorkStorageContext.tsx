@@ -6,10 +6,7 @@ import {
   useMemo,
   useRef,
 } from "react"
-import {
-  FirebaseContext,
-  useStorageContext,
-} from "../../shared/FirebaseContext"
+import { useStorageContext } from "../../shared/FirebaseContext"
 import {
   Colour,
   Label,
