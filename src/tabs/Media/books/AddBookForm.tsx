@@ -1,6 +1,6 @@
-import { useContext, useMemo, useRef, useState } from "react"
+import { useMemo, useRef, useState } from "react"
 import { FormControl } from "../../../shared/controls/FormControl"
-import { FirebaseContext } from "../../../shared/FirebaseContext"
+import { useStorageContext } from "../../../shared/FirebaseContext"
 import {
   AuthorDetails,
   BookDetails,
@@ -17,13 +17,9 @@ export function AddBookForm() {
   const [author, setAuthor] = useState<OptionType>()
   const [series, setSeries] = useState<OptionType>()
 
-  const storageContext = useContext(FirebaseContext)
-  if (!storageContext) {
-    throw new Error("Missing storage context")
-  }
+  const { useValue, addItem } = useStorageContext()
 
-  const { value } =
-    storageContext.useValue<Record<string, ReadingItemDetails>>(BOOKS_KEY)
+  const { value } = useValue<Record<string, ReadingItemDetails>>(BOOKS_KEY)
   const authorOptions = value
     ? Object.values(value)
         .filter((item) => item.type === "author")
@@ -55,7 +51,7 @@ export function AddBookForm() {
   ) => {
     const id =
       item.id === ""
-        ? storageContext.addItem(path, {
+        ? addItem(path, {
             type: item.type,
             name: item.name,
           })
@@ -94,7 +90,7 @@ export function AddBookForm() {
       )
     }
 
-    storageContext?.addItem<BookDetails>(path, {
+    addItem<BookDetails>(path, {
       type: "book",
       title,
     })

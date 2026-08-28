@@ -1,6 +1,5 @@
-import { useContext, FormEvent } from "react"
+import { SubmitEvent } from "react"
 import { FormControl } from "../../../shared/controls/FormControl"
-import { FirebaseContext } from "../../../shared/FirebaseContext"
 import { TickIcon } from "../../../shared/icons/Tick"
 
 type CalorieFormProps = {
@@ -19,12 +18,7 @@ export function CalorieForm({
   expended,
   onSubmit,
 }: CalorieFormProps) {
-  const storageContext = useContext(FirebaseContext)
-  if (!storageContext) {
-    throw new Error("no storage context")
-  }
-
-  const handleSubmit = (event: FormEvent) => {
+  const handleSubmit = (event: SubmitEvent) => {
     event.preventDefault()
     const [consumedElement, expendedElement] = (event.target as HTMLFormElement)
       .elements

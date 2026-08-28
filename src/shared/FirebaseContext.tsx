@@ -1,5 +1,5 @@
 import { ref, set, onValue, Database, push, remove } from "firebase/database"
-import { createContext, useEffect, useState } from "react"
+import { createContext, useContext, useEffect, useState } from "react"
 
 type Item = { id: string }
 
@@ -39,8 +39,18 @@ export function createFirebaseContext(database: Database): ContextType {
       }
     },
     deleteItem: (parent, item) => {
-      const reference = ref(database, `${parent}/${item.id}`)
-      remove(reference)
+      if (!item.id) {
+        console.error(
+          `deleteItem called with no id, refusing to delete under "${parent}"`,
+          item,
+        )
+        return
+      }
+      const path = `${parent}/${item.id}`
+      const reference = ref(database, path)
+      remove(reference).catch((error) => {
+        console.error(`deleteItem failed for "${path}"`, error)
+      })
     },
     updateList: <T extends { id: string }>(listName: string, list: T[]) => {
       const map = list.reduce(
@@ -70,4 +80,13 @@ export function createFirebaseContext(database: Database): ContextType {
       return result
     },
   }
+}
+
+export function useStorageContext(): ContextType {
+  const context = useContext(FirebaseContext)
+  if (!context) {
+    throw new Error("Storage context not found")
+  }
+
+  return context
 }

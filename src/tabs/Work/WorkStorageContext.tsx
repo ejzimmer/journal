@@ -6,7 +6,10 @@ import {
   useMemo,
   useRef,
 } from "react"
-import { FirebaseContext } from "../../shared/FirebaseContext"
+import {
+  FirebaseContext,
+  useStorageContext,
+} from "../../shared/FirebaseContext"
 import {
   Colour,
   Label,
@@ -59,17 +62,13 @@ export const WorkStorageContext = createContext<
 >(undefined)
 
 export function WorkStorageProvider({ children }: { children: ReactNode }) {
-  const firebase = useContext(FirebaseContext)
-  if (!firebase) {
-    throw new Error("Missing Firebase context provider")
-  }
   const {
     addItem,
     updateItem,
     deleteItem,
     updateList: updateItemsList,
     useValue,
-  } = firebase
+  } = useStorageContext()
 
   const { value: rawLists, loading: isLoading } =
     useValue<Record<string, WorkTask>>(WORK_KEY)

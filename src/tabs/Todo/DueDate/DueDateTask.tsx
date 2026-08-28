@@ -1,6 +1,5 @@
-import { useContext } from "react"
 import { EditableDate } from "../../../shared/controls/EditableDate"
-import { FirebaseContext } from "../../../shared/FirebaseContext"
+import { useStorageContext } from "../../../shared/FirebaseContext"
 import { CalendarTask, CALENDAR_KEY, STATUSES } from "../../../shared/types"
 import { differenceInDays, isSameDay, startOfDay } from "date-fns"
 import { Switch } from "../../../shared/controls/Switch"
@@ -28,15 +27,11 @@ const getDateClass = (task: CalendarTask) => {
 }
 
 export function DueDateTask({ task }: { task: CalendarTask }) {
-  const context = useContext(FirebaseContext)
-  if (!context) {
-    throw new Error("Missing Firebase context provider")
-  }
+  const { updateItem, deleteItem } = useStorageContext()
 
-  const onChange = (task: CalendarTask) =>
-    context.updateItem(CALENDAR_KEY, task)
+  const onChange = (task: CalendarTask) => updateItem(CALENDAR_KEY, task)
   const onDelete = () => {
-    context.deleteItem<CalendarTask>(CALENDAR_KEY, task)
+    deleteItem<CalendarTask>(CALENDAR_KEY, task)
   }
 
   return (

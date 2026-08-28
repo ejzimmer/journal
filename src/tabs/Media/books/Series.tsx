@@ -1,8 +1,7 @@
-import { useContext } from "react"
 import { EditableText } from "../../../shared/controls/EditableText"
-import { FirebaseContext } from "../../../shared/FirebaseContext"
 import { BookList } from "./BookList"
 import { BookDetails, SeriesDetails } from "../types"
+import { useStorageContext } from "../../../shared/FirebaseContext"
 
 type SeriesProps = {
   series: SeriesDetails<BookDetails>
@@ -14,13 +13,10 @@ type SeriesProps = {
 }
 
 export function Series({ series, path, author }: SeriesProps) {
-  const storageContext = useContext(FirebaseContext)
-  if (!storageContext) {
-    throw new Error("Missing Firebase context provider")
-  }
+  const { updateItem } = useStorageContext()
 
   const updateSeriesName = (name: string) => {
-    storageContext.updateItem<SeriesDetails<BookDetails>>(path, {
+    updateItem<SeriesDetails<BookDetails>>(path, {
       ...series,
       name,
     })

@@ -1,5 +1,4 @@
-import { useContext } from "react"
-import { FirebaseContext } from "../../../shared/FirebaseContext"
+import { useStorageContext } from "../../../shared/FirebaseContext"
 import "./StationRunning.css"
 
 const KEY = "2026/stations"
@@ -12,12 +11,9 @@ type StationDetails = {
 }
 
 export function StationRunning() {
-  const storageContext = useContext(FirebaseContext)
-  if (!storageContext) {
-    throw new Error("missing storage context")
-  }
+  const { useValue, updateItem } = useStorageContext()
 
-  const { value } = storageContext.useValue<Record<string, StationDetails>>(KEY)
+  const { value } = useValue<Record<string, StationDetails>>(KEY)
   const stations = value && Object.values(value)
 
   return (
@@ -38,7 +34,7 @@ export function StationRunning() {
           >
             <Station
               {...station}
-              onChange={(station) => storageContext.updateItem(KEY, station)}
+              onChange={(station) => updateItem(KEY, station)}
             />
           </li>
         ))}

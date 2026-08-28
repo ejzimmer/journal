@@ -1,5 +1,5 @@
-import { useContext, useEffect, useMemo, useRef, useState } from "react"
-import { FirebaseContext } from "../../shared/FirebaseContext"
+import { useEffect, useMemo, useRef, useState } from "react"
+import { useStorageContext } from "../../shared/FirebaseContext"
 
 import "./index.css"
 import { Project } from "./Project"
@@ -20,13 +20,9 @@ export function Projects() {
   const [containerHeight, setContainerHeight] = useState<number>()
   const [filterCategories, setFilterCategories] = useState<Category[]>([])
 
-  const storageContext = useContext(FirebaseContext)
-  if (!storageContext) {
-    throw new Error("Missing Firebase context provider")
-  }
+  const { useValue, updateList, deleteItem } = useStorageContext()
 
-  const { value } =
-    storageContext.useValue<Record<string, ProjectDetails>>(PROJECTS_KEY)
+  const { value } = useValue<Record<string, ProjectDetails>>(PROJECTS_KEY)
   const sortedProjects = useMemo(() => {
     const projects = value ? Object.values(value) : []
     return sortByPosition(projects).sort((a, b) => {
@@ -95,14 +91,11 @@ export function Projects() {
             <Project
               project={project}
               onDelete={() => {
-                storageContext.updateList(
-                  PROJECTS_KEY,
-                  reorderProjects(sortedProjects, index),
-                )
-                storageContext.deleteItem(PROJECTS_KEY, project)
+                updateList(PROJECTS_KEY, reorderProjects(sortedProjects, index))
+                deleteItem(PROJECTS_KEY, project)
               }}
               onMoveToEnd={() =>
-                storageContext.updateList(PROJECTS_KEY, [
+                updateList(PROJECTS_KEY, [
                   ...reorderProjects(sortedProjects, index),
                   { ...project, position: sortedProjects.length - 1 },
                 ])

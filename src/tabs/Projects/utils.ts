@@ -1,5 +1,4 @@
-import { useContext } from "react"
-import { FirebaseContext } from "../../shared/FirebaseContext"
+import { useStorageContext } from "../../shared/FirebaseContext"
 import {
   Category,
   DAILY_KEY,
@@ -16,12 +15,9 @@ export const getSubtasksKey = (projectId: string, subtaskId?: string) => {
 }
 
 export function useLinkedTasks(linkedId?: string) {
-  const storageContext = useContext(FirebaseContext)
-  if (!storageContext) {
-    throw new Error("Missing Firebase context provider")
-  }
+  const { useValue, addItem, updateItem } = useStorageContext()
 
-  const { value: linkedTask } = storageContext.useValue<DailyTask>(
+  const { value: linkedTask } = useValue<DailyTask>(
     linkedId && `${DAILY_KEY}/${linkedId}`,
   )
 
@@ -34,16 +30,17 @@ export function useLinkedTasks(linkedId?: string) {
     category: Category
     linkedTaskId: string
   }) => {
-    const linkedId = storageContext.addItem<
-      Omit<DailyTask, keyof OrderedListItem>
-    >(DAILY_KEY, {
-      category,
-      description,
-      status: "ready",
-      type: "一度",
-      lastCompleted: new Date().getTime(),
-      linkedTask: linkedTaskId,
-    })
+    const linkedId = addItem<Omit<DailyTask, keyof OrderedListItem>>(
+      DAILY_KEY,
+      {
+        category,
+        description,
+        status: "ready",
+        type: "一度",
+        lastCompleted: new Date().getTime(),
+        linkedTask: linkedTaskId,
+      },
+    )
 
     return linkedId
   }
@@ -51,7 +48,7 @@ export function useLinkedTasks(linkedId?: string) {
   const updateLinkedTask = (updatedTask: Partial<DailyTask>) => {
     if (!linkedTask) return
 
-    storageContext.updateItem<DailyTask>(DAILY_KEY, {
+    updateItem<DailyTask>(DAILY_KEY, {
       ...linkedTask,
       ...updatedTask,
     })
