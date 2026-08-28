@@ -1,45 +1,40 @@
 import { render, screen } from "@testing-library/react"
 import { AddBookForm } from "./AddBookForm"
 import userEvent from "@testing-library/user-event"
-import { ReactNode } from "react"
-import { ContextType, FirebaseContext } from "../../../shared/FirebaseContext"
+import { ContextType } from "../../../shared/FirebaseContext"
 import { BOOKS_KEY } from "../types"
+import { StorageContextWrapper } from "../../../shared/storageContextTestUtils"
 
-const defaultMethods = {
-  addItem: jest.fn(),
-  updateItem: jest.fn(),
-  deleteItem: jest.fn(),
-  updateList: jest.fn(),
-  useValue: () => ({
-    value: {
-      "1": {
-        id: "1",
-        type: "author",
-        name: "Terry Pratchett",
-        items: { "4": { id: "4", type: "series", name: "Discworld" } },
-      },
-      "2": { id: "2", type: "author", name: "Ursula Le Guin" },
-      "3": { id: "3", type: "series", name: "Earthsea" },
-    },
-    loading: false,
-  }),
-} as ContextType
+const booksValue = {
+  "1": {
+    id: "1",
+    type: "author",
+    name: "Terry Pratchett",
+    items: { "4": { id: "4", type: "series", name: "Discworld" } },
+  },
+  "2": { id: "2", type: "author", name: "Ursula Le Guin" },
+  "3": { id: "3", type: "series", name: "Earthsea" },
+}
 
 const getId = (_: string, { type }: any) =>
   type === "author" ? "author_id" : "series_id"
 
-function Context({
-  overrideMethods = {},
-  children,
-}: {
-  overrideMethods: Partial<ContextType>
-  children: ReactNode
-}) {
-  return (
-    <FirebaseContext.Provider value={{ ...defaultMethods, ...overrideMethods }}>
-      {children}
-    </FirebaseContext.Provider>
-  )
+function renderAddBookForm(overrides: Partial<ContextType> = {}) {
+  return render(<AddBookForm />, {
+    wrapper: ({ children }) => (
+      <StorageContextWrapper
+        value={{
+          useValue: <T,>() => ({
+            value: booksValue as unknown as T,
+            loading: false,
+          }),
+          ...overrides,
+        }}
+      >
+        {children}
+      </StorageContextWrapper>
+    ),
+  })
 }
 
 describe("AddBookForm", () => {
@@ -47,11 +42,7 @@ describe("AddBookForm", () => {
     it("creates a new book", async () => {
       const user = userEvent.setup()
       const addItem = jest.fn()
-      render(<AddBookForm />, {
-        wrapper: (props) => (
-          <Context {...props} overrideMethods={{ addItem }} />
-        ),
-      })
+      renderAddBookForm({ addItem })
 
       await user.type(
         screen.getByRole("textbox", { name: "Book title" }),
@@ -69,11 +60,7 @@ describe("AddBookForm", () => {
     it("creates a new author and adds the new book to their items", async () => {
       const user = userEvent.setup()
       const addItem = jest.fn().mockReturnValue("1234")
-      render(<AddBookForm />, {
-        wrapper: (props) => (
-          <Context {...props} overrideMethods={{ addItem }} />
-        ),
-      })
+      renderAddBookForm({ addItem })
 
       await user.type(
         screen.getByRole("textbox", { name: "Book title" }),
@@ -100,11 +87,7 @@ describe("AddBookForm", () => {
     it("adds the new book to the existing author", async () => {
       const user = userEvent.setup()
       const addItem = jest.fn().mockReturnValue("1234")
-      render(<AddBookForm />, {
-        wrapper: (props) => (
-          <Context {...props} overrideMethods={{ addItem }} />
-        ),
-      })
+      renderAddBookForm({ addItem })
 
       await user.type(
         screen.getByRole("textbox", { name: "Book title" }),
@@ -126,11 +109,7 @@ describe("AddBookForm", () => {
     it("creates a new series and adds the new book to their items", async () => {
       const user = userEvent.setup()
       const addItem = jest.fn().mockReturnValue("1212")
-      render(<AddBookForm />, {
-        wrapper: (props) => (
-          <Context {...props} overrideMethods={{ addItem }} />
-        ),
-      })
+      renderAddBookForm({ addItem })
 
       await user.type(
         screen.getByRole("textbox", { name: "Book title" }),
@@ -157,11 +136,7 @@ describe("AddBookForm", () => {
     it("adds the new book to the existing author", async () => {
       const user = userEvent.setup()
       const addItem = jest.fn().mockReturnValue("1234")
-      render(<AddBookForm />, {
-        wrapper: (props) => (
-          <Context {...props} overrideMethods={{ addItem }} />
-        ),
-      })
+      renderAddBookForm({ addItem })
 
       await user.type(
         screen.getByRole("textbox", { name: "Book title" }),
@@ -183,11 +158,7 @@ describe("AddBookForm", () => {
     it("adds the new book to the existing author", async () => {
       const user = userEvent.setup()
       const addItem = jest.fn().mockImplementation(getId)
-      render(<AddBookForm />, {
-        wrapper: (props) => (
-          <Context {...props} overrideMethods={{ addItem }} />
-        ),
-      })
+      renderAddBookForm({ addItem })
 
       await user.type(
         screen.getByRole("textbox", { name: "Book title" }),
@@ -226,11 +197,7 @@ describe("AddBookForm", () => {
     it("adds the new book to the existing author", async () => {
       const user = userEvent.setup()
       const addItem = jest.fn().mockImplementation(getId)
-      render(<AddBookForm />, {
-        wrapper: (props) => (
-          <Context {...props} overrideMethods={{ addItem }} />
-        ),
-      })
+      renderAddBookForm({ addItem })
 
       await user.type(
         screen.getByRole("textbox", { name: "Book title" }),
@@ -265,11 +232,7 @@ describe("AddBookForm", () => {
     it("adds the new book to the existing author & series", async () => {
       const user = userEvent.setup()
       const addItem = jest.fn().mockImplementation(getId)
-      render(<AddBookForm />, {
-        wrapper: (props) => (
-          <Context {...props} overrideMethods={{ addItem }} />
-        ),
-      })
+      renderAddBookForm({ addItem })
 
       await user.type(
         screen.getByRole("textbox", { name: "Book title" }),
@@ -294,11 +257,7 @@ describe("AddBookForm", () => {
     it("only shows the series for the selected author", async () => {
       const user = userEvent.setup()
       const addItem = jest.fn().mockImplementation(getId)
-      render(<AddBookForm />, {
-        wrapper: (props) => (
-          <Context {...props} overrideMethods={{ addItem }} />
-        ),
-      })
+      renderAddBookForm({ addItem })
 
       await user.type(
         screen.getByRole("textbox", { name: "Book title" }),
@@ -322,11 +281,7 @@ describe("AddBookForm", () => {
     it("clears the form", async () => {
       const user = userEvent.setup()
       const addItem = jest.fn().mockImplementation(getId)
-      render(<AddBookForm />, {
-        wrapper: (props) => (
-          <Context {...props} overrideMethods={{ addItem }} />
-        ),
-      })
+      renderAddBookForm({ addItem })
 
       await user.type(
         screen.getByRole("textbox", { name: "Book title" }),

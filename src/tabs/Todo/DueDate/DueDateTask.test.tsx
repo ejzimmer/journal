@@ -1,9 +1,12 @@
 import { render, screen } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 import { DueDateTask } from "./DueDateTask"
-import { FirebaseContext } from "../../../shared/FirebaseContext"
 import { CategoriesContext } from ".."
 import { CalendarTask } from "../../../shared/types"
+import {
+  createStorageContext,
+  StorageContextWrapper,
+} from "../../../shared/storageContextTestUtils"
 
 const task: CalendarTask = {
   id: "1",
@@ -16,20 +19,14 @@ const task: CalendarTask = {
   statusUpdateDate: Date.now(),
 }
 
-const storageContext = {
-  addItem: jest.fn(),
-  updateItem: jest.fn(),
-  deleteItem: jest.fn(),
-  updateList: jest.fn(),
-  useValue: () => ({ value: undefined, loading: false }),
-}
+const storageContext = createStorageContext()
 
 const Wrapper = ({ children }: { children: React.ReactNode }) => (
-  <FirebaseContext.Provider value={storageContext}>
+  <StorageContextWrapper value={storageContext}>
     <CategoriesContext.Provider value={["🛒", "📓"]}>
       {children}
     </CategoriesContext.Provider>
-  </FirebaseContext.Provider>
+  </StorageContextWrapper>
 )
 
 describe("DueDateTask", () => {

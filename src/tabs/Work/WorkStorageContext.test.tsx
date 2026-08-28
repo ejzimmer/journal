@@ -1,6 +1,7 @@
 import { useContext } from "react"
 import { render, screen } from "@testing-library/react"
 import { FirebaseContext } from "../../shared/FirebaseContext"
+import { createStorageContext } from "../../shared/storageContextTestUtils"
 import {
   WorkStorageContext,
   WorkStorageContextType,
@@ -32,10 +33,9 @@ function createFirebaseContext(
   storedLabels: Record<string, StoredLabel> | undefined = {},
 ) {
   return {
+    ...createStorageContext(),
     addItem: jest.fn(() => "new-id"),
     updateItem: jest.fn(),
-    deleteItem: jest.fn(),
-    updateList: jest.fn(),
     useValue: <T,>(key?: string) => {
       if (key === LABELS_KEY) {
         return {

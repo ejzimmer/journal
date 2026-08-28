@@ -2,9 +2,12 @@ import { render, screen } from "@testing-library/react"
 import { ThisWeekTask } from "./ThisWeekTask"
 import { WeeklyTask } from "../../../shared/types"
 import userEvent from "@testing-library/user-event"
-import { FirebaseContext } from "../../../shared/FirebaseContext"
 import { CategoriesContext } from ".."
 import { subDays } from "date-fns"
+import {
+  createStorageContext,
+  StorageContextWrapper,
+} from "../../../shared/storageContextTestUtils"
 
 const task: WeeklyTask = {
   frequency: 3,
@@ -19,22 +22,16 @@ const task: WeeklyTask = {
   ],
 }
 
-const storageContext = {
-  addItem: jest.fn(),
-  updateItem: jest.fn(),
-  deleteItem: jest.fn(),
-  updateList: jest.fn(),
-  useValue: () => {
-    return { value: {} as any, loading: false }
-  },
-}
+const storageContext = createStorageContext({
+  useValue: () => ({ value: {} as any, loading: false }),
+})
 
 const Wrapper = ({ children }: { children: React.ReactNode }) => (
-  <FirebaseContext.Provider value={storageContext}>
+  <StorageContextWrapper value={storageContext}>
     <CategoriesContext.Provider value={["🧘", "💪"]}>
       {children}
     </CategoriesContext.Provider>
-  </FirebaseContext.Provider>
+  </StorageContextWrapper>
 )
 
 const expectToBeInViewMode = () => {

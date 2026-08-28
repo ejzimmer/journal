@@ -1,7 +1,7 @@
 import { render, screen } from "@testing-library/react"
 import { YarnState } from "./YarnState"
-import { FirebaseContext } from "../../../shared/FirebaseContext"
 import { ReactNode } from "react"
+import { StorageContextWrapper } from "../../../shared/storageContextTestUtils"
 
 const yarnState = {
   wool: {
@@ -21,17 +21,11 @@ const yarnState = {
 
 function Wrapper({ children }: { children: ReactNode }) {
   return (
-    <FirebaseContext.Provider
-      value={{
-        addItem: jest.fn(),
-        updateItem: jest.fn(),
-        deleteItem: jest.fn(),
-        updateList: jest.fn(),
-        useValue: jest.fn().mockReturnValue({ value: yarnState }),
-      }}
+    <StorageContextWrapper
+      value={{ useValue: jest.fn().mockReturnValue({ value: yarnState }) }}
     >
       {children}
-    </FirebaseContext.Provider>
+    </StorageContextWrapper>
   )
 }
 

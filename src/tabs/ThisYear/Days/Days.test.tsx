@@ -1,8 +1,8 @@
 import { render, screen, within } from "@testing-library/react"
 import { DayList } from "./DayList"
-import { FirebaseContext } from "../../../shared/FirebaseContext"
 import { DayData } from "../../../shared/types"
 import { ReactNode } from "react"
+import { StorageContextWrapper } from "../../../shared/storageContextTestUtils"
 
 function Wrapper({
   children,
@@ -12,17 +12,13 @@ function Wrapper({
   dailyData?: Record<string, DayData>
 }) {
   return (
-    <FirebaseContext.Provider
+    <StorageContextWrapper
       value={{
-        addItem: jest.fn(),
-        updateItem: jest.fn(),
-        deleteItem: jest.fn(),
-        updateList: jest.fn(),
         useValue: jest.fn().mockReturnValue({ loading: false, value: dailyData }),
       }}
     >
       {children}
-    </FirebaseContext.Provider>
+    </StorageContextWrapper>
   )
 }
 

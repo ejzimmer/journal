@@ -1,9 +1,10 @@
 import { render, screen } from "@testing-library/react"
 import { Day } from "./Day"
 import userEvent from "@testing-library/user-event"
-import { ContextType, FirebaseContext } from "../../../shared/FirebaseContext"
+import { ContextType } from "../../../shared/FirebaseContext"
 import { ReactNode } from "react"
 import { HABITS } from "../../../shared/types"
+import { StorageContextWrapper } from "../../../shared/storageContextTestUtils"
 
 const Wrapper = ({
   children,
@@ -12,9 +13,7 @@ const Wrapper = ({
   children: ReactNode
   overrides?: Partial<ContextType>
 }) => (
-  <FirebaseContext.Provider value={overrides ?? ({} as any)}>
-    {children}
-  </FirebaseContext.Provider>
+  <StorageContextWrapper value={overrides}>{children}</StorageContextWrapper>
 )
 
 const minimalProps = {
