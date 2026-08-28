@@ -14,7 +14,7 @@ export function Calories() {
   const [view, setView] = useState<View>("週")
   const [dismissed, setDismissed] = useState(false)
 
-  const { useValue } = useStorageContext()
+  const { useValue, updateItem } = useStorageContext()
   const { value } = useValue<Record<string, DayData>>(DAILY_PATH)
 
   const days = useMemo(() => setupDays(value), [value])
@@ -53,7 +53,7 @@ export function Calories() {
             expended={yesterdayData?.expended}
             onClose={() => setDismissed(true)}
             onSubmit={({ consumed, expended }) => {
-              storageContext.updateItem<DayData>(DAILY_PATH, {
+              updateItem<DayData>(DAILY_PATH, {
                 ...(yesterdayData ?? { id: yesterdayId }),
                 id: yesterdayId,
                 consumed,
