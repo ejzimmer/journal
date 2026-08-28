@@ -94,7 +94,7 @@ describe("LabelsControl", () => {
         wrapper: Wrapper,
       })
 
-      const options = screen.getAllByRole("option")
+      const options = screen.getAllByRole("option", { hidden: true })
       expect(options).toHaveLength(mockOptions.length - mockValues.length)
       options.forEach((option) => {
         expect(option).not.toHaveTextContent(mockValues[0].value)

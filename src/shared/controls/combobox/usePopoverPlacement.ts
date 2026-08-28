@@ -1,8 +1,25 @@
 import { useLayoutEffect, useState } from "react"
 
+const GAP = 4
 const EDGE_BUFFER = 4
 
 export type PopoverPlacement = "below" | "above"
+
+type PopoverPosition = {
+  placement: PopoverPlacement
+  maxHeight: number
+  top?: number
+  bottom?: number
+  left: number
+  minWidth: number
+}
+
+const DEFAULT_POSITION: PopoverPosition = {
+  placement: "below",
+  maxHeight: 0,
+  left: 0,
+  minWidth: 0,
+}
 
 export function usePopoverPlacement(
   popoverState: "open" | "closed",
@@ -10,8 +27,7 @@ export function usePopoverPlacement(
   popoverRef: React.RefObject<HTMLElement | null>,
   onAnchorHidden: () => void
 ) {
-  const [placement, setPlacement] = useState<PopoverPlacement>("below")
-  const [maxHeight, setMaxHeight] = useState<number>()
+  const [position, setPosition] = useState<PopoverPosition>(DEFAULT_POSITION)
 
   useLayoutEffect(() => {
     if (popoverState !== "open") return
@@ -29,29 +45,31 @@ export function usePopoverPlacement(
         return
       }
 
-      // "below" grows down from a top edge anchored to the trigger, "above"
-      // grows up from a bottom edge anchored to the trigger - either edge is
-      // stable regardless of the box's current height, so read it directly.
-      const wasAbove = popoverEl.classList.contains("open-above")
-
-      popoverEl.classList.remove("open-above")
-      const belowTop = popoverEl.getBoundingClientRect().top
-
-      popoverEl.classList.add("open-above")
-      const aboveBottom = popoverEl.getBoundingClientRect().bottom
-
-      popoverEl.classList.toggle("open-above", wasAbove)
-
-      const spaceBelow = window.innerHeight - belowTop - EDGE_BUFFER
-      const spaceAbove = aboveBottom - EDGE_BUFFER
+      const spaceBelow = window.innerHeight - anchorRect.bottom - GAP - EDGE_BUFFER
+      const spaceAbove = anchorRect.top - GAP - EDGE_BUFFER
       const contentHeight = popoverEl.scrollHeight
 
+      const shared = { left: anchorRect.left, minWidth: anchorRect.width }
+
+      // Sets top/bottom as plain numbers rather than CSS anchor positioning:
+      // browsers vary in whether position-area's block-axis placement
+      // updates reliably when the chosen side changes. Scroll/resize already
+      // trigger a full re-measure here regardless, so anchor positioning's
+      // live tracking isn't needed on top of that.
       if (contentHeight <= spaceBelow || spaceBelow >= spaceAbove) {
-        setPlacement("below")
-        setMaxHeight(Math.max(spaceBelow, 0))
+        setPosition({
+          ...shared,
+          placement: "below",
+          maxHeight: Math.max(spaceBelow, 0),
+          top: anchorRect.bottom + GAP,
+        })
       } else {
-        setPlacement("above")
-        setMaxHeight(Math.max(spaceAbove, 0))
+        setPosition({
+          ...shared,
+          placement: "above",
+          maxHeight: Math.max(spaceAbove, 0),
+          bottom: window.innerHeight - anchorRect.top + GAP,
+        })
       }
     }
 
@@ -64,5 +82,5 @@ export function usePopoverPlacement(
     }
   }, [popoverState, anchorRef, popoverRef, onAnchorHidden])
 
-  return { placement, maxHeight }
+  return position
 }

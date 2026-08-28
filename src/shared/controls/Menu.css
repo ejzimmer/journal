@@ -1,10 +1,10 @@
-[popover] {
+.menu[popover] {
   inset: unset;
   border-radius: 6px;
   position: absolute;
 }
 
-:popover-open {
+.menu:popover-open {
   display: flex;
   flex-direction: column;
   border: none;

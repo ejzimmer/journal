@@ -110,7 +110,9 @@ describe("AddBookForm", () => {
         screen.getByRole("textbox", { name: "Book title" }),
         "The Left Hand of Darkness"
       )
-      await user.click(screen.getByRole("option", { name: "Ursula Le Guin" }))
+      await user.click(
+        screen.getByRole("option", { name: "Ursula Le Guin", hidden: true }),
+      )
       await user.click(screen.getByRole("button", { name: "Create" }))
 
       expect(addItem).toHaveBeenCalledWith(`${BOOKS_KEY}/2/items`, {
@@ -165,7 +167,9 @@ describe("AddBookForm", () => {
         screen.getByRole("textbox", { name: "Book title" }),
         "The Tombs of Atuan"
       )
-      await user.click(screen.getByRole("option", { name: "Earthsea" }))
+      await user.click(
+        screen.getByRole("option", { name: "Earthsea", hidden: true }),
+      )
       await user.click(screen.getByRole("button", { name: "Create" }))
 
       expect(addItem).toHaveBeenCalledWith(`${BOOKS_KEY}/3/items`, {
@@ -306,10 +310,10 @@ describe("AddBookForm", () => {
       )
 
       expect(
-        screen.getByRole("option", { name: "Discworld" })
+        screen.getByRole("option", { name: "Discworld", hidden: true })
       ).toBeInTheDocument()
       expect(
-        screen.queryByRole("option", { name: "Earthsea" })
+        screen.queryByRole("option", { name: "Earthsea", hidden: true })
       ).not.toBeInTheDocument()
     })
   })

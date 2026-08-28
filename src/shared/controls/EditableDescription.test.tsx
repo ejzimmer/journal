@@ -100,7 +100,7 @@ describe("EditableDescription", () => {
         })
         await user.click(screen.getByText("Brush teeth"))
 
-        await user.click(screen.getByRole("option", { name: "🧹" }))
+        await user.click(screen.getByRole("option", { name: "🧹", hidden: true }))
 
         expect(onChange).toHaveBeenCalledWith({ category: "🧹" })
         expectToBeInViewMode()

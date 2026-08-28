@@ -57,7 +57,16 @@ module.exports = {
   appBuild: resolveApp(buildPath),
   appPublic: resolveApp('public'),
   appHtml: resolveApp('public/index.html'),
-  appIndexJs: resolveModule(resolveApp, 'src/index'),
+  // The mock-Firebase entry point (src/mocks/index) is dev/test-only
+  // scaffolding kept out of the real app entry (src/index) - swap it in
+  // here at the build-config layer, via REACT_APP_USE_MOCK_FIREBASE, so no
+  // mock-mode branching needs to live in production source.
+  appIndexJs: resolveModule(
+    resolveApp,
+    process.env.REACT_APP_USE_MOCK_FIREBASE === 'true'
+      ? 'src/mocks/index'
+      : 'src/index'
+  ),
   appPackageJson: resolveApp('package.json'),
   appSrc: resolveApp('src'),
   appTsConfig: resolveApp('tsconfig.json'),

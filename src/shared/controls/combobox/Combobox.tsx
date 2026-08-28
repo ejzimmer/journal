@@ -26,19 +26,14 @@ export function Combobox<T extends OptionType>({
   autoFocus,
 }: ComboboxProps<T>) {
   const inputId = useId()
-  const anchorName = `--combobox-${inputId.replace(/[^a-zA-Z0-9]/g, "")}`
   const containerRef = useRef<HTMLDivElement>(null)
 
   const popoverId = useId()
   const popoverRef = useRef<HTMLDivElement>(null)
   const { popoverState, hidePopover, showPopover, togglePopover } =
     usePopoverState(popoverRef)
-  const { placement, maxHeight } = usePopoverPlacement(
-    popoverState,
-    containerRef,
-    popoverRef,
-    hidePopover
-  )
+  const { placement, maxHeight, top, bottom, left, minWidth } =
+    usePopoverPlacement(popoverState, containerRef, popoverRef, hidePopover)
 
   useEffect(() => {
     if (autoFocus) showPopover()
@@ -137,11 +132,7 @@ export function Combobox<T extends OptionType>({
         </label>
       )}
 
-      <div
-        ref={containerRef}
-        className="combobox"
-        style={{ anchorName } as React.CSSProperties}
-      >
+      <div ref={containerRef} className="combobox">
         {isMultiValue ? (
           <MultiValueInput
             value={value}
@@ -189,9 +180,12 @@ export function Combobox<T extends OptionType>({
         <Popover
           popoverRef={popoverRef}
           popoverId={popoverId}
-          anchorName={anchorName}
           placement={placement}
           maxHeight={maxHeight}
+          top={top}
+          bottom={bottom}
+          left={left}
+          minWidth={minWidth}
           options={displayedOptions}
           selected={value}
           onClick={(option) => {
