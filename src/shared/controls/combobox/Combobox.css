@@ -9,16 +9,7 @@
 
   [popover] {
     position: fixed;
-    position-area: end center;
-    margin-block-start: 4px;
-    min-width: 100%;
     overflow-y: auto;
-
-    &.open-above {
-      position-area: start center;
-      margin-block-start: 0;
-      margin-block-end: 4px;
-    }
   }
 
   input[role="combobox"] {
