@@ -1,5 +1,3 @@
-import { useContext } from "react"
-import { FirebaseContext } from "../../../shared/FirebaseContext"
 import { GameDetails } from "../types"
 
 import { XIcon } from "../../../shared/icons/X"
@@ -7,29 +5,27 @@ import { EditableText } from "../../../shared/controls/EditableText"
 import { Checkbox } from "../../../shared/controls/Checkbox"
 
 import "./Game.css"
+import { useStorageContext } from "../../../shared/FirebaseContext"
 
 export function Game({ game, path }: { game: GameDetails; path: string }) {
-  const storageContext = useContext(FirebaseContext)
-  if (!storageContext) {
-    throw new Error("Missing Firebase context provider")
-  }
+  const { updateItem, deleteItem } = useStorageContext()
 
   const updateTitle = (title: string) => {
-    storageContext.updateItem<GameDetails>(path, {
+    updateItem<GameDetails>(path, {
       ...game,
       title,
     })
   }
 
   const updateStatus = (status: GameDetails["status"]) => {
-    storageContext.updateItem<GameDetails>(path, {
+    updateItem<GameDetails>(path, {
       ...game,
       status,
     })
   }
 
   const deleteGame = () => {
-    storageContext.deleteItem(path, game)
+    deleteItem(path, game)
   }
 
   return (

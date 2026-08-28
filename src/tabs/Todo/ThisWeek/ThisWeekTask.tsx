@@ -1,7 +1,7 @@
-import { FormEvent, useContext, useMemo, useRef, useState } from "react"
+import { SubmitEvent, useContext, useMemo, useRef, useState } from "react"
 
 import "./ThisWeekTask.css"
-import { FirebaseContext } from "../../../shared/FirebaseContext"
+import { useStorageContext } from "../../../shared/FirebaseContext"
 import {
   DAILY_PATH,
   DayData,
@@ -25,15 +25,12 @@ export function ThisWeekTask({ task }: { task: WeeklyTask }) {
   const descriptionRef = useRef<HTMLInputElement>(null)
   const frequencyRef = useRef<HTMLInputElement>(null)
 
-  const storageContext = useContext(FirebaseContext)
-  if (!storageContext) {
-    throw new Error("Missing Firebase context provider")
-  }
+  const { updateItem, deleteItem, useValue } = useStorageContext()
   const onChange = (task: WeeklyTask) => {
-    storageContext.updateItem<WeeklyTask>(WEEKLY_KEY, task)
+    updateItem<WeeklyTask>(WEEKLY_KEY, task)
   }
 
-  const onSubmit = (event: FormEvent) => {
+  const onSubmit = (event: SubmitEvent) => {
     event.preventDefault()
     if (!descriptionRef.current || !frequencyRef.current) {
       return
@@ -41,7 +38,7 @@ export function ThisWeekTask({ task }: { task: WeeklyTask }) {
 
     const description = descriptionRef.current.value
     if (!description) {
-      storageContext.deleteItem<WeeklyTask>(WEEKLY_KEY, task)
+      deleteItem<WeeklyTask>(WEEKLY_KEY, task)
       return
     }
 
@@ -54,7 +51,7 @@ export function ThisWeekTask({ task }: { task: WeeklyTask }) {
       return
     }
 
-    storageContext.updateItem<WeeklyTask>(WEEKLY_KEY, {
+    updateItem<WeeklyTask>(WEEKLY_KEY, {
       ...task,
       description: descriptionRef.current.value,
       frequency: isNaN(frequency) ? task.frequency : frequency,
@@ -73,7 +70,7 @@ export function ThisWeekTask({ task }: { task: WeeklyTask }) {
   )
 
   const { day, month } = formatDate(new Date())
-  const { value: today } = storageContext.useValue<Record<string, DayData>>(
+  const { value: today } = useValue<Record<string, DayData>>(
     `${DAILY_PATH}/${day}${month}`,
   )
 
@@ -104,7 +101,7 @@ export function ThisWeekTask({ task }: { task: WeeklyTask }) {
 
     const habits =
       today?.habits ?? Object.fromEntries(HABITS.map((habit) => [habit, false]))
-    storageContext.updateItem<DayData>(DAILY_PATH, {
+    updateItem<DayData>(DAILY_PATH, {
       id: `${day}${month}`,
       habits: {
         ...habits,

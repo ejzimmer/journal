@@ -1,5 +1,5 @@
 import { ref, set, onValue, Database, push, remove } from "firebase/database"
-import { createContext, useEffect, useState } from "react"
+import { createContext, useContext, useEffect, useState } from "react"
 
 type Item = { id: string }
 
@@ -80,4 +80,13 @@ export function createFirebaseContext(database: Database): ContextType {
       return result
     },
   }
+}
+
+export function useStorageContext(): ContextType {
+  const context = useContext(FirebaseContext)
+  if (!context) {
+    throw new Error("Storage context not found")
+  }
+
+  return context
 }

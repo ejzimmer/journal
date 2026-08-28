@@ -1,5 +1,5 @@
-import { useContext, useState } from "react"
-import { FirebaseContext } from "../../../shared/FirebaseContext"
+import { useState } from "react"
+import { useStorageContext } from "../../../shared/FirebaseContext"
 import { EmojiCheckbox } from "../../../shared/controls/EmojiCheckbox"
 import { DayMonth } from "./types"
 import { CalorieForm } from "./CalorieForm"
@@ -11,10 +11,7 @@ type DayProps = DayData & { date: DayMonth; path: string; balance?: number }
 export function Day({ path, date, balance, ...props }: DayProps) {
   const [editingCalories, setEditingCalories] = useState(false)
 
-  const storageContext = useContext(FirebaseContext)
-  if (!storageContext) {
-    throw new Error("no storage context")
-  }
+  const { updateItem } = useStorageContext()
 
   const calorieFormIsVisible = editingCalories || typeof balance !== "number"
 
@@ -28,7 +25,7 @@ export function Day({ path, date, balance, ...props }: DayProps) {
           consumed={props.consumed}
           expended={props.expended}
           onSubmit={({ consumed, expended }) => {
-            storageContext.updateItem<DayData>(path, {
+            updateItem<DayData>(path, {
               ...props,
               consumed,
               expended,
@@ -47,7 +44,7 @@ export function Day({ path, date, balance, ...props }: DayProps) {
                 isChecked={!!props.habits?.[habit]}
                 label={habit}
                 onChange={() => {
-                  storageContext.updateItem(path, {
+                  updateItem(path, {
                     ...props,
                     habits: {
                       ...props.habits,
@@ -59,9 +56,7 @@ export function Day({ path, date, balance, ...props }: DayProps) {
             ))}
             <Trackers
               trackers={props.trackers}
-              onUpdate={(trackers) =>
-                storageContext.updateItem(path, { ...props, trackers })
-              }
+              onUpdate={(trackers) => updateItem(path, { ...props, trackers })}
             />
           </div>
           <div className="balance" onClick={() => setEditingCalories(true)}>

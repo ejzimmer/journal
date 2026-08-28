@@ -1,10 +1,9 @@
-import React from "react"
 import { addDays, differenceInCalendarDays, startOfDay } from "date-fns"
 import { useContext, useMemo, useState } from "react"
 
 import "./Days.css"
 import { Day } from "./Day"
-import { FirebaseContext } from "../../../shared/FirebaseContext"
+import { useStorageContext } from "../../../shared/FirebaseContext"
 import { TrackerContext } from "./types"
 import { EmojiCheckbox } from "../../../shared/controls/EmojiCheckbox"
 import { toggleListItem } from "./utils"
@@ -16,11 +15,8 @@ const STARTING_BALANCE = 19687
 export function DayList() {
   const [filters, setFilters] = useState<string[]>([])
 
-  const storageContext = useContext(FirebaseContext)
-  if (!storageContext) {
-    throw new Error("no storage context")
-  }
-  const { value } = storageContext.useValue<Record<string, DayData>>(DAILY_PATH)
+  const { useValue } = useStorageContext()
+  const { value } = useValue<Record<string, DayData>>(DAILY_PATH)
 
   const days = useMemo(() => setupDays(value), [value])
   const lowestBalance = useMemo(

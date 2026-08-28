@@ -1,5 +1,5 @@
-import { useContext, useMemo } from "react"
-import { FirebaseContext } from "../../../shared/FirebaseContext"
+import { useMemo } from "react"
+import { useStorageContext } from "../../../shared/FirebaseContext"
 import { Book, Reading } from "./Reading"
 
 import "./index.css"
@@ -21,12 +21,9 @@ const hasId = (book: Goal): book is Required<Goal> =>
   typeof book.id === "string"
 
 export function OtherGoals() {
-  const storageContext = useContext(FirebaseContext)
-  if (!storageContext) {
-    throw new Error("missing storage context")
-  }
+  const { useValue, updateItem, addItem } = useStorageContext()
 
-  const { value } = storageContext.useValue<Record<string, Goal>>(path)
+  const { value } = useValue<Record<string, Goal>>(path)
   const goals = useMemo(
     () =>
       value
@@ -39,9 +36,9 @@ export function OtherGoals() {
 
   const onUpdate = (goal: Goal) => {
     if (hasId(goal)) {
-      storageContext.updateItem(path, goal)
+      updateItem(path, goal)
     } else {
-      storageContext.addItem<Goal>(path, goal)
+      addItem<Goal>(path, goal)
     }
   }
 

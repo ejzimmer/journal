@@ -1,6 +1,6 @@
-import { useContext, useState } from "react"
+import { useState } from "react"
 import { FormControl } from "../../shared/controls/FormControl"
-import { FirebaseContext } from "../../shared/FirebaseContext"
+import { useStorageContext } from "../../shared/FirebaseContext"
 import { TickIcon } from "../../shared/icons/Tick"
 import {
   categories,
@@ -16,11 +16,8 @@ export function AddProjectForm() {
   const [description, setDescription] = useState("")
   const [category, setCategory] = useState<Category>("🧹")
 
-  const storageContext = useContext(FirebaseContext)
-  if (!storageContext) {
-    throw new Error("Missing Firebase context provider")
-  }
-  const { value } = storageContext.useValue(PROJECTS_KEY)
+  const { useValue, addItem } = useStorageContext()
+  const { value } = useValue(PROJECTS_KEY)
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
@@ -29,7 +26,7 @@ export function AddProjectForm() {
       return
     }
 
-    storageContext.addItem<ProjectDetails>(PROJECTS_KEY, {
+    addItem<ProjectDetails>(PROJECTS_KEY, {
       description,
       category,
       parentId: PROJECTS_KEY,

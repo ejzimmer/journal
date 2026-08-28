@@ -1,18 +1,14 @@
-import { useContext } from "react"
 import { KEY, Yarn } from "./types"
 
 import "./YarnState.css"
-import { FirebaseContext } from "../../../shared/FirebaseContext"
+import { useStorageContext } from "../../../shared/FirebaseContext"
 import { getHistoryByMonth } from "./utils"
 import { MonthlyBalance } from "./MonthlyBalance"
 
 export function YarnState() {
-  const storageContext = useContext(FirebaseContext)
-  if (!storageContext) {
-    throw new Error("Missing Firebase context provider")
-  }
+  const { useValue } = useStorageContext()
 
-  const { value } = storageContext.useValue<Yarn>(KEY)
+  const { value } = useValue<Yarn>(KEY)
 
   if (!value) {
     return <>Loading...</>

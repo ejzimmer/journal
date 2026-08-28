@@ -1,5 +1,5 @@
-import { CSSProperties, useContext, useState } from "react"
-import { FirebaseContext } from "../../shared/FirebaseContext"
+import { CSSProperties, useState } from "react"
+import { useStorageContext } from "../../shared/FirebaseContext"
 
 import "./Project.css"
 import { EmojiCheckbox } from "../../shared/controls/EmojiCheckbox"
@@ -57,10 +57,7 @@ export function Project({ project, onMoveToEnd, onDelete }: ProjectProps) {
   )
   const [hasOpenedSubtasks, setHasOpenedSubtasks] = useState(subtasksVisible)
 
-  const storageContext = useContext(FirebaseContext)
-  if (!storageContext) {
-    throw new Error("Missing Firebase context provider")
-  }
+  const { updateItem } = useStorageContext()
 
   const { createLinkedTask: createDailyTask, updateLinkedTask } =
     useLinkedTasks(project.linkedTaskId)
@@ -74,11 +71,11 @@ export function Project({ project, onMoveToEnd, onDelete }: ProjectProps) {
 
   const onChangeStatus = () => {
     if (project.status === "in_progress") {
-      storageContext.updateItem(PROJECTS_KEY, { ...project, status: "done" })
+      updateItem(PROJECTS_KEY, { ...project, status: "done" })
     } else if (project.status === "done") {
-      storageContext.updateItem(PROJECTS_KEY, { ...project, status: "ready" })
+      updateItem(PROJECTS_KEY, { ...project, status: "ready" })
     } else {
-      storageContext.updateItem(PROJECTS_KEY, {
+      updateItem(PROJECTS_KEY, {
         ...project,
         status: "in_progress",
       })
@@ -104,13 +101,10 @@ export function Project({ project, onMoveToEnd, onDelete }: ProjectProps) {
         })
 
         if (linkedId) {
-          storageContext.updateItem<ProjectSubtask>(
-            getSubtasksKey(project.id),
-            {
-              ...task,
-              linkedId,
-            },
-          )
+          updateItem<ProjectSubtask>(getSubtasksKey(project.id), {
+            ...task,
+            linkedId,
+          })
         }
       })
     } else {
@@ -121,7 +115,7 @@ export function Project({ project, onMoveToEnd, onDelete }: ProjectProps) {
       })
 
       if (linkedTaskId) {
-        storageContext.updateItem<ProjectDetails>(PROJECTS_KEY, {
+        updateItem<ProjectDetails>(PROJECTS_KEY, {
           ...project,
           linkedTaskId,
         })
@@ -137,7 +131,7 @@ export function Project({ project, onMoveToEnd, onDelete }: ProjectProps) {
     (!project.status || project.status === "ready") &&
     doneSubtasks.length > 0
   ) {
-    storageContext.updateItem<ProjectDetails>(PROJECTS_KEY, {
+    updateItem<ProjectDetails>(PROJECTS_KEY, {
       ...project,
       status: "in_progress",
     })
@@ -156,7 +150,7 @@ export function Project({ project, onMoveToEnd, onDelete }: ProjectProps) {
           label="project"
           value={project.description}
           onChange={(description) => {
-            storageContext.updateItem<ProjectDetails>(PROJECTS_KEY, {
+            updateItem<ProjectDetails>(PROJECTS_KEY, {
               ...project,
               description,
             })

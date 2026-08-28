@@ -1,5 +1,5 @@
-import { useContext, useMemo, useState } from "react"
-import { FirebaseContext } from "../../../shared/FirebaseContext"
+import { useMemo, useState } from "react"
+import { useStorageContext } from "../../../shared/FirebaseContext"
 import { DayData, DAILY_PATH } from "../../../shared/types"
 import { setupDays } from "../utils"
 import { Switch } from "../../../shared/controls/Switch"
@@ -12,11 +12,8 @@ type View = "週" | "日"
 export function Calories() {
   const [view, setView] = useState<View>("週")
 
-  const storageContext = useContext(FirebaseContext)
-  if (!storageContext) {
-    throw new Error("no storage context")
-  }
-  const { value } = storageContext.useValue<Record<string, DayData>>(DAILY_PATH)
+  const { useValue } = useStorageContext()
+  const { value } = useValue<Record<string, DayData>>(DAILY_PATH)
 
   const days = useMemo(() => setupDays(value), [value])
 

@@ -1,6 +1,6 @@
-import { ReactElement, useContext } from "react"
+import { ReactElement } from "react"
 import { Checkbox } from "../../shared/controls/Checkbox"
-import { FirebaseContext } from "../../shared/FirebaseContext"
+import { useStorageContext } from "../../shared/FirebaseContext"
 import { ProjectDetails, ProjectSubtask } from "../../shared/types"
 import { ButtonWithConfirmation } from "../../shared/controls/ButtonWithConfirmation"
 import { useLinkedTasks } from "./utils"
@@ -15,10 +15,7 @@ type SubtaskProps = ProjectSubtask & {
 }
 
 export function Subtask({ path, dragHandle, project, ...task }: SubtaskProps) {
-  const storageContext = useContext(FirebaseContext)
-  if (!storageContext) {
-    throw new Error("Missing Firebase context provider")
-  }
+  const { updateItem, deleteItem } = useStorageContext()
 
   const {
     linkedTask,
@@ -27,7 +24,7 @@ export function Subtask({ path, dragHandle, project, ...task }: SubtaskProps) {
   } = useLinkedTasks(task.linkedId)
 
   const updateTask = (task: ProjectSubtask) => {
-    storageContext.updateItem<ProjectSubtask>(path, task)
+    updateItem<ProjectSubtask>(path, task)
   }
 
   const onAddToTodo = () => {
@@ -78,7 +75,7 @@ export function Subtask({ path, dragHandle, project, ...task }: SubtaskProps) {
         onChange={(description) => {
           updateTask({ ...task, description })
         }}
-        onDelete={() => storageContext.deleteItem(path, task)}
+        onDelete={() => deleteItem(path, task)}
         style={{ fontSize: "1em" }}
       />
       {!linkedTask ? (

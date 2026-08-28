@@ -1,5 +1,5 @@
-import { Fragment, useContext } from "react"
-import { FirebaseContext } from "../../../shared/FirebaseContext"
+import { Fragment } from "react"
+import { useStorageContext } from "../../../shared/FirebaseContext"
 import { AuthorDetails, BOOKS_KEY } from "../types"
 import { EditableText } from "../../../shared/controls/EditableText"
 import { getComponent } from "./utils"
@@ -7,16 +7,13 @@ import { Book } from "./Book"
 import { Series } from "./Series"
 
 export function Author({ author }: { author: AuthorDetails }) {
-  const storageContext = useContext(FirebaseContext)
-  if (!storageContext) {
-    throw new Error("Missing Firebase context provider")
-  }
+  const { updateItem } = useStorageContext()
 
   const path = `${BOOKS_KEY}/${author.id}/items`
   const items = author.items ? Object.values(author.items) : undefined
 
   const updateAuthorName = (name: string) => {
-    storageContext.updateItem<AuthorDetails>(BOOKS_KEY, { ...author, name })
+    updateItem<AuthorDetails>(BOOKS_KEY, { ...author, name })
   }
 
   if (items === undefined || items.length === 0) {

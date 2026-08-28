@@ -2,8 +2,8 @@ import { endOfDay, isAfter, subDays } from "date-fns"
 import { AddThisWeekTaskForm } from "./AddThisWeekTaskForm"
 import { ThisWeekTask } from "./ThisWeekTask"
 import { WEEKLY_KEY, WeeklyTask } from "../../../shared/types"
-import { useContext, useRef } from "react"
-import { FirebaseContext } from "../../../shared/FirebaseContext"
+import { useRef } from "react"
+import { useStorageContext } from "../../../shared/FirebaseContext"
 
 export function refreshTasks(
   tasks: WeeklyTask[],
@@ -27,12 +27,8 @@ export function refreshTasks(
 
 export function ThisWeekList() {
   const listRef = useRef<HTMLOListElement>(null)
-  const storageContext = useContext(FirebaseContext)
-  if (!storageContext) {
-    throw new Error("Missing Firebase context provider")
-  }
-  const { value } =
-    storageContext.useValue<Record<string, WeeklyTask>>(WEEKLY_KEY)
+  const { useValue, updateItem } = useStorageContext()
+  const { value } = useValue<Record<string, WeeklyTask>>(WEEKLY_KEY)
 
   const taskOrder = useRef<string[]>([])
 
@@ -54,7 +50,7 @@ export function ThisWeekList() {
   const tasks = value ? taskOrder.current.map((id) => value[id]) : []
 
   refreshTasks(tasks, (task) => {
-    storageContext.updateItem<WeeklyTask>(WEEKLY_KEY, task)
+    updateItem<WeeklyTask>(WEEKLY_KEY, task)
   })
 
   return (
