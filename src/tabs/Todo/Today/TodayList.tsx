@@ -64,7 +64,7 @@ export function TodayList() {
     )
   }
 
-  useDailyReset(tasks)
+  useDailyReset()
 
   useDropTarget({
     dropTargetRef: listRef,
