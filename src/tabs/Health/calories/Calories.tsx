@@ -32,16 +32,16 @@ export function Calories() {
       </div>
       <div className="tracker-stage">
         <div
-          className={`tracker-pane ${view === "週" ? "active" : ""}`}
-          aria-hidden={view !== "週"}
-        >
-          <WeeklyCalorieTracker days={days} />
-        </div>
-        <div
           className={`tracker-pane ${view === "日" ? "active" : ""}`}
           aria-hidden={view !== "日"}
         >
           <Days days={days} />
+        </div>
+        <div
+          className={`tracker-pane ${view === "週" ? "active" : ""}`}
+          aria-hidden={view !== "週"}
+        >
+          <WeeklyCalorieTracker days={days} />
         </div>
       </div>
     </div>

@@ -1,0 +1,20 @@
+table.exercise-tracker {
+  border-collapse: collapse;
+  table-layout: fixed;
+  width: 100%;
+
+  th,
+  td {
+    border: 1px solid black;
+    padding: 8px;
+
+    .date {
+      font-weight: bold;
+    }
+
+    &:last-child {
+      border: none;
+      padding-inline: 0;
+    }
+  }
+}
