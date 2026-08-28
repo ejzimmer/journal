@@ -1,0 +1,21 @@
+.done-tick {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--success-colour);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  svg path {
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+    animation: draw-done-tick 0.3s ease forwards;
+  }
+}
+
+@keyframes draw-done-tick {
+  to {
+    stroke-dashoffset: 0;
+  }
+}

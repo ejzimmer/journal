@@ -14,7 +14,7 @@ export function TickIcon({
       width={width}
       fill="none"
     >
-      <path d="M2,12 L8,18 18,3" />
+      <path d="M2,12 L8,18 18,3" pathLength="1" />
     </svg>
   )
 }

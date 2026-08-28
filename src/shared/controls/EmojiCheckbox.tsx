@@ -1,4 +1,5 @@
 import { ChangeEvent } from "react"
+import { DoneTick } from "./DoneTick"
 import "./EmojiCheckbox.css"
 
 type EmojiCheckboxProps = {
@@ -6,6 +7,7 @@ type EmojiCheckboxProps = {
   isChecked: boolean
   onChange: (event: React.ChangeEvent<HTMLInputElement>) => void
   label: string
+  useTickForDone?: boolean
 }
 
 export function EmojiCheckbox({
@@ -13,16 +15,21 @@ export function EmojiCheckbox({
   isChecked,
   onChange,
   label,
+  useTickForDone,
 }: EmojiCheckboxProps) {
+  const checkedClass = isChecked ? (useTickForDone ? "done-icon" : "done") : ""
+
   return (
-    <label className={`emoji-checkbox ${isChecked ? "done" : ""}`}>
+    <label className={`emoji-checkbox ${checkedClass}`}>
       <input
         aria-label={label}
         type="checkbox"
         onChange={onChange}
         checked={isChecked}
       />
-      {typeof emoji === "string" ? (
+      {isChecked && useTickForDone ? (
+        <DoneTick />
+      ) : typeof emoji === "string" ? (
         emoji.startsWith(".") ? (
           <img
             src={emoji}
