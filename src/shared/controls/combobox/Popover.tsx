@@ -6,9 +6,12 @@ import { PopoverPlacement } from "./usePopoverPlacement"
 type PopoverProps<T> = {
   popoverRef: React.RefObject<HTMLDivElement | null>
   popoverId: string
-  anchorName: string
   placement: PopoverPlacement
-  maxHeight?: number
+  maxHeight: number
+  top?: number
+  bottom?: number
+  left: number
+  minWidth: number
   options: T[]
   selected?: T | T[]
   onClick: (option: T) => void
@@ -21,9 +24,12 @@ type PopoverProps<T> = {
 export function Popover<T extends OptionType>({
   popoverRef,
   popoverId,
-  anchorName,
   placement,
   maxHeight,
+  top,
+  bottom,
+  left,
+  minWidth,
   options,
   selected,
   onClick,
@@ -42,11 +48,18 @@ export function Popover<T extends OptionType>({
       popover="manual"
       data-testid="popover"
       id={popoverId}
-      className={placement === "above" ? "open-above" : ""}
+      data-placement={placement}
       style={
         {
-          positionAnchor: anchorName,
-          maxHeight: maxHeight !== undefined ? `${maxHeight}px` : undefined,
+          // The popover UA stylesheet defaults inset to 0, so the side we're
+          // not positioning from must be set to "auto" explicitly -
+          // otherwise that leftover 0 wins over the side we do set, once
+          // height ends up over-constrained between the two.
+          top: top !== undefined ? `${top}px` : "auto",
+          bottom: bottom !== undefined ? `${bottom}px` : "auto",
+          left: `${left}px`,
+          minWidth: `${minWidth}px`,
+          maxHeight: `${maxHeight}px`,
         } as React.CSSProperties
       }
     >
