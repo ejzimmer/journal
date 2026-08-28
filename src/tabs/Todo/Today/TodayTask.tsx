@@ -3,6 +3,7 @@ import { useStorageContext } from "../../../shared/FirebaseContext"
 import "./TodayTask.css"
 import { DailyTask, DAILY_KEY, ProjectSubtask } from "../../../shared/types"
 import { EditableDescription } from "../../../shared/controls/EditableDescription"
+import { DoneTick } from "./DoneTick"
 
 export function TodayTask({
   task,
@@ -46,6 +47,7 @@ export function TodayTask({
       category={task.category}
       description={task.description}
       isChecked={task.status !== "ready"}
+      doneIcon={<DoneTick />}
       onChange={(change) => {
         if ("isChecked" in change) {
           handleStatusChange()

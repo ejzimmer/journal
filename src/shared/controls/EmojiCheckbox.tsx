@@ -6,6 +6,7 @@ type EmojiCheckboxProps = {
   isChecked: boolean
   onChange: (event: React.ChangeEvent<HTMLInputElement>) => void
   label: string
+  doneIcon?: React.ReactElement
 }
 
 export function EmojiCheckbox({
@@ -13,16 +14,21 @@ export function EmojiCheckbox({
   isChecked,
   onChange,
   label,
+  doneIcon,
 }: EmojiCheckboxProps) {
+  const checkedClass = isChecked ? (doneIcon ? "done-icon" : "done") : ""
+
   return (
-    <label className={`emoji-checkbox ${isChecked ? "done" : ""}`}>
+    <label className={`emoji-checkbox ${checkedClass}`}>
       <input
         aria-label={label}
         type="checkbox"
         onChange={onChange}
         checked={isChecked}
       />
-      {typeof emoji === "string" ? (
+      {isChecked && doneIcon ? (
+        doneIcon
+      ) : typeof emoji === "string" ? (
         emoji.startsWith(".") ? (
           <img
             src={emoji}
