@@ -27,6 +27,7 @@ function Wrapper({ children }: { children: ReactNode }) {
         updateItem: jest.fn(),
         deleteItem: jest.fn(),
         updateList: jest.fn(),
+        setValue: jest.fn(),
         useValue: jest.fn().mockReturnValue({ value: yarnState }),
       }}
     >

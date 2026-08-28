@@ -13,6 +13,7 @@ export interface ContextType {
   updateItem: ParentCrudFunction
   deleteItem: ParentCrudFunction
   updateList: <T extends Item>(listName: string, list: T[]) => void
+  setValue: <T>(path: string, value: T) => void
   useValue: <T>(key?: string) => { value?: T; loading: boolean }
 }
 
@@ -51,6 +52,9 @@ export function createFirebaseContext(database: Database): ContextType {
         {} as Record<string, T>,
       )
       set(ref(database, listName), map)
+    },
+    setValue: (path, value) => {
+      set(ref(database, path), value)
     },
     useValue: (key?: string) => {
       const [result, setResult] = useState<any>({ loading: true })

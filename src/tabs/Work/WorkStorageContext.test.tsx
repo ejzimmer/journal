@@ -36,6 +36,7 @@ function createFirebaseContext(
     updateItem: jest.fn(),
     deleteItem: jest.fn(),
     updateList: jest.fn(),
+    setValue: jest.fn(),
     useValue: <T,>(key?: string) => {
       if (key === LABELS_KEY) {
         return {

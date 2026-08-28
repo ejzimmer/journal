@@ -10,6 +10,7 @@ const defaultMethods = {
   updateItem: jest.fn(),
   deleteItem: jest.fn(),
   updateList: jest.fn(),
+  setValue: jest.fn(),
   useValue: () => ({
     value: {
       "1": {

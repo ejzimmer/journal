@@ -7,6 +7,7 @@ export type TodoTask = OrderedListItem & {
 }
 
 export const DAILY_KEY = `${TODO_KEY}/日`
+export const DAILY_RESET_KEY = `${TODO_KEY}/dailyReset`
 export type DailyTaskDetails = {
   type: "毎日" | "一度"
   status: "ready" | "done" | "finished"

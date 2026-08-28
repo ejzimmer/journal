@@ -27,6 +27,7 @@ import {
   sortByPosition,
 } from "../../../shared/drag-and-drop/utils"
 import { formatDate } from "../../../shared/utils"
+import { useDailyReset } from "./useDailyReset"
 
 const updatedYesterday = (task: DailyTask, status: DailyTask["status"]) =>
   task.status === status && isBefore(task.lastCompleted, startOfDay(new Date()))
@@ -71,14 +72,7 @@ export function TodayList() {
     )
   }
 
-  const readyToReset = tasks.filter((task) => updatedYesterday(task, "done"))
-  readyToReset.forEach((task) =>
-    storageContext.updateItem<DailyTask>(DAILY_KEY, {
-      ...task,
-      status: "ready",
-      lastCompleted: new Date().getTime(),
-    }),
-  )
+  useDailyReset(tasks)
 
   useDropTarget({
     dropTargetRef: listRef,
