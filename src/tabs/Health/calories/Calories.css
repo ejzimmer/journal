@@ -140,7 +140,7 @@
     align-items: center;
     gap: 8px;
 
-    button {
+    button[type="submit"] {
       display: none;
     }
   }

@@ -1,4 +1,4 @@
-import { FormEvent, useEffect, useId, useRef, useState } from "react"
+import { FormEvent, useEffect, useId, useRef } from "react"
 import { FormControl } from "../../../shared/controls/FormControl"
 import { TickIcon } from "../../../shared/icons/Tick"
 import { XIcon } from "../../../shared/icons/X"
@@ -7,7 +7,7 @@ type CalorieFormProps = {
   date: { day: number; month: string }
   consumed?: number
   expended?: number
-  shouldShow: boolean
+  onClose: () => void
   onSubmit: ({
     consumed,
     expended,
@@ -21,29 +21,15 @@ export function CalorieForm({
   date,
   consumed,
   expended,
-  shouldShow,
+  onClose,
   onSubmit,
 }: CalorieFormProps) {
-  const [popoverDismissed, setPopoverDismissed] = useState(false)
   const popoverRef = useRef<HTMLDivElement>(null)
   const dateHeadingId = useId()
 
   useEffect(() => {
-    const popover = popoverRef.current
-    if (!popover) {
-      return
-    }
-
-    const isOpen = popover.matches(":popover-open")
-    if (shouldShow && !popoverDismissed && !isOpen) {
-      popover.showPopover()
-    }
-  }, [shouldShow, popoverDismissed])
-
-  const dismiss = () => {
-    setPopoverDismissed(true)
-    popoverRef.current?.hidePopover()
-  }
+    popoverRef.current?.showPopover()
+  }, [])
 
   const handleSubmit = (event: FormEvent) => {
     event.preventDefault()
@@ -61,7 +47,7 @@ export function CalorieForm({
       consumed: Number.parseInt(consumedInput.value),
       expended: Number.parseInt(expendedInput.value),
     })
-    popoverRef.current?.hidePopover()
+    onClose()
   }
 
   return (
@@ -73,11 +59,11 @@ export function CalorieForm({
       aria-labelledby={dateHeadingId}
       onToggle={(event) => {
         if (event.newState === "closed") {
-          setPopoverDismissed(true)
+          onClose()
         }
       }}
     >
-      <button className="icon ghost dismiss" aria-label="dismiss" onClick={dismiss}>
+      <button className="icon ghost dismiss" aria-label="dismiss" onClick={onClose}>
         <XIcon width="16px" />
       </button>
       <h2 id={dateHeadingId}>
@@ -98,7 +84,7 @@ export function CalorieForm({
           defaultValue={`${expended ?? ""}`}
           size={4}
         />
-        <button className="icon ghost">
+        <button type="submit" className="icon ghost">
           <TickIcon width="20px" colour="var(--success-colour)" />
         </button>
       </form>

@@ -12,6 +12,7 @@ type View = "週" | "日"
 
 export function Calories() {
   const [view, setView] = useState<View>("週")
+  const [dismissed, setDismissed] = useState(false)
 
   const { useValue } = useStorageContext()
   const { value } = useValue<Record<string, DayData>>(DAILY_PATH)
@@ -20,6 +21,7 @@ export function Calories() {
   const yesterday = days[days.length - 1]
   const yesterdayId = yesterday && `${yesterday.day}${yesterday.month}`
   const yesterdayData = yesterdayId ? value?.[yesterdayId] : undefined
+  const caloriesRecordedYesterday = typeof yesterday?.diff === "number"
 
   return (
     <div>
@@ -44,12 +46,12 @@ export function Calories() {
         >
           <WeeklyCalorieTracker days={days} />
         </div>
-        {yesterday && yesterdayId && (
+        {yesterday && yesterdayId && !caloriesRecordedYesterday && !dismissed && (
           <CalorieForm
             date={{ day: yesterday.day, month: yesterday.month }}
             consumed={yesterdayData?.consumed}
             expended={yesterdayData?.expended}
-            shouldShow={typeof yesterday.diff !== "number"}
+            onClose={() => setDismissed(true)}
             onSubmit={({ consumed, expended }) => {
               storageContext.updateItem<DayData>(DAILY_PATH, {
                 ...(yesterdayData ?? { id: yesterdayId }),
