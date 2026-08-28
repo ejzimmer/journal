@@ -2,7 +2,7 @@ import { useContext, useEffect, useMemo, useRef, useState } from "react"
 import { PlusIcon } from "../../shared/icons/Plus"
 import { TickIcon } from "../../shared/icons/Tick"
 import { XIcon } from "../../shared/icons/X"
-import { FirebaseContext } from "../../shared/FirebaseContext"
+import { useStorageContext } from "../../shared/FirebaseContext"
 import { CategoriesContext } from "."
 import { TodoTask } from "../../shared/types"
 import { FormControl } from "../../shared/controls/FormControl"
@@ -21,12 +21,8 @@ export function AddTaskForm<T>({
   getAdditionalFieldValues,
   children,
 }: AddTaskFormProps<T>) {
-  const storageContext = useContext(FirebaseContext)
-  if (!storageContext) {
-    throw new Error("Missing Firebase context provider")
-  }
-  const { value } =
-    storageContext.useValue<Record<string, T & TodoTask>>(listId)
+  const { useValue, addItem } = useStorageContext()
+  const { value } = useValue<Record<string, T & TodoTask>>(listId)
 
   const categories = useContext(CategoriesContext)
   if (!categories) {
@@ -68,7 +64,7 @@ export function AddTaskForm<T>({
       return
     }
 
-    storageContext.addItem<TodoTask & T>(listId, {
+    addItem<TodoTask & T>(listId, {
       description,
       category: category.label,
       position: value ? Object.keys(value).length : 0,
@@ -114,7 +110,11 @@ export function AddTaskForm<T>({
 
         {children}
         <div className="buttons">
-          <button type="submit" className="icon primary-clear" aria-label="Create">
+          <button
+            type="submit"
+            className="icon primary-clear"
+            aria-label="Create"
+          >
             <TickIcon width="20px" />
           </button>
           <button

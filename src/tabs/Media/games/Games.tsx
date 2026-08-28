@@ -1,9 +1,9 @@
-import { Fragment, useContext } from "react"
-import { FirebaseContext } from "../../../shared/FirebaseContext"
+import { Fragment } from "react"
 import { AddGameForm } from "./AddGameForm"
 import { GAMES_KEY, PlayingItemDetails } from "../types"
 import { Game } from "./Game"
 import { Series } from "./Series"
+import { useStorageContext } from "../../../shared/FirebaseContext"
 
 function getComponent<T extends PlayingItemDetails>(item: T) {
   switch (item.type) {
@@ -15,13 +15,9 @@ function getComponent<T extends PlayingItemDetails>(item: T) {
 }
 
 export function Games() {
-  const storageContext = useContext(FirebaseContext)
-  if (!storageContext) {
-    throw new Error("Missing Firebase context provider")
-  }
+  const { useValue } = useStorageContext()
 
-  const { value } =
-    storageContext.useValue<Record<string, PlayingItemDetails>>(GAMES_KEY)
+  const { value } = useValue<Record<string, PlayingItemDetails>>(GAMES_KEY)
   const items = value ? Object.values(value) : []
 
   return (

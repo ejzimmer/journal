@@ -1,8 +1,8 @@
 import { extractClosestEdge } from "@atlaskit/pragmatic-drag-and-drop-hitbox/closest-edge"
 import { reorderWithEdge } from "@atlaskit/pragmatic-drag-and-drop-hitbox/util/reorder-with-edge"
 import { monitorForElements } from "@atlaskit/pragmatic-drag-and-drop/element/adapter"
-import { useEffect, useCallback, useContext } from "react"
-import { FirebaseContext } from "../FirebaseContext"
+import { useEffect, useCallback } from "react"
+import { useStorageContext } from "../FirebaseContext"
 import {
   Draggable,
   DropTarget,
@@ -28,11 +28,7 @@ export function useDraggableList<
   getAxis,
   onMove,
 }: UseDraggableArgs<T>) {
-  const context = useContext(FirebaseContext)
-  if (!context) {
-    throw new Error("Missing Firebase context provider")
-  }
-  const { useValue, updateList, addItem, deleteItem } = context
+  const { useValue, updateList, addItem, deleteItem } = useStorageContext()
 
   const { value } = useValue<Record<string, T>>(listId)
 
