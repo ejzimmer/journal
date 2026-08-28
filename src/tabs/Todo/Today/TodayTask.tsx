@@ -1,5 +1,4 @@
-import { useContext } from "react"
-import { FirebaseContext } from "../../../shared/FirebaseContext"
+import { useStorageContext } from "../../../shared/FirebaseContext"
 
 import "./TodayTask.css"
 import { DailyTask, DAILY_KEY, ProjectSubtask } from "../../../shared/types"
@@ -12,14 +11,9 @@ export function TodayTask({
   task: DailyTask
   onChange: (task: DailyTask) => void
 }) {
-  const storageContext = useContext(FirebaseContext)
-  if (!storageContext) {
-    throw new Error("Missing Firebase context provider")
-  }
+  const { useValue, updateItem, deleteItem } = useStorageContext()
 
-  const { value: linkedTask } = storageContext.useValue<ProjectSubtask>(
-    task?.linkedTask,
-  )
+  const { value: linkedTask } = useValue<ProjectSubtask>(task?.linkedTask)
 
   const handleStatusChange = () => {
     if (task.status !== "ready") {
@@ -40,7 +34,7 @@ export function TodayTask({
       const segments = task.linkedTask.split("/")
       const path = segments.slice(0, segments.length - 1).join("/")
 
-      storageContext.updateItem<ProjectSubtask>(path, {
+      updateItem<ProjectSubtask>(path, {
         ...linkedTask,
         status: task.status === "finished" ? "ready" : "done",
       })
@@ -56,7 +50,7 @@ export function TodayTask({
         if ("isChecked" in change) {
           handleStatusChange()
         } else if ("description" in change && change.description === "") {
-          storageContext.deleteItem<DailyTask>(DAILY_KEY, task)
+          deleteItem<DailyTask>(DAILY_KEY, task)
         } else {
           onChange({ ...task, ...change })
         }

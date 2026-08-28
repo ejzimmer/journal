@@ -1,6 +1,5 @@
-import { useContext, useRef, useState } from "react"
+import { useRef, useState } from "react"
 import { FormControl } from "../../../shared/controls/FormControl"
-import { FirebaseContext } from "../../../shared/FirebaseContext"
 import {
   GameDetails,
   GAMES_KEY,
@@ -10,18 +9,15 @@ import {
 import { Combobox } from "../../../shared/controls/combobox/Combobox"
 import { OptionType } from "../../../shared/controls/combobox/types"
 import { SubmitButton } from "../SubmitButton"
+import { useStorageContext } from "../../../shared/FirebaseContext"
 
 export function AddGameForm() {
   const titleRef = useRef<HTMLInputElement>(null)
   const [series, setSeries] = useState<OptionType>()
 
-  const storageContext = useContext(FirebaseContext)
-  if (!storageContext) {
-    throw new Error("Missing storage context")
-  }
+  const { useValue, addItem } = useStorageContext()
 
-  const { value } =
-    storageContext.useValue<Record<string, ReadingItemDetails>>(GAMES_KEY)
+  const { value } = useValue<Record<string, ReadingItemDetails>>(GAMES_KEY)
   const seriesOptions = value
     ? Object.values(value)
         .filter((item) => item.type === "series")
@@ -34,7 +30,7 @@ export function AddGameForm() {
   ) => {
     const id =
       item.id === ""
-        ? storageContext.addItem(path, {
+        ? addItem(path, {
             type: item.type,
             name: item.name,
           })
@@ -62,7 +58,7 @@ export function AddGameForm() {
       )
     }
 
-    storageContext?.addItem<GameDetails>(path, {
+    addItem<GameDetails>(path, {
       type: "game",
       title,
     })

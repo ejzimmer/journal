@@ -1,5 +1,5 @@
-import { useContext, useEffect, useMemo, useRef, useState } from "react"
-import { FirebaseContext } from "../../shared/FirebaseContext"
+import { useEffect, useMemo, useRef, useState } from "react"
+import { useStorageContext } from "../../shared/FirebaseContext"
 import { PlusIcon } from "../../shared/icons/Plus"
 import { SortIcon } from "../../shared/icons/Sort"
 import { Subtask } from "./Subtask"
@@ -32,14 +32,10 @@ export function SubtaskList({ projectId, isVisible }: SubtasksProps) {
   const formContainerRef = useRef<HTMLDivElement>(null)
   const subtasksKey = getSubtasksKey(projectId)
 
-  const storageContext = useContext(FirebaseContext)
-  if (!storageContext) {
-    throw new Error("Missing Firebase context provider")
-  }
-  const { value } =
-    storageContext.useValue<Record<string, ProjectSubtask>>(subtasksKey)
+  const { useValue, addItem, updateList } = useStorageContext()
+  const { value } = useValue<Record<string, ProjectSubtask>>(subtasksKey)
   const subtasks = useMemo(() => (value ? Object.values(value) : []), [value])
-  const { value: project } = storageContext.useValue<ProjectDetails>(
+  const { value: project } = useValue<ProjectDetails>(
     `${PROJECTS_KEY}/${projectId}`,
   )
   const isProjectLoaded = Boolean(project)
@@ -47,7 +43,7 @@ export function SubtaskList({ projectId, isVisible }: SubtasksProps) {
   const onAddTask = (description: string) => {
     if (!project) return
 
-    storageContext.addItem<ProjectSubtask>(subtasksKey, {
+    addItem<ProjectSubtask>(subtasksKey, {
       description,
       status: "ready",
       category: project.category,
@@ -105,7 +101,7 @@ export function SubtaskList({ projectId, isVisible }: SubtasksProps) {
       )
       .map((task, index) => ({ ...task, position: index }))
 
-    storageContext.updateList<ProjectSubtask>(
+    updateList<ProjectSubtask>(
       subtasksKey,
       reordered.map(({ parentId, ...task }) => task),
     )
@@ -114,12 +110,12 @@ export function SubtaskList({ projectId, isVisible }: SubtasksProps) {
   useEffect(() => {
     const isMissingAPosition = subtasks.some((task) => task.position == null)
     if (isMissingAPosition) {
-      storageContext.updateList<ProjectSubtask>(
+      updateList<ProjectSubtask>(
         subtasksKey,
         sortedTasks.map(({ parentId, ...task }) => task),
       )
     }
-  }, [subtasks, sortedTasks, subtasksKey, storageContext])
+  }, [subtasks, sortedTasks, subtasksKey, updateList])
 
   if (!project) {
     return null
@@ -143,7 +139,7 @@ export function SubtaskList({ projectId, isVisible }: SubtasksProps) {
                 list={sortedTasks}
                 index={index}
                 onReorder={(tasks: OrderedListItem[]) => {
-                  storageContext.updateList(subtasksKey, tasks)
+                  updateList(subtasksKey, tasks)
                 }}
               />
             }

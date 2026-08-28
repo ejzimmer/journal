@@ -11,8 +11,8 @@ import {
   HABITS,
   isHabit,
 } from "../../../shared/types"
-import { useContext, useRef } from "react"
-import { FirebaseContext } from "../../../shared/FirebaseContext"
+import { useRef } from "react"
+import { useStorageContext } from "../../../shared/FirebaseContext"
 import { DraggableListItem } from "../../../shared/drag-and-drop/DraggableListItem"
 import {
   draggableTypeKey,
@@ -34,18 +34,12 @@ const updatedYesterday = (task: DailyTask, status: DailyTask["status"]) =>
 
 export function TodayList() {
   const listRef = useRef<HTMLOListElement>(null)
-  const storageContext = useContext(FirebaseContext)
-  if (!storageContext) {
-    throw new Error("Missing Firebase context provider")
-  }
-  const { value } =
-    storageContext.useValue<Record<string, DailyTask>>(DAILY_KEY)
+  const { useValue, deleteItem, updateList, updateItem } = useStorageContext()
+  const { value } = useValue<Record<string, DailyTask>>(DAILY_KEY)
   const tasks = value ? sortByPosition(Object.values(value)) : []
 
   const { day, month } = formatDate(new Date())
-  const { value: today } = storageContext.useValue<DayData>(
-    `${DAILY_PATH}/${day}${month}`,
-  )
+  const { value: today } = useValue<DayData>(`${DAILY_PATH}/${day}${month}`)
 
   const { finishedTasks, unfinishedTasks } = tasks.reduce(
     (sortedTasks: Record<string, DailyTask[]>, task) => {
@@ -62,11 +56,9 @@ export function TodayList() {
     },
   )
 
-  finishedTasks.forEach((task) =>
-    storageContext.deleteItem<DailyTask>(DAILY_KEY, task),
-  )
+  finishedTasks.forEach((task) => deleteItem<DailyTask>(DAILY_KEY, task))
   if (finishedTasks.length) {
-    storageContext.updateList(
+    updateList(
       DAILY_KEY,
       unfinishedTasks.map((task, index) => ({ ...task, position: index })),
     )
@@ -110,7 +102,7 @@ export function TodayList() {
                   list={tasks}
                   index={index}
                   onReorder={(tasks: OrderedListItem[]) => {
-                    storageContext.updateList(DAILY_KEY, tasks)
+                    updateList(DAILY_KEY, tasks)
                   }}
                 />
               }
@@ -118,7 +110,7 @@ export function TodayList() {
               <TodayTask
                 task={task}
                 onChange={(task: DailyTask) => {
-                  storageContext.updateItem<DailyTask>(DAILY_KEY, task)
+                  updateItem<DailyTask>(DAILY_KEY, task)
 
                   if (!isHabit(task.category)) {
                     return
@@ -134,7 +126,7 @@ export function TodayList() {
                   const habits =
                     today?.habits ??
                     Object.fromEntries(HABITS.map((habit) => [habit, false]))
-                  storageContext.updateItem<DayData>(DAILY_PATH, {
+                  updateItem<DayData>(DAILY_PATH, {
                     id: `${day}${month}`,
                     habits: {
                       ...habits,

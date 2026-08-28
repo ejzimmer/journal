@@ -7,6 +7,14 @@
       inset 2px 2px 5px hsl(0 0% 0% / 0.35),
       inset -1px -1px 2px hsl(0 0% 100% / 0.6);
 
+    &:focus-within {
+      outline: none;
+      box-shadow:
+        0 0 4px 1px hsl(211 81% 55% / 0.6),
+        0 0 14px 6px hsl(211 81% 55% / 0.45),
+        inset 0 0 6px hsl(211 81% 55% / 0.3);
+    }
+
     label {
       padding-block: 4px;
 
@@ -20,6 +28,7 @@
 
       &:has(input:checked) {
         color: var(--action-colour-dark);
+        text-shadow: 1px 1px hsl(211 81% 55% / 0.6);
       }
     }
 
@@ -55,18 +64,19 @@
 
 .tracker-stage {
   position: relative;
-  height: 212px;
   width: 100%;
-  margin-block-start: 16px;
 }
 
 .tracker-pane {
-  position: absolute;
-  inset: 0;
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.35s ease-out;
   visibility: hidden;
+
+  &:not(:first-child) {
+    position: absolute;
+    inset: 0;
+  }
 
   &.active {
     opacity: 1;

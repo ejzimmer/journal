@@ -1,5 +1,5 @@
-import { useContext, useRef, useState } from "react"
-import { FirebaseContext } from "../../../shared/FirebaseContext"
+import { useRef, useState } from "react"
+import { useStorageContext } from "../../../shared/FirebaseContext"
 import { KEY, Yarn, YarnType } from "./types"
 import { Switch } from "../../../shared/controls/Switch"
 
@@ -8,11 +8,8 @@ import { TickIcon } from "../../../shared/icons/Tick"
 import { getMonthId } from "./utils"
 
 export function YarnTrackingForm() {
-  const storageContext = useContext(FirebaseContext)
-  if (!storageContext) {
-    throw new Error("Missing Firebase context provider")
-  }
-  const { value } = storageContext.useValue<Yarn>(KEY)
+  const { useValue, updateItem } = useStorageContext()
+  const { value } = useValue<Yarn>(KEY)
   const yarnTypes = Object.keys(value ?? {})
 
   const yarnTypeRef = useRef<HTMLSelectElement>(null)
@@ -43,7 +40,7 @@ export function YarnTrackingForm() {
     const today = new Date()
     const key = getMonthId(today.getFullYear(), today.getMonth())
 
-    storageContext.updateItem<YarnType>(`${KEY}`, {
+    updateItem<YarnType>(`${KEY}`, {
       id: yarnType,
       history: {
         ...yarnDetails.history,

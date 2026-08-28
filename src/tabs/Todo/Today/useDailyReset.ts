@@ -1,6 +1,6 @@
-import { useContext, useEffect } from "react"
+import { useEffect } from "react"
 import { isBefore, startOfDay } from "date-fns"
-import { FirebaseContext } from "../../../shared/FirebaseContext"
+import { useStorageContext } from "../../../shared/FirebaseContext"
 import { DAILY_KEY, DAILY_RESET_KEY, DailyTask } from "../../../shared/types"
 
 // Resets "done" everyday tasks back to "ready" once a day. Guarded by a
@@ -8,13 +8,9 @@ import { DAILY_KEY, DAILY_RESET_KEY, DailyTask } from "../../../shared/types"
 // timestamp, so the reset only runs (and writes) once per day rather than
 // once per task per render.
 export function useDailyReset(tasks: DailyTask[]) {
-  const storageContext = useContext(FirebaseContext)
-  if (!storageContext) {
-    throw new Error("Missing Firebase context provider")
-  }
+  const { useValue, updateItem, setValue } = useStorageContext()
 
-  const { value: lastReset, loading } =
-    storageContext.useValue<number>(DAILY_RESET_KEY)
+  const { value: lastReset, loading } = useValue<number>(DAILY_RESET_KEY)
 
   useEffect(() => {
     if (loading) return
@@ -24,14 +20,14 @@ export function useDailyReset(tasks: DailyTask[]) {
     tasks
       .filter((task) => task.status === "done")
       .forEach((task) =>
-        storageContext.updateItem<DailyTask>(DAILY_KEY, {
+        updateItem<DailyTask>(DAILY_KEY, {
           ...task,
           status: "ready",
           lastCompleted: new Date().getTime(),
         }),
       )
 
-    storageContext.setValue(DAILY_RESET_KEY, new Date().getTime())
+    setValue(DAILY_RESET_KEY, new Date().getTime())
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [loading, lastReset])
 }

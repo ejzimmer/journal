@@ -3,8 +3,7 @@ import { AddDueDateTaskForm } from "./AddDueDateTaskForm"
 import { DueDateTask } from "./DueDateTask"
 
 import "./DueDateTask.css"
-import { useContext } from "react"
-import { FirebaseContext } from "../../../shared/FirebaseContext"
+import { useStorageContext } from "../../../shared/FirebaseContext"
 import { CalendarTask, CALENDAR_KEY } from "../../../shared/types"
 
 const readyToDelete = (task: CalendarTask) => {
@@ -19,25 +18,21 @@ const readyToDelete = (task: CalendarTask) => {
 const taskIsToday = (task: CalendarTask) => isSameDay(task.dueDate, new Date())
 
 export function DueDateList() {
-  const storageContext = useContext(FirebaseContext)
-  if (!storageContext) {
-    throw new Error("Missing Firebase context provider")
-  }
-  const { value } =
-    storageContext.useValue<Record<string, CalendarTask>>(CALENDAR_KEY)
+  const { useValue, deleteItem, updateItem } = useStorageContext()
+  const { value } = useValue<Record<string, CalendarTask>>(CALENDAR_KEY)
   const tasks = value ? Object.values(value) : []
 
   const readyToReset = tasks.some(readyToDelete)
   if (readyToReset) {
     const finishedTasks = tasks.filter(readyToDelete)
     finishedTasks.forEach((task) =>
-      storageContext.deleteItem<CalendarTask>(CALENDAR_KEY, task),
+      deleteItem<CalendarTask>(CALENDAR_KEY, task),
     )
     const todayTasks = tasks.filter(
       (task) => taskIsToday(task) && task.status === "paused",
     )
     todayTasks.forEach((task) =>
-      storageContext.updateItem(CALENDAR_KEY, { ...task, status: "ready" }),
+      updateItem(CALENDAR_KEY, { ...task, status: "ready" }),
     )
   }
 

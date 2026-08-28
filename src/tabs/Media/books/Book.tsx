@@ -1,5 +1,4 @@
-import { useContext } from "react"
-import { FirebaseContext } from "../../../shared/FirebaseContext"
+import { useStorageContext } from "../../../shared/FirebaseContext"
 import { BookDetails } from "../types"
 
 import { EditableText } from "../../../shared/controls/EditableText"
@@ -17,20 +16,17 @@ type BookProps = {
 }
 
 export function Book({ book, path, author }: BookProps) {
-  const storageContext = useContext(FirebaseContext)
-  if (!storageContext) {
-    throw new Error("Missing Firebase context provider")
-  }
+  const { updateItem, deleteItem } = useStorageContext()
 
   const updateTitle = (title: string) => {
-    storageContext.updateItem<BookDetails>(path, {
+    updateItem<BookDetails>(path, {
       ...book,
       title,
     })
   }
 
   const toggleDone = () => {
-    storageContext.updateItem<BookDetails>(path, {
+    updateItem<BookDetails>(path, {
       ...book,
       isDone: !book.isDone,
     })
@@ -39,14 +35,14 @@ export function Book({ book, path, author }: BookProps) {
   const updateMedium = () => {
     const medium =
       book.medium == null ? "📖" : book.medium === "📖" ? "🎧" : null
-    storageContext.updateItem<BookDetails>(path, {
+    updateItem<BookDetails>(path, {
       ...book,
       medium,
     })
   }
 
   const deleteBook = () => {
-    storageContext.deleteItem(path, book)
+    deleteItem(path, book)
   }
 
   return (
