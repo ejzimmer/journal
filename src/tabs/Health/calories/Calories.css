@@ -65,6 +65,7 @@
 .tracker-stage {
   position: relative;
   width: 100%;
+  anchor-name: --tracker-stage;
 }
 
 .tracker-pane {
@@ -93,4 +94,54 @@
 
 .tracker-pane.active .day-grid .day-circle {
   animation: pop-in 0.4s ease-out both;
+}
+
+.calorie-form-card {
+  position: absolute;
+  inset: unset;
+  margin: 0;
+  position-anchor: --tracker-stage;
+  position-area: center;
+  background: white;
+  width: 200px;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  border: none;
+  padding: 0;
+  box-shadow: 2px 2px 12px hsl(0 0% 0% / 0.25);
+
+  /* the UA stylesheet hides a closed popover via a non-!important display:
+     none, so anything that sets display here must stay scoped to the open
+     state - otherwise this rule would win the cascade and defeat it */
+  &:popover-open {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+  }
+
+  &::backdrop {
+    background: hsl(0 0% 100% / 0.6);
+  }
+
+  .dismiss {
+    position: absolute;
+    top: 42px;
+    right: 42px;
+  }
+
+  h2 {
+    margin: 0;
+    font-size: 14px;
+  }
+
+  form {
+    align-items: center;
+    gap: 8px;
+
+    button[type="submit"] {
+      display: none;
+    }
+  }
 }

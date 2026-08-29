@@ -4,6 +4,9 @@ import { BrowserRouter } from "react-router-dom"
 
 import "./index.css"
 import { App } from "./App"
+import { AppUpdateBanner } from "./shared/AppUpdateBanner"
+import { setWaitingRegistration } from "./shared/appUpdateStore"
+import * as serviceWorkerRegistration from "./serviceWorkerRegistration"
 
 import { initializeApp } from "firebase/app"
 import { getDatabase } from "firebase/database"
@@ -37,5 +40,8 @@ root.render(
         <App />
       </BrowserRouter>
     </FirebaseContext.Provider>
+    <AppUpdateBanner />
   </React.StrictMode>,
 )
+
+serviceWorkerRegistration.register({ onUpdate: setWaitingRegistration })

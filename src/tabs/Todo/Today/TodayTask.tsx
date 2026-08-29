@@ -46,6 +46,7 @@ export function TodayTask({
       category={task.category}
       description={task.description}
       isChecked={task.status !== "ready"}
+      useTickForDone
       onChange={(change) => {
         if ("isChecked" in change) {
           handleStatusChange()

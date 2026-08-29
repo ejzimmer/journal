@@ -1,6 +1,6 @@
 import { useContext } from "react"
 import { render, screen } from "@testing-library/react"
-import { FirebaseContext } from "../../shared/FirebaseContext"
+import { renderWithStorage } from "../../shared/storageContextTestUtils"
 import {
   WorkStorageContext,
   WorkStorageContextType,
@@ -66,12 +66,11 @@ function getWorkStorage(
   firebaseContext: ReturnType<typeof createFirebaseContext>,
 ) {
   let captured: WorkStorageContextType | undefined
-  render(
-    <FirebaseContext.Provider value={firebaseContext}>
-      <WorkStorageProvider>
-        <Probe onReady={(context) => (captured = context)} />
-      </WorkStorageProvider>
-    </FirebaseContext.Provider>,
+  renderWithStorage(
+    <WorkStorageProvider>
+      <Probe onReady={(context) => (captured = context)} />
+    </WorkStorageProvider>,
+    { value: firebaseContext },
   )
   return captured
 }
@@ -248,7 +247,7 @@ describe("WorkStorageContext", () => {
           <></>
         </WorkStorageProvider>,
       ),
-    ).toThrow("Missing Firebase context provider")
+    ).toThrow("Storage context not found")
 
     consoleError.mockRestore()
   })
@@ -753,12 +752,11 @@ describe("WorkStorageContext labels", () => {
 describe("Work storage screen render smoke test", () => {
   it("renders children once lists have loaded", () => {
     const firebaseContext = createFirebaseContext({ [list.id]: list })
-    render(
-      <FirebaseContext.Provider value={firebaseContext}>
-        <WorkStorageProvider>
-          <div>ready</div>
-        </WorkStorageProvider>
-      </FirebaseContext.Provider>,
+    renderWithStorage(
+      <WorkStorageProvider>
+        <div>ready</div>
+      </WorkStorageProvider>,
+      { value: firebaseContext },
     )
 
     expect(screen.getByText("ready")).toBeInTheDocument()

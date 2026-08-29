@@ -26,7 +26,8 @@
       height: 25px;
 
       &.done-today {
-        border-color: hsla(261, 82%, 63%, 0.877);
+        --light: hsl(211, 81%, 66%);
+        --dark: hsl(211, 81%, 36%);
       }
 
       &::-moz-progress-bar {
@@ -39,6 +40,7 @@
             var(--dark)
           ),
           linear-gradient(var(--dark), var(--light), var(--dark));
+        opacity: var(--fill-opacity, 1);
       }
       &::-webkit-progress-value {
         background:
@@ -52,6 +54,7 @@
           linear-gradient(var(--dark), var(--light), var(--dark));
         border-top-left-radius: 100px;
         border-bottom-left-radius: 100px;
+        opacity: var(--fill-opacity, 1);
       }
 
       &.full::-webkit-progress-value {

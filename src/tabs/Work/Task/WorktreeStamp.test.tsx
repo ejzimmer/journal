@@ -47,6 +47,9 @@ describe("WorktreeStamp", () => {
     render(<WorktreeStamp worktree="wt2" onChange={onChange} />)
 
     await user.click(
+      screen.getByRole("button", { name: "Change worktree, currently WT2" }),
+    )
+    await user.click(
       screen.getByRole("button", {
         name: "Remove worktree stamp",
         hidden: true,

@@ -84,7 +84,10 @@ describe("Combobox", () => {
 
     options.forEach((option) => {
       expect(
-        screen.getByRole("option", { name: `custom: ${option.label}` })
+        screen.getByRole("option", {
+          name: `custom: ${option.label}`,
+          hidden: true,
+        })
       ).toBeInTheDocument()
     })
   })
@@ -111,7 +114,7 @@ describe("Combobox", () => {
 
       options.forEach((option) => {
         expect(
-          screen.getByRole("option", { name: option.label })
+          screen.getByRole("option", { name: option.label, hidden: true })
         ).toHaveAttribute("aria-selected", option === value ? "true" : "false")
       })
     })
@@ -274,7 +277,7 @@ describe("Combobox", () => {
 
       options.forEach((option) => {
         expect(
-          screen.getByRole("option", { name: option.label })
+          screen.getByRole("option", { name: option.label, hidden: true })
         ).toHaveAttribute(
           "aria-selected",
           value.includes(option) ? "true" : "false"

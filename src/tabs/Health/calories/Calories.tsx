@@ -5,17 +5,23 @@ import { setupDays } from "../utils"
 import { Switch } from "../../../shared/controls/Switch"
 import { Days } from "./Days"
 import { WeeklyCalorieTracker } from "./WeeklyCalorieTracker"
+import { CalorieForm } from "./CalorieForm"
 import "./Calories.css"
 
 type View = "週" | "日"
 
 export function Calories() {
   const [view, setView] = useState<View>("週")
+  const [dismissed, setDismissed] = useState(false)
 
-  const { useValue } = useStorageContext()
+  const { useValue, updateItem } = useStorageContext()
   const { value } = useValue<Record<string, DayData>>(DAILY_PATH)
 
   const days = useMemo(() => setupDays(value), [value])
+  const yesterday = days[days.length - 1]
+  const yesterdayId = yesterday && `${yesterday.day}${yesterday.month}`
+  const yesterdayData = yesterdayId ? value?.[yesterdayId] : undefined
+  const caloriesRecordedYesterday = typeof yesterday?.diff === "number"
 
   return (
     <div>
@@ -40,6 +46,22 @@ export function Calories() {
         >
           <WeeklyCalorieTracker days={days} />
         </div>
+        {yesterday && yesterdayId && !caloriesRecordedYesterday && !dismissed && (
+          <CalorieForm
+            date={{ day: yesterday.day, month: yesterday.month }}
+            consumed={yesterdayData?.consumed}
+            expended={yesterdayData?.expended}
+            onClose={() => setDismissed(true)}
+            onSubmit={({ consumed, expended }) => {
+              updateItem<DayData>(DAILY_PATH, {
+                ...(yesterdayData ?? { id: yesterdayId }),
+                id: yesterdayId,
+                consumed,
+                expended,
+              })
+            }}
+          />
+        )}
       </div>
     </div>
   )

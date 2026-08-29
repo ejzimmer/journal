@@ -1,58 +1,33 @@
-import { render, screen } from "@testing-library/react"
+import { screen } from "@testing-library/react"
 import { AddBookForm } from "./AddBookForm"
 import userEvent from "@testing-library/user-event"
-import { ReactNode } from "react"
-import { ContextType, FirebaseContext } from "../../../shared/FirebaseContext"
-import { BOOKS_KEY } from "../types"
+import { BOOKS_KEY, ReadingItemDetails } from "../types"
+import { renderWithStorage } from "../../../shared/storageContextTestUtils"
 
-const defaultMethods = {
-  addItem: jest.fn(),
-  updateItem: jest.fn(),
-  deleteItem: jest.fn(),
-  updateList: jest.fn(),
-  setValue: jest.fn(),
-  useValue: () => ({
-    value: {
-      "1": {
-        id: "1",
-        type: "author",
-        name: "Terry Pratchett",
-        items: { "4": { id: "4", type: "series", name: "Discworld" } },
-      },
-      "2": { id: "2", type: "author", name: "Ursula Le Guin" },
-      "3": { id: "3", type: "series", name: "Earthsea" },
-    },
-    loading: false,
-  }),
-} as ContextType
+const booksValue: Record<string, ReadingItemDetails> = {
+  "1": {
+    id: "1",
+    type: "author",
+    name: "Terry Pratchett",
+    items: { "4": { id: "4", type: "series", name: "Discworld" } },
+  },
+  "2": { id: "2", type: "author", name: "Ursula Le Guin" },
+  "3": { id: "3", type: "series", name: "Earthsea" },
+}
+
+function useValue<T>() {
+  return { value: booksValue as T, loading: false }
+}
 
 const getId = (_: string, { type }: any) =>
   type === "author" ? "author_id" : "series_id"
-
-function Context({
-  overrideMethods = {},
-  children,
-}: {
-  overrideMethods: Partial<ContextType>
-  children: ReactNode
-}) {
-  return (
-    <FirebaseContext.Provider value={{ ...defaultMethods, ...overrideMethods }}>
-      {children}
-    </FirebaseContext.Provider>
-  )
-}
 
 describe("AddBookForm", () => {
   describe("when the user enters a book title & submits the form", () => {
     it("creates a new book", async () => {
       const user = userEvent.setup()
       const addItem = jest.fn()
-      render(<AddBookForm />, {
-        wrapper: (props) => (
-          <Context {...props} overrideMethods={{ addItem }} />
-        ),
-      })
+      renderWithStorage(<AddBookForm />, { value: { addItem, useValue } })
 
       await user.type(
         screen.getByRole("textbox", { name: "Book title" }),
@@ -70,11 +45,7 @@ describe("AddBookForm", () => {
     it("creates a new author and adds the new book to their items", async () => {
       const user = userEvent.setup()
       const addItem = jest.fn().mockReturnValue("1234")
-      render(<AddBookForm />, {
-        wrapper: (props) => (
-          <Context {...props} overrideMethods={{ addItem }} />
-        ),
-      })
+      renderWithStorage(<AddBookForm />, { value: { addItem, useValue } })
 
       await user.type(
         screen.getByRole("textbox", { name: "Book title" }),
@@ -101,17 +72,15 @@ describe("AddBookForm", () => {
     it("adds the new book to the existing author", async () => {
       const user = userEvent.setup()
       const addItem = jest.fn().mockReturnValue("1234")
-      render(<AddBookForm />, {
-        wrapper: (props) => (
-          <Context {...props} overrideMethods={{ addItem }} />
-        ),
-      })
+      renderWithStorage(<AddBookForm />, { value: { addItem, useValue } })
 
       await user.type(
         screen.getByRole("textbox", { name: "Book title" }),
         "The Left Hand of Darkness"
       )
-      await user.click(screen.getByRole("option", { name: "Ursula Le Guin" }))
+      await user.click(
+        screen.getByRole("option", { name: "Ursula Le Guin", hidden: true }),
+      )
       await user.click(screen.getByRole("button", { name: "Create" }))
 
       expect(addItem).toHaveBeenCalledWith(`${BOOKS_KEY}/2/items`, {
@@ -125,11 +94,7 @@ describe("AddBookForm", () => {
     it("creates a new series and adds the new book to their items", async () => {
       const user = userEvent.setup()
       const addItem = jest.fn().mockReturnValue("1212")
-      render(<AddBookForm />, {
-        wrapper: (props) => (
-          <Context {...props} overrideMethods={{ addItem }} />
-        ),
-      })
+      renderWithStorage(<AddBookForm />, { value: { addItem, useValue } })
 
       await user.type(
         screen.getByRole("textbox", { name: "Book title" }),
@@ -156,17 +121,15 @@ describe("AddBookForm", () => {
     it("adds the new book to the existing author", async () => {
       const user = userEvent.setup()
       const addItem = jest.fn().mockReturnValue("1234")
-      render(<AddBookForm />, {
-        wrapper: (props) => (
-          <Context {...props} overrideMethods={{ addItem }} />
-        ),
-      })
+      renderWithStorage(<AddBookForm />, { value: { addItem, useValue } })
 
       await user.type(
         screen.getByRole("textbox", { name: "Book title" }),
         "The Tombs of Atuan"
       )
-      await user.click(screen.getByRole("option", { name: "Earthsea" }))
+      await user.click(
+        screen.getByRole("option", { name: "Earthsea", hidden: true }),
+      )
       await user.click(screen.getByRole("button", { name: "Create" }))
 
       expect(addItem).toHaveBeenCalledWith(`${BOOKS_KEY}/3/items`, {
@@ -180,11 +143,7 @@ describe("AddBookForm", () => {
     it("adds the new book to the existing author", async () => {
       const user = userEvent.setup()
       const addItem = jest.fn().mockImplementation(getId)
-      render(<AddBookForm />, {
-        wrapper: (props) => (
-          <Context {...props} overrideMethods={{ addItem }} />
-        ),
-      })
+      renderWithStorage(<AddBookForm />, { value: { addItem, useValue } })
 
       await user.type(
         screen.getByRole("textbox", { name: "Book title" }),
@@ -223,11 +182,7 @@ describe("AddBookForm", () => {
     it("adds the new book to the existing author", async () => {
       const user = userEvent.setup()
       const addItem = jest.fn().mockImplementation(getId)
-      render(<AddBookForm />, {
-        wrapper: (props) => (
-          <Context {...props} overrideMethods={{ addItem }} />
-        ),
-      })
+      renderWithStorage(<AddBookForm />, { value: { addItem, useValue } })
 
       await user.type(
         screen.getByRole("textbox", { name: "Book title" }),
@@ -262,11 +217,7 @@ describe("AddBookForm", () => {
     it("adds the new book to the existing author & series", async () => {
       const user = userEvent.setup()
       const addItem = jest.fn().mockImplementation(getId)
-      render(<AddBookForm />, {
-        wrapper: (props) => (
-          <Context {...props} overrideMethods={{ addItem }} />
-        ),
-      })
+      renderWithStorage(<AddBookForm />, { value: { addItem, useValue } })
 
       await user.type(
         screen.getByRole("textbox", { name: "Book title" }),
@@ -291,11 +242,7 @@ describe("AddBookForm", () => {
     it("only shows the series for the selected author", async () => {
       const user = userEvent.setup()
       const addItem = jest.fn().mockImplementation(getId)
-      render(<AddBookForm />, {
-        wrapper: (props) => (
-          <Context {...props} overrideMethods={{ addItem }} />
-        ),
-      })
+      renderWithStorage(<AddBookForm />, { value: { addItem, useValue } })
 
       await user.type(
         screen.getByRole("textbox", { name: "Book title" }),
@@ -307,10 +254,10 @@ describe("AddBookForm", () => {
       )
 
       expect(
-        screen.getByRole("option", { name: "Discworld" })
+        screen.getByRole("option", { name: "Discworld", hidden: true })
       ).toBeInTheDocument()
       expect(
-        screen.queryByRole("option", { name: "Earthsea" })
+        screen.queryByRole("option", { name: "Earthsea", hidden: true })
       ).not.toBeInTheDocument()
     })
   })
@@ -319,11 +266,7 @@ describe("AddBookForm", () => {
     it("clears the form", async () => {
       const user = userEvent.setup()
       const addItem = jest.fn().mockImplementation(getId)
-      render(<AddBookForm />, {
-        wrapper: (props) => (
-          <Context {...props} overrideMethods={{ addItem }} />
-        ),
-      })
+      renderWithStorage(<AddBookForm />, { value: { addItem, useValue } })
 
       await user.type(
         screen.getByRole("textbox", { name: "Book title" }),
