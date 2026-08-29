@@ -1,9 +1,6 @@
 import { IconProps } from "./types"
 
-export function SortIcon({
-  width = "100%",
-  colour = "currentColor",
-}: IconProps) {
+export function SortIcon({ colour = "currentColor", ...props }: IconProps) {
   return (
     <svg
       viewBox="0 0 20 20"
@@ -11,8 +8,9 @@ export function SortIcon({
       strokeWidth="4"
       strokeLinecap="round"
       strokeLinejoin="round"
-      width={width}
       fill="none"
+      width="100%"
+      {...props}
     >
       <path d="M2,6 L5,2 8,6" />
       <path d="M5,2 L5,15" />

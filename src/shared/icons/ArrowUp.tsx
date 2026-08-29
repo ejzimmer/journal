@@ -1,9 +1,6 @@
 import { IconProps } from "./types"
 
-export function ArrowUpIcon({
-  width = "100%",
-  colour = "currentColor",
-}: IconProps) {
+export function ArrowUpIcon({ colour = "currentColor", ...props }: IconProps) {
   return (
     <svg
       viewBox="0 0 20 20"
@@ -11,8 +8,9 @@ export function ArrowUpIcon({
       strokeWidth="4"
       strokeLinecap="round"
       strokeLinejoin="round"
-      width={width}
       fill="none"
+      width="100%"
+      {...props}
     >
       <path d="M3,8 L10,2 17,8" />
       <path d="M10,2 L10,18" />

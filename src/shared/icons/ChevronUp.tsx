@@ -1,8 +1,8 @@
 import { IconProps } from "./types"
 
 export function ChevronUpIcon({
-  width = "100%",
   colour = "currentColor",
+  ...props
 }: IconProps) {
   return (
     <svg
@@ -11,8 +11,9 @@ export function ChevronUpIcon({
       strokeWidth="2"
       strokeLinecap="round"
       strokeLinejoin="round"
-      width={width}
       fill="none"
+      width="100%"
+      {...props}
     >
       <path d="M3,12 L10,6 17,12" />
     </svg>

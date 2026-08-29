@@ -1,18 +1,19 @@
 import { IconProps } from "./types"
 
 export function PauseButtonIcon({
-  width = "100%",
   colour = "currentColor",
+  ...props
 }: IconProps) {
   return (
     <svg
       stroke={colour}
       fill={colour}
-      width={width}
       strokeWidth="2"
       viewBox="0 0 20 20"
       strokeLinejoin="round"
       strokeLinecap="round"
+      width="100%"
+      {...props}
     >
       <rect x="2" y="2" width="5" height="16" />
       <rect x="12" y="2" width="5" height="16" />
