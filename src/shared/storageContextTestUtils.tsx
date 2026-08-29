@@ -10,6 +10,7 @@ export function createStorageContext(
     updateItem: jest.fn(),
     deleteItem: jest.fn(),
     updateList: jest.fn(),
+    setValue: jest.fn(),
     useValue: () => ({ value: undefined, loading: false }),
     ...overrides,
   }
