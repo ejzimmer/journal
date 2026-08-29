@@ -31,10 +31,10 @@ describe("Days", () => {
     const onSelectDay = jest.fn()
     render(<Days days={mockDays} onSelectDay={onSelectDay} />)
 
-    const dots = screen.getAllByRole("button", { name: "update day" })
+    const dots = screen.getAllByRole("button", { name: /^update / })
     expect(dots).toHaveLength(20)
 
-    await user.click(dots[4])
+    await user.click(screen.getByRole("button", { name: "update 5 Jan" }))
 
     expect(onSelectDay).toHaveBeenCalledWith("5Jan")
   })

@@ -43,7 +43,7 @@ export function Days({ days, onSelectDay }: DaysProps) {
           <button
             type="button"
             className="day-button"
-            aria-label="update day"
+            aria-label={`update ${day.day} ${day.month}`}
             onClick={() => onSelectDay(getDayId(day))}
           >
             <div className="day-details" style={{ textAlign: "center" }}>
