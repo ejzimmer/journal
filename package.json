@@ -74,6 +74,11 @@
     "webpack": "^5.64.4",
     "webpack-dev-server": "^4.6.0",
     "webpack-manifest-plugin": "^4.0.2",
+    "workbox-core": "^6.6.1",
+    "workbox-expiration": "^6.6.1",
+    "workbox-precaching": "^6.6.1",
+    "workbox-routing": "^6.6.1",
+    "workbox-strategies": "^6.6.1",
     "workbox-webpack-plugin": "^6.4.1"
   },
   "scripts": {
