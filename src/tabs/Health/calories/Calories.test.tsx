@@ -118,4 +118,50 @@ describe("Calories", () => {
       ).not.toBeInTheDocument()
     })
   })
+
+  describe("editing an existing day", () => {
+    it("opens the form pre-populated with that day's values when its dot is clicked, and updates it on submit", async () => {
+      const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime })
+      const updateItem = jest.fn()
+      const dailyData = {
+        "3Jan": { id: "3Jan", consumed: 1500, expended: 2000 },
+        "6Jan": { id: "6Jan", consumed: 1800, expended: 2200 },
+      }
+
+      render(<Calories />, {
+        wrapper: ({ children }) => (
+          <FirebaseContext.Provider
+            value={{
+              addItem: jest.fn(),
+              updateItem,
+              deleteItem: jest.fn(),
+              updateList: jest.fn(),
+              useValue: jest
+                .fn()
+                .mockReturnValue({ loading: false, value: dailyData }),
+            }}
+          >
+            {children}
+          </FirebaseContext.Provider>
+        ),
+      })
+
+      await user.click(screen.getByRole("radio", { name: "日" }))
+      await user.click(screen.getAllByRole("button", { name: "update day" })[2])
+
+      expect(screen.getByRole("heading", { name: "3 Jan" })).toBeInTheDocument()
+      expect(screen.getByRole("textbox", { name: "In" })).toHaveValue("1500")
+      expect(screen.getByRole("textbox", { name: "Out" })).toHaveValue("2000")
+
+      await user.clear(screen.getByRole("textbox", { name: "In" }))
+      await user.type(screen.getByRole("textbox", { name: "In" }), "1600")
+      await user.clear(screen.getByRole("textbox", { name: "Out" }))
+      await user.type(screen.getByRole("textbox", { name: "Out" }), "2100{Enter}")
+
+      expect(updateItem).toHaveBeenCalledWith(
+        DAILY_PATH,
+        expect.objectContaining({ id: "3Jan", consumed: 1600, expended: 2100 }),
+      )
+    })
+  })
 })
