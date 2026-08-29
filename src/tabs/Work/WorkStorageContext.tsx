@@ -16,7 +16,6 @@ import {
   WorkTask,
   WORK_KEY,
 } from "./types"
-import { cleanupDoneOnlyLabels } from "./cleanupDoneOnlyLabels"
 
 const STALE_AFTER_MS = 7 * 24 * 60 * 60 * 1000
 
@@ -117,19 +116,6 @@ export function WorkStorageProvider({ children }: { children: ReactNode }) {
       }
     })
   }, [labelsLoading, labels, deleteItem])
-
-  // TEMPORARY one-off cleanup, run once when both the task tree and label
-  // store have loaded: see cleanupDoneOnlyLabels for why this exists. Safe
-  // to remove (along with cleanupDoneOnlyLabels) once it's run once in
-  // production.
-  const hasCleanedDoneOnlyLabels = useRef(false)
-  useEffect(() => {
-    if (hasCleanedDoneOnlyLabels.current || isLoading || labelsLoading) return
-    hasCleanedDoneOnlyLabels.current = true
-    if (lists) {
-      cleanupDoneOnlyLabels(lists, labels, { updateItem })
-    }
-  }, [lists, isLoading, labels, labelsLoading, updateItem])
 
   const countLabelUsage = (id: string) => {
     let count = 0
