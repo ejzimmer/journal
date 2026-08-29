@@ -15,8 +15,6 @@ export type Balance = {
   diff?: number
 }
 
-export const getDayId = (day: Balance) => day.id
-
 export function setupDays(dayData?: Record<string, DayData>): Balance[] {
   const today = startOfDay(new Date())
   const newYearsDay = startOfDay(new Date("2026-01-01"))
