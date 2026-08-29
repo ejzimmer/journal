@@ -1,21 +1,8 @@
-import { render, screen } from "@testing-library/react"
+import { screen } from "@testing-library/react"
 import { Day } from "./Day"
 import userEvent from "@testing-library/user-event"
-import { ContextType, FirebaseContext } from "../../../shared/FirebaseContext"
-import { ReactNode } from "react"
 import { HABITS } from "../../../shared/types"
-
-const Wrapper = ({
-  children,
-  overrides,
-}: {
-  children: ReactNode
-  overrides?: Partial<ContextType>
-}) => (
-  <FirebaseContext.Provider value={overrides ?? ({} as any)}>
-    {children}
-  </FirebaseContext.Provider>
-)
+import { renderWithStorage } from "../../../shared/storageContextTestUtils"
 
 const minimalProps = {
   path: "2026/daily",
@@ -34,17 +21,13 @@ const commonProps = {
 
 describe("Day", () => {
   it("shows the date", () => {
-    render(<Day {...minimalProps} />, {
-      wrapper: Wrapper,
-    })
+    renderWithStorage(<Day {...minimalProps} />)
 
     expect(screen.getByRole("heading", { name: "12 Jan" })).toBeInTheDocument()
   })
   describe("when there is no information available", () => {
     it("shows the form", () => {
-      render(<Day {...minimalProps} />, {
-        wrapper: Wrapper,
-      })
+      renderWithStorage(<Day {...minimalProps} />)
 
       expect(
         screen.getByRole("textbox", { name: "consumed" }),
@@ -61,7 +44,7 @@ describe("Day", () => {
   describe("when the balance is available", () => {
     it("shows the net calories & trackers", async () => {
       const user = userEvent.setup()
-      render(<Day {...commonProps} />, { wrapper: Wrapper })
+      renderWithStorage(<Day {...commonProps} />)
 
       expect(screen.queryByRole("textbox")).not.toBeInTheDocument()
       expect(screen.getByText(20028)).toBeInTheDocument()
@@ -87,7 +70,7 @@ describe("Day", () => {
     describe("and the user clicks the calorie number", () => {
       it("brings back the form", async () => {
         const user = userEvent.setup()
-        render(<Day {...commonProps} />, { wrapper: Wrapper })
+        renderWithStorage(<Day {...commonProps} />)
 
         const netCalories = screen.getByText("20028")
         await user.click(netCalories)
@@ -105,11 +88,7 @@ describe("Day", () => {
     it("only removes one", async () => {
       const user = userEvent.setup()
       const updateItem = jest.fn()
-      render(<Day {...commonProps} />, {
-        wrapper: ({ children }) => (
-          <Wrapper overrides={{ updateItem }}>{children}</Wrapper>
-        ),
-      })
+      renderWithStorage(<Day {...commonProps} />, { value: { updateItem } })
 
       await user.click(screen.getAllByRole("button", { name: "delete 🥡" })[0])
 

@@ -1,10 +1,11 @@
-import { render, screen } from "@testing-library/react"
+import { screen } from "@testing-library/react"
 import { ThisWeekTask } from "./ThisWeekTask"
 import { WeeklyTask } from "../../../shared/types"
 import userEvent from "@testing-library/user-event"
-import { FirebaseContext } from "../../../shared/FirebaseContext"
 import { CategoriesContext } from ".."
 import { subDays } from "date-fns"
+import { ContextType } from "../../../shared/FirebaseContext"
+import { renderWithStorage } from "../../../shared/storageContextTestUtils"
 
 const task: WeeklyTask = {
   frequency: 3,
@@ -19,23 +20,10 @@ const task: WeeklyTask = {
   ],
 }
 
-const storageContext = {
-  addItem: jest.fn(),
-  updateItem: jest.fn(),
-  deleteItem: jest.fn(),
-  updateList: jest.fn(),
-  useValue: () => {
-    return { value: {} as any, loading: false }
-  },
-}
-
-const Wrapper = ({ children }: { children: React.ReactNode }) => (
-  <FirebaseContext.Provider value={storageContext}>
-    <CategoriesContext.Provider value={["🧘", "💪"]}>
-      {children}
-    </CategoriesContext.Provider>
-  </FirebaseContext.Provider>
-)
+const useValue: ContextType["useValue"] = () => ({
+  value: {} as any,
+  loading: false,
+})
 
 const expectToBeInViewMode = () => {
   expect(screen.queryByRole("combobox")).not.toBeInTheDocument()
@@ -52,13 +40,17 @@ describe("ThisWeekTask", () => {
     describe("when the user clicks the button", () => {
       it("updates the list of times completed", async () => {
         const user = userEvent.setup()
-        render(<ThisWeekTask task={task} />, {
-          wrapper: Wrapper,
-        })
+        const updateItem = jest.fn()
+        renderWithStorage(
+          <CategoriesContext.Provider value={["🧘", "💪"]}>
+            <ThisWeekTask task={task} />
+          </CategoriesContext.Provider>,
+          { value: { useValue, updateItem } },
+        )
 
         await user.click(screen.getByRole("button", { name: task.category }))
 
-        expect(storageContext.updateItem).toHaveBeenCalledWith(
+        expect(updateItem).toHaveBeenCalledWith(
           expect.anything(),
           expect.objectContaining({
             completed: [...task.completed!, expect.any(Number)],
@@ -70,14 +62,18 @@ describe("ThisWeekTask", () => {
     describe("when the user shift+clicks the button", () => {
       it("removes the most recently completed item", async () => {
         const user = userEvent.setup()
-        render(<ThisWeekTask task={task} />, {
-          wrapper: Wrapper,
-        })
+        const updateItem = jest.fn()
+        renderWithStorage(
+          <CategoriesContext.Provider value={["🧘", "💪"]}>
+            <ThisWeekTask task={task} />
+          </CategoriesContext.Provider>,
+          { value: { useValue, updateItem } },
+        )
 
         await user.keyboard("{Shift>}")
         await user.click(screen.getByRole("button", { name: task.category }))
 
-        expect(storageContext.updateItem).toHaveBeenCalledWith(
+        expect(updateItem).toHaveBeenCalledWith(
           expect.anything(),
           expect.objectContaining({
             completed: [task.completed?.[0]],
@@ -89,7 +85,12 @@ describe("ThisWeekTask", () => {
     describe("when the user clicks the description", () => {
       it("goes into edit mode", async () => {
         const user = userEvent.setup()
-        render(<ThisWeekTask task={task} />, { wrapper: Wrapper })
+        renderWithStorage(
+          <CategoriesContext.Provider value={["🧘", "💪"]}>
+            <ThisWeekTask task={task} />
+          </CategoriesContext.Provider>,
+          { value: { useValue } },
+        )
 
         await user.click(screen.getByText(task.description))
 
@@ -115,7 +116,12 @@ describe("ThisWeekTask", () => {
     })
 
     it("shows the current progress", () => {
-      render(<ThisWeekTask task={task} />, { wrapper: Wrapper })
+      renderWithStorage(
+        <CategoriesContext.Provider value={["🧘", "💪"]}>
+          <ThisWeekTask task={task} />
+        </CategoriesContext.Provider>,
+        { value: { useValue } },
+      )
 
       const progress = screen.getByRole("progressbar")
       expect(progress).toHaveValue(2)
@@ -136,9 +142,11 @@ describe("ThisWeekTask", () => {
           ...task.completed!,
           subDays(new Date(), 1).getTime(),
         ]
-        render(
-          <ThisWeekTask task={{ ...task, completed: tooMuchComplete }} />,
-          { wrapper: Wrapper },
+        renderWithStorage(
+          <CategoriesContext.Provider value={["🧘", "💪"]}>
+            <ThisWeekTask task={{ ...task, completed: tooMuchComplete }} />
+          </CategoriesContext.Provider>,
+          { value: { useValue } },
         )
 
         expect(screen.getByText("+3")).toBeInTheDocument()
@@ -150,8 +158,13 @@ describe("ThisWeekTask", () => {
     describe("when the user picks a new category", () => {
       it("updates the category and switches to view mode", async () => {
         const user = userEvent.setup()
-        const onChange = jest.spyOn(storageContext, "updateItem")
-        render(<ThisWeekTask task={task} />, { wrapper: Wrapper })
+        const onChange = jest.fn()
+        renderWithStorage(
+          <CategoriesContext.Provider value={["🧘", "💪"]}>
+            <ThisWeekTask task={task} />
+          </CategoriesContext.Provider>,
+          { value: { useValue, updateItem: onChange } },
+        )
 
         await user.click(screen.getByText(task.description))
 
@@ -169,8 +182,13 @@ describe("ThisWeekTask", () => {
     describe("when the user updates the description/frequency and presses enter", () => {
       it("updates the description/frequency and switches to view mode", async () => {
         const user = userEvent.setup()
-        const onChange = jest.spyOn(storageContext, "updateItem")
-        render(<ThisWeekTask task={task} />, { wrapper: Wrapper })
+        const onChange = jest.fn()
+        renderWithStorage(
+          <CategoriesContext.Provider value={["🧘", "💪"]}>
+            <ThisWeekTask task={task} />
+          </CategoriesContext.Provider>,
+          { value: { useValue, updateItem: onChange } },
+        )
 
         await user.click(screen.getByText(task.description))
 
@@ -200,8 +218,13 @@ describe("ThisWeekTask", () => {
     describe("when the user deletes the description and presses enter", () => {
       it("deletes the item", async () => {
         const user = userEvent.setup()
-        const onDelete = jest.spyOn(storageContext, "deleteItem")
-        render(<ThisWeekTask task={task} />, { wrapper: Wrapper })
+        const onDelete = jest.fn()
+        renderWithStorage(
+          <CategoriesContext.Provider value={["🧘", "💪"]}>
+            <ThisWeekTask task={task} />
+          </CategoriesContext.Provider>,
+          { value: { useValue, deleteItem: onDelete } },
+        )
 
         await user.click(screen.getByText(task.description))
 
@@ -218,9 +241,14 @@ describe("ThisWeekTask", () => {
     describe("when the user deletes the frequency", () => {
       it("switches back to view mode without changing anything", async () => {
         const user = userEvent.setup()
-        const onChange = jest.spyOn(storageContext, "updateItem")
-        const onDelete = jest.spyOn(storageContext, "deleteItem")
-        render(<ThisWeekTask task={task} />, { wrapper: Wrapper })
+        const onChange = jest.fn()
+        const onDelete = jest.fn()
+        renderWithStorage(
+          <CategoriesContext.Provider value={["🧘", "💪"]}>
+            <ThisWeekTask task={task} />
+          </CategoriesContext.Provider>,
+          { value: { useValue, updateItem: onChange, deleteItem: onDelete } },
+        )
 
         await user.click(screen.getByText(task.description))
 
@@ -244,8 +272,13 @@ describe("ThisWeekTask", () => {
     describe("whe the user presses Escape", () => {
       it("returns to view mode without saving any changes", async () => {
         const user = userEvent.setup()
-        const onChange = jest.spyOn(storageContext, "updateItem")
-        render(<ThisWeekTask task={task} />, { wrapper: Wrapper })
+        const onChange = jest.fn()
+        renderWithStorage(
+          <CategoriesContext.Provider value={["🧘", "💪"]}>
+            <ThisWeekTask task={task} />
+          </CategoriesContext.Provider>,
+          { value: { useValue, updateItem: onChange } },
+        )
 
         await user.click(screen.getByText(task.description))
 
