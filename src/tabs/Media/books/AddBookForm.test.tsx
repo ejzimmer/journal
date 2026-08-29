@@ -1,11 +1,10 @@
-import { render, screen } from "@testing-library/react"
+import { screen } from "@testing-library/react"
 import { AddBookForm } from "./AddBookForm"
 import userEvent from "@testing-library/user-event"
-import { ContextType } from "../../../shared/FirebaseContext"
-import { BOOKS_KEY } from "../types"
-import { StorageContextWrapper } from "../../../shared/storageContextTestUtils"
+import { BOOKS_KEY, ReadingItemDetails } from "../types"
+import { renderWithStorage } from "../../../shared/storageContextTestUtils"
 
-const booksValue = {
+const booksValue: Record<string, ReadingItemDetails> = {
   "1": {
     id: "1",
     type: "author",
@@ -16,33 +15,19 @@ const booksValue = {
   "3": { id: "3", type: "series", name: "Earthsea" },
 }
 
+function useValue<T>() {
+  return { value: booksValue as T, loading: false }
+}
+
 const getId = (_: string, { type }: any) =>
   type === "author" ? "author_id" : "series_id"
-
-function renderAddBookForm(overrides: Partial<ContextType> = {}) {
-  return render(<AddBookForm />, {
-    wrapper: ({ children }) => (
-      <StorageContextWrapper
-        value={{
-          useValue: <T,>() => ({
-            value: booksValue as unknown as T,
-            loading: false,
-          }),
-          ...overrides,
-        }}
-      >
-        {children}
-      </StorageContextWrapper>
-    ),
-  })
-}
 
 describe("AddBookForm", () => {
   describe("when the user enters a book title & submits the form", () => {
     it("creates a new book", async () => {
       const user = userEvent.setup()
       const addItem = jest.fn()
-      renderAddBookForm({ addItem })
+      renderWithStorage(<AddBookForm />, { value: { addItem, useValue } })
 
       await user.type(
         screen.getByRole("textbox", { name: "Book title" }),
@@ -60,7 +45,7 @@ describe("AddBookForm", () => {
     it("creates a new author and adds the new book to their items", async () => {
       const user = userEvent.setup()
       const addItem = jest.fn().mockReturnValue("1234")
-      renderAddBookForm({ addItem })
+      renderWithStorage(<AddBookForm />, { value: { addItem, useValue } })
 
       await user.type(
         screen.getByRole("textbox", { name: "Book title" }),
@@ -87,7 +72,7 @@ describe("AddBookForm", () => {
     it("adds the new book to the existing author", async () => {
       const user = userEvent.setup()
       const addItem = jest.fn().mockReturnValue("1234")
-      renderAddBookForm({ addItem })
+      renderWithStorage(<AddBookForm />, { value: { addItem, useValue } })
 
       await user.type(
         screen.getByRole("textbox", { name: "Book title" }),
@@ -109,7 +94,7 @@ describe("AddBookForm", () => {
     it("creates a new series and adds the new book to their items", async () => {
       const user = userEvent.setup()
       const addItem = jest.fn().mockReturnValue("1212")
-      renderAddBookForm({ addItem })
+      renderWithStorage(<AddBookForm />, { value: { addItem, useValue } })
 
       await user.type(
         screen.getByRole("textbox", { name: "Book title" }),
@@ -136,7 +121,7 @@ describe("AddBookForm", () => {
     it("adds the new book to the existing author", async () => {
       const user = userEvent.setup()
       const addItem = jest.fn().mockReturnValue("1234")
-      renderAddBookForm({ addItem })
+      renderWithStorage(<AddBookForm />, { value: { addItem, useValue } })
 
       await user.type(
         screen.getByRole("textbox", { name: "Book title" }),
@@ -158,7 +143,7 @@ describe("AddBookForm", () => {
     it("adds the new book to the existing author", async () => {
       const user = userEvent.setup()
       const addItem = jest.fn().mockImplementation(getId)
-      renderAddBookForm({ addItem })
+      renderWithStorage(<AddBookForm />, { value: { addItem, useValue } })
 
       await user.type(
         screen.getByRole("textbox", { name: "Book title" }),
@@ -197,7 +182,7 @@ describe("AddBookForm", () => {
     it("adds the new book to the existing author", async () => {
       const user = userEvent.setup()
       const addItem = jest.fn().mockImplementation(getId)
-      renderAddBookForm({ addItem })
+      renderWithStorage(<AddBookForm />, { value: { addItem, useValue } })
 
       await user.type(
         screen.getByRole("textbox", { name: "Book title" }),
@@ -232,7 +217,7 @@ describe("AddBookForm", () => {
     it("adds the new book to the existing author & series", async () => {
       const user = userEvent.setup()
       const addItem = jest.fn().mockImplementation(getId)
-      renderAddBookForm({ addItem })
+      renderWithStorage(<AddBookForm />, { value: { addItem, useValue } })
 
       await user.type(
         screen.getByRole("textbox", { name: "Book title" }),
@@ -257,7 +242,7 @@ describe("AddBookForm", () => {
     it("only shows the series for the selected author", async () => {
       const user = userEvent.setup()
       const addItem = jest.fn().mockImplementation(getId)
-      renderAddBookForm({ addItem })
+      renderWithStorage(<AddBookForm />, { value: { addItem, useValue } })
 
       await user.type(
         screen.getByRole("textbox", { name: "Book title" }),
@@ -281,7 +266,7 @@ describe("AddBookForm", () => {
     it("clears the form", async () => {
       const user = userEvent.setup()
       const addItem = jest.fn().mockImplementation(getId)
-      renderAddBookForm({ addItem })
+      renderWithStorage(<AddBookForm />, { value: { addItem, useValue } })
 
       await user.type(
         screen.getByRole("textbox", { name: "Book title" }),

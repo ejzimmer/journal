@@ -1,7 +1,6 @@
 import { useContext } from "react"
 import { render, screen } from "@testing-library/react"
-import { FirebaseContext } from "../../shared/FirebaseContext"
-import { createStorageContext } from "../../shared/storageContextTestUtils"
+import { renderWithStorage } from "../../shared/storageContextTestUtils"
 import {
   WorkStorageContext,
   WorkStorageContextType,
@@ -33,9 +32,10 @@ function createFirebaseContext(
   storedLabels: Record<string, StoredLabel> | undefined = {},
 ) {
   return {
-    ...createStorageContext(),
     addItem: jest.fn(() => "new-id"),
     updateItem: jest.fn(),
+    deleteItem: jest.fn(),
+    updateList: jest.fn(),
     useValue: <T,>(key?: string) => {
       if (key === LABELS_KEY) {
         return {
@@ -65,12 +65,11 @@ function getWorkStorage(
   firebaseContext: ReturnType<typeof createFirebaseContext>,
 ) {
   let captured: WorkStorageContextType | undefined
-  render(
-    <FirebaseContext.Provider value={firebaseContext}>
-      <WorkStorageProvider>
-        <Probe onReady={(context) => (captured = context)} />
-      </WorkStorageProvider>
-    </FirebaseContext.Provider>,
+  renderWithStorage(
+    <WorkStorageProvider>
+      <Probe onReady={(context) => (captured = context)} />
+    </WorkStorageProvider>,
+    { value: firebaseContext },
   )
   return captured
 }
@@ -752,12 +751,11 @@ describe("WorkStorageContext labels", () => {
 describe("Work storage screen render smoke test", () => {
   it("renders children once lists have loaded", () => {
     const firebaseContext = createFirebaseContext({ [list.id]: list })
-    render(
-      <FirebaseContext.Provider value={firebaseContext}>
-        <WorkStorageProvider>
-          <div>ready</div>
-        </WorkStorageProvider>
-      </FirebaseContext.Provider>,
+    renderWithStorage(
+      <WorkStorageProvider>
+        <div>ready</div>
+      </WorkStorageProvider>,
+      { value: firebaseContext },
     )
 
     expect(screen.getByText("ready")).toBeInTheDocument()

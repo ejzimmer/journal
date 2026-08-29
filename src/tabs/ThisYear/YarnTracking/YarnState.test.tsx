@@ -1,7 +1,6 @@
-import { render, screen } from "@testing-library/react"
+import { screen } from "@testing-library/react"
 import { YarnState } from "./YarnState"
-import { ReactNode } from "react"
-import { StorageContextWrapper } from "../../../shared/storageContextTestUtils"
+import { renderWithStorage } from "../../../shared/storageContextTestUtils"
 
 const yarnState = {
   wool: {
@@ -19,16 +18,6 @@ const yarnState = {
   },
 }
 
-function Wrapper({ children }: { children: ReactNode }) {
-  return (
-    <StorageContextWrapper
-      value={{ useValue: jest.fn().mockReturnValue({ value: yarnState }) }}
-    >
-      {children}
-    </StorageContextWrapper>
-  )
-}
-
 describe("YarnState", () => {
   beforeEach(() => {
     jest.useFakeTimers()
@@ -40,8 +29,8 @@ describe("YarnState", () => {
   })
 
   it("shows the monthly totals, carrying the current month forward", () => {
-    render(<YarnState />, {
-      wrapper: Wrapper,
+    renderWithStorage(<YarnState />, {
+      value: { useValue: jest.fn().mockReturnValue({ value: yarnState }) },
     })
 
     expect(screen.getByText(/January: 500g/)).toBeInTheDocument()
@@ -50,8 +39,8 @@ describe("YarnState", () => {
   })
 
   it("sets the bar widths as percentages of the highest amount", () => {
-    render(<YarnState />, {
-      wrapper: Wrapper,
+    renderWithStorage(<YarnState />, {
+      value: { useValue: jest.fn().mockReturnValue({ value: yarnState }) },
     })
 
     const [january, february, current] = screen.getAllByRole("listitem")

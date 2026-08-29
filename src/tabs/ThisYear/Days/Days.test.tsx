@@ -1,32 +1,15 @@
-import { render, screen, within } from "@testing-library/react"
+import { screen, within } from "@testing-library/react"
 import { DayList } from "./DayList"
 import { DayData } from "../../../shared/types"
-import { ReactNode } from "react"
-import { StorageContextWrapper } from "../../../shared/storageContextTestUtils"
-
-function Wrapper({
-  children,
-  dailyData,
-}: {
-  children: ReactNode
-  dailyData?: Record<string, DayData>
-}) {
-  return (
-    <StorageContextWrapper
-      value={{
-        useValue: jest.fn().mockReturnValue({ loading: false, value: dailyData }),
-      }}
-    >
-      {children}
-    </StorageContextWrapper>
-  )
-}
+import { renderWithStorage } from "../../../shared/storageContextTestUtils"
 
 describe("Days", () => {
   it("displays an element for every day of the year", () => {
     jest.useFakeTimers()
     jest.setSystemTime(new Date("2026-03-12"))
-    render(<DayList />, { wrapper: Wrapper })
+    renderWithStorage(<DayList />, {
+      value: { useValue: jest.fn().mockReturnValue({ loading: false }) },
+    })
 
     const numberOfDays = 31 + 28 + 12
     const daysList = screen.getByRole("list", { name: "days" })
@@ -46,8 +29,10 @@ describe("Days", () => {
       dailyData[`${day}Jan`] = { id: `${day}Jan`, consumed: 2000, expended: 2500 }
     }
 
-    render(<DayList />, {
-      wrapper: (props) => <Wrapper {...props} dailyData={dailyData} />,
+    renderWithStorage(<DayList />, {
+      value: {
+        useValue: jest.fn().mockReturnValue({ loading: false, value: dailyData }),
+      },
     })
 
     const bars = screen.getAllByText(/^\d+ Jan: /)
@@ -65,8 +50,10 @@ describe("Days", () => {
       dailyData[`${day}Jan`] = { id: `${day}Jan`, consumed: 2000, expended: 2500 }
     }
 
-    render(<DayList />, {
-      wrapper: (props) => <Wrapper {...props} dailyData={dailyData} />,
+    renderWithStorage(<DayList />, {
+      value: {
+        useValue: jest.fn().mockReturnValue({ loading: false, value: dailyData }),
+      },
     })
 
     const bars = screen.getAllByText(/^\d+ Jan: /)
