@@ -14,6 +14,9 @@ export type Balance = {
   diff?: number
 }
 
+export const getDayId = (day: { day: number; month: string }) =>
+  `${day.day}${day.month}`
+
 export function setupDays(dayData?: Record<string, DayData>): Balance[] {
   const today = startOfDay(new Date())
   const newYearsDay = startOfDay(new Date("2026-01-01"))
@@ -24,7 +27,7 @@ export function setupDays(dayData?: Record<string, DayData>): Balance[] {
     const date = addDays(newYearsDay, i)
     const previousBalance = i === 0 ? STARTING_BALANCE : days[i - 1].balance
     const { day, month } = formatDate(date)
-    const { consumed, expended } = dayData?.[day + month] ?? {}
+    const { consumed, expended } = dayData?.[getDayId({ day, month })] ?? {}
     const diff = consumed && expended && expended - consumed
 
     const daySummary = {

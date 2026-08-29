@@ -4,6 +4,7 @@ import { ReactNode } from "react"
 import { Calories } from "./Calories"
 import { FirebaseContext } from "../../../shared/FirebaseContext"
 import { createMockFirebaseContext } from "../../../shared/mockFirebase"
+import { renderWithStorage } from "../../../shared/storageContextTestUtils"
 import { DAILY_PATH, DayData } from "../../../shared/types"
 
 function Wrapper({
@@ -116,6 +117,73 @@ describe("Calories", () => {
       expect(
         screen.queryByRole("textbox", { name: "In" }),
       ).not.toBeInTheDocument()
+    })
+  })
+
+  describe("editing an existing day", () => {
+    it("opens the form pre-populated with that day's values when its dot is clicked, and updates it on submit", async () => {
+      const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime })
+      const updateItem = jest.fn()
+      const dailyData = {
+        "3Jan": { id: "3Jan", consumed: 1500, expended: 2000 },
+        "6Jan": { id: "6Jan", consumed: 1800, expended: 2200 },
+      }
+
+      renderWithStorage(<Calories />, {
+        value: {
+          updateItem,
+          useValue: jest
+            .fn()
+            .mockReturnValue({ loading: false, value: dailyData }),
+        },
+      })
+
+      await user.click(screen.getByRole("radio", { name: "日" }))
+      await user.click(screen.getByRole("button", { name: "update 3 Jan" }))
+
+      expect(screen.getByRole("heading", { name: "3 Jan" })).toBeInTheDocument()
+      expect(screen.getByRole("textbox", { name: "In" })).toHaveValue("1500")
+      expect(screen.getByRole("textbox", { name: "Out" })).toHaveValue("2000")
+
+      await user.clear(screen.getByRole("textbox", { name: "In" }))
+      await user.type(screen.getByRole("textbox", { name: "In" }), "1600")
+      await user.clear(screen.getByRole("textbox", { name: "Out" }))
+      await user.type(screen.getByRole("textbox", { name: "Out" }), "2100{Enter}")
+
+      expect(updateItem).toHaveBeenCalledWith(
+        DAILY_PATH,
+        expect.objectContaining({ id: "3Jan", consumed: 1600, expended: 2100 }),
+      )
+    })
+
+    it("switches to the newly clicked day's form when another dot is clicked while a form is already open", async () => {
+      const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime })
+      const dailyData = {
+        "2Jan": { id: "2Jan", consumed: 1200, expended: 2600 },
+        "6Jan": { id: "6Jan", consumed: 1800, expended: 2200 },
+      }
+
+      renderWithStorage(<Calories />, {
+        value: {
+          useValue: jest
+            .fn()
+            .mockReturnValue({ loading: false, value: dailyData }),
+        },
+      })
+
+      await user.click(screen.getByRole("radio", { name: "日" }))
+      await user.click(screen.getByRole("button", { name: "update 2 Jan" }))
+
+      expect(screen.getByRole("heading", { name: "2 Jan" })).toBeInTheDocument()
+      expect(screen.getByRole("textbox", { name: "In" })).toHaveValue("1200")
+
+      await user.click(screen.getByRole("button", { name: "update 4 Jan" }))
+
+      expect(screen.getByRole("heading", { name: "4 Jan" })).toBeInTheDocument()
+      expect(
+        screen.queryByRole("heading", { name: "2 Jan" }),
+      ).not.toBeInTheDocument()
+      expect(screen.getByRole("textbox", { name: "In" })).toHaveValue("")
     })
   })
 })
