@@ -247,7 +247,7 @@ describe("WorkStorageContext", () => {
           <></>
         </WorkStorageProvider>,
       ),
-    ).toThrow("Missing Firebase context provider")
+    ).toThrow("Storage context not found")
 
     consoleError.mockRestore()
   })
