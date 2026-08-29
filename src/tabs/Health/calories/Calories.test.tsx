@@ -21,6 +21,7 @@ function Wrapper({
         updateItem: jest.fn(),
         deleteItem: jest.fn(),
         updateList: jest.fn(),
+        setValue: jest.fn(),
         useValue: jest.fn().mockReturnValue({ loading: false, value: dailyData }),
       }}
     >
@@ -85,6 +86,7 @@ describe("Calories", () => {
               updateItem,
               deleteItem: jest.fn(),
               updateList: jest.fn(),
+              setValue: jest.fn(),
               useValue: jest.fn().mockReturnValue({ loading: false, value: undefined }),
             }}
           >

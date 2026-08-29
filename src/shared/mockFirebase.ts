@@ -116,6 +116,10 @@ export function createMockFirebaseContext(
       write(listName, map)
       notify(listName)
     },
+    setValue<T>(path: string, value: T) {
+      write(path, value)
+      notify(path)
+    },
     useValue<T>(key?: string) {
       const [result, setResult] = useState<{ value?: T; loading: boolean }>({
         loading: true,
