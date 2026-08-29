@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react"
 import { useStorageContext } from "../../../shared/FirebaseContext"
 import { DayData, DAILY_PATH } from "../../../shared/types"
+import { normalizeDailyData } from "../../../shared/utils"
 import { setupDays } from "../utils"
 import { Switch } from "../../../shared/controls/Switch"
 import { Days } from "./Days"
@@ -16,11 +17,12 @@ export function Calories() {
 
   const { useValue, updateItem } = useStorageContext()
   const { value } = useValue<Record<string, DayData>>(DAILY_PATH)
+  const dailyData = useMemo(() => normalizeDailyData(value), [value])
 
-  const days = useMemo(() => setupDays(value), [value])
+  const days = useMemo(() => setupDays(dailyData), [dailyData])
   const yesterday = days[days.length - 1]
   const yesterdayId = yesterday && yesterday.id
-  const yesterdayData = yesterdayId ? value?.[yesterdayId] : undefined
+  const yesterdayData = yesterdayId ? dailyData[yesterdayId] : undefined
   const caloriesRecordedYesterday = typeof yesterday?.diff === "number"
 
   return (

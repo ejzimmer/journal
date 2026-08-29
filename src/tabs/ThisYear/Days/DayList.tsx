@@ -7,7 +7,11 @@ import { useStorageContext } from "../../../shared/FirebaseContext"
 import { TrackerContext } from "./types"
 import { EmojiCheckbox } from "../../../shared/controls/EmojiCheckbox"
 import { toggleListItem } from "./utils"
-import { formatDate, formatDateId } from "../../../shared/utils"
+import {
+  formatDate,
+  formatDateId,
+  normalizeDailyData,
+} from "../../../shared/utils"
 import { DAILY_PATH, DayData, HABITS } from "../../../shared/types"
 
 const STARTING_BALANCE = 19687
@@ -17,8 +21,9 @@ export function DayList() {
 
   const { useValue } = useStorageContext()
   const { value } = useValue<Record<string, DayData>>(DAILY_PATH)
+  const dailyData = useMemo(() => normalizeDailyData(value), [value])
 
-  const days = useMemo(() => setupDays(value), [value])
+  const days = useMemo(() => setupDays(dailyData), [dailyData])
   const lowestBalance = useMemo(
     () =>
       days.reduce((lowest, currentDay) => {
@@ -38,15 +43,14 @@ export function DayList() {
   const weeklyBalances = useMemo(() => getWeeklyBalance(days), [days])
   const trackers = useMemo(
     () =>
-      value &&
       Array.from(
         new Set(
-          Object.values(value)
+          Object.values(dailyData)
             .flatMap((day) => day.trackers)
             .filter(Boolean) as string[],
         ),
       ),
-    [value],
+    [dailyData],
   )
 
   return (
@@ -56,7 +60,7 @@ export function DayList() {
         <Filters filters={filters} onChange={setFilters} />
         <ol className="days" aria-label="days">
           {days.map(({ id, day, month, balance, diff, dayOfWeek }) => {
-            const dayData = (value?.[id] as DayData) ?? { id }
+            const dayData = dailyData[id] ?? { id }
 
             return (
               <li
