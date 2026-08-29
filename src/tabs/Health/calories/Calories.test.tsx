@@ -58,7 +58,9 @@ describe("Calories", () => {
     })
 
     it("doesn't show the form when yesterday's calories are already recorded", () => {
-      renderCalories({ "6Jan": { id: "6Jan", consumed: 1800, expended: 2200 } })
+      renderCalories({
+        "2026-01-06": { id: "2026-01-06", consumed: 1800, expended: 2200 },
+      })
 
       expect(
         screen.queryByRole("textbox", { name: "In" }),
@@ -66,7 +68,9 @@ describe("Calories", () => {
     })
 
     it("shows the form when yesterday has an entry but calories haven't been recorded yet", () => {
-      renderCalories({ "6Jan": { id: "6Jan", habits: { "🧘": true } } as DayData })
+      renderCalories({
+        "2026-01-06": { id: "2026-01-06", habits: { "🧘": true } } as DayData,
+      })
 
       expect(
         screen.getByRole("textbox", { name: "In" }),

@@ -19,7 +19,7 @@ export function Calories() {
 
   const days = useMemo(() => setupDays(value), [value])
   const yesterday = days[days.length - 1]
-  const yesterdayId = yesterday && `${yesterday.day}${yesterday.month}`
+  const yesterdayId = yesterday && yesterday.id
   const yesterdayData = yesterdayId ? value?.[yesterdayId] : undefined
   const caloriesRecordedYesterday = typeof yesterday?.diff === "number"
 

@@ -11,7 +11,7 @@ import {
   WEEKLY_KEY,
   WeeklyTask,
 } from "../../../shared/types"
-import { formatDate } from "../../../shared/utils"
+import { formatDateId } from "../../../shared/utils"
 import { Combobox } from "../../../shared/controls/combobox/Combobox"
 import { CategoriesContext } from ".."
 import { ProgressIndicator } from "./ProgressIndicator"
@@ -69,9 +69,9 @@ export function ThisWeekTask({ task }: { task: WeeklyTask }) {
     [categories],
   )
 
-  const { day, month } = formatDate(new Date())
+  const todayId = formatDateId(new Date())
   const { value: today } = useValue<Record<string, DayData>>(
-    `${DAILY_PATH}/${day}${month}`,
+    `${DAILY_PATH}/${todayId}`,
   )
 
   const handleClick = (event: React.MouseEvent) => {
@@ -102,7 +102,7 @@ export function ThisWeekTask({ task }: { task: WeeklyTask }) {
     const habits =
       today?.habits ?? Object.fromEntries(HABITS.map((habit) => [habit, false]))
     updateItem<DayData>(DAILY_PATH, {
-      id: `${day}${month}`,
+      id: todayId,
       habits: {
         ...habits,
         [task.category]: !event.shiftKey,

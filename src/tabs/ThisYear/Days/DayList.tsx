@@ -7,7 +7,7 @@ import { useStorageContext } from "../../../shared/FirebaseContext"
 import { TrackerContext } from "./types"
 import { EmojiCheckbox } from "../../../shared/controls/EmojiCheckbox"
 import { toggleListItem } from "./utils"
-import { formatDate } from "../../../shared/utils"
+import { formatDate, formatDateId } from "../../../shared/utils"
 import { DAILY_PATH, DayData, HABITS } from "../../../shared/types"
 
 const STARTING_BALANCE = 19687
@@ -55,8 +55,7 @@ export function DayList() {
       <TrackerContext.Provider value={trackers}>
         <Filters filters={filters} onChange={setFilters} />
         <ol className="days" aria-label="days">
-          {days.map(({ day, month, balance, diff, dayOfWeek }) => {
-            const id = day + month
+          {days.map(({ id, day, month, balance, diff, dayOfWeek }) => {
             const dayData = (value?.[id] as DayData) ?? { id }
 
             return (
@@ -86,6 +85,7 @@ export function DayList() {
 }
 
 type Balance = {
+  id: string
   day: number
   month: string
   dayOfWeek: number
@@ -103,10 +103,11 @@ function setupDays(dayData?: Record<string, DayData>): Balance[] {
     const date = addDays(newYearsDay, i)
     const previousBalance = i === 0 ? STARTING_BALANCE : days[i - 1].balance
     const { day, month } = formatDate(date)
-    const { consumed, expended } = dayData?.[day + month] ?? {}
+    const id = formatDateId(date)
+    const { consumed, expended } = dayData?.[id] ?? {}
     const diff = consumed && expended && expended - consumed
 
-    const daySummary = { day, month, dayOfWeek: date.getDay() }
+    const daySummary = { id, day, month, dayOfWeek: date.getDay() }
     if (typeof previousBalance === "number" && typeof diff === "number") {
       days[i] = { ...daySummary, balance: previousBalance - diff, diff }
     } else {

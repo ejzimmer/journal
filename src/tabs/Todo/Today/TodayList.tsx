@@ -26,7 +26,7 @@ import {
   isDraggable,
   sortByPosition,
 } from "../../../shared/drag-and-drop/utils"
-import { formatDate } from "../../../shared/utils"
+import { formatDateId } from "../../../shared/utils"
 
 const updatedYesterday = (task: DailyTask, status: DailyTask["status"]) =>
   task.status === status && isBefore(task.lastCompleted, startOfDay(new Date()))
@@ -37,8 +37,8 @@ export function TodayList() {
   const { value } = useValue<Record<string, DailyTask>>(DAILY_KEY)
   const tasks = value ? sortByPosition(Object.values(value)) : []
 
-  const { day, month } = formatDate(new Date())
-  const { value: today } = useValue<DayData>(`${DAILY_PATH}/${day}${month}`)
+  const todayId = formatDateId(new Date())
+  const { value: today } = useValue<DayData>(`${DAILY_PATH}/${todayId}`)
 
   const { finishedTasks, unfinishedTasks } = tasks.reduce(
     (sortedTasks: Record<string, DailyTask[]>, task) => {
@@ -133,7 +133,7 @@ export function TodayList() {
                     today?.habits ??
                     Object.fromEntries(HABITS.map((habit) => [habit, false]))
                   updateItem<DayData>(DAILY_PATH, {
-                    id: `${day}${month}`,
+                    id: todayId,
                     habits: {
                       ...habits,
                       [task.category]: allTasksDone,

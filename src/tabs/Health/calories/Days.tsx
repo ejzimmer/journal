@@ -28,7 +28,7 @@ export function Days({ days }: DaysProps) {
     >
       {days.map((day, index) => (
         <li
-          key={`${day.day}-${day.month}`}
+          key={day.id}
           className="day-circle"
           style={
             {

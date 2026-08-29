@@ -1,6 +1,10 @@
+import { format } from "date-fns"
+
 const dateFormatter = Intl.DateTimeFormat("en-AU", {
   month: "short",
 })
+
+export const formatDateId = (date: Date) => format(date, "yyyy-MM-dd")
 
 export const formatDate = (date: Date) => {
   const day = date.getDate()

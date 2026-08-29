@@ -7,7 +7,7 @@ import { renderWithStorage } from "../../../shared/storageContextTestUtils"
 const minimalProps = {
   path: "2026/daily",
   date: { day: 12, month: "Jan" },
-  id: "12Jan",
+  id: "2026-01-12",
 }
 
 const commonProps = {
