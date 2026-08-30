@@ -23,7 +23,7 @@ export function ProgressIndicator({
     ? differenceInDays(new Date(), mostRecentlyDone)
     : 0
   const fillOpacity =
-    daysSinceDone > 2 ? Math.max(0, 1 - 0.05 * (daysSinceDone - 2)) : 1
+    daysSinceDone > 2 ? Math.max(0, 1 - 0.2 * (daysSinceDone - 2)) : 1
 
   return (
     <div className="indicators">
