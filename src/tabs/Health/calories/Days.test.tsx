@@ -7,6 +7,7 @@ const firstDay = Temporal.PlainDate.from("2026-01-01")
 const mockDays: Balance[] = Array.from({ length: 20 }).map((_, index) => {
   const thisDay = firstDay.add({ days: index })
   return {
+    id: thisDay.toString(),
     day: thisDay.day,
     month: "Jan",
     monthNumber: thisDay.month,
@@ -36,6 +37,6 @@ describe("Days", () => {
 
     await user.click(screen.getByRole("button", { name: "update 5 Jan" }))
 
-    expect(onSelectDay).toHaveBeenCalledWith("5Jan")
+    expect(onSelectDay).toHaveBeenCalledWith("2026-01-05")
   })
 })

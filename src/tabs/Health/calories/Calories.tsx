@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react"
 import { useStorageContext } from "../../../shared/FirebaseContext"
 import { DayData, DAILY_PATH } from "../../../shared/types"
-import { getDayId, setupDays } from "../utils"
+import { setupDays } from "../utils"
 import { Switch } from "../../../shared/controls/Switch"
 import { Days } from "./Days"
 import { WeeklyCalorieTracker } from "./WeeklyCalorieTracker"
@@ -20,7 +20,7 @@ export function Calories() {
 
   const days = useMemo(() => setupDays(value), [value])
   const yesterday = days[days.length - 1]
-  const yesterdayId = yesterday && getDayId(yesterday)
+  const yesterdayId = yesterday && yesterday.id
   const caloriesRecordedYesterday = typeof yesterday?.diff === "number"
 
   const activeDayId =
@@ -29,7 +29,7 @@ export function Calories() {
       ? yesterdayId
       : null)
   const activeDay = activeDayId
-    ? days.find((day) => getDayId(day) === activeDayId)
+    ? days.find((day) => day.id === activeDayId)
     : undefined
   const activeDayData = activeDayId ? value?.[activeDayId] : undefined
 

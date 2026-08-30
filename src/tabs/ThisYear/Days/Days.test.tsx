@@ -26,7 +26,8 @@ describe("Days", () => {
 
     const dailyData: Record<string, DayData> = {}
     for (let day = 1; day <= 7; day += 1) {
-      dailyData[`${day}Jan`] = { id: `${day}Jan`, consumed: 2000, expended: 2500 }
+      const id = `2026-01-${`${day}`.padStart(2, "0")}`
+      dailyData[id] = { id, consumed: 2000, expended: 2500 }
     }
 
     renderWithStorage(<DayList />, {
@@ -47,7 +48,8 @@ describe("Days", () => {
 
     const dailyData: Record<string, DayData> = {}
     for (let day = 1; day <= 8; day += 1) {
-      dailyData[`${day}Jan`] = { id: `${day}Jan`, consumed: 2000, expended: 2500 }
+      const id = `2026-01-${`${day}`.padStart(2, "0")}`
+      dailyData[id] = { id, consumed: 2000, expended: 2500 }
     }
 
     renderWithStorage(<DayList />, {

@@ -1,7 +1,7 @@
 import { CSSProperties, useMemo } from "react"
 
 import "./Days.css"
-import { Balance, getDayId } from "../utils"
+import { Balance } from "../utils"
 
 type DaysProps = {
   days: Balance[]
@@ -29,7 +29,7 @@ export function Days({ days, onSelectDay }: DaysProps) {
     >
       {days.map((day, index) => (
         <li
-          key={`${day.day}-${day.month}`}
+          key={day.id}
           className="day-circle"
           style={
             {
@@ -44,7 +44,7 @@ export function Days({ days, onSelectDay }: DaysProps) {
             type="button"
             className="day-button"
             aria-label={`update ${day.day} ${day.month}`}
-            onClick={() => onSelectDay(getDayId(day))}
+            onClick={() => onSelectDay(day.id)}
           >
             <div className="day-details" style={{ textAlign: "center" }}>
               <b>
