@@ -735,17 +735,10 @@ module.exports = function (webpackEnv) {
             paths.appNodeModules,
             '.cache/.eslintcache'
           ),
-          // ESLint class options
-          cwd: paths.appPath,
-          resolvePluginsRelativeTo: __dirname,
-          baseConfig: {
-            extends: [require.resolve('eslint-config-react-app/base')],
-            rules: {
-              ...(!hasJsxRuntime && {
-                'react/react-in-jsx-scope': 'error',
-              }),
-            },
-          },
+          // Picks up eslint.config.js from the project root, same as the
+          // `eslint` CLI -- there's a single flat config now instead of
+          // this plugin's own separate baseConfig plus package.json's
+          // eslintConfig.
         }),
     ].filter(Boolean),
     // Turn off performance processing because we utilize
