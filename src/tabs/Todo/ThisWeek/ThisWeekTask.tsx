@@ -11,7 +11,7 @@ import {
   WEEKLY_KEY,
   WeeklyTask,
 } from "../../../shared/types"
-import { formatDateId, normalizeDailyData } from "../../../shared/utils"
+import { formatDateId } from "../../../shared/utils"
 import { Combobox } from "../../../shared/controls/combobox/Combobox"
 import { CategoriesContext } from ".."
 import { ProgressIndicator } from "./ProgressIndicator"
@@ -70,11 +70,7 @@ export function ThisWeekTask({ task }: { task: WeeklyTask }) {
   )
 
   const todayId = formatDateId(new Date())
-  const { value: dailyValue } = useValue<Record<string, DayData>>(DAILY_PATH)
-  const today = useMemo(
-    () => normalizeDailyData(dailyValue)[todayId],
-    [dailyValue, todayId],
-  )
+  const { value: today } = useValue<DayData>(`${DAILY_PATH}/${todayId}`)
 
   const handleClick = (event: React.MouseEvent) => {
     if (!task.completed) {

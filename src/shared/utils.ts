@@ -37,7 +37,7 @@ export const formatDate = (date: Date) => {
 
 // Ids written before the yyyy-mm-dd migration are just "5Jan" with no year.
 // Since they only ever existed for 2026, that's the year we assume for them.
-export const normalizeDayId = (id: string) => {
+export const normaliseDayId = (id: string) => {
   if (CANONICAL_ID.test(id)) {
     return id
   }
@@ -56,7 +56,7 @@ export const normalizeDayId = (id: string) => {
   return formatDateId(new Date(2026, monthIndex, Number(day)))
 }
 
-export const normalizeDailyData = (
+export const normaliseDailyData = (
   data?: Record<string, DayData>,
 ): Record<string, DayData> => {
   if (!data) {
@@ -64,22 +64,22 @@ export const normalizeDailyData = (
   }
 
   const entries = Object.entries(data).map(
-    ([key, value]) => [key, normalizeDayId(key), value] as const,
+    ([key, value]) => [key, normaliseDayId(key), value] as const,
   )
 
-  const normalized: Record<string, DayData> = {}
+  const normalised: Record<string, DayData> = {}
   for (const [key, id, value] of entries) {
     if (id !== key) {
-      normalized[id] = { ...normalized[id], ...value, id }
+      normalised[id] = { ...normalised[id], ...value, id }
     }
   }
   for (const [key, id, value] of entries) {
     if (id === key) {
-      normalized[id] = { ...normalized[id], ...value, id }
+      normalised[id] = { ...normalised[id], ...value, id }
     }
   }
 
-  return normalized
+  return normalised
 }
 
 export const CATEGORIES = [

@@ -11,7 +11,7 @@ import {
   HABITS,
   isHabit,
 } from "../../../shared/types"
-import { useMemo, useRef } from "react"
+import { useRef } from "react"
 import { useStorageContext } from "../../../shared/FirebaseContext"
 import { DraggableListItem } from "../../../shared/drag-and-drop/DraggableListItem"
 import {
@@ -26,7 +26,7 @@ import {
   isDraggable,
   sortByPosition,
 } from "../../../shared/drag-and-drop/utils"
-import { formatDateId, normalizeDailyData } from "../../../shared/utils"
+import { formatDateId } from "../../../shared/utils"
 import { useDailyReset } from "./useDailyReset"
 
 const updatedYesterday = (task: DailyTask, status: DailyTask["status"]) =>
@@ -39,11 +39,7 @@ export function TodayList() {
   const tasks = value ? sortByPosition(Object.values(value)) : []
 
   const todayId = formatDateId(new Date())
-  const { value: dailyValue } = useValue<Record<string, DayData>>(DAILY_PATH)
-  const today = useMemo(
-    () => normalizeDailyData(dailyValue)[todayId],
-    [dailyValue, todayId],
-  )
+  const { value: today } = useValue<DayData>(`${DAILY_PATH}/${todayId}`)
 
   const { finishedTasks, unfinishedTasks } = tasks.reduce(
     (sortedTasks: Record<string, DailyTask[]>, task) => {
