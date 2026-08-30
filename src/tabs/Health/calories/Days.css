@@ -49,11 +49,16 @@
   }
 
   &:hover {
-    scale: 2;
+    width: 100px;
     z-index: 1;
 
     .day-details {
       opacity: 1;
+      font-size: 13px;
+    }
+
+    .period-icons {
+      bottom: 10px;
     }
   }
 }

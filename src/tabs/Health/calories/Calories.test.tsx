@@ -59,6 +59,20 @@ describe("Calories", () => {
       ).toBeInTheDocument()
     })
 
+    it("doesn't show the form while daily data is still loading", () => {
+      renderWithStorage(<Calories />, {
+        value: {
+          useValue: jest
+            .fn()
+            .mockReturnValue({ loading: true, value: undefined }),
+        },
+      })
+
+      expect(
+        screen.queryByRole("textbox", { name: "In" }),
+      ).not.toBeInTheDocument()
+    })
+
     it("doesn't show the form when yesterday's calories are already recorded", () => {
       renderCalories({
         "2026-01-06": { id: "2026-01-06", consumed: 1800, expended: 2200 },
