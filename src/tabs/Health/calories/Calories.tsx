@@ -16,7 +16,7 @@ export function Calories() {
   const [selectedDayId, setSelectedDayId] = useState<string | null>(null)
 
   const { useValue, updateItem } = useStorageContext()
-  const { value } = useValue<Record<string, DayData>>(DAILY_PATH)
+  const { value, loading } = useValue<Record<string, DayData>>(DAILY_PATH)
 
   const days = useMemo(() => setupDays(value), [value])
   const yesterday = days[days.length - 1]
@@ -25,7 +25,7 @@ export function Calories() {
 
   const activeDayId =
     selectedDayId ??
-    (yesterdayId && !caloriesRecordedYesterday && !dismissed
+    (!loading && yesterdayId && !caloriesRecordedYesterday && !dismissed
       ? yesterdayId
       : null)
   const activeDay = activeDayId
