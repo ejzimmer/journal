@@ -10,6 +10,7 @@ import "./App.css"
 import { Loading } from "./shared/loading"
 import { TopNav } from "./TopNav"
 import { AppRoutes } from "./AppRoutes"
+import { useLegacyDayIdMigration } from "./shared/useLegacyDayIdMigration"
 
 export function App() {
   const [isLoading, setIsLoading] = useState(true)
@@ -49,6 +50,12 @@ export function App() {
       </div>
     )
   }
+
+  return <LoggedInApp />
+}
+
+function LoggedInApp() {
+  useLegacyDayIdMigration()
 
   return (
     <>

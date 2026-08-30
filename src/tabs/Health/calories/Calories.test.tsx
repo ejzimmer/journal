@@ -60,7 +60,9 @@ describe("Calories", () => {
     })
 
     it("doesn't show the form when yesterday's calories are already recorded", () => {
-      renderCalories({ "6Jan": { id: "6Jan", consumed: 1800, expended: 2200 } })
+      renderCalories({
+        "2026-01-06": { id: "2026-01-06", consumed: 1800, expended: 2200 },
+      })
 
       expect(
         screen.queryByRole("textbox", { name: "In" }),
@@ -68,7 +70,9 @@ describe("Calories", () => {
     })
 
     it("shows the form when yesterday has an entry but calories haven't been recorded yet", () => {
-      renderCalories({ "6Jan": { id: "6Jan", habits: { "🧘": true } } as DayData })
+      renderCalories({
+        "2026-01-06": { id: "2026-01-06", habits: { "🧘": true } } as DayData,
+      })
 
       expect(
         screen.getByRole("textbox", { name: "In" }),
@@ -127,8 +131,8 @@ describe("Calories", () => {
       const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime })
       const updateItem = jest.fn()
       const dailyData = {
-        "3Jan": { id: "3Jan", consumed: 1500, expended: 2000 },
-        "6Jan": { id: "6Jan", consumed: 1800, expended: 2200 },
+        "2026-01-03": { id: "2026-01-03", consumed: 1500, expended: 2000 },
+        "2026-01-06": { id: "2026-01-06", consumed: 1800, expended: 2200 },
       }
 
       renderWithStorage(<Calories />, {
@@ -154,15 +158,19 @@ describe("Calories", () => {
 
       expect(updateItem).toHaveBeenCalledWith(
         DAILY_PATH,
-        expect.objectContaining({ id: "3Jan", consumed: 1600, expended: 2100 }),
+        expect.objectContaining({
+          id: "2026-01-03",
+          consumed: 1600,
+          expended: 2100,
+        }),
       )
     })
 
     it("switches to the newly clicked day's form when another dot is clicked while a form is already open", async () => {
       const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime })
       const dailyData = {
-        "2Jan": { id: "2Jan", consumed: 1200, expended: 2600 },
-        "6Jan": { id: "6Jan", consumed: 1800, expended: 2200 },
+        "2026-01-02": { id: "2026-01-02", consumed: 1200, expended: 2600 },
+        "2026-01-06": { id: "2026-01-06", consumed: 1800, expended: 2200 },
       }
 
       renderWithStorage(<Calories />, {
@@ -193,7 +201,12 @@ describe("Calories", () => {
     it("shows the period icon for a day that has tracker data", async () => {
       const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime })
       const dailyData = {
-        "3Jan": { id: "3Jan", consumed: 1500, expended: 2000, trackers: ["🔴"] },
+        "2026-01-03": {
+          id: "2026-01-03",
+          consumed: 1500,
+          expended: 2000,
+          trackers: ["🔴"],
+        },
       }
 
       renderWithStorage(<Calories />, {
