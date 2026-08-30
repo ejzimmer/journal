@@ -22,7 +22,7 @@ const isColour = (text?: string): text is Colour =>
   !!(text && COLOURS.find((c) => c === text))
 
 export function getNextColour(colours: Colour[]): Colour {
-  let firstUnused = COLOURS.find((c) => !colours.includes(c))
+  const firstUnused = COLOURS.find((c) => !colours.includes(c))
   if (firstUnused) {
     return firstUnused
   }
