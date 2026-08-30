@@ -12,6 +12,7 @@ export type Balance = {
   dayOfWeek: number
   balance?: number
   diff?: number
+  trackers?: string[]
 }
 
 export const getDayId = (day: { day: number; month: string }) =>
@@ -27,7 +28,8 @@ export function setupDays(dayData?: Record<string, DayData>): Balance[] {
     const date = addDays(newYearsDay, i)
     const previousBalance = i === 0 ? STARTING_BALANCE : days[i - 1].balance
     const { day, month } = formatDate(date)
-    const { consumed, expended } = dayData?.[getDayId({ day, month })] ?? {}
+    const { consumed, expended, trackers } =
+      dayData?.[getDayId({ day, month })] ?? {}
     const diff = consumed && expended && expended - consumed
 
     const daySummary = {
@@ -36,6 +38,7 @@ export function setupDays(dayData?: Record<string, DayData>): Balance[] {
       monthNumber: date.getMonth() + 1,
       dayOfWeek: date.getDay(),
       diff: typeof diff === "number" ? diff : undefined,
+      trackers,
     }
     days[i] =
       typeof previousBalance === "number" && typeof diff === "number"

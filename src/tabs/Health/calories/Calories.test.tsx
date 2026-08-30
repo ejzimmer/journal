@@ -188,4 +188,25 @@ describe("Calories", () => {
       expect(screen.getByRole("textbox", { name: "In" })).toHaveValue("")
     })
   })
+
+  describe("period tracking", () => {
+    it("shows the period icon for a day that has tracker data", async () => {
+      const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime })
+      const dailyData = {
+        "3Jan": { id: "3Jan", consumed: 1500, expended: 2000, trackers: ["🔴"] },
+      }
+
+      renderWithStorage(<Calories />, {
+        value: {
+          useValue: jest
+            .fn()
+            .mockReturnValue({ loading: false, value: dailyData }),
+        },
+      })
+
+      await user.click(screen.getByRole("radio", { name: "日" }))
+
+      expect(screen.getByRole("img", { name: "heavy flow" })).toBeInTheDocument()
+    })
+  })
 })
