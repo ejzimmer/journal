@@ -221,5 +221,70 @@ describe("Calories", () => {
 
       expect(screen.getByRole("img", { name: "heavy flow" })).toBeInTheDocument()
     })
+
+    it("shows a checkbox for each tracker in the calorie form, checked to match existing trackers", async () => {
+      const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime })
+      const dailyData = {
+        "2026-01-03": {
+          id: "2026-01-03",
+          consumed: 1500,
+          expended: 2000,
+          trackers: ["🔴"],
+        },
+      }
+
+      renderWithStorage(<Calories />, {
+        value: {
+          useValue: jest
+            .fn()
+            .mockReturnValue({ loading: false, value: dailyData }),
+        },
+      })
+
+      await user.click(screen.getByRole("radio", { name: "日" }))
+      await user.click(screen.getByRole("button", { name: "update 3 Jan" }))
+
+      expect(screen.getByRole("checkbox", { name: "light flow" })).not.toBeChecked()
+      expect(screen.getByRole("checkbox", { name: "heavy flow" })).toBeChecked()
+      expect(screen.getByRole("checkbox", { name: "ovary pain" })).not.toBeChecked()
+    })
+
+    it("saves the trackers selected in the calorie form", async () => {
+      const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime })
+      const updateItem = jest.fn()
+      const dailyData = {
+        "2026-01-03": {
+          id: "2026-01-03",
+          consumed: 1500,
+          expended: 2000,
+          trackers: ["🔴"],
+        },
+      }
+
+      renderWithStorage(<Calories />, {
+        value: {
+          updateItem,
+          useValue: jest
+            .fn()
+            .mockReturnValue({ loading: false, value: dailyData }),
+        },
+      })
+
+      await user.click(screen.getByRole("radio", { name: "日" }))
+      await user.click(screen.getByRole("button", { name: "update 3 Jan" }))
+
+      await user.click(screen.getByRole("checkbox", { name: "heavy flow" }))
+      await user.click(screen.getByRole("checkbox", { name: "ovary pain" }))
+      await user.click(screen.getByRole("textbox", { name: "In" }))
+      await user.keyboard("{Enter}")
+
+      expect(updateItem).toHaveBeenCalledWith(
+        DAILY_PATH,
+        expect.objectContaining({
+          id: "2026-01-03",
+          trackers: ["🥚"],
+        }),
+      )
+    })
   })
 })

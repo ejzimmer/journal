@@ -70,13 +70,15 @@ export function Calories() {
             date={{ day: activeDay.day, month: activeDay.month }}
             consumed={activeDayData?.consumed}
             expended={activeDayData?.expended}
+            trackers={activeDayData?.trackers}
             onClose={closeForm}
-            onSubmit={({ consumed, expended }) => {
+            onSubmit={({ consumed, expended, trackers }) => {
               updateItem<DayData>(DAILY_PATH, {
                 ...(activeDayData ?? { id: activeDayId }),
                 id: activeDayId,
                 consumed,
                 expended,
+                trackers,
               })
             }}
           />

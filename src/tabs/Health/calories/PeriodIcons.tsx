@@ -3,9 +3,9 @@ import { BloodDropsIcon } from "../../../shared/icons/BloodDrops"
 import { LightningBoltIcon } from "../../../shared/icons/LightningBolt"
 import "./PeriodIcons.css"
 
-const LIGHT_FLOW = "🟤"
-const HEAVY_FLOW = "🔴"
-const OVARY_PAIN = "🥚"
+export const LIGHT_FLOW = "🟤"
+export const HEAVY_FLOW = "🔴"
+export const OVARY_PAIN = "🥚"
 
 export function PeriodIcons({ trackers }: { trackers?: string[] }) {
   if (!trackers?.length) {
