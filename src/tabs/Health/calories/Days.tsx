@@ -2,7 +2,6 @@ import { CSSProperties, useMemo } from "react"
 
 import "./Days.css"
 import { Balance } from "../utils"
-import { opaqueLchOnWhite } from "./colour"
 import { PeriodIcons } from "./PeriodIcons"
 
 type DaysProps = {
@@ -66,9 +65,17 @@ const weekday = (day: Balance) =>
   Temporal.PlainDate.from({ year: 2026, month: day.monthNumber, day: day.day })
     .dayOfWeek
 
+const FULL_LIGHTNESS = 78
+const FULL_CHROMA = 230
+
 function getDayColour(diff: number, maxDiff: number) {
   const intensity = maxDiff === 0 ? 1 : Math.min(Math.abs(diff) / maxDiff, 1)
   const hue = diff < 0 ? 77 : 104
 
-  return opaqueLchOnWhite(78, 230, hue, intensity)
+  // Fades toward white (lightness 100%, chroma 0) as intensity drops, so the
+  // result is always a fully opaque colour rather than a translucent one.
+  const lightness = 100 - intensity * (100 - FULL_LIGHTNESS)
+  const chroma = intensity * FULL_CHROMA
+
+  return `lch(${lightness}% ${chroma} ${hue})`
 }
