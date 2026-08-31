@@ -69,5 +69,9 @@ function getDayColour(diff: number, maxDiff: number) {
   const intensity = maxDiff === 0 ? 1 : Math.min(Math.abs(diff) / maxDiff, 1)
   const hue = diff < 0 ? 77 : 104
 
-  return `lch(78% 230 ${hue} / ${intensity})`
+  // Linear interpolation between white (intensity 0) and the full colour (intensity 1).
+  const lightness = intensity * 78 + (1 - intensity) * 100
+  const chroma = intensity * 230
+
+  return `lch(${lightness}% ${chroma} ${hue})`
 }
