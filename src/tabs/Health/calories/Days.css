@@ -6,7 +6,9 @@
   gap: 3px;
   overflow-x: auto;
   overflow-y: hidden;
-  padding-block-start: 8px;
+  /* leaves room for hovered circles in the top/bottom row to grow into,
+     since overflow-y: hidden would otherwise clip them */
+  padding-block: 26px;
   padding-inline: 6px;
   box-sizing: content-box;
   list-style-type: none;
@@ -49,7 +51,7 @@
   }
 
   &:hover {
-    scale: 2;
+    scale: 2.2;
     z-index: 1;
 
     .day-details {

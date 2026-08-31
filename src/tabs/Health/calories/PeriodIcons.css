@@ -1,6 +1,6 @@
 .period-icons {
   position: absolute;
-  bottom: 4px;
+  bottom: 0;
   left: 50%;
   translate: -50% 0;
   display: flex;
