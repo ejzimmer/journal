@@ -2,6 +2,7 @@ import { CSSProperties, useMemo } from "react"
 
 import "./Days.css"
 import { Balance } from "../utils"
+import { opaqueLchOnWhite } from "./colour"
 import { PeriodIcons } from "./PeriodIcons"
 
 type DaysProps = {
@@ -69,5 +70,5 @@ function getDayColour(diff: number, maxDiff: number) {
   const intensity = maxDiff === 0 ? 1 : Math.min(Math.abs(diff) / maxDiff, 1)
   const hue = diff < 0 ? 77 : 104
 
-  return `lch(78% 230 ${hue} / ${intensity})`
+  return opaqueLchOnWhite(78, 230, hue, intensity)
 }
