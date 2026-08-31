@@ -85,7 +85,7 @@ describe("Calories", () => {
 
     it("shows the form when yesterday has an entry but calories haven't been recorded yet", () => {
       renderCalories({
-        "2026-01-06": { id: "2026-01-06", habits: { "🧘": true } } as DayData,
+        "2026-01-06": { id: "2026-01-06", trackers: ["🔴"] },
       })
 
       expect(

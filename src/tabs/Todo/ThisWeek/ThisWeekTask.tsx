@@ -2,16 +2,7 @@ import { SubmitEvent, useContext, useMemo, useRef, useState } from "react"
 
 import "./ThisWeekTask.css"
 import { useStorageContext } from "../../../shared/FirebaseContext"
-import {
-  DAILY_PATH,
-  DayData,
-  Habit,
-  HABITS,
-  isHabit,
-  WEEKLY_KEY,
-  WeeklyTask,
-} from "../../../shared/types"
-import { formatDateId } from "../../../shared/utils"
+import { WEEKLY_KEY, WeeklyTask } from "../../../shared/types"
 import { Combobox } from "../../../shared/controls/combobox/Combobox"
 import { CategoriesContext } from ".."
 import { ProgressIndicator } from "./ProgressIndicator"
@@ -25,7 +16,7 @@ export function ThisWeekTask({ task }: { task: WeeklyTask }) {
   const descriptionRef = useRef<HTMLInputElement>(null)
   const frequencyRef = useRef<HTMLInputElement>(null)
 
-  const { updateItem, deleteItem, useValue } = useStorageContext()
+  const { updateItem, deleteItem } = useStorageContext()
   const onChange = (task: WeeklyTask) => {
     updateItem<WeeklyTask>(WEEKLY_KEY, task)
   }
@@ -69,9 +60,6 @@ export function ThisWeekTask({ task }: { task: WeeklyTask }) {
     [categories],
   )
 
-  const todayId = formatDateId(new Date())
-  const { value: today } = useValue<DayData>(`${DAILY_PATH}/${todayId}`)
-
   const handleClick = (event: React.MouseEvent) => {
     if (!task.completed) {
       task.completed = []
@@ -92,20 +80,6 @@ export function ThisWeekTask({ task }: { task: WeeklyTask }) {
         completed: [...completed.filter(Boolean), completedDate],
       })
     }
-
-    if (!isHabit(task.category) || event.ctrlKey) {
-      return
-    }
-
-    const habits =
-      today?.habits ?? Object.fromEntries(HABITS.map((habit) => [habit, false]))
-    updateItem<DayData>(DAILY_PATH, {
-      id: todayId,
-      habits: {
-        ...habits,
-        [task.category]: !event.shiftKey,
-      } as Record<Habit, boolean>,
-    })
   }
 
   const handleClose = ({ key }: React.KeyboardEvent<HTMLFormElement>) => {

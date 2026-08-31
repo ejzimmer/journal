@@ -2,15 +2,7 @@ import { TodayTask } from "./TodayTask"
 
 import { AddTodayTaskForm } from "./AddTodayTaskForm"
 import { isBefore, startOfDay } from "date-fns"
-import {
-  DailyTask,
-  DAILY_KEY,
-  DAILY_PATH,
-  DayData,
-  Habit,
-  HABITS,
-  isHabit,
-} from "../../../shared/types"
+import { DailyTask, DAILY_KEY } from "../../../shared/types"
 import { useRef } from "react"
 import { useStorageContext } from "../../../shared/FirebaseContext"
 import { DraggableListItem } from "../../../shared/drag-and-drop/DraggableListItem"
@@ -26,7 +18,6 @@ import {
   isDraggable,
   sortByPosition,
 } from "../../../shared/drag-and-drop/utils"
-import { formatDateId } from "../../../shared/utils"
 import { useDailyReset } from "./useDailyReset"
 
 const updatedYesterday = (task: DailyTask, status: DailyTask["status"]) =>
@@ -37,9 +28,6 @@ export function TodayList() {
   const { useValue, deleteItem, updateList, updateItem } = useStorageContext()
   const { value } = useValue<Record<string, DailyTask>>(DAILY_KEY)
   const tasks = value ? sortByPosition(Object.values(value)) : []
-
-  const todayId = formatDateId(new Date())
-  const { value: today } = useValue<DayData>(`${DAILY_PATH}/${todayId}`)
 
   const { finishedTasks, unfinishedTasks } = tasks.reduce(
     (sortedTasks: Record<string, DailyTask[]>, task) => {
@@ -111,28 +99,6 @@ export function TodayList() {
                 task={task}
                 onChange={(task: DailyTask) => {
                   updateItem<DailyTask>(DAILY_KEY, task)
-
-                  if (!isHabit(task.category)) {
-                    return
-                  }
-
-                  const otherTasksInCategory = tasks.filter(
-                    (t) => t.id !== task.id && t.category === task.category,
-                  )
-                  const allTasksDone =
-                    otherTasksInCategory.every((t) => t.status === "done") &&
-                    task.status === "done"
-
-                  const habits =
-                    today?.habits ??
-                    Object.fromEntries(HABITS.map((habit) => [habit, false]))
-                  updateItem<DayData>(DAILY_PATH, {
-                    id: todayId,
-                    habits: {
-                      ...habits,
-                      [task.category]: allTasksDone,
-                    } as Record<Habit, boolean>,
-                  })
                 }}
               />
             </DraggableListItem>
