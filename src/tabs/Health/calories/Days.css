@@ -6,10 +6,9 @@
   gap: 3px;
   overflow-x: auto;
   overflow-y: hidden;
-  /* leaves room for hovered circles in the top/bottom row to grow into,
-     since overflow-y: hidden would otherwise clip them */
-  padding-block: 26px;
-  padding-inline: 6px;
+  /* leaves room for hovered circles at the edges of the grid to grow into,
+     since the overflow above would otherwise clip them */
+  padding: 26px;
   box-sizing: content-box;
   list-style-type: none;
   margin: 0;
