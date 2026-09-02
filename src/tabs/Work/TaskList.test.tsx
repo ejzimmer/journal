@@ -29,6 +29,32 @@ const unlabelledList: WorkTask = {
   parentId: "work",
   lastStatusUpdate: 0,
   position: 1,
+  items: {
+    "task-1": {
+      id: "task-1",
+      description: "not done",
+      status: "not_started",
+      parentId: "list-2",
+      lastStatusUpdate: 0,
+      position: 0,
+    },
+    "task-2": {
+      id: "task-2",
+      description: "also not done",
+      status: "not_started",
+      parentId: "list-2",
+      lastStatusUpdate: 0,
+      position: 1,
+    },
+    "task-3": {
+      id: "task-3",
+      description: "done",
+      status: "done",
+      parentId: "list-2",
+      lastStatusUpdate: 0,
+      position: 2,
+    },
+  },
 }
 
 const lists: Record<string, WorkTask> = {
@@ -115,5 +141,19 @@ describe("TaskList label", () => {
       { value: urgentLabel.value, colour: urgentLabel.colour },
       labelledList,
     )
+  })
+})
+
+describe("TaskList count", () => {
+  it("shows the number of not-done items in the list", () => {
+    renderTaskList(unlabelledList.id, createStorageContext())
+
+    expect(screen.getByLabelText("2 tasks remaining")).toHaveTextContent("(2)")
+  })
+
+  it("hides the count for a list with no items", () => {
+    renderTaskList(labelledList.id, createStorageContext())
+
+    expect(screen.queryByLabelText(/tasks remaining/)).not.toBeInTheDocument()
   })
 })

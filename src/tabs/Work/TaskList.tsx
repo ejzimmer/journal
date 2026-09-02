@@ -81,6 +81,11 @@ export function TaskList({
     [list?.items],
   )
 
+  const notDoneCount = useMemo(
+    () => sortedList.filter((task) => task.status !== "done").length,
+    [sortedList],
+  )
+
   const dragState = useDropTarget({
     dropTargetRef: listRef,
     canDrop: ({ source }) => isTask(source.data),
@@ -156,6 +161,14 @@ export function TaskList({
                 </button>
               </>
             ))}
+          {notDoneCount > 0 && (
+            <span
+              className="task-count"
+              aria-label={`${notDoneCount} tasks remaining`}
+            >
+              ({notDoneCount})
+            </span>
+          )}
           <PostitModalDialog
             isOpen={confirmDeleteModalOpen}
             message={`Are you sure you want to delete list ${list.description}?`}
