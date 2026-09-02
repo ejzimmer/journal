@@ -10,7 +10,7 @@
   svg path {
     stroke-dasharray: 1;
     stroke-dashoffset: 1;
-    animation: draw-done-tick 0.3s ease forwards;
+    animation: draw-done-tick 0.6s ease forwards;
   }
 }
 
