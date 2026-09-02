@@ -8,6 +8,7 @@
   justify-content: center;
   width: 1.25em;
   aspect-ratio: 1;
+  padding: 2px;
 
   &.done,
   &.finished {
