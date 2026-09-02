@@ -210,6 +210,14 @@ ol.work-lists > li {
       }
 
       form.subtasks.editing {
+        display: inline-flex;
+        flex-direction: row;
+        align-items: center;
+
+        .bracket {
+          color: var(--body-colour-mid);
+        }
+
         input {
           font: inherit;
           color: var(--body-colour);

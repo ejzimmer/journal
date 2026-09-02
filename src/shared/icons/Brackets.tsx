@@ -7,7 +7,7 @@ export function BracketsIcon({
 }: IconProps) {
   return (
     <svg
-      viewBox="0 0 20 20"
+      viewBox="0 0 20 25"
       stroke={colour}
       strokeWidth={strokeWidth}
       strokeLinecap="round"
@@ -15,8 +15,8 @@ export function BracketsIcon({
       width={width}
       fill="none"
     >
-      <polyline points="8,3 5,3 5,17 8,17" />
-      <polyline points="12,3 15,3 15,17 12,17" />
+      <polyline points="8,2 5,2 5,23 8,23" />
+      <polyline points="12,2 15,2 15,23 12,23" />
     </svg>
   )
 }

@@ -64,6 +64,7 @@ export function Subtasks({ subtasks, listId, taskId }: SubtasksProps) {
   if (isEditing) {
     return (
       <form className="subtasks editing" onSubmit={handleSubmit} onBlur={handleBlur}>
+        <span className="bracket">[</span>
         <input
           ref={inputRef}
           autoFocus
@@ -72,6 +73,7 @@ export function Subtasks({ subtasks, listId, taskId }: SubtasksProps) {
           defaultValue={sorted.map((subtask) => subtask.description).join(", ")}
           onKeyDown={handleKeyDown}
         />
+        <span className="bracket">]</span>
       </form>
     )
   }
