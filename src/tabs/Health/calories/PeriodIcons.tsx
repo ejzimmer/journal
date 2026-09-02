@@ -16,17 +16,17 @@ export function PeriodIcons({ trackers }: { trackers?: string[] }) {
     <div className="period-icons">
       {trackers.includes(LIGHT_FLOW) && (
         <span role="img" aria-label="light flow">
-          <BloodDropIcon width="9px" />
+          <BloodDropIcon width="6px" />
         </span>
       )}
       {trackers.includes(HEAVY_FLOW) && (
         <span role="img" aria-label="heavy flow">
-          <BloodDropsIcon width="13px" />
+          <BloodDropsIcon width="9px" />
         </span>
       )}
       {trackers.includes(OVARY_PAIN) && (
         <span role="img" aria-label="ovary pain">
-          <LightningBoltIcon width="9px" />
+          <LightningBoltIcon width="6px" />
         </span>
       )}
     </div>
