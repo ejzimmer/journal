@@ -58,8 +58,8 @@ ol.work-lists > li {
     }
 
     .task-count {
-      font-family: sans-serif;
-      font-size: 0.9rem;
+      margin-inline-start: auto;
+      font-size: 1.4em;
       font-weight: bold;
       color: var(--body-colour-light);
     }
