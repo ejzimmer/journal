@@ -36,7 +36,6 @@ export type WorkStorageContextType = {
   deleteTask: (listId: string, task: WorkTask) => void
   reorderTasks: <T extends { id: string }>(listId: string, tasks: T[]) => void
 
-  addSubtask: (listId: string, taskId: string, description: string) => void
   deleteSubtask: (listId: string, taskId: string, subtask: Subtask) => void
   updateSubtasksList: (
     listId: string,
@@ -221,9 +220,6 @@ export function WorkStorageProvider({ children }: { children: ReactNode }) {
       updateItemsList(`${WORK_KEY}/${listId}/items`, tasks)
     },
 
-    addSubtask: (listId, taskId, description) => {
-      addItem(`${WORK_KEY}/${listId}/items/${taskId}/subtasks`, { description })
-    },
     deleteSubtask: (listId, taskId, subtask) => {
       deleteItem(`${WORK_KEY}/${listId}/items/${taskId}/subtasks`, subtask)
     },
