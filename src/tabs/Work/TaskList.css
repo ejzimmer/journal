@@ -127,7 +127,7 @@ ol.work-lists > li {
       opacity: 1;
     }
 
-    &:has(form.add-subtask:focus-within) .add-metadata {
+    &:has(form.subtasks.editing:focus-within) .add-metadata {
       opacity: 0.4;
     }
 
@@ -224,28 +224,6 @@ ol.work-lists > li {
         }
       }
 
-      form.add-subtask {
-        display: flex;
-        flex-direction: row;
-        align-items: center;
-        gap: 4px;
-
-        > button {
-          margin-block-end: var(--baseline-nudge);
-        }
-
-        input {
-          font: inherit;
-          border: none;
-          border-bottom: 1px solid var(--body-colour-light);
-          background: transparent;
-          width: 8em;
-
-          &:focus {
-            outline: none;
-          }
-        }
-      }
     }
 
     button.add-metadata {

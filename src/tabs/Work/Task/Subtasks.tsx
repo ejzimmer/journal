@@ -2,6 +2,8 @@ import { FormEvent, KeyboardEvent, useRef, useState } from "react"
 import { sortByPosition } from "../../../shared/drag-and-drop/utils"
 import { useWorkStorage } from "../WorkStorageContext"
 import { Subtask } from "../types"
+import { BracketsIcon } from "../../../shared/icons/Brackets"
+import { StandardChecklistButton } from "./StandardChecklistButton"
 
 type SubtasksProps = {
   subtasks?: Record<string, Subtask>
@@ -14,11 +16,8 @@ export function Subtasks({ subtasks, listId, taskId }: SubtasksProps) {
   const [isEditing, setIsEditing] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
 
-  if (!subtasks || Object.keys(subtasks).length === 0) {
-    return null
-  }
-
-  const sorted = sortByPosition(Object.values(subtasks))
+  const sorted = sortByPosition(Object.values(subtasks ?? {}))
+  const hasSubtasks = sorted.length > 0
 
   const save = () => {
     const text = inputRef.current?.value ?? ""
@@ -78,24 +77,38 @@ export function Subtasks({ subtasks, listId, taskId }: SubtasksProps) {
   }
 
   return (
-    <span className="subtasks" onClick={() => setIsEditing(true)}>
-      [
-      {sorted.map((subtask, index) => (
-        <span key={subtask.id}>
-          <button
-            type="button"
-            className="subtask"
-            onClick={(event) => {
-              event.stopPropagation()
-              deleteSubtask(listId, taskId, subtask)
-            }}
-          >
-            {subtask.description}
-          </button>
-          {index < sorted.length - 1 ? ", " : ""}
+    <>
+      {hasSubtasks ? (
+        <span className="subtasks" onClick={() => setIsEditing(true)}>
+          [
+          {sorted.map((subtask, index) => (
+            <span key={subtask.id}>
+              <button
+                type="button"
+                className="subtask"
+                onClick={(event) => {
+                  event.stopPropagation()
+                  deleteSubtask(listId, taskId, subtask)
+                }}
+              >
+                {subtask.description}
+              </button>
+              {index < sorted.length - 1 ? ", " : ""}
+            </span>
+          ))}
+          ]
         </span>
-      ))}
-      ]
-    </span>
+      ) : (
+        <button
+          type="button"
+          className="add-metadata ghost"
+          aria-label="Add subtask"
+          onClick={() => setIsEditing(true)}
+        >
+          <BracketsIcon width="16px" />
+        </button>
+      )}
+      <StandardChecklistButton listId={listId} taskId={taskId} />
+    </>
   )
 }

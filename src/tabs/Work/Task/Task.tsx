@@ -14,7 +14,6 @@ import { WorktreeStamp } from "./WorktreeStamp"
 import { AddWorktree } from "./AddWorktree"
 import { Worktree } from "../types"
 import { Subtasks } from "./Subtasks"
-import { AddSubtask } from "./AddSubtask"
 
 type TaskProps = {
   task: WorkTask
@@ -116,8 +115,6 @@ export function Task({ task, listId, dragHandle }: TaskProps) {
         {hasLabels && (
           <DueDate dueDate={task.dueDate} onChange={onChangeDueDate} />
         )}
-
-        <AddSubtask listId={listId} taskId={task.id} />
       </div>
     </DraggableListItem>
   )

@@ -187,18 +187,6 @@ describe("WorkStorageContext", () => {
     )
   })
 
-  it("addSubtask writes a new subtask under the task", () => {
-    const firebaseContext = createFirebaseContext({ [list.id]: list })
-    const workStorage = getWorkStorage(firebaseContext)
-
-    workStorage?.addSubtask(list.id, task.id, "Write tests")
-
-    expect(firebaseContext.addItem).toHaveBeenCalledWith(
-      "work/list-1/items/task-1/subtasks",
-      { description: "Write tests" },
-    )
-  })
-
   it("updateSubtasksList writes the full subtasks list back to the task", () => {
     const firebaseContext = createFirebaseContext({ [list.id]: list })
     const workStorage = getWorkStorage(firebaseContext)
