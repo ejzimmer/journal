@@ -161,12 +161,14 @@ export function TaskList({
                 </button>
               </>
             ))}
-          <span
-            className="task-count"
-            aria-label={`${notDoneCount} tasks remaining`}
-          >
-            {notDoneCount}
-          </span>
+          {notDoneCount > 0 && (
+            <span
+              className="task-count"
+              aria-label={`${notDoneCount} tasks remaining`}
+            >
+              ({notDoneCount})
+            </span>
+          )}
           <PostitModalDialog
             isOpen={confirmDeleteModalOpen}
             message={`Are you sure you want to delete list ${list.description}?`}

@@ -148,12 +148,12 @@ describe("TaskList count", () => {
   it("shows the number of not-done items in the list", () => {
     renderTaskList(unlabelledList.id, createStorageContext())
 
-    expect(screen.getByLabelText("2 tasks remaining")).toHaveTextContent("2")
+    expect(screen.getByLabelText("2 tasks remaining")).toHaveTextContent("(2)")
   })
 
-  it("shows 0 for a list with no items", () => {
+  it("hides the count for a list with no items", () => {
     renderTaskList(labelledList.id, createStorageContext())
 
-    expect(screen.getByLabelText("0 tasks remaining")).toHaveTextContent("0")
+    expect(screen.queryByLabelText(/tasks remaining/)).not.toBeInTheDocument()
   })
 })
