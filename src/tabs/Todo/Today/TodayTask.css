@@ -4,7 +4,6 @@
     opacity: 0.4;
 
     .editable-description > div {
-      margin-inline-start: 3px;
       text-decoration: line-through;
     }
   }
