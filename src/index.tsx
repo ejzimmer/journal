@@ -10,10 +10,8 @@ import * as serviceWorkerRegistration from "./serviceWorkerRegistration"
 
 import { initializeApp } from "firebase/app"
 import { getDatabase } from "firebase/database"
-import {
-  createFirebaseContext,
-  FirebaseContext,
-} from "./shared/FirebaseContext"
+import { FirebaseContext } from "./shared/FirebaseContext"
+import { createLocalFirstContext } from "./shared/localFirst/createLocalFirstContext"
 
 const firebaseConfig = {
   apiKey: "AIzaSyAlKw5_aMOUlR3SdkbU6vHADLTUvXZHNJg",
@@ -26,22 +24,27 @@ const firebaseConfig = {
     "https://journal-50dcf-default-rtdb.asia-southeast1.firebasedatabase.app",
 }
 
-const contextValue = createFirebaseContext(
+const { context: contextValue, hydrate } = createLocalFirstContext(
   getDatabase(initializeApp(firebaseConfig)),
 )
 
-const container = document.getElementById("root")
-const root = createRoot(container!)
-
-root.render(
-  <React.StrictMode>
-    <FirebaseContext.Provider value={contextValue}>
-      <BrowserRouter>
-        <App />
-      </BrowserRouter>
-    </FirebaseContext.Provider>
-    <AppUpdateBanner />
-  </React.StrictMode>,
-)
-
+// Registered synchronously (not after hydrate resolves): the registration
+// helper waits on the window "load" event, which can fire before an async
+// IndexedDB read finishes, so it must not be delayed behind one.
 serviceWorkerRegistration.register({ onUpdate: setWaitingRegistration })
+
+hydrate().then(() => {
+  const container = document.getElementById("root")
+  const root = createRoot(container!)
+
+  root.render(
+    <React.StrictMode>
+      <FirebaseContext.Provider value={contextValue}>
+        <BrowserRouter>
+          <App />
+        </BrowserRouter>
+      </FirebaseContext.Provider>
+      <AppUpdateBanner />
+    </React.StrictMode>,
+  )
+})
