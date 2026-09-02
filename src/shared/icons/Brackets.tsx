@@ -1,10 +1,9 @@
 import { IconProps } from "./types"
 
-export function BracketsIcon({
-  width = "100%",
-  colour = "currentColor",
-  strokeWidth = "2",
-}: IconProps) {
+export function BracketsIcon({ colour = "currentColor", ...props }: IconProps) {
+  const width = props.width ?? "100%"
+  const strokeWidth = props.strokeWidth ?? "2"
+
   return (
     <svg
       viewBox="0 0 20 25"

@@ -1,24 +1,18 @@
-import { render, screen } from "@testing-library/react"
+import { screen } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 import { Subtasks } from "./Subtasks"
-import { WorkStorageContext, WorkStorageContextType } from "../WorkStorageContext"
-import { createWorkStorageContext } from "../workStorageTestUtils"
+import { WorkStorageContextType } from "../WorkStorageContext"
+import { renderWithWorkStorage } from "../workStorageTestUtils"
 import { STANDARD_CHECKLIST, Subtask, WorkTask } from "../types"
 
 function renderWithContext(
   subtasks: Record<string, Subtask> | undefined,
   overrides: Partial<WorkStorageContextType> = {},
 ) {
-  const storageContext = createWorkStorageContext({
-    getTask: () => ({ subtasks }) as WorkTask,
-    ...overrides,
-  })
-  const result = render(
-    <WorkStorageContext.Provider value={storageContext}>
-      <Subtasks subtasks={subtasks} listId="list-1" taskId="task-1" />
-    </WorkStorageContext.Provider>,
+  return renderWithWorkStorage(
+    <Subtasks subtasks={subtasks} listId="list-1" taskId="task-1" />,
+    { getTask: () => ({ subtasks }) as WorkTask, ...overrides },
   )
-  return { ...result, storageContext }
 }
 
 describe("Subtasks", () => {
