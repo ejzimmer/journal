@@ -81,6 +81,11 @@ export function TaskList({
     [list?.items],
   )
 
+  const notDoneCount = useMemo(
+    () => sortedList.filter((task) => task.status !== "done").length,
+    [sortedList],
+  )
+
   const dragState = useDropTarget({
     dropTargetRef: listRef,
     canDrop: ({ source }) => isTask(source.data),
@@ -122,6 +127,12 @@ export function TaskList({
               }}
             />
           </h2>
+          <span
+            className="task-count"
+            aria-label={`${notDoneCount} tasks remaining`}
+          >
+            {notDoneCount}
+          </span>
           {listLabel &&
             (editingLabel ? (
               <LabelsControl

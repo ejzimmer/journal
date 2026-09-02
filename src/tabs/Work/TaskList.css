@@ -56,6 +56,13 @@ ol.work-lists > li {
     button.ghost {
       padding: 4px;
     }
+
+    .task-count {
+      font-family: sans-serif;
+      font-size: 0.9rem;
+      font-weight: bold;
+      color: var(--body-colour-light);
+    }
   }
 
   ol.tasks {
