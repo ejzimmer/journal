@@ -102,7 +102,21 @@ export function createMockFirebaseContext(
       notify(path)
     },
     deleteItem<T extends { id: string }>(parent: string, item: T) {
-      write(`${parent}/${item.id}`, undefined)
+      if (!item.id) {
+        console.error(
+          `deleteItem called with no id, refusing to delete under "${parent}"`,
+          item,
+        )
+        return
+      }
+      const path = `${parent}/${item.id}`
+      if (getAtPath(data, path) === undefined) {
+        console.error(
+          `deleteItem found nothing at "${path}" - nothing will be deleted`,
+          item,
+        )
+      }
+      write(path, undefined)
       notify(parent)
     },
     updateList<T extends { id: string }>(listName: string, list: T[]) {

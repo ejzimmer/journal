@@ -1,4 +1,12 @@
-import { ref, set, onValue, Database, push, remove } from "firebase/database"
+import {
+  ref,
+  set,
+  onValue,
+  Database,
+  push,
+  remove,
+  get,
+} from "firebase/database"
 import { createContext, useContext, useEffect, useState } from "react"
 
 type Item = { id: string }
@@ -49,6 +57,16 @@ export function createFirebaseContext(database: Database): ContextType {
       }
       const path = `${parent}/${item.id}`
       const reference = ref(database, path)
+      get(reference)
+        .then((snapshot) => {
+          if (!snapshot.exists()) {
+            console.error(
+              `deleteItem found nothing at "${path}" - remove() will succeed without deleting anything`,
+              item,
+            )
+          }
+        })
+        .catch(() => {})
       remove(reference).catch((error) => {
         console.error(`deleteItem failed for "${path}"`, error)
       })
