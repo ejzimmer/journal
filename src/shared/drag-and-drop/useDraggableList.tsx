@@ -17,9 +17,6 @@ type UseDraggableArgs<T> = {
   getTargetListId: (source: Draggable, target: DropTarget) => string
   getAxis: (source: Draggable) => "horizontal" | "vertical"
   onMove?: (item: T, sourceListId: string, targetListId: string) => T
-  // Required to move an item to a *different* list. Callers whose
-  // getTargetListId never resolves to another list (same-list reordering
-  // only) can omit it.
   moveItem?: (args: {
     item: T
     movedItem: T
