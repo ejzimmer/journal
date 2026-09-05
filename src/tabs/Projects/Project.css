@@ -89,7 +89,10 @@
       opacity: 1;
       margin-block-end: 12px;
       overflow: visible;
-      background: var(--project-colour-light);
+      /* Plain, not tinted: paper, not more card. The shadow below stays
+         tinted to the project colour so it still reads as attached to this
+         particular card. */
+      background: white;
       box-shadow: inset 0 6px 6px -6px var(--popout-shadow);
     }
   }
@@ -173,10 +176,16 @@
     label.checkbox .control {
       width: 1.2em;
       /* --project-colour already carries a built-in 50% alpha per category,
-         so this reads as muted against the popout rather than as bright as
-         a fully solid swatch would. */
+         so the border reads as muted against the popout rather than as
+         bright as a fully solid swatch would. */
       color: var(--project-colour);
       border: 2px solid;
+
+      &:has(+ :checked) {
+        background: var(--project-colour);
+        border-color: var(--project-colour);
+        color: white;
+      }
     }
 
     label:has(:checked) + div {
