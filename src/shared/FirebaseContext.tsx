@@ -24,10 +24,6 @@ export interface ContextType {
   updateList: <T extends Item>(listName: string, list: T[]) => void
   setValue: <T>(path: string, value: T) => void
   useValue: <T>(key?: string) => { value?: T; loading: boolean }
-  // Moves movedItem (keeping its id) from sourceListId to targetListId in a
-  // single write, so the move can't be observed (or land) half-applied.
-  // targetListItems - the destination list's other current items - are
-  // renumbered around movedItem.position to make space for it.
   moveItemBetweenLists: <T extends { id: string; position: number }>(args: {
     movedItem: T
     sourceListId: string
