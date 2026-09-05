@@ -1,6 +1,6 @@
 .done-tick {
   width: 100%;
-  height: 100%;
+  aspect-ratio: 1;
   border-radius: 50%;
   background: var(--success-colour);
   display: inline-flex;
