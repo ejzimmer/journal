@@ -134,22 +134,29 @@ export function createMockFirebaseContext(
       write(path, value)
       notify(path)
     },
-    moveItemBetweenLists<T>(
-      source: { parent: string; id: string },
-      destination: { parent: string; item: Omit<T, "id"> },
-      positionUpdates?: Record<string, number>,
-    ) {
-      const newId = `mock-${nextId++}`
+    moveItemBetweenLists<T extends { id: string; position: number }>({
+      movedItem,
+      sourceListId,
+      targetListId,
+      targetListItems = [],
+    }: {
+      movedItem: T
+      sourceListId: string
+      targetListId: string
+      targetListItems?: T[]
+    }) {
       const updates: Record<string, unknown> = {
-        [`${destination.parent}/${newId}`]: { ...destination.item, id: newId },
-        [`${source.parent}/${source.id}`]: null,
+        [`${targetListId}/${movedItem.id}`]: movedItem,
+        [`${sourceListId}/${movedItem.id}`]: null,
       }
-      Object.entries(positionUpdates ?? {}).forEach(([itemId, position]) => {
-        updates[`${destination.parent}/${itemId}/position`] = position
+      targetListItems.forEach((existingItem) => {
+        updates[`${targetListId}/${existingItem.id}/position`] =
+          existingItem.position < movedItem.position
+            ? existingItem.position
+            : existingItem.position + 1
       })
       Object.entries(updates).forEach(([path, value]) => write(path, value))
       Object.keys(updates).forEach((path) => notify(path))
-      return newId
     },
     useValue<T>(key?: string) {
       const [result, setResult] = useState<{ value?: T; loading: boolean }>({

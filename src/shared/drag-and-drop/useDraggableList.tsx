@@ -141,22 +141,12 @@ export function useDraggableList<
             ? onMove(item, sourceData.parentId, targetListId)
             : item
 
-          const positionUpdates: Record<string, number> = {}
-          sortedTarget.forEach((existingItem) => {
-            positionUpdates[existingItem.id] =
-              existingItem.position < targetListIndex
-                ? existingItem.position
-                : existingItem.position + 1
+          moveItemBetweenLists({
+            movedItem: { ...movedItem, position: targetListIndex },
+            sourceListId: sourceData.parentId,
+            targetListId,
+            targetListItems: sortedTarget,
           })
-
-          moveItemBetweenLists(
-            { parent: sourceData.parentId, id: sourceData.id },
-            {
-              parent: targetListId,
-              item: { ...movedItem, position: targetListIndex },
-            },
-            positionUpdates,
-          )
         } else {
           const list = getItemByPath(sourceData.parentId, value)
           const item = list[sourceData.id]
@@ -164,10 +154,11 @@ export function useDraggableList<
             ? onMove(item, sourceData.parentId, targetListId)
             : item
 
-          moveItemBetweenLists(
-            { parent: sourceData.parentId, id: sourceData.id },
-            { parent: targetListId, item: movedItem },
-          )
+          moveItemBetweenLists({
+            movedItem,
+            sourceListId: sourceData.parentId,
+            targetListId,
+          })
         }
       },
     })

@@ -24,15 +24,16 @@ export interface ContextType {
   updateList: <T extends Item>(listName: string, list: T[]) => void
   setValue: <T>(path: string, value: T) => void
   useValue: <T>(key?: string) => { value?: T; loading: boolean }
-  // Adds the item under destination.parent and removes source.id from
-  // source.parent in a single write, so the move can't be observed (or land)
-  // half-applied. positionUpdates optionally re-numbers other items already
-  // in the destination list, keyed by their id. Returns the new item's id.
-  moveItemBetweenLists: <T>(
-    source: { parent: string; id: string },
-    destination: { parent: string; item: Omit<T, "id"> },
-    positionUpdates?: Record<string, number>,
-  ) => string
+  // Moves movedItem (keeping its id) from sourceListId to targetListId in a
+  // single write, so the move can't be observed (or land) half-applied.
+  // targetListItems - the destination list's other current items - are
+  // renumbered around movedItem.position to make space for it.
+  moveItemBetweenLists: <T extends { id: string; position: number }>(args: {
+    movedItem: T
+    sourceListId: string
+    targetListId: string
+    targetListItems?: T[]
+  }) => void
 }
 
 export const FirebaseContext = createContext<ContextType | undefined>(undefined)
@@ -94,19 +95,25 @@ export function createFirebaseContext(database: Database): ContextType {
     setValue: (path, value) => {
       set(ref(database, path), value)
     },
-    moveItemBetweenLists: (source, destination, positionUpdates) => {
-      const newId = push(ref(database, destination.parent)).key as string
+    moveItemBetweenLists: ({
+      movedItem,
+      sourceListId,
+      targetListId,
+      targetListItems = [],
+    }) => {
       const updates: Record<string, unknown> = {
-        [`${destination.parent}/${newId}`]: { ...destination.item, id: newId },
-        [`${source.parent}/${source.id}`]: null,
+        [`${targetListId}/${movedItem.id}`]: movedItem,
+        [`${sourceListId}/${movedItem.id}`]: null,
       }
-      Object.entries(positionUpdates ?? {}).forEach(([itemId, position]) => {
-        updates[`${destination.parent}/${itemId}/position`] = position
+      targetListItems.forEach((existingItem) => {
+        updates[`${targetListId}/${existingItem.id}/position`] =
+          existingItem.position < movedItem.position
+            ? existingItem.position
+            : existingItem.position + 1
       })
       update(ref(database), updates).catch((error) => {
         console.error("moveItemBetweenLists failed", updates, error)
       })
-      return newId
     },
     useValue: (key?: string) => {
       const [result, setResult] = useState<any>({ loading: true })
