@@ -28,7 +28,7 @@ export function useDraggableList<
   getAxis,
   onMove,
 }: UseDraggableArgs<T>) {
-  const { useValue, updateList, addItem, deleteItem } = useStorageContext()
+  const { useValue, updateList, generateId, atomicUpdate } = useStorageContext()
 
   const { value } = useValue<Record<string, T>>(listId)
 
@@ -133,17 +133,6 @@ export function useDraggableList<
           >
           const sortedTarget = sortByPosition(Object.values(targetList))
 
-          // Make a space for the new item
-          updateList(
-            targetListId,
-            sortedTarget.map((item) =>
-              item.position < targetListIndex
-                ? item
-                : { ...item, position: item.position + 1 },
-            ),
-          )
-
-          // Add the new item to the list
           const item = getItemByPath(
             `${sourceData.parentId}/${sourceData.id}`,
             value,
@@ -151,29 +140,45 @@ export function useDraggableList<
           const movedItem = onMove
             ? onMove(item, sourceData.parentId, targetListId)
             : item
-          addItem(targetListId, {
-            ...movedItem,
-            position: targetListIndex,
-          })
+          const newId = generateId()
 
-          // Remove the item from the old list
-          deleteItem(sourceData.parentId, item)
+          // Add the new item, make space for it among the existing items,
+          // and remove it from its old list, all in a single write so the
+          // move can't be observed (or land) half-applied.
+          const updates: Record<string, unknown> = {
+            [`${targetListId}/${newId}`]: {
+              ...movedItem,
+              id: newId,
+              position: targetListIndex,
+            },
+            [`${sourceData.parentId}/${sourceData.id}`]: null,
+          }
+          sortedTarget.forEach((existingItem) => {
+            updates[`${targetListId}/${existingItem.id}/position`] =
+              existingItem.position < targetListIndex
+                ? existingItem.position
+                : existingItem.position + 1
+          })
+          atomicUpdate(updates)
         } else {
           const list = getItemByPath(sourceData.parentId, value)
           const item = list[sourceData.id]
           const movedItem = onMove
             ? onMove(item, sourceData.parentId, targetListId)
             : item
+          const newId = generateId()
 
-          addItem(targetListId, movedItem)
-          deleteItem(sourceData.parentId, item)
+          atomicUpdate({
+            [`${targetListId}/${newId}`]: { ...movedItem, id: newId },
+            [`${sourceData.parentId}/${sourceData.id}`]: null,
+          })
         }
       },
     })
   }, [
     value,
-    addItem,
-    deleteItem,
+    generateId,
+    atomicUpdate,
     getDestinationIndex,
     updatePosition,
     updateList,

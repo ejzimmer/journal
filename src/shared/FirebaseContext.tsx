@@ -6,6 +6,7 @@ import {
   push,
   remove,
   get,
+  update,
 } from "firebase/database"
 import { createContext, useContext, useEffect, useState } from "react"
 
@@ -23,6 +24,11 @@ export interface ContextType {
   updateList: <T extends Item>(listName: string, list: T[]) => void
   setValue: <T>(path: string, value: T) => void
   useValue: <T>(key?: string) => { value?: T; loading: boolean }
+  generateId: () => string
+  // Applies every path -> value pair in one write, so a move that spans two
+  // locations (e.g. add to one list, remove from another) can't be observed
+  // half-applied. A value of null deletes the path.
+  atomicUpdate: (updates: Record<string, unknown>) => void
 }
 
 export const FirebaseContext = createContext<ContextType | undefined>(undefined)
@@ -83,6 +89,12 @@ export function createFirebaseContext(database: Database): ContextType {
     },
     setValue: (path, value) => {
       set(ref(database, path), value)
+    },
+    generateId: () => push(ref(database)).key as string,
+    atomicUpdate: (updates) => {
+      update(ref(database), updates).catch((error) => {
+        console.error("atomicUpdate failed", updates, error)
+      })
     },
     useValue: (key?: string) => {
       const [result, setResult] = useState<any>({ loading: true })

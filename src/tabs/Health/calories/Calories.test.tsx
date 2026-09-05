@@ -23,6 +23,8 @@ function Wrapper({
         updateList: jest.fn(),
         setValue: jest.fn(),
         useValue: jest.fn().mockReturnValue({ loading: false, value: dailyData }),
+        generateId: jest.fn(),
+        atomicUpdate: jest.fn(),
       }}
     >
       {children}
@@ -106,6 +108,8 @@ describe("Calories", () => {
               updateList: jest.fn(),
               setValue: jest.fn(),
               useValue: jest.fn().mockReturnValue({ loading: false, value: undefined }),
+              generateId: jest.fn(),
+              atomicUpdate: jest.fn(),
             }}
           >
             {children}

@@ -134,6 +134,11 @@ export function createMockFirebaseContext(
       write(path, value)
       notify(path)
     },
+    generateId: () => `mock-${nextId++}`,
+    atomicUpdate(updates: Record<string, unknown>) {
+      Object.entries(updates).forEach(([path, value]) => write(path, value))
+      Object.keys(updates).forEach((path) => notify(path))
+    },
     useValue<T>(key?: string) {
       const [result, setResult] = useState<{ value?: T; loading: boolean }>({
         loading: true,
