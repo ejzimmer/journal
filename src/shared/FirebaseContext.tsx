@@ -6,6 +6,7 @@ import {
   push,
   remove,
   get,
+  update,
 } from "firebase/database"
 import { createContext, useContext, useEffect, useState } from "react"
 
@@ -23,6 +24,12 @@ export interface ContextType {
   updateList: <T extends Item>(listName: string, list: T[]) => void
   setValue: <T>(path: string, value: T) => void
   useValue: <T>(key?: string) => { value?: T; loading: boolean }
+  moveItemBetweenLists: <T extends { id: string; position: number }>(args: {
+    movedItem: T
+    sourceListId: string
+    targetListId: string
+    targetListItems?: T[]
+  }) => void
 }
 
 export const FirebaseContext = createContext<ContextType | undefined>(undefined)
@@ -83,6 +90,26 @@ export function createFirebaseContext(database: Database): ContextType {
     },
     setValue: (path, value) => {
       set(ref(database, path), value)
+    },
+    moveItemBetweenLists: ({
+      movedItem,
+      sourceListId,
+      targetListId,
+      targetListItems = [],
+    }) => {
+      const updates: Record<string, unknown> = {
+        [`${targetListId}/${movedItem.id}`]: movedItem,
+        [`${sourceListId}/${movedItem.id}`]: null,
+      }
+      targetListItems.forEach((existingItem) => {
+        updates[`${targetListId}/${existingItem.id}/position`] =
+          existingItem.position < movedItem.position
+            ? existingItem.position
+            : existingItem.position + 1
+      })
+      update(ref(database), updates).catch((error) => {
+        console.error("moveItemBetweenLists failed", updates, error)
+      })
     },
     useValue: (key?: string) => {
       const [result, setResult] = useState<any>({ loading: true })

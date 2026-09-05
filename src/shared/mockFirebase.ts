@@ -134,6 +134,30 @@ export function createMockFirebaseContext(
       write(path, value)
       notify(path)
     },
+    moveItemBetweenLists<T extends { id: string; position: number }>({
+      movedItem,
+      sourceListId,
+      targetListId,
+      targetListItems = [],
+    }: {
+      movedItem: T
+      sourceListId: string
+      targetListId: string
+      targetListItems?: T[]
+    }) {
+      const updates: Record<string, unknown> = {
+        [`${targetListId}/${movedItem.id}`]: movedItem,
+        [`${sourceListId}/${movedItem.id}`]: null,
+      }
+      targetListItems.forEach((existingItem) => {
+        updates[`${targetListId}/${existingItem.id}/position`] =
+          existingItem.position < movedItem.position
+            ? existingItem.position
+            : existingItem.position + 1
+      })
+      Object.entries(updates).forEach(([path, value]) => write(path, value))
+      Object.keys(updates).forEach((path) => notify(path))
+    },
     useValue<T>(key?: string) {
       const [result, setResult] = useState<{ value?: T; loading: boolean }>({
         loading: true,

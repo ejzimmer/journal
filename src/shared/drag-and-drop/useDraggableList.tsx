@@ -28,7 +28,7 @@ export function useDraggableList<
   getAxis,
   onMove,
 }: UseDraggableArgs<T>) {
-  const { useValue, updateList, addItem, deleteItem } = useStorageContext()
+  const { useValue, updateList, moveItemBetweenLists } = useStorageContext()
 
   const { value } = useValue<Record<string, T>>(listId)
 
@@ -133,17 +133,6 @@ export function useDraggableList<
           >
           const sortedTarget = sortByPosition(Object.values(targetList))
 
-          // Make a space for the new item
-          updateList(
-            targetListId,
-            sortedTarget.map((item) =>
-              item.position < targetListIndex
-                ? item
-                : { ...item, position: item.position + 1 },
-            ),
-          )
-
-          // Add the new item to the list
           const item = getItemByPath(
             `${sourceData.parentId}/${sourceData.id}`,
             value,
@@ -151,13 +140,13 @@ export function useDraggableList<
           const movedItem = onMove
             ? onMove(item, sourceData.parentId, targetListId)
             : item
-          addItem(targetListId, {
-            ...movedItem,
-            position: targetListIndex,
-          })
 
-          // Remove the item from the old list
-          deleteItem(sourceData.parentId, item)
+          moveItemBetweenLists({
+            movedItem: { ...movedItem, position: targetListIndex },
+            sourceListId: sourceData.parentId,
+            targetListId,
+            targetListItems: sortedTarget,
+          })
         } else {
           const list = getItemByPath(sourceData.parentId, value)
           const item = list[sourceData.id]
@@ -165,15 +154,17 @@ export function useDraggableList<
             ? onMove(item, sourceData.parentId, targetListId)
             : item
 
-          addItem(targetListId, movedItem)
-          deleteItem(sourceData.parentId, item)
+          moveItemBetweenLists({
+            movedItem,
+            sourceListId: sourceData.parentId,
+            targetListId,
+          })
         }
       },
     })
   }, [
     value,
-    addItem,
-    deleteItem,
+    moveItemBetweenLists,
     getDestinationIndex,
     updatePosition,
     updateList,
