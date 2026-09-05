@@ -7,6 +7,7 @@ import {
   useRef,
 } from "react"
 import { useStorageContext } from "../../shared/FirebaseContext"
+import { addSourceListLabel } from "./labelUtils"
 import {
   Colour,
   Label,
@@ -34,6 +35,13 @@ export type WorkStorageContextType = {
   ) => void
   updateTask: (listId: string, task: WorkTask) => void
   deleteTask: (listId: string, task: WorkTask) => void
+  moveTask: (args: {
+    task: WorkTask
+    movedItem: WorkTask
+    sourceListId: string
+    targetListId: string
+    targetListItems?: WorkTask[]
+  }) => void
   reorderTasks: <T extends { id: string }>(listId: string, tasks: T[]) => void
 
   deleteSubtask: (listId: string, taskId: string, subtask: Subtask) => void
@@ -63,6 +71,7 @@ export function WorkStorageProvider({ children }: { children: ReactNode }) {
     updateItem,
     deleteItem,
     updateList: updateItemsList,
+    moveItemBetweenLists,
     useValue,
   } = useStorageContext()
 
@@ -214,6 +223,21 @@ export function WorkStorageProvider({ children }: { children: ReactNode }) {
     updateTask,
     deleteTask: (listId, task) => {
       deleteItem(`${WORK_KEY}/${listId}/items`, task)
+      task.labelIds?.forEach((id) => markUnusedLabel(id))
+    },
+    moveTask: ({ task, movedItem, sourceListId, targetListId, targetListItems }) => {
+      const [, sourceListKey] = sourceListId.split("/")
+      const sourceList = sourceListKey ? lists?.[sourceListKey] : undefined
+      const labelledItem = sourceList
+        ? addSourceListLabel(movedItem, sourceList)
+        : movedItem
+
+      moveItemBetweenLists({
+        movedItem: { ...labelledItem, parentId: targetListId },
+        sourceListId,
+        targetListId,
+        targetListItems,
+      })
       task.labelIds?.forEach((id) => markUnusedLabel(id))
     },
     reorderTasks: (listId, tasks) => {

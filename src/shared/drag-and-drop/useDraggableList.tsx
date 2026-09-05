@@ -16,7 +16,15 @@ type UseDraggableArgs<T> = {
   canDropSourceOnTarget: (source: Draggable, target: DropTarget) => boolean
   getTargetListId: (source: Draggable, target: DropTarget) => string
   getAxis: (source: Draggable) => "horizontal" | "vertical"
-  onMove?: (item: T, sourceListId: string, targetListId: string) => T
+  moveItemBetweenLists?: (args: {
+    item: T
+    movedItem: T
+    sourceListId: string
+    targetListId: string
+    targetListItems?: T[]
+  }) => void
+  useValue?: <U>(key?: string) => { value?: U; loading: boolean }
+  updateList?: <U extends { id: string }>(listName: string, list: U[]) => void
 }
 
 export function useDraggableList<
@@ -26,9 +34,13 @@ export function useDraggableList<
   canDropSourceOnTarget,
   getTargetListId,
   getAxis,
-  onMove,
+  moveItemBetweenLists,
+  useValue: useValueProp,
+  updateList: updateListProp,
 }: UseDraggableArgs<T>) {
-  const { useValue, updateList, moveItemBetweenLists } = useStorageContext()
+  const storageContext = useStorageContext()
+  const useValue = useValueProp ?? storageContext.useValue
+  const updateList = updateListProp ?? storageContext.updateList
 
   const { value } = useValue<Record<string, T>>(listId)
 
@@ -137,12 +149,10 @@ export function useDraggableList<
             `${sourceData.parentId}/${sourceData.id}`,
             value,
           )
-          const movedItem = onMove
-            ? onMove(item, sourceData.parentId, targetListId)
-            : item
 
-          moveItemBetweenLists({
-            movedItem: { ...movedItem, position: targetListIndex },
+          moveItemBetweenLists?.({
+            item,
+            movedItem: { ...item, position: targetListIndex },
             sourceListId: sourceData.parentId,
             targetListId,
             targetListItems: sortedTarget,
@@ -150,12 +160,10 @@ export function useDraggableList<
         } else {
           const list = getItemByPath(sourceData.parentId, value)
           const item = list[sourceData.id]
-          const movedItem = onMove
-            ? onMove(item, sourceData.parentId, targetListId)
-            : item
 
-          moveItemBetweenLists({
-            movedItem,
+          moveItemBetweenLists?.({
+            item,
+            movedItem: item,
             sourceListId: sourceData.parentId,
             targetListId,
           })
@@ -172,6 +180,5 @@ export function useDraggableList<
     getTargetListId,
     getAxis,
     getItemByPath,
-    onMove,
   ])
 }

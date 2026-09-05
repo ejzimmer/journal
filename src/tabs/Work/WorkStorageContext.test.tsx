@@ -36,6 +36,7 @@ function createFirebaseContext(
     updateItem: jest.fn(),
     deleteItem: jest.fn(),
     updateList: jest.fn(),
+    moveItemBetweenLists: jest.fn(),
     setValue: jest.fn(),
     useValue: <T,>(key?: string) => {
       if (key === LABELS_KEY) {
@@ -604,6 +605,88 @@ describe("WorkStorageContext labels", () => {
         LABELS_KEY,
         expect.objectContaining({ id: a11yLabel.id }),
       )
+    })
+  })
+
+  describe("moveTask", () => {
+    it("moves the item to the target list and removes it from the source", () => {
+      const task = makeTask("list-1")
+      const list = makeList("list-1", { items: { [task.id]: task } })
+      const targetList = makeList("list-2")
+      const firebaseContext = createFirebaseContext(
+        { [list.id]: list, [targetList.id]: targetList },
+        storedLabels,
+      )
+      const workStorage = getWorkStorage(firebaseContext)
+
+      workStorage?.moveTask({
+        task,
+        movedItem: { ...task, position: 1 },
+        sourceListId: "work/list-1/items",
+        targetListId: "work/list-2/items",
+      })
+
+      expect(firebaseContext.moveItemBetweenLists).toHaveBeenCalledWith(
+        expect.objectContaining({
+          movedItem: expect.objectContaining({
+            id: task.id,
+            position: 1,
+            parentId: "work/list-2/items",
+          }),
+          sourceListId: "work/list-1/items",
+          targetListId: "work/list-2/items",
+        }),
+      )
+    })
+
+    it("adds the source list's label to the moved item", () => {
+      const task = makeTask("list-1")
+      const list = makeList("list-1", {
+        items: { [task.id]: task },
+        labelIds: [a11yLabel.id],
+      })
+      const targetList = makeList("list-2")
+      const firebaseContext = createFirebaseContext(
+        { [list.id]: list, [targetList.id]: targetList },
+        storedLabels,
+      )
+      const workStorage = getWorkStorage(firebaseContext)
+
+      workStorage?.moveTask({
+        task,
+        movedItem: { ...task, position: 1 },
+        sourceListId: "work/list-1/items",
+        targetListId: "work/list-2/items",
+      })
+
+      expect(firebaseContext.moveItemBetweenLists).toHaveBeenCalledWith(
+        expect.objectContaining({
+          movedItem: expect.objectContaining({ labelIds: [a11yLabel.id] }),
+        }),
+      )
+    })
+
+    it("marks the original task's labels unused once nothing else references them", () => {
+      const task = makeTask("list-1", { labelIds: [urgentLabel.id] })
+      const list = makeList("list-1", { items: { [task.id]: task } })
+      const targetList = makeList("list-2")
+      const firebaseContext = createFirebaseContext(
+        { [list.id]: list, [targetList.id]: targetList },
+        storedLabels,
+      )
+      const workStorage = getWorkStorage(firebaseContext)
+
+      workStorage?.moveTask({
+        task,
+        movedItem: { ...task, position: 1 },
+        sourceListId: "work/list-1/items",
+        targetListId: "work/list-2/items",
+      })
+
+      expect(firebaseContext.updateItem).toHaveBeenCalledWith(LABELS_KEY, {
+        ...urgentLabel,
+        lastRemoved: expect.any(Number),
+      })
     })
   })
 
