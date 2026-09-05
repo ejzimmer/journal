@@ -17,7 +17,7 @@ export function MoveToOtherLists({
   doneListId,
   task,
 }: MoveToOtherListsProps) {
-  const { addTask, deleteTask } = useWorkStorage()
+  const { moveTask } = useWorkStorage()
 
   const currentList = allLists.find(({ id }) => id === currentListId)
   const otherLists = allLists.filter(
@@ -28,7 +28,7 @@ export function MoveToOtherLists({
     <Menu.Action
       onClick={() => {
         moveTaskBetweenLists(
-          { addTask, deleteTask },
+          { moveTask },
           task,
           currentListId,
           currentList,

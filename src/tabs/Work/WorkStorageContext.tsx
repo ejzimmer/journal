@@ -34,6 +34,12 @@ export type WorkStorageContextType = {
   ) => void
   updateTask: (listId: string, task: WorkTask) => void
   deleteTask: (listId: string, task: WorkTask) => void
+  moveTask: (
+    currentListId: string,
+    destinationListId: string,
+    task: WorkTask,
+    movedTask: WorkTask,
+  ) => void
   reorderTasks: <T extends { id: string }>(listId: string, tasks: T[]) => void
 
   deleteSubtask: (listId: string, taskId: string, subtask: Subtask) => void
@@ -63,6 +69,7 @@ export function WorkStorageProvider({ children }: { children: ReactNode }) {
     updateItem,
     deleteItem,
     updateList: updateItemsList,
+    moveItemBetweenLists,
     useValue,
   } = useStorageContext()
 
@@ -214,6 +221,17 @@ export function WorkStorageProvider({ children }: { children: ReactNode }) {
     updateTask,
     deleteTask: (listId, task) => {
       deleteItem(`${WORK_KEY}/${listId}/items`, task)
+      task.labelIds?.forEach((id) => markUnusedLabel(id))
+    },
+    moveTask: (currentListId, destinationListId, task, movedTask) => {
+      moveItemBetweenLists({
+        movedItem: {
+          ...movedTask,
+          parentId: `${WORK_KEY}/${destinationListId}/items`,
+        },
+        sourceListId: `${WORK_KEY}/${currentListId}/items`,
+        targetListId: `${WORK_KEY}/${destinationListId}/items`,
+      })
       task.labelIds?.forEach((id) => markUnusedLabel(id))
     },
     reorderTasks: (listId, tasks) => {
