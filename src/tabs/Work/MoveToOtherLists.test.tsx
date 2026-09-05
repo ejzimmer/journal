@@ -50,11 +50,13 @@ describe("MoveToOtherLists", () => {
     await user.click(screen.getByRole("menuitem", { name: "Today" }))
 
     expect(storageContext.moveTask).toHaveBeenCalledWith(
-      "list-1",
-      "list-2",
-      task,
       expect.objectContaining({
-        labelIds: ["label-a11y"],
+        task,
+        sourceListId: "work/list-1/items",
+        targetListId: "work/list-2/items",
+        movedItem: expect.objectContaining({
+          labelIds: ["label-a11y"],
+        }),
       }),
     )
   })

@@ -17,6 +17,16 @@ type UseDraggableArgs<T> = {
   getTargetListId: (source: Draggable, target: DropTarget) => string
   getAxis: (source: Draggable) => "horizontal" | "vertical"
   onMove?: (item: T, sourceListId: string, targetListId: string) => T
+  // Required to move an item to a *different* list. Callers whose
+  // getTargetListId never resolves to another list (same-list reordering
+  // only) can omit it.
+  moveItem?: (args: {
+    item: T
+    movedItem: T
+    sourceListId: string
+    targetListId: string
+    targetListItems?: T[]
+  }) => void
 }
 
 export function useDraggableList<
@@ -27,8 +37,9 @@ export function useDraggableList<
   getTargetListId,
   getAxis,
   onMove,
+  moveItem,
 }: UseDraggableArgs<T>) {
-  const { useValue, updateList, moveItemBetweenLists } = useStorageContext()
+  const { useValue, updateList } = useStorageContext()
 
   const { value } = useValue<Record<string, T>>(listId)
 
@@ -141,7 +152,8 @@ export function useDraggableList<
             ? onMove(item, sourceData.parentId, targetListId)
             : item
 
-          moveItemBetweenLists({
+          moveItem?.({
+            item,
             movedItem: { ...movedItem, position: targetListIndex },
             sourceListId: sourceData.parentId,
             targetListId,
@@ -154,7 +166,8 @@ export function useDraggableList<
             ? onMove(item, sourceData.parentId, targetListId)
             : item
 
-          moveItemBetweenLists({
+          moveItem?.({
+            item,
             movedItem,
             sourceListId: sourceData.parentId,
             targetListId,
@@ -164,7 +177,7 @@ export function useDraggableList<
     })
   }, [
     value,
-    moveItemBetweenLists,
+    moveItem,
     getDestinationIndex,
     updatePosition,
     updateList,

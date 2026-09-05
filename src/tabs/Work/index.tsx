@@ -180,6 +180,8 @@ function WorkContent() {
       const sourceList = sourceListKey ? lists?.[sourceListKey] : undefined
       return sourceList ? addSourceListLabel(item, sourceList) : item
     },
+    moveItem: ({ item, movedItem, sourceListId, targetListId, targetListItems }) =>
+      moveTask({ task: item, movedItem, sourceListId, targetListId, targetListItems }),
   })
 
   if (listsLoading) {

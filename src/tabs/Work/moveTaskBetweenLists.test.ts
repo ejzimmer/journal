@@ -36,10 +36,12 @@ describe("moveTaskBetweenLists", () => {
     moveTaskBetweenLists(storage, task, sourceList.id, sourceList, destinationList)
 
     expect(storage.moveTask).toHaveBeenCalledWith(
-      "list-1",
-      "list-2",
-      task,
-      expect.objectContaining({ id: "task-1", position: 0 }),
+      expect.objectContaining({
+        task,
+        sourceListId: "work/list-1/items",
+        targetListId: "work/list-2/items",
+        movedItem: expect.objectContaining({ id: "task-1", position: 0 }),
+      }),
     )
   })
 
@@ -49,10 +51,9 @@ describe("moveTaskBetweenLists", () => {
     moveTaskBetweenLists(storage, task, sourceList.id, sourceList, destinationList)
 
     expect(storage.moveTask).toHaveBeenCalledWith(
-      "list-1",
-      "list-2",
-      task,
-      expect.objectContaining({ labelIds: ["label-a11y"] }),
+      expect.objectContaining({
+        movedItem: expect.objectContaining({ labelIds: ["label-a11y"] }),
+      }),
     )
   })
 
@@ -74,10 +75,9 @@ describe("moveTaskBetweenLists", () => {
     )
 
     expect(storage.moveTask).toHaveBeenCalledWith(
-      "list-1",
-      "list-2",
-      task,
-      expect.objectContaining({ position: 3 }),
+      expect.objectContaining({
+        movedItem: expect.objectContaining({ position: 3 }),
+      }),
     )
   })
 })
