@@ -21,7 +21,6 @@ const sourceList: WorkTask = {
   parentId: "work",
   lastStatusUpdate: 0,
   position: 0,
-  labelIds: ["label-a11y"],
 }
 
 const destinationList: WorkTask = {
@@ -34,7 +33,7 @@ const destinationList: WorkTask = {
 }
 
 describe("MoveToOtherLists", () => {
-  it("adds the source list's label to the task when moved", async () => {
+  it("moves the task to the clicked list", async () => {
     const user = userEvent.setup()
     const storageContext = createWorkStorageContext()
     render(
@@ -54,9 +53,7 @@ describe("MoveToOtherLists", () => {
         task,
         sourceListId: "work/list-1/items",
         targetListId: "work/list-2/items",
-        movedItem: expect.objectContaining({
-          labelIds: ["label-a11y"],
-        }),
+        movedItem: expect.objectContaining({ id: task.id }),
       }),
     )
   })

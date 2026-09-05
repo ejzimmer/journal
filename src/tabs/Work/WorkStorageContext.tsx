@@ -7,6 +7,7 @@ import {
   useRef,
 } from "react"
 import { useStorageContext } from "../../shared/FirebaseContext"
+import { addSourceListLabel } from "./labelUtils"
 import {
   Colour,
   Label,
@@ -225,8 +226,14 @@ export function WorkStorageProvider({ children }: { children: ReactNode }) {
       task.labelIds?.forEach((id) => markUnusedLabel(id))
     },
     moveTask: ({ task, movedItem, sourceListId, targetListId, targetListItems }) => {
+      const [, sourceListKey] = sourceListId.split("/")
+      const sourceList = sourceListKey ? lists?.[sourceListKey] : undefined
+      const labelledItem = sourceList
+        ? addSourceListLabel(movedItem, sourceList)
+        : movedItem
+
       moveItemBetweenLists({
-        movedItem: { ...movedItem, parentId: targetListId },
+        movedItem: { ...labelledItem, parentId: targetListId },
         sourceListId,
         targetListId,
         targetListItems,
