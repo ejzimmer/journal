@@ -15,6 +15,7 @@ export function createWorkStorageContext(
     addTask: jest.fn(),
     updateTask: jest.fn(),
     deleteTask: jest.fn(),
+    moveTask: jest.fn(),
     reorderTasks: jest.fn(),
     deleteSubtask: jest.fn(),
     updateSubtasksList: jest.fn(),

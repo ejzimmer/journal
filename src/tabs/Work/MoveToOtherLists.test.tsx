@@ -49,12 +49,13 @@ describe("MoveToOtherLists", () => {
 
     await user.click(screen.getByRole("menuitem", { name: "Today" }))
 
-    expect(storageContext.addTask).toHaveBeenCalledWith(
+    expect(storageContext.moveTask).toHaveBeenCalledWith(
+      "list-1",
       "list-2",
+      task,
       expect.objectContaining({
         labelIds: ["label-a11y"],
       }),
     )
-    expect(storageContext.deleteTask).toHaveBeenCalledWith("list-1", task)
   })
 })

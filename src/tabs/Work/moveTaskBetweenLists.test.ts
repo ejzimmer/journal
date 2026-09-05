@@ -30,31 +30,34 @@ const destinationList: WorkTask = {
 }
 
 describe("moveTaskBetweenLists", () => {
-  it("adds the task to the destination list and removes it from the source list", () => {
-    const storage = { addTask: jest.fn(), deleteTask: jest.fn() }
+  it("moves the task to the destination list in one call", () => {
+    const storage = { moveTask: jest.fn() }
 
     moveTaskBetweenLists(storage, task, sourceList.id, sourceList, destinationList)
 
-    expect(storage.addTask).toHaveBeenCalledWith(
+    expect(storage.moveTask).toHaveBeenCalledWith(
+      "list-1",
       "list-2",
+      task,
       expect.objectContaining({ id: "task-1", position: 0 }),
     )
-    expect(storage.deleteTask).toHaveBeenCalledWith("list-1", task)
   })
 
   it("adds the source list's label to the moved task", () => {
-    const storage = { addTask: jest.fn(), deleteTask: jest.fn() }
+    const storage = { moveTask: jest.fn() }
 
     moveTaskBetweenLists(storage, task, sourceList.id, sourceList, destinationList)
 
-    expect(storage.addTask).toHaveBeenCalledWith(
+    expect(storage.moveTask).toHaveBeenCalledWith(
+      "list-1",
       "list-2",
+      task,
       expect.objectContaining({ labelIds: ["label-a11y"] }),
     )
   })
 
   it("places the task after the highest positioned item in the destination list", () => {
-    const storage = { addTask: jest.fn(), deleteTask: jest.fn() }
+    const storage = { moveTask: jest.fn() }
     const destinationWithItems: WorkTask = {
       ...destinationList,
       items: {
@@ -70,8 +73,10 @@ describe("moveTaskBetweenLists", () => {
       destinationWithItems,
     )
 
-    expect(storage.addTask).toHaveBeenCalledWith(
+    expect(storage.moveTask).toHaveBeenCalledWith(
+      "list-1",
       "list-2",
+      task,
       expect.objectContaining({ position: 3 }),
     )
   })

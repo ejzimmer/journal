@@ -2,11 +2,12 @@ import { addSourceListLabel } from "./labelUtils"
 import { WorkTask } from "./types"
 
 type MoveTaskStorage = {
-  addTask: (
-    listId: string,
-    task: Partial<WorkTask> & { description: string },
+  moveTask: (
+    currentListId: string,
+    destinationListId: string,
+    task: WorkTask,
+    movedTask: WorkTask,
   ) => void
-  deleteTask: (listId: string, task: WorkTask) => void
 }
 
 export function moveTaskBetweenLists(
@@ -27,10 +28,9 @@ export function moveTaskBetweenLists(
     ? addSourceListLabel(task, currentList)
     : task
 
-  storage.addTask(destinationList.id, {
+  storage.moveTask(currentListId, destinationList.id, task, {
     ...movedTask,
     position,
     lastStatusUpdate: new Date().getTime(),
   })
-  storage.deleteTask(currentListId, task)
 }

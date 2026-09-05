@@ -31,7 +31,7 @@ function WorkContent() {
     isLoading: listsLoading,
     addList,
     addTask,
-    deleteTask,
+    moveTask,
     reorderTasks,
   } = useWorkStorage()
 
@@ -70,14 +70,14 @@ function WorkContent() {
       }
 
       moveTaskBetweenLists(
-        { addTask, deleteTask },
+        { moveTask },
         task,
         currentListId,
         orderedLists[currentIndex],
         targetList,
       )
     },
-    [orderedLists, addTask, deleteTask],
+    [orderedLists, moveTask],
   )
 
   const onUpdate = useCallback(() => {
