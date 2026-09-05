@@ -12,8 +12,7 @@ export function createStorageContext(
     updateList: jest.fn(),
     setValue: jest.fn(),
     useValue: () => ({ value: undefined, loading: false }),
-    generateId: jest.fn(),
-    atomicUpdate: jest.fn(),
+    moveItemBetweenLists: jest.fn(),
     ...overrides,
   }
 }

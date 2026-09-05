@@ -1,40 +1,16 @@
 import { render, screen } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
-import { ReactNode } from "react"
 import { Calories } from "./Calories"
 import { FirebaseContext } from "../../../shared/FirebaseContext"
 import { createMockFirebaseContext } from "../../../shared/mockFirebase"
 import { renderWithStorage } from "../../../shared/storageContextTestUtils"
 import { DAILY_PATH, DayData } from "../../../shared/types"
 
-function Wrapper({
-  children,
-  dailyData,
-}: {
-  children: ReactNode
-  dailyData?: Record<string, DayData>
-}) {
-  return (
-    <FirebaseContext.Provider
-      value={{
-        addItem: jest.fn(),
-        updateItem: jest.fn(),
-        deleteItem: jest.fn(),
-        updateList: jest.fn(),
-        setValue: jest.fn(),
-        useValue: jest.fn().mockReturnValue({ loading: false, value: dailyData }),
-        generateId: jest.fn(),
-        atomicUpdate: jest.fn(),
-      }}
-    >
-      {children}
-    </FirebaseContext.Provider>
-  )
-}
-
 function renderCalories(dailyData?: Record<string, DayData>) {
-  return render(<Calories />, {
-    wrapper: (props) => <Wrapper {...props} dailyData={dailyData} />,
+  return renderWithStorage(<Calories />, {
+    value: {
+      useValue: jest.fn().mockReturnValue({ loading: false, value: dailyData }),
+    },
   })
 }
 
@@ -98,24 +74,7 @@ describe("Calories", () => {
     it("dismisses the form without saving anything", async () => {
       const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime })
       const updateItem = jest.fn()
-      render(<Calories />, {
-        wrapper: ({ children }) => (
-          <FirebaseContext.Provider
-            value={{
-              addItem: jest.fn(),
-              updateItem,
-              deleteItem: jest.fn(),
-              updateList: jest.fn(),
-              setValue: jest.fn(),
-              useValue: jest.fn().mockReturnValue({ loading: false, value: undefined }),
-              generateId: jest.fn(),
-              atomicUpdate: jest.fn(),
-            }}
-          >
-            {children}
-          </FirebaseContext.Provider>
-        ),
-      })
+      renderWithStorage(<Calories />, { value: { updateItem } })
 
       await user.click(screen.getByRole("button", { name: "dismiss" }))
 
