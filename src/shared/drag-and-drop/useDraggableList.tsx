@@ -17,7 +17,7 @@ type UseDraggableArgs<T> = {
   getTargetListId: (source: Draggable, target: DropTarget) => string
   getAxis: (source: Draggable) => "horizontal" | "vertical"
   onMove?: (item: T, sourceListId: string, targetListId: string) => T
-  moveItem?: (args: {
+  moveItemBetweenLists?: (args: {
     item: T
     movedItem: T
     sourceListId: string
@@ -34,7 +34,7 @@ export function useDraggableList<
   getTargetListId,
   getAxis,
   onMove,
-  moveItem,
+  moveItemBetweenLists,
 }: UseDraggableArgs<T>) {
   const { useValue, updateList } = useStorageContext()
 
@@ -149,7 +149,7 @@ export function useDraggableList<
             ? onMove(item, sourceData.parentId, targetListId)
             : item
 
-          moveItem?.({
+          moveItemBetweenLists?.({
             item,
             movedItem: { ...movedItem, position: targetListIndex },
             sourceListId: sourceData.parentId,
@@ -163,7 +163,7 @@ export function useDraggableList<
             ? onMove(item, sourceData.parentId, targetListId)
             : item
 
-          moveItem?.({
+          moveItemBetweenLists?.({
             item,
             movedItem,
             sourceListId: sourceData.parentId,
@@ -174,7 +174,7 @@ export function useDraggableList<
     })
   }, [
     value,
-    moveItem,
+    moveItemBetweenLists,
     getDestinationIndex,
     updatePosition,
     updateList,
