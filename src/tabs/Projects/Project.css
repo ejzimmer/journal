@@ -77,12 +77,20 @@
     transition:
       height 0.2s ease-out,
       opacity 0.1s 0.2s linear;
+    /* Caps how far a long subtask can stretch the card, matching the
+       existing shrink-to-fit sizing (nothing else changes it): a subtask
+       line longer than this wraps in place instead of continuing to widen
+       the card. */
+    max-width: 420px;
 
     &.visible {
+      --popout-shadow: color(from var(--project-colour) srgb r g b / 0.5);
+
       opacity: 1;
       margin-block-end: 12px;
-      margin-block-start: 8px;
       overflow: visible;
+      background: var(--project-colour-light);
+      box-shadow: inset 0 6px 6px -6px var(--popout-shadow);
     }
   }
 
@@ -164,12 +172,11 @@
 
     label.checkbox .control {
       width: 1.2em;
-      color: var(--body-colour-mid);
+      /* --project-colour already carries a built-in 50% alpha per category,
+         so this reads as muted against the popout rather than as bright as
+         a fully solid swatch would. */
+      color: var(--project-colour);
       border: 2px solid;
-
-      &:has(+ :focus) {
-        border-color: var(--project-colour);
-      }
     }
 
     label:has(:checked) + div {
