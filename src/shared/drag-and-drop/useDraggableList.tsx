@@ -24,6 +24,8 @@ type UseDraggableArgs<T> = {
     targetListId: string
     targetListItems?: T[]
   }) => void
+  useValue?: <U>(key?: string) => { value?: U; loading: boolean }
+  updateList?: <U extends { id: string }>(listName: string, list: U[]) => void
 }
 
 export function useDraggableList<
@@ -35,8 +37,12 @@ export function useDraggableList<
   getAxis,
   onMove,
   moveItemBetweenLists,
+  useValue: useValueProp,
+  updateList: updateListProp,
 }: UseDraggableArgs<T>) {
-  const { useValue, updateList } = useStorageContext()
+  const storageContext = useStorageContext()
+  const useValue = useValueProp ?? storageContext.useValue
+  const updateList = updateListProp ?? storageContext.updateList
 
   const { value } = useValue<Record<string, T>>(listId)
 
