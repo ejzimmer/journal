@@ -35,7 +35,8 @@ export function SubtaskList({
   const containerRef = useRef<HTMLDivElement>(null)
   const listRef = useRef<HTMLOListElement>(null)
   const formContainerRef = useRef<HTMLDivElement>(null)
-  const hasRevealedSubtasks = useRef(wasOpenOnLoad)
+  const hasRevealedSubtasks = useRef(false)
+  const isLoadReveal = useRef(wasOpenOnLoad)
   const subtasksKey = getSubtasksKey(projectId)
 
   const { useValue, addItem, updateList } = useStorageContext()
@@ -75,6 +76,14 @@ export function SubtaskList({
     if (hasRevealedSubtasks.current || !containerHeight || !container) return
     hasRevealedSubtasks.current = true
 
+    const isOnLoad = isLoadReveal.current
+    isLoadReveal.current = false
+
+    const shelf = container.closest("ul.projects")
+    const isFirstOpenSheet =
+      shelf?.querySelector(".subtasks-section.visible") === container
+    if (isOnLoad && !isFirstOpenSheet) return
+
     const cardTop = container.parentElement?.getBoundingClientRect().top ?? 0
     const hiddenBelowFold =
       container.getBoundingClientRect().top +
@@ -84,7 +93,7 @@ export function SubtaskList({
     if (hiddenBelowFold > 0) {
       window.scrollBy({
         top: Math.min(hiddenBelowFold, cardTop),
-        behavior: "smooth",
+        behavior: isOnLoad ? "auto" : "smooth",
       })
     }
   }, [isVisible, containerHeight])
