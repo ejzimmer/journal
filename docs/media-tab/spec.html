@@ -1,0 +1,304 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Media Tab Build Spec</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Literata:opsz,wght@7..72,400;7..72,600;7..72,700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+
+<style>
+  :root {
+    color-scheme: light;
+    --ink: hsl(0 0% 18%);
+    --ink-2: hsl(0 0% 40%);
+    --ink-3: hsl(214 12% 54%);
+    --rule: hsl(214 32% 90%);
+    --rule-soft: hsl(214 32% 95%);
+    --page: hsl(210 33% 98%);
+    --card: #fff;
+    --trap: hsl(2 62% 48%);
+    --set: hsl(214 62% 44%);
+
+    --ui: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu,
+      Cantarell, "Helvetica Neue", sans-serif;
+    --display: "Literata", Georgia, "Times New Roman", serif;
+    --mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    background: var(--page);
+    color: var(--ink);
+    font-family: var(--ui);
+    font-size: 15.5px;
+    line-height: 1.62;
+  }
+
+  .page {
+    max-width: 940px;
+    margin-inline: auto;
+    padding-inline: 24px;
+    padding-block: 44px 100px;
+    display: flex;
+    flex-direction: column;
+    gap: 44px;
+  }
+
+  h1 {
+    font-family: var(--display);
+    font-weight: 700;
+    font-size: clamp(28px, 4vw, 38px);
+    line-height: 1.12;
+    margin: 0;
+    letter-spacing: -0.015em;
+  }
+  h2 {
+    font-family: var(--display);
+    font-weight: 600;
+    font-size: 23px;
+    line-height: 1.2;
+    margin: 0;
+  }
+  h3 { font-size: 15px; font-weight: 700; margin: 0; }
+
+  p { margin: 0; max-width: 70ch; }
+  section { display: flex; flex-direction: column; gap: 15px; }
+
+  .eyebrow {
+    font-family: var(--mono);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: var(--ink-3);
+  }
+  .lede { font-size: 17.5px; color: var(--ink-2); max-width: 66ch; }
+
+  a { color: hsl(211 61% 42%); text-underline-offset: 2px; }
+
+  code {
+    font-family: var(--mono);
+    font-size: 0.86em;
+    background: hsl(214 34% 94%);
+    padding: 1px 5px;
+    border-radius: 4px;
+  }
+
+  ul { margin: 0; padding-inline-start: 21px; display: flex; flex-direction: column; gap: 9px; max-width: 70ch; }
+  li::marker { color: var(--ink-3); }
+
+  hr { border: 0; border-block-start: 1px solid var(--rule); margin: 0; }
+
+  /* decided things: flat list, nothing decorative */
+  .settled { display: flex; flex-direction: column; gap: 1px; background: var(--rule); border: 1px solid var(--rule); border-radius: 9px; overflow: hidden; }
+  .settled > div { background: var(--card); padding: 13px 16px; display: grid; grid-template-columns: 190px 1fr; gap: 16px; }
+  .settled b { font-size: 14px; }
+  .settled span { font-size: 14px; color: var(--ink-2); }
+  @media (width < 680px) { .settled > div { grid-template-columns: 1fr; gap: 4px; } }
+
+  /* gotchas: the symptom is the headline, because that's how you'll meet it */
+  .trap {
+    background: var(--card);
+    border: 1px solid var(--rule);
+    border-inline-start: 3px solid var(--trap);
+    border-radius: 0 9px 9px 0;
+    padding: 14px 17px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+  .trap h3 { color: var(--trap); font-size: 14.5px; }
+  .trap p { font-size: 14px; color: var(--ink-2); max-width: 74ch; }
+  .trap .fix { font-size: 14px; }
+  .trap .fix b { font-weight: 600; }
+
+  table {
+    border-collapse: collapse;
+    width: 100%;
+    font-size: 13.5px;
+    background: var(--card);
+    border: 1px solid var(--rule);
+    border-radius: 9px;
+    overflow: hidden;
+  }
+  th, td { text-align: left; padding: 8px 14px; border-block-start: 1px solid var(--rule-soft); vertical-align: top; }
+  thead th {
+    border-block-start: 0;
+    background: hsl(214 34% 97%);
+    font-size: 10.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--ink-3);
+    font-weight: 600;
+  }
+  td code { background: none; padding: 0; }
+  td.n { font-family: var(--mono); font-variant-numeric: tabular-nums; font-size: 12.5px; white-space: nowrap; }
+  .scroll { overflow-x: auto; }
+
+  .swatches { display: flex; flex-wrap: wrap; gap: 5px; }
+  .sw { width: 40px; height: 26px; border-radius: 4px; }
+</style>
+
+</head>
+<body>
+<div class="page">
+
+  <header style="display:flex;flex-direction:column;gap:13px">
+    <div class="eyebrow">journal · media tab</div>
+    <h1>Media Tab Build Spec</h1>
+    <p class="lede">Build the media tab as a bookcase. The working reference is <a href="https://claude.ai/code/artifact/d3cd0d85-9d07-4cd1-aa33-a4fe1e3ba7e5">The Media Bookcase</a> — <code>prototype.html</code>, beside this file. It is interactive and its behaviour is normative: open it, and read it where this document is silent. This document says what the result must do, what has already been settled, and the things that will waste your afternoon if you meet them cold.</p>
+  </header>
+
+  <hr>
+
+  <section>
+    <h2>The outcome</h2>
+    <p>Two bookcases, one for books and one for games, each a run of shelves that wrap.</p>
+    <ul>
+      <li>Each <b>series</b> is a stretch of shelf with its name on a hand-written card clipped to the shelf edge. Books in a series share one trim height and carry matching bands at head and tail, so a set reads as a set.</li>
+      <li>Each <b>spine</b> shows the title and, on a second line, the author's full name. Spine height follows title length. The cover colour is the author, so an author's books look alike wherever they sit.</li>
+      <li>Books with no series collect in one unlabelled run at the end.</li>
+      <li><b>Status is a stamp at the foot of each spine</b> that cycles when clicked. Unread stock sits pale on the shelf and takes its colour once finished.</li>
+      <li><b>Clicking the title</b> opens the book in a dialog: title, status, author, series, and the series' band colour. A <code>+</code> beside each heading opens the same shape of dialog to add one.</li>
+      <li>Games get the same shelves, shorter and squatter, grouped and named by series.</li>
+    </ul>
+
+    <h3 style="margin-block-start:6px">Status cycle</h3>
+    <p>Books: <code>unread → 📖 reading → 🎧 listening → ✓ read → unread</code>. Games: <code>unplayed → 🎮 playing → ✓ played → unplayed</code>. This is today's medium button with <em>finished</em> folded in; it reads and writes the <code>medium</code> and <code>isDone</code> already on the item. Unread shows the emoji greyscaled and faded; <code>✓</code> takes the series' band colour.</p>
+
+    <h3 style="margin-block-start:6px">Order</h3>
+    <p>Series runs are ordered by their author's name, so an author's series sit together. The singles run is ordered by author, then title.</p>
+  </section>
+
+  <hr>
+
+  <section>
+    <h2>Ground rules</h2>
+    <p>Do these from the start and several whole categories of problem never arise.</p>
+    <ul>
+      <li><b>Reuse the app's existing components — all of them.</b> <code>Combobox</code> for the author and series fields, <code>EditableText</code> for renaming, <code>FormModal</code> and <code>ModalDialog</code> for the two dialogs, the existing button classes for buttons. Nothing here needs a new primitive. In particular: don't hand-roll a dialog (you will get focus and Escape wrong) and don't reach for a native <code>&lt;input list&gt;</code> + <code>&lt;datalist&gt;</code> — its popup is drawn by the browser, can't be styled, and follows the OS theme rather than the page.</li>
+      <li><b>Every colour in the tab is <code>oklch()</code>.</b> Its lightness is perceptual, so holding L and C fixed and varying only the hue gives covers that genuinely look equally light. The same construction in HSL doesn't: a light yellow at the blue's lightness is a beige, and desaturating to compensate makes it worse. Skip hues near 100 entirely.</li>
+      <li><b>Two click targets per spine, neither nested.</b> The title is a button that opens the dialog; the stamp is a button that changes status. The book as a whole is not a button.</li>
+      <li><b>Bands are decoration.</b> <code>pointer-events: none</code>, no tooltip, no hit area — they sit over the title, and the card already names the series.</li>
+      <li><b>Spine height comes from title length</b>, never randomised. An arbitrary height difference reads as meaningful and people will ask what it means.</li>
+      <li><b>Band colour is independent of cover colour.</b> The cover is the author; a band drawn as a shade of it can't distinguish two series by the same author.</li>
+    </ul>
+  </section>
+
+  <hr>
+
+  <section>
+    <h2>Settled — don't reopen these</h2>
+    <div class="settled">
+      <div><b>Grouped by series</b><span>A run per series, named on its card, with the author printed on each spine. Not grouped by author.</span></div>
+      <div><b>The data structure stays</b><span>No migration, no new collections. The existing tree supports everything here. <code>moveItemBetweenLists</code> already re-parents atomically, and the status cycle rides on <code>medium</code> + <code>isDone</code>. The only addition anywhere is an optional <code>band</code> on series nodes, written only when a colour is picked.</span></div>
+      <div><b>Status lives on the spine</b><span>Clicking the stamp changes it. It is not a control inside the edit form — having to open a dialog to say you started a book is worse than what the tab does now.</span></div>
+      <div><b>Shelf order is the name as typed</b><span>Alphabetical on the author's <code>name</code>, so it files under whatever that begins with. No surname filing: a surname can't be derived from one free-text field, and a separate "file under" field isn't wanted.</span></div>
+      <div><b>No counts or progress stats</b><span>No "6 to go", no per-group progress pips, nothing that tallies. The shelf filling with colour is the only progress indicator.</span></div>
+      <div><b>Two new fonts are fine</b><span><code>Literata</code> for spines, <code>Dancing Script</code> for the shelf cards. Add them alongside the four already loaded.</span></div>
+      <div><b>Series bands are always visible</b><span>Permanent, not revealed on hover — bands that appear on hover read as a glitch. The series is <em>named</em> on its shelf card, so the bands never need to carry the name themselves.</span></div>
+      <div><b>One dialog shape for add and edit</b><span>Both are dialogs, not panels below the shelf. A button at the top with its form at the bottom of the page was tried and is worse.</span></div>
+    </div>
+  </section>
+
+  <hr>
+
+  <section>
+    <h2>Gotchas</h2>
+    <p>These bite even when you've done everything above. The headline is the symptom, because that's how you'll meet it.</p>
+
+    <div class="trap">
+      <h3>A two-line spine title reads backwards</h3>
+      <p>Verifying by measuring x-positions will tell you it's correct, and it won't be. You read a spine by tipping your head right, which puts the <em>rightmost</em> column on top — so the first line must be on the right.</p>
+      <p class="fix"><b>Use <code>writing-mode: vertical-rl</code>, not <code>vertical-lr</code>.</b></p>
+    </div>
+
+    <div class="trap">
+      <h3>Long titles stop wrapping and grow past the shelf</h3>
+      <p>Series members need <code>min-height</code> so a flex row with <code>align-items: stretch</code> can size them all to the tallest — but that leaves the height indefinite, so a percentage <code>max-height</code> on the label has nothing to resolve against and is ignored.</p>
+      <p class="fix"><b>Cap the label with a definite length</b> derived from the shelf, not <code>max-height: 100%</code>.</p>
+    </div>
+
+    <div class="trap">
+      <h3>Every shelf board sits slightly above the books standing on it</h3>
+      <p>The board is a repeating background gradient on the case, and backgrounds are measured from the padding box.</p>
+      <p class="fix"><b>Space above the case must be <code>margin</code>, never <code>padding</code>.</b></p>
+    </div>
+
+
+
+
+
+
+
+
+
+
+    <div class="trap">
+      <h3>The status stamp and the tail band overlap</h3>
+      <p>Both want the foot of the spine.</p>
+      <p class="fix"><b>Give the spine a deep bottom padding</b> and place the stamp clear above the band, with the title clear above that.</p>
+    </div>
+  </section>
+
+  <hr>
+
+  <section>
+    <h2>Numbers worth copying</h2>
+    <p>Taken from the reference build rather than re-derived. Everything else can be read out of it directly.</p>
+
+    <div class="scroll"><table>
+      <thead><tr><th>Colour</th><th>Value</th></tr></thead>
+      <tbody>
+        <tr><td>Cover, shelved</td><td class="n">oklch(85% .085 &lt;hue&gt;)</td></tr>
+        <tr><td>Cover, unread</td><td class="n">oklch(96% .022 &lt;hue&gt;)</td></tr>
+        <tr><td>Title / unread title</td><td class="n">oklch(38% .09 &lt;hue&gt;) / oklch(48% .045 &lt;hue&gt;)</td></tr>
+        <tr><td>Band</td><td class="n">oklch(58% .16 &lt;hue&gt;)</td></tr>
+        <tr><td>Cover hues (by author)</td><td class="n">25, 58, 145, 185, 232, 268, 305, 345</td></tr>
+        <tr><td>Band hues (by series)</td><td class="n">25, 55, 110, 148, 190, 240, 275, 305, 330, 355</td></tr>
+      </tbody>
+    </table></div>
+
+    <div class="swatches" style="margin-block-start:2px">
+      <div class="sw" style="background:oklch(85% .085 25)"></div>
+      <div class="sw" style="background:oklch(85% .085 58)"></div>
+      <div class="sw" style="background:oklch(85% .085 145)"></div>
+      <div class="sw" style="background:oklch(85% .085 185)"></div>
+      <div class="sw" style="background:oklch(85% .085 232)"></div>
+      <div class="sw" style="background:oklch(85% .085 268)"></div>
+      <div class="sw" style="background:oklch(85% .085 305)"></div>
+      <div class="sw" style="background:oklch(85% .085 345)"></div>
+    </div>
+
+    <div class="scroll" style="margin-block-start:6px"><table>
+      <thead><tr><th>Geometry</th><th class="n">Books</th><th class="n">Games</th></tr></thead>
+      <tbody>
+        <tr><td>Book area / board position</td><td class="n">232px</td><td class="n">188px</td></tr>
+        <tr><td>Shelf row pitch</td><td class="n">292px</td><td class="n">248px</td></tr>
+        <tr><td>Spine height</td><td class="n">178 + min(34, len×1.5)</td><td class="n">142 + min(34, len×1.7)</td></tr>
+        <tr><td>Spine padding</td><td class="n" colspan="2">17px 6px 56px</td></tr>
+        <tr><td>Label cap</td><td class="n" colspan="2">book area − 86px</td></tr>
+        <tr><td>Stamp</td><td class="n" colspan="2">25px, 22px from the foot</td></tr>
+        <tr><td>Band</td><td class="n" colspan="2">6px strip in a 22px hit area</td></tr>
+        <tr><td>Spine type</td><td class="n" colspan="2">14px Literata, vertical-rl</td></tr>
+      </tbody>
+    </table></div>
+  </section>
+
+  <hr>
+
+  <section>
+    <h2>Accessibility</h2>
+    <ul>
+      <li>Everything interactive is a real <code>&lt;button&gt;</code>. The spine's face carries the full name — <code>"Guards! Guards!, Discworld series, read"</code> — and the stamp announces its state and what a click will do next.</li>
+      <li>Bands are not focusable and take no pointer events. The series reaches keyboard users through the spine's accessible name and the shelf card.</li>
+      <li>Every title sits at 5.7:1 or better on its cover, unread included. Re-check if the cover lightness moves.</li>
+    </ul>
+  </section>
+
+</div>
+
+</body>
+</html>

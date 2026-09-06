@@ -1,0 +1,1356 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>The Media Bookcase</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Literata:opsz,wght@7..72,400;7..72,600;7..72,700&family=IBM+Plex+Mono:wght@400;500&family=Dancing+Script:wght@500;600;700&display=swap">
+
+<style>
+  :root {
+    --ink: hsl(0 0% 20%);
+    --ink-2: hsl(0 0% 42%);
+    --ink-3: hsl(214 12% 56%);
+    --rule: hsl(214 32% 91%);
+    --rule-strong: hsl(214 32% 80%);
+    --page: hsl(210 33% 98%);
+    --card: #fff;
+
+    --books: hsl(29 94% 50%);
+    --games: hsl(187 76% 36%);
+    --author: hsl(150 62% 34%);
+    --series: hsl(266 55% 56%);
+    --now: hsl(203 89% 45%);
+    --done: hsl(152 22% 52%);
+    --danger: hsl(10 89% 41%);
+
+    --ui: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu,
+      Cantarell, "Helvetica Neue", sans-serif;
+    --display: "Literata", Georgia, "Times New Roman", serif;
+    --mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+    --hand: "Dancing Script", "Segoe Script", "Snell Roundhand", cursive;
+  }
+
+  :root { color-scheme: light; }
+
+  body {
+    background: var(--page);
+    color: var(--ink);
+    font-family: var(--ui);
+    font-size: 16px;
+    line-height: 1.55;
+  }
+
+  * { box-sizing: border-box; }
+
+  .page {
+    max-width: 1280px;
+    margin-inline: auto;
+    padding-inline: 24px;
+    padding-block: 48px 96px;
+    display: flex;
+    flex-direction: column;
+    gap: 56px;
+  }
+
+  .prose { max-width: 66ch; display: flex; flex-direction: column; gap: 16px; }
+  .prose p { margin: 0; }
+
+  h1 {
+    font-family: var(--display);
+    font-weight: 700;
+    font-size: clamp(30px, 4vw, 44px);
+    line-height: 1.1;
+    letter-spacing: -0.01em;
+    margin: 0;
+    text-wrap: balance;
+  }
+  h2 {
+    font-family: var(--display);
+    font-weight: 600;
+    font-size: 26px;
+    line-height: 1.2;
+    margin: 0;
+    text-wrap: balance;
+  }
+  h3 {
+    font-family: var(--display);
+    font-weight: 600;
+    font-size: 19px;
+    margin: 0;
+  }
+
+  .eyebrow {
+    font-family: var(--mono);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--ink-3);
+  }
+
+  .lede { font-size: 18px; color: var(--ink-2); }
+
+  a { color: hsl(211 61% 43%); }
+
+  code, .mono { font-family: var(--mono); font-size: 0.88em; }
+
+  .shared {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 2px;
+    background: var(--rule);
+    border: 1px solid var(--rule);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  .shared > div {
+    background: var(--card);
+    padding: 18px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .shared strong { font-size: 14px; }
+  .shared p { margin: 0; font-size: 14px; color: var(--ink-2); }
+
+
+  .rationale {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 20px 32px;
+    border-block: 1px solid var(--rule);
+    padding-block: 20px;
+  }
+  .rationale h4 {
+    margin: 0 0 4px;
+    font-family: var(--mono);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--ink-3);
+    font-weight: 500;
+  }
+  .rationale p { margin: 0; font-size: 14px; color: var(--ink-2); }
+  .rationale li { font-size: 14px; color: var(--ink-2); }
+  .rationale ul { margin: 0; padding-inline-start: 18px; }
+
+  .compare {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-block-end: -28px;
+  }
+  .compare .lab {
+    font-family: var(--mono);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--ink-3);
+  }
+  .seg {
+    display: inline-flex;
+    border: 2px solid var(--rule);
+    border-radius: 100px;
+    overflow: hidden;
+    background: #fff;
+  }
+  .seg button {
+    border: 0;
+    background: none;
+    font: inherit;
+    font-size: 13px;
+    padding: 5px 16px;
+    color: var(--ink-2);
+    cursor: pointer;
+  }
+  .seg button[aria-pressed="true"] { background: var(--ink); color: #fff; }
+  .seg button:focus-visible { outline: 2px solid var(--ink); outline-offset: -2px; }
+
+  /* ================= app frame ================= */
+  .app {
+    background: #fff;
+    border: 1px solid var(--rule);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 1px 2px hsl(214 30% 60% / 0.12), 0 8px 24px hsl(214 30% 60% / 0.08);
+  }
+  .app-nav {
+    display: flex;
+    gap: 0;
+    border-block-end: 2px solid var(--rule);
+    padding-inline: 14px;
+    font-size: 15px;
+  }
+  .app-nav span {
+    padding: 8px 16px;
+    color: var(--ink-2);
+  }
+  .app-nav span.on {
+    color: hsl(211 61% 43%);
+    box-shadow: inset 0 -2px 0 0 currentColor;
+  }
+  .app-body { padding: 24px 26px 30px; }
+
+  /* ================= shared prototype bits ================= */
+  .proto { font-size: 17px; }
+  .proto ul, .proto ol { list-style: none; margin: 0; padding: 0; }
+  .proto button { font: inherit; cursor: pointer; }
+
+  .ed {
+    border: 0;
+    background: none;
+    padding: 1px 4px;
+    margin-inline: -4px;
+    border-radius: 5px;
+    font: inherit;
+    color: inherit;
+    text-align: left;
+    cursor: text;
+    max-width: 100%;
+  }
+  .ed:hover { background: hsl(214 40% 94%); }
+  .ed:focus-visible { outline: 2px solid var(--ink); outline-offset: 0; }
+  input.ed-input {
+    font: inherit;
+    color: inherit;
+    border: 1px solid var(--ink);
+    border-radius: 5px;
+    padding: 0 3px;
+    background: #fff;
+    min-width: 4ch;
+  }
+  input.ed-input:focus-visible { outline: none; }
+
+
+
+  .icon-btn {
+    flex: none;
+    border: 0;
+    background: none;
+    padding: 2px 4px;
+    border-radius: 5px;
+    color: var(--ink-3);
+    line-height: 1;
+    opacity: 0;
+    transition: opacity 0.15s, color 0.15s, background 0.15s;
+  }
+  .row:hover .icon-btn, .icon-btn:focus-visible, .row:focus-within .icon-btn { opacity: 1; }
+  .icon-btn:hover { background: hsl(214 40% 94%); color: var(--ink); }
+  .icon-btn.del:hover { color: var(--danger); }
+  .icon-btn:focus-visible { outline: 2px solid var(--ink); }
+
+
+  .btn {
+    font: inherit;
+    font-size: 13px;
+    padding: 5px 12px;
+    border-radius: 6px;
+    border: 2px solid var(--rule);
+    background: #fff;
+    color: inherit;
+    cursor: pointer;
+  }
+  .btn:hover { background: var(--rule); }
+  .btn.go { border-color: var(--now); color: var(--now); }
+  .btn.go:hover { background: color-mix(in srgb, var(--now) 12%, #fff); }
+  .btn:focus-visible { outline: 2px solid var(--ink); outline-offset: 1px; }
+
+
+
+  .panel-head {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    flex-wrap: wrap;
+    padding-block-end: 10px;
+  }
+  .panel-head h3 {
+    font-size: 22px;
+    color: var(--acc);
+  }
+  .panel-head .spacer { flex: 1; }
+
+
+  /* ================= OPTION C : spines ================= */
+  .c-wrap { display: flex; flex-direction: column; gap: 34px; }
+  .c-section.books { --acc: var(--books); --spine-h: 232px; --shelf-y: 232px; --pitch: 292px; }
+  .c-section.games { --acc: var(--games); --spine-h: 188px; --shelf-y: 188px; --pitch: 248px; }
+  .c-section .panel-head { border-block-end: 3px solid color-mix(in srgb, var(--acc) 35%, #fff); }
+
+  /* One board per row, drawn across the whole case, so the shelf runs
+     unbroken behind every author on that line. Margin, not padding — the
+     gradient is measured from the padding box. */
+  .case {
+    display: flex;
+    flex-wrap: wrap;
+    align-content: flex-start;
+    column-gap: 26px;
+    margin-block-start: 16px;
+    background-image: repeating-linear-gradient(
+      to bottom,
+      transparent 0 var(--shelf-y),
+      hsl(32 40% 80%) var(--shelf-y) calc(var(--shelf-y) + 4px),
+      hsl(30 32% 66%) calc(var(--shelf-y) + 4px) calc(var(--shelf-y) + 7px),
+      transparent calc(var(--shelf-y) + 7px) var(--pitch)
+    );
+  }
+
+  .run { min-height: var(--pitch); display: flex; flex-direction: column; flex: none; min-width: 96px; }
+  .run-books { height: var(--spine-h); flex: none; display: flex; align-items: flex-end; padding-inline: 2px; }
+
+  /* a card in a holder on the shelf edge, written by hand */
+  .run-label {
+    margin-block-start: 5px;
+    align-self: flex-start;
+    margin-inline-start: 3px;
+    background: hsl(44 52% 97%);
+    border: 1px solid hsl(38 26% 82%);
+    border-radius: 2px;
+    box-shadow: 0 1px 2px hsl(32 30% 50% / 0.22);
+    padding: 2px 11px 3px;
+    font-family: var(--hand);
+    font-weight: 600;
+    font-size: 19px;
+    line-height: 1.15;
+    color: hsl(222 32% 32%);
+    text-align: left;
+    white-space: nowrap;
+  }
+  .run-label .ed { text-align: left; font-family: inherit; }
+  .run-label .what {
+    display: none;
+    font-size: 16px;
+    color: hsl(222 16% 50%);
+  }
+  .run.show-series .what { display: block; }
+
+  .slot { display: flex; align-items: flex-end; padding-inline: 1.5px; }
+
+  /* A series is published to one trim size. Nothing has to compute that —
+     the set stretches its books to whichever of them is tallest. */
+  .ser-set { display: flex; align-items: stretch; align-self: flex-end; }
+  .ser-set .slot { align-items: stretch; }
+
+  .spine {
+    --cl: 85;
+    --cc: 0.085;
+    position: relative;
+    min-height: var(--h, 172px);
+    width: auto;
+    flex: none;
+    border: 0;
+    border-radius: 3px 3px 1px 1px;
+    padding: 17px 6px 56px;
+    background:
+      linear-gradient(
+        to right,
+        oklch(calc((var(--cl) - 8) * 1%) var(--cc) var(--hue)) 0 2px,
+        oklch(calc((var(--cl) + 5) * 1%) var(--cc) var(--hue)) 3px 6px,
+        oklch(calc(var(--cl) * 1%) var(--cc) var(--hue)) 8px calc(100% - 4px),
+        oklch(calc((var(--cl) - 7) * 1%) var(--cc) var(--hue)) calc(100% - 2px) 100%
+      );
+    box-shadow:
+      inset 0 0 0 1px oklch(96% 0.02 var(--hue) / 0.45),
+      0 1px 2px oklch(45% 0.05 var(--hue) / 0.3);
+    color: oklch(38% 0.09 var(--hue));
+    font-family: var(--display);
+    font-size: 14px;
+    line-height: 1.25;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: box-shadow 0.18s, transform 0.18s;
+  }
+
+  /* A spine is read by tipping your head to the right, which puts the
+     rightmost column on top — so the first line is the right-hand one. */
+  .spine .label .t,
+  .spine .label .by { display: block; }
+  .spine .label .by {
+    font-size: 0.84em;
+    opacity: 0.7;
+    font-style: italic;
+    margin-block-start: 4px;
+  }
+
+  .spine .label {
+    writing-mode: vertical-rl;
+    text-orientation: mixed;
+    max-height: calc(var(--spine-h) - 86px);
+    text-align: center;
+  }
+
+  /* unread stock sits pale and takes its colour once it's finished */
+  .spine[data-status="todo"] {
+    --cl: 96;
+    --cc: 0.022;
+    color: oklch(48% 0.045 var(--hue));
+    box-shadow:
+      inset 0 0 0 1px oklch(99% 0.005 var(--hue) / 0.6),
+      0 1px 2px oklch(55% 0.02 var(--hue) / 0.18);
+  }
+
+  /* A matched set: one trim height, and boxed-set bands at head and tail.
+     The card names the series, so the bands are purely decorative. */
+  .band {
+    position: absolute;
+    inset-inline: 4px;
+    height: 22px;
+    z-index: 4;
+    pointer-events: none;
+  }
+  .band::before {
+    content: "";
+    position: absolute;
+    inset-inline: 0;
+    height: 6px;
+    background: var(--band, oklch(55% 0.12 var(--hue)));
+  }
+  .band-head { inset-block-start: 0; }
+  .band-head::before { inset-block-start: 8px; }
+  .band-tail { inset-block-end: 0; }
+  .band-tail::before { inset-block-end: 9px; }
+
+
+  .title-btn {
+    border: 0;
+    background: none;
+    padding: 0;
+    margin: 0;
+    font: inherit;
+    color: inherit;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    max-height: 100%;
+    border-radius: 3px;
+  }
+  .title-btn:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+
+  /* the status control lives on the book, the way today's medium button does */
+  .stamp {
+    position: absolute;
+    inset-block-end: 22px;
+    inset-inline-start: 50%;
+    transform: translateX(-50%);
+    z-index: 3;
+    width: 25px;
+    height: 25px;
+    border: 0;
+    border-radius: 6px;
+    background: none;
+    padding: 0;
+    font-size: 14px;
+    line-height: 1;
+    cursor: pointer;
+    display: grid;
+    place-items: center;
+    transition: filter 0.15s, opacity 0.15s, background 0.15s;
+  }
+  .stamp:hover { background: hsl(var(--hue) 30% 100% / 0.5); }
+  .stamp:focus-visible { outline: 2px solid var(--ink); outline-offset: 1px; }
+  .stamp[data-status="todo"] { filter: grayscale(1) contrast(0.5); opacity: 0.45; }
+  .stamp[data-status="todo"]:hover { filter: none; opacity: 0.9; }
+  .stamp[data-status="done"] {
+    color: var(--band, oklch(50% 0.13 var(--hue)));
+    font-size: 17px;
+    font-weight: 700;
+  }
+
+  .spine:hover { transform: translateY(-3px); }
+  .spine:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+
+  .spine[aria-expanded="true"] {
+    box-shadow:
+      inset 0 0 0 1px hsl(var(--hue) 30% 92% / 0.35),
+      0 0 0 2px var(--ink),
+      0 8px 14px -8px hsl(0 0% 20% / 0.5);
+  }
+
+  .add-icon {
+    width: 30px;
+    height: 30px;
+    flex: none;
+    border: 2px solid color-mix(in srgb, var(--acc) 40%, #fff);
+    border-radius: 100px;
+    background: color-mix(in srgb, var(--acc) 8%, #fff);
+    color: color-mix(in srgb, var(--acc) 78%, black);
+    font-size: 19px;
+    line-height: 1;
+    display: grid;
+    place-items: center;
+    cursor: pointer;
+    padding: 0;
+    transition: background 0.15s, border-color 0.15s, transform 0.15s;
+  }
+  .add-icon:hover { background: color-mix(in srgb, var(--acc) 18%, #fff); border-color: var(--acc); transform: scale(1.06); }
+  .add-icon:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+
+  .modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background: hsl(214 28% 24% / 0.34);
+    display: grid;
+    place-items: center;
+    padding: 20px;
+    z-index: 60;
+  }
+  .modal {
+    background: #fff;
+    border-radius: 12px;
+    border-block-start: 4px solid var(--dc, var(--rule-strong));
+    padding: 20px 24px;
+    width: min(520px, 100%);
+    box-shadow: 0 18px 50px hsl(214 30% 25% / 0.3);
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  .modal h4 {
+    font-family: var(--display);
+    font-size: 20px;
+    margin: 0;
+    color: var(--acc);
+  }
+  .modal form { display: flex; flex-direction: column; gap: 16px; }
+  .modal .acts { display: flex; gap: 8px; justify-content: flex-end; }
+
+  /* one panel below the case, whether you're editing a book or adding one */
+  .modal:focus { outline: none; }
+  .modal .head { display: flex; align-items: center; gap: 10px; }
+  .modal .dtitle { font-family: var(--display); font-size: 20px; }
+  .modal .spacer { flex: 1; }
+  .modal .icon-btn { opacity: 1; }
+
+  .fields { display: flex; flex-wrap: wrap; gap: 14px; }
+  .fields .f { display: flex; flex-direction: column; gap: 4px; flex: 1 1 190px; }
+  .fields label,
+  .modal label,
+  .status-row > .lab {
+    font-family: var(--ui);
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.09em;
+    color: var(--ink-3);
+  }
+  .fields input {
+    font: inherit;
+    font-size: 15px;
+    padding: 7px 9px;
+    border: 1.5px solid var(--rule-strong);
+    border-radius: 6px;
+    background: #fff;
+    color: inherit;
+    width: 100%;
+  }
+  .fields input:focus-visible {
+    outline: 2px solid var(--ink);
+    outline-offset: -1px;
+  }
+
+  .swatches { display: flex; flex-wrap: wrap; gap: 6px; }
+  .swatch {
+    width: 24px;
+    height: 24px;
+    border-radius: 6px;
+    border: 2px solid transparent;
+    background: var(--sw);
+    cursor: pointer;
+    padding: 0;
+    transition: transform 0.12s, box-shadow 0.12s;
+  }
+  .swatch:hover { transform: scale(1.12); }
+  .swatch:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+  .swatch[aria-pressed="true"] {
+    box-shadow: 0 0 0 2px #fff inset, 0 0 0 2px var(--ink);
+  }
+
+  .status-row { display: flex; flex-direction: column; gap: 6px; }
+  .status-set { display: inline-flex; flex-wrap: wrap; gap: 6px; }
+  .status-set button {
+    font: inherit;
+    font-size: 13.5px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 13px;
+    border-radius: 100px;
+    border: 2px solid var(--rule);
+    background: #fff;
+    color: var(--ink-2);
+    cursor: pointer;
+    transition: border-color 0.15s, background 0.15s, color 0.15s;
+  }
+  .status-set button:hover { border-color: var(--rule-strong); }
+  .status-set button:focus-visible { outline: 2px solid var(--ink); outline-offset: 1px; }
+  .status-set button[aria-pressed="true"] {
+    border-color: var(--acc);
+    background: color-mix(in srgb, var(--acc) 12%, #fff);
+    color: color-mix(in srgb, var(--acc) 72%, black);
+  }
+
+  /* ================= verdict ================= */
+  .verdict {
+    background: var(--card);
+    border: 2px solid var(--rule);
+    border-radius: 12px;
+    padding: 22px 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .verdict p { margin: 0; max-width: 68ch; }
+  .verdict ul { margin: 0; padding-inline-start: 20px; display: flex; flex-direction: column; gap: 6px; }
+
+  .sr {
+    position: absolute; width: 1px; height: 1px; overflow: hidden;
+    clip: rect(0 0 0 0); white-space: nowrap;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; }
+  }
+</style>
+
+</head>
+<body>
+<div class="page">
+
+  <header class="prose">
+    <div class="eyebrow">Journal · media tab</div>
+    <h1>The Media Bookcase</h1>
+    <p class="lede">Everything below is live — click a book to open it, click the stamp at its foot to move it along, rename anything by clicking it, add a book, give one the author it's been missing. Every series gets a stretch of shelf with its name on a hand-written card; its books are published to one trim size and banded at head and tail. The cover colour is the author, whose full name is printed on every spine.</p>
+  </header>
+
+  <section class="prose" style="max-width:none">
+    <h2>The change underneath</h2>
+    <div class="prose">
+      <p>Nothing, in storage. Books stay in the tree they're in today — an author owns series, a series owns books, and a book's parent <em>is</em> its path: <code>media/books/&lt;authorId&gt;/items/&lt;seriesId&gt;/items/&lt;bookId&gt;</code>. Giving an existing book an author is therefore a move rather than a field write, and the storage layer already does moves: <code>moveItemBetweenLists</code> re-parents atomically and keeps the id. What's missing is only the control — no component in the tab offers one — and that's what the dialog below adds.</p>
+      <p>The status stamp is the same: it reads and writes the <code>medium</code> and <code>isDone</code> already on the item, so there's no new field and nothing to migrate. The one addition anywhere is an optional band colour on a series node, written only when you pick one.</p>
+    </div>
+
+  <section style="display:flex;flex-direction:column;gap:16px">
+    <h2>How it behaves</h2>
+    <div class="shared">
+      <div>
+        <strong>Status is a stamp on the spine</strong>
+        <p>The stamp at the foot of each spine cycles the way today's medium button does, with finished folded in: unread → 📖 → 🎧 → ✓. It's the same two fields the tab already stores — <code>medium</code> and <code>isDone</code> — read as one cycle, so a finished book can't show a stale medium.</p>
+      </div>
+      <div>
+        <strong>Click anything to rename it</strong>
+        <p>Titles, author names and series names are all <code>EditableText</code>. Clearing a title deletes the item, exactly as the book row does now.</p>
+      </div>
+      <div>
+        <strong>Fill in the blanks later</strong>
+        <p>Author and series are ordinary fields on a book — comboboxes prefilled with whatever it already has. Add what's missing, correct what's wrong; typing a name that doesn't exist yet creates it, and the book moves to that shelf.</p>
+      </div>
+      <div>
+        <strong>One dialog for both</strong>
+        <p>Clicking a book opens it in a dialog; the <span aria-hidden="true">+</span> beside Books or Games opens the same shape of dialog to add one. Escape or a click outside closes either.</p>
+      </div>
+    </div>
+  </section>
+
+  <section style="display:flex;flex-direction:column;gap:24px">
+    <div class="app">
+      <nav class="app-nav" aria-hidden="true">
+        <span>todo</span><span>health</span><span>2026</span><span>projects</span><span class="on">media</span><span>work</span>
+      </nav>
+      <div class="app-body">
+        <div class="proto" id="proto"></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="verdict">
+    <p>The status cycle, the author-and-series control and the add flow all sit behind the view, so a different layout later is a re-render rather than a migration.</p>
+  </section>
+
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  /* ---------------------------------- data ---------------------------------- */
+
+  var uid = 0;
+  function id(p) { uid += 1; return p + "-" + uid; }
+
+  var db = {
+    authors: {},
+    bookSeries: {},
+    books: {},
+    gameSeries: {},
+    games: {}
+  };
+
+  // Bands are their own colour, not a tint of the cover — that's what makes
+  // two series by the same author tell apart at a glance.
+  // Bands are their own colour, not a tint of the cover — that's what makes
+  // two series by the same author tell apart at a glance. Same L and C, so
+  // no band shouts louder than another.
+  var BANDS = [
+    { name: "Red", hue: 25 }, { name: "Orange", hue: 55 },
+    { name: "Olive", hue: 110 }, { name: "Green", hue: 148 },
+    { name: "Teal", hue: 190 }, { name: "Blue", hue: 240 },
+    { name: "Indigo", hue: 275 }, { name: "Violet", hue: 305 },
+    { name: "Magenta", hue: 330 }, { name: "Pink", hue: 355 }
+  ];
+  function bandCss(hue) { return "oklch(58% 0.16 " + hue + ")"; }
+  var nextBand = 0;
+  function takeBand() { var i = nextBand % BANDS.length; nextBand += 1; return i; }
+
+  function author(name) { var o = { id: id("au"), name: name }; db.authors[o.id] = o; return o; }
+  function bseries(name, authorId) {
+    var o = { id: id("bs"), name: name, authorId: authorId, band: takeBand() };
+    db.bookSeries[o.id] = o; return o;
+  }
+  function book(title, authorId, seriesId, status) {
+    var o = { id: id("bk"), title: title, authorId: authorId || null, seriesId: seriesId || null, status: status || "todo" };
+    db.books[o.id] = o; return o;
+  }
+  function gseries(name) {
+    var o = { id: id("gs"), name: name, band: takeBand() };
+    db.gameSeries[o.id] = o; return o;
+  }
+  function game(title, seriesId, status) {
+    var o = { id: id("gm"), title: title, seriesId: seriesId || null, status: status || "todo" };
+    db.games[o.id] = o; return o;
+  }
+
+  var pratchett = author("Terry Pratchett");
+  var discworld = bseries("Discworld", pratchett.id);
+  book("Guards! Guards!", pratchett.id, discworld.id, "done");
+  book("Witches Abroad", pratchett.id, discworld.id, "done");
+  book("Night Watch", pratchett.id, discworld.id, "listening");
+  book("Thud!", pratchett.id, discworld.id, "todo");
+  book("Nation", pratchett.id, null, "done");
+
+  var leguin = author("Ursula Le Guin");
+  var earthsea = bseries("Earthsea", leguin.id);
+  book("A Wizard of Earthsea", leguin.id, earthsea.id, "done");
+  book("The Tombs of Atuan", leguin.id, earthsea.id, "reading");
+  book("The Farthest Shore", leguin.id, earthsea.id, "todo");
+  var hainish = bseries("Hainish Cycle", leguin.id);
+  book("The Left Hand of Darkness", leguin.id, hainish.id, "done");
+  book("The Dispossessed", leguin.id, hainish.id, "todo");
+  book("The Word for World is Forest", leguin.id, hainish.id, "todo");
+
+  var muir = author("Tamsyn Muir");
+  var lockedTomb = bseries("The Locked Tomb", muir.id);
+  book("Gideon the Ninth", muir.id, lockedTomb.id, "done");
+  book("Harrow the Ninth", muir.id, lockedTomb.id, "listening");
+  book("Nona the Ninth", muir.id, lockedTomb.id, "todo");
+
+  var shelley = author("Mary Shelley");
+  book("Frankenstein", shelley.id, null, "todo");
+
+  book("The Linguist Mages", null, null, "todo");
+
+  var zelda = gseries("The Legend of Zelda");
+  game("Breath of the Wild", zelda.id, "done");
+  game("Tears of the Kingdom", zelda.id, "playing");
+  game("Echoes of Wisdom", zelda.id, "todo");
+  var portal = gseries("Portal");
+  game("Portal", portal.id, "done");
+  game("Portal 2", portal.id, "done");
+  game("Stardew Valley", null, "playing");
+  game("Hades", null, "todo");
+  game("Outer Wilds", null, "todo");
+
+  /* --------------------------------- helpers -------------------------------- */
+
+  var BOOK_NOW = { reading: "📖", listening: "🎧" };
+  var BOOK_NOW_LABEL = { reading: "reading", listening: "listening" };
+
+  function vals(obj) { return Object.keys(obj).map(function (k) { return obj[k]; }); }
+
+  function isBook(item) { return item.id.indexOf("bk") === 0; }
+  function isNow(item) { return item.status === "reading" || item.status === "listening" || item.status === "playing"; }
+  function isDone(item) { return item.status === "done"; }
+
+  function el(tag, cls, text) {
+    var n = document.createElement(tag);
+    if (cls) n.className = cls;
+    if (text != null) n.textContent = text;
+    return n;
+  }
+
+  function booksInSeries(seriesId) {
+    return vals(db.books).filter(function (b) { return (b.seriesId || null) === seriesId; });
+  }
+
+  function booksOf(authorId, seriesId) {
+    return vals(db.books).filter(function (b) {
+      return (b.authorId || null) === (authorId || null) && (b.seriesId || null) === (seriesId || null);
+    });
+  }
+
+  function seriesOf(authorId) {
+    return vals(db.bookSeries).filter(function (s) { return (s.authorId || null) === (authorId || null); });
+  }
+
+  function allBooksFor(authorId) {
+    return vals(db.books).filter(function (b) { return (b.authorId || null) === (authorId || null); });
+  }
+
+  function gamesOf(seriesId) {
+    return vals(db.games).filter(function (g) { return (g.seriesId || null) === (seriesId || null); });
+  }
+
+
+
+  /* ------------------------------ mutations --------------------------------- */
+
+
+  function findOrCreateAuthor(name) {
+    var trimmed = name.trim();
+    if (!trimmed) return null;
+    var found = vals(db.authors).filter(function (a) { return a.name.toLowerCase() === trimmed.toLowerCase(); })[0];
+    return found ? found.id : author(trimmed).id;
+  }
+
+  function findOrCreateBookSeries(name, authorId) {
+    var trimmed = name.trim();
+    if (!trimmed) return null;
+    var found = vals(db.bookSeries).filter(function (s) {
+      return s.name.toLowerCase() === trimmed.toLowerCase() && (s.authorId || null) === (authorId || null);
+    })[0];
+    return found ? found.id : bseries(trimmed, authorId).id;
+  }
+
+  function findOrCreateGameSeries(name) {
+    var trimmed = name.trim();
+    if (!trimmed) return null;
+    var found = vals(db.gameSeries).filter(function (s) { return s.name.toLowerCase() === trimmed.toLowerCase(); })[0];
+    return found ? found.id : gseries(trimmed).id;
+  }
+
+  /* ---------------------------- editable text ------------------------------- */
+
+  function editable(value, label, onCommit, onDelete, cls) {
+    var btn = el("button", "ed " + (cls || ""), value);
+    btn.type = "button";
+    btn.setAttribute("aria-label", label + ": " + value + " (click to edit)");
+    btn.addEventListener("click", function () {
+      var input = el("input", "ed-input");
+      input.value = value;
+      input.size = Math.max(value.length, 4);
+      input.setAttribute("aria-label", label);
+      btn.replaceWith(input);
+      input.focus();
+      input.select();
+      var settled = false;
+      function commit() {
+        if (settled) return;
+        settled = true;
+        var next = input.value.trim();
+        if (!next && onDelete) onDelete();
+        else if (next && next !== value) onCommit(next);
+        else render();
+      }
+      input.addEventListener("blur", commit);
+      input.addEventListener("keydown", function (e) {
+        if (e.key === "Enter") { e.preventDefault(); commit(); }
+        else if (e.key === "Escape") { settled = true; render(); }
+      });
+    });
+    return btn;
+  }
+
+  /* ------------------------------- controls --------------------------------- */
+
+
+
+  function iconButton(glyph, label, cls, onClick) {
+    var b = el("button", "icon-btn " + (cls || ""), glyph);
+    b.type = "button";
+    b.setAttribute("aria-label", label);
+    b.addEventListener("click", onClick);
+    return b;
+  }
+
+  /* ------------------------------ move popover ------------------------------ */
+
+
+  function datalistFor(names, listId) {
+    var dl = el("datalist");
+    dl.id = listId;
+    names.forEach(function (n) { dl.appendChild(el("option")).value = n; });
+    return dl;
+  }
+
+
+
+
+  /* --------------------------------- add ------------------------------------ */
+
+  var addOpen = null; // key of the open add form
+
+
+  function authorNames() { return vals(db.authors).map(function (a) { return a.name; }).sort(); }
+  function bookSeriesNames() { return vals(db.bookSeries).map(function (s) { return s.name; }).sort(); }
+  function gameSeriesNames() { return vals(db.gameSeries).map(function (s) { return s.name; }).sort(); }
+
+
+
+  /* ============================== OPTION C ================================== */
+
+  var openSpine = null;
+
+
+  // Light tints, the way the rest of the app colours things, held to one
+  // lightness band so a shelf of different authors reads as a set rather than
+  // a paintbox. Chosen colour by colour, since an even hue step at fixed
+  // lightness lands unevenly to the eye. Assigned by position in the sorted
+  // list so no two neighbouring runs collide.
+  // OKLCH, because its lightness is perceptual: hold L and C steady, vary only
+  // the hue, and every cover reads as equally light. The same trick in HSL is
+  // what turned the yellow into beige while the blue stayed strong.
+  // Hues near 100 are skipped — a light yellow is a beige however you get to it.
+  var COVER_HUES = [25, 58, 145, 185, 232, 268, 305, 345];
+
+  function clothFor(index) { return COVER_HUES[index % COVER_HUES.length]; }
+
+
+
+  var BOOK_STATUSES = [
+    { value: "todo", glyph: "", label: "Not started" },
+    { value: "reading", glyph: "📖", label: "Reading" },
+    { value: "listening", glyph: "🎧", label: "Listening" },
+    { value: "done", glyph: "✓", label: "Read" }
+  ];
+  var GAME_STATUSES = [
+    { value: "todo", glyph: "", label: "Not started" },
+    { value: "playing", glyph: "🎮", label: "Playing" },
+    { value: "done", glyph: "✓", label: "Played" }
+  ];
+
+  // Cycles the way the current tab's medium button does, with the finished
+  // state folded in: unread -> reading -> listening -> read -> unread.
+  function addTrigger(key, label) {
+    var b = el("button", "add-icon", "+");
+    b.type = "button";
+    b.setAttribute("aria-label", label);
+    b.setAttribute("aria-haspopup", "dialog");
+    b.addEventListener("click", function () {
+      addOpen = key;
+      openSpine = null;
+      render();
+    });
+    return b;
+  }
+
+  function modalWrap(ariaLabel, panel, onClose) {
+    var back = el("div", "modal-backdrop");
+    panel.classList.add("modal");
+    panel.setAttribute("role", "dialog");
+    panel.setAttribute("aria-modal", "true");
+    panel.setAttribute("aria-label", ariaLabel);
+    back.addEventListener("mousedown", function (e) { if (e.target === back) onClose(); });
+    back.addEventListener("keydown", function (e) { if (e.key === "Escape") onClose(); });
+    back.appendChild(panel);
+    // focus has to land inside the dialog, or Escape never reaches it — and
+    // it's where focus should go on open regardless
+    panel.tabIndex = -1;
+    requestAnimationFrame(function () {
+      if (!panel.contains(document.activeElement)) panel.focus();
+    });
+    return back;
+  }
+
+  function addModal(kind) {
+    var isBookKind = kind === "book";
+    var m = el("div");
+    var heading = isBookKind ? "Add a book" : "Add a game";
+    m.appendChild(el("h4", null, heading));
+
+    var form = el("form");
+    var fields = el("div", "fields");
+    var inputs = {};
+
+    function addField(labelText, options, name) {
+      var f = el("div", "f");
+      var listId = "modal-" + name;
+      var lab = el("label", null, labelText);
+      lab.htmlFor = listId + "-in";
+      var inp = el("input");
+      inp.id = listId + "-in";
+      inp.autocomplete = "off";
+      if (options) {
+        inp.setAttribute("list", listId);
+        f.appendChild(datalistFor(options, listId));
+      }
+      f.appendChild(lab);
+      f.appendChild(inp);
+      fields.appendChild(f);
+      inputs[name] = inp;
+    }
+
+    addField("Title", null, "title");
+    if (isBookKind) addField("Author (optional)", authorNames(), "author");
+    addField("Series (optional)", isBookKind ? bookSeriesNames() : gameSeriesNames(), "series");
+    form.appendChild(fields);
+
+    var acts = el("div", "acts");
+    var cancel = el("button", "btn", "Cancel");
+    cancel.type = "button";
+    cancel.addEventListener("click", close);
+    var save = el("button", "btn go", heading);
+    save.type = "submit";
+    acts.appendChild(cancel);
+    acts.appendChild(save);
+    form.appendChild(acts);
+
+    form.addEventListener("submit", function (e) {
+      e.preventDefault();
+      var title = inputs.title.value.trim();
+      if (!title) { inputs.title.focus(); return; }
+      if (isBookKind) {
+        var aid = inputs.author.value ? findOrCreateAuthor(inputs.author.value) : null;
+        var sid = inputs.series.value ? findOrCreateBookSeries(inputs.series.value, aid) : null;
+        if (sid && !aid && db.bookSeries[sid].authorId) aid = db.bookSeries[sid].authorId;
+        book(title, aid, sid, "todo");
+      } else {
+        game(title, inputs.series.value ? findOrCreateGameSeries(inputs.series.value) : null, "todo");
+      }
+      close();
+    });
+
+    function close() { addOpen = null; render(); }
+
+    m.appendChild(form);
+    requestAnimationFrame(function () { inputs.title.focus(); });
+    return modalWrap(heading, m, close);
+  }
+
+  function nextStatus(item) {
+    if (isBook(item)) {
+      return item.status === "todo" ? "reading"
+        : item.status === "reading" ? "listening"
+        : item.status === "listening" ? "done"
+        : "todo";
+    }
+    return item.status === "todo" ? "playing" : item.status === "playing" ? "done" : "todo";
+  }
+
+  function statusStamp(item) {
+    var b = el("button", "stamp");
+    b.type = "button";
+    b.dataset.status = item.status;
+    var glyph = item.status === "done" ? "\u2713"
+      : isBook(item) ? (BOOK_NOW[item.status] || "\ud83d\udcd6") : "\ud83c\udfae";
+    b.textContent = glyph;
+    var set = isBook(item) ? BOOK_STATUSES : GAME_STATUSES;
+    var now = set.filter(function (o) { return o.value === item.status; })[0].label;
+    var then = set.filter(function (o) { return o.value === nextStatus(item); })[0].label;
+    b.title = now + " — click for " + then.toLowerCase();
+    b.setAttribute("aria-label", item.title + ": " + now + ". Change to " + then.toLowerCase());
+    b.addEventListener("click", function () {
+      item.status = nextStatus(item);
+      render();
+    });
+    return b;
+  }
+
+  function spine(item, cloth, series, showAuthor) {
+    var slot = el("div", "slot");
+    var s = el("div", "spine");
+    s.dataset.status = item.status;
+    s.style.setProperty("--hue", cloth);
+    // Height tracks the title, so a longer one gets more spine to print on.
+    // It varies the shelf the way real books do, and the variation means
+    // something — an arbitrary height just invites you to look for a reason.
+    var len = item.title.length;
+    s.style.setProperty("--h", (isBook(item)
+      ? 178 + Math.min(34, Math.round(len * 1.5))
+      : 142 + Math.min(34, Math.round(len * 1.7))) + "px");
+
+    var set = isBook(item) ? BOOK_STATUSES : GAME_STATUSES;
+    var word = set.filter(function (o) { return o.value === item.status; })[0].label;
+
+    var title = el("button", "title-btn");
+    title.type = "button";
+    title.setAttribute("aria-label", item.title +
+      (series ? ", " + series.name + " series" : "") + ", " + word.toLowerCase());
+    title.addEventListener("click", function () {
+      openSpine = openSpine === item.id ? null : item.id;
+      addOpen = null;
+      render();
+    });
+
+    var label = el("span", "label");
+    label.appendChild(el("span", "t", item.title));
+    if (showAuthor && item.authorId) {
+      label.appendChild(el("span", "by", db.authors[item.authorId].name));
+    }
+    title.appendChild(label);
+    s.appendChild(title);
+
+    if (series) {
+      s.style.setProperty("--band", bandCss(BANDS[series.band % BANDS.length].hue));
+      ["band-head", "band-tail"].forEach(function (which) {
+        s.appendChild(el("span", "band " + which));
+      });
+    }
+
+    s.appendChild(statusStamp(item));
+    slot.appendChild(s);
+    return slot;
+  }
+
+  function authorRun(labelNode, spines) {
+    var run = el("div", "run");
+    var books = el("div", "run-books");
+    spines.forEach(function (s) { books.appendChild(s); });
+    run.appendChild(books);
+    if (labelNode) {
+      var lab = el("div", "run-label");
+      lab.appendChild(labelNode);
+      run.appendChild(lab);
+    }
+    return run;
+  }
+
+
+  function statusControl(item) {
+    var wrap = el("div", "status-row");
+    wrap.appendChild(el("div", "lab", "Status"));
+    var set = el("div", "status-set");
+    (isBook(item) ? BOOK_STATUSES : GAME_STATUSES).forEach(function (o) {
+      var b = el("button");
+      b.type = "button";
+      b.setAttribute("aria-pressed", String(item.status === o.value));
+      if (o.glyph) {
+        var g = el("span", null, o.glyph);
+        g.setAttribute("aria-hidden", "true");
+        b.appendChild(g);
+      }
+      b.appendChild(el("span", null, o.label));
+      b.addEventListener("click", function () { item.status = o.value; render(); });
+      set.appendChild(b);
+    });
+    wrap.appendChild(set);
+    return wrap;
+  }
+
+  // One control per relationship: type a name to move it there, clear it to
+  // take it out, type something new to create it.
+  function comboField(labelText, value, options, key, onCommit) {
+    var f = el("div", "f");
+    var listId = "cb-" + key;
+    var lab = el("label", null, labelText);
+    lab.htmlFor = listId + "-in";
+    var inp = el("input");
+    inp.id = listId + "-in";
+    inp.autocomplete = "off";
+    inp.value = value || "";
+    inp.placeholder = "none";
+    inp.setAttribute("list", listId);
+    f.appendChild(datalistFor(options, listId));
+    f.appendChild(lab);
+    f.appendChild(inp);
+    inp.addEventListener("change", function () { onCommit(inp.value); });
+    inp.addEventListener("blur", function () {
+      if (inp.value !== (value || "")) onCommit(inp.value);
+    });
+    return f;
+  }
+
+  function editPanel(item, kind, hue) {
+    var d = el("div");
+    if (hue != null) d.style.setProperty("--dc", "oklch(78% 0.11 " + hue + ")");
+
+    var head = el("div", "head");
+    head.appendChild(editable(item.title, kind + " title",
+      function (v) { item.title = v; render(); },
+      function () { openSpine = null; removeItem(item); }, "dtitle"));
+    head.appendChild(el("span", "spacer"));
+    head.appendChild(iconButton("×", "Delete " + item.title, "del", function () {
+      openSpine = null;
+      removeItem(item);
+    }));
+    d.appendChild(head);
+
+    d.appendChild(statusControl(item));
+
+    var fields = el("div", "fields");
+    if (isBook(item)) {
+      fields.appendChild(comboField("Author",
+        item.authorId ? db.authors[item.authorId].name : "",
+        authorNames(), item.id + "-a",
+        function (v) {
+          item.authorId = findOrCreateAuthor(v);
+          if (item.seriesId && db.bookSeries[item.seriesId]) {
+            db.bookSeries[item.seriesId].authorId = item.authorId;
+          }
+          render();
+        }));
+      fields.appendChild(comboField("Series",
+        item.seriesId ? db.bookSeries[item.seriesId].name : "",
+        bookSeriesNames(), item.id + "-s",
+        function (v) { item.seriesId = findOrCreateBookSeries(v, item.authorId); render(); }));
+    } else {
+      fields.appendChild(comboField("Series",
+        item.seriesId ? db.gameSeries[item.seriesId].name : "",
+        gameSeriesNames(), item.id + "-s",
+        function (v) { item.seriesId = findOrCreateGameSeries(v); render(); }));
+    }
+    d.appendChild(fields);
+
+    var ser2 = item.seriesId
+      ? (isBook(item) ? db.bookSeries[item.seriesId] : db.gameSeries[item.seriesId])
+      : null;
+    if (ser2) {
+      var row = el("div", "status-row");
+      row.appendChild(el("div", "lab", ser2.name + " band colour"));
+      var sw = el("div", "swatches");
+      BANDS.forEach(function (colour, i) {
+        var btn = el("button", "swatch");
+        btn.type = "button";
+        btn.style.setProperty("--sw", bandCss(colour.hue));
+        btn.setAttribute("aria-pressed", String(ser2.band % BANDS.length === i));
+        btn.setAttribute("aria-label", colour.name + " for " + ser2.name);
+        btn.title = colour.name;
+        btn.addEventListener("click", function () { ser2.band = i; render(); });
+        sw.appendChild(btn);
+      });
+      row.appendChild(sw);
+      d.appendChild(row);
+    }
+    return modalWrap(item.title, d, function () { openSpine = null; render(); });
+  }
+
+  // A stretch of shelf per series, named on its card; the author is printed on
+  // each spine. Books outside a series collect in an unlabelled run at the end.
+  function buildBooksCase(hueOf, authorsSorted) {
+    var kase = el("div", "case");
+
+    // shelved by author, so an author's series sit together
+    vals(db.bookSeries)
+      .filter(function (ser) { return booksInSeries(ser.id).length; })
+      .sort(function (x, y) {
+        var ax = x.authorId ? db.authors[x.authorId].name : "\uffff";
+        var ay = y.authorId ? db.authors[y.authorId].name : "\uffff";
+        return ax.localeCompare(ay) || x.name.localeCompare(y.name);
+      })
+      .forEach(function (ser) {
+        var set = el("div", "ser-set");
+        booksInSeries(ser.id).forEach(function (b) {
+          set.appendChild(spine(b, hueOf[b.authorId], ser, true));
+        });
+        var nm = editable(ser.name, "Series name",
+          function (v) { ser.name = v; render(); }, null, "");
+        kase.appendChild(authorRun(nm, [set]));
+      });
+
+    var singles = vals(db.books)
+      .filter(function (b) { return !b.seriesId; })
+      .sort(function (x, y) {
+        var ax = x.authorId ? db.authors[x.authorId].name : "\uffff";
+        var ay = y.authorId ? db.authors[y.authorId].name : "\uffff";
+        return ax.localeCompare(ay) || x.title.localeCompare(y.title);
+      });
+    if (singles.length) {
+      kase.appendChild(authorRun(null, singles.map(function (b, i) {
+        var hue = b.authorId ? hueOf[b.authorId] : clothFor(authorsSorted.length + i);
+        return spine(b, hue, null, true);
+      })));
+    }
+    return kase;
+  }
+
+  function renderC() {
+    var root = el("div", "c-wrap");
+
+    /* ------------------------------ books ------------------------------ */
+    var bs = el("div", "c-section books");
+    var bh = el("div", "panel-head");
+    bh.appendChild(el("h3", null, "Books"));
+    bh.appendChild(el("span", "spacer"));
+    bh.appendChild(addTrigger("c-book", "Add a book"));
+    bs.appendChild(bh);
+
+    var authorsSorted = vals(db.authors)
+      .filter(function (a) { return allBooksFor(a.id).length; })
+      .sort(function (a, b) { return a.name.localeCompare(b.name); });
+
+    var hueOf = {};
+    authorsSorted.forEach(function (a, i) { hueOf[a.id] = clothFor(i); });
+
+    bs.appendChild(buildBooksCase(hueOf, authorsSorted));
+
+    var openBook = vals(db.books).filter(function (b) { return b.id === openSpine; })[0];
+    if (openBook) {
+      bs.appendChild(editPanel(openBook, "Book",
+        openBook.authorId ? hueOf[openBook.authorId] : null));
+    }
+    if (addOpen === "c-book") bs.appendChild(addModal("book"));
+    root.appendChild(bs);
+
+
+    /* ------------------------------ games ------------------------------ */
+    var gs = el("div", "c-section games");
+    var gh = el("div", "panel-head");
+    gh.appendChild(el("h3", null, "Games"));
+    gh.appendChild(el("span", "spacer"));
+    gh.appendChild(addTrigger("c-game", "Add a game"));
+    gs.appendChild(gh);
+
+    var gSeries = vals(db.gameSeries)
+      .filter(function (s) { return gamesOf(s.id).length; })
+      .sort(function (a, b) { return a.name.localeCompare(b.name); });
+
+    var gHue = {};
+    gSeries.forEach(function (s, i) { gHue[s.id] = clothFor(i + 4); });
+
+    var gCase = el("div", "case");
+    gSeries.forEach(function (s) {
+      var set = el("div", "ser-set");
+      gamesOf(s.id).forEach(function (g) { set.appendChild(spine(g, gHue[s.id], s)); });
+      var name = editable(s.name, "Series name", function (v) { s.name = v; render(); }, null, "");
+      gCase.appendChild(authorRun(name, [set]));
+    });
+    var solo = gamesOf(null);
+    if (solo.length) {
+      gCase.appendChild(authorRun(null, solo.map(function (g, i) {
+        return spine(g, clothFor(gSeries.length + 4 + i));
+      })));
+    }
+
+    gs.appendChild(gCase);
+
+    var openGame = vals(db.games).filter(function (g) { return g.id === openSpine; })[0];
+    if (openGame) {
+      gs.appendChild(editPanel(openGame, "Game",
+        openGame.seriesId ? gHue[openGame.seriesId] : null));
+    }
+    if (addOpen === "c-game") gs.appendChild(addModal("game"));
+    root.appendChild(gs);
+
+    return root;
+  }
+
+  /* ================================ chrome ================================== */
+
+
+
+
+
+  function render() {
+    var host = document.getElementById("proto");
+    host.innerHTML = "";
+    host.appendChild(renderC());
+  }
+
+  render();
+})();
+</script>
+
+</body>
+</html>
