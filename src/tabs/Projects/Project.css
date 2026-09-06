@@ -88,14 +88,6 @@
     max-width: 420px;
 
     &.visible {
-      /* Mixed toward black so the shadow stays dark enough to read against
-         white even for the palest category colours. */
-      --popout-shadow: color-mix(
-        in srgb,
-        color(from var(--project-colour) srgb r g b / 1) 60%,
-        black 40%
-      );
-
       opacity: 1;
       margin-block-end: 12px;
       overflow: visible;
@@ -103,7 +95,7 @@
       border: 1px solid var(--border-colour);
       /* .project-details already draws this edge. */
       border-top: none;
-      box-shadow: inset 0 6px 8px -4px var(--popout-shadow);
+      box-shadow: inset 0 6px 8px -4px hsl(0 0% 0% / 0.35);
     }
   }
 
