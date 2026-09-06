@@ -1,4 +1,4 @@
-import { CSSProperties, useRef, useState } from "react"
+import { CSSProperties, useState } from "react"
 import { useStorageContext } from "../../shared/FirebaseContext"
 
 import "./Project.css"
@@ -56,7 +56,6 @@ export function Project({ project, onMoveToEnd, onDelete }: ProjectProps) {
     getOpenProjectIds().has(project.id),
   )
   const [hasOpenedSubtasks, setHasOpenedSubtasks] = useState(subtasksVisible)
-  const wasOpenOnLoad = useRef(subtasksVisible).current
 
   const { updateItem } = useStorageContext()
 
@@ -194,11 +193,7 @@ export function Project({ project, onMoveToEnd, onDelete }: ProjectProps) {
         </button>
       </div>
       {hasOpenedSubtasks && (
-        <SubtaskList
-          projectId={project.id}
-          isVisible={subtasksVisible}
-          wasOpenOnLoad={wasOpenOnLoad}
-        />
+        <SubtaskList projectId={project.id} isVisible={subtasksVisible} />
       )}
     </div>
   )
