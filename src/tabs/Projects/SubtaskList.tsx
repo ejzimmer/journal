@@ -22,14 +22,20 @@ import { useDraggableList } from "../../shared/drag-and-drop/useDraggableList"
 type SubtasksProps = {
   projectId: string
   isVisible: boolean
+  wasOpenOnLoad: boolean
 }
 
-export function SubtaskList({ projectId, isVisible }: SubtasksProps) {
+export function SubtaskList({
+  projectId,
+  isVisible,
+  wasOpenOnLoad,
+}: SubtasksProps) {
   const [formVisible, setFormVisible] = useState(false)
   const [containerHeight, setContainerHeight] = useState(0)
   const containerRef = useRef<HTMLDivElement>(null)
   const listRef = useRef<HTMLOListElement>(null)
   const formContainerRef = useRef<HTMLDivElement>(null)
+  const hasRevealedSubtasks = useRef(wasOpenOnLoad)
   const subtasksKey = getSubtasksKey(projectId)
 
   const { useValue, addItem, updateList } = useStorageContext()
@@ -58,6 +64,30 @@ export function SubtaskList({ projectId, isVisible }: SubtasksProps) {
       )
     }
   }, [subtasks, isProjectLoaded])
+
+  useEffect(() => {
+    if (!isVisible) {
+      hasRevealedSubtasks.current = false
+      return
+    }
+
+    const container = containerRef.current
+    if (hasRevealedSubtasks.current || !containerHeight || !container) return
+    hasRevealedSubtasks.current = true
+
+    const cardTop = container.parentElement?.getBoundingClientRect().top ?? 0
+    const hiddenBelowFold =
+      container.getBoundingClientRect().top +
+      containerHeight -
+      window.innerHeight
+
+    if (hiddenBelowFold > 0) {
+      window.scrollBy({
+        top: Math.min(hiddenBelowFold, cardTop),
+        behavior: "smooth",
+      })
+    }
+  }, [isVisible, containerHeight])
 
   useDropTarget({
     dropTargetRef: listRef,
