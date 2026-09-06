@@ -8,10 +8,17 @@
   align-self: start;
 
   &.in_progress {
-    outline: 2px solid color(from var(--project-colour) srgb r g b / 1);
-    outline-offset: -2px;
     background:
       linear-gradient(45deg, white, transparent), var(--project-colour-light);
+
+    /* Scoped to the header rather than the whole card: with the popout now
+       its own white sheet, an outline on .project would trace the full
+       perimeter and frame the popout in a saturated colour it isn't
+       supposed to have. */
+    .project-details {
+      outline: 2px solid color(from var(--project-colour) srgb r g b / 1);
+      outline-offset: -2px;
+    }
   }
 
   &.done {
@@ -162,7 +169,16 @@
     }
   }
 
-  ol.subtasks,
+  ol.subtasks {
+    /* .project-details has 10px of its own inline padding, but the drag
+       handle's glyph sits inset within its icon box (six dots centred in a
+       24-unit viewBox, at 16px rendered width that's ~4.5px of empty space
+       on each side) - offsetting by that difference is what actually lines
+       the visible dots up under the category icon, not just the boxes. */
+    padding-inline-start: 5.5px;
+    padding-inline-end: 0px;
+  }
+
   form.add-subtask-form.visible {
     padding-inline-start: 24px;
     padding-inline-end: 0px;
