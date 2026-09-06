@@ -1,0 +1,17 @@
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"$(git rev-parse --show-toplevel)/.claude/hooks/no-history-comments.sh\"",
+            "timeout": 15,
+            "statusMessage": "Checking staged comments for history-narrating language..."
+          }
+        ]
+      }
+    ]
+  }
+}
