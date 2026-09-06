@@ -1,0 +1,907 @@
+<title>Projects Shelf</title>
+<style>
+  /* Single light theme on purpose: this reproduces the app's own palette,
+     which has no dark mode. Every colour is painted explicitly. */
+  :root {
+    --body-font: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto",
+      "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans",
+      "Helvetica Neue", sans-serif;
+    --mono: ui-monospace, "SF Mono", Menlo, Monaco, Consolas, "Courier New",
+      monospace;
+
+    /* straight from src/index.css */
+    --body-colour: hsl(0 0% 20%);
+    --body-colour-mid: hsl(0 0% 50%);
+    --border-colour: hsl(214 32% 91%);
+    --action-colour: hsl(211 81% 46%);
+
+    /* page chrome — neutrals biased toward the app's 214° border hue */
+    --page: hsl(214 24% 97%);
+    --panel: hsl(0 0% 100%);
+    --rule: hsl(214 26% 89%);
+    --note: hsl(214 12% 46%);
+    --note-dim: hsl(214 10% 60%);
+
+    /* the geometry rule that makes the packing work */
+    --small-h: 42px;
+    --shelf-gap: 10px;
+    --big-h: calc(var(--small-h) * 2 + var(--shelf-gap));
+  }
+
+  /* the app sets this globally in index.css; the height maths below depends
+     on it, since a card's height is declared rather than derived */
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+
+  body {
+    margin: 0;
+    background: var(--page);
+    color: var(--body-colour);
+    font-family: var(--body-font);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    line-height: 1.5;
+  }
+
+  .page {
+    max-width: 1080px;
+    margin-inline: auto;
+    padding: 40px 24px 90px;
+    display: flex;
+    flex-direction: column;
+    gap: 44px;
+  }
+
+  /* ---------- page chrome (commentary, not the design being judged) ------- */
+
+  header h1 {
+    margin: 0 0 6px;
+    font-size: 30px;
+    font-weight: 600;
+    letter-spacing: -0.015em;
+    text-wrap: balance;
+  }
+  header p {
+    margin: 0;
+    max-width: 62ch;
+    color: var(--note);
+    font-size: 15px;
+  }
+  .eyebrow {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: var(--note-dim);
+    margin: 0 0 10px;
+  }
+  section {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+  .panel {
+    background: var(--panel);
+    border: 1px solid var(--rule);
+    border-radius: 10px;
+    padding: 22px 18px 26px;
+  }
+  .hint {
+    margin: 0;
+    font-size: 13px;
+    color: var(--note-dim);
+    text-align: center;
+    font-family: var(--mono);
+    letter-spacing: 0.03em;
+  }
+
+  .decisions {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 11px;
+    max-width: 70ch;
+  }
+  .decisions li {
+    display: grid;
+    grid-template-columns: 140px 1fr;
+    gap: 14px;
+    font-size: 14.5px;
+    color: var(--note);
+    align-items: baseline;
+  }
+  .decisions dfn {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--note-dim);
+    font-style: normal;
+  }
+  .decisions b {
+    color: var(--body-colour);
+    font-weight: 500;
+  }
+  .decisions code {
+    font-family: var(--mono);
+    font-size: 0.88em;
+    background: hsl(214 30% 94%);
+    padding: 1px 4px;
+    border-radius: 3px;
+  }
+
+  /* =========================================================================
+     THE MOCK — app-scale UI below
+     ========================================================================= */
+
+  .projects-container {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    font-size: 16px;
+  }
+
+  .projects-filter {
+    display: flex;
+    place-self: center;
+    align-items: center;
+    font-size: 1.2em;
+    gap: 8px;
+    border: 2px solid var(--border-colour);
+    border-radius: 100px;
+    padding: 4px 12px;
+  }
+  .fcat {
+    background: none;
+    border: 0;
+    padding: 2px;
+    font-size: 1em;
+    line-height: 1;
+    cursor: pointer;
+    opacity: 0.4;
+    border-radius: 50%;
+  }
+  .fcat:hover {
+    opacity: 0.75;
+  }
+  .fclear {
+    background: none;
+    border: 0;
+    cursor: pointer;
+    color: var(--body-colour-mid);
+    font-size: 0.7em;
+    line-height: 1;
+    padding: 4px;
+  }
+
+  /* --- the shelf --------------------------------------------------------- */
+
+  ul.projects {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    justify-content: center;
+    gap: var(--shelf-gap);
+    /* room for a sheet of paper to hang below the last row */
+    padding-bottom: 40px;
+  }
+
+  /* a stack is one flex item holding two small cards — it is exactly as tall
+     as a big card, so every row on the shelf comes out flush */
+  .stack {
+    display: flex;
+    flex-direction: column;
+    gap: var(--shelf-gap);
+    align-items: stretch;
+    position: relative;
+    z-index: 1;
+  }
+  .stack:has(.project.open) {
+    z-index: 30;
+  }
+
+  /* --- the card ---------------------------------------------------------- */
+
+  .project {
+    --tint: hsl(var(--h) var(--s) var(--l) / 0.13);
+    --edge: hsl(var(--h) var(--s) var(--l) / 0.38);
+    --solid: hsl(var(--h) var(--s) var(--l) / 1);
+
+    --card-border: 1px;
+    --radius: 7px;
+    --pad-x: 12px;
+    /* how wide a card may grow to keep its sheet from wrapping */
+    --card-max: 420px;
+
+    position: relative;
+    z-index: 1;
+    flex: 0 0 auto;
+    display: flex;
+    flex-direction: column;
+    height: var(--small-h);
+    background: var(--tint);
+    border: var(--card-border) solid var(--edge);
+    border-radius: var(--radius);
+    padding: 6px var(--pad-x);
+    max-width: var(--card-max);
+    transition: background 0.18s ease, border-color 0.18s ease,
+      box-shadow 0.18s ease;
+  }
+  .project.open {
+    z-index: 30;
+  }
+
+  .row-main {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex: 1 1 auto;
+    min-height: 0;
+  }
+
+  .cat {
+    font-size: 1.05em;
+    line-height: 1;
+    background: none;
+    border: 0;
+    padding: 3px;
+    margin: -3px;
+    border-radius: 50%;
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+  .cat:hover {
+    background: hsl(var(--h) var(--s) var(--l) / 0.35);
+  }
+  .cat:focus-visible,
+  .act:focus-visible,
+  .box:focus-visible {
+    outline: 2px solid var(--solid);
+    outline-offset: 1px;
+  }
+
+  .name {
+    font-size: 1em;
+    white-space: nowrap;
+  }
+
+  /* --- in_progress: full hue, lifted, exactly two small cards tall -------- */
+
+  .project.in_progress {
+    --tint: hsl(var(--h) var(--s) var(--l) / 0.42);
+    --edge: hsl(var(--h) var(--s) var(--l) / 0.9);
+    height: var(--big-h);
+    --card-border: 2px;
+    padding: 8px 12px 9px;
+    min-width: 268px;
+    box-shadow: 0 2px 7px hsl(var(--h) var(--s) var(--l) / 0.32);
+  }
+  .project.in_progress .cat {
+    font-size: 1.2em;
+  }
+  .project.in_progress .name {
+    font-weight: 500;
+  }
+
+  .row-meta {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex: 0 0 auto;
+    margin-top: 6px;
+    padding-top: 7px;
+    border-top: 1px solid hsl(var(--h) var(--s) var(--l) / 0.45);
+  }
+
+  .progress {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+  .track {
+    flex: 1 1 auto;
+    height: 6px;
+    border-radius: 100px;
+    background: hsl(var(--h) var(--s) var(--l) / 0.3);
+    overflow: hidden;
+  }
+  .fill {
+    height: 100%;
+    border-radius: 100px;
+    background: var(--solid);
+    transition: width 0.3s cubic-bezier(0.2, 0.7, 0.3, 1);
+  }
+  .count {
+    font-size: 0.72em;
+    color: hsl(0 0% 32%);
+    white-space: nowrap;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .acts {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    margin-left: auto;
+    flex-shrink: 0;
+  }
+  .act {
+    background: none;
+    border: 0;
+    padding: 3px;
+    cursor: pointer;
+    line-height: 0;
+    font-size: 0.8em;
+    border-radius: 4px;
+    opacity: 0.5;
+    transition: opacity 0.15s ease;
+    color: var(--action-colour);
+  }
+  .project:hover .act,
+  .project:focus-within .act {
+    opacity: 1;
+  }
+  .act:hover {
+    background: hsl(var(--h) var(--s) var(--l) / 0.4);
+  }
+  .act svg {
+    display: block;
+  }
+  .chev svg {
+    transition: transform 0.25s ease;
+  }
+  .project.open .chev svg {
+    transform: rotate(180deg);
+  }
+
+  /* small cards have no meta row, so their chevron rides in the main row and
+     only appears when you're pointing at them */
+  .chev-small {
+    opacity: 0;
+    margin-left: auto;
+  }
+  .project:hover .chev-small,
+  .project:focus-within .chev-small,
+  .project.open .chev-small {
+    opacity: 0.65;
+  }
+
+  /* --- done: harvested. hue kept, settled, marked. ------------------------ */
+
+  .project.done {
+    --tint-strength: 24%;
+    --tint: color-mix(in srgb, hsl(var(--h) var(--s) var(--l)) var(--tint-strength), transparent);
+    --edge: hsl(var(--h) var(--s) var(--l) / 0.45);
+    --done-ink: hsl(0 0% 34%);
+    /* Translucent so the card's tint bleeds through and the disc lands on a
+       grey of that card's own hue. The lightness is lower than the composite
+       it produces, since half of what you see is the tint behind it. */
+    --done-mark: hsl(0 0% 52% / 0.5);
+    /* The tint composited over the white panel. Sharing --tint-strength with
+       --tint above is what keeps this the card's exact background colour, so
+       the tick reads as cut out of the disc rather than drawn onto it. */
+    --done-glyph: color-mix(in srgb, hsl(var(--h) var(--s) var(--l)) var(--tint-strength), hsl(0 0% 100%));
+    box-shadow: inset 0 1px 3px hsl(var(--h) var(--s) var(--l) / 0.3);
+  }
+  .project.done .name {
+    color: var(--done-ink);
+  }
+  /* The same circle and drawn-in tick as the app's DoneTick
+     (shared/controls/DoneTick.css), in grey. It stands where the category
+     emoji sits on every other card, so a finished project is the one tile on
+     the shelf with no colour in its icon slot. */
+  .done-tick {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--done-mark);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .done-tick svg {
+    stroke: var(--done-glyph);
+  }
+  .done-tick svg path {
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+    animation: draw-done-tick 0.3s ease forwards;
+  }
+  @keyframes draw-done-tick {
+    to {
+      stroke-dashoffset: 0;
+    }
+  }
+
+  /* --- the printer: subtasks feed out of the card's bottom edge ----------- */
+
+  /* Starts below the card's border box, never on top of it: the bottom border
+     has to stay unbroken or it reads as a sheet laid over the card rather than
+     one coming out from under it. An absolute box resolves its offsets against
+     the padding box, so the border width has to be added back on.
+
+     The sides are inset to the straight run of the bottom border — the corners
+     have already curved away by then, and a sheet the full width of the card
+     would emerge past the ends of the slot. */
+  .paper-slot {
+    position: absolute;
+    top: calc(100% + var(--card-border));
+    left: calc(var(--radius) - var(--card-border));
+    right: calc(var(--radius) - var(--card-border));
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows 0.4s cubic-bezier(0.22, 0.68, 0.3, 1);
+    pointer-events: none;
+  }
+  .project.open .paper-slot {
+    grid-template-rows: 1fr;
+    pointer-events: auto;
+  }
+
+  /* padding gives the sheet's shadow somewhere to land; the negative margin
+     cancels it so the sheet stays the width of the card. the top edge stays
+     hard so the sheet is clipped exactly at the card. */
+  .paper-clip {
+    overflow: hidden;
+    min-height: 0;
+    padding: 0 20px 24px;
+    margin: 0 -20px -24px;
+  }
+
+  /* the sheet is parked a full height up behind the card while closed, so the
+     top edge of the slot has to clip hard; the negative insets leave the sides
+     and bottom open for the sheet's shadow */
+  .paper-slot {
+    clip-path: inset(0 -40px -40px -40px);
+  }
+
+  .paper {
+    --tear: 5px;
+    background: hsl(40 30% 99%);
+    border: 1px solid hsl(var(--h) var(--s) var(--l) / 0.5);
+    border-top: 0;
+    border-radius: 0 0 3px 3px;
+    padding: 10px 12px calc(var(--tear) + 12px);
+    transform: translateY(-100%);
+    transition: transform 0.4s cubic-bezier(0.22, 0.68, 0.3, 1);
+    filter: drop-shadow(0 5px 9px hsl(var(--h) 30% 30% / 0.26));
+    /* the sheet's leading edge stays shaded, as though still under the lip */
+    box-shadow: inset 0 7px 7px -7px hsl(var(--h) 45% 25% / 0.4);
+    /* torn-off bottom edge */
+    mask:
+      linear-gradient(#000 0 0) top / 100% calc(100% - var(--tear)) no-repeat,
+      radial-gradient(
+          circle var(--tear) at var(--tear) 0,
+          transparent 98%,
+          #000 100%
+        )
+        bottom left / calc(var(--tear) * 2) var(--tear) repeat-x;
+  }
+  .project.open .paper {
+    transform: translateY(0);
+  }
+
+  .subtasks {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .subtask {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    font-size: 0.86em;
+  }
+  .stext {
+    min-width: 0;
+  }
+  .box {
+    width: 1.15em;
+    height: 1.15em;
+    /* centres the box on the first line, so it stays put when text wraps */
+    margin-top: 0.18em;
+    flex-shrink: 0;
+    border: 2px solid var(--body-colour-mid);
+    border-radius: 3px;
+    display: grid;
+    place-items: center;
+    background: none;
+    cursor: pointer;
+    padding: 0;
+  }
+  .subtask.done .box {
+    background: var(--solid);
+    border-color: var(--solid);
+  }
+  .subtask.done .stext {
+    text-decoration: line-through;
+    opacity: 0.6;
+  }
+  .addsub {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 8px;
+    font-size: 0.8em;
+    color: var(--action-colour);
+    background: none;
+    border: 0;
+    padding: 2px 0;
+    cursor: pointer;
+    font-family: inherit;
+  }
+  .paper .empty {
+    margin: 0 0 2px;
+    font-size: 0.82em;
+    color: var(--body-colour-mid);
+  }
+
+  @media (max-width: 620px) {
+    .decisions li {
+      grid-template-columns: 1fr;
+      gap: 2px;
+    }
+    .project.in_progress {
+      min-width: 0;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    * {
+      transition-duration: 0.01ms !important;
+      animation-duration: 0.01ms !important;
+    }
+    .paper {
+      transform: none;
+    }
+  }
+</style>
+
+<div class="page">
+  <header>
+    <p class="eyebrow">Projects tab · layout study</p>
+    <h1>Projects Shelf</h1>
+    <p>
+      Vitality carried by saturation, size and a second row. Small cards pair
+      into stacks so the shelf packs flush, and subtasks feed out of the card
+      on a sheet of paper instead of pushing the row apart.
+    </p>
+  </header>
+
+  <section>
+    <p class="eyebrow">At app scale · interactive</p>
+    <div class="panel">
+      <div class="projects-container">
+        <div class="projects-filter">
+          <button class="fcat" aria-label="Filter by shopping">🛒</button>
+          <button class="fcat" aria-label="Filter by journal">📓</button>
+          <button class="fcat" aria-label="Filter by writing">🖊️</button>
+          <button class="fcat" aria-label="Filter by code">👩‍💻</button>
+          <button class="fcat" aria-label="Filter by cleaning">🧹</button>
+          <button class="fcat" aria-label="Filter by sewing">🪡</button>
+          <button class="fcat" aria-label="Filter by knitting">🧶</button>
+          <button class="fcat" aria-label="Filter by moving">🚚</button>
+          <button class="fclear" aria-label="Clear filters">✕</button>
+        </div>
+        <ul class="projects" id="shelf"></ul>
+      </div>
+      <p class="hint">
+        Chevron feeds the paper out · emoji cycles ready → in progress → done ·
+        esc closes
+      </p>
+    </div>
+  </section>
+
+  <section>
+    <p class="eyebrow">How the packing works</p>
+    <ul class="decisions">
+      <li>
+        <dfn>Geometry</dfn>
+        <span
+          ><b>A big card is exactly two small cards plus one gap.</b>
+          <code>--big-h: calc(var(--small-h) * 2 + var(--shelf-gap))</code>.
+          Everything else follows from that one line: any row of the shelf is
+          either one big-card-height or one small-card-height, so rows come out
+          flush instead of ragged.</span
+        >
+      </li>
+      <li>
+        <dfn>Stacks</dfn>
+        <span
+          ><b>Small cards are paired into a wrapper before they hit the
+          shelf.</b>
+          The wrapper is a single flex item holding two cards in a column, so
+          the browser sees one big-card-shaped thing. No grid, no masonry
+          library — the flex-wrap shelf is untouched.</span
+        >
+      </li>
+      <li>
+        <dfn>Pairing rule</dfn>
+        <span
+          ><b>Walk the list, buffer the small ones, emit a stack every second
+          one.</b>
+          Big cards pass straight through. A leftover odd one sits alone. The
+          list order is preserved apart from a small card occasionally waiting
+          for a partner.</span
+        >
+      </li>
+      <li>
+        <dfn>The paper</dfn>
+        <span
+          ><b>Absolutely positioned under the card, so it is out of flow.</b>
+          The shelf cannot reflow when you open something. The slot animates
+          <code>grid-template-rows: 0fr → 1fr</code> while the sheet inside
+          slides from <code>translateY(-100%)</code> — the two together read as
+          feeding out of a slot rather than unfolding.</span
+        >
+      </li>
+      <li>
+        <dfn>Small cards too</dfn>
+        <span
+          ><b>A chevron fades in on hover.</b> Otherwise a ready project with
+          subtasks would have no way to open, since only living cards carry a
+          meta row.</span
+        >
+      </li>
+    </ul>
+  </section>
+</div>
+
+<script>
+  const PROJECTS = [
+    { id: "p1", cat: "🪡", c: "203 85% 77%", name: "Take up the linen trousers", status: "ready",
+      subtasks: [ ["Unpick the old hem", false], ["Press and measure against the good pair", false], ["Stitch and finish", false] ] },
+    { id: "p2", cat: "👩‍💻", c: "93 90% 45%", name: "Rewrite the projects tab", status: "in_progress",
+      subtasks: [ ["Sketch the card states", true], ["Pick the saturation ladder", true], ["Build the stack packing", true], ["Printer-feed the subtasks", false], ["Kill the status sort", false], ["Port the drag handles", false], ["Screenshot for the PR", false] ] },
+    { id: "p3", cat: "🛒", c: "197 36% 70%", name: "Restock pantry staples", status: "ready", subtasks: [] },
+    { id: "p4", cat: "🚚", c: "352 90% 45%", name: "Book the removalists", status: "done",
+      subtasks: [ ["Get three quotes", true], ["Confirm the date", true] ] },
+    { id: "p5", cat: "🖊️", c: "209 79% 48%", name: "Write up the Kyoto trip", status: "in_progress", subtasks: [] },
+    { id: "p6", cat: "📓", c: "0 0% 49%", name: "Set up 2027 bullet journal", status: "ready", subtasks: [] },
+    { id: "p7", cat: "🧹", c: "45 100% 76%", name: "Clear out the spare room", status: "in_progress",
+      subtasks: [ ["Empty the wardrobe", true], ["Take books to the op shop", true], ["Sort the boxes under the bed", false], ["Patch and sand the wall where the old shelf brackets came out", false], ["Shift the desk in", false], ["Hang the blind", false] ] },
+    { id: "p8", cat: "🧶", c: "339 78% 67%", name: "Block the shawl", status: "done", subtasks: [] },
+    { id: "p9", cat: "🧶", c: "339 78% 67%", name: "Finish the green cardigan", status: "in_progress",
+      subtasks: [ ["Back panel", true], ["Left front", true], ["Right front", true], ["Sleeves", true], ["Seam the shoulders", true], ["Pick up the button band", true], ["Sew on buttons", false], ["Weave in ends", false] ] },
+    { id: "p10", cat: "🛒", c: "197 36% 70%", name: "Replace the kettle", status: "ready", subtasks: [] },
+    { id: "p11", cat: "👩‍💻", c: "93 90% 45%", name: "Migrate the Firebase rules", status: "done",
+      subtasks: [ ["Draft the new rules", true], ["Test against staging", true], ["Deploy", true] ] },
+    { id: "p12", cat: "🧹", c: "45 100% 76%", name: "Descale the coffee machine", status: "ready", subtasks: [] },
+  ];
+
+  const CYCLE = { ready: "in_progress", in_progress: "done", done: "ready" };
+  const shelf = document.getElementById("shelf");
+  let openId = null;
+
+  const icon = {
+    end: '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11"/><path d="m7 11 5 5 5-5"/><path d="M5 20h14"/></svg>',
+    chev: '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m5 9 7 7 7-7"/></svg>',
+    /* the app's own TickIcon geometry, so the drawn-in stroke matches */
+    doneTick:
+      '<span class="done-tick"><svg viewBox="0 0 20 20" width="14" stroke-width="3" stroke-linecap="round" fill="none"><path d="M2,12 L8,18 18,3" pathLength="1"/></svg></span>',
+    tickSm: '<svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"><path d="m4 12 6 6L20 6"/></svg>',
+  };
+
+  const esc = (s) => s.replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+
+  /* pair small cards into stacks so every shelf item is one of two heights */
+  function pack(projects) {
+    const out = [];
+    let pending = [];
+    for (const p of projects) {
+      if (p.status === "in_progress") {
+        out.push([p]);
+      } else {
+        pending.push(p);
+        if (pending.length === 2) {
+          out.push(pending);
+          pending = [];
+        }
+      }
+    }
+    if (pending.length) out.push(pending);
+    return out;
+  }
+
+  function paperHTML(p) {
+    const rows = p.subtasks.length
+      ? `<ul class="subtasks">${p.subtasks
+          .map(
+            ([text, done], i) => `
+        <li class="subtask ${done ? "done" : ""}">
+          <button class="box" data-sub="${i}" aria-label="${esc(text)} — ${done ? "done" : "not done"}">${done ? icon.tickSm : ""}</button>
+          <span class="stext">${esc(text)}</span>
+        </li>`
+          )
+          .join("")}</ul>`
+      : `<p class="empty">No subtasks yet.</p>`;
+    return `<div class="paper-slot"><div class="paper-clip"><div class="paper">
+        ${rows}<button class="addsub">+ Add subtask</button>
+      </div></div></div>`;
+  }
+
+  function cardHTML(p) {
+    const [h, s, l] = p.c.split(" ");
+    const done = p.subtasks.filter(([, d]) => d).length;
+    const total = p.subtasks.length;
+    const open = openId === p.id ? " open" : "";
+
+    const acts = `<div class="acts">
+        <button class="act" aria-label="Copy to today">🔗</button>
+        <button class="act" aria-label="Move to end">${icon.end}</button>
+        <button class="act chev" data-chev aria-label="Show subtasks">${icon.chev}</button>
+      </div>`;
+
+    const meta =
+      p.status === "in_progress"
+        ? `<div class="row-meta">
+             ${total ? `<div class="progress">
+               <div class="track"><div class="fill" style="width:${Math.round((done / total) * 100)}%"></div></div>
+               <span class="count">${done} of ${total}</span>
+             </div>` : ""}
+             ${acts}
+           </div>`
+        : "";
+
+    // a done project trades its category emoji for the tick; the card's tint
+    // still carries the category
+    const marker = p.status === "done" ? icon.doneTick : p.cat;
+    const smallChev =
+      p.status !== "in_progress"
+        ? `<button class="act chev chev-small" data-chev aria-label="Show subtasks">${icon.chev}</button>`
+        : "";
+
+    return `<li class="project ${p.status}${open}" data-id="${p.id}" style="--h:${h};--s:${s};--l:${l}">
+        <div class="row-main">
+          <button class="cat" data-cat aria-label="${esc(p.name)} — ${p.status === "done" ? "done, " : ""}change status">${marker}</button>
+          <span class="name">${esc(p.name)}</span>
+          ${smallChev}
+        </div>
+        ${meta}
+        ${paperHTML(p)}
+      </li>`;
+  }
+
+  function render() {
+    shelf.innerHTML = pack(PROJECTS)
+      .map((group) =>
+        group.length === 1 && group[0].status === "in_progress"
+          ? cardHTML(group[0])
+          : `<li class="stack"><ul style="display:contents">${group.map(cardHTML).join("")}</ul></li>`
+      )
+      .join("");
+    fitCardsToSheets();
+  }
+
+  /* A card is sized by its name, but the sheet it feeds out is sized by its
+     subtasks — so a short name with wordy subtasks gets a tall, narrow sheet.
+     The sheet is in the DOM whether or not it is open, so its unwrapped width
+     can be measured and given back to the card as a minimum. */
+  function fitCardsToSheets() {
+    const entries = [...shelf.querySelectorAll(".project")]
+      .map((card) => ({ card, paper: card.querySelector(".subtasks") && card.querySelector(".paper") }))
+      .filter((e) => e.paper);
+
+    // Three passes, so the browser flushes layout twice rather than once per
+    // card: unwrap every sheet, then read every sheet, then write every width.
+    entries.forEach(({ paper }) => (paper.style.width = "max-content"));
+
+    entries.forEach((e) => {
+      const style = getComputedStyle(e.card);
+      const radius = parseFloat(style.borderTopLeftRadius);
+      e.needed = Math.min(
+        e.paper.getBoundingClientRect().width + 2 * radius,
+        parseFloat(style.maxWidth)
+      );
+      e.current = e.card.getBoundingClientRect().width;
+    });
+
+    entries.forEach((e) => {
+      e.paper.style.width = "";
+      if (e.needed > e.current) e.card.style.minWidth = `${Math.ceil(e.needed)}px`;
+    });
+  }
+
+  /* Opening and closing only ever toggles a class. Rebuilding the markup would
+     create the sheet already open, and a transition needs a value to change on
+     an element that is already in the document. */
+  function setOpen(id) {
+    openId = id;
+    shelf.querySelectorAll(".project").forEach((el) => {
+      const isOpen = el.dataset.id === openId;
+      el.classList.toggle("open", isOpen);
+      el.querySelectorAll("[data-chev]").forEach((c) =>
+        c.setAttribute("aria-label", isOpen ? "Hide subtasks" : "Show subtasks")
+      );
+    });
+  }
+
+  /* Ticking a subtask patches the card in place, so the sheet currently fed
+     out is not thrown away underneath the pointer. */
+  function refreshCard(project) {
+    const card = shelf.querySelector(`.project[data-id="${project.id}"]`);
+    if (!card) return;
+    const total = project.subtasks.length;
+    const done = project.subtasks.filter(([, d]) => d).length;
+
+    card.querySelectorAll(".subtask").forEach((li, i) => {
+      const [text, isDone] = project.subtasks[i];
+      li.classList.toggle("done", isDone);
+      const box = li.querySelector(".box");
+      box.innerHTML = isDone ? icon.tickSm : "";
+      box.setAttribute("aria-label", `${text} — ${isDone ? "done" : "not done"}`);
+    });
+
+    const fill = card.querySelector(".fill");
+    if (fill && total) fill.style.width = `${Math.round((done / total) * 100)}%`;
+    const count = card.querySelector(".count");
+    if (count) count.textContent = `${done} of ${total}`;
+  }
+
+  /* FLIP so re-packing after a status change reads as movement, not a jump */
+  function rerenderAnimated() {
+    const before = new Map();
+    shelf.querySelectorAll(".project").forEach((el) =>
+      before.set(el.dataset.id, el.getBoundingClientRect())
+    );
+    render();
+    if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    shelf.querySelectorAll(".project").forEach((el) => {
+      const a = before.get(el.dataset.id);
+      if (!a) return;
+      const b = el.getBoundingClientRect();
+      const dx = a.left - b.left;
+      const dy = a.top - b.top;
+      if (!dx && !dy) return;
+      el.animate(
+        [{ transform: `translate(${dx}px, ${dy}px)` }, { transform: "none" }],
+        { duration: 320, easing: "cubic-bezier(.2,.7,.3,1)" }
+      );
+    });
+  }
+
+  shelf.addEventListener("click", (e) => {
+    const card = e.target.closest(".project");
+    if (!card) return;
+    const project = PROJECTS.find((p) => p.id === card.dataset.id);
+
+    if (e.target.closest("[data-cat]")) {
+      project.status = CYCLE[project.status];
+      if (openId === project.id) openId = null;
+      rerenderAnimated();
+      return;
+    }
+    if (e.target.closest("[data-chev]")) {
+      setOpen(openId === project.id ? null : project.id);
+      return;
+    }
+    const box = e.target.closest("[data-sub]");
+    if (box) {
+      const i = Number(box.dataset.sub);
+      project.subtasks[i][1] = !project.subtasks[i][1];
+      refreshCard(project);
+    }
+  });
+
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && openId) setOpen(null);
+  });
+  document.addEventListener("click", (e) => {
+    if (openId && !e.target.closest(".project")) setOpen(null);
+  });
+
+  render();
+</script>
