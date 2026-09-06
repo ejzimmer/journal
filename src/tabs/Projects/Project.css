@@ -1,7 +1,6 @@
 .project {
   --project-colour-light: color(from var(--project-colour) srgb r g b / 0.2);
   flex-shrink: 0;
-  border: 1px solid var(--border-colour);
   list-style-type: none;
   background: var(--project-colour-light);
   font-size: 18px;
@@ -38,6 +37,9 @@
     padding-inline: 10px;
     padding-block: 5px;
     background: var(--project-colour);
+    /* Was .project's border - moved here so the card and the popout below
+       it are two independent bordered boxes rather than one shared box. */
+    border: 1px solid var(--border-colour);
   }
 
   button path {
@@ -91,16 +93,30 @@
     max-width: 420px;
 
     &.visible {
-      --popout-shadow: color(from var(--project-colour) srgb r g b / 0.5);
+      /* A shadow needs to be darker than its surface to read as a shadow at
+         all - many categories are pale enough (pastel, ~50% alpha over
+         white) that the plain project colour never gets there, however
+         opaque you make it. Mixing toward black guarantees a properly dark
+         tone while keeping each category's own hue. */
+      --popout-shadow: color-mix(
+        in srgb,
+        color(from var(--project-colour) srgb r g b / 1) 60%,
+        black 40%
+      );
 
       opacity: 1;
       margin-block-end: 12px;
       overflow: visible;
-      /* Plain, not tinted: paper, not more card. The shadow below stays
-         tinted to the project colour so it still reads as attached to this
-         particular card. */
+      /* Plain, not tinted: paper, not more card. The shadow stays tinted to
+         the project colour so it still reads as attached to this
+         particular card; the border matches the card's own, not the
+         project colour, and single pixel like the card's. No top border,
+         since the card's own bottom border already draws that line - two
+         would double up. */
       background: white;
-      box-shadow: inset 0 6px 6px -6px var(--popout-shadow);
+      border: 1px solid var(--border-colour);
+      border-top: none;
+      box-shadow: inset 0 6px 8px -4px var(--popout-shadow);
     }
   }
 
