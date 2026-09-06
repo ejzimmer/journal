@@ -10,10 +10,9 @@
     background:
       linear-gradient(45deg, white, transparent), var(--project-colour-light);
 
-    /* Scoped to the header rather than the whole card: with the popout now
-       its own white sheet, an outline on .project would trace the full
-       perimeter and frame the popout in a saturated colour it isn't
-       supposed to have. */
+    /* .project also wraps the popout below the header, so this outline is
+       scoped to .project-details to keep the saturated colour around just
+       the header. */
     .project-details {
       outline: 2px solid color(from var(--project-colour) srgb r g b / 1);
       outline-offset: -2px;
@@ -37,8 +36,9 @@
     padding-inline: 10px;
     padding-block: 5px;
     background: var(--project-colour);
-    /* Was .project's border - moved here so the card and the popout below
-       it are two independent bordered boxes rather than one shared box. */
+    /* .project-details and .subtasks-section are each their own bordered
+       box, so the header and the popout below it read as two separate
+       surfaces rather than one shared one. */
     border: 1px solid var(--border-colour);
   }
 
@@ -86,18 +86,14 @@
     transition:
       height 0.2s ease-out,
       opacity 0.1s 0.2s linear;
-    /* Caps how far a long subtask can stretch the card, matching the
-       existing shrink-to-fit sizing (nothing else changes it): a subtask
-       line longer than this wraps in place instead of continuing to widen
-       the card. */
+    /* The card already shrinks to fit its widest child (plain box layout,
+       no JS). This caps that at 420px, so a very long subtask wraps
+       instead of the card growing further. */
     max-width: 420px;
 
     &.visible {
-      /* A shadow needs to be darker than its surface to read as a shadow at
-         all - many categories are pale enough (pastel, ~50% alpha over
-         white) that the plain project colour never gets there, however
-         opaque you make it. Mixing toward black guarantees a properly dark
-         tone while keeping each category's own hue. */
+      /* Mixed toward black so the shadow stays dark enough to read against
+         white even for the palest category colours. */
       --popout-shadow: color-mix(
         in srgb,
         color(from var(--project-colour) srgb r g b / 1) 60%,
@@ -107,12 +103,11 @@
       opacity: 1;
       margin-block-end: 12px;
       overflow: visible;
-      /* Plain, not tinted: paper, not more card. The shadow stays tinted to
-         the project colour so it still reads as attached to this
-         particular card; the border matches the card's own, not the
-         project colour, and single pixel like the card's. No top border,
-         since the card's own bottom border already draws that line - two
-         would double up. */
+      /* Plain white, not tinted: paper, not more card. The shadow stays
+         tinted to the project colour so the sheet still reads as
+         belonging to this card. The border matches the card's own colour
+         and width; there's no top edge because the card's own bottom
+         border already draws that line. */
       background: white;
       border: 1px solid var(--border-colour);
       border-top: none;
