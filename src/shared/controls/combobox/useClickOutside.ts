@@ -19,9 +19,6 @@ export function useClickOutside({
       }
     }
 
-    // mousedown, not click: the press that opens the element lands before this
-    // listener is attached, but the click it produces does not, so listening
-    // for click closes the element on the very interaction that opened it.
     if (shouldListen) window.addEventListener("mousedown", handler)
 
     return () => {

@@ -138,9 +138,6 @@ export function TaskList({
                   }
                   const newLabel = labels[0]
                   if (newLabel) {
-                    // A list carries a single label, and removeLabel's write
-                    // isn't reflected in `list` yet, so add against a copy with
-                    // the old label already dropped.
                     addLabel(newLabel, { ...list, labelIds: [] })
                   }
                   setEditingLabel(false)
