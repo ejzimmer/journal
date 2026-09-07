@@ -133,9 +133,8 @@ describe("TaskList label", () => {
     await user.click(screen.getByRole("button", { name: "Change a11y label" }))
     await user.click(screen.getByRole("option", { name: "urgent" }))
 
-    expect(storageContext.changeLabel).toHaveBeenCalledWith(
-      a11yLabel.id,
-      { value: urgentLabel.value, colour: urgentLabel.colour },
+    expect(storageContext.changeLabels).toHaveBeenCalledWith(
+      [{ value: urgentLabel.value, colour: urgentLabel.colour }],
       labelledList,
     )
     expect(storageContext.removeLabel).not.toHaveBeenCalled()

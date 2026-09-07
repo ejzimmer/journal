@@ -363,17 +363,13 @@ describe("WorkStorageContext labels", () => {
     })
   })
 
-  describe("changeLabel", () => {
-    it("replaces the entity's labelIds with the new label's id", () => {
+  describe("changeLabels", () => {
+    it("replaces the entity's labelIds with the given labels", () => {
       const list = makeList("list-1", { labelIds: [a11yLabel.id] })
       const firebaseContext = createFirebaseContext({ [list.id]: list }, storedLabels)
       const workStorage = getWorkStorage(firebaseContext)
 
-      workStorage?.changeLabel(
-        a11yLabel.id,
-        { value: "urgent", colour: "yellow" },
-        list,
-      )
+      workStorage?.changeLabels([{ value: "urgent", colour: "yellow" }], list)
 
       expect(firebaseContext.updateItem).toHaveBeenCalledWith("work", {
         ...list,
@@ -381,36 +377,32 @@ describe("WorkStorageContext labels", () => {
       })
     })
 
-    it("leaves the entity's other labels in place", () => {
-      const task = makeTask("list-1", {
-        labelIds: [a11yLabel.id, urgentLabel.id],
-      })
+    it("keeps every label it is given, not just the first", () => {
+      const task = makeTask("list-1", { labelIds: [a11yLabel.id] })
       const list = makeList("list-1", { items: { [task.id]: task } })
       const firebaseContext = createFirebaseContext({ [list.id]: list }, storedLabels)
       const workStorage = getWorkStorage(firebaseContext)
 
-      workStorage?.changeLabel(
-        a11yLabel.id,
-        { value: "blocked", colour: "red" },
+      workStorage?.changeLabels(
+        [
+          { value: "a11y", colour: "blue" },
+          { value: "urgent", colour: "yellow" },
+        ],
         task,
       )
 
       expect(firebaseContext.updateItem).toHaveBeenCalledWith(
         "work/list-1/items",
-        { ...task, labelIds: ["new-id", urgentLabel.id] },
+        { ...task, labelIds: [a11yLabel.id, urgentLabel.id] },
       )
     })
 
-    it("creates the new label when it doesn't exist yet", () => {
+    it("creates a label that doesn't exist yet", () => {
       const list = makeList("list-1", { labelIds: [a11yLabel.id] })
       const firebaseContext = createFirebaseContext({ [list.id]: list }, storedLabels)
       const workStorage = getWorkStorage(firebaseContext)
 
-      workStorage?.changeLabel(
-        a11yLabel.id,
-        { value: "blocked", colour: "red" },
-        list,
-      )
+      workStorage?.changeLabels([{ value: "blocked", colour: "red" }], list)
 
       expect(firebaseContext.addItem).toHaveBeenCalledWith(LABELS_KEY, {
         value: "blocked",
@@ -418,16 +410,12 @@ describe("WorkStorageContext labels", () => {
       })
     })
 
-    it("marks the replaced label unused once nothing else references it", () => {
+    it("marks a dropped label unused once nothing else references it", () => {
       const list = makeList("list-1", { labelIds: [a11yLabel.id] })
       const firebaseContext = createFirebaseContext({ [list.id]: list }, storedLabels)
       const workStorage = getWorkStorage(firebaseContext)
 
-      workStorage?.changeLabel(
-        a11yLabel.id,
-        { value: "urgent", colour: "yellow" },
-        list,
-      )
+      workStorage?.changeLabels([{ value: "urgent", colour: "yellow" }], list)
 
       expect(firebaseContext.updateItem).toHaveBeenCalledWith(LABELS_KEY, {
         ...a11yLabel,
@@ -435,7 +423,7 @@ describe("WorkStorageContext labels", () => {
       })
     })
 
-    it("leaves the replaced label alone while another entity still uses it", () => {
+    it("leaves a dropped label alone while another entity still uses it", () => {
       const task = makeTask("list-1", { labelIds: [a11yLabel.id] })
       const list = makeList("list-1", {
         labelIds: [a11yLabel.id],
@@ -444,11 +432,7 @@ describe("WorkStorageContext labels", () => {
       const firebaseContext = createFirebaseContext({ [list.id]: list }, storedLabels)
       const workStorage = getWorkStorage(firebaseContext)
 
-      workStorage?.changeLabel(
-        a11yLabel.id,
-        { value: "urgent", colour: "yellow" },
-        list,
-      )
+      workStorage?.changeLabels([{ value: "urgent", colour: "yellow" }], list)
 
       expect(firebaseContext.updateItem).not.toHaveBeenCalledWith(
         LABELS_KEY,
@@ -456,20 +440,44 @@ describe("WorkStorageContext labels", () => {
       )
     })
 
-    it("does not mark the label unused when it is unchanged", () => {
+    it("does not mark a label unused when it is kept", () => {
       const list = makeList("list-1", { labelIds: [urgentLabel.id] })
       const firebaseContext = createFirebaseContext({ [list.id]: list }, storedLabels)
       const workStorage = getWorkStorage(firebaseContext)
 
-      workStorage?.changeLabel(
-        urgentLabel.id,
-        { value: "urgent", colour: "yellow" },
-        list,
-      )
+      workStorage?.changeLabels([{ value: "urgent", colour: "yellow" }], list)
 
       expect(firebaseContext.updateItem).not.toHaveBeenCalledWith(
         LABELS_KEY,
         expect.objectContaining({ lastRemoved: expect.any(Number) }),
+      )
+    })
+  })
+
+  describe("updateList", () => {
+    it("marks a label unused when the list stops referencing it", () => {
+      const list = makeList("list-1", { labelIds: [a11yLabel.id] })
+      const firebaseContext = createFirebaseContext({ [list.id]: list }, storedLabels)
+      const workStorage = getWorkStorage(firebaseContext)
+
+      workStorage?.updateList({ ...list, labelIds: [] })
+
+      expect(firebaseContext.updateItem).toHaveBeenCalledWith(LABELS_KEY, {
+        ...a11yLabel,
+        lastRemoved: expect.any(Number),
+      })
+    })
+
+    it("leaves labels alone when only the description changes", () => {
+      const list = makeList("list-1", { labelIds: [a11yLabel.id] })
+      const firebaseContext = createFirebaseContext({ [list.id]: list }, storedLabels)
+      const workStorage = getWorkStorage(firebaseContext)
+
+      workStorage?.updateList({ ...list, description: "Renamed" })
+
+      expect(firebaseContext.updateItem).not.toHaveBeenCalledWith(
+        LABELS_KEY,
+        expect.anything(),
       )
     })
   })
