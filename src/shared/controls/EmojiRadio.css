@@ -1,0 +1,40 @@
+.emoji-radio {
+  font-size: 1.2em;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.6em;
+  aspect-ratio: 1;
+  border-radius: 6px;
+  filter: grayscale(100%);
+  opacity: 0.4;
+  transition:
+    filter 0.2s,
+    opacity 0.2s,
+    transform 0.2s;
+
+  &:hover {
+    filter: grayscale(50%);
+    opacity: 0.75;
+  }
+
+  &.checked {
+    filter: none;
+    opacity: 1;
+    text-shadow: 1px 1px hsl(0 0 0/0.1);
+    transform: scale(1.1);
+  }
+
+  &:has(input:focus-visible) {
+    outline: 2px solid var(--body-colour);
+    outline-offset: 1px;
+  }
+
+  input {
+    width: 0;
+    height: 0;
+    overflow: hidden;
+    position: fixed;
+  }
+}

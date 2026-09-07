@@ -25,3 +25,11 @@ A code comment should explain the code that's actually there - never an alternat
 That narrative belongs in the PR description or commit message, where "here's what I tried and why I changed direction" actually has the surrounding context to land in. In the code itself, only document a non-obvious property of the code as it stands - e.g. "this edge is stable regardless of the box's height" is fine; "this doesn't need the max-height reset the earlier version had" is not, because the earlier version is gone and nobody reading this file will ever see it.
 
 Before finishing any change, reread new comments as if you have no memory of the debugging session that produced them - if a comment only makes sense to someone who watched you write and discard code, cut it or rewrite it to describe only what's actually there.
+
+## Function names have to mean something
+
+A function's name is the only part of it most readers will ever see. It should say what the function does, or what it hands back, specifically enough that someone who never opens the body can predict both.
+
+`apply` almost never does that. Apply what, to what? It fills the verb slot without committing to anything, and `handle`, `process`, `manage` and `do` are the same. If a name only makes sense once you've read the argument list or the body, it isn't naming the function - it's just occupying the space where the name goes.
+
+Name it after what it returns (`parentEmptiedBy`, `bookStatusFields`) or with the specific verb for what it does (`removeFromList`, `convertFromBookStatus`). Watch the verb: `resolveParentPath` sounds like it works a path out and hands it back, so the author or series it quietly creates on the way is a surprise. If no specific verb fits, that's usually the function doing more than one thing, and the fix is to split it rather than to reach for a vaguer word.

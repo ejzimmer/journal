@@ -1,25 +1,21 @@
 import { GameDetails, MediaList } from "../types"
-
 import { XIcon } from "../../../shared/icons/X"
-import { EditableText } from "../../../shared/controls/EditableText"
 import { Checkbox } from "../../../shared/controls/Checkbox"
-
-import "./Game.css"
+import { EditGameForm } from "./EditGameForm"
 import { useMediaStorage } from "../MediaStorageContext"
 
-export function Game({ game, list }: { game: GameDetails; list: MediaList }) {
-  const { updateItem, removeFromList } = useMediaStorage()
+import "./Game.css"
 
-  const updateTitle = (title: string) => {
-    updateItem(list, { ...game, title })
-  }
+type GameProps = {
+  game: GameDetails
+  list: MediaList
+}
+
+export function Game({ game, list }: GameProps) {
+  const { updateItem, removeFromList } = useMediaStorage()
 
   const updateStatus = (status: GameDetails["status"]) => {
     updateItem(list, { ...game, status })
-  }
-
-  const deleteGame = () => {
-    removeFromList(list, game)
   }
 
   return (
@@ -30,8 +26,9 @@ export function Game({ game, list }: { game: GameDetails; list: MediaList }) {
         aria-label="is played"
       />
       <div className={`details ${game.status}`}>
-        <EditableText label="title" value={game.title} onChange={updateTitle} />
+        <EditGameForm game={game} list={list} />
         <button
+          className="status"
           aria-label="update status to in progress"
           onClick={() =>
             updateStatus(game.status === "in_progress" ? null : "in_progress")
@@ -40,7 +37,10 @@ export function Game({ game, list }: { game: GameDetails; list: MediaList }) {
           🎮
         </button>
       </div>
-      <button className="emoji ghost" onClick={deleteGame}>
+      <button
+        className="emoji ghost"
+        onClick={() => removeFromList(list, game)}
+      >
         <XIcon width="16px" />
       </button>
     </li>

@@ -1,10 +1,10 @@
 import { BookDetails, MediaList } from "../types"
-
 import { EditableText } from "../../../shared/controls/EditableText"
+import { Checkbox } from "../../../shared/controls/Checkbox"
+import { EditBookForm } from "./EditBookForm"
+import { useMediaStorage } from "../MediaStorageContext"
 
 import "./Book.css"
-import { Checkbox } from "../../../shared/controls/Checkbox"
-import { useMediaStorage } from "../MediaStorageContext"
 
 type BookProps = {
   book: BookDetails
@@ -16,11 +16,7 @@ type BookProps = {
 }
 
 export function Book({ book, list, author }: BookProps) {
-  const { updateItem, removeFromList } = useMediaStorage()
-
-  const updateTitle = (title: string) => {
-    updateItem(list, { ...book, title })
-  }
+  const { updateItem } = useMediaStorage()
 
   const toggleDone = () => {
     updateItem(list, { ...book, isDone: !book.isDone })
@@ -32,10 +28,6 @@ export function Book({ book, list, author }: BookProps) {
     updateItem(list, { ...book, medium })
   }
 
-  const deleteBook = () => {
-    removeFromList(list, book)
-  }
-
   return (
     <li className="book">
       <Checkbox
@@ -45,23 +37,17 @@ export function Book({ book, list, author }: BookProps) {
       />
 
       <span className={book.isDone ? "done" : ""}>
-        <EditableText
-          label="title"
-          onChange={updateTitle}
-          style={{
-            fontStyle: "italic",
-            display: "inline",
-          }}
-          value={`${book.title}${author ? ", " : ""}`}
-          onDelete={deleteBook}
-        />
+        <EditBookForm book={book} list={list} />
         {author && (
-          <EditableText
-            onChange={author.onChange}
-            label="author name"
-            value={author.name}
-            style={{ display: "inline" }}
-          />
+          <>
+            {", "}
+            <EditableText
+              onChange={author.onChange}
+              label="author name"
+              value={author.name}
+              style={{ display: "inline" }}
+            />
+          </>
         )}
 
         <button

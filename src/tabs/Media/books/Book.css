@@ -5,6 +5,10 @@
   }
 }
 
+.book button.media-title {
+  font-style: italic;
+}
+
 button.medium {
   padding: 0;
   width: 24px;

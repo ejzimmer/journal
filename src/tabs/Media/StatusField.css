@@ -1,0 +1,17 @@
+.status-field {
+  border: 0;
+  margin: 0;
+  padding: 0;
+
+  legend {
+    font-weight: bold;
+    margin-block-end: 5px;
+    padding: 0;
+  }
+
+  .options {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+}
