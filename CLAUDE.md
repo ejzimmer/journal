@@ -32,7 +32,7 @@ A function's name is the only part of it most readers will ever see. It should s
 
 `apply` almost never does that. Apply what, to what? It fills the verb slot without committing to anything, and `handle`, `process`, `manage` and `do` are the same. If a name only makes sense once you've read the argument list or the body, it isn't naming the function - it's just occupying the space where the name goes.
 
-Name it after what it returns (`parentEmptiedBy`, `bookStatusFields`) or with the specific verb for what it does (`removeFromList`, `convertFromBookStatus`). Watch the verb: `resolveParentPath` sounds like it works a path out and hands it back, so the author or series it quietly creates on the way is a surprise. If no specific verb fits, that's usually the function doing more than one thing, and the fix is to split it rather than to reach for a vaguer word.
+Start it with the verb for what it does - `getEmptiedParent`, `removeFromList`, `convertFromBookStatus`. A bare noun phrase reads as a value rather than a call, so `parentsOf`, `childrenOf`, `seriesIn` and `pathTo` all want a `get` on the front. Watch which verb: `resolveParentPath` sounds like it works a path out and hands it back, so the author or series it quietly creates on the way is a surprise. And a preposition has to be carrying its weight - `addToList` and `removeFromList` name a direction relative to the list, but `updateInList` just updates one item, so it's `updateItem`. If no specific verb fits, that's usually the function doing more than one thing, and the fix is to split it rather than to reach for a vaguer word.
 
 ## No single-line helpers in tests
 

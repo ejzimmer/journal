@@ -17,24 +17,29 @@ type EditBookFormProps = {
   list: MediaList
 }
 
-const toOption = ({ id, name }: ListParent) => ({ id, label: name })
+const convertToOption = ({ id, name }: ListParent) => ({ id, label: name })
 
-const toParent = (option?: OptionType) =>
+const convertToListParent = (option?: OptionType) =>
   option && { id: option.id, name: option.label }
 
 export function EditBookForm({ book, list }: EditBookFormProps) {
-  const { authors, seriesIn, removeFromList, moveToList } = useMediaStorage()
+  const { authors, getSeriesInList, removeFromList, moveToList } =
+    useMediaStorage()
 
   const [title, setTitle] = useState(book.title)
   const [status, setStatus] = useState(getBookStatus(book))
-  const [author, setAuthor] = useState(list.author && toOption(list.author))
-  const [series, setSeries] = useState(list.series && toOption(list.series))
+  const [author, setAuthor] = useState(
+    list.author && convertToOption(list.author),
+  )
+  const [series, setSeries] = useState(
+    list.series && convertToOption(list.series),
+  )
 
-  const fillFromBook = () => {
+  const fillFieldsFromBook = () => {
     setTitle(book.title)
     setStatus(getBookStatus(book))
-    setAuthor(list.author && toOption(list.author))
-    setSeries(list.series && toOption(list.series))
+    setAuthor(list.author && convertToOption(list.author))
+    setSeries(list.series && convertToOption(list.series))
   }
 
   const changeAuthor = (newAuthor: OptionType) => {
@@ -44,10 +49,10 @@ export function EditBookForm({ book, list }: EditBookFormProps) {
     }
   }
 
-  const seriesOptions = seriesIn({
+  const seriesOptions = getSeriesInList({
     root: "books",
-    author: author?.id ? toParent(author) : undefined,
-  }).map(toOption)
+    author: author?.id ? convertToListParent(author) : undefined,
+  }).map(convertToOption)
 
   const save = () => {
     if (!title.trim()) {
@@ -63,8 +68,8 @@ export function EditBookForm({ book, list }: EditBookFormProps) {
 
     moveToList(updated, list, {
       root: "books",
-      author: toParent(author),
-      series: toParent(series),
+      author: convertToListParent(author),
+      series: convertToListParent(series),
     })
     return true
   }
@@ -76,7 +81,7 @@ export function EditBookForm({ book, list }: EditBookFormProps) {
           type="button"
           className="media-title"
           onClick={() => {
-            fillFromBook()
+            fillFieldsFromBook()
             onClick()
           }}
         >
@@ -96,7 +101,7 @@ export function EditBookForm({ book, list }: EditBookFormProps) {
       <Combobox
         label="Author"
         value={author}
-        options={authors.map(toOption)}
+        options={authors.map(convertToOption)}
         createOption={(label) => ({ id: "", label })}
         onChange={changeAuthor}
       />

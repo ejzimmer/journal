@@ -17,22 +17,24 @@ type EditGameFormProps = {
   list: MediaList
 }
 
-const toOption = ({ id, name }: ListParent) => ({ id, label: name })
+const convertToOption = ({ id, name }: ListParent) => ({ id, label: name })
 
-const toParent = (option?: OptionType) =>
+const convertToListParent = (option?: OptionType) =>
   option && { id: option.id, name: option.label }
 
 export function EditGameForm({ game, list }: EditGameFormProps) {
-  const { seriesIn, removeFromList, moveToList } = useMediaStorage()
+  const { getSeriesInList, removeFromList, moveToList } = useMediaStorage()
 
   const [title, setTitle] = useState(game.title)
   const [status, setStatus] = useState(getGameStatus(game))
-  const [series, setSeries] = useState(list.series && toOption(list.series))
+  const [series, setSeries] = useState(
+    list.series && convertToOption(list.series),
+  )
 
-  const fillFromGame = () => {
+  const fillFieldsFromGame = () => {
     setTitle(game.title)
     setStatus(getGameStatus(game))
-    setSeries(list.series && toOption(list.series))
+    setSeries(list.series && convertToOption(list.series))
   }
 
   const save = () => {
@@ -47,7 +49,10 @@ export function EditGameForm({ game, list }: EditGameFormProps) {
       ...convertFromGameStatus(status),
     }
 
-    moveToList(updated, list, { root: "games", series: toParent(series) })
+    moveToList(updated, list, {
+      root: "games",
+      series: convertToListParent(series),
+    })
     return true
   }
 
@@ -58,7 +63,7 @@ export function EditGameForm({ game, list }: EditGameFormProps) {
           type="button"
           className="media-title"
           onClick={() => {
-            fillFromGame()
+            fillFieldsFromGame()
             onClick()
           }}
         >
@@ -78,7 +83,7 @@ export function EditGameForm({ game, list }: EditGameFormProps) {
       <Combobox
         label="Series"
         value={series}
-        options={seriesIn({ root: "games" }).map(toOption)}
+        options={getSeriesInList({ root: "games" }).map(convertToOption)}
         createOption={(label) => ({ id: "", label })}
         onChange={setSeries}
       />

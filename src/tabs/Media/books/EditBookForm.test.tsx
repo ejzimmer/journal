@@ -29,7 +29,7 @@ const inDiscworld: MediaList = {
   series: discworld,
 }
 
-const seriesIn = ({ author }: MediaList) => {
+const getSeriesInList = ({ author }: MediaList) => {
   if (!author) return [earthsea]
   return author.id === pratchett.id ? [discworld] : []
 }
@@ -41,7 +41,7 @@ const renderForm = (
 ) =>
   renderWithMediaStorage(<EditBookForm book={book} list={list} />, {
     authors: [pratchett, leguin],
-    seriesIn,
+    getSeriesInList,
     ...overrides,
   })
 
