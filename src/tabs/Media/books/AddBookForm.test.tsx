@@ -20,19 +20,16 @@ const renderAddBookForm = () =>
     seriesIn,
   })
 
-const typeTitle = (user: ReturnType<typeof userEvent.setup>, title: string) =>
-  user.type(screen.getByRole("textbox", { name: "Book title" }), title)
-
-const create = (user: ReturnType<typeof userEvent.setup>) =>
-  user.click(screen.getByRole("button", { name: "Create" }))
-
 describe("AddBookForm", () => {
   describe("when only a title is entered", () => {
     it("adds the book to the root list", async () => {
       const user = userEvent.setup()
       const { storage } = renderAddBookForm()
 
-      await typeTitle(user, "The Linguist Mages{Enter}")
+      await user.type(
+        screen.getByRole("textbox", { name: "Book title" }),
+        "The Linguist Mages{Enter}",
+      )
 
       expect(storage.addToList).toHaveBeenCalledWith(
         { root: "books", author: undefined, series: undefined },
@@ -46,11 +43,14 @@ describe("AddBookForm", () => {
       const user = userEvent.setup()
       const { storage } = renderAddBookForm()
 
-      await typeTitle(user, "The Left Hand of Darkness")
+      await user.type(
+        screen.getByRole("textbox", { name: "Book title" }),
+        "The Left Hand of Darkness",
+      )
       await user.click(
         screen.getByRole("option", { name: "Ursula Le Guin", hidden: true }),
       )
-      await create(user)
+      await user.click(screen.getByRole("button", { name: "Create" }))
 
       expect(storage.addToList).toHaveBeenCalledWith(
         { root: "books", author: leguin, series: undefined },
@@ -64,7 +64,10 @@ describe("AddBookForm", () => {
       const user = userEvent.setup()
       const { storage } = renderAddBookForm()
 
-      await typeTitle(user, "The Long Dark Teatime of the Soul")
+      await user.type(
+        screen.getByRole("textbox", { name: "Book title" }),
+        "The Long Dark Teatime of the Soul",
+      )
       await user.type(
         screen.getByRole("combobox", { name: "Author name" }),
         "Douglas Adams",
@@ -73,7 +76,7 @@ describe("AddBookForm", () => {
         screen.getByRole("combobox", { name: "Series name" }),
         "Dirk Gently",
       )
-      await create(user)
+      await user.click(screen.getByRole("button", { name: "Create" }))
 
       expect(storage.addToList).toHaveBeenCalledWith(
         {
@@ -110,11 +113,14 @@ describe("AddBookForm", () => {
       const user = userEvent.setup()
       renderAddBookForm()
 
-      await typeTitle(user, "Witches Abroad")
+      await user.type(
+        screen.getByRole("textbox", { name: "Book title" }),
+        "Witches Abroad",
+      )
       await user.click(
         screen.getByRole("option", { name: "Terry Pratchett", hidden: true }),
       )
-      await create(user)
+      await user.click(screen.getByRole("button", { name: "Create" }))
 
       screen.getAllByRole("textbox").forEach((input) => {
         expect(input).toHaveValue("")
