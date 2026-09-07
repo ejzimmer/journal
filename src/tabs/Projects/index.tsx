@@ -123,14 +123,7 @@ function FilteredProject({
   const isVisible = !categories.length || categories.includes(project.category)
 
   return (
-    <li
-      style={{
-        overflow: isVisible ? "auto" : "hidden",
-        transition: `max-width 1s`,
-        maxWidth: isVisible ? "80vw" : "0",
-        height: isVisible ? "auto" : 0,
-      }}
-    >
+    <li className={`project-item ${isVisible ? "" : "filtered-out"}`}>
       {children}
     </li>
   )

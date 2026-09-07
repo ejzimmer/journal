@@ -1,19 +1,20 @@
 .project {
   --project-colour-light: color(from var(--project-colour) srgb r g b / 0.2);
+  --project-border-colour: color(from var(--project-colour) srgb r g b / 1);
+  position: relative;
   flex-shrink: 0;
   list-style-type: none;
   background: var(--project-colour-light);
   font-size: 18px;
   align-self: start;
 
+  &:has(.subtasks-section.visible) {
+    z-index: 1;
+  }
+
   &.in_progress {
     background:
       linear-gradient(45deg, white, transparent), var(--project-colour-light);
-
-    .project-details {
-      outline: 2px solid color(from var(--project-colour) srgb r g b / 1);
-      outline-offset: -2px;
-    }
   }
 
   &.done {
@@ -33,7 +34,7 @@
     padding-inline: 10px;
     padding-block: 5px;
     background: var(--project-colour);
-    border: 1px solid var(--border-colour);
+    border: 2px solid var(--project-border-colour);
   }
 
   button path {
@@ -75,21 +76,27 @@
   }
 
   .subtasks-section {
+    position: absolute;
+    inset-block-start: 100%;
+    inset-inline: 0;
     opacity: 0;
     overflow: hidden;
     transition:
       height 0.2s ease-out,
       opacity 0.1s 0.2s linear;
-    max-width: 420px;
 
     &.visible {
+      --seam-shadow: linear-gradient(
+        to bottom,
+        hsl(0 0% 0% / 0.35),
+        transparent
+      );
+
       opacity: 1;
-      margin-block-end: 12px;
       overflow: visible;
-      background: white;
-      border: 1px solid var(--border-colour);
+      background: var(--seam-shadow) top / 100% 8px no-repeat, white;
+      border: 1px solid var(--project-border-colour);
       border-top: none;
-      box-shadow: inset 0 6px 8px -4px hsl(0 0% 0% / 0.35);
     }
   }
 

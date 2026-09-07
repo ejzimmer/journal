@@ -16,6 +16,22 @@
     justify-content: center;
   }
 
+  li.project-item {
+    max-width: 80vw;
+    overflow: auto;
+    transition: max-width 1s;
+
+    &.filtered-out {
+      max-width: 0;
+      height: 0;
+      overflow: hidden;
+    }
+
+    &:not(.filtered-out):has(.subtasks-section.visible) {
+      overflow: visible;
+    }
+  }
+
   .projects-filter {
     display: flex;
     place-self: center;
