@@ -1,5 +1,11 @@
 import { LABELS_KEY, StoredLabel, WorkTask, WORK_KEY } from "../tabs/Work/types"
 import {
+  Category,
+  ProjectDetails,
+  ProjectSubtask,
+  PROJECTS_KEY,
+} from "../shared/types"
+import {
   AuthorDetails,
   BookDetails,
   GameDetails,
@@ -157,6 +163,60 @@ const games = byId<PlayingItemDetails>([
   game("game-outer-wilds", "Outer Wilds"),
 ])
 
+const subtask = (
+  id: string,
+  description: string,
+  category: Category,
+  position: number,
+  status: ProjectSubtask["status"] = "ready",
+): ProjectSubtask => ({ id, description, category, position, status })
+
+const project = (
+  id: string,
+  description: string,
+  category: Category,
+  position: number,
+  extra: Partial<ProjectDetails> = {},
+): ProjectDetails => ({
+  id,
+  description,
+  category,
+  position,
+  parentId: PROJECTS_KEY,
+  ...extra,
+})
+
+const projects = byId<ProjectDetails>([
+  project("project-shelves", "Put up the hallway shelves", "🚚", 0, {
+    status: "in_progress",
+    subtasks: byId([
+      subtask("subtask-brackets", "Buy brackets", "🚚", 0, "done"),
+      subtask("subtask-drill", "Borrow a drill", "🚚", 1),
+      subtask("subtask-paint", "Paint the boards", "🚚", 2),
+    ]),
+  }),
+  project("project-socks", "Knit the striped socks", "🧶", 1, {
+    subtasks: byId([
+      subtask("subtask-yarn", "Wind the yarn", "🧶", 0),
+      subtask("subtask-heel", "Learn a better heel", "🧶", 1),
+    ]),
+  }),
+  project("project-quilt", "Finish the quilt binding", "🪡", 2),
+  project("project-groceries", "Plan the week's meals", "🛒", 3),
+  project("project-journal", "Write up the trip notes", "📓", 4, {
+    subtasks: byId([subtask("subtask-photos", "Pick the photos", "📓", 0)]),
+  }),
+  project("project-blog", "Redesign the projects tab", "👩‍💻", 5, {
+    status: "in_progress",
+    subtasks: byId([
+      subtask("subtask-spec", "Agree the spec", "👩‍💻", 0, "done"),
+      subtask("subtask-cards", "Restyle the cards", "👩‍💻", 1),
+    ]),
+  }),
+  project("project-desk", "Clear off the desk", "🧹", 6, { status: "done" }),
+  project("project-letters", "Reply to the birthday cards", "🖊️", 7),
+])
+
 export const seedData = {
   [WORK_KEY]: {
     [backlog.id]: { ...backlog, items: { [backlogTask.id]: backlogTask } },
@@ -175,4 +235,5 @@ export const seedData = {
     books,
     games,
   },
+  [PROJECTS_KEY]: projects,
 }
