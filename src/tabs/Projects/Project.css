@@ -78,7 +78,10 @@
   .subtasks-section {
     position: absolute;
     inset-block-start: 100%;
-    inset-inline: 0;
+    inset-inline-start: 0;
+    min-width: 100%;
+    width: max-content;
+    max-width: min(840px, 90vw);
     opacity: 0;
     overflow: hidden;
     transition:
@@ -167,7 +170,7 @@
 
   ol.subtasks {
     padding-inline-start: 5.5px;
-    padding-inline-end: 0px;
+    padding-inline-end: 12px;
   }
 
   form.add-subtask-form.visible {
