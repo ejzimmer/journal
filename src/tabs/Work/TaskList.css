@@ -343,6 +343,26 @@ form.add-task {
 }
 
 .label-tag {
+  button.label-value {
+    font: inherit;
+    color: inherit;
+    text-transform: inherit;
+    background: none;
+    border: 0;
+    border-radius: 0;
+    height: auto;
+    line-height: inherit;
+    padding: 0;
+    margin-inline-start: 0;
+    cursor: pointer;
+
+    &:hover,
+    &:focus-visible {
+      background: none;
+      text-decoration: underline;
+    }
+  }
+
   button {
     padding: 2px;
     margin-inline-start: 4px;
