@@ -33,3 +33,9 @@ A function's name is the only part of it most readers will ever see. It should s
 `apply` almost never does that. Apply what, to what? It fills the verb slot without committing to anything, and `handle`, `process`, `manage` and `do` are the same. If a name only makes sense once you've read the argument list or the body, it isn't naming the function - it's just occupying the space where the name goes.
 
 Name it after what it returns (`parentEmptiedBy`, `bookStatusFields`) or with the specific verb for what it does (`removeFromList`, `convertFromBookStatus`). Watch the verb: `resolveParentPath` sounds like it works a path out and hands it back, so the author or series it quietly creates on the way is a surprise. If no specific verb fits, that's usually the function doing more than one thing, and the fix is to split it rather than to reach for a vaguer word.
+
+## No single-line helpers in tests
+
+A helper in a test file has to earn its name. `typeTitle(user, "Thud!")` and `create(user)` each wrapped one line and saved nothing: a reader now has to scroll up to learn that "create" clicks a button labelled Create, and `create(user)` reads like it creates a user, which it doesn't. The line each replaced already said exactly what it did, in the place where it mattered.
+
+Write the interaction out in the test. A helper earns its place when it sets up something several tests share and would otherwise repeat - a render with a stocked context, a fixture, a fake - not when it renames a single call.

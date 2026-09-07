@@ -17,6 +17,12 @@ const nightWatch: BookDetails = {
   medium: "🎧",
 }
 
+const orphan: BookDetails = {
+  id: "orphan",
+  type: "book",
+  title: "The Linguist Mages",
+}
+
 const inDiscworld: MediaList = {
   root: "books",
   author: pratchett,
@@ -39,25 +45,13 @@ const renderForm = (
     ...overrides,
   })
 
-const openForm = async (user: ReturnType<typeof userEvent.setup>) =>
-  user.click(screen.getByRole("button", { name: /^Night Watch|^The Linguist/ }))
-
-const save = (user: ReturnType<typeof userEvent.setup>) =>
-  user.click(screen.getByRole("button", { name: "Save" }))
-
-const orphan: BookDetails = {
-  id: "orphan",
-  type: "book",
-  title: "The Linguist Mages",
-}
-
 describe("EditBookForm", () => {
   describe("when the form is opened", () => {
     it("fills it in from the book and the list it is in", async () => {
       const user = userEvent.setup()
       renderForm(nightWatch, inDiscworld)
 
-      await openForm(user)
+      await user.click(screen.getByRole("button", { name: "Night Watch" }))
 
       expect(screen.getByRole("textbox", { name: "Title" })).toHaveValue(
         "Night Watch",
@@ -77,14 +71,14 @@ describe("EditBookForm", () => {
       const user = userEvent.setup()
       const { storage } = renderForm(nightWatch, inDiscworld)
 
-      await openForm(user)
+      await user.click(screen.getByRole("button", { name: "Night Watch" }))
       await user.clear(screen.getByRole("textbox", { name: "Title" }))
       await user.type(
         screen.getByRole("textbox", { name: "Title" }),
         "Night Watch (annotated)",
       )
       await user.click(screen.getByRole("radio", { name: "Reading" }))
-      await save(user)
+      await user.click(screen.getByRole("button", { name: "Save" }))
 
       expect(storage.moveToList).toHaveBeenCalledWith(
         {
@@ -104,9 +98,9 @@ describe("EditBookForm", () => {
       const user = userEvent.setup()
       const { storage } = renderForm(nightWatch, inDiscworld)
 
-      await openForm(user)
+      await user.click(screen.getByRole("button", { name: "Night Watch" }))
       await user.click(screen.getByRole("radio", { name: "Read" }))
-      await save(user)
+      await user.click(screen.getByRole("button", { name: "Save" }))
 
       expect(storage.moveToList).toHaveBeenCalledWith(
         expect.objectContaining({ isDone: true, medium: null }),
@@ -121,11 +115,13 @@ describe("EditBookForm", () => {
       const user = userEvent.setup()
       const { storage } = renderForm(orphan, { root: "books" })
 
-      await openForm(user)
+      await user.click(
+        screen.getByRole("button", { name: "The Linguist Mages" }),
+      )
       await user.click(
         screen.getByRole("option", { name: "Ursula Le Guin", hidden: true }),
       )
-      await save(user)
+      await user.click(screen.getByRole("button", { name: "Save" }))
 
       expect(storage.moveToList).toHaveBeenCalledWith(
         expect.objectContaining({ id: "orphan" }),
@@ -140,12 +136,12 @@ describe("EditBookForm", () => {
       const user = userEvent.setup()
       const { storage } = renderForm(nightWatch, inDiscworld)
 
-      await openForm(user)
+      await user.click(screen.getByRole("button", { name: "Night Watch" }))
       await user.type(
         screen.getByRole("combobox", { name: "Series" }),
         "The Watch",
       )
-      await save(user)
+      await user.click(screen.getByRole("button", { name: "Save" }))
 
       expect(storage.moveToList).toHaveBeenCalledWith(
         expect.anything(),
@@ -164,7 +160,9 @@ describe("EditBookForm", () => {
       const user = userEvent.setup()
       renderForm(orphan, { root: "books" })
 
-      await openForm(user)
+      await user.click(
+        screen.getByRole("button", { name: "The Linguist Mages" }),
+      )
       expect(
         screen.getByRole("option", { name: "Earthsea", hidden: true }),
       ).toBeInTheDocument()
@@ -187,9 +185,9 @@ describe("EditBookForm", () => {
       const user = userEvent.setup()
       const { storage } = renderForm(nightWatch, inDiscworld)
 
-      await openForm(user)
+      await user.click(screen.getByRole("button", { name: "Night Watch" }))
       await user.clear(screen.getByRole("textbox", { name: "Title" }))
-      await save(user)
+      await user.click(screen.getByRole("button", { name: "Save" }))
 
       expect(storage.removeFromList).toHaveBeenCalledWith(
         inDiscworld,
