@@ -141,19 +141,11 @@ export function TaskList({
                 onDismiss={() => setEditingLabel(false)}
               />
             ) : (
-              <>
-                <Labels
-                  labelIds={list.labelIds}
-                  onRemoveLabel={(id) => removeLabel(id, list)}
-                />
-                <button
-                  className="ghost"
-                  aria-label={`Change ${listLabel.value} label`}
-                  onClick={() => setEditingLabel(true)}
-                >
-                  ✏️
-                </button>
-              </>
+              <Labels
+                labelIds={list.labelIds}
+                onRemoveLabel={(id) => removeLabel(id, list)}
+                onEditLabel={() => setEditingLabel(true)}
+              />
             ))}
           {notDoneCount > 0 && (
             <span
