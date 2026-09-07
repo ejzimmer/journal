@@ -359,7 +359,6 @@ form.add-task {
     &:hover,
     &:focus-visible {
       background: none;
-      text-decoration: underline;
     }
   }
 
