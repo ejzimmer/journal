@@ -57,6 +57,8 @@ export function Project({ project, onMoveToEnd, onDelete }: ProjectProps) {
   )
   const [hasOpenedSubtasks, setHasOpenedSubtasks] = useState(subtasksVisible)
 
+  const status = project.status ?? "ready"
+
   const { updateItem } = useStorageContext()
 
   const { createLinkedTask: createDailyTask, updateLinkedTask } =
@@ -70,9 +72,9 @@ export function Project({ project, onMoveToEnd, onDelete }: ProjectProps) {
   } as CSSProperties
 
   const onChangeStatus = () => {
-    if (project.status === "in_progress") {
+    if (status === "in_progress") {
       updateItem(PROJECTS_KEY, { ...project, status: "done" })
-    } else if (project.status === "done") {
+    } else if (status === "done") {
       updateItem(PROJECTS_KEY, { ...project, status: "ready" })
     } else {
       updateItem(PROJECTS_KEY, {
@@ -82,7 +84,7 @@ export function Project({ project, onMoveToEnd, onDelete }: ProjectProps) {
     }
 
     updateLinkedTask({
-      status: project.status === "in_progress" ? "finished" : "ready",
+      status: status === "in_progress" ? "finished" : "ready",
       lastCompleted: new Date().getTime(),
     })
   }
@@ -127,10 +129,7 @@ export function Project({ project, onMoveToEnd, onDelete }: ProjectProps) {
   const subtasks = Object.values(project.subtasks ?? {})
   const doneSubtasks = subtasks.filter((subtask) => subtask.status === "done")
 
-  if (
-    (!project.status || project.status === "ready") &&
-    doneSubtasks.length > 0
-  ) {
+  if (status === "ready" && doneSubtasks.length > 0) {
     updateItem<ProjectDetails>(PROJECTS_KEY, {
       ...project,
       status: "in_progress",
@@ -138,11 +137,11 @@ export function Project({ project, onMoveToEnd, onDelete }: ProjectProps) {
   }
 
   return (
-    <div className={`project ${project.status}`} style={projectColour}>
+    <div className={`project ${status}`} style={projectColour}>
       <div className="project-details">
         <EmojiCheckbox
           emoji={project.category}
-          isChecked={project.status === "in_progress"}
+          isChecked={status === "in_progress"}
           onChange={onChangeStatus}
           label={""}
         />
@@ -161,23 +160,27 @@ export function Project({ project, onMoveToEnd, onDelete }: ProjectProps) {
             flexGrow: 1,
           }}
         />
-        <div className="project-actions">
-          <ButtonWithConfirmation
-            className="icon ghost project-action-button"
-            onClick={onAddToTodo}
-            confirmationMessage="Copied!"
-          >
-            🔗
-          </ButtonWithConfirmation>
+        {status !== "ready" && (
+          <>
+            <div className="project-actions">
+              <ButtonWithConfirmation
+                className="icon ghost project-action-button"
+                onClick={onAddToTodo}
+                confirmationMessage="Copied!"
+              >
+                🔗
+              </ButtonWithConfirmation>
 
-          <button
-            className="icon ghost project-action-button"
-            onClick={onMoveToEnd}
-          >
-            <ArrowToEndIcon width="20px" colour="var(--action-colour)" />
-          </button>
-        </div>
-        <SubTasksStatus subtasks={subtasks} doneSubtasks={doneSubtasks} />
+              <button
+                className="icon ghost project-action-button"
+                onClick={onMoveToEnd}
+              >
+                <ArrowToEndIcon width="20px" colour="var(--action-colour)" />
+              </button>
+            </div>
+            <SubTasksStatus subtasks={subtasks} doneSubtasks={doneSubtasks} />
+          </>
+        )}
 
         <button
           className={`ghost expand ${subtasksVisible ? "expanded" : ""}`}

@@ -1,11 +1,16 @@
 .project {
   --project-colour-light: color(from var(--project-colour) srgb r g b / 0.2);
   --project-border-colour: color(from var(--project-colour) srgb r g b / 1);
+  --card-tint: var(--project-colour);
+  --card-edge: var(--project-border-colour);
+  --card-border: 2px;
+  --radius: 7px;
   --card-max: min(840px, 80vw);
   position: relative;
   flex-shrink: 0;
   list-style-type: none;
   background: var(--project-colour-light);
+  border-radius: var(--radius);
   font-size: 18px;
   align-self: start;
   min-width: 0;
@@ -13,6 +18,24 @@
 
   &:has(.subtasks-section.visible) {
     z-index: 1;
+  }
+
+  &.ready {
+    --card-tint: color(from var(--project-colour) srgb r g b / 0.13);
+    --card-edge: color(from var(--project-colour) srgb r g b / 0.38);
+    --card-border: 1px;
+    background: none;
+
+    button.expand {
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+
+    &:hover button.expand,
+    &:focus-within button.expand,
+    button.expand.expanded {
+      opacity: 1;
+    }
   }
 
   &.in_progress {
@@ -36,8 +59,9 @@
     align-items: center;
     padding-inline: 10px;
     padding-block: 5px;
-    background: var(--project-colour);
-    border: 2px solid var(--project-border-colour);
+    background: var(--card-tint);
+    border: var(--card-border) solid var(--card-edge);
+    border-radius: var(--radius);
   }
 
   button path {
@@ -45,7 +69,8 @@
   }
 
   button.expand:focus {
-    outline: 2px solid var(--project-colour-light);
+    outline: 2px solid var(--project-border-colour);
+    outline-offset: 1px;
   }
   button.expand path {
     transform-origin: center;
@@ -100,8 +125,10 @@
       opacity: 1;
       overflow: visible;
       background: var(--seam-shadow) top / 100% 8px no-repeat, white;
-      border: 1px solid var(--project-border-colour);
+      border: 1px solid var(--card-edge);
       border-top: none;
+      border-end-start-radius: var(--radius);
+      border-end-end-radius: var(--radius);
     }
   }
 
