@@ -24,6 +24,7 @@ export function createWorkStorageContext(
     labels: [],
     getLabel: () => undefined,
     addLabel: jest.fn(),
+    changeLabel: jest.fn(),
     removeLabel: jest.fn(),
     updateLabel: jest.fn(),
     ...overrides,

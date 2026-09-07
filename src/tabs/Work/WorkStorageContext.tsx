@@ -57,6 +57,7 @@ export type WorkStorageContextType = {
   labels: StoredLabel[]
   getLabel: (id: string) => StoredLabel | undefined
   addLabel: (label: Label, entity: WorkTask) => void
+  changeLabel: (label: Label, entity: WorkTask) => void
   removeLabel: (id: string, entity: WorkTask) => void
   updateLabel: (id: string, colour: Colour) => void
 }
@@ -264,6 +265,14 @@ export function WorkStorageProvider({ children }: { children: ReactNode }) {
       const id = upsertLabel(label)
       const labelIds = Array.from(new Set([...(entity.labelIds ?? []), id]))
       updateItem(entity.parentId, { ...entity, labelIds })
+    },
+    changeLabel: (label, entity) => {
+      const previousIds = entity.labelIds ?? []
+      const id = upsertLabel(label)
+      updateItem(entity.parentId, { ...entity, labelIds: [id] })
+      previousIds
+        .filter((previousId) => previousId !== id)
+        .forEach(markUnusedLabel)
     },
     removeLabel: (id, entity) => {
       const labelIds = (entity.labelIds ?? []).filter(

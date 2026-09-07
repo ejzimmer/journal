@@ -67,7 +67,7 @@ export function TaskList({
     reorderTasks,
     addTask,
     getLabel,
-    addLabel,
+    changeLabel,
     removeLabel,
   } = useWorkStorage()
 
@@ -132,13 +132,9 @@ export function TaskList({
               <LabelsControl
                 value={listLabel ? [listLabel] : []}
                 onChange={(labels) => {
-                  const oldId = list.labelIds?.[0]
-                  if (oldId) {
-                    removeLabel(oldId, list)
-                  }
                   const newLabel = labels[0]
                   if (newLabel) {
-                    addLabel(newLabel, { ...list, labelIds: [] })
+                    changeLabel(newLabel, list)
                   }
                   setEditingLabel(false)
                 }}

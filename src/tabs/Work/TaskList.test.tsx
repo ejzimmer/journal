@@ -133,14 +133,11 @@ describe("TaskList label", () => {
     await user.click(screen.getByRole("button", { name: "Change a11y label" }))
     await user.click(screen.getByRole("option", { name: "urgent" }))
 
-    expect(storageContext.removeLabel).toHaveBeenCalledWith(
-      a11yLabel.id,
+    expect(storageContext.changeLabel).toHaveBeenCalledWith(
+      { value: urgentLabel.value, colour: urgentLabel.colour },
       labelledList,
     )
-    expect(storageContext.addLabel).toHaveBeenCalledWith(
-      { value: urgentLabel.value, colour: urgentLabel.colour },
-      { ...labelledList, labelIds: [] },
-    )
+    expect(storageContext.removeLabel).not.toHaveBeenCalled()
   })
 
   it("brings the edit button back when the label picker is dismissed", async () => {
