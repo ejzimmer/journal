@@ -18,8 +18,7 @@ import {
 import { useDropTarget } from "../../shared/drag-and-drop/useDropTarget"
 import { isDraggable, sortByPosition } from "../../shared/drag-and-drop/utils"
 import { useDraggableList } from "../../shared/drag-and-drop/useDraggableList"
-import { useOpenHeight } from "./useOpenHeight"
-import { useScrollIntoViewWhenOpened } from "./useScrollIntoViewWhenOpened"
+import { useDrawer } from "./useDrawer"
 
 type SubtasksProps = {
   projectId: string
@@ -28,7 +27,7 @@ type SubtasksProps = {
 
 export function SubtaskList({ projectId, isVisible }: SubtasksProps) {
   const [formVisible, setFormVisible] = useState(false)
-  const sectionRef = useRef<HTMLDivElement>(null)
+  const drawerRef = useRef<HTMLDivElement>(null)
   const listRef = useRef<HTMLOListElement>(null)
   const formRef = useRef<HTMLDivElement>(null)
   const subtasksKey = getSubtasksKey(projectId)
@@ -52,16 +51,12 @@ export function SubtaskList({ projectId, isVisible }: SubtasksProps) {
     })
   }
 
-  const openHeight = useOpenHeight({
+  const drawerHeight = useDrawer({
+    drawerRef,
     listRef,
     formRef,
     subtasks,
     isProjectLoaded,
-  })
-
-  useScrollIntoViewWhenOpened({
-    sectionRef,
-    openHeight,
     isOpen: isVisible,
   })
 
@@ -130,8 +125,8 @@ export function SubtaskList({ projectId, isVisible }: SubtasksProps) {
   return (
     <div
       className={`subtasks-section ${isVisible ? "visible" : ""}`}
-      style={{ height: isVisible ? openHeight : 0 }}
-      ref={sectionRef}
+      style={{ height: drawerHeight }}
+      ref={drawerRef}
     >
       <ol className="subtasks" ref={listRef}>
         {sortedTasks.map((task, index) => (
