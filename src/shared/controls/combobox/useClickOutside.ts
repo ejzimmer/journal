@@ -11,18 +11,21 @@ export function useClickOutside({
 }) {
   useEffect(() => {
     const handler = (event: MouseEvent) => {
-      if (
-        event.target instanceof Node &&
-        !elementRef.current?.contains(event.target)
-      ) {
+      const element = elementRef.current
+      if (!element) return
+
+      if (event.target instanceof Node && !element.contains(event.target)) {
         onClickOutside()
       }
     }
 
-    if (shouldListen) window.addEventListener("click", handler)
+    // mousedown, not click: the press that opens the element lands before this
+    // listener is attached, but the click it produces does not, so listening
+    // for click closes the element on the very interaction that opened it.
+    if (shouldListen) window.addEventListener("mousedown", handler)
 
     return () => {
-      window.removeEventListener("click", handler)
+      window.removeEventListener("mousedown", handler)
     }
   }, [onClickOutside, elementRef, shouldListen])
 }

@@ -139,8 +139,36 @@ describe("TaskList label", () => {
     )
     expect(storageContext.addLabel).toHaveBeenCalledWith(
       { value: urgentLabel.value, colour: urgentLabel.colour },
-      labelledList,
+      { ...labelledList, labelIds: [] },
     )
+  })
+
+  it("brings the edit button back when the label picker is dismissed", async () => {
+    const user = userEvent.setup()
+    renderTaskList(labelledList.id, createStorageContext())
+
+    await user.click(screen.getByRole("button", { name: "Change a11y label" }))
+    expect(
+      screen.queryByRole("button", { name: "Change a11y label" }),
+    ).not.toBeInTheDocument()
+
+    await user.click(document.body)
+
+    expect(
+      screen.getByRole("button", { name: "Change a11y label" }),
+    ).toBeInTheDocument()
+  })
+
+  it("brings the edit button back when the label picker is cancelled with escape", async () => {
+    const user = userEvent.setup()
+    renderTaskList(labelledList.id, createStorageContext())
+
+    await user.click(screen.getByRole("button", { name: "Change a11y label" }))
+    await user.keyboard("{Escape}")
+
+    expect(
+      screen.getByRole("button", { name: "Change a11y label" }),
+    ).toBeInTheDocument()
   })
 })
 

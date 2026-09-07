@@ -10,6 +10,7 @@ export type LabelsControlProps = {
   hideLabel?: boolean
   isMulti?: boolean
   autoFocus?: boolean
+  onDismiss?: () => void
 }
 
 type LabelOption = {
@@ -58,6 +59,7 @@ export function LabelsControl({
   label,
   isMulti = true,
   autoFocus,
+  onDismiss,
 }: LabelsControlProps) {
   const { labels } = useWorkStorage()
 
@@ -94,6 +96,7 @@ export function LabelsControl({
       Value={Option}
       hideSelectedOptions
       autoFocus={autoFocus}
+      onDismiss={onDismiss}
     />
   )
 }

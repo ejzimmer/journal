@@ -53,7 +53,7 @@ ol.work-lists > li {
       gap: 2px;
     }
 
-    button.ghost {
+    & > button.ghost {
       padding: 4px;
     }
 

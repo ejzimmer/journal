@@ -43,6 +43,7 @@ const backlogTask = task(
 )
 
 const demoLabel: StoredLabel = { id: "label-demo", value: "demo", colour: "blue" }
+const otherLabel: StoredLabel = { id: "label-other", value: "other", colour: "orange" }
 
 const todayTask = task(today.id, "task-today-1", "Try dragging this task", 0, {
   labelIds: [demoLabel.id],
@@ -55,10 +56,15 @@ const doneTask = task(done.id, "task-done-1", "See how Done looks", 0, {
 export const seedData = {
   [WORK_KEY]: {
     [backlog.id]: { ...backlog, items: { [backlogTask.id]: backlogTask } },
-    [today.id]: { ...today, items: { [todayTask.id]: todayTask } },
+    [today.id]: {
+      ...today,
+      labelIds: [demoLabel.id],
+      items: { [todayTask.id]: todayTask },
+    },
     [done.id]: { ...done, items: { [doneTask.id]: doneTask } },
   },
   [LABELS_KEY]: {
     [demoLabel.id]: demoLabel,
+    [otherLabel.id]: otherLabel,
   },
 }
