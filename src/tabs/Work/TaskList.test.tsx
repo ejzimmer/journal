@@ -134,6 +134,7 @@ describe("TaskList label", () => {
     await user.click(screen.getByRole("option", { name: "urgent" }))
 
     expect(storageContext.changeLabel).toHaveBeenCalledWith(
+      a11yLabel.id,
       { value: urgentLabel.value, colour: urgentLabel.colour },
       labelledList,
     )

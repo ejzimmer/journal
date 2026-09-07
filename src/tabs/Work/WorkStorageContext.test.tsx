@@ -369,7 +369,11 @@ describe("WorkStorageContext labels", () => {
       const firebaseContext = createFirebaseContext({ [list.id]: list }, storedLabels)
       const workStorage = getWorkStorage(firebaseContext)
 
-      workStorage?.changeLabel({ value: "urgent", colour: "yellow" }, list)
+      workStorage?.changeLabel(
+        a11yLabel.id,
+        { value: "urgent", colour: "yellow" },
+        list,
+      )
 
       expect(firebaseContext.updateItem).toHaveBeenCalledWith("work", {
         ...list,
@@ -377,12 +381,36 @@ describe("WorkStorageContext labels", () => {
       })
     })
 
+    it("leaves the entity's other labels in place", () => {
+      const task = makeTask("list-1", {
+        labelIds: [a11yLabel.id, urgentLabel.id],
+      })
+      const list = makeList("list-1", { items: { [task.id]: task } })
+      const firebaseContext = createFirebaseContext({ [list.id]: list }, storedLabels)
+      const workStorage = getWorkStorage(firebaseContext)
+
+      workStorage?.changeLabel(
+        a11yLabel.id,
+        { value: "blocked", colour: "red" },
+        task,
+      )
+
+      expect(firebaseContext.updateItem).toHaveBeenCalledWith(
+        "work/list-1/items",
+        { ...task, labelIds: ["new-id", urgentLabel.id] },
+      )
+    })
+
     it("creates the new label when it doesn't exist yet", () => {
       const list = makeList("list-1", { labelIds: [a11yLabel.id] })
       const firebaseContext = createFirebaseContext({ [list.id]: list }, storedLabels)
       const workStorage = getWorkStorage(firebaseContext)
 
-      workStorage?.changeLabel({ value: "blocked", colour: "red" }, list)
+      workStorage?.changeLabel(
+        a11yLabel.id,
+        { value: "blocked", colour: "red" },
+        list,
+      )
 
       expect(firebaseContext.addItem).toHaveBeenCalledWith(LABELS_KEY, {
         value: "blocked",
@@ -395,7 +423,11 @@ describe("WorkStorageContext labels", () => {
       const firebaseContext = createFirebaseContext({ [list.id]: list }, storedLabels)
       const workStorage = getWorkStorage(firebaseContext)
 
-      workStorage?.changeLabel({ value: "urgent", colour: "yellow" }, list)
+      workStorage?.changeLabel(
+        a11yLabel.id,
+        { value: "urgent", colour: "yellow" },
+        list,
+      )
 
       expect(firebaseContext.updateItem).toHaveBeenCalledWith(LABELS_KEY, {
         ...a11yLabel,
@@ -412,7 +444,11 @@ describe("WorkStorageContext labels", () => {
       const firebaseContext = createFirebaseContext({ [list.id]: list }, storedLabels)
       const workStorage = getWorkStorage(firebaseContext)
 
-      workStorage?.changeLabel({ value: "urgent", colour: "yellow" }, list)
+      workStorage?.changeLabel(
+        a11yLabel.id,
+        { value: "urgent", colour: "yellow" },
+        list,
+      )
 
       expect(firebaseContext.updateItem).not.toHaveBeenCalledWith(
         LABELS_KEY,
@@ -425,7 +461,11 @@ describe("WorkStorageContext labels", () => {
       const firebaseContext = createFirebaseContext({ [list.id]: list }, storedLabels)
       const workStorage = getWorkStorage(firebaseContext)
 
-      workStorage?.changeLabel({ value: "urgent", colour: "yellow" }, list)
+      workStorage?.changeLabel(
+        urgentLabel.id,
+        { value: "urgent", colour: "yellow" },
+        list,
+      )
 
       expect(firebaseContext.updateItem).not.toHaveBeenCalledWith(
         LABELS_KEY,

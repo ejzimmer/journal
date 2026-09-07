@@ -132,9 +132,10 @@ export function TaskList({
               <LabelsControl
                 value={listLabel ? [listLabel] : []}
                 onChange={(labels) => {
+                  const oldId = list.labelIds?.[0]
                   const newLabel = labels[0]
-                  if (newLabel) {
-                    changeLabel(newLabel, list)
+                  if (oldId && newLabel) {
+                    changeLabel(oldId, newLabel, list)
                   }
                   setEditingLabel(false)
                 }}
