@@ -45,7 +45,18 @@ else
   echo "Could not select the Node version in .nvmrc ($(tr -d '[:space:]' <.nvmrc)); staying on $(node -v)." >&2
 fi
 
-if yarn install --frozen-lockfile >/dev/null; then
+lockfile_backup="$(mktemp)"
+cp yarn.lock "$lockfile_backup"
+
+install_ok=0
+yarn install --frozen-lockfile >/dev/null || install_ok=$?
+
+if ! cmp -s yarn.lock "$lockfile_backup"; then
+  cp "$lockfile_backup" yarn.lock
+fi
+rm -f "$lockfile_backup"
+
+if [ "$install_ok" -eq 0 ]; then
   echo "Node $(node -v) ready, dependencies installed."
 else
   echo "yarn install failed on $(node -v), which does not match .nvmrc. Expect src/tabs/Health/calories to fail with 'Temporal is not defined' until Node matches." >&2
