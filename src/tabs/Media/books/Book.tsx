@@ -16,20 +16,20 @@ type BookProps = {
 }
 
 export function Book({ book, list, author }: BookProps) {
-  const { updateInList, removeFromList } = useMediaStorage()
+  const { updateItem, removeFromList } = useMediaStorage()
 
   const updateTitle = (title: string) => {
-    updateInList(list, { ...book, title })
+    updateItem(list, { ...book, title })
   }
 
   const toggleDone = () => {
-    updateInList(list, { ...book, isDone: !book.isDone })
+    updateItem(list, { ...book, isDone: !book.isDone })
   }
 
   const updateMedium = () => {
     const medium =
       book.medium == null ? "📖" : book.medium === "📖" ? "🎧" : null
-    updateInList(list, { ...book, medium })
+    updateItem(list, { ...book, medium })
   }
 
   const deleteBook = () => {

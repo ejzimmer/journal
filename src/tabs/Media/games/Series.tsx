@@ -6,10 +6,10 @@ import { useMediaStorage } from "../MediaStorageContext"
 const GAMES: MediaList = { root: "games" }
 
 export function Series({ series }: { series: SeriesDetails<GameDetails> }) {
-  const { updateInList } = useMediaStorage()
+  const { updateItem } = useMediaStorage()
 
   const updateSeriesName = (name: string) => {
-    updateInList(GAMES, { ...series, name })
+    updateItem(GAMES, { ...series, name })
   }
 
   return (

@@ -8,14 +8,14 @@ import "./Game.css"
 import { useMediaStorage } from "../MediaStorageContext"
 
 export function Game({ game, list }: { game: GameDetails; list: MediaList }) {
-  const { updateInList, removeFromList } = useMediaStorage()
+  const { updateItem, removeFromList } = useMediaStorage()
 
   const updateTitle = (title: string) => {
-    updateInList(list, { ...game, title })
+    updateItem(list, { ...game, title })
   }
 
   const updateStatus = (status: GameDetails["status"]) => {
-    updateInList(list, { ...game, status })
+    updateItem(list, { ...game, status })
   }
 
   const deleteGame = () => {

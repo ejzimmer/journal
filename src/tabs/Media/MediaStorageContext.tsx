@@ -20,10 +20,10 @@ export type MediaStorageContextType = {
   isLoading: boolean
 
   authors: ListParent[]
-  seriesIn: (list: MediaList) => ListParent[]
+  getSeriesInList: (list: MediaList) => ListParent[]
 
   addToList: <T extends MediaItem>(list: MediaList, item: Omit<T, "id">) => void
-  updateInList: <T extends { id: string }>(list: MediaList, item: T) => void
+  updateItem: <T extends { id: string }>(list: MediaList, item: T) => void
   removeFromList: <T extends { id: string }>(list: MediaList, item: T) => void
   moveToList: <T extends { id: string }>(
     item: T,
@@ -36,16 +36,17 @@ export const MediaStorageContext = createContext<
   MediaStorageContextType | undefined
 >(undefined)
 
-const rootKey = (root: MediaRoot) => (root === "books" ? BOOKS_KEY : GAMES_KEY)
+const getRootKey = (root: MediaRoot) =>
+  root === "books" ? BOOKS_KEY : GAMES_KEY
 
-const parentsOf = ({ author, series }: MediaList) => {
+const getListParents = ({ author, series }: MediaList) => {
   const parents: { type: ParentType; parent: ListParent }[] = []
   if (author) parents.push({ type: "author", parent: author })
   if (series) parents.push({ type: "series", parent: series })
   return parents
 }
 
-const childrenOf = (item?: MediaItem) =>
+const getChildren = (item?: MediaItem) =>
   item?.type === "author" || item?.type === "series"
     ? (item.items as Record<string, MediaItem> | undefined)
     : undefined
@@ -55,47 +56,52 @@ const hasChildrenBesides = (
   leavingId: string,
 ) => Object.keys(children ?? {}).some((id) => id !== leavingId)
 
-const isParentOf = (list: MediaList | undefined, { id }: ListParent) =>
+const hasParent = (list: MediaList | undefined, { id }: ListParent) =>
   list?.author?.id === id || list?.series?.id === id
 
 export function MediaStorageProvider({ children }: { children: ReactNode }) {
-  const { addItem, updateItem, deleteItem, moveItemBetweenLists, useValue } =
-    useStorageContext()
+  const {
+    addItem: addAtPath,
+    updateItem: updateAtPath,
+    deleteItem: deleteAtPath,
+    moveItemBetweenLists,
+    useValue,
+  } = useStorageContext()
 
   const { value: books, loading: booksLoading } =
     useValue<Record<string, ReadingItemDetails>>(BOOKS_KEY)
   const { value: games, loading: gamesLoading } =
     useValue<Record<string, PlayingItemDetails>>(GAMES_KEY)
 
-  const itemsIn = (list: MediaList) => {
+  const getItems = (list: MediaList) => {
     let items = (list.root === "books" ? books : games) as
       Record<string, MediaItem> | undefined
 
-    for (const { parent } of parentsOf(list)) {
-      items = childrenOf(items?.[parent.id])
+    for (const { parent } of getListParents(list)) {
+      items = getChildren(items?.[parent.id])
     }
 
     return items
   }
 
-  const parentsIn = (list: MediaList, type: ParentType): ListParent[] =>
-    Object.values(itemsIn(list) ?? {})
+  const getParentsInList = (list: MediaList, type: ParentType): ListParent[] =>
+    Object.values(getItems(list) ?? {})
       .filter((item): item is ParentItem => item.type === type)
       .map(({ id, name }) => ({ id, name }))
 
-  const pathTo = (list: MediaList) =>
-    parentsOf(list).reduce(
+  const getPath = (list: MediaList) =>
+    getListParents(list).reduce(
       (path, { parent }) => `${path}/${parent.id}/items`,
-      rootKey(list.root),
+      getRootKey(list.root),
     )
 
-  const upsertPathTo = (list: MediaList) =>
-    parentsOf(list).reduce((path, { type, parent }) => {
-      const id = parent.id || addItem(path, { type, name: parent.name })
+  const upsertPath = (list: MediaList) =>
+    getListParents(list).reduce((path, { type, parent }) => {
+      const id = parent.id || addAtPath(path, { type, name: parent.name })
       return `${path}/${id}/items`
-    }, rootKey(list.root))
+    }, getRootKey(list.root))
 
-  const parentChain = (list: MediaList) => {
+  const getParentChain = (list: MediaList) => {
     const chain: {
       parent: ListParent
       list: MediaList
@@ -103,11 +109,11 @@ export function MediaStorageProvider({ children }: { children: ReactNode }) {
     }[] = []
     let containing: MediaList = { root: list.root }
 
-    for (const { type, parent } of parentsOf(list)) {
+    for (const { type, parent } of getListParents(list)) {
       chain.push({
         parent,
         list: containing,
-        children: childrenOf(itemsIn(containing)?.[parent.id]),
+        children: getChildren(getItems(containing)?.[parent.id]),
       })
       containing = { ...containing, [type]: parent }
     }
@@ -115,8 +121,12 @@ export function MediaStorageProvider({ children }: { children: ReactNode }) {
     return chain
   }
 
-  const parentEmptiedBy = (from: MediaList, itemId: string, to?: MediaList) => {
-    const chain = parentChain(from)
+  const getEmptiedParent = (
+    from: MediaList,
+    itemId: string,
+    to?: MediaList,
+  ) => {
+    const chain = getParentChain(from)
     let emptied: { list: MediaList; parent: ListParent } | undefined
 
     for (let index = chain.length - 1; index >= 0; index -= 1) {
@@ -124,7 +134,7 @@ export function MediaStorageProvider({ children }: { children: ReactNode }) {
       const leavingId =
         index === chain.length - 1 ? itemId : chain[index + 1].parent.id
 
-      if (isParentOf(to, parent) || hasChildrenBesides(children, leavingId)) {
+      if (hasParent(to, parent) || hasChildrenBesides(children, leavingId)) {
         break
       }
       emptied = { list, parent }
@@ -133,9 +143,13 @@ export function MediaStorageProvider({ children }: { children: ReactNode }) {
     return emptied
   }
 
-  const removeEmptied = (from: MediaList, itemId: string, to?: MediaList) => {
-    const emptied = parentEmptiedBy(from, itemId, to)
-    if (emptied) deleteItem(pathTo(emptied.list), emptied.parent)
+  const removeEmptiedParent = (
+    from: MediaList,
+    itemId: string,
+    to?: MediaList,
+  ) => {
+    const emptied = getEmptiedParent(from, itemId, to)
+    if (emptied) deleteAtPath(getPath(emptied.list), emptied.parent)
     return !!emptied
   }
 
@@ -144,24 +158,24 @@ export function MediaStorageProvider({ children }: { children: ReactNode }) {
     games,
     isLoading: booksLoading || gamesLoading,
 
-    authors: parentsIn({ root: "books" }, "author"),
-    seriesIn: (list) => parentsIn(list, "series"),
+    authors: getParentsInList({ root: "books" }, "author"),
+    getSeriesInList: (list) => getParentsInList(list, "series"),
 
     addToList: (list, item) => {
-      addItem(upsertPathTo(list), item)
+      addAtPath(upsertPath(list), item)
     },
-    updateInList: (list, item) => {
-      updateItem(pathTo(list), item)
+    updateItem: (list, item) => {
+      updateAtPath(getPath(list), item)
     },
     removeFromList: (list, item) => {
-      if (!removeEmptied(list, item.id)) deleteItem(pathTo(list), item)
+      if (!removeEmptiedParent(list, item.id)) deleteAtPath(getPath(list), item)
     },
     moveToList: (item, from, to) => {
-      const targetPath = upsertPathTo(to)
-      const sourcePath = pathTo(from)
+      const targetPath = upsertPath(to)
+      const sourcePath = getPath(from)
 
       if (targetPath === sourcePath) {
-        updateItem(sourcePath, item)
+        updateAtPath(sourcePath, item)
         return
       }
 
@@ -170,7 +184,7 @@ export function MediaStorageProvider({ children }: { children: ReactNode }) {
         sourceListId: sourcePath,
         targetListId: targetPath,
       })
-      removeEmptied(from, item.id, to)
+      removeEmptiedParent(from, item.id, to)
     },
   }
 

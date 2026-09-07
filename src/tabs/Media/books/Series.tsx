@@ -13,10 +13,10 @@ type SeriesProps = {
 }
 
 export function Series({ series, list, author }: SeriesProps) {
-  const { updateInList } = useMediaStorage()
+  const { updateItem } = useMediaStorage()
 
   const updateSeriesName = (name: string) => {
-    updateInList(list, { ...series, name })
+    updateItem(list, { ...series, name })
   }
 
   return (

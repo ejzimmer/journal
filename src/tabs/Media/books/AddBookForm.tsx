@@ -6,7 +6,7 @@ import { OptionType } from "../../../shared/controls/combobox/types"
 import { SubmitButton } from "../SubmitButton"
 import { useMediaStorage } from "../MediaStorageContext"
 
-const toParent = (option?: OptionType) =>
+const convertToListParent = (option?: OptionType) =>
   option && { id: option.id, name: option.label }
 
 export function AddBookForm() {
@@ -14,11 +14,11 @@ export function AddBookForm() {
   const [author, setAuthor] = useState<OptionType>()
   const [series, setSeries] = useState<OptionType>()
 
-  const { authors, seriesIn, addToList } = useMediaStorage()
+  const { authors, getSeriesInList, addToList } = useMediaStorage()
 
-  const seriesOptions = seriesIn({
+  const seriesOptions = getSeriesInList({
     root: "books",
-    author: author?.id ? toParent(author) : undefined,
+    author: author?.id ? convertToListParent(author) : undefined,
   }).map(({ id, name }) => ({ id, label: name }))
 
   const createItem = (event: React.FormEvent) => {
@@ -28,7 +28,11 @@ export function AddBookForm() {
     if (!title) return
 
     addToList<BookDetails>(
-      { root: "books", author: toParent(author), series: toParent(series) },
+      {
+        root: "books",
+        author: convertToListParent(author),
+        series: convertToListParent(series),
+      },
       { type: "book", title },
     )
     ;(event.target as HTMLFormElement).reset()

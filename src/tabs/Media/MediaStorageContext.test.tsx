@@ -329,12 +329,12 @@ describe("MediaStorageContext", () => {
     })
   })
 
-  describe("seriesIn", () => {
+  describe("getSeriesInList", () => {
     it("offers only the series belonging to the given author", () => {
       const { storage } = renderMediaStorage()
 
       expect(
-        storage.seriesIn({
+        storage.getSeriesInList({
           root: "books",
           author: { id: "pratchett", name: "Terry Pratchett" },
         }),
@@ -347,7 +347,7 @@ describe("MediaStorageContext", () => {
     it("offers the series with no author when no author is given", () => {
       const { storage } = renderMediaStorage()
 
-      expect(storage.seriesIn({ root: "books" })).toEqual([
+      expect(storage.getSeriesInList({ root: "books" })).toEqual([
         { id: "earthsea", name: "Earthsea" },
       ])
     })

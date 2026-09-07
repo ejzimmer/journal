@@ -6,14 +6,14 @@ import { OptionType } from "../../../shared/controls/combobox/types"
 import { SubmitButton } from "../SubmitButton"
 import { useMediaStorage } from "../MediaStorageContext"
 
-const toParent = (option?: OptionType) =>
+const convertToListParent = (option?: OptionType) =>
   option && { id: option.id, name: option.label }
 
 export function AddGameForm() {
   const titleRef = useRef<HTMLInputElement>(null)
   const [series, setSeries] = useState<OptionType>()
 
-  const { seriesIn, addToList } = useMediaStorage()
+  const { getSeriesInList, addToList } = useMediaStorage()
 
   const createItem = (event: React.FormEvent) => {
     event.preventDefault()
@@ -22,7 +22,7 @@ export function AddGameForm() {
     if (!title) return
 
     addToList<GameDetails>(
-      { root: "games", series: toParent(series) },
+      { root: "games", series: convertToListParent(series) },
       { type: "game", title },
     )
     ;(event.target as HTMLFormElement).reset()
@@ -35,7 +35,7 @@ export function AddGameForm() {
       <Combobox
         label="Series name"
         value={series}
-        options={seriesIn({ root: "games" }).map(({ id, name }) => ({
+        options={getSeriesInList({ root: "games" }).map(({ id, name }) => ({
           id,
           label: name,
         }))}

@@ -9,7 +9,7 @@ const leguin: ListParent = { id: "leguin", name: "Ursula Le Guin" }
 const discworld: ListParent = { id: "discworld", name: "Discworld" }
 const earthsea: ListParent = { id: "earthsea", name: "Earthsea" }
 
-const seriesIn = ({ author }: MediaList) => {
+const getSeriesInList = ({ author }: MediaList) => {
   if (!author) return [earthsea]
   return author.id === pratchett.id ? [discworld] : []
 }
@@ -17,7 +17,7 @@ const seriesIn = ({ author }: MediaList) => {
 const renderAddBookForm = () =>
   renderWithMediaStorage(<AddBookForm />, {
     authors: [pratchett, leguin],
-    seriesIn,
+    getSeriesInList,
   })
 
 describe("AddBookForm", () => {

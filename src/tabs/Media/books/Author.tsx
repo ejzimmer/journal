@@ -9,7 +9,7 @@ import { useMediaStorage } from "../MediaStorageContext"
 const BOOKS: MediaList = { root: "books" }
 
 export function Author({ author }: { author: AuthorDetails }) {
-  const { updateInList } = useMediaStorage()
+  const { updateItem } = useMediaStorage()
 
   const items = author.items ? Object.values(author.items) : []
   const list: MediaList = {
@@ -18,7 +18,7 @@ export function Author({ author }: { author: AuthorDetails }) {
   }
 
   const updateAuthorName = (name: string) => {
-    updateInList(BOOKS, { ...author, name })
+    updateItem(BOOKS, { ...author, name })
   }
   const asAuthorOfSingleItem = {
     name: author.name,
