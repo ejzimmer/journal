@@ -18,6 +18,8 @@ import {
 import { useDropTarget } from "../../shared/drag-and-drop/useDropTarget"
 import { isDraggable, sortByPosition } from "../../shared/drag-and-drop/utils"
 import { useDraggableList } from "../../shared/drag-and-drop/useDraggableList"
+import { useOpenHeight } from "./useOpenHeight"
+import { useScrollIntoViewWhenOpened } from "./useScrollIntoViewWhenOpened"
 
 type SubtasksProps = {
   projectId: string
@@ -26,11 +28,9 @@ type SubtasksProps = {
 
 export function SubtaskList({ projectId, isVisible }: SubtasksProps) {
   const [formVisible, setFormVisible] = useState(false)
-  const [containerHeight, setContainerHeight] = useState(0)
-  const containerRef = useRef<HTMLDivElement>(null)
+  const sectionRef = useRef<HTMLDivElement>(null)
   const listRef = useRef<HTMLOListElement>(null)
-  const formContainerRef = useRef<HTMLDivElement>(null)
-  const hasRevealedSubtasks = useRef(false)
+  const formRef = useRef<HTMLDivElement>(null)
   const subtasksKey = getSubtasksKey(projectId)
 
   const { useValue, addItem, updateList } = useStorageContext()
@@ -52,37 +52,18 @@ export function SubtaskList({ projectId, isVisible }: SubtasksProps) {
     })
   }
 
-  useEffect(() => {
-    if (listRef.current && formContainerRef.current) {
-      setContainerHeight(
-        listRef.current.clientHeight + formContainerRef.current.clientHeight,
-      )
-    }
-  }, [subtasks, isProjectLoaded])
+  const openHeight = useOpenHeight({
+    listRef,
+    formRef,
+    subtasks,
+    isProjectLoaded,
+  })
 
-  useEffect(() => {
-    if (!isVisible) {
-      hasRevealedSubtasks.current = false
-      return
-    }
-
-    const container = containerRef.current
-    if (hasRevealedSubtasks.current || !containerHeight || !container) return
-    hasRevealedSubtasks.current = true
-
-    const cardTop = container.parentElement?.getBoundingClientRect().top ?? 0
-    const hiddenBelowFold =
-      container.getBoundingClientRect().top +
-      containerHeight -
-      window.innerHeight
-
-    if (hiddenBelowFold > 0) {
-      window.scrollBy({
-        top: Math.min(hiddenBelowFold, cardTop),
-        behavior: "smooth",
-      })
-    }
-  }, [isVisible, containerHeight])
+  useScrollIntoViewWhenOpened({
+    sectionRef,
+    openHeight,
+    isOpen: isVisible,
+  })
 
   useDropTarget({
     dropTargetRef: listRef,
@@ -149,8 +130,8 @@ export function SubtaskList({ projectId, isVisible }: SubtasksProps) {
   return (
     <div
       className={`subtasks-section ${isVisible ? "visible" : ""}`}
-      style={{ height: isVisible ? containerHeight : 0 }}
-      ref={containerRef}
+      style={{ height: isVisible ? openHeight : 0 }}
+      ref={sectionRef}
     >
       <ol className="subtasks" ref={listRef}>
         {sortedTasks.map((task, index) => (
@@ -172,7 +153,7 @@ export function SubtaskList({ projectId, isVisible }: SubtasksProps) {
         ))}
       </ol>
       <div
-        ref={formContainerRef}
+        ref={formRef}
         style={{
           display: "flex",
           alignItems: "center",
