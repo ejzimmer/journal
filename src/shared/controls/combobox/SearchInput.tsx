@@ -10,6 +10,7 @@ export function SearchInput({
   isPopoverOpen,
   size,
   ariaLabel,
+  autoFocus,
 }: SearchInputProps) {
   return (
     <input
@@ -22,6 +23,7 @@ export function SearchInput({
       onChange={onChange}
       onClick={onClick}
       autoComplete="off"
+      autoFocus={autoFocus}
       size={size}
       aria-label={ariaLabel}
     />

@@ -10,6 +10,14 @@ Don't commit screenshots into the repo to get them into a PR description - GitHu
 
 Don't reach for a `let` at module scope to pass ephemeral state between component instances (e.g. "which item should regain focus after the next render"). It's invisible to React's data flow and got flagged in review. Reach for a hook instead - often a plain `useRef` inside the component already does the job: React preserves a component instance (and its refs/state) across a re-render as long as its `key` doesn't change, even if it moves position within a keyed list, so state that only needs to survive "this instance, across its own re-render" doesn't need to live outside the component at all. Only use React Context (with a Provider mounted above the components that need to share it) for state that genuinely must be shared *across* different component instances.
 
+## Don't write code comments unless asked
+
+Default to no comments at all. Write code that reads on its own - name things well, keep functions small - and leave the explanation out. A comment that feels necessary is usually a sign the code needs rewriting rather than annotating. This applies to every language and file type here, scripts and config included. The reasoning behind a change belongs in the commit message or the PR description, where it has room and context; the file itself should just be the code. Only add a comment when explicitly asked for one.
+
+## Node version
+
+The project runs on the Node version in `.nvmrc` (also pinned in `package.json` engines). Containers for Claude Code on the web start on an older Node, where `yarn` refuses to install and the `src/tabs/Health/calories` suites fail with `Temporal is not defined`. `.claude/hooks/session-start.sh` installs and selects the pinned version at session start; if those failures ever show up, check `node -v` before treating them as pre-existing.
+
 ## No comments that document abandoned approaches
 
 A code comment should explain the code that's actually there - never an alternative you tried, reasoned about, and discarded before landing on the final version. Comments like "this doesn't need X" or "unlike the previous approach, this avoids Y" reference an implementation history that isn't in the file: nothing on the page shows what X or "the previous approach" was, so a future reader (who never saw your intermediate attempts) has no way to resolve what the comment is contrasting against. It reads as confusing at best, meaningless at worst.

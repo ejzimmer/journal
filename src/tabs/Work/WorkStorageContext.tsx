@@ -57,6 +57,7 @@ export type WorkStorageContextType = {
   labels: StoredLabel[]
   getLabel: (id: string) => StoredLabel | undefined
   addLabel: (label: Label, entity: WorkTask) => void
+  changeLabels: (labels: Label[], entity: WorkTask) => void
   removeLabel: (id: string, entity: WorkTask) => void
   updateLabel: (id: string, colour: Colour) => void
 }
@@ -161,8 +162,26 @@ export function WorkStorageProvider({ children }: { children: ReactNode }) {
     }
   }
 
+  const diffLabelIds = (
+    oldLabelIds: string[] = [],
+    newLabelIds: string[] = [],
+  ) => ({
+    removed: new Set(oldLabelIds.filter((id) => !newLabelIds.includes(id))),
+    added: new Set(newLabelIds.filter((id) => !oldLabelIds.includes(id))),
+  })
+
+  const applyLabelUsage = (removed: Set<string>, added: Set<string>) => {
+    removed.forEach((id) => markUnusedLabel(id))
+    added.forEach((id) => markLabelAsUsed(id))
+  }
+
   const updateList = (list: WorkTask) => {
+    const previousList = lists?.[list.id]
     updateItem(WORK_KEY, list)
+    if (!previousList) return
+
+    const { removed, added } = diffLabelIds(previousList.labelIds, list.labelIds)
+    applyLabelUsage(removed, added)
   }
 
   const updateTask = (listId: string, task: WorkTask) => {
@@ -170,24 +189,17 @@ export function WorkStorageProvider({ children }: { children: ReactNode }) {
     updateItem(`${WORK_KEY}/${listId}/items`, task)
     if (!previousTask) return
 
-    const oldLabelIds = previousTask.labelIds ?? []
+    const { removed, added } = diffLabelIds(previousTask.labelIds, task.labelIds)
     const newLabelIds = task.labelIds ?? []
-    const removedLabelIds = new Set(
-      oldLabelIds.filter((id) => !newLabelIds.includes(id)),
-    )
-    const addedLabelIds = new Set(
-      newLabelIds.filter((id) => !oldLabelIds.includes(id)),
-    )
 
     if (previousTask.status !== "done" && task.status === "done") {
-      newLabelIds.forEach((id) => removedLabelIds.add(id))
+      newLabelIds.forEach((id) => removed.add(id))
     }
     if (previousTask.status === "done" && task.status !== "done") {
-      newLabelIds.forEach((id) => addedLabelIds.add(id))
+      newLabelIds.forEach((id) => added.add(id))
     }
 
-    removedLabelIds.forEach((id) => markUnusedLabel(id))
-    addedLabelIds.forEach((id) => markLabelAsUsed(id))
+    applyLabelUsage(removed, added)
   }
 
   const value: WorkStorageContextType = {
@@ -264,6 +276,15 @@ export function WorkStorageProvider({ children }: { children: ReactNode }) {
       const id = upsertLabel(label)
       const labelIds = Array.from(new Set([...(entity.labelIds ?? []), id]))
       updateItem(entity.parentId, { ...entity, labelIds })
+    },
+    changeLabels: (labels, entity) => {
+      const labelIds = Array.from(
+        new Set(labels.map((label) => upsertLabel(label))),
+      )
+      updateItem(entity.parentId, { ...entity, labelIds })
+
+      const { removed, added } = diffLabelIds(entity.labelIds, labelIds)
+      applyLabelUsage(removed, added)
     },
     removeLabel: (id, entity) => {
       const labelIds = (entity.labelIds ?? []).filter(

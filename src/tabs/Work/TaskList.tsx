@@ -67,7 +67,7 @@ export function TaskList({
     reorderTasks,
     addTask,
     getLabel,
-    addLabel,
+    changeLabels,
     removeLabel,
   } = useWorkStorage()
 
@@ -132,19 +132,13 @@ export function TaskList({
               <LabelsControl
                 value={listLabel ? [listLabel] : []}
                 onChange={(labels) => {
-                  const oldId = list.labelIds?.[0]
-                  if (oldId) {
-                    removeLabel(oldId, list)
-                  }
-                  const newLabel = labels[0]
-                  if (newLabel) {
-                    addLabel(newLabel, list)
-                  }
+                  changeLabels(labels, list)
                   setEditingLabel(false)
                 }}
                 label=""
                 isMulti={false}
                 autoFocus
+                onDismiss={() => setEditingLabel(false)}
               />
             ) : (
               <>

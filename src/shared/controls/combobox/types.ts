@@ -15,6 +15,7 @@ type BaseProps<T> = {
   inputSize?: number
   ariaLabel?: string
   autoFocus?: boolean
+  onDismiss?: () => void
 }
 type SingleValueProps<T> = BaseProps<T> & {
   isMultiValue?: false
@@ -54,6 +55,7 @@ export type SearchInputProps = {
   onClick: (event: React.MouseEvent) => void
   size?: number
   ariaLabel?: string
+  autoFocus?: boolean
 }
 
 export type ComboboxProps<T extends OptionType> =

@@ -363,6 +363,125 @@ describe("WorkStorageContext labels", () => {
     })
   })
 
+  describe("changeLabels", () => {
+    it("replaces the entity's labelIds with the given labels", () => {
+      const list = makeList("list-1", { labelIds: [a11yLabel.id] })
+      const firebaseContext = createFirebaseContext({ [list.id]: list }, storedLabels)
+      const workStorage = getWorkStorage(firebaseContext)
+
+      workStorage?.changeLabels([{ value: "urgent", colour: "yellow" }], list)
+
+      expect(firebaseContext.updateItem).toHaveBeenCalledWith("work", {
+        ...list,
+        labelIds: [urgentLabel.id],
+      })
+    })
+
+    it("keeps every label it is given, not just the first", () => {
+      const task = makeTask("list-1", { labelIds: [a11yLabel.id] })
+      const list = makeList("list-1", { items: { [task.id]: task } })
+      const firebaseContext = createFirebaseContext({ [list.id]: list }, storedLabels)
+      const workStorage = getWorkStorage(firebaseContext)
+
+      workStorage?.changeLabels(
+        [
+          { value: "a11y", colour: "blue" },
+          { value: "urgent", colour: "yellow" },
+        ],
+        task,
+      )
+
+      expect(firebaseContext.updateItem).toHaveBeenCalledWith(
+        "work/list-1/items",
+        { ...task, labelIds: [a11yLabel.id, urgentLabel.id] },
+      )
+    })
+
+    it("creates a label that doesn't exist yet", () => {
+      const list = makeList("list-1", { labelIds: [a11yLabel.id] })
+      const firebaseContext = createFirebaseContext({ [list.id]: list }, storedLabels)
+      const workStorage = getWorkStorage(firebaseContext)
+
+      workStorage?.changeLabels([{ value: "blocked", colour: "red" }], list)
+
+      expect(firebaseContext.addItem).toHaveBeenCalledWith(LABELS_KEY, {
+        value: "blocked",
+        colour: "red",
+      })
+    })
+
+    it("marks a dropped label unused once nothing else references it", () => {
+      const list = makeList("list-1", { labelIds: [a11yLabel.id] })
+      const firebaseContext = createFirebaseContext({ [list.id]: list }, storedLabels)
+      const workStorage = getWorkStorage(firebaseContext)
+
+      workStorage?.changeLabels([{ value: "urgent", colour: "yellow" }], list)
+
+      expect(firebaseContext.updateItem).toHaveBeenCalledWith(LABELS_KEY, {
+        ...a11yLabel,
+        lastRemoved: expect.any(Number),
+      })
+    })
+
+    it("leaves a dropped label alone while another entity still uses it", () => {
+      const task = makeTask("list-1", { labelIds: [a11yLabel.id] })
+      const list = makeList("list-1", {
+        labelIds: [a11yLabel.id],
+        items: { [task.id]: task },
+      })
+      const firebaseContext = createFirebaseContext({ [list.id]: list }, storedLabels)
+      const workStorage = getWorkStorage(firebaseContext)
+
+      workStorage?.changeLabels([{ value: "urgent", colour: "yellow" }], list)
+
+      expect(firebaseContext.updateItem).not.toHaveBeenCalledWith(
+        LABELS_KEY,
+        expect.objectContaining({ id: a11yLabel.id }),
+      )
+    })
+
+    it("does not mark a label unused when it is kept", () => {
+      const list = makeList("list-1", { labelIds: [urgentLabel.id] })
+      const firebaseContext = createFirebaseContext({ [list.id]: list }, storedLabels)
+      const workStorage = getWorkStorage(firebaseContext)
+
+      workStorage?.changeLabels([{ value: "urgent", colour: "yellow" }], list)
+
+      expect(firebaseContext.updateItem).not.toHaveBeenCalledWith(
+        LABELS_KEY,
+        expect.objectContaining({ lastRemoved: expect.any(Number) }),
+      )
+    })
+  })
+
+  describe("updateList", () => {
+    it("marks a label unused when the list stops referencing it", () => {
+      const list = makeList("list-1", { labelIds: [a11yLabel.id] })
+      const firebaseContext = createFirebaseContext({ [list.id]: list }, storedLabels)
+      const workStorage = getWorkStorage(firebaseContext)
+
+      workStorage?.updateList({ ...list, labelIds: [] })
+
+      expect(firebaseContext.updateItem).toHaveBeenCalledWith(LABELS_KEY, {
+        ...a11yLabel,
+        lastRemoved: expect.any(Number),
+      })
+    })
+
+    it("leaves labels alone when only the description changes", () => {
+      const list = makeList("list-1", { labelIds: [a11yLabel.id] })
+      const firebaseContext = createFirebaseContext({ [list.id]: list }, storedLabels)
+      const workStorage = getWorkStorage(firebaseContext)
+
+      workStorage?.updateList({ ...list, description: "Renamed" })
+
+      expect(firebaseContext.updateItem).not.toHaveBeenCalledWith(
+        LABELS_KEY,
+        expect.anything(),
+      )
+    })
+  })
+
   describe("removeLabel", () => {
     it("removes the id from the entity's labelIds", () => {
       const task = makeTask("list-1", { labelIds: [a11yLabel.id] })

@@ -18,6 +18,7 @@ export function UpdateLabels({
         setAddingLabel(false)
       }}
       label=""
+      onDismiss={() => setAddingLabel(false)}
     />
   ) : (
     <button
