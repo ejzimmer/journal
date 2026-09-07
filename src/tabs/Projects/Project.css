@@ -86,12 +86,15 @@
       opacity 0.1s 0.2s linear;
 
     &.visible {
+      --seam-shadow: linear-gradient(
+        to bottom,
+        hsl(0 0% 0% / 0.35),
+        transparent
+      );
+
       opacity: 1;
       overflow: visible;
-      background:
-        linear-gradient(to bottom, hsl(0 0% 0% / 0.35), transparent) top / 100%
-          8px no-repeat,
-        white;
+      background: var(--seam-shadow) top / 100% 8px no-repeat, white;
       border: 1px solid var(--project-border-colour);
       border-top: none;
     }
