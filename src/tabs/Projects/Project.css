@@ -1,12 +1,15 @@
 .project {
   --project-colour-light: color(from var(--project-colour) srgb r g b / 0.2);
   --project-border-colour: color(from var(--project-colour) srgb r g b / 1);
+  --card-max: min(840px, 80vw);
   position: relative;
   flex-shrink: 0;
   list-style-type: none;
   background: var(--project-colour-light);
   font-size: 18px;
   align-self: start;
+  min-width: 0;
+  transition: min-width 0.2s ease-out;
 
   &:has(.subtasks-section.visible) {
     z-index: 1;
@@ -78,7 +81,9 @@
   .subtasks-section {
     position: absolute;
     inset-block-start: 100%;
-    inset-inline: 0;
+    inset-inline-start: 0;
+    width: 100%;
+    max-width: var(--card-max);
     opacity: 0;
     overflow: hidden;
     transition:
@@ -167,7 +172,7 @@
 
   ol.subtasks {
     padding-inline-start: 5.5px;
-    padding-inline-end: 0px;
+    padding-inline-end: 12px;
   }
 
   form.add-subtask-form.visible {
