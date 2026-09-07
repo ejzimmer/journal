@@ -1,31 +1,25 @@
-import { GameDetails } from "../types"
+import { GameDetails, MediaList } from "../types"
 
 import { XIcon } from "../../../shared/icons/X"
 import { EditableText } from "../../../shared/controls/EditableText"
 import { Checkbox } from "../../../shared/controls/Checkbox"
 
 import "./Game.css"
-import { useStorageContext } from "../../../shared/FirebaseContext"
+import { useMediaStorage } from "../MediaStorageContext"
 
-export function Game({ game, path }: { game: GameDetails; path: string }) {
-  const { updateItem, deleteItem } = useStorageContext()
+export function Game({ game, list }: { game: GameDetails; list: MediaList }) {
+  const { updateInList, removeFromList } = useMediaStorage()
 
   const updateTitle = (title: string) => {
-    updateItem<GameDetails>(path, {
-      ...game,
-      title,
-    })
+    updateInList(list, { ...game, title })
   }
 
   const updateStatus = (status: GameDetails["status"]) => {
-    updateItem<GameDetails>(path, {
-      ...game,
-      status,
-    })
+    updateInList(list, { ...game, status })
   }
 
   const deleteGame = () => {
-    deleteItem(path, game)
+    removeFromList(list, game)
   }
 
   return (

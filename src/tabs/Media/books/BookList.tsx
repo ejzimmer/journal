@@ -1,12 +1,12 @@
 import { Book } from "./Book"
-import { BookDetails } from "../types"
+import { BookDetails, MediaList } from "../types"
 
 export function BookList({
   books,
-  path,
+  list,
 }: {
   books?: Record<string, BookDetails>
-  path: string
+  list: MediaList
 }) {
   const bookDetails = books ? Object.values(books) : undefined
 
@@ -14,7 +14,7 @@ export function BookList({
     bookDetails && (
       <ul>
         {bookDetails.map((book) => (
-          <Book key={book.id} book={book} path={path} />
+          <Book key={book.id} book={book} list={list} />
         ))}
       </ul>
     )

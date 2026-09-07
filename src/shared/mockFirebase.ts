@@ -134,7 +134,7 @@ export function createMockFirebaseContext(
       write(path, value)
       notify(path)
     },
-    moveItemBetweenLists<T extends { id: string; position: number }>({
+    moveItemBetweenLists<T extends { id: string; position?: number }>({
       movedItem,
       sourceListId,
       targetListId,
@@ -143,18 +143,24 @@ export function createMockFirebaseContext(
       movedItem: T
       sourceListId: string
       targetListId: string
-      targetListItems?: T[]
+      targetListItems?: (T & { position: number })[]
     }) {
-      const updates: Record<string, unknown> = {
+      const { position } = movedItem
+      const positions: Record<string, number> = {}
+      if (position !== undefined) {
+        targetListItems.forEach((existingItem) => {
+          positions[`${targetListId}/${existingItem.id}/position`] =
+            existingItem.position < position
+              ? existingItem.position
+              : existingItem.position + 1
+        })
+      }
+
+      const updates: Record<string, T | null | number> = {
         [`${targetListId}/${movedItem.id}`]: movedItem,
         [`${sourceListId}/${movedItem.id}`]: null,
+        ...positions,
       }
-      targetListItems.forEach((existingItem) => {
-        updates[`${targetListId}/${existingItem.id}/position`] =
-          existingItem.position < movedItem.position
-            ? existingItem.position
-            : existingItem.position + 1
-      })
       Object.entries(updates).forEach(([path, value]) => write(path, value))
       Object.keys(updates).forEach((path) => notify(path))
     },

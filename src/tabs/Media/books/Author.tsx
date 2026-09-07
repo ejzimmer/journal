@@ -1,42 +1,41 @@
 import { Fragment } from "react"
-import { useStorageContext } from "../../../shared/FirebaseContext"
-import { AuthorDetails, BOOKS_KEY } from "../types"
+import { AuthorDetails, MediaList } from "../types"
 import { EditableText } from "../../../shared/controls/EditableText"
 import { getComponent } from "./utils"
 import { Book } from "./Book"
 import { Series } from "./Series"
+import { useMediaStorage } from "../MediaStorageContext"
+
+const BOOKS: MediaList = { root: "books" }
 
 export function Author({ author }: { author: AuthorDetails }) {
-  const { updateItem } = useStorageContext()
+  const { updateInList } = useMediaStorage()
 
-  const path = `${BOOKS_KEY}/${author.id}/items`
-  const items = author.items ? Object.values(author.items) : undefined
-
-  const updateAuthorName = (name: string) => {
-    updateItem<AuthorDetails>(BOOKS_KEY, { ...author, name })
+  const items = author.items ? Object.values(author.items) : []
+  const list: MediaList = {
+    root: "books",
+    author: { id: author.id, name: author.name },
   }
 
-  if (items === undefined || items.length === 0) {
+  const updateAuthorName = (name: string) => {
+    updateInList(BOOKS, { ...author, name })
+  }
+  const asAuthorOfSingleItem = {
+    name: author.name,
+    onChange: updateAuthorName,
+  }
+
+  if (items.length === 0) {
     return null
   }
 
   if (items.length === 1 && items[0].type === "book") {
-    return (
-      <Book
-        book={items[0]}
-        path={path}
-        author={{ name: author.name, onChange: updateAuthorName }}
-      />
-    )
+    return <Book book={items[0]} list={list} author={asAuthorOfSingleItem} />
   }
 
   if (items.length === 1 && items[0].type === "series") {
     return (
-      <Series
-        path={path}
-        series={items[0]}
-        author={{ name: author.name, onChange: updateAuthorName }}
-      />
+      <Series series={items[0]} list={list} author={asAuthorOfSingleItem} />
     )
   }
 
@@ -49,13 +48,11 @@ export function Author({ author }: { author: AuthorDetails }) {
           onChange={updateAuthorName}
         />
       </div>
-      {items && (
-        <ul>
-          {items.map((item) => (
-            <Fragment key={item.id}>{getComponent(item, path)}</Fragment>
-          ))}
-        </ul>
-      )}
+      <ul>
+        {items.map((item) => (
+          <Fragment key={item.id}>{getComponent(item, list)}</Fragment>
+        ))}
+      </ul>
     </li>
   )
 }

@@ -40,3 +40,16 @@ export type PlayingItemDetails = GameDetails | SeriesDetails<GameDetails>
 export const isSeries = (
   item: ReadingItemDetails | PlayingItemDetails
 ): item is SeriesDetails<any> => item.type === "series"
+
+export type MediaRoot = "books" | "games"
+
+export type ListParent = {
+  id: string
+  name: string
+}
+
+export type MediaList = {
+  root: MediaRoot
+  author?: ListParent
+  series?: ListParent
+}

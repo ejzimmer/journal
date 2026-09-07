@@ -24,11 +24,11 @@ export interface ContextType {
   updateList: <T extends Item>(listName: string, list: T[]) => void
   setValue: <T>(path: string, value: T) => void
   useValue: <T>(key?: string) => { value?: T; loading: boolean }
-  moveItemBetweenLists: <T extends { id: string; position: number }>(args: {
+  moveItemBetweenLists: <T extends { id: string; position?: number }>(args: {
     movedItem: T
     sourceListId: string
     targetListId: string
-    targetListItems?: T[]
+    targetListItems?: (T & { position: number })[]
   }) => void
 }
 
@@ -97,16 +97,22 @@ export function createFirebaseContext(database: Database): ContextType {
       targetListId,
       targetListItems = [],
     }) => {
-      const updates: Record<string, unknown> = {
+      const { position } = movedItem
+      const positions: Record<string, number> = {}
+      if (position !== undefined) {
+        targetListItems.forEach((existingItem) => {
+          positions[`${targetListId}/${existingItem.id}/position`] =
+            existingItem.position < position
+              ? existingItem.position
+              : existingItem.position + 1
+        })
+      }
+
+      const updates: Record<string, typeof movedItem | null | number> = {
         [`${targetListId}/${movedItem.id}`]: movedItem,
         [`${sourceListId}/${movedItem.id}`]: null,
+        ...positions,
       }
-      targetListItems.forEach((existingItem) => {
-        updates[`${targetListId}/${existingItem.id}/position`] =
-          existingItem.position < movedItem.position
-            ? existingItem.position
-            : existingItem.position + 1
-      })
       update(ref(database), updates).catch((error) => {
         console.error("moveItemBetweenLists failed", updates, error)
       })

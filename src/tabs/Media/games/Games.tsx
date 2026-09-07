@@ -1,24 +1,24 @@
 import { Fragment } from "react"
 import { AddGameForm } from "./AddGameForm"
-import { GAMES_KEY, PlayingItemDetails } from "../types"
+import { MediaList, PlayingItemDetails } from "../types"
 import { Game } from "./Game"
 import { Series } from "./Series"
-import { useStorageContext } from "../../../shared/FirebaseContext"
+import { useMediaStorage } from "../MediaStorageContext"
+
+const GAMES: MediaList = { root: "games" }
 
 function getComponent<T extends PlayingItemDetails>(item: T) {
   switch (item.type) {
     case "game":
-      return <Game game={item} path={GAMES_KEY} />
+      return <Game game={item} list={GAMES} />
     case "series":
-      return <Series series={item} path={GAMES_KEY} />
+      return <Series series={item} />
   }
 }
 
 export function Games() {
-  const { useValue } = useStorageContext()
-
-  const { value } = useValue<Record<string, PlayingItemDetails>>(GAMES_KEY)
-  const items = value ? Object.values(value) : []
+  const { games } = useMediaStorage()
+  const items = Object.values(games ?? {})
 
   return (
     <div className="games">

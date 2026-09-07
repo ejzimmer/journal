@@ -1,22 +1,15 @@
 import { EditableText } from "../../../shared/controls/EditableText"
 import { GameList } from "./GameList"
-import { GameDetails, GAMES_KEY, SeriesDetails } from "../types"
-import { useStorageContext } from "../../../shared/FirebaseContext"
+import { GameDetails, MediaList, SeriesDetails } from "../types"
+import { useMediaStorage } from "../MediaStorageContext"
 
-export function Series({
-  series,
-  path,
-}: {
-  series: SeriesDetails<GameDetails>
-  path: string
-}) {
-  const { updateItem } = useStorageContext()
+const GAMES: MediaList = { root: "games" }
+
+export function Series({ series }: { series: SeriesDetails<GameDetails> }) {
+  const { updateInList } = useMediaStorage()
 
   const updateSeriesName = (name: string) => {
-    updateItem<SeriesDetails<GameDetails>>(path, {
-      ...series,
-      name,
-    })
+    updateInList(GAMES, { ...series, name })
   }
 
   return (
@@ -30,8 +23,11 @@ export function Series({
         />
       </div>
       <GameList
-        games={series.items as Record<string, GameDetails>}
-        path={`${GAMES_KEY}/${series.id}/items`}
+        games={series.items}
+        list={{
+          root: "games",
+          series: { id: series.id, name: series.name },
+        }}
       />
     </li>
   )

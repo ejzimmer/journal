@@ -1,12 +1,12 @@
 import { Game } from "./Game"
-import { GameDetails } from "../types"
+import { GameDetails, MediaList } from "../types"
 
 export function GameList({
   games,
-  path,
+  list,
 }: {
   games?: Record<string, GameDetails>
-  path: string
+  list: MediaList
 }) {
   const gameDetails = games ? Object.values(games) : undefined
 
@@ -14,7 +14,7 @@ export function GameList({
     gameDetails && (
       <ul>
         {gameDetails.map((game) => (
-          <Game key={game.id} game={game} path={path} />
+          <Game key={game.id} game={game} list={list} />
         ))}
       </ul>
     )
