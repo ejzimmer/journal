@@ -22,10 +22,17 @@ export function useDrawer({
   const hasScrolledIntoView = useRef(false)
 
   useEffect(() => {
-    if (!listRef.current || !formRef.current) return
+    const drawer = drawerRef.current
+    if (!drawer || !listRef.current || !formRef.current) return
 
     setOpenHeight(listRef.current.clientHeight + formRef.current.clientHeight)
-  }, [listRef, formRef, subtasks, isProjectLoaded])
+
+    const card = drawer.parentElement
+    if (!card) return
+
+    card.style.minWidth = ""
+    card.style.minWidth = `${drawer.offsetWidth}px`
+  }, [drawerRef, listRef, formRef, subtasks, isProjectLoaded])
 
   useEffect(() => {
     if (!isOpen) {
