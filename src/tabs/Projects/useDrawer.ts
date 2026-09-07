@@ -25,13 +25,17 @@ export function useDrawer({
     const drawer = drawerRef.current
     if (!drawer || !listRef.current || !formRef.current) return
 
-    setOpenHeight(listRef.current.clientHeight + formRef.current.clientHeight)
-
     const card = drawer.parentElement
     if (!card) return
 
     card.style.minWidth = ""
-    card.style.minWidth = `${drawer.offsetWidth}px`
+    drawer.style.width = "max-content"
+
+    const contentWidth = Math.ceil(drawer.getBoundingClientRect().width)
+    setOpenHeight(listRef.current.clientHeight + formRef.current.clientHeight)
+
+    drawer.style.width = ""
+    card.style.minWidth = `${contentWidth}px`
   }, [drawerRef, listRef, formRef, subtasks, isProjectLoaded])
 
   useEffect(() => {

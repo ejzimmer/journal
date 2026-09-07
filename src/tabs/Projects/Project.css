@@ -8,6 +8,8 @@
   background: var(--project-colour-light);
   font-size: 18px;
   align-self: start;
+  min-width: 0;
+  transition: min-width 0.2s ease-out;
 
   &:has(.subtasks-section.visible) {
     z-index: 1;
@@ -80,8 +82,7 @@
     position: absolute;
     inset-block-start: 100%;
     inset-inline-start: 0;
-    min-width: 100%;
-    width: max-content;
+    width: 100%;
     max-width: var(--card-max);
     opacity: 0;
     overflow: hidden;
