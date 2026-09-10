@@ -16,7 +16,11 @@ import {
 
 const now = Date.now()
 
-function list(id: string, description: string, position: number): WorkTask {
+function createList(
+  id: string,
+  description: string,
+  position: number,
+): WorkTask {
   return {
     id,
     description,
@@ -27,7 +31,7 @@ function list(id: string, description: string, position: number): WorkTask {
   }
 }
 
-function task(
+function createTask(
   listId: string,
   id: string,
   description: string,
@@ -45,11 +49,11 @@ function task(
   }
 }
 
-const backlog = list("list-backlog", "Backlog", 0)
-const today = list("list-today", "Today", 1)
-const done = list("list-done", "Done", 2)
+const backlog = createList("list-backlog", "Backlog", 0)
+const today = createList("list-today", "Today", 1)
+const done = createList("list-done", "Done", 2)
 
-const backlogTask = task(
+const backlogTask = createTask(
   backlog.id,
   "task-backlog-1",
   "Set up the mock backend",
@@ -59,27 +63,31 @@ const backlogTask = task(
 const demoLabel: StoredLabel = { id: "label-demo", value: "demo", colour: "blue" }
 const otherLabel: StoredLabel = { id: "label-other", value: "other", colour: "orange" }
 
-const todayTask = task(today.id, "task-today-1", "Try dragging this task", 0, {
-  labelIds: [demoLabel.id],
-})
+const todayTask = createTask(
+  today.id,
+  "task-today-1",
+  "Try dragging this task",
+  0,
+  { labelIds: [demoLabel.id] },
+)
 
-const doneTask = task(done.id, "task-done-1", "See how Done looks", 0, {
+const doneTask = createTask(done.id, "task-done-1", "See how Done looks", 0, {
   status: "done",
 })
 
-const book = (
+const createBook = (
   id: string,
   title: string,
   extra: Partial<BookDetails> = {},
 ): BookDetails => ({ id, type: "book", title, ...extra })
 
-const game = (
+const createGame = (
   id: string,
   title: string,
   extra: Partial<GameDetails> = {},
 ): GameDetails => ({ id, type: "game", title, ...extra })
 
-const byId = <T extends { id: string }>(items: T[]): Record<string, T> =>
+const indexById = <T extends { id: string }>(items: T[]): Record<string, T> =>
   items.reduce(
     (map, item) => {
       map[item.id] = item
@@ -88,7 +96,7 @@ const byId = <T extends { id: string }>(items: T[]): Record<string, T> =>
     {} as Record<string, T>,
   )
 
-const bookSeries = (
+const createBookSeries = (
   id: string,
   name: string,
   books: BookDetails[],
@@ -96,16 +104,16 @@ const bookSeries = (
   id,
   type: "series",
   name,
-  items: byId(books),
+  items: indexById(books),
 })
 
-const author = (
+const createAuthor = (
   id: string,
   name: string,
   items: (SeriesDetails<BookDetails> | BookDetails)[],
-): AuthorDetails => ({ id, type: "author", name, items: byId(items) })
+): AuthorDetails => ({ id, type: "author", name, items: indexById(items) })
 
-const gameSeries = (
+const createGameSeries = (
   id: string,
   name: string,
   games: GameDetails[],
@@ -113,57 +121,66 @@ const gameSeries = (
   id,
   type: "series",
   name,
-  items: byId(games),
+  items: indexById(games),
 })
 
-const books = byId<ReadingItemDetails>([
-  author("author-pratchett", "Terry Pratchett", [
-    bookSeries("series-discworld", "Discworld", [
-      book("book-guards", "Guards! Guards!", { isDone: true, medium: "📖" }),
-      book("book-witches", "Witches Abroad", { isDone: true, medium: "🎧" }),
-      book("book-nightwatch", "Night Watch", { medium: "🎧" }),
-      book("book-thud", "Thud!"),
+const books = indexById<ReadingItemDetails>([
+  createAuthor("author-pratchett", "Terry Pratchett", [
+    createBookSeries("series-discworld", "Discworld", [
+      createBook("book-guards", "Guards! Guards!", {
+        isDone: true,
+        medium: "📖",
+      }),
+      createBook("book-witches", "Witches Abroad", {
+        isDone: true,
+        medium: "🎧",
+      }),
+      createBook("book-nightwatch", "Night Watch", { medium: "🎧" }),
+      createBook("book-thud", "Thud!"),
     ]),
-    book("book-nation", "Nation", { isDone: true, medium: "📖" }),
+    createBook("book-nation", "Nation", { isDone: true, medium: "📖" }),
   ]),
-  author("author-leguin", "Ursula Le Guin", [
-    bookSeries("series-earthsea", "Earthsea", [
-      book("book-wizard", "A Wizard of Earthsea", { isDone: true }),
-      book("book-tombs", "The Tombs of Atuan", { medium: "📖" }),
-      book("book-shore", "The Farthest Shore"),
+  createAuthor("author-leguin", "Ursula Le Guin", [
+    createBookSeries("series-earthsea", "Earthsea", [
+      createBook("book-wizard", "A Wizard of Earthsea", { isDone: true }),
+      createBook("book-tombs", "The Tombs of Atuan", { medium: "📖" }),
+      createBook("book-shore", "The Farthest Shore"),
     ]),
-    book("book-lefthand", "The Left Hand of Darkness", { isDone: true }),
-    book("book-dispossessed", "The Dispossessed"),
+    createBook("book-lefthand", "The Left Hand of Darkness", { isDone: true }),
+    createBook("book-dispossessed", "The Dispossessed"),
   ]),
-  author("author-muir", "Tamsyn Muir", [
-    bookSeries("series-lockedtomb", "The Locked Tomb", [
-      book("book-gideon", "Gideon the Ninth", { isDone: true, medium: "🎧" }),
-      book("book-harrow", "Harrow the Ninth", { medium: "🎧" }),
-      book("book-nona", "Nona the Ninth"),
+  createAuthor("author-muir", "Tamsyn Muir", [
+    createBookSeries("series-lockedtomb", "The Locked Tomb", [
+      createBook("book-gideon", "Gideon the Ninth", {
+        isDone: true,
+        medium: "🎧",
+      }),
+      createBook("book-harrow", "Harrow the Ninth", { medium: "🎧" }),
+      createBook("book-nona", "Nona the Ninth"),
     ]),
   ]),
-  author("author-shelley", "Mary Shelley", [
-    book("book-frankenstein", "Frankenstein"),
+  createAuthor("author-shelley", "Mary Shelley", [
+    createBook("book-frankenstein", "Frankenstein"),
   ]),
-  book("book-linguist-mages", "The Linguist Mages"),
+  createBook("book-linguist-mages", "The Linguist Mages"),
 ])
 
-const games = byId<PlayingItemDetails>([
-  gameSeries("series-zelda", "The Legend of Zelda", [
-    game("game-botw", "Breath of the Wild", { status: "done" }),
-    game("game-totk", "Tears of the Kingdom", { status: "in_progress" }),
-    game("game-echoes", "Echoes of Wisdom"),
+const games = indexById<PlayingItemDetails>([
+  createGameSeries("series-zelda", "The Legend of Zelda", [
+    createGame("game-botw", "Breath of the Wild", { status: "done" }),
+    createGame("game-totk", "Tears of the Kingdom", { status: "in_progress" }),
+    createGame("game-echoes", "Echoes of Wisdom"),
   ]),
-  gameSeries("series-portal", "Portal", [
-    game("game-portal", "Portal", { status: "done" }),
-    game("game-portal2", "Portal 2", { status: "done" }),
+  createGameSeries("series-portal", "Portal", [
+    createGame("game-portal", "Portal", { status: "done" }),
+    createGame("game-portal2", "Portal 2", { status: "done" }),
   ]),
-  game("game-stardew", "Stardew Valley", { status: "in_progress" }),
-  game("game-hades", "Hades"),
-  game("game-outer-wilds", "Outer Wilds"),
+  createGame("game-stardew", "Stardew Valley", { status: "in_progress" }),
+  createGame("game-hades", "Hades"),
+  createGame("game-outer-wilds", "Outer Wilds"),
 ])
 
-const subtask = (
+const createSubtask = (
   id: string,
   description: string,
   category: Category,
@@ -171,7 +188,7 @@ const subtask = (
   status: ProjectSubtask["status"] = "ready",
 ): ProjectSubtask => ({ id, description, category, position, status })
 
-const project = (
+const createProject = (
   id: string,
   description: string,
   category: Category,
@@ -186,35 +203,39 @@ const project = (
   ...extra,
 })
 
-const projects = byId<ProjectDetails>([
-  project("project-shelves", "Put up the hallway shelves", "🚚", 0, {
+const projects = indexById<ProjectDetails>([
+  createProject("project-shelves", "Put up the hallway shelves", "🚚", 0, {
     status: "in_progress",
-    subtasks: byId([
-      subtask("subtask-brackets", "Buy brackets", "🚚", 0, "done"),
-      subtask("subtask-drill", "Borrow a drill", "🚚", 1),
-      subtask("subtask-paint", "Paint the boards", "🚚", 2),
+    subtasks: indexById([
+      createSubtask("subtask-brackets", "Buy brackets", "🚚", 0, "done"),
+      createSubtask("subtask-drill", "Borrow a drill", "🚚", 1),
+      createSubtask("subtask-paint", "Paint the boards", "🚚", 2),
     ]),
   }),
-  project("project-socks", "Knit the striped socks", "🧶", 1, {
-    subtasks: byId([
-      subtask("subtask-yarn", "Wind the yarn", "🧶", 0),
-      subtask("subtask-heel", "Learn a better heel", "🧶", 1),
+  createProject("project-socks", "Knit the striped socks", "🧶", 1, {
+    subtasks: indexById([
+      createSubtask("subtask-yarn", "Wind the yarn", "🧶", 0),
+      createSubtask("subtask-heel", "Learn a better heel", "🧶", 1),
     ]),
   }),
-  project("project-quilt", "Finish the quilt binding", "🪡", 2),
-  project("project-groceries", "Plan the week's meals", "🛒", 3),
-  project("project-journal", "Write up the trip notes", "📓", 4, {
-    subtasks: byId([subtask("subtask-photos", "Pick the photos", "📓", 0)]),
+  createProject("project-quilt", "Finish the quilt binding", "🪡", 2),
+  createProject("project-groceries", "Plan the week's meals", "🛒", 3),
+  createProject("project-journal", "Write up the trip notes", "📓", 4, {
+    subtasks: indexById([
+      createSubtask("subtask-photos", "Pick the photos", "📓", 0),
+    ]),
   }),
-  project("project-blog", "Redesign the projects tab", "👩‍💻", 5, {
+  createProject("project-blog", "Redesign the projects tab", "👩‍💻", 5, {
     status: "in_progress",
-    subtasks: byId([
-      subtask("subtask-spec", "Agree the spec", "👩‍💻", 0, "done"),
-      subtask("subtask-cards", "Restyle the cards", "👩‍💻", 1),
+    subtasks: indexById([
+      createSubtask("subtask-spec", "Agree the spec", "👩‍💻", 0, "done"),
+      createSubtask("subtask-cards", "Restyle the cards", "👩‍💻", 1),
     ]),
   }),
-  project("project-desk", "Clear off the desk", "🧹", 6, { status: "done" }),
-  project("project-letters", "Reply to the birthday cards", "🖊️", 7),
+  createProject("project-desk", "Clear off the desk", "🧹", 6, {
+    status: "done",
+  }),
+  createProject("project-letters", "Reply to the birthday cards", "🖊️", 7),
 ])
 
 export const seedData = {

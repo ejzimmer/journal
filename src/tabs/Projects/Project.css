@@ -1,9 +1,9 @@
 .project {
   --project-colour-light: color(from var(--project-colour) srgb r g b / 0.2);
   --project-border-colour: color(from var(--project-colour) srgb r g b / 1);
-  --card-tint: var(--project-colour);
-  --card-edge: var(--project-border-colour);
-  --card-border: 2px;
+  --card-colour: var(--project-colour);
+  --card-border-colour: var(--project-border-colour);
+  --card-border-width: 2px;
   --radius: 7px;
   --card-max: min(840px, 80vw);
   position: relative;
@@ -21,9 +21,9 @@
   }
 
   &.ready {
-    --card-tint: color(from var(--project-colour) srgb r g b / 0.13);
-    --card-edge: color(from var(--project-colour) srgb r g b / 0.38);
-    --card-border: 1px;
+    --card-colour: color(from var(--project-colour) srgb r g b / 0.13);
+    --card-border-colour: color(from var(--project-colour) srgb r g b / 0.38);
+    --card-border-width: 1px;
     background: none;
 
     button.expand {
@@ -59,8 +59,8 @@
     align-items: center;
     padding-inline: 10px;
     padding-block: 5px;
-    background: var(--card-tint);
-    border: var(--card-border) solid var(--card-edge);
+    background: var(--card-colour);
+    border: var(--card-border-width) solid var(--card-border-colour);
     border-radius: var(--radius);
   }
 
@@ -125,7 +125,7 @@
       opacity: 1;
       overflow: visible;
       background: var(--seam-shadow) top / 100% 8px no-repeat, white;
-      border: 1px solid var(--card-edge);
+      border: 1px solid var(--card-border-colour);
       border-top: none;
       border-end-start-radius: var(--radius);
       border-end-end-radius: var(--radius);
