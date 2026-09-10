@@ -1,8 +1,7 @@
-import { useMemo, useRef, useState } from "react"
+import { useRef, useState } from "react"
 import { FormControl } from "../../../shared/controls/FormControl"
 import { useStorageContext } from "../../../shared/FirebaseContext"
 import {
-  AuthorDetails,
   BookDetails,
   BOOKS_KEY,
   ReadingItemDetails,
@@ -12,6 +11,17 @@ import { Combobox } from "../../../shared/controls/combobox/Combobox"
 import { OptionType } from "../../../shared/controls/combobox/types"
 import { SubmitButton } from "../SubmitButton"
 
+const getAuthors = (items: Record<string, ReadingItemDetails>) => {
+  const authors = new Set<string>()
+
+  Object.values(items).forEach((item) => {
+    const books = item.type === "book" ? [item] : Object.values(item.items ?? {})
+    books.forEach(({ author }) => author && authors.add(author))
+  })
+
+  return [...authors]
+}
+
 export function AddBookForm() {
   const titleRef = useRef<HTMLInputElement>(null)
   const [author, setAuthor] = useState<OptionType>()
@@ -20,45 +30,16 @@ export function AddBookForm() {
   const { useValue, addItem } = useStorageContext()
 
   const { value } = useValue<Record<string, ReadingItemDetails>>(BOOKS_KEY)
+
   const authorOptions = value
-    ? Object.values(value)
-        .filter((item) => item.type === "author")
-        .map((author) => ({ id: author.id, label: author.name }))
+    ? getAuthors(value).map((name) => ({ id: name, label: name }))
     : []
 
-  const seriesOptions = useMemo(() => {
-    if (!value) {
-      return []
-    }
-
-    if (author && !author.id) {
-      return []
-    }
-
-    const items = author?.id ? (value[author.id] as AuthorDetails).items : value
-    return items
-      ? Object.values(items)
-          .filter((item) => item.type === "series")
-          .map((author) => ({ id: author.id, label: author.name }))
-      : []
-  }, [value, author])
-
-  const createParentItem = <
-    T extends AuthorDetails | SeriesDetails<BookDetails>,
-  >(
-    item: T,
-    path: string,
-  ) => {
-    const id =
-      item.id === ""
-        ? addItem(path, {
-            type: item.type,
-            name: item.name,
-          })
-        : item.id
-
-    return `${path}/${id}/items`
-  }
+  const seriesOptions = value
+    ? Object.values(value)
+        .filter((item) => item.type === "series")
+        .map((series) => ({ id: series.id, label: series.name }))
+    : []
 
   const createItem = (event: React.FormEvent) => {
     event.preventDefault()
@@ -68,31 +49,21 @@ export function AddBookForm() {
 
     let path = BOOKS_KEY
 
-    if (author) {
-      path = createParentItem(
-        {
-          id: author.id,
-          type: "author",
-          name: author.label,
-        },
-        path,
-      )
-    }
-
     if (series) {
-      path = createParentItem(
-        {
-          id: series.id,
-          type: "series",
-          name: series.label,
-        },
-        path,
-      )
+      const id =
+        series.id === ""
+          ? addItem<SeriesDetails<BookDetails>>(path, {
+              type: "series",
+              name: series.label,
+            })
+          : series.id
+      path = `${path}/${id}/items`
     }
 
     addItem<BookDetails>(path, {
       type: "book",
       title,
+      ...(author && { author: author.label }),
     })
     ;(event.target as HTMLFormElement).reset()
     setAuthor(undefined)

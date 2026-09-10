@@ -1,6 +1,5 @@
 import { LABELS_KEY, StoredLabel, WorkTask, WORK_KEY } from "../tabs/Work/types"
 import {
-  AuthorDetails,
   BookDetails,
   GameDetails,
   PlayingItemDetails,
@@ -93,12 +92,6 @@ const bookSeries = (
   items: byId(books),
 })
 
-const author = (
-  id: string,
-  name: string,
-  items: (SeriesDetails<BookDetails> | BookDetails)[],
-): AuthorDetails => ({ id, type: "author", name, items: byId(items) })
-
 const gameSeries = (
   id: string,
   name: string,
@@ -111,34 +104,57 @@ const gameSeries = (
 })
 
 const books = byId<ReadingItemDetails>([
-  author("author-pratchett", "Terry Pratchett", [
-    bookSeries("series-discworld", "Discworld", [
-      book("book-guards", "Guards! Guards!", { isDone: true, medium: "📖" }),
-      book("book-witches", "Witches Abroad", { isDone: true, medium: "🎧" }),
-      book("book-nightwatch", "Night Watch", { medium: "🎧" }),
-      book("book-thud", "Thud!"),
-    ]),
-    book("book-nation", "Nation", { isDone: true, medium: "📖" }),
+  bookSeries("series-discworld", "Discworld", [
+    book("book-guards", "Guards! Guards!", {
+      author: "Terry Pratchett",
+      isDone: true,
+      medium: "📖",
+    }),
+    book("book-witches", "Witches Abroad", {
+      author: "Terry Pratchett",
+      isDone: true,
+      medium: "🎧",
+    }),
+    book("book-nightwatch", "Night Watch", {
+      author: "Terry Pratchett",
+      medium: "🎧",
+    }),
+    book("book-thud", "Thud!", { author: "Terry Pratchett" }),
   ]),
-  author("author-leguin", "Ursula Le Guin", [
-    bookSeries("series-earthsea", "Earthsea", [
-      book("book-wizard", "A Wizard of Earthsea", { isDone: true }),
-      book("book-tombs", "The Tombs of Atuan", { medium: "📖" }),
-      book("book-shore", "The Farthest Shore"),
-    ]),
-    book("book-lefthand", "The Left Hand of Darkness", { isDone: true }),
-    book("book-dispossessed", "The Dispossessed"),
+  book("book-nation", "Nation", {
+    author: "Terry Pratchett",
+    isDone: true,
+    medium: "📖",
+  }),
+  bookSeries("series-earthsea", "Earthsea", [
+    book("book-wizard", "A Wizard of Earthsea", {
+      author: "Ursula Le Guin",
+      isDone: true,
+    }),
+    book("book-tombs", "The Tombs of Atuan", {
+      author: "Ursula Le Guin",
+      medium: "📖",
+    }),
+    book("book-shore", "The Farthest Shore", { author: "Ursula Le Guin" }),
   ]),
-  author("author-muir", "Tamsyn Muir", [
-    bookSeries("series-lockedtomb", "The Locked Tomb", [
-      book("book-gideon", "Gideon the Ninth", { isDone: true, medium: "🎧" }),
-      book("book-harrow", "Harrow the Ninth", { medium: "🎧" }),
-      book("book-nona", "Nona the Ninth"),
-    ]),
+  book("book-lefthand", "The Left Hand of Darkness", {
+    author: "Ursula Le Guin",
+    isDone: true,
+  }),
+  book("book-dispossessed", "The Dispossessed", { author: "Ursula Le Guin" }),
+  bookSeries("series-lockedtomb", "The Locked Tomb", [
+    book("book-gideon", "Gideon the Ninth", {
+      author: "Tamsyn Muir",
+      isDone: true,
+      medium: "🎧",
+    }),
+    book("book-harrow", "Harrow the Ninth", {
+      author: "Tamsyn Muir",
+      medium: "🎧",
+    }),
+    book("book-nona", "Nona the Ninth", { author: "Tamsyn Muir" }),
   ]),
-  author("author-shelley", "Mary Shelley", [
-    book("book-frankenstein", "Frankenstein"),
-  ]),
+  book("book-frankenstein", "Frankenstein", { author: "Mary Shelley" }),
   book("book-linguist-mages", "The Linguist Mages"),
 ])
 
