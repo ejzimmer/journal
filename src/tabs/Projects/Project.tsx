@@ -14,7 +14,6 @@ import {
 import { ButtonWithConfirmation } from "../../shared/controls/ButtonWithConfirmation"
 import { getSubtasksKey, useLinkedTasks } from "./utils"
 import { ArrowToEndIcon } from "../../shared/icons/ArrowToEnd"
-import { TickIcon } from "../../shared/icons/Tick"
 import { EditableText } from "../../shared/controls/EditableText"
 
 type ProjectProps = {
@@ -136,34 +135,54 @@ export function Project({ project, onMoveToEnd, onDelete }: ProjectProps) {
     })
   }
 
+  const expandButton = (
+    <button
+      className={`ghost expand ${subtasksVisible ? "expanded" : ""}`}
+      onClick={() => {
+        const nextVisible = !subtasksVisible
+        setSubtasksVisible(nextVisible)
+        setHasOpenedSubtasks(true)
+        setProjectOpen(project.id, nextVisible)
+      }}
+      aria-label="Show subtasks"
+    >
+      <ChevronDownIcon width="20px" />
+    </button>
+  )
+
   return (
     <div className={`project ${status}`} style={projectColour}>
       <div className="project-details">
-        <EmojiCheckbox
-          emoji={project.category}
-          isChecked={status === "done"}
-          useTickForDone
-          onChange={onChangeStatus}
-          label={""}
-        />
-        <EditableText
-          className="project-name"
-          label="project"
-          value={project.description}
-          onChange={(description) => {
-            updateItem<ProjectDetails>(PROJECTS_KEY, {
-              ...project,
-              description,
-            })
-          }}
-          onDelete={onDelete}
-          style={{
-            fontSize: "1em",
-            flexGrow: 1,
-          }}
-        />
+        <div className="project-main-row">
+          <EmojiCheckbox
+            emoji={project.category}
+            isChecked={status === "done"}
+            useTickForDone
+            onChange={onChangeStatus}
+            label={""}
+          />
+          <EditableText
+            className="project-name"
+            label="project"
+            value={project.description}
+            onChange={(description) => {
+              updateItem<ProjectDetails>(PROJECTS_KEY, {
+                ...project,
+                description,
+              })
+            }}
+            onDelete={onDelete}
+            style={{
+              fontSize: "1em",
+              flexGrow: 1,
+            }}
+          />
+          {status !== "in_progress" && expandButton}
+        </div>
+
         {status === "in_progress" && (
-          <>
+          <div className="project-meta-row">
+            <SubtaskProgress subtasks={subtasks} doneSubtasks={doneSubtasks} />
             <div className="project-actions">
               <ButtonWithConfirmation
                 className="icon ghost project-action-button"
@@ -179,23 +198,11 @@ export function Project({ project, onMoveToEnd, onDelete }: ProjectProps) {
               >
                 <ArrowToEndIcon width="20px" colour="var(--action-colour)" />
               </button>
-            </div>
-            <SubTasksStatus subtasks={subtasks} doneSubtasks={doneSubtasks} />
-          </>
-        )}
 
-        <button
-          className={`ghost expand ${subtasksVisible ? "expanded" : ""}`}
-          onClick={() => {
-            const nextVisible = !subtasksVisible
-            setSubtasksVisible(nextVisible)
-            setHasOpenedSubtasks(true)
-            setProjectOpen(project.id, nextVisible)
-          }}
-          style={{ marginInlineStart: "auto" }}
-        >
-          <ChevronDownIcon width="20px" />
-        </button>
+              {expandButton}
+            </div>
+          </div>
+        )}
       </div>
       {hasOpenedSubtasks && (
         <SubtaskList projectId={project.id} isVisible={subtasksVisible} />
@@ -204,39 +211,27 @@ export function Project({ project, onMoveToEnd, onDelete }: ProjectProps) {
   )
 }
 
-type SubTasksStatusProps = {
+type SubtaskProgressProps = {
   subtasks: ProjectSubtask[]
   doneSubtasks: ProjectSubtask[]
 }
 
-function SubTasksStatus({ subtasks, doneSubtasks }: SubTasksStatusProps) {
+function SubtaskProgress({ subtasks, doneSubtasks }: SubtaskProgressProps) {
   if (subtasks.length === 0) return null
 
-  if (subtasks.length > doneSubtasks.length) {
-    return (
-      <div className="subtasks-progress">
-        {doneSubtasks.length}/{subtasks.length}
-      </div>
-    )
-  }
+  const donePercentage = (doneSubtasks.length / subtasks.length) * 100
 
   return (
-    <div
-      className="subtasks-progress"
-      style={{
-        width: "2.4em",
-        height: "1.5em",
-        display: "flex",
-        alignContent: "center",
-        justifyContent: "center",
-        paddingInline: "4px",
-      }}
-    >
-      <TickIcon
-        colour="var(--project-colour-solid)"
-        width="50%"
-        strokeWidth="3"
-      />
+    <div className="subtasks-progress">
+      <div className="subtasks-progress-track" aria-hidden="true">
+        <div
+          className="subtasks-progress-fill"
+          style={{ width: `${donePercentage}%` }}
+        />
+      </div>
+      <span className="subtasks-progress-count">
+        {doneSubtasks.length} of {subtasks.length}
+      </span>
     </div>
   )
 }
