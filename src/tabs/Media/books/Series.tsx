@@ -3,16 +3,13 @@ import { BookList } from "./BookList"
 import { BookDetails, SeriesDetails } from "../types"
 import { useStorageContext } from "../../../shared/FirebaseContext"
 
-type SeriesProps = {
+export function Series({
+  series,
+  path,
+}: {
   series: SeriesDetails<BookDetails>
   path: string
-  author?: {
-    name: string
-    onChange: (name: string) => void
-  }
-}
-
-export function Series({ series, path, author }: SeriesProps) {
+}) {
   const { updateItem } = useStorageContext()
 
   const updateSeriesName = (name: string) => {
@@ -24,27 +21,13 @@ export function Series({ series, path, author }: SeriesProps) {
 
   return (
     <li className="series">
-      <div style={{ display: "flex", gap: "8px" }}>
+      <div>
         <EditableText
           label="Series name"
           value={series.name}
           onChange={updateSeriesName}
-          style={{
-            textDecoration: author ? "" : "underline",
-            fontWeight: author ? "bold" : "",
-          }}
+          style={{ fontWeight: "bold" }}
         />
-        {author && (
-          <span style={{ display: "inline-flex" }}>
-            (
-            <EditableText
-              value={author.name}
-              onChange={author.onChange}
-              label="Author's name"
-            />
-            )
-          </span>
-        )}
       </div>
       <BookList
         books={series.items as Record<string, BookDetails>}

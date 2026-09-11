@@ -93,13 +93,16 @@ function createStorageContext(): WorkStorageContextType {
 }
 
 describe("TaskList label", () => {
-  it("shows the label and an edit button when the list has a label", () => {
+  it("opens the label picker when the label text is clicked", async () => {
+    const user = userEvent.setup()
     renderTaskList(labelledList.id, createStorageContext())
 
-    expect(screen.getByText("a11y")).toBeInTheDocument()
-    expect(
-      screen.getByRole("button", { name: "Change a11y label" }),
-    ).toBeInTheDocument()
+    const labelText = screen.getByRole("button", { name: "Change a11y label" })
+    expect(labelText).toHaveTextContent("a11y")
+
+    await user.click(labelText)
+
+    expect(screen.getByRole("combobox")).toBeInTheDocument()
   })
 
   it("doesn't show a label or edit button when the list has none", () => {

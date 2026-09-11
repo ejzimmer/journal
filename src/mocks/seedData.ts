@@ -6,7 +6,6 @@ import {
   PROJECTS_KEY,
 } from "../shared/types"
 import {
-  AuthorDetails,
   BookDetails,
   GameDetails,
   PlayingItemDetails,
@@ -107,12 +106,6 @@ const createBookSeries = (
   items: indexById(books),
 })
 
-const createAuthor = (
-  id: string,
-  name: string,
-  items: (SeriesDetails<BookDetails> | BookDetails)[],
-): AuthorDetails => ({ id, type: "author", name, items: indexById(items) })
-
 const createGameSeries = (
   id: string,
   name: string,
@@ -125,43 +118,61 @@ const createGameSeries = (
 })
 
 const books = indexById<ReadingItemDetails>([
-  createAuthor("author-pratchett", "Terry Pratchett", [
-    createBookSeries("series-discworld", "Discworld", [
-      createBook("book-guards", "Guards! Guards!", {
-        isDone: true,
-        medium: "📖",
-      }),
-      createBook("book-witches", "Witches Abroad", {
-        isDone: true,
-        medium: "🎧",
-      }),
-      createBook("book-nightwatch", "Night Watch", { medium: "🎧" }),
-      createBook("book-thud", "Thud!"),
-    ]),
-    createBook("book-nation", "Nation", { isDone: true, medium: "📖" }),
+  createBookSeries("series-discworld", "Discworld", [
+    createBook("book-guards", "Guards! Guards!", {
+      author: "Terry Pratchett",
+      isDone: true,
+      medium: "📖",
+    }),
+    createBook("book-witches", "Witches Abroad", {
+      author: "Terry Pratchett",
+      isDone: true,
+      medium: "🎧",
+    }),
+    createBook("book-nightwatch", "Night Watch", {
+      author: "Terry Pratchett",
+      medium: "🎧",
+    }),
+    createBook("book-thud", "Thud!", { author: "Terry Pratchett" }),
   ]),
-  createAuthor("author-leguin", "Ursula Le Guin", [
-    createBookSeries("series-earthsea", "Earthsea", [
-      createBook("book-wizard", "A Wizard of Earthsea", { isDone: true }),
-      createBook("book-tombs", "The Tombs of Atuan", { medium: "📖" }),
-      createBook("book-shore", "The Farthest Shore"),
-    ]),
-    createBook("book-lefthand", "The Left Hand of Darkness", { isDone: true }),
-    createBook("book-dispossessed", "The Dispossessed"),
+  createBook("book-nation", "Nation", {
+    author: "Terry Pratchett",
+    isDone: true,
+    medium: "📖",
+  }),
+  createBookSeries("series-earthsea", "Earthsea", [
+    createBook("book-wizard", "A Wizard of Earthsea", {
+      author: "Ursula Le Guin",
+      isDone: true,
+    }),
+    createBook("book-tombs", "The Tombs of Atuan", {
+      author: "Ursula Le Guin",
+      medium: "📖",
+    }),
+    createBook("book-shore", "The Farthest Shore", {
+      author: "Ursula Le Guin",
+    }),
   ]),
-  createAuthor("author-muir", "Tamsyn Muir", [
-    createBookSeries("series-lockedtomb", "The Locked Tomb", [
-      createBook("book-gideon", "Gideon the Ninth", {
-        isDone: true,
-        medium: "🎧",
-      }),
-      createBook("book-harrow", "Harrow the Ninth", { medium: "🎧" }),
-      createBook("book-nona", "Nona the Ninth"),
-    ]),
+  createBook("book-lefthand", "The Left Hand of Darkness", {
+    author: "Ursula Le Guin",
+    isDone: true,
+  }),
+  createBook("book-dispossessed", "The Dispossessed", {
+    author: "Ursula Le Guin",
+  }),
+  createBookSeries("series-lockedtomb", "The Locked Tomb", [
+    createBook("book-gideon", "Gideon the Ninth", {
+      author: "Tamsyn Muir",
+      isDone: true,
+      medium: "🎧",
+    }),
+    createBook("book-harrow", "Harrow the Ninth", {
+      author: "Tamsyn Muir",
+      medium: "🎧",
+    }),
+    createBook("book-nona", "Nona the Ninth", { author: "Tamsyn Muir" }),
   ]),
-  createAuthor("author-shelley", "Mary Shelley", [
-    createBook("book-frankenstein", "Frankenstein"),
-  ]),
+  createBook("book-frankenstein", "Frankenstein", { author: "Mary Shelley" }),
   createBook("book-linguist-mages", "The Linguist Mages"),
 ])
 
