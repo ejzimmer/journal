@@ -5,27 +5,27 @@ import { EditableText } from "../../../shared/controls/EditableText"
 import { Checkbox } from "../../../shared/controls/Checkbox"
 
 import "./Game.css"
-import { useStorageContext } from "../../../shared/FirebaseContext"
+import { useMediaStorage } from "../MediaStorageContext"
 
-export function Game({ game, path }: { game: GameDetails; path: string }) {
-  const { updateItem, deleteItem } = useStorageContext()
+export function Game({ game }: { game: GameDetails }) {
+  const { updateMedia, deleteMedia } = useMediaStorage()
 
   const updateTitle = (title: string) => {
-    updateItem<GameDetails>(path, {
+    updateMedia({
       ...game,
       title,
     })
   }
 
   const updateStatus = (status: GameDetails["status"]) => {
-    updateItem<GameDetails>(path, {
+    updateMedia({
       ...game,
       status,
     })
   }
 
   const deleteGame = () => {
-    deleteItem(path, game)
+    deleteMedia(game)
   }
 
   return (

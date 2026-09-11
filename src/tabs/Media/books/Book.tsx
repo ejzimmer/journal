@@ -1,30 +1,30 @@
-import { useStorageContext } from "../../../shared/FirebaseContext"
 import { BookDetails } from "../types"
 
 import { EditableText } from "../../../shared/controls/EditableText"
 
 import "./Book.css"
 import { Checkbox } from "../../../shared/controls/Checkbox"
+import { useMediaStorage } from "../MediaStorageContext"
 
-export function Book({ book, path }: { book: BookDetails; path: string }) {
-  const { updateItem, deleteItem } = useStorageContext()
+export function Book({ book }: { book: BookDetails }) {
+  const { updateMedia, deleteMedia } = useMediaStorage()
 
   const updateTitle = (title: string) => {
-    updateItem<BookDetails>(path, {
+    updateMedia({
       ...book,
       title,
     })
   }
 
   const updateAuthor = (author: string) => {
-    updateItem<BookDetails>(path, {
+    updateMedia({
       ...book,
       author,
     })
   }
 
   const toggleDone = () => {
-    updateItem<BookDetails>(path, {
+    updateMedia({
       ...book,
       isDone: !book.isDone,
     })
@@ -33,14 +33,14 @@ export function Book({ book, path }: { book: BookDetails; path: string }) {
   const updateMedium = () => {
     const medium =
       book.medium == null ? "📖" : book.medium === "📖" ? "🎧" : null
-    updateItem<BookDetails>(path, {
+    updateMedia({
       ...book,
       medium,
     })
   }
 
   const deleteBook = () => {
-    deleteItem(path, book)
+    deleteMedia(book)
   }
 
   return (

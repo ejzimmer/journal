@@ -1,45 +1,23 @@
 import { useRef, useState } from "react"
 import { FormControl } from "../../../shared/controls/FormControl"
-import { useStorageContext } from "../../../shared/FirebaseContext"
-import {
-  BookDetails,
-  BOOKS_KEY,
-  ReadingItemDetails,
-  SeriesDetails,
-} from "../types"
+import { NewBook } from "../types"
 import { Combobox } from "../../../shared/controls/combobox/Combobox"
 import { OptionType } from "../../../shared/controls/combobox/types"
 import { SubmitButton } from "../SubmitButton"
-
-const getAuthors = (items: Record<string, ReadingItemDetails>) => {
-  const authors = new Set<string>()
-
-  Object.values(items).forEach((item) => {
-    const books = item.type === "book" ? [item] : Object.values(item.items ?? {})
-    books.forEach(({ author }) => author && authors.add(author))
-  })
-
-  return [...authors]
-}
+import { useMediaStorage } from "../MediaStorageContext"
 
 export function AddBookForm() {
   const titleRef = useRef<HTMLInputElement>(null)
   const [author, setAuthor] = useState<OptionType>()
   const [series, setSeries] = useState<OptionType>()
 
-  const { useValue, addItem } = useStorageContext()
+  const { authors, bookSeries, addMedia, addMediaSeries } = useMediaStorage()
 
-  const { value } = useValue<Record<string, ReadingItemDetails>>(BOOKS_KEY)
-
-  const authorOptions = value
-    ? getAuthors(value).map((name) => ({ id: name, label: name }))
-    : []
-
-  const seriesOptions = value
-    ? Object.values(value)
-        .filter((item) => item.type === "series")
-        .map((series) => ({ id: series.id, label: series.name }))
-    : []
+  const authorOptions = authors.map((name) => ({ id: name, label: name }))
+  const seriesOptions = bookSeries.map((series) => ({
+    id: series.id,
+    label: series.name,
+  }))
 
   const createItem = (event: React.FormEvent) => {
     event.preventDefault()
@@ -47,24 +25,20 @@ export function AddBookForm() {
     const title = titleRef.current?.value
     if (!title) return
 
-    let path = BOOKS_KEY
-
-    if (series) {
-      const id =
-        series.id === ""
-          ? addItem<SeriesDetails<BookDetails>>(path, {
-              type: "series",
-              name: series.label,
-            })
-          : series.id
-      path = `${path}/${id}/items`
-    }
-
-    addItem<BookDetails>(path, {
+    const book: NewBook = {
       type: "book",
       title,
       ...(author && { author: author.label }),
-    })
+    }
+
+    if (series && series.id === "") {
+      addMediaSeries(series.label, book)
+    } else if (series) {
+      addMedia(book, series.id)
+    } else {
+      addMedia(book)
+    }
+
     ;(event.target as HTMLFormElement).reset()
     setAuthor(undefined)
     setSeries(undefined)
