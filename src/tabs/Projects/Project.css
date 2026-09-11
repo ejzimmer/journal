@@ -36,6 +36,11 @@
     --card-colour: color(from var(--project-colour) srgb r g b / 0.13);
     --card-border-colour: color(from var(--project-colour) srgb r g b / 0.38);
     --card-border-width: 1px;
+
+    .project-name,
+    label.emoji-checkbox {
+      opacity: 0.6;
+    }
   }
 
   &.in_progress {
@@ -49,13 +54,11 @@
 
     .project-name {
       font-weight: 500;
-      opacity: 0.8;
     }
 
     label.emoji-checkbox {
       font-size: 1.35em;
       text-shadow: none;
-      opacity: 0.8;
     }
   }
 
