@@ -207,6 +207,80 @@ describe("MediaStorageContext", () => {
     })
   })
 
+  describe("updateMedia", () => {
+    it("writes standalone media back to the main list", () => {
+      const updateItem = jest.fn()
+      const nation = createBook("book-nation", "Nation")
+      const mediaStorage = createMediaStorage({
+        ...createStoredMedia({ books: [nation] }),
+        updateItem,
+      })
+      const updated = { ...nation, title: "Nation (Terry Pratchett)" }
+
+      mediaStorage.updateMedia(updated)
+
+      expect(updateItem).toHaveBeenCalledWith(BOOKS_KEY, updated)
+    })
+
+    it("writes media in a series back to that series' items", () => {
+      const updateItem = jest.fn()
+      const guards = createBook("book-guards", "Guards! Guards!")
+      const discworld = createSeries("series-discworld", "Discworld", [
+        guards,
+      ])
+      const mediaStorage = createMediaStorage({
+        ...createStoredMedia({ books: [discworld] }),
+        updateItem,
+      })
+      const updated = { ...guards, isDone: true }
+
+      mediaStorage.updateMedia(updated)
+
+      expect(updateItem).toHaveBeenCalledWith(
+        `${BOOKS_KEY}/series-discworld/items`,
+        updated,
+      )
+    })
+  })
+
+  describe("updateMediaSeries", () => {
+    it("writes a renamed book series back to the books key", () => {
+      const updateItem = jest.fn()
+      const discworld = createSeries("series-discworld", "Discworld", [
+        createBook("book-guards", "Guards! Guards!"),
+      ])
+      const mediaStorage = createMediaStorage({
+        ...createStoredMedia({ books: [discworld] }),
+        updateItem,
+      })
+
+      mediaStorage.updateMediaSeries(discworld, "Discworld (renamed)")
+
+      expect(updateItem).toHaveBeenCalledWith(BOOKS_KEY, {
+        ...discworld,
+        name: "Discworld (renamed)",
+      })
+    })
+
+    it("writes a renamed game series back to the games key", () => {
+      const updateItem = jest.fn()
+      const zelda = createSeries("series-zelda", "The Legend of Zelda", [
+        createGame("game-botw", "Breath of the Wild"),
+      ])
+      const mediaStorage = createMediaStorage({
+        ...createStoredMedia({ games: [zelda] }),
+        updateItem,
+      })
+
+      mediaStorage.updateMediaSeries(zelda, "Zelda")
+
+      expect(updateItem).toHaveBeenCalledWith(GAMES_KEY, {
+        ...zelda,
+        name: "Zelda",
+      })
+    })
+  })
+
   describe("deleteMedia", () => {
     it("removes standalone media from the main list", () => {
       const deleteItem = jest.fn()

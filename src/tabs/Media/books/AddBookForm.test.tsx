@@ -1,51 +1,48 @@
 import { screen } from "@testing-library/react"
 import { AddBookForm } from "./AddBookForm"
 import userEvent from "@testing-library/user-event"
-import { BOOKS_KEY, ReadingItemDetails } from "../types"
-import { renderWithStorage } from "../../../shared/storageContextTestUtils"
+import { BookDetails, SeriesDetails } from "../types"
+import { renderWithMediaStorage } from "../mediaStorageTestUtils"
 
-const booksValue: Record<string, ReadingItemDetails> = {
-  "1": { id: "1", type: "book", title: "Nation", author: "Terry Pratchett" },
-  "2": {
-    id: "2",
-    type: "series",
-    name: "Discworld",
-    items: {
-      "3": { id: "3", type: "book", title: "Thud!", author: "Terry Pratchett" },
-    },
+const discworld: SeriesDetails<BookDetails> = {
+  id: "2",
+  type: "series",
+  name: "Discworld",
+  items: {
+    "3": { id: "3", type: "book", title: "Thud!", author: "Terry Pratchett" },
   },
-  "4": {
-    id: "4",
-    type: "series",
-    name: "Earthsea",
-    items: {
-      "5": {
-        id: "5",
-        type: "book",
-        title: "The Tombs of Atuan",
-        author: "Ursula Le Guin",
-      },
+}
+
+const earthsea: SeriesDetails<BookDetails> = {
+  id: "4",
+  type: "series",
+  name: "Earthsea",
+  items: {
+    "5": {
+      id: "5",
+      type: "book",
+      title: "The Tombs of Atuan",
+      author: "Ursula Le Guin",
     },
   },
 }
 
-function useValue<T>() {
-  return { value: booksValue as T, loading: false }
-}
+const authors = ["Terry Pratchett", "Ursula Le Guin"]
+const bookSeries = [discworld, earthsea]
 
 describe("AddBookForm", () => {
   describe("when the user enters a book title & submits the form", () => {
     it("creates a new book", async () => {
       const user = userEvent.setup()
-      const addItem = jest.fn()
-      renderWithStorage(<AddBookForm />, { value: { addItem, useValue } })
+      const addMedia = jest.fn()
+      renderWithMediaStorage(<AddBookForm />, { authors, bookSeries, addMedia })
 
       await user.type(
         screen.getByRole("textbox", { name: "Book title" }),
         "The Linguist Mages{Enter}"
       )
 
-      expect(addItem).toHaveBeenCalledWith(BOOKS_KEY, {
+      expect(addMedia).toHaveBeenCalledWith({
         type: "book",
         title: "The Linguist Mages",
       })
@@ -55,8 +52,8 @@ describe("AddBookForm", () => {
   describe("when the user enters a new author & book title", () => {
     it("creates the book with that author", async () => {
       const user = userEvent.setup()
-      const addItem = jest.fn()
-      renderWithStorage(<AddBookForm />, { value: { addItem, useValue } })
+      const addMedia = jest.fn()
+      renderWithMediaStorage(<AddBookForm />, { authors, bookSeries, addMedia })
 
       await user.type(
         screen.getByRole("textbox", { name: "Book title" }),
@@ -68,7 +65,7 @@ describe("AddBookForm", () => {
       )
       await user.click(screen.getByRole("button", { name: "Create" }))
 
-      expect(addItem).toHaveBeenCalledWith(BOOKS_KEY, {
+      expect(addMedia).toHaveBeenCalledWith({
         type: "book",
         title: "Frankenstein",
         author: "Mary Shelley",
@@ -79,8 +76,8 @@ describe("AddBookForm", () => {
   describe("when the user selects an existing author & enters a book title", () => {
     it("creates the book with that author", async () => {
       const user = userEvent.setup()
-      const addItem = jest.fn()
-      renderWithStorage(<AddBookForm />, { value: { addItem, useValue } })
+      const addMedia = jest.fn()
+      renderWithMediaStorage(<AddBookForm />, { authors, bookSeries, addMedia })
 
       await user.type(
         screen.getByRole("textbox", { name: "Book title" }),
@@ -91,7 +88,7 @@ describe("AddBookForm", () => {
       )
       await user.click(screen.getByRole("button", { name: "Create" }))
 
-      expect(addItem).toHaveBeenCalledWith(BOOKS_KEY, {
+      expect(addMedia).toHaveBeenCalledWith({
         type: "book",
         title: "The Left Hand of Darkness",
         author: "Ursula Le Guin",
@@ -101,7 +98,7 @@ describe("AddBookForm", () => {
 
   describe("the author options", () => {
     it("include the authors of books in a series", async () => {
-      renderWithStorage(<AddBookForm />, { value: { useValue } })
+      renderWithMediaStorage(<AddBookForm />, { authors, bookSeries })
 
       expect(
         screen.getByRole("option", { name: "Terry Pratchett", hidden: true })
@@ -112,7 +109,7 @@ describe("AddBookForm", () => {
     })
 
     it("list each author once", async () => {
-      renderWithStorage(<AddBookForm />, { value: { useValue } })
+      renderWithMediaStorage(<AddBookForm />, { authors, bookSeries })
 
       expect(
         screen.getAllByRole("option", { name: "Terry Pratchett", hidden: true })
@@ -123,8 +120,12 @@ describe("AddBookForm", () => {
   describe("when the user enters a new series & book title", () => {
     it("creates a new series and adds the new book to its items", async () => {
       const user = userEvent.setup()
-      const addItem = jest.fn().mockReturnValue("1212")
-      renderWithStorage(<AddBookForm />, { value: { addItem, useValue } })
+      const addMediaSeries = jest.fn()
+      renderWithMediaStorage(<AddBookForm />, {
+        authors,
+        bookSeries,
+        addMediaSeries,
+      })
 
       await user.type(
         screen.getByRole("textbox", { name: "Book title" }),
@@ -136,11 +137,7 @@ describe("AddBookForm", () => {
       )
       await user.click(screen.getByRole("button", { name: "Create" }))
 
-      expect(addItem).toHaveBeenCalledWith(BOOKS_KEY, {
-        type: "series",
-        name: "The Locked Tomb",
-      })
-      expect(addItem).toHaveBeenCalledWith(`${BOOKS_KEY}/1212/items`, {
+      expect(addMediaSeries).toHaveBeenCalledWith("The Locked Tomb", {
         type: "book",
         title: "Gideon the Ninth",
       })
@@ -150,8 +147,8 @@ describe("AddBookForm", () => {
   describe("when the user selects an existing series & enters a book title", () => {
     it("adds the new book to the existing series", async () => {
       const user = userEvent.setup()
-      const addItem = jest.fn()
-      renderWithStorage(<AddBookForm />, { value: { addItem, useValue } })
+      const addMedia = jest.fn()
+      renderWithMediaStorage(<AddBookForm />, { authors, bookSeries, addMedia })
 
       await user.type(
         screen.getByRole("textbox", { name: "Book title" }),
@@ -162,18 +159,22 @@ describe("AddBookForm", () => {
       )
       await user.click(screen.getByRole("button", { name: "Create" }))
 
-      expect(addItem).toHaveBeenCalledWith(`${BOOKS_KEY}/4/items`, {
-        type: "book",
-        title: "The Farthest Shore",
-      })
+      expect(addMedia).toHaveBeenCalledWith(
+        { type: "book", title: "The Farthest Shore" },
+        "4",
+      )
     })
   })
 
   describe("when the user enters an author, a series & a book", () => {
     it("adds the book to the series, with its author", async () => {
       const user = userEvent.setup()
-      const addItem = jest.fn().mockReturnValue("series_id")
-      renderWithStorage(<AddBookForm />, { value: { addItem, useValue } })
+      const addMediaSeries = jest.fn()
+      renderWithMediaStorage(<AddBookForm />, {
+        authors,
+        bookSeries,
+        addMediaSeries,
+      })
 
       await user.type(
         screen.getByRole("textbox", { name: "Book title" }),
@@ -189,11 +190,7 @@ describe("AddBookForm", () => {
       )
       await user.click(screen.getByRole("button", { name: "Create" }))
 
-      expect(addItem).toHaveBeenCalledWith(BOOKS_KEY, {
-        type: "series",
-        name: "Dirk Gently",
-      })
-      expect(addItem).toHaveBeenCalledWith(`${BOOKS_KEY}/series_id/items`, {
+      expect(addMediaSeries).toHaveBeenCalledWith("Dirk Gently", {
         type: "book",
         title: "The Long Dark Teatime of the Soul",
         author: "Douglas Adams",
@@ -204,8 +201,7 @@ describe("AddBookForm", () => {
   describe("After the form is submitted", () => {
     it("clears the form", async () => {
       const user = userEvent.setup()
-      const addItem = jest.fn().mockReturnValue("series_id")
-      renderWithStorage(<AddBookForm />, { value: { addItem, useValue } })
+      renderWithMediaStorage(<AddBookForm />, { authors, bookSeries })
 
       await user.type(
         screen.getByRole("textbox", { name: "Book title" }),
