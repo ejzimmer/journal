@@ -141,11 +141,13 @@ export function Project({ project, onMoveToEnd, onDelete }: ProjectProps) {
       <div className="project-details">
         <EmojiCheckbox
           emoji={project.category}
-          isChecked={status === "in_progress"}
+          isChecked={status === "done"}
+          useTickForDone
           onChange={onChangeStatus}
           label={""}
         />
         <EditableText
+          className="project-name"
           label="project"
           value={project.description}
           onChange={(description) => {
@@ -160,7 +162,7 @@ export function Project({ project, onMoveToEnd, onDelete }: ProjectProps) {
             flexGrow: 1,
           }}
         />
-        {status !== "ready" && (
+        {status === "in_progress" && (
           <>
             <div className="project-actions">
               <ButtonWithConfirmation
@@ -231,7 +233,7 @@ function SubTasksStatus({ subtasks, doneSubtasks }: SubTasksStatusProps) {
       }}
     >
       <TickIcon
-        colour="color(from var(--project-colour) srgb r g b / 1)"
+        colour="var(--project-colour-solid)"
         width="50%"
         strokeWidth="3"
       />

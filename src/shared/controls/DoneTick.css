@@ -3,6 +3,7 @@
   aspect-ratio: 1;
   border-radius: 50%;
   background: var(--success-colour);
+  color: white;
   display: inline-flex;
   align-items: center;
   justify-content: center;
