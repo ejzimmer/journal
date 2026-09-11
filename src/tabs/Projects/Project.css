@@ -1,31 +1,26 @@
 .project {
   --project-colour-light: color(from var(--project-colour) srgb r g b / 0.2);
-  --project-border-colour: color(from var(--project-colour) srgb r g b / 1);
+  --project-colour-solid: color(from var(--project-colour) srgb r g b / 1);
   --card-colour: var(--project-colour);
-  --card-border-colour: var(--project-border-colour);
+  --card-border-colour: var(--project-colour-solid);
   --card-border-width: 2px;
   --radius: 7px;
+  --drawer-inset: calc(var(--radius) - var(--card-border-width));
   --card-max: min(840px, 80vw);
   position: relative;
   flex-shrink: 0;
   list-style-type: none;
-  background: var(--project-colour-light);
   border-radius: var(--radius);
   font-size: 18px;
   align-self: start;
-  min-width: 0;
+  min-width: calc(var(--drawer-content-width, 0px) + 2 * var(--drawer-inset));
   transition: min-width 0.2s ease-out;
 
   &:has(.subtasks-section.visible) {
     z-index: 1;
   }
 
-  &.ready {
-    --card-colour: color(from var(--project-colour) srgb r g b / 0.13);
-    --card-border-colour: color(from var(--project-colour) srgb r g b / 0.38);
-    --card-border-width: 1px;
-    background: none;
-
+  &:not(.in_progress) {
     button.expand {
       opacity: 0;
       transition: opacity 0.2s;
@@ -38,19 +33,51 @@
     }
   }
 
+  &.ready {
+    --card-colour: color(from var(--project-colour) srgb r g b / 0.13);
+    --card-border-colour: color(from var(--project-colour) srgb r g b / 0.38);
+    --card-border-width: 1px;
+  }
+
   &.in_progress {
     background:
       linear-gradient(45deg, white, transparent), var(--project-colour-light);
+
+    label.emoji-checkbox {
+      text-shadow: 1px 1px 4px hsl(0 0 0 /0.4);
+    }
   }
 
   &.done {
-    filter: grayscale(0.5);
-    opacity: 0.5;
-    text-decoration: line-through;
-  }
-  label.emoji-checkbox.done {
-    filter: none;
-    text-shadow: 1px 1px 4px hsl(0 0 0 /0.4);
+    --tint-strength: 24%;
+    --card-colour: color-mix(
+      in srgb,
+      var(--project-colour-solid) var(--tint-strength),
+      transparent
+    );
+    --card-border-colour: color(from var(--project-colour) srgb r g b / 0.45);
+    --card-border-width: 1px;
+    --done-ink: hsl(0 0% 34%);
+    --done-mark: hsl(0 0% 52% / 0.5);
+    --done-glyph: color-mix(
+      in srgb,
+      var(--project-colour-solid) var(--tint-strength),
+      white
+    );
+
+    .project-details {
+      box-shadow: inset 0 1px 3px
+        color(from var(--project-colour) srgb r g b / 0.3);
+    }
+
+    .project-name {
+      color: var(--done-ink);
+    }
+
+    .done-tick {
+      background: var(--done-mark);
+      color: var(--done-glyph);
+    }
   }
 
   .project-details {
@@ -69,7 +96,7 @@
   }
 
   button.expand:focus {
-    outline: 2px solid var(--project-border-colour);
+    outline: 2px solid var(--project-colour-solid);
     outline-offset: 1px;
   }
   button.expand path {
@@ -94,20 +121,17 @@
     text-shadow: 1px 1px hsl(0 0 0/0.3);
   }
 
-  &:not(.done) {
-    &:hover,
-    &:focus-visible {
-      .project-action-button {
-        opacity: 1;
-      }
+  &:hover,
+  &:focus-visible {
+    .project-action-button {
+      opacity: 1;
     }
   }
 
   .subtasks-section {
     position: absolute;
     inset-block-start: 100%;
-    inset-inline-start: 0;
-    width: 100%;
+    inset-inline: var(--drawer-inset);
     max-width: var(--card-max);
     opacity: 0;
     overflow: hidden;

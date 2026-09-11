@@ -23,15 +23,10 @@ export function Projects() {
   const { useValue, updateList, deleteItem } = useStorageContext()
 
   const { value } = useValue<Record<string, ProjectDetails>>(PROJECTS_KEY)
-  const sortedProjects = useMemo(() => {
-    const projects = value ? Object.values(value) : []
-    return sortByPosition(projects).sort((a, b) => {
-      if (a.status === b.status) return 0
-      if (a.status === "in_progress" || b.status === "done") return -1
-      if (a.status === "done" || b.status === "in_progress") return 1
-      return 0
-    })
-  }, [value])
+  const sortedProjects = useMemo(
+    () => sortByPosition(value ? Object.values(value) : []),
+    [value],
+  )
 
   useEffect(() => {
     if (containerRef.current) {

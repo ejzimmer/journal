@@ -247,6 +247,13 @@ const projects = indexById<ProjectDetails>([
     status: "done",
   }),
   createProject("project-letters", "Reply to the birthday cards", "🖊️", 7),
+  createProject("project-boxes", "Unpack the last boxes", "🚚", 8, {
+    status: "done",
+    subtasks: indexById([
+      createSubtask("subtask-books", "Shelve the books", "🚚", 0, "done"),
+      createSubtask("subtask-flatten", "Flatten the cartons", "🚚", 1, "done"),
+    ]),
+  }),
 ])
 
 export const seedData = {
