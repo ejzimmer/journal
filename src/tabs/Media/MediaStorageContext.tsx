@@ -27,8 +27,10 @@ export type MediaStorageContextType = {
   updateMedia: (media: MediaDetails) => void
   updateMediaSeries: (series: MediaSeries, name: string) => void
   deleteMedia: (media: MediaDetails) => void
-  moveMedia: (media: MediaDetails, seriesId?: string) => void
-  moveMediaToNewSeries: (media: MediaDetails, name: string) => void
+  moveMedia: (
+    media: MediaDetails,
+    destination?: { id: string } | { name: string },
+  ) => void
 }
 
 const getMediaKey = (type: MediaDetails["type"]) =>
@@ -127,11 +129,17 @@ export function MediaStorageProvider({ children }: { children: ReactNode }) {
         deleteItem(getMediaKey(media.type), media)
       }
     },
-    moveMedia: (media, seriesId) => moveMediaToSeriesId(media, seriesId),
-    moveMediaToNewSeries: (media, name) => {
-      const key = getMediaKey(media.type)
-      const seriesId = addItem<MediaSeries>(key, { type: "series", name })
-      moveMediaToSeriesId(media, seriesId ?? undefined)
+    moveMedia: (media, destination) => {
+      if (destination && "name" in destination) {
+        const key = getMediaKey(media.type)
+        const seriesId = addItem<MediaSeries>(key, {
+          type: "series",
+          name: destination.name,
+        })
+        moveMediaToSeriesId(media, seriesId ?? undefined)
+      } else {
+        moveMediaToSeriesId(media, destination?.id)
+      }
     },
   }
 

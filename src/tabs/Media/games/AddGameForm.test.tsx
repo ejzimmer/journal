@@ -15,10 +15,6 @@ const zelda: SeriesDetails<GameDetails> = {
 
 const gameSeries = [zelda]
 
-const openForm = async (user: ReturnType<typeof userEvent.setup>) => {
-  await user.click(screen.getByRole("button", { name: "Add a game" }))
-}
-
 describe("AddGameForm", () => {
   describe("when the user enters a game title & submits the form", () => {
     it("creates a new game", async () => {
@@ -26,7 +22,7 @@ describe("AddGameForm", () => {
       const addMedia = jest.fn()
       renderWithMediaStorage(<AddGameForm />, { gameSeries, addMedia })
 
-      await openForm(user)
+      await user.click(screen.getByRole("button", { name: "Add a game" }))
       await user.type(
         screen.getByRole("textbox", { name: "Game title" }),
         "Stardew Valley{Enter}"
@@ -45,7 +41,7 @@ describe("AddGameForm", () => {
       const addMediaSeries = jest.fn()
       renderWithMediaStorage(<AddGameForm />, { gameSeries, addMediaSeries })
 
-      await openForm(user)
+      await user.click(screen.getByRole("button", { name: "Add a game" }))
       await user.type(
         screen.getByRole("textbox", { name: "Game title" }),
         "Metroid Prime"
@@ -54,7 +50,7 @@ describe("AddGameForm", () => {
         screen.getByRole("combobox", { name: "Series name" }),
         "Metroid"
       )
-      await user.click(screen.getAllByRole("button", { name: "Add a game" })[1])
+      await user.click(screen.getByRole("button", { name: "Save" }))
 
       expect(addMediaSeries).toHaveBeenCalledWith("Metroid", {
         type: "game",
@@ -69,7 +65,7 @@ describe("AddGameForm", () => {
       const addMedia = jest.fn()
       renderWithMediaStorage(<AddGameForm />, { gameSeries, addMedia })
 
-      await openForm(user)
+      await user.click(screen.getByRole("button", { name: "Add a game" }))
       await user.type(
         screen.getByRole("textbox", { name: "Game title" }),
         "Breath of the Wild"
@@ -77,7 +73,7 @@ describe("AddGameForm", () => {
       await user.click(
         screen.getByRole("option", { name: "The Legend of Zelda", hidden: true }),
       )
-      await user.click(screen.getAllByRole("button", { name: "Add a game" })[1])
+      await user.click(screen.getByRole("button", { name: "Save" }))
 
       expect(addMedia).toHaveBeenCalledWith(
         { type: "game", title: "Breath of the Wild" },
@@ -87,22 +83,18 @@ describe("AddGameForm", () => {
   })
 
   describe("After the form is submitted", () => {
-    it("closes the modal and clears the form", async () => {
+    it("clears the form", async () => {
       const user = userEvent.setup()
       renderWithMediaStorage(<AddGameForm />, { gameSeries })
 
-      await openForm(user)
+      await user.click(screen.getByRole("button", { name: "Add a game" }))
       await user.type(
         screen.getByRole("textbox", { name: "Game title" }),
         "Hollow Knight"
       )
-      await user.click(screen.getAllByRole("button", { name: "Add a game" })[1])
+      await user.click(screen.getByRole("button", { name: "Save" }))
 
-      expect(
-        screen.queryByRole("textbox", { name: "Game title" })
-      ).not.toBeInTheDocument()
-
-      await openForm(user)
+      await user.click(screen.getByRole("button", { name: "Add a game" }))
 
       expect(screen.getByRole("textbox", { name: "Game title" })).toHaveValue(
         "",

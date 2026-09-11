@@ -348,7 +348,7 @@ describe("MediaStorageContext", () => {
         deleteItem,
       })
 
-      mediaStorage.moveMedia(guards, "series-earthsea")
+      mediaStorage.moveMedia(guards, { id: "series-earthsea" })
 
       expect(updateItem).toHaveBeenCalledWith(
         `${BOOKS_KEY}/series-earthsea/items`,
@@ -370,7 +370,7 @@ describe("MediaStorageContext", () => {
         deleteItem,
       })
 
-      mediaStorage.moveMedia(nation, "series-discworld")
+      mediaStorage.moveMedia(nation, { id: "series-discworld" })
 
       expect(updateItem).toHaveBeenCalledWith(
         `${BOOKS_KEY}/series-discworld/items`,
@@ -408,7 +408,7 @@ describe("MediaStorageContext", () => {
         deleteItem,
       })
 
-      mediaStorage.moveMedia(wizard, "series-discworld")
+      mediaStorage.moveMedia(wizard, { id: "series-discworld" })
 
       expect(updateItem).toHaveBeenCalledWith(
         `${BOOKS_KEY}/series-discworld/items`,
@@ -445,7 +445,7 @@ describe("MediaStorageContext", () => {
         deleteItem,
       })
 
-      mediaStorage.moveMedia(guards, "series-discworld")
+      mediaStorage.moveMedia(guards, { id: "series-discworld" })
 
       expect(updateItem).not.toHaveBeenCalled()
       expect(deleteItem).not.toHaveBeenCalled()
@@ -466,10 +466,8 @@ describe("MediaStorageContext", () => {
       expect(updateItem).not.toHaveBeenCalled()
       expect(deleteItem).not.toHaveBeenCalled()
     })
-  })
 
-  describe("moveMediaToNewSeries", () => {
-    it("creates the series and moves standalone media into it", () => {
+    it("creates a new series and moves standalone media into it", () => {
       const addItem = jest.fn(() => "new-series")
       const updateItem = jest.fn()
       const deleteItem = jest.fn()
@@ -481,7 +479,7 @@ describe("MediaStorageContext", () => {
         deleteItem,
       })
 
-      mediaStorage.moveMediaToNewSeries(nation, "Discworld")
+      mediaStorage.moveMedia(nation, { name: "Discworld" })
 
       expect(addItem).toHaveBeenCalledWith(BOOKS_KEY, {
         type: "series",
@@ -494,14 +492,10 @@ describe("MediaStorageContext", () => {
       expect(deleteItem).toHaveBeenCalledWith(BOOKS_KEY, nation)
     })
 
-    it("creates the series and moves media out of its old one", () => {
+    it("creates a new series and moves media out of its old one", () => {
       const addItem = jest.fn(() => "new-series")
       const updateItem = jest.fn()
       const deleteItem = jest.fn()
-      const guards = createBook("book-guards", "Guards! Guards!")
-      const discworld = createSeries("series-discworld", "Discworld", [
-        guards,
-      ])
       const mediaStorage = createMediaStorage({
         ...createStoredMedia({ books: [discworld] }),
         addItem,
@@ -509,13 +503,16 @@ describe("MediaStorageContext", () => {
         deleteItem,
       })
 
-      mediaStorage.moveMediaToNewSeries(guards, "Discworld (renamed)")
+      mediaStorage.moveMedia(guards, { name: "Discworld (renamed)" })
 
       expect(updateItem).toHaveBeenCalledWith(
         `${BOOKS_KEY}/new-series/items`,
         guards,
       )
-      expect(deleteItem).toHaveBeenCalledWith(BOOKS_KEY, discworld)
+      expect(deleteItem).toHaveBeenCalledWith(
+        `${BOOKS_KEY}/series-discworld/items`,
+        guards,
+      )
     })
   })
 })

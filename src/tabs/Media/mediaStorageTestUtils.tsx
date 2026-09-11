@@ -21,7 +21,6 @@ export function createMediaStorageContext(
     updateMediaSeries: jest.fn(),
     deleteMedia: jest.fn(),
     moveMedia: jest.fn(),
-    moveMediaToNewSeries: jest.fn(),
     ...overrides,
   }
 }

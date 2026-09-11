@@ -79,15 +79,15 @@ describe("EditGameForm", () => {
     )
     await user.click(screen.getByRole("button", { name: "Save" }))
 
-    expect(moveMedia).toHaveBeenCalledWith(botw, "series-metroid")
+    expect(moveMedia).toHaveBeenCalledWith(botw, { id: "series-metroid" })
   })
 
   it("creates a new series when a new name is entered", async () => {
     const user = userEvent.setup()
-    const moveMediaToNewSeries = jest.fn()
+    const moveMedia = jest.fn()
     renderWithMediaStorage(
       <EditGameForm game={botw} isOpen={true} onCancel={jest.fn()} />,
-      { gameSeries: [zelda, metroid], moveMediaToNewSeries },
+      { gameSeries: [zelda, metroid], moveMedia },
     )
 
     await user.type(
@@ -96,7 +96,7 @@ describe("EditGameForm", () => {
     )
     await user.click(screen.getByRole("button", { name: "Save" }))
 
-    expect(moveMediaToNewSeries).toHaveBeenCalledWith(botw, "Hyrule Warriors")
+    expect(moveMedia).toHaveBeenCalledWith(botw, { name: "Hyrule Warriors" })
   })
 
   it("deletes the game", async () => {
