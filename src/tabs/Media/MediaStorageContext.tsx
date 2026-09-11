@@ -35,6 +35,9 @@ export type MediaStorageContextType = {
 
   moveBookToSeries: (book: BookDetails, seriesId: string) => void
   moveGameToSeries: (game: GameDetails, seriesId: string) => void
+
+  moveBookToMainList: (book: BookDetails) => void
+  moveGameToMainList: (game: GameDetails) => void
 }
 
 function createMediaOperations<T extends BookDetails | GameDetails>({
@@ -92,6 +95,13 @@ function createMediaOperations<T extends BookDetails | GameDetails>({
       } else {
         storage.deleteItem(key, item)
       }
+    },
+    moveItemToMainList: (item: T) => {
+      const currentSeries = findSeriesContaining(item.id)
+      if (!currentSeries) return
+
+      storage.updateItem(key, item)
+      deleteItemFromSeries(currentSeries, item)
     },
   }
 }
@@ -171,6 +181,9 @@ export function MediaStorageProvider({ children }: { children: ReactNode }) {
 
     moveBookToSeries: bookOperations.moveItemToSeries,
     moveGameToSeries: gameOperations.moveItemToSeries,
+
+    moveBookToMainList: bookOperations.moveItemToMainList,
+    moveGameToMainList: gameOperations.moveItemToMainList,
   }
 
   return (

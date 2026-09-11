@@ -450,6 +450,87 @@ describe("MediaStorageContext", () => {
     })
   })
 
+  describe("moving back to the main list", () => {
+    it("moveBookToMainList writes the book to the books key and removes it from its series", () => {
+      const firebaseContext = createFirebaseContext()
+      const mediaStorage = getMediaStorage(firebaseContext)
+
+      mediaStorage.current?.moveBookToMainList(guards)
+
+      expect(firebaseContext.updateItem).toHaveBeenCalledWith(BOOKS_KEY, guards)
+      expect(firebaseContext.deleteItem).toHaveBeenCalledWith(
+        `${BOOKS_KEY}/series-discworld/items`,
+        guards,
+      )
+    })
+
+    it("moveBookToMainList deletes the series when the book was the last one in it", () => {
+      const firebaseContext = createFirebaseContext()
+      const mediaStorage = getMediaStorage(firebaseContext)
+      const [onlyBook] = Object.values(earthsea.items ?? {})
+
+      mediaStorage.current?.moveBookToMainList(onlyBook)
+
+      expect(firebaseContext.updateItem).toHaveBeenCalledWith(
+        BOOKS_KEY,
+        onlyBook,
+      )
+      expect(firebaseContext.deleteItem).toHaveBeenCalledTimes(1)
+      expect(firebaseContext.deleteItem).toHaveBeenCalledWith(
+        BOOKS_KEY,
+        earthsea,
+      )
+    })
+
+    it("moveBookToMainList does nothing when the book is already in the main list", () => {
+      const firebaseContext = createFirebaseContext()
+      const mediaStorage = getMediaStorage(firebaseContext)
+
+      mediaStorage.current?.moveBookToMainList(nation)
+
+      expect(firebaseContext.updateItem).not.toHaveBeenCalled()
+      expect(firebaseContext.deleteItem).not.toHaveBeenCalled()
+    })
+
+    it("moveGameToMainList writes the game to the games key and removes it from its series", () => {
+      const firebaseContext = createFirebaseContext()
+      const mediaStorage = getMediaStorage(firebaseContext)
+
+      mediaStorage.current?.moveGameToMainList(botw)
+
+      expect(firebaseContext.updateItem).toHaveBeenCalledWith(GAMES_KEY, botw)
+      expect(firebaseContext.deleteItem).toHaveBeenCalledWith(
+        `${GAMES_KEY}/series-zelda/items`,
+        botw,
+      )
+    })
+
+    it("moveGameToMainList deletes the series when the game was the last one in it", () => {
+      const firebaseContext = createFirebaseContext()
+      const mediaStorage = getMediaStorage(firebaseContext)
+      const [onlyGame] = Object.values(portal.items ?? {})
+
+      mediaStorage.current?.moveGameToMainList(onlyGame)
+
+      expect(firebaseContext.updateItem).toHaveBeenCalledWith(
+        GAMES_KEY,
+        onlyGame,
+      )
+      expect(firebaseContext.deleteItem).toHaveBeenCalledTimes(1)
+      expect(firebaseContext.deleteItem).toHaveBeenCalledWith(GAMES_KEY, portal)
+    })
+
+    it("moveGameToMainList does nothing when the game is already in the main list", () => {
+      const firebaseContext = createFirebaseContext()
+      const mediaStorage = getMediaStorage(firebaseContext)
+
+      mediaStorage.current?.moveGameToMainList(stardew)
+
+      expect(firebaseContext.updateItem).not.toHaveBeenCalled()
+      expect(firebaseContext.deleteItem).not.toHaveBeenCalled()
+    })
+  })
+
   describe("against the mock backend", () => {
     const renderWithMockBackend = () => {
       const firebaseContext = createMockFirebaseContext({
@@ -506,6 +587,34 @@ describe("MediaStorageContext", () => {
       expect(Object.keys(earthseaItems ?? {}).sort()).toEqual(
         [guards.id, "book-wizard"].sort(),
       )
+    })
+
+    it("moving a book to the main list leaves it alongside the series", () => {
+      const mediaStorage = renderWithMockBackend()
+
+      act(() => {
+        mediaStorage.current?.moveBookToMainList(guards)
+      })
+
+      const books = mediaStorage.current?.books ?? []
+      expect(books).toContainEqual(guards)
+      const discworldItems = books.find(
+        (book) => book.id === discworld.id,
+      ) as typeof discworld
+      expect(Object.keys(discworldItems.items ?? {})).toEqual([nightWatch.id])
+    })
+
+    it("moving the last book in a series to the main list removes the series", () => {
+      const mediaStorage = renderWithMockBackend()
+      const [onlyBook] = Object.values(earthsea.items ?? {})
+
+      act(() => {
+        mediaStorage.current?.moveBookToMainList(onlyBook)
+      })
+
+      const books = mediaStorage.current?.books ?? []
+      expect(books).toContainEqual(onlyBook)
+      expect(books.map((book) => book.id)).not.toContain(earthsea.id)
     })
 
     it("moving the last game out of a series removes the series", () => {
