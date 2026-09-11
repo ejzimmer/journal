@@ -1,13 +1,14 @@
 import { createContext, ReactNode, useContext, useMemo } from "react"
-import { ContextType, useStorageContext } from "../../shared/FirebaseContext"
+import { useStorageContext } from "../../shared/FirebaseContext"
 import {
   BookDetails,
   BOOKS_KEY,
   GameDetails,
   GAMES_KEY,
   isSeries,
-  NewBook,
-  NewGame,
+  MediaDetails,
+  MediaSeries,
+  NewMedia,
   PlayingItemDetails,
   ReadingItemDetails,
   SeriesDetails,
@@ -21,90 +22,14 @@ export type MediaStorageContextType = {
   authors: string[]
   isLoading: boolean
 
-  addBook: (book: NewBook) => void
-  addGame: (game: NewGame) => void
-
-  addBookSeries: (name: string, book: NewBook) => void
-  addGameSeries: (name: string, game: NewGame) => void
-
-  addBookToSeries: (seriesId: string, book: NewBook) => void
-  addGameToSeries: (seriesId: string, game: NewGame) => void
-
-  deleteBook: (book: BookDetails) => void
-  deleteGame: (game: GameDetails) => void
-
-  moveBookToSeries: (book: BookDetails, seriesId: string) => void
-  moveGameToSeries: (game: GameDetails, seriesId: string) => void
-
-  moveBookToMainList: (book: BookDetails) => void
-  moveGameToMainList: (game: GameDetails) => void
+  addMedia: (media: NewMedia, seriesId?: string) => void
+  addMediaSeries: (name: string, media: NewMedia) => void
+  deleteMedia: (media: MediaDetails) => void
+  moveMedia: (media: MediaDetails, seriesId?: string) => void
 }
 
-function createMediaOperations<T extends BookDetails | GameDetails>({
-  key,
-  type,
-  entries,
-  storage,
-}: {
-  key: string
-  type: T["type"]
-  entries: (T | SeriesDetails<T>)[]
-  storage: ContextType
-}) {
-  const findSeriesContaining = (itemId: string) =>
-    entries
-      .filter((entry) => isSeries(entry))
-      .find((series) => itemId in (series.items ?? {}))
-
-  const deleteItemFromSeries = (series: SeriesDetails<T>, item: T) => {
-    const isLastInSeries = Object.keys(series.items ?? {}).length <= 1
-    if (isLastInSeries) {
-      storage.deleteItem(key, series)
-    } else {
-      storage.deleteItem(`${key}/${series.id}/items`, item)
-    }
-  }
-
-  return {
-    addItem: (item: Omit<T, "id" | "type">) =>
-      storage.addItem(key, { ...item, type }),
-    addSeries: (name: string, item: Omit<T, "id" | "type">) => {
-      const seriesId = storage.addItem<SeriesDetails<T>>(key, {
-        type: "series",
-        name,
-      })
-      storage.addItem(`${key}/${seriesId}/items`, { ...item, type })
-    },
-    addItemToSeries: (seriesId: string, item: Omit<T, "id" | "type">) =>
-      storage.addItem(`${key}/${seriesId}/items`, { ...item, type }),
-    deleteItem: (item: T) => {
-      const series = findSeriesContaining(item.id)
-      if (series) {
-        deleteItemFromSeries(series, item)
-      } else {
-        storage.deleteItem(key, item)
-      }
-    },
-    moveItemToSeries: (item: T, seriesId: string) => {
-      const currentSeries = findSeriesContaining(item.id)
-      if (currentSeries?.id === seriesId) return
-
-      storage.updateItem(`${key}/${seriesId}/items`, item)
-      if (currentSeries) {
-        deleteItemFromSeries(currentSeries, item)
-      } else {
-        storage.deleteItem(key, item)
-      }
-    },
-    moveItemToMainList: (item: T) => {
-      const currentSeries = findSeriesContaining(item.id)
-      if (!currentSeries) return
-
-      storage.updateItem(key, item)
-      deleteItemFromSeries(currentSeries, item)
-    },
-  }
-}
+const getMediaKey = (type: MediaDetails["type"]) =>
+  type === "book" ? BOOKS_KEY : GAMES_KEY
 
 function listAuthors(books: ReadingItemDetails[]) {
   const authors = new Set<string>()
@@ -124,8 +49,7 @@ export const MediaStorageContext = createContext<
 >(undefined)
 
 export function MediaStorageProvider({ children }: { children: ReactNode }) {
-  const storage = useStorageContext()
-  const { useValue } = storage
+  const { addItem, updateItem, deleteItem, useValue } = useStorageContext()
 
   const { value: storedBooks, loading: booksLoading } =
     useValue<Record<string, ReadingItemDetails>>(BOOKS_KEY)
@@ -146,18 +70,25 @@ export function MediaStorageProvider({ children }: { children: ReactNode }) {
 
   const authors = useMemo(() => listAuthors(books), [books])
 
-  const bookOperations = createMediaOperations<BookDetails>({
-    key: BOOKS_KEY,
-    type: "book",
-    entries: books,
-    storage,
-  })
-  const gameOperations = createMediaOperations<GameDetails>({
-    key: GAMES_KEY,
-    type: "game",
-    entries: games,
-    storage,
-  })
+  const findSeriesContaining = (media: MediaDetails) => {
+    const series = media.type === "book" ? bookSeries : gameSeries
+    return series.find((entry) => media.id in (entry.items ?? {}))
+  }
+
+  const deleteMediaFromSeries = (series: MediaSeries, media: MediaDetails) => {
+    const key = getMediaKey(media.type)
+    const isLastInSeries = Object.keys(series.items ?? {}).length <= 1
+    if (isLastInSeries) {
+      deleteItem(key, series)
+    } else {
+      deleteItem(`${key}/${series.id}/items`, media)
+    }
+  }
+
+  const getMediaPath = (type: MediaDetails["type"], seriesId?: string) => {
+    const key = getMediaKey(type)
+    return seriesId ? `${key}/${seriesId}/items` : key
+  }
 
   const value: MediaStorageContextType = {
     books,
@@ -167,23 +98,33 @@ export function MediaStorageProvider({ children }: { children: ReactNode }) {
     authors,
     isLoading: booksLoading || gamesLoading,
 
-    addBook: bookOperations.addItem,
-    addGame: gameOperations.addItem,
+    addMedia: (media, seriesId) => {
+      addItem(getMediaPath(media.type, seriesId), media)
+    },
+    addMediaSeries: (name, media) => {
+      const key = getMediaKey(media.type)
+      const seriesId = addItem<MediaSeries>(key, { type: "series", name })
+      addItem(`${key}/${seriesId}/items`, media)
+    },
+    deleteMedia: (media) => {
+      const series = findSeriesContaining(media)
+      if (series) {
+        deleteMediaFromSeries(series, media)
+      } else {
+        deleteItem(getMediaKey(media.type), media)
+      }
+    },
+    moveMedia: (media, seriesId) => {
+      const currentSeries = findSeriesContaining(media)
+      if (currentSeries?.id === seriesId) return
 
-    addBookSeries: bookOperations.addSeries,
-    addGameSeries: gameOperations.addSeries,
-
-    addBookToSeries: bookOperations.addItemToSeries,
-    addGameToSeries: gameOperations.addItemToSeries,
-
-    deleteBook: bookOperations.deleteItem,
-    deleteGame: gameOperations.deleteItem,
-
-    moveBookToSeries: bookOperations.moveItemToSeries,
-    moveGameToSeries: gameOperations.moveItemToSeries,
-
-    moveBookToMainList: bookOperations.moveItemToMainList,
-    moveGameToMainList: gameOperations.moveItemToMainList,
+      updateItem(getMediaPath(media.type, seriesId), media)
+      if (currentSeries) {
+        deleteMediaFromSeries(currentSeries, media)
+      } else {
+        deleteItem(getMediaKey(media.type), media)
+      }
+    },
   }
 
   return (

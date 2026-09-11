@@ -24,8 +24,14 @@ export type GameDetails = {
   status?: null | "in_progress" | "done"
 }
 
-export type NewBook = Omit<BookDetails, "id" | "type">
-export type NewGame = Omit<GameDetails, "id" | "type">
+export type NewBook = Omit<BookDetails, "id">
+export type NewGame = Omit<GameDetails, "id">
+
+export type MediaDetails = BookDetails | GameDetails
+export type NewMedia = NewBook | NewGame
+export type MediaSeries =
+  | SeriesDetails<BookDetails>
+  | SeriesDetails<GameDetails>
 
 export type ReadingItemDetails = BookDetails | SeriesDetails<BookDetails>
 

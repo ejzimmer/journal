@@ -1,8 +1,6 @@
-import { act } from "react"
 import { renderHook } from "@testing-library/react"
 import { ContextType } from "../../shared/FirebaseContext"
 import { StorageContextWrapper } from "../../shared/storageContextTestUtils"
-import { createMockFirebaseContext } from "../../shared/mockFirebase"
 import { MediaStorageProvider, useMediaStorage } from "./MediaStorageContext"
 import {
   BookDetails,
@@ -50,19 +48,14 @@ const createStoredMedia = ({
   }),
 })
 
-function renderMediaStorage(storage: Partial<ContextType> = {}) {
-  const { result } = renderHook(useMediaStorage, {
+const createMediaStorage = (storage: Partial<ContextType> = {}) =>
+  renderHook(useMediaStorage, {
     wrapper: ({ children }) => (
       <StorageContextWrapper value={storage}>
         <MediaStorageProvider>{children}</MediaStorageProvider>
       </StorageContextWrapper>
     ),
-  })
-  return result
-}
-
-const createMediaStorage = (storage: Partial<ContextType> = {}) =>
-  renderMediaStorage(storage).current
+  }).result.current
 
 describe("MediaStorageContext", () => {
   it("throws when the hook is used outside a provider", () => {
@@ -146,12 +139,16 @@ describe("MediaStorageContext", () => {
     })
   })
 
-  describe("adding to the main list", () => {
-    it("addBook writes a book to the books key", () => {
+  describe("addMedia", () => {
+    it("writes a book to the books key", () => {
       const addItem = jest.fn()
       const mediaStorage = createMediaStorage({ addItem })
 
-      mediaStorage.addBook({ title: "Thud!", author: "Terry Pratchett" })
+      mediaStorage.addMedia({
+        type: "book",
+        title: "Thud!",
+        author: "Terry Pratchett",
+      })
 
       expect(addItem).toHaveBeenCalledWith(BOOKS_KEY, {
         type: "book",
@@ -160,25 +157,41 @@ describe("MediaStorageContext", () => {
       })
     })
 
-    it("addGame writes a game to the games key", () => {
+    it("writes a game to the games key", () => {
       const addItem = jest.fn()
       const mediaStorage = createMediaStorage({ addItem })
 
-      mediaStorage.addGame({ title: "Hades" })
+      mediaStorage.addMedia({ type: "game", title: "Hades" })
 
       expect(addItem).toHaveBeenCalledWith(GAMES_KEY, {
         type: "game",
         title: "Hades",
       })
     })
+
+    it("writes under the series items when given a series", () => {
+      const addItem = jest.fn()
+      const mediaStorage = createMediaStorage({ addItem })
+
+      mediaStorage.addMedia(
+        { type: "book", title: "Thud!" },
+        "series-discworld",
+      )
+
+      expect(addItem).toHaveBeenCalledWith(
+        `${BOOKS_KEY}/series-discworld/items`,
+        { type: "book", title: "Thud!" },
+      )
+    })
   })
 
-  describe("adding a series", () => {
-    it("addBookSeries creates the series and puts the book in it", () => {
+  describe("addMediaSeries", () => {
+    it("creates the series and puts the media in it", () => {
       const addItem = jest.fn(() => "new-series")
       const mediaStorage = createMediaStorage({ addItem })
 
-      mediaStorage.addBookSeries("Tiffany Aching", {
+      mediaStorage.addMediaSeries("Tiffany Aching", {
+        type: "book",
         title: "The Wee Free Men",
       })
 
@@ -192,55 +205,10 @@ describe("MediaStorageContext", () => {
         { type: "book", title: "The Wee Free Men" },
       )
     })
-
-    it("addGameSeries creates the series and puts the game in it", () => {
-      const addItem = jest.fn(() => "new-series")
-      const mediaStorage = createMediaStorage({ addItem })
-
-      mediaStorage.addGameSeries("Metroid", { title: "Dread" })
-
-      expect(addItem).toHaveBeenNthCalledWith(1, GAMES_KEY, {
-        type: "series",
-        name: "Metroid",
-      })
-      expect(addItem).toHaveBeenNthCalledWith(
-        2,
-        `${GAMES_KEY}/new-series/items`,
-        { type: "game", title: "Dread" },
-      )
-    })
   })
 
-  describe("adding to an existing series", () => {
-    it("addBookToSeries writes the book under the series items", () => {
-      const addItem = jest.fn()
-      const mediaStorage = createMediaStorage({ addItem })
-
-      mediaStorage.addBookToSeries("series-discworld", { title: "Thud!" })
-
-      expect(addItem).toHaveBeenCalledWith(
-        `${BOOKS_KEY}/series-discworld/items`,
-        { type: "book", title: "Thud!" },
-      )
-    })
-
-    it("addGameToSeries writes the game under the series items", () => {
-      const addItem = jest.fn()
-      const mediaStorage = createMediaStorage({ addItem })
-
-      mediaStorage.addGameToSeries("series-zelda", {
-        title: "Echoes of Wisdom",
-      })
-
-      expect(addItem).toHaveBeenCalledWith(`${GAMES_KEY}/series-zelda/items`, {
-        type: "game",
-        title: "Echoes of Wisdom",
-      })
-    })
-  })
-
-  describe("deleting", () => {
-    it("deleteBook removes a standalone book from the books key", () => {
+  describe("deleteMedia", () => {
+    it("removes standalone media from the main list", () => {
       const deleteItem = jest.fn()
       const nation = createBook("book-nation", "Nation")
       const mediaStorage = createMediaStorage({
@@ -248,12 +216,12 @@ describe("MediaStorageContext", () => {
         deleteItem,
       })
 
-      mediaStorage.deleteBook(nation)
+      mediaStorage.deleteMedia(nation)
 
       expect(deleteItem).toHaveBeenCalledWith(BOOKS_KEY, nation)
     })
 
-    it("deleteBook removes a book from its series", () => {
+    it("removes media from its series", () => {
       const deleteItem = jest.fn()
       const guards = createBook("book-guards", "Guards! Guards!")
       const discworld = createSeries("series-discworld", "Discworld", [
@@ -265,7 +233,7 @@ describe("MediaStorageContext", () => {
         deleteItem,
       })
 
-      mediaStorage.deleteBook(guards)
+      mediaStorage.deleteMedia(guards)
 
       expect(deleteItem).toHaveBeenCalledWith(
         `${BOOKS_KEY}/series-discworld/items`,
@@ -273,55 +241,7 @@ describe("MediaStorageContext", () => {
       )
     })
 
-    it("deleteBook deletes the series when the book was the last one in it", () => {
-      const deleteItem = jest.fn()
-      const wizard = createBook("book-wizard", "A Wizard of Earthsea")
-      const earthsea = createSeries("series-earthsea", "Earthsea", [wizard])
-      const mediaStorage = createMediaStorage({
-        ...createStoredMedia({ books: [earthsea] }),
-        deleteItem,
-      })
-
-      mediaStorage.deleteBook(wizard)
-
-      expect(deleteItem).toHaveBeenCalledTimes(1)
-      expect(deleteItem).toHaveBeenCalledWith(BOOKS_KEY, earthsea)
-    })
-
-    it("deleteGame removes a standalone game from the games key", () => {
-      const deleteItem = jest.fn()
-      const stardew = createGame("game-stardew", "Stardew Valley")
-      const mediaStorage = createMediaStorage({
-        ...createStoredMedia({ games: [stardew] }),
-        deleteItem,
-      })
-
-      mediaStorage.deleteGame(stardew)
-
-      expect(deleteItem).toHaveBeenCalledWith(GAMES_KEY, stardew)
-    })
-
-    it("deleteGame removes a game from its series", () => {
-      const deleteItem = jest.fn()
-      const botw = createGame("game-botw", "Breath of the Wild")
-      const zelda = createSeries("series-zelda", "The Legend of Zelda", [
-        botw,
-        createGame("game-totk", "Tears of the Kingdom"),
-      ])
-      const mediaStorage = createMediaStorage({
-        ...createStoredMedia({ games: [zelda] }),
-        deleteItem,
-      })
-
-      mediaStorage.deleteGame(botw)
-
-      expect(deleteItem).toHaveBeenCalledWith(
-        `${GAMES_KEY}/series-zelda/items`,
-        botw,
-      )
-    })
-
-    it("deleteGame deletes the series when the game was the last one in it", () => {
+    it("deletes the series when the media was the last thing in it", () => {
       const deleteItem = jest.fn()
       const portalGame = createGame("game-portal", "Portal")
       const portal = createSeries("series-portal", "Portal", [portalGame])
@@ -330,29 +250,31 @@ describe("MediaStorageContext", () => {
         deleteItem,
       })
 
-      mediaStorage.deleteGame(portalGame)
+      mediaStorage.deleteMedia(portalGame)
 
       expect(deleteItem).toHaveBeenCalledTimes(1)
       expect(deleteItem).toHaveBeenCalledWith(GAMES_KEY, portal)
     })
   })
 
-  describe("moving to another series", () => {
-    it("moveBookToSeries writes the book to the new series and removes it from the old one", () => {
+  describe("moveMedia", () => {
+    const guards = createBook("book-guards", "Guards! Guards!")
+    const nightWatch = createBook("book-nightwatch", "Night Watch")
+    const discworld = createSeries("series-discworld", "Discworld", [
+      guards,
+      nightWatch,
+    ])
+
+    it("writes the media to the new series and removes it from the old one", () => {
       const updateItem = jest.fn()
       const deleteItem = jest.fn()
-      const guards = createBook("book-guards", "Guards! Guards!")
-      const discworld = createSeries("series-discworld", "Discworld", [
-        guards,
-        createBook("book-nightwatch", "Night Watch"),
-      ])
       const mediaStorage = createMediaStorage({
         ...createStoredMedia({ books: [discworld] }),
         updateItem,
         deleteItem,
       })
 
-      mediaStorage.moveBookToSeries(guards, "series-earthsea")
+      mediaStorage.moveMedia(guards, "series-earthsea")
 
       expect(updateItem).toHaveBeenCalledWith(
         `${BOOKS_KEY}/series-earthsea/items`,
@@ -364,7 +286,44 @@ describe("MediaStorageContext", () => {
       )
     })
 
-    it("moveBookToSeries deletes the old series when the book was the last one in it", () => {
+    it("moves standalone media into a series", () => {
+      const updateItem = jest.fn()
+      const deleteItem = jest.fn()
+      const nation = createBook("book-nation", "Nation")
+      const mediaStorage = createMediaStorage({
+        ...createStoredMedia({ books: [nation] }),
+        updateItem,
+        deleteItem,
+      })
+
+      mediaStorage.moveMedia(nation, "series-discworld")
+
+      expect(updateItem).toHaveBeenCalledWith(
+        `${BOOKS_KEY}/series-discworld/items`,
+        nation,
+      )
+      expect(deleteItem).toHaveBeenCalledWith(BOOKS_KEY, nation)
+    })
+
+    it("moves media back to the main list when given no series", () => {
+      const updateItem = jest.fn()
+      const deleteItem = jest.fn()
+      const mediaStorage = createMediaStorage({
+        ...createStoredMedia({ books: [discworld] }),
+        updateItem,
+        deleteItem,
+      })
+
+      mediaStorage.moveMedia(guards)
+
+      expect(updateItem).toHaveBeenCalledWith(BOOKS_KEY, guards)
+      expect(deleteItem).toHaveBeenCalledWith(
+        `${BOOKS_KEY}/series-discworld/items`,
+        guards,
+      )
+    })
+
+    it("deletes the old series when the media was the last thing in it", () => {
       const updateItem = jest.fn()
       const deleteItem = jest.fn()
       const wizard = createBook("book-wizard", "A Wizard of Earthsea")
@@ -375,7 +334,7 @@ describe("MediaStorageContext", () => {
         deleteItem,
       })
 
-      mediaStorage.moveBookToSeries(wizard, "series-discworld")
+      mediaStorage.moveMedia(wizard, "series-discworld")
 
       expect(updateItem).toHaveBeenCalledWith(
         `${BOOKS_KEY}/series-discworld/items`,
@@ -385,115 +344,7 @@ describe("MediaStorageContext", () => {
       expect(deleteItem).toHaveBeenCalledWith(BOOKS_KEY, earthsea)
     })
 
-    it("moveBookToSeries moves a standalone book into the series", () => {
-      const updateItem = jest.fn()
-      const deleteItem = jest.fn()
-      const nation = createBook("book-nation", "Nation")
-      const mediaStorage = createMediaStorage({
-        ...createStoredMedia({ books: [nation] }),
-        updateItem,
-        deleteItem,
-      })
-
-      mediaStorage.moveBookToSeries(nation, "series-discworld")
-
-      expect(updateItem).toHaveBeenCalledWith(
-        `${BOOKS_KEY}/series-discworld/items`,
-        nation,
-      )
-      expect(deleteItem).toHaveBeenCalledWith(BOOKS_KEY, nation)
-    })
-
-    it("moveBookToSeries does nothing when the book is already in that series", () => {
-      const updateItem = jest.fn()
-      const deleteItem = jest.fn()
-      const guards = createBook("book-guards", "Guards! Guards!")
-      const discworld = createSeries("series-discworld", "Discworld", [guards])
-      const mediaStorage = createMediaStorage({
-        ...createStoredMedia({ books: [discworld] }),
-        updateItem,
-        deleteItem,
-      })
-
-      mediaStorage.moveBookToSeries(guards, "series-discworld")
-
-      expect(updateItem).not.toHaveBeenCalled()
-      expect(deleteItem).not.toHaveBeenCalled()
-    })
-
-    it("moveGameToSeries writes the game to the new series and removes it from the old one", () => {
-      const updateItem = jest.fn()
-      const deleteItem = jest.fn()
-      const botw = createGame("game-botw", "Breath of the Wild")
-      const zelda = createSeries("series-zelda", "The Legend of Zelda", [
-        botw,
-        createGame("game-totk", "Tears of the Kingdom"),
-      ])
-      const mediaStorage = createMediaStorage({
-        ...createStoredMedia({ games: [zelda] }),
-        updateItem,
-        deleteItem,
-      })
-
-      mediaStorage.moveGameToSeries(botw, "series-portal")
-
-      expect(updateItem).toHaveBeenCalledWith(
-        `${GAMES_KEY}/series-portal/items`,
-        botw,
-      )
-      expect(deleteItem).toHaveBeenCalledWith(
-        `${GAMES_KEY}/series-zelda/items`,
-        botw,
-      )
-    })
-
-    it("moveGameToSeries deletes the old series when the game was the last one in it", () => {
-      const updateItem = jest.fn()
-      const deleteItem = jest.fn()
-      const portalGame = createGame("game-portal", "Portal")
-      const portal = createSeries("series-portal", "Portal", [portalGame])
-      const mediaStorage = createMediaStorage({
-        ...createStoredMedia({ games: [portal] }),
-        updateItem,
-        deleteItem,
-      })
-
-      mediaStorage.moveGameToSeries(portalGame, "series-zelda")
-
-      expect(updateItem).toHaveBeenCalledWith(
-        `${GAMES_KEY}/series-zelda/items`,
-        portalGame,
-      )
-      expect(deleteItem).toHaveBeenCalledTimes(1)
-      expect(deleteItem).toHaveBeenCalledWith(GAMES_KEY, portal)
-    })
-  })
-
-  describe("moving back to the main list", () => {
-    it("moveBookToMainList writes the book to the books key and removes it from its series", () => {
-      const updateItem = jest.fn()
-      const deleteItem = jest.fn()
-      const guards = createBook("book-guards", "Guards! Guards!")
-      const discworld = createSeries("series-discworld", "Discworld", [
-        guards,
-        createBook("book-nightwatch", "Night Watch"),
-      ])
-      const mediaStorage = createMediaStorage({
-        ...createStoredMedia({ books: [discworld] }),
-        updateItem,
-        deleteItem,
-      })
-
-      mediaStorage.moveBookToMainList(guards)
-
-      expect(updateItem).toHaveBeenCalledWith(BOOKS_KEY, guards)
-      expect(deleteItem).toHaveBeenCalledWith(
-        `${BOOKS_KEY}/series-discworld/items`,
-        guards,
-      )
-    })
-
-    it("moveBookToMainList deletes the series when the book was the last one in it", () => {
+    it("deletes the old series when its last media moves to the main list", () => {
       const updateItem = jest.fn()
       const deleteItem = jest.fn()
       const wizard = createBook("book-wizard", "A Wizard of Earthsea")
@@ -504,14 +355,29 @@ describe("MediaStorageContext", () => {
         deleteItem,
       })
 
-      mediaStorage.moveBookToMainList(wizard)
+      mediaStorage.moveMedia(wizard)
 
       expect(updateItem).toHaveBeenCalledWith(BOOKS_KEY, wizard)
       expect(deleteItem).toHaveBeenCalledTimes(1)
       expect(deleteItem).toHaveBeenCalledWith(BOOKS_KEY, earthsea)
     })
 
-    it("moveBookToMainList does nothing when the book is already in the main list", () => {
+    it("does nothing when the media is already in that series", () => {
+      const updateItem = jest.fn()
+      const deleteItem = jest.fn()
+      const mediaStorage = createMediaStorage({
+        ...createStoredMedia({ books: [discworld] }),
+        updateItem,
+        deleteItem,
+      })
+
+      mediaStorage.moveMedia(guards, "series-discworld")
+
+      expect(updateItem).not.toHaveBeenCalled()
+      expect(deleteItem).not.toHaveBeenCalled()
+    })
+
+    it("does nothing when the media is already in the main list", () => {
       const updateItem = jest.fn()
       const deleteItem = jest.fn()
       const nation = createBook("book-nation", "Nation")
@@ -521,178 +387,10 @@ describe("MediaStorageContext", () => {
         deleteItem,
       })
 
-      mediaStorage.moveBookToMainList(nation)
+      mediaStorage.moveMedia(nation)
 
       expect(updateItem).not.toHaveBeenCalled()
       expect(deleteItem).not.toHaveBeenCalled()
-    })
-
-    it("moveGameToMainList writes the game to the games key and removes it from its series", () => {
-      const updateItem = jest.fn()
-      const deleteItem = jest.fn()
-      const botw = createGame("game-botw", "Breath of the Wild")
-      const zelda = createSeries("series-zelda", "The Legend of Zelda", [
-        botw,
-        createGame("game-totk", "Tears of the Kingdom"),
-      ])
-      const mediaStorage = createMediaStorage({
-        ...createStoredMedia({ games: [zelda] }),
-        updateItem,
-        deleteItem,
-      })
-
-      mediaStorage.moveGameToMainList(botw)
-
-      expect(updateItem).toHaveBeenCalledWith(GAMES_KEY, botw)
-      expect(deleteItem).toHaveBeenCalledWith(
-        `${GAMES_KEY}/series-zelda/items`,
-        botw,
-      )
-    })
-
-    it("moveGameToMainList deletes the series when the game was the last one in it", () => {
-      const updateItem = jest.fn()
-      const deleteItem = jest.fn()
-      const portalGame = createGame("game-portal", "Portal")
-      const portal = createSeries("series-portal", "Portal", [portalGame])
-      const mediaStorage = createMediaStorage({
-        ...createStoredMedia({ games: [portal] }),
-        updateItem,
-        deleteItem,
-      })
-
-      mediaStorage.moveGameToMainList(portalGame)
-
-      expect(updateItem).toHaveBeenCalledWith(GAMES_KEY, portalGame)
-      expect(deleteItem).toHaveBeenCalledTimes(1)
-      expect(deleteItem).toHaveBeenCalledWith(GAMES_KEY, portal)
-    })
-
-    it("moveGameToMainList does nothing when the game is already in the main list", () => {
-      const updateItem = jest.fn()
-      const deleteItem = jest.fn()
-      const stardew = createGame("game-stardew", "Stardew Valley")
-      const mediaStorage = createMediaStorage({
-        ...createStoredMedia({ games: [stardew] }),
-        updateItem,
-        deleteItem,
-      })
-
-      mediaStorage.moveGameToMainList(stardew)
-
-      expect(updateItem).not.toHaveBeenCalled()
-      expect(deleteItem).not.toHaveBeenCalled()
-    })
-  })
-
-  describe("against the mock backend", () => {
-    const guards = createBook("book-guards", "Guards! Guards!")
-    const nightWatch = createBook("book-nightwatch", "Night Watch")
-    const discworld = createSeries("series-discworld", "Discworld", [
-      guards,
-      nightWatch,
-    ])
-    const wizard = createBook("book-wizard", "A Wizard of Earthsea")
-    const earthsea = createSeries("series-earthsea", "Earthsea", [wizard])
-    const portalGame = createGame("game-portal", "Portal")
-    const portal = createSeries("series-portal", "Portal", [portalGame])
-    const botw = createGame("game-botw", "Breath of the Wild")
-    const zelda = createSeries("series-zelda", "The Legend of Zelda", [botw])
-
-    const renderWithMockBackend = () =>
-      renderMediaStorage(
-        createMockFirebaseContext({
-          media: {
-            books: indexById<ReadingItemDetails>([discworld, earthsea]),
-            games: indexById<PlayingItemDetails>([zelda, portal]),
-          },
-        }),
-      )
-
-    it("adding a series leaves the series holding the new book", () => {
-      const mediaStorage = renderWithMockBackend()
-
-      act(() => {
-        mediaStorage.current.addBookSeries("Tiffany Aching", {
-          title: "The Wee Free Men",
-        })
-      })
-
-      const series = mediaStorage.current.bookSeries.find(
-        (series) => series.name === "Tiffany Aching",
-      )
-      expect(Object.values(series?.items ?? {})).toEqual([
-        expect.objectContaining({ type: "book", title: "The Wee Free Men" }),
-      ])
-    })
-
-    it("deleting the last book in a series removes the series", () => {
-      const mediaStorage = renderWithMockBackend()
-
-      act(() => {
-        mediaStorage.current.deleteBook(wizard)
-      })
-
-      expect(mediaStorage.current.books).toEqual([discworld])
-    })
-
-    it("moving a book keeps it in the new series only", () => {
-      const mediaStorage = renderWithMockBackend()
-
-      act(() => {
-        mediaStorage.current.moveBookToSeries(guards, earthsea.id)
-      })
-
-      const seriesItems = (id: string) =>
-        Object.keys(
-          mediaStorage.current.bookSeries.find((series) => series.id === id)
-            ?.items ?? {},
-        ).sort()
-
-      expect(seriesItems(discworld.id)).toEqual([nightWatch.id])
-      expect(seriesItems(earthsea.id)).toEqual([guards.id, wizard.id].sort())
-    })
-
-    it("moving a book to the main list leaves it alongside its old series", () => {
-      const mediaStorage = renderWithMockBackend()
-
-      act(() => {
-        mediaStorage.current.moveBookToMainList(guards)
-      })
-
-      expect(mediaStorage.current.books).toContainEqual(guards)
-      const [remainingSeries] = mediaStorage.current.bookSeries.filter(
-        (series) => series.id === discworld.id,
-      )
-      expect(Object.keys(remainingSeries.items ?? {})).toEqual([nightWatch.id])
-    })
-
-    it("moving the last book in a series to the main list removes the series", () => {
-      const mediaStorage = renderWithMockBackend()
-
-      act(() => {
-        mediaStorage.current.moveBookToMainList(wizard)
-      })
-
-      expect(mediaStorage.current.books).toContainEqual(wizard)
-      expect(mediaStorage.current.books.map(({ id }) => id)).not.toContain(
-        earthsea.id,
-      )
-    })
-
-    it("moving the last game out of a series removes the series", () => {
-      const mediaStorage = renderWithMockBackend()
-
-      act(() => {
-        mediaStorage.current.moveGameToSeries(portalGame, zelda.id)
-      })
-
-      expect(mediaStorage.current.gameSeries.map(({ id }) => id)).toEqual([
-        zelda.id,
-      ])
-      expect(
-        Object.keys(mediaStorage.current.gameSeries[0].items ?? {}).sort(),
-      ).toEqual([botw.id, portalGame.id].sort())
     })
   })
 })
