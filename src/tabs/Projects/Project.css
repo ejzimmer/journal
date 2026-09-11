@@ -128,10 +128,11 @@
   }
 
   .subtasks-section {
+    --drawer-inset: calc(var(--radius) - var(--card-border-width));
+
     position: absolute;
     inset-block-start: 100%;
-    inset-inline-start: 0;
-    width: 100%;
+    inset-inline: var(--drawer-inset);
     max-width: var(--card-max);
     opacity: 0;
     overflow: hidden;
