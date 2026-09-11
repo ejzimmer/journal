@@ -1,5 +1,4 @@
 .project {
-  --project-colour-light: color(from var(--project-colour) srgb r g b / 0.2);
   --project-colour-solid: color(from var(--project-colour) srgb r g b / 1);
   --card-colour: var(--project-colour);
   --card-border-colour: var(--project-colour-solid);
@@ -40,11 +39,23 @@
   }
 
   &.in_progress {
-    background:
-      linear-gradient(45deg, white, transparent), var(--project-colour-light);
+    --card-colour: color(from var(--project-colour) srgb r g b / 0.42);
+    --card-border-colour: color(from var(--project-colour) srgb r g b / 0.9);
+
+    .project-details {
+      padding-block: 8px 9px;
+      box-shadow: 0 2px 7px color(from var(--project-colour) srgb r g b / 0.32);
+    }
+
+    .project-name {
+      font-weight: 500;
+      opacity: 0.8;
+    }
 
     label.emoji-checkbox {
-      text-shadow: 1px 1px 4px hsl(0 0 0 /0.4);
+      font-size: 1.35em;
+      text-shadow: none;
+      opacity: 0.8;
     }
   }
 
@@ -82,13 +93,28 @@
 
   .project-details {
     display: flex;
-    gap: 4px;
-    align-items: center;
+    flex-direction: column;
     padding-inline: 10px;
     padding-block: 5px;
     background: var(--card-colour);
     border: var(--card-border-width) solid var(--card-border-colour);
     border-radius: var(--radius);
+  }
+
+  .project-main-row {
+    display: flex;
+    gap: 4px;
+    align-items: center;
+  }
+
+  .project-meta-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-block-start: 6px;
+    padding-block-start: 7px;
+    border-block-start: 1px solid
+      color(from var(--project-colour) srgb r g b / 0.45);
   }
 
   button path {
@@ -111,18 +137,18 @@
     display: flex;
     align-items: center;
     gap: 4px;
-    margin-inline-end: 8px;
+    margin-inline-start: auto;
   }
 
   .project-action-button {
-    opacity: 0;
+    opacity: 0.5;
     transition: all 0.2s;
     font-size: 1em;
     text-shadow: 1px 1px hsl(0 0 0/0.3);
   }
 
   &:hover,
-  &:focus-visible {
+  &:focus-within {
     .project-action-button {
       opacity: 1;
     }
@@ -266,13 +292,32 @@
   }
 
   .subtasks-progress {
-    margin-inline-start: 1em;
-    font-size: 0.9em;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-grow: 1;
+    min-width: 0;
+  }
+
+  .subtasks-progress-track {
+    flex-grow: 1;
+    height: 6px;
     border-radius: 1000px;
-    padding-block: 4px;
-    padding-inline: 8px;
-    background: hsl(0 0 100% /0.4);
-    --project-colour-shadow: color(from var(--project-colour) srgb r g b / 0.6);
-    box-shadow: inset 2px 2px 2px var(--project-colour-shadow);
+    overflow: hidden;
+    background: color(from var(--project-colour) srgb r g b / 0.3);
+  }
+
+  .subtasks-progress-fill {
+    height: 100%;
+    border-radius: 1000px;
+    background: var(--project-colour-solid);
+    transition: width 0.3s cubic-bezier(0.2, 0.7, 0.3, 1);
+  }
+
+  .subtasks-progress-count {
+    font-size: 0.72em;
+    white-space: nowrap;
+    font-variant-numeric: tabular-nums;
+    color: hsl(0 0% 26%);
   }
 }
