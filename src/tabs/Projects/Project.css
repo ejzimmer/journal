@@ -5,6 +5,7 @@
   --card-border-colour: var(--project-colour-solid);
   --card-border-width: 2px;
   --radius: 7px;
+  --drawer-inset: calc(var(--radius) - var(--card-border-width));
   --card-max: min(840px, 80vw);
   position: relative;
   flex-shrink: 0;
@@ -12,7 +13,7 @@
   border-radius: var(--radius);
   font-size: 18px;
   align-self: start;
-  min-width: 0;
+  min-width: calc(var(--drawer-content-width, 0px) + 2 * var(--drawer-inset));
   transition: min-width 0.2s ease-out;
 
   &:has(.subtasks-section.visible) {
@@ -128,8 +129,6 @@
   }
 
   .subtasks-section {
-    --drawer-inset: calc(var(--radius) - var(--card-border-width));
-
     position: absolute;
     inset-block-start: 100%;
     inset-inline: var(--drawer-inset);

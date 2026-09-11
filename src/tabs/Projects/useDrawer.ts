@@ -28,15 +28,14 @@ export function useDrawer({
     const card = drawer.parentElement
     if (!card) return
 
-    card.style.minWidth = ""
+    card.style.removeProperty("--drawer-content-width")
     drawer.style.width = "max-content"
 
     const contentWidth = Math.ceil(drawer.getBoundingClientRect().width)
-    const drawerInset = parseFloat(getComputedStyle(drawer).insetInlineStart)
     setOpenHeight(listRef.current.clientHeight + formRef.current.clientHeight)
 
     drawer.style.width = ""
-    card.style.minWidth = `${contentWidth + 2 * drawerInset}px`
+    card.style.setProperty("--drawer-content-width", `${contentWidth}px`)
   }, [drawerRef, listRef, formRef, subtasks, isProjectLoaded])
 
   useEffect(() => {
