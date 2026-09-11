@@ -24,10 +24,19 @@ export type GameDetails = {
   status?: null | "in_progress" | "done"
 }
 
+export type NewBook = Omit<BookDetails, "id">
+export type NewGame = Omit<GameDetails, "id">
+
+export type MediaDetails = BookDetails | GameDetails
+export type NewMedia = NewBook | NewGame
+export type MediaSeries =
+  | SeriesDetails<BookDetails>
+  | SeriesDetails<GameDetails>
+
 export type ReadingItemDetails = BookDetails | SeriesDetails<BookDetails>
 
 export type PlayingItemDetails = GameDetails | SeriesDetails<GameDetails>
 
-export const isSeries = (
-  item: ReadingItemDetails | PlayingItemDetails
-): item is SeriesDetails<any> => item.type === "series"
+export const isSeries = <T extends BookDetails | GameDetails>(
+  item: T | SeriesDetails<T>
+): item is SeriesDetails<T> => item.type === "series"
