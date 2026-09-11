@@ -6,22 +6,20 @@ import { EditableText } from "../../../shared/controls/EditableText"
 import "./Book.css"
 import { Checkbox } from "../../../shared/controls/Checkbox"
 
-type BookProps = {
-  book: BookDetails
-  path: string
-  author?: {
-    name: string
-    onChange: (name: string) => void
-  }
-}
-
-export function Book({ book, path, author }: BookProps) {
+export function Book({ book, path }: { book: BookDetails; path: string }) {
   const { updateItem, deleteItem } = useStorageContext()
 
   const updateTitle = (title: string) => {
     updateItem<BookDetails>(path, {
       ...book,
       title,
+    })
+  }
+
+  const updateAuthor = (author: string) => {
+    updateItem<BookDetails>(path, {
+      ...book,
+      author,
     })
   }
 
@@ -61,14 +59,14 @@ export function Book({ book, path, author }: BookProps) {
             fontStyle: "italic",
             display: "inline",
           }}
-          value={`${book.title}${author ? ", " : ""}`}
+          value={`${book.title}${book.author ? ", " : ""}`}
           onDelete={deleteBook}
         />
-        {author && (
+        {book.author && (
           <EditableText
-            onChange={author.onChange}
+            onChange={updateAuthor}
             label="author name"
-            value={author.name}
+            value={book.author}
             style={{ display: "inline" }}
           />
         )}

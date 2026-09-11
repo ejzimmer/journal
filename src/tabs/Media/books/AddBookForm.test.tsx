@@ -5,22 +5,33 @@ import { BOOKS_KEY, ReadingItemDetails } from "../types"
 import { renderWithStorage } from "../../../shared/storageContextTestUtils"
 
 const booksValue: Record<string, ReadingItemDetails> = {
-  "1": {
-    id: "1",
-    type: "author",
-    name: "Terry Pratchett",
-    items: { "4": { id: "4", type: "series", name: "Discworld" } },
+  "1": { id: "1", type: "book", title: "Nation", author: "Terry Pratchett" },
+  "2": {
+    id: "2",
+    type: "series",
+    name: "Discworld",
+    items: {
+      "3": { id: "3", type: "book", title: "Thud!", author: "Terry Pratchett" },
+    },
   },
-  "2": { id: "2", type: "author", name: "Ursula Le Guin" },
-  "3": { id: "3", type: "series", name: "Earthsea" },
+  "4": {
+    id: "4",
+    type: "series",
+    name: "Earthsea",
+    items: {
+      "5": {
+        id: "5",
+        type: "book",
+        title: "The Tombs of Atuan",
+        author: "Ursula Le Guin",
+      },
+    },
+  },
 }
 
 function useValue<T>() {
   return { value: booksValue as T, loading: false }
 }
-
-const getId = (_: string, { type }: any) =>
-  type === "author" ? "author_id" : "series_id"
 
 describe("AddBookForm", () => {
   describe("when the user enters a book title & submits the form", () => {
@@ -42,9 +53,9 @@ describe("AddBookForm", () => {
   })
 
   describe("when the user enters a new author & book title", () => {
-    it("creates a new author and adds the new book to their items", async () => {
+    it("creates the book with that author", async () => {
       const user = userEvent.setup()
-      const addItem = jest.fn().mockReturnValue("1234")
+      const addItem = jest.fn()
       renderWithStorage(<AddBookForm />, { value: { addItem, useValue } })
 
       await user.type(
@@ -58,20 +69,17 @@ describe("AddBookForm", () => {
       await user.click(screen.getByRole("button", { name: "Create" }))
 
       expect(addItem).toHaveBeenCalledWith(BOOKS_KEY, {
-        type: "author",
-        name: "Mary Shelley",
-      })
-      expect(addItem).toHaveBeenCalledWith(`${BOOKS_KEY}/1234/items`, {
         type: "book",
         title: "Frankenstein",
+        author: "Mary Shelley",
       })
     })
   })
 
   describe("when the user selects an existing author & enters a book title", () => {
-    it("adds the new book to the existing author", async () => {
+    it("creates the book with that author", async () => {
       const user = userEvent.setup()
-      const addItem = jest.fn().mockReturnValue("1234")
+      const addItem = jest.fn()
       renderWithStorage(<AddBookForm />, { value: { addItem, useValue } })
 
       await user.type(
@@ -83,15 +91,37 @@ describe("AddBookForm", () => {
       )
       await user.click(screen.getByRole("button", { name: "Create" }))
 
-      expect(addItem).toHaveBeenCalledWith(`${BOOKS_KEY}/2/items`, {
+      expect(addItem).toHaveBeenCalledWith(BOOKS_KEY, {
         type: "book",
         title: "The Left Hand of Darkness",
+        author: "Ursula Le Guin",
       })
     })
   })
 
+  describe("the author options", () => {
+    it("include the authors of books in a series", async () => {
+      renderWithStorage(<AddBookForm />, { value: { useValue } })
+
+      expect(
+        screen.getByRole("option", { name: "Terry Pratchett", hidden: true })
+      ).toBeInTheDocument()
+      expect(
+        screen.getByRole("option", { name: "Ursula Le Guin", hidden: true })
+      ).toBeInTheDocument()
+    })
+
+    it("list each author once", async () => {
+      renderWithStorage(<AddBookForm />, { value: { useValue } })
+
+      expect(
+        screen.getAllByRole("option", { name: "Terry Pratchett", hidden: true })
+      ).toHaveLength(1)
+    })
+  })
+
   describe("when the user enters a new series & book title", () => {
-    it("creates a new series and adds the new book to their items", async () => {
+    it("creates a new series and adds the new book to its items", async () => {
       const user = userEvent.setup()
       const addItem = jest.fn().mockReturnValue("1212")
       renderWithStorage(<AddBookForm />, { value: { addItem, useValue } })
@@ -118,31 +148,31 @@ describe("AddBookForm", () => {
   })
 
   describe("when the user selects an existing series & enters a book title", () => {
-    it("adds the new book to the existing author", async () => {
+    it("adds the new book to the existing series", async () => {
       const user = userEvent.setup()
-      const addItem = jest.fn().mockReturnValue("1234")
+      const addItem = jest.fn()
       renderWithStorage(<AddBookForm />, { value: { addItem, useValue } })
 
       await user.type(
         screen.getByRole("textbox", { name: "Book title" }),
-        "The Tombs of Atuan"
+        "The Farthest Shore"
       )
       await user.click(
         screen.getByRole("option", { name: "Earthsea", hidden: true }),
       )
       await user.click(screen.getByRole("button", { name: "Create" }))
 
-      expect(addItem).toHaveBeenCalledWith(`${BOOKS_KEY}/3/items`, {
+      expect(addItem).toHaveBeenCalledWith(`${BOOKS_KEY}/4/items`, {
         type: "book",
-        title: "The Tombs of Atuan",
+        title: "The Farthest Shore",
       })
     })
   })
 
-  describe("when the user enters a new author, series & book", () => {
-    it("adds the new book to the existing author", async () => {
+  describe("when the user enters an author, a series & a book", () => {
+    it("adds the book to the series, with its author", async () => {
       const user = userEvent.setup()
-      const addItem = jest.fn().mockImplementation(getId)
+      const addItem = jest.fn().mockReturnValue("series_id")
       renderWithStorage(<AddBookForm />, { value: { addItem, useValue } })
 
       await user.type(
@@ -160,112 +190,21 @@ describe("AddBookForm", () => {
       await user.click(screen.getByRole("button", { name: "Create" }))
 
       expect(addItem).toHaveBeenCalledWith(BOOKS_KEY, {
-        type: "author",
-        name: "Douglas Adams",
-      })
-      expect(addItem).toHaveBeenCalledWith(`${BOOKS_KEY}/author_id/items`, {
         type: "series",
         name: "Dirk Gently",
       })
-
-      expect(addItem).toHaveBeenCalledWith(
-        `${BOOKS_KEY}/author_id/items/series_id/items`,
-        {
-          type: "book",
-          title: "The Long Dark Teatime of the Soul",
-        }
-      )
-    })
-  })
-
-  describe("when the user selects an existing author & enters a new series & book", () => {
-    it("adds the new book to the existing author", async () => {
-      const user = userEvent.setup()
-      const addItem = jest.fn().mockImplementation(getId)
-      renderWithStorage(<AddBookForm />, { value: { addItem, useValue } })
-
-      await user.type(
-        screen.getByRole("textbox", { name: "Book title" }),
-        "Diggers"
-      )
-      await user.type(
-        screen.getByRole("combobox", { name: "Author name" }),
-        "Terry Pratchett"
-      )
-      await user.type(
-        screen.getByRole("combobox", { name: "Series name" }),
-        "The Carpet People"
-      )
-      await user.click(screen.getByRole("button", { name: "Create" }))
-
-      expect(addItem).toHaveBeenCalledWith(`${BOOKS_KEY}/1/items`, {
-        type: "series",
-        name: "The Carpet People",
-      })
-
-      expect(addItem).toHaveBeenCalledWith(
-        `${BOOKS_KEY}/1/items/series_id/items`,
-        {
-          type: "book",
-          title: "Diggers",
-        }
-      )
-    })
-  })
-
-  describe("when the user selects an existing author & series & enters a new book", () => {
-    it("adds the new book to the existing author & series", async () => {
-      const user = userEvent.setup()
-      const addItem = jest.fn().mockImplementation(getId)
-      renderWithStorage(<AddBookForm />, { value: { addItem, useValue } })
-
-      await user.type(
-        screen.getByRole("textbox", { name: "Book title" }),
-        "Witches Abroad"
-      )
-      await user.type(
-        screen.getByRole("combobox", { name: "Author name" }),
-        "Terry Pratchett"
-      )
-      await user.type(
-        screen.getByRole("combobox", { name: "Series name" }),
-        "Discworld"
-      )
-      await user.click(screen.getByRole("button", { name: "Create" }))
-
-      expect(addItem).toHaveBeenCalledWith(`${BOOKS_KEY}/1/items/4/items`, {
+      expect(addItem).toHaveBeenCalledWith(`${BOOKS_KEY}/series_id/items`, {
         type: "book",
-        title: "Witches Abroad",
+        title: "The Long Dark Teatime of the Soul",
+        author: "Douglas Adams",
       })
-    })
-
-    it("only shows the series for the selected author", async () => {
-      const user = userEvent.setup()
-      const addItem = jest.fn().mockImplementation(getId)
-      renderWithStorage(<AddBookForm />, { value: { addItem, useValue } })
-
-      await user.type(
-        screen.getByRole("textbox", { name: "Book title" }),
-        "Witches Abroad"
-      )
-      await user.type(
-        screen.getByRole("combobox", { name: "Author name" }),
-        "Terry Pratchett"
-      )
-
-      expect(
-        screen.getByRole("option", { name: "Discworld", hidden: true })
-      ).toBeInTheDocument()
-      expect(
-        screen.queryByRole("option", { name: "Earthsea", hidden: true })
-      ).not.toBeInTheDocument()
     })
   })
 
   describe("After the form is submitted", () => {
     it("clears the form", async () => {
       const user = userEvent.setup()
-      const addItem = jest.fn().mockImplementation(getId)
+      const addItem = jest.fn().mockReturnValue("series_id")
       renderWithStorage(<AddBookForm />, { value: { addItem, useValue } })
 
       await user.type(
@@ -286,11 +225,9 @@ describe("AddBookForm", () => {
         expect(input).toHaveValue("")
       })
 
-      // Just the li element, not the value div
+      // Just the option, not the selected value
       expect(screen.getAllByText("Terry Pratchett")).toHaveLength(1)
-
-      // The Discworld option doens't appear at all, as the author isn't selected
-      expect(screen.queryByText("Discworld")).not.toBeInTheDocument()
+      expect(screen.getAllByText("Discworld")).toHaveLength(1)
     })
   })
 })

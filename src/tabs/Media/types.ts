@@ -1,13 +1,6 @@
 export const BOOKS_KEY = "media/books"
 export const GAMES_KEY = "media/games"
 
-export type AuthorDetails = {
-  id: string
-  type: "author"
-  name: string
-  items?: Record<string, SeriesDetails<BookDetails> | BookDetails>
-}
-
 export type SeriesDetails<T extends BookDetails | GameDetails> = {
   id: string
   type: "series"
@@ -19,6 +12,7 @@ export type BookDetails = {
   id: string
   type: "book"
   title: string
+  author?: string
   medium?: "📖" | "🎧" | null
   isDone?: boolean
 }
@@ -30,10 +24,7 @@ export type GameDetails = {
   status?: null | "in_progress" | "done"
 }
 
-export type ReadingItemDetails =
-  | BookDetails
-  | AuthorDetails
-  | SeriesDetails<BookDetails>
+export type ReadingItemDetails = BookDetails | SeriesDetails<BookDetails>
 
 export type PlayingItemDetails = GameDetails | SeriesDetails<GameDetails>
 

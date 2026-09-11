@@ -1,8 +1,18 @@
+import { Fragment } from "react"
 import { AddBookForm } from "./AddBookForm"
 import { BOOKS_KEY, ReadingItemDetails } from "../types"
-import { getComponent } from "./utils"
-import React from "react"
+import { Book } from "./Book"
+import { Series } from "./Series"
 import { useStorageContext } from "../../../shared/FirebaseContext"
+
+function getComponent<T extends ReadingItemDetails>(item: T) {
+  switch (item.type) {
+    case "book":
+      return <Book book={item} path={BOOKS_KEY} />
+    case "series":
+      return <Series series={item} path={BOOKS_KEY} />
+  }
+}
 
 export function Books() {
   const { useValue } = useStorageContext()
@@ -15,7 +25,7 @@ export function Books() {
       <h2>Books</h2>
       <ul>
         {items.map((item) => (
-          <React.Fragment key={item.id}>{getComponent(item)}</React.Fragment>
+          <Fragment key={item.id}>{getComponent(item)}</Fragment>
         ))}
       </ul>
       <AddBookForm />
