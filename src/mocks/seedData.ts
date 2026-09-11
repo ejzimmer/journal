@@ -1,5 +1,11 @@
 import { LABELS_KEY, StoredLabel, WorkTask, WORK_KEY } from "../tabs/Work/types"
 import {
+  Category,
+  ProjectDetails,
+  ProjectSubtask,
+  PROJECTS_KEY,
+} from "../shared/types"
+import {
   BookDetails,
   GameDetails,
   PlayingItemDetails,
@@ -9,7 +15,11 @@ import {
 
 const now = Date.now()
 
-function list(id: string, description: string, position: number): WorkTask {
+function createList(
+  id: string,
+  description: string,
+  position: number,
+): WorkTask {
   return {
     id,
     description,
@@ -20,7 +30,7 @@ function list(id: string, description: string, position: number): WorkTask {
   }
 }
 
-function task(
+function createTask(
   listId: string,
   id: string,
   description: string,
@@ -38,11 +48,11 @@ function task(
   }
 }
 
-const backlog = list("list-backlog", "Backlog", 0)
-const today = list("list-today", "Today", 1)
-const done = list("list-done", "Done", 2)
+const backlog = createList("list-backlog", "Backlog", 0)
+const today = createList("list-today", "Today", 1)
+const done = createList("list-done", "Done", 2)
 
-const backlogTask = task(
+const backlogTask = createTask(
   backlog.id,
   "task-backlog-1",
   "Set up the mock backend",
@@ -52,27 +62,31 @@ const backlogTask = task(
 const demoLabel: StoredLabel = { id: "label-demo", value: "demo", colour: "blue" }
 const otherLabel: StoredLabel = { id: "label-other", value: "other", colour: "orange" }
 
-const todayTask = task(today.id, "task-today-1", "Try dragging this task", 0, {
-  labelIds: [demoLabel.id],
-})
+const todayTask = createTask(
+  today.id,
+  "task-today-1",
+  "Try dragging this task",
+  0,
+  { labelIds: [demoLabel.id] },
+)
 
-const doneTask = task(done.id, "task-done-1", "See how Done looks", 0, {
+const doneTask = createTask(done.id, "task-done-1", "See how Done looks", 0, {
   status: "done",
 })
 
-const book = (
+const createBook = (
   id: string,
   title: string,
   extra: Partial<BookDetails> = {},
 ): BookDetails => ({ id, type: "book", title, ...extra })
 
-const game = (
+const createGame = (
   id: string,
   title: string,
   extra: Partial<GameDetails> = {},
 ): GameDetails => ({ id, type: "game", title, ...extra })
 
-const byId = <T extends { id: string }>(items: T[]): Record<string, T> =>
+const indexById = <T extends { id: string }>(items: T[]): Record<string, T> =>
   items.reduce(
     (map, item) => {
       map[item.id] = item
@@ -81,7 +95,7 @@ const byId = <T extends { id: string }>(items: T[]): Record<string, T> =>
     {} as Record<string, T>,
   )
 
-const bookSeries = (
+const createBookSeries = (
   id: string,
   name: string,
   books: BookDetails[],
@@ -89,10 +103,10 @@ const bookSeries = (
   id,
   type: "series",
   name,
-  items: byId(books),
+  items: indexById(books),
 })
 
-const gameSeries = (
+const createGameSeries = (
   id: string,
   name: string,
   games: GameDetails[],
@@ -100,77 +114,139 @@ const gameSeries = (
   id,
   type: "series",
   name,
-  items: byId(games),
+  items: indexById(games),
 })
 
-const books = byId<ReadingItemDetails>([
-  bookSeries("series-discworld", "Discworld", [
-    book("book-guards", "Guards! Guards!", {
+const books = indexById<ReadingItemDetails>([
+  createBookSeries("series-discworld", "Discworld", [
+    createBook("book-guards", "Guards! Guards!", {
       author: "Terry Pratchett",
       isDone: true,
       medium: "📖",
     }),
-    book("book-witches", "Witches Abroad", {
+    createBook("book-witches", "Witches Abroad", {
       author: "Terry Pratchett",
       isDone: true,
       medium: "🎧",
     }),
-    book("book-nightwatch", "Night Watch", {
+    createBook("book-nightwatch", "Night Watch", {
       author: "Terry Pratchett",
       medium: "🎧",
     }),
-    book("book-thud", "Thud!", { author: "Terry Pratchett" }),
+    createBook("book-thud", "Thud!", { author: "Terry Pratchett" }),
   ]),
-  book("book-nation", "Nation", {
+  createBook("book-nation", "Nation", {
     author: "Terry Pratchett",
     isDone: true,
     medium: "📖",
   }),
-  bookSeries("series-earthsea", "Earthsea", [
-    book("book-wizard", "A Wizard of Earthsea", {
+  createBookSeries("series-earthsea", "Earthsea", [
+    createBook("book-wizard", "A Wizard of Earthsea", {
       author: "Ursula Le Guin",
       isDone: true,
     }),
-    book("book-tombs", "The Tombs of Atuan", {
+    createBook("book-tombs", "The Tombs of Atuan", {
       author: "Ursula Le Guin",
       medium: "📖",
     }),
-    book("book-shore", "The Farthest Shore", { author: "Ursula Le Guin" }),
+    createBook("book-shore", "The Farthest Shore", {
+      author: "Ursula Le Guin",
+    }),
   ]),
-  book("book-lefthand", "The Left Hand of Darkness", {
+  createBook("book-lefthand", "The Left Hand of Darkness", {
     author: "Ursula Le Guin",
     isDone: true,
   }),
-  book("book-dispossessed", "The Dispossessed", { author: "Ursula Le Guin" }),
-  bookSeries("series-lockedtomb", "The Locked Tomb", [
-    book("book-gideon", "Gideon the Ninth", {
+  createBook("book-dispossessed", "The Dispossessed", {
+    author: "Ursula Le Guin",
+  }),
+  createBookSeries("series-lockedtomb", "The Locked Tomb", [
+    createBook("book-gideon", "Gideon the Ninth", {
       author: "Tamsyn Muir",
       isDone: true,
       medium: "🎧",
     }),
-    book("book-harrow", "Harrow the Ninth", {
+    createBook("book-harrow", "Harrow the Ninth", {
       author: "Tamsyn Muir",
       medium: "🎧",
     }),
-    book("book-nona", "Nona the Ninth", { author: "Tamsyn Muir" }),
+    createBook("book-nona", "Nona the Ninth", { author: "Tamsyn Muir" }),
   ]),
-  book("book-frankenstein", "Frankenstein", { author: "Mary Shelley" }),
-  book("book-linguist-mages", "The Linguist Mages"),
+  createBook("book-frankenstein", "Frankenstein", { author: "Mary Shelley" }),
+  createBook("book-linguist-mages", "The Linguist Mages"),
 ])
 
-const games = byId<PlayingItemDetails>([
-  gameSeries("series-zelda", "The Legend of Zelda", [
-    game("game-botw", "Breath of the Wild", { status: "done" }),
-    game("game-totk", "Tears of the Kingdom", { status: "in_progress" }),
-    game("game-echoes", "Echoes of Wisdom"),
+const games = indexById<PlayingItemDetails>([
+  createGameSeries("series-zelda", "The Legend of Zelda", [
+    createGame("game-botw", "Breath of the Wild", { status: "done" }),
+    createGame("game-totk", "Tears of the Kingdom", { status: "in_progress" }),
+    createGame("game-echoes", "Echoes of Wisdom"),
   ]),
-  gameSeries("series-portal", "Portal", [
-    game("game-portal", "Portal", { status: "done" }),
-    game("game-portal2", "Portal 2", { status: "done" }),
+  createGameSeries("series-portal", "Portal", [
+    createGame("game-portal", "Portal", { status: "done" }),
+    createGame("game-portal2", "Portal 2", { status: "done" }),
   ]),
-  game("game-stardew", "Stardew Valley", { status: "in_progress" }),
-  game("game-hades", "Hades"),
-  game("game-outer-wilds", "Outer Wilds"),
+  createGame("game-stardew", "Stardew Valley", { status: "in_progress" }),
+  createGame("game-hades", "Hades"),
+  createGame("game-outer-wilds", "Outer Wilds"),
+])
+
+const createSubtask = (
+  id: string,
+  description: string,
+  category: Category,
+  position: number,
+  status: ProjectSubtask["status"] = "ready",
+): ProjectSubtask => ({ id, description, category, position, status })
+
+const createProject = (
+  id: string,
+  description: string,
+  category: Category,
+  position: number,
+  extra: Partial<ProjectDetails> = {},
+): ProjectDetails => ({
+  id,
+  description,
+  category,
+  position,
+  parentId: PROJECTS_KEY,
+  ...extra,
+})
+
+const projects = indexById<ProjectDetails>([
+  createProject("project-shelves", "Put up the hallway shelves", "🚚", 0, {
+    status: "in_progress",
+    subtasks: indexById([
+      createSubtask("subtask-brackets", "Buy brackets", "🚚", 0, "done"),
+      createSubtask("subtask-drill", "Borrow a drill", "🚚", 1),
+      createSubtask("subtask-paint", "Paint the boards", "🚚", 2),
+    ]),
+  }),
+  createProject("project-socks", "Knit the striped socks", "🧶", 1, {
+    subtasks: indexById([
+      createSubtask("subtask-yarn", "Wind the yarn", "🧶", 0),
+      createSubtask("subtask-heel", "Learn a better heel", "🧶", 1),
+    ]),
+  }),
+  createProject("project-quilt", "Finish the quilt binding", "🪡", 2),
+  createProject("project-groceries", "Plan the week's meals", "🛒", 3),
+  createProject("project-journal", "Write up the trip notes", "📓", 4, {
+    subtasks: indexById([
+      createSubtask("subtask-photos", "Pick the photos", "📓", 0),
+    ]),
+  }),
+  createProject("project-blog", "Redesign the projects tab", "👩‍💻", 5, {
+    status: "in_progress",
+    subtasks: indexById([
+      createSubtask("subtask-spec", "Agree the spec", "👩‍💻", 0, "done"),
+      createSubtask("subtask-cards", "Restyle the cards", "👩‍💻", 1),
+    ]),
+  }),
+  createProject("project-desk", "Clear off the desk", "🧹", 6, {
+    status: "done",
+  }),
+  createProject("project-letters", "Reply to the birthday cards", "🖊️", 7),
 ])
 
 export const seedData = {
@@ -191,4 +267,5 @@ export const seedData = {
     books,
     games,
   },
+  [PROJECTS_KEY]: projects,
 }

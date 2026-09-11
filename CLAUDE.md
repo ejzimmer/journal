@@ -14,6 +14,10 @@ Don't reach for a `let` at module scope to pass ephemeral state between componen
 
 Default to no comments at all. Write code that reads on its own - name things well, keep functions small - and leave the explanation out. A comment that feels necessary is usually a sign the code needs rewriting rather than annotating. This applies to every language and file type here, scripts and config included. The reasoning behind a change belongs in the commit message or the PR description, where it has room and context; the file itself should just be the code. Only add a comment when explicitly asked for one.
 
+## Function names describe what the function does
+
+A function name should describe what the function does. As such, it should include both a verb and a noun - `createItem`, NOT `item`. If a function name uses the verb "resolve" because it does multiple things, it's probably a bad function.
+
 ## Node version
 
 The project runs on the Node version in `.nvmrc` (also pinned in `package.json` engines). Containers for Claude Code on the web start on an older Node, where `yarn` refuses to install and the `src/tabs/Health/calories` suites fail with `Temporal is not defined`. `.claude/hooks/session-start.sh` installs and selects the pinned version at session start; if those failures ever show up, check `node -v` before treating them as pre-existing.
