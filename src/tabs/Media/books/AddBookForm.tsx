@@ -3,7 +3,7 @@ import { FormControl } from "../../../shared/controls/FormControl"
 import { NewBook } from "../types"
 import { Combobox } from "../../../shared/controls/combobox/Combobox"
 import { OptionType } from "../../../shared/controls/combobox/types"
-import { SubmitButton } from "../SubmitButton"
+import { FormModal } from "../../../shared/controls/FormModal"
 import { useMediaStorage } from "../MediaStorageContext"
 
 export function AddBookForm() {
@@ -19,11 +19,9 @@ export function AddBookForm() {
     label: series.name,
   }))
 
-  const createItem = (event: React.FormEvent) => {
-    event.preventDefault()
-
+  const createBook = () => {
     const title = titleRef.current?.value
-    if (!title) return
+    if (!title) return false
 
     const book: NewBook = {
       type: "book",
@@ -39,13 +37,21 @@ export function AddBookForm() {
       addMedia(book)
     }
 
-    ;(event.target as HTMLFormElement).reset()
     setAuthor(undefined)
     setSeries(undefined)
+    return true
   }
 
   return (
-    <form onSubmit={createItem} className="create-new">
+    <FormModal
+      trigger={(props) => (
+        <button {...props} className="outline icon" aria-label="Add a book">
+          +
+        </button>
+      )}
+      onSubmit={createBook}
+      submitButtonText="Add a book"
+    >
       <FormControl label="Book title" ref={titleRef} />
       <Combobox
         label="Author name"
@@ -61,7 +67,6 @@ export function AddBookForm() {
         createOption={(label) => ({ id: "", label })}
         onChange={setSeries}
       />
-      <SubmitButton label="Create" />
-    </form>
+    </FormModal>
   )
 }

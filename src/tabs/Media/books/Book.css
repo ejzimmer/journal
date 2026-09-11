@@ -3,6 +3,22 @@
     opacity: 0.4;
     text-decoration: line-through;
   }
+
+  button.title {
+    border: 0;
+    padding: 0;
+    height: auto;
+    font-size: 1em;
+    font-style: italic;
+    text-align: start;
+    background: none;
+
+    &:hover,
+    &:focus-visible {
+      background: none;
+      text-decoration: underline;
+    }
+  }
 }
 
 button.medium {

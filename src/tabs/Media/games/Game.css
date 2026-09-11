@@ -5,7 +5,7 @@
     gap: 8px;
   }
 
-  .details button {
+  .details button:not(.title) {
     padding: 0;
     width: 24px;
     height: 24px;
@@ -21,10 +21,25 @@
     }
   }
 
-  .details.in_progress button {
+  .details.in_progress button:not(.title) {
     transform: scale(1.1);
     text-shadow: 1px 1px hsl(0 0 0/0.1);
     filter: grayscale(0) contrast(1);
     opacity: 1;
+  }
+
+  .details button.title {
+    border: 0;
+    padding: 0;
+    height: auto;
+    font-size: 1em;
+    text-align: start;
+    background: none;
+
+    &:hover,
+    &:focus-visible {
+      background: none;
+      text-decoration: underline;
+    }
   }
 }

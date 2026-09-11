@@ -89,17 +89,6 @@
     }
   }
 
-  form.create-new {
-    border: 2px solid var(--border-colour);
-    border-radius: 12px;
-    background: white;
-    padding: 12px;
-    display: flex;
-    flex-direction: column;
-    gap: 24px;
-    margin-block-start: auto;
-  }
-
   .combobox {
     position: relative;
     margin-block-start: 8px;

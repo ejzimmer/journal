@@ -467,4 +467,55 @@ describe("MediaStorageContext", () => {
       expect(deleteItem).not.toHaveBeenCalled()
     })
   })
+
+  describe("moveMediaToNewSeries", () => {
+    it("creates the series and moves standalone media into it", () => {
+      const addItem = jest.fn(() => "new-series")
+      const updateItem = jest.fn()
+      const deleteItem = jest.fn()
+      const nation = createBook("book-nation", "Nation")
+      const mediaStorage = createMediaStorage({
+        ...createStoredMedia({ books: [nation] }),
+        addItem,
+        updateItem,
+        deleteItem,
+      })
+
+      mediaStorage.moveMediaToNewSeries(nation, "Discworld")
+
+      expect(addItem).toHaveBeenCalledWith(BOOKS_KEY, {
+        type: "series",
+        name: "Discworld",
+      })
+      expect(updateItem).toHaveBeenCalledWith(
+        `${BOOKS_KEY}/new-series/items`,
+        nation,
+      )
+      expect(deleteItem).toHaveBeenCalledWith(BOOKS_KEY, nation)
+    })
+
+    it("creates the series and moves media out of its old one", () => {
+      const addItem = jest.fn(() => "new-series")
+      const updateItem = jest.fn()
+      const deleteItem = jest.fn()
+      const guards = createBook("book-guards", "Guards! Guards!")
+      const discworld = createSeries("series-discworld", "Discworld", [
+        guards,
+      ])
+      const mediaStorage = createMediaStorage({
+        ...createStoredMedia({ books: [discworld] }),
+        addItem,
+        updateItem,
+        deleteItem,
+      })
+
+      mediaStorage.moveMediaToNewSeries(guards, "Discworld (renamed)")
+
+      expect(updateItem).toHaveBeenCalledWith(
+        `${BOOKS_KEY}/new-series/items`,
+        guards,
+      )
+      expect(deleteItem).toHaveBeenCalledWith(BOOKS_KEY, discworld)
+    })
+  })
 })

@@ -3,7 +3,7 @@ import { FormControl } from "../../../shared/controls/FormControl"
 import { NewGame } from "../types"
 import { Combobox } from "../../../shared/controls/combobox/Combobox"
 import { OptionType } from "../../../shared/controls/combobox/types"
-import { SubmitButton } from "../SubmitButton"
+import { FormModal } from "../../../shared/controls/FormModal"
 import { useMediaStorage } from "../MediaStorageContext"
 
 export function AddGameForm() {
@@ -17,11 +17,9 @@ export function AddGameForm() {
     label: series.name,
   }))
 
-  const createItem = (event: React.FormEvent) => {
-    event.preventDefault()
-
+  const createGame = () => {
     const title = titleRef.current?.value
-    if (!title) return
+    if (!title) return false
 
     const game: NewGame = { type: "game", title }
 
@@ -33,12 +31,20 @@ export function AddGameForm() {
       addMedia(game)
     }
 
-    ;(event.target as HTMLFormElement).reset()
     setSeries(undefined)
+    return true
   }
 
   return (
-    <form onSubmit={createItem} className="create-new">
+    <FormModal
+      trigger={(props) => (
+        <button {...props} className="outline icon" aria-label="Add a game">
+          +
+        </button>
+      )}
+      onSubmit={createGame}
+      submitButtonText="Add a game"
+    >
       <FormControl label="Game title" ref={titleRef} />
       <Combobox
         label="Series name"
@@ -47,7 +53,6 @@ export function AddGameForm() {
         createOption={(label) => ({ id: "", label })}
         onChange={setSeries}
       />
-      <SubmitButton label="Create" />
-    </form>
+    </FormModal>
   )
 }
