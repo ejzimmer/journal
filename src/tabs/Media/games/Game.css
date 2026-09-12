@@ -1,49 +1,101 @@
 .game {
-  .details {
-    display: flex;
-    flex-grow: 1;
-    gap: 8px;
+  position: relative;
+  min-height: var(--spine-height, 142px);
+  padding: 17px 6px 56px;
+  border-radius: 3px 3px 1px 1px;
+  background: oklch(85% 0.085 var(--hue));
+  box-shadow:
+    inset 0 0 0 1px oklch(96% 0.02 var(--hue) / 0.45),
+    0 1px 2px oklch(45% 0.05 var(--hue) / 0.3);
+  color: oklch(38% 0.09 var(--hue));
+  font-family: "Literata", Georgia, "Times New Roman", serif;
+  font-size: 14px;
+  line-height: 1.25;
+  transition:
+    box-shadow 0.18s,
+    transform 0.18s;
+
+  &:hover {
+    transform: translateY(-3px);
   }
 
-  .details button {
-    padding: 0;
-    width: 24px;
-    height: 24px;
-    border: 0;
-    transition: all 0.2s;
-    filter: grayscale(100%) contrast(0.5);
-    opacity: 0.4;
-
-    &:hover {
-      background: none;
-      filter: grayscale(50%) contrast(0.5);
-      opacity: 0.8;
-    }
+  &[data-status="unplayed"] {
+    background: oklch(96% 0.022 var(--hue));
+    color: oklch(48% 0.045 var(--hue));
+    box-shadow:
+      inset 0 0 0 1px oklch(99% 0.005 var(--hue) / 0.6),
+      0 1px 2px oklch(55% 0.02 var(--hue) / 0.18);
   }
+}
 
-  .details.in_progress button {
-    transform: scale(1.1);
-    text-shadow: 1px 1px hsl(0 0 0/0.1);
-    filter: grayscale(0) contrast(1);
-    opacity: 1;
+.game button.title {
+  align-self: center;
+  border: 0;
+  padding: 0;
+  height: auto;
+  max-height: 100%;
+  font: inherit;
+  color: inherit;
+  background: none;
+  border-radius: 3px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &:hover,
+  &:focus-visible {
+    background: none;
   }
+}
 
-  .details button.title {
-    width: auto;
-    height: auto;
-    font-size: 1em;
-    text-align: start;
-    transform: none;
-    text-shadow: none;
+.game .label {
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  max-height: 102px;
+  text-align: center;
+}
+
+.game .label .title-text {
+  display: block;
+}
+
+.game .stamp {
+  position: absolute;
+  inset-block-end: 22px;
+  inset-inline-start: 50%;
+  transform: translateX(-50%);
+  width: 25px;
+  height: 25px;
+  padding: 0;
+  border: 0;
+  border-radius: 6px;
+  background: none;
+  font-size: 14px;
+  line-height: 1;
+  display: grid;
+  place-items: center;
+  transition:
+    filter 0.15s,
+    opacity 0.15s,
+    background 0.15s;
+
+  &:hover {
+    background: hsl(var(--hue) 30% 100% / 0.5);
+  }
+}
+
+.game[data-status="unplayed"] .stamp {
+  filter: grayscale(1) contrast(0.5);
+  opacity: 0.45;
+
+  &:hover {
     filter: none;
-    opacity: 1;
-
-    &:hover,
-    &:focus-visible {
-      background: none;
-      filter: none;
-      opacity: 1;
-      text-decoration: underline;
-    }
+    opacity: 0.9;
   }
+}
+
+.game[data-status="played"] .stamp {
+  color: oklch(50% 0.13 var(--hue));
+  font-size: 17px;
+  font-weight: 700;
 }

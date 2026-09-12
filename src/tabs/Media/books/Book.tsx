@@ -1,59 +1,94 @@
-import { useState } from "react"
+import { CSSProperties, useState } from "react"
 import { BookDetails } from "../types"
-
-import { Checkbox } from "../../../shared/controls/Checkbox"
 import { EditBookForm } from "./EditBookForm"
 import { useMediaStorage } from "../MediaStorageContext"
+import { getCoverHue } from "../coverHue"
 
 import "./Book.css"
+
+type BookStatus = "unread" | "reading" | "listening" | "read"
+
+const BOOK_STATUS_ORDER: BookStatus[] = [
+  "unread",
+  "reading",
+  "listening",
+  "read",
+]
+
+function getBookStatus(book: BookDetails): BookStatus {
+  if (book.isDone) return "read"
+  if (book.medium === "📖") return "reading"
+  if (book.medium === "🎧") return "listening"
+  return "unread"
+}
+
+function getNextBookStatus(status: BookStatus): BookStatus {
+  const index = BOOK_STATUS_ORDER.indexOf(status)
+  return BOOK_STATUS_ORDER[(index + 1) % BOOK_STATUS_ORDER.length]
+}
+
+function getMediumForStatus(status: BookStatus): BookDetails["medium"] {
+  if (status === "reading") return "📖"
+  if (status === "listening") return "🎧"
+  return null
+}
+
+const BOOK_STATUS_GLYPH: Record<BookStatus, string> = {
+  unread: "📖",
+  reading: "📖",
+  listening: "🎧",
+  read: "✓",
+}
+
+function getSpineHeight(title: string) {
+  return 178 + Math.min(34, Math.round(title.length * 1.5))
+}
 
 export function Book({ book }: { book: BookDetails }) {
   const { updateMedia } = useMediaStorage()
   const [isEditFormOpen, setIsEditFormOpen] = useState(false)
 
-  const toggleDone = () => {
-    updateMedia({
-      ...book,
-      isDone: !book.isDone,
-    })
-  }
+  const status = getBookStatus(book)
+  const nextStatus = getNextBookStatus(status)
+  const hue = getCoverHue(book.author ?? book.title)
 
-  const updateMedium = () => {
-    const medium =
-      book.medium == null ? "📖" : book.medium === "📖" ? "🎧" : null
+  const cycleStatus = () => {
     updateMedia({
       ...book,
-      medium,
+      medium: getMediumForStatus(nextStatus),
+      isDone: nextStatus === "read",
     })
   }
 
   return (
-    <li className="book">
-      <Checkbox
-        aria-label="is read"
-        isChecked={!!book.isDone}
-        onChange={toggleDone}
-      />
+    <li
+      className="book"
+      data-status={status}
+      style={
+        {
+          "--hue": hue,
+          "--spine-height": `${getSpineHeight(book.title)}px`,
+        } as CSSProperties
+      }
+    >
+      <button
+        className="title"
+        aria-label={`${book.title}${book.author ? `, ${book.author}` : ""}, ${status}`}
+        onClick={() => setIsEditFormOpen(true)}
+      >
+        <span className="label">
+          <span className="title-text">{book.title}</span>
+          {book.author && <span className="author">{book.author}</span>}
+        </span>
+      </button>
 
-      <span className={book.isDone ? "done" : ""}>
-        <button
-          className="title"
-          aria-label={`Edit ${book.title}`}
-          onClick={() => setIsEditFormOpen(true)}
-        >
-          {book.title}
-          {book.author ? `, ${book.author}` : ""}
-        </button>
-
-        <button
-          className={`medium ${book.medium ? "" : "empty"}`}
-          aria-label="update medium"
-          onClick={updateMedium}
-          style={{ marginInlineStart: "8px" }}
-        >
-          {book.medium ?? "📖"}
-        </button>
-      </span>
+      <button
+        className="stamp"
+        aria-label={`${book.title}: ${status}. Change to ${nextStatus}`}
+        onClick={cycleStatus}
+      >
+        {BOOK_STATUS_GLYPH[status]}
+      </button>
 
       <EditBookForm
         book={book}

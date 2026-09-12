@@ -22,6 +22,10 @@
 
   ul {
     padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: 4px;
   }
 
   li {
@@ -55,15 +59,6 @@
 
   li.author > div:first-child {
     font-weight: bold;
-  }
-
-  .checkbox .control {
-    font-size: 24px;
-    color: var(--border-colour-hover);
-
-    svg {
-      stroke: currentColor;
-    }
   }
 
   button {
