@@ -15,7 +15,6 @@ import { ButtonWithConfirmation } from "../../shared/controls/ButtonWithConfirma
 import { getSubtasksKey, useLinkedTasks } from "./utils"
 import { ArrowToEndIcon } from "../../shared/icons/ArrowToEnd"
 import { EditableText } from "../../shared/controls/EditableText"
-import { useOpenProject } from "./OpenProjectContext"
 
 type ProjectProps = {
   project: ProjectDetails
@@ -23,9 +22,38 @@ type ProjectProps = {
   onDelete: () => void
 }
 
+const OPEN_PROJECTS_STORAGE_KEY = "openProjectIds"
+
+function getOpenProjectIds(): Set<string> {
+  try {
+    const stored = localStorage.getItem(OPEN_PROJECTS_STORAGE_KEY)
+    return new Set(stored ? JSON.parse(stored) : [])
+  } catch {
+    return new Set()
+  }
+}
+
+function setProjectOpen(projectId: string, isOpen: boolean) {
+  const openProjectIds = getOpenProjectIds()
+  if (isOpen) {
+    openProjectIds.add(projectId)
+  } else {
+    openProjectIds.delete(projectId)
+  }
+  try {
+    localStorage.setItem(
+      OPEN_PROJECTS_STORAGE_KEY,
+      JSON.stringify([...openProjectIds]),
+    )
+  } catch {
+    // Ignore storage errors, e.g. private browsing or a full quota
+  }
+}
+
 export function Project({ project, onMoveToEnd, onDelete }: ProjectProps) {
-  const { openProjectId, setOpenProjectId } = useOpenProject()
-  const subtasksVisible = openProjectId === project.id
+  const [subtasksVisible, setSubtasksVisible] = useState(() =>
+    getOpenProjectIds().has(project.id),
+  )
   const [hasOpenedSubtasks, setHasOpenedSubtasks] = useState(subtasksVisible)
 
   const status = project.status ?? "ready"
@@ -111,8 +139,10 @@ export function Project({ project, onMoveToEnd, onDelete }: ProjectProps) {
     <button
       className={`ghost expand ${subtasksVisible ? "expanded" : ""}`}
       onClick={() => {
-        setOpenProjectId(subtasksVisible ? null : project.id)
+        const nextVisible = !subtasksVisible
+        setSubtasksVisible(nextVisible)
         setHasOpenedSubtasks(true)
+        setProjectOpen(project.id, nextVisible)
       }}
       aria-label="Show subtasks"
     >

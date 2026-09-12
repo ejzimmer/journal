@@ -14,7 +14,6 @@ import { EmojiCheckbox } from "../../shared/controls/EmojiCheckbox"
 import { XIcon } from "../../shared/icons/X"
 import { sortByPosition } from "../../shared/drag-and-drop/utils"
 import { packProjects, reorderProjects } from "./utils"
-import { OpenProjectProvider } from "./OpenProjectContext"
 
 export function Projects() {
   const containerRef = useRef<HTMLUListElement>(null)
@@ -49,12 +48,13 @@ export function Projects() {
     }
   }
 
-  const renderProject = (project: ProjectDetails) => {
+  const renderProject = (project: ProjectDetails, as?: "li" | "div") => {
     const index = sortedProjects.indexOf(project)
 
     return (
       <FilteredProject
         key={project.id}
+        as={as}
         project={project}
         filter={filterCategories}
       >
@@ -100,35 +100,35 @@ export function Projects() {
           <XIcon width=".6em" colour="var(--body-colour-mid)" />
         </button>
       </div>
-      <OpenProjectProvider>
-        <ul
-          className="projects"
-          ref={containerRef}
-          style={{ height: containerHeight }}
-        >
-          {groups.map((group) =>
-            group.length === 1 ? (
-              renderProject(group[0])
-            ) : (
-              <li className="stack" key={group.map((p) => p.id).join("-")}>
-                <ul className="stack-items">{group.map(renderProject)}</ul>
-              </li>
-            ),
-          )}
-          <li>
-            <AddProjectForm />
-          </li>
-        </ul>
-      </OpenProjectProvider>
+      <ul
+        className="projects"
+        ref={containerRef}
+        style={{ height: containerHeight }}
+      >
+        {groups.map((group) =>
+          group.length === 1 ? (
+            renderProject(group[0])
+          ) : (
+            <li className="stack" key={group.map((p) => p.id).join("-")}>
+              {group.map((project) => renderProject(project, "div"))}
+            </li>
+          ),
+        )}
+        <li>
+          <AddProjectForm />
+        </li>
+      </ul>
     </div>
   )
 }
 
 function FilteredProject({
+  as: Tag = "li",
   filter: categories,
   project,
   children,
 }: {
+  as?: "li" | "div"
   filter: Category[]
   project: ProjectDetails
   children: React.ReactNode
@@ -136,8 +136,8 @@ function FilteredProject({
   const isVisible = !categories.length || categories.includes(project.category)
 
   return (
-    <li className={`project-item ${isVisible ? "" : "filtered-out"}`}>
+    <Tag className={`project-item ${isVisible ? "" : "filtered-out"}`}>
       {children}
-    </li>
+    </Tag>
   )
 }

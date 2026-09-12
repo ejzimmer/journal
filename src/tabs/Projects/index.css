@@ -23,11 +23,7 @@
     gap: var(--shelf-gap);
   }
 
-  ul.stack-items {
-    display: contents;
-  }
-
-  li.project-item {
+  .project-item {
     max-width: 80vw;
     overflow: auto;
     transition: max-width 1s;
