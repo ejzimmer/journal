@@ -18,8 +18,6 @@
     grid-template-columns: repeat(auto-fill, var(--grid-unit));
     justify-content: center;
     gap: var(--shelf-gap);
-    max-height: 100%;
-    overflow-y: auto;
   }
 
   .project-item {

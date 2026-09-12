@@ -76,7 +76,7 @@ export function Projects() {
       <ul
         className="projects"
         ref={containerRef}
-        style={{ height: containerHeight }}
+        style={{ minHeight: containerHeight }}
       >
         {sortedProjects.map((project, index) => (
           <FilteredProject
