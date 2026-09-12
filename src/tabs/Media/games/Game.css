@@ -27,4 +27,23 @@
     filter: grayscale(0) contrast(1);
     opacity: 1;
   }
+
+  .details button.title {
+    width: auto;
+    height: auto;
+    font-size: 1em;
+    text-align: start;
+    transform: none;
+    text-shadow: none;
+    filter: none;
+    opacity: 1;
+
+    &:hover,
+    &:focus-visible {
+      background: none;
+      filter: none;
+      opacity: 1;
+      text-decoration: underline;
+    }
+  }
 }

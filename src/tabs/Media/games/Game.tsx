@@ -1,31 +1,21 @@
+import { useState } from "react"
 import { GameDetails } from "../types"
 
-import { XIcon } from "../../../shared/icons/X"
-import { EditableText } from "../../../shared/controls/EditableText"
 import { Checkbox } from "../../../shared/controls/Checkbox"
-
-import "./Game.css"
+import { EditGameForm } from "./EditGameForm"
 import { useMediaStorage } from "../MediaStorageContext"
 
-export function Game({ game }: { game: GameDetails }) {
-  const { updateMedia, deleteMedia } = useMediaStorage()
+import "./Game.css"
 
-  const updateTitle = (title: string) => {
-    updateMedia({
-      ...game,
-      title,
-    })
-  }
+export function Game({ game }: { game: GameDetails }) {
+  const { updateMedia } = useMediaStorage()
+  const [isEditFormOpen, setIsEditFormOpen] = useState(false)
 
   const updateStatus = (status: GameDetails["status"]) => {
     updateMedia({
       ...game,
       status,
     })
-  }
-
-  const deleteGame = () => {
-    deleteMedia(game)
   }
 
   return (
@@ -36,7 +26,13 @@ export function Game({ game }: { game: GameDetails }) {
         aria-label="is played"
       />
       <div className={`details ${game.status}`}>
-        <EditableText label="title" value={game.title} onChange={updateTitle} />
+        <button
+          className="title"
+          aria-label={`Edit ${game.title}`}
+          onClick={() => setIsEditFormOpen(true)}
+        >
+          {game.title}
+        </button>
         <button
           aria-label="update status to in progress"
           onClick={() =>
@@ -46,9 +42,12 @@ export function Game({ game }: { game: GameDetails }) {
           🎮
         </button>
       </div>
-      <button className="emoji ghost" onClick={deleteGame}>
-        <XIcon width="16px" />
-      </button>
+
+      <EditGameForm
+        game={game}
+        isOpen={isEditFormOpen}
+        onCancel={() => setIsEditFormOpen(false)}
+      />
     </li>
   )
 }

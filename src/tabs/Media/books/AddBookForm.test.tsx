@@ -37,6 +37,7 @@ describe("AddBookForm", () => {
       const addMedia = jest.fn()
       renderWithMediaStorage(<AddBookForm />, { authors, bookSeries, addMedia })
 
+      await user.click(screen.getByRole("button", { name: "Add a book" }))
       await user.type(
         screen.getByRole("textbox", { name: "Book title" }),
         "The Linguist Mages{Enter}"
@@ -55,6 +56,7 @@ describe("AddBookForm", () => {
       const addMedia = jest.fn()
       renderWithMediaStorage(<AddBookForm />, { authors, bookSeries, addMedia })
 
+      await user.click(screen.getByRole("button", { name: "Add a book" }))
       await user.type(
         screen.getByRole("textbox", { name: "Book title" }),
         "Frankenstein"
@@ -63,7 +65,7 @@ describe("AddBookForm", () => {
         screen.getByRole("combobox", { name: "Author name" }),
         "Mary Shelley"
       )
-      await user.click(screen.getByRole("button", { name: "Create" }))
+      await user.click(screen.getByRole("button", { name: "Save" }))
 
       expect(addMedia).toHaveBeenCalledWith({
         type: "book",
@@ -79,6 +81,7 @@ describe("AddBookForm", () => {
       const addMedia = jest.fn()
       renderWithMediaStorage(<AddBookForm />, { authors, bookSeries, addMedia })
 
+      await user.click(screen.getByRole("button", { name: "Add a book" }))
       await user.type(
         screen.getByRole("textbox", { name: "Book title" }),
         "The Left Hand of Darkness"
@@ -86,7 +89,7 @@ describe("AddBookForm", () => {
       await user.click(
         screen.getByRole("option", { name: "Ursula Le Guin", hidden: true }),
       )
-      await user.click(screen.getByRole("button", { name: "Create" }))
+      await user.click(screen.getByRole("button", { name: "Save" }))
 
       expect(addMedia).toHaveBeenCalledWith({
         type: "book",
@@ -98,7 +101,10 @@ describe("AddBookForm", () => {
 
   describe("the author options", () => {
     it("include the authors of books in a series", async () => {
+      const user = userEvent.setup()
       renderWithMediaStorage(<AddBookForm />, { authors, bookSeries })
+
+      await user.click(screen.getByRole("button", { name: "Add a book" }))
 
       expect(
         screen.getByRole("option", { name: "Terry Pratchett", hidden: true })
@@ -109,7 +115,10 @@ describe("AddBookForm", () => {
     })
 
     it("list each author once", async () => {
+      const user = userEvent.setup()
       renderWithMediaStorage(<AddBookForm />, { authors, bookSeries })
+
+      await user.click(screen.getByRole("button", { name: "Add a book" }))
 
       expect(
         screen.getAllByRole("option", { name: "Terry Pratchett", hidden: true })
@@ -127,6 +136,7 @@ describe("AddBookForm", () => {
         addMediaSeries,
       })
 
+      await user.click(screen.getByRole("button", { name: "Add a book" }))
       await user.type(
         screen.getByRole("textbox", { name: "Book title" }),
         "Gideon the Ninth"
@@ -135,7 +145,7 @@ describe("AddBookForm", () => {
         screen.getByRole("combobox", { name: "Series name" }),
         "The Locked Tomb"
       )
-      await user.click(screen.getByRole("button", { name: "Create" }))
+      await user.click(screen.getByRole("button", { name: "Save" }))
 
       expect(addMediaSeries).toHaveBeenCalledWith("The Locked Tomb", {
         type: "book",
@@ -150,6 +160,7 @@ describe("AddBookForm", () => {
       const addMedia = jest.fn()
       renderWithMediaStorage(<AddBookForm />, { authors, bookSeries, addMedia })
 
+      await user.click(screen.getByRole("button", { name: "Add a book" }))
       await user.type(
         screen.getByRole("textbox", { name: "Book title" }),
         "The Farthest Shore"
@@ -157,7 +168,7 @@ describe("AddBookForm", () => {
       await user.click(
         screen.getByRole("option", { name: "Earthsea", hidden: true }),
       )
-      await user.click(screen.getByRole("button", { name: "Create" }))
+      await user.click(screen.getByRole("button", { name: "Save" }))
 
       expect(addMedia).toHaveBeenCalledWith(
         { type: "book", title: "The Farthest Shore" },
@@ -176,6 +187,7 @@ describe("AddBookForm", () => {
         addMediaSeries,
       })
 
+      await user.click(screen.getByRole("button", { name: "Add a book" }))
       await user.type(
         screen.getByRole("textbox", { name: "Book title" }),
         "The Long Dark Teatime of the Soul"
@@ -188,7 +200,7 @@ describe("AddBookForm", () => {
         screen.getByRole("combobox", { name: "Series name" }),
         "Dirk Gently"
       )
-      await user.click(screen.getByRole("button", { name: "Create" }))
+      await user.click(screen.getByRole("button", { name: "Save" }))
 
       expect(addMediaSeries).toHaveBeenCalledWith("Dirk Gently", {
         type: "book",
@@ -203,6 +215,7 @@ describe("AddBookForm", () => {
       const user = userEvent.setup()
       renderWithMediaStorage(<AddBookForm />, { authors, bookSeries })
 
+      await user.click(screen.getByRole("button", { name: "Add a book" }))
       await user.type(
         screen.getByRole("textbox", { name: "Book title" }),
         "Witches Abroad"
@@ -215,12 +228,13 @@ describe("AddBookForm", () => {
         screen.getByRole("combobox", { name: "Series name" }),
         "Discworld"
       )
-      await user.click(screen.getByRole("button", { name: "Create" }))
+      await user.click(screen.getByRole("button", { name: "Save" }))
 
-      screen.getAllByRole("textbox").forEach((input) => {
-        expect(input).toHaveValue("")
-      })
+      await user.click(screen.getByRole("button", { name: "Add a book" }))
 
+      expect(screen.getByRole("textbox", { name: "Book title" })).toHaveValue(
+        "",
+      )
       // Just the option, not the selected value
       expect(screen.getAllByText("Terry Pratchett")).toHaveLength(1)
       expect(screen.getAllByText("Discworld")).toHaveLength(1)

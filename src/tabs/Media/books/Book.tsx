@@ -1,27 +1,15 @@
+import { useState } from "react"
 import { BookDetails } from "../types"
 
-import { EditableText } from "../../../shared/controls/EditableText"
-
-import "./Book.css"
 import { Checkbox } from "../../../shared/controls/Checkbox"
+import { EditBookForm } from "./EditBookForm"
 import { useMediaStorage } from "../MediaStorageContext"
 
+import "./Book.css"
+
 export function Book({ book }: { book: BookDetails }) {
-  const { updateMedia, deleteMedia } = useMediaStorage()
-
-  const updateTitle = (title: string) => {
-    updateMedia({
-      ...book,
-      title,
-    })
-  }
-
-  const updateAuthor = (author: string) => {
-    updateMedia({
-      ...book,
-      author,
-    })
-  }
+  const { updateMedia } = useMediaStorage()
+  const [isEditFormOpen, setIsEditFormOpen] = useState(false)
 
   const toggleDone = () => {
     updateMedia({
@@ -39,10 +27,6 @@ export function Book({ book }: { book: BookDetails }) {
     })
   }
 
-  const deleteBook = () => {
-    deleteMedia(book)
-  }
-
   return (
     <li className="book">
       <Checkbox
@@ -52,24 +36,14 @@ export function Book({ book }: { book: BookDetails }) {
       />
 
       <span className={book.isDone ? "done" : ""}>
-        <EditableText
-          label="title"
-          onChange={updateTitle}
-          style={{
-            fontStyle: "italic",
-            display: "inline",
-          }}
-          value={`${book.title}${book.author ? ", " : ""}`}
-          onDelete={deleteBook}
-        />
-        {book.author && (
-          <EditableText
-            onChange={updateAuthor}
-            label="author name"
-            value={book.author}
-            style={{ display: "inline" }}
-          />
-        )}
+        <button
+          className="title"
+          aria-label={`Edit ${book.title}`}
+          onClick={() => setIsEditFormOpen(true)}
+        >
+          {book.title}
+          {book.author ? `, ${book.author}` : ""}
+        </button>
 
         <button
           className={`medium ${book.medium ? "" : "empty"}`}
@@ -80,6 +54,12 @@ export function Book({ book }: { book: BookDetails }) {
           {book.medium ?? "📖"}
         </button>
       </span>
+
+      <EditBookForm
+        book={book}
+        isOpen={isEditFormOpen}
+        onCancel={() => setIsEditFormOpen(false)}
+      />
     </li>
   )
 }

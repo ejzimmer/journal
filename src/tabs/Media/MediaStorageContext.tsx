@@ -27,7 +27,10 @@ export type MediaStorageContextType = {
   updateMedia: (media: MediaDetails) => void
   updateMediaSeries: (series: MediaSeries, name: string) => void
   deleteMedia: (media: MediaDetails) => void
-  moveMedia: (media: MediaDetails, seriesId?: string) => void
+  moveMedia: (
+    media: MediaDetails,
+    destination?: { id: string } | { name: string },
+  ) => void
 }
 
 const getMediaKey = (type: MediaDetails["type"]) =>
@@ -126,17 +129,30 @@ export function MediaStorageProvider({ children }: { children: ReactNode }) {
         deleteItem(getMediaKey(media.type), media)
       }
     },
-    moveMedia: (media, seriesId) => {
-      const currentSeries = findSeriesContaining(media)
-      if (currentSeries?.id === seriesId) return
-
-      updateItem(getMediaPath(media.type, seriesId), media)
-      if (currentSeries) {
-        deleteMediaFromSeries(currentSeries, media)
+    moveMedia: (media, destination) => {
+      if (destination && "name" in destination) {
+        const key = getMediaKey(media.type)
+        const seriesId = addItem<MediaSeries>(key, {
+          type: "series",
+          name: destination.name,
+        })
+        moveMediaToSeriesId(media, seriesId ?? undefined)
       } else {
-        deleteItem(getMediaKey(media.type), media)
+        moveMediaToSeriesId(media, destination?.id)
       }
     },
+  }
+
+  function moveMediaToSeriesId(media: MediaDetails, seriesId?: string) {
+    const currentSeries = findSeriesContaining(media)
+    if (currentSeries?.id === seriesId) return
+
+    updateItem(getMediaPath(media.type, seriesId), media)
+    if (currentSeries) {
+      deleteMediaFromSeries(currentSeries, media)
+    } else {
+      deleteItem(getMediaKey(media.type), media)
+    }
   }
 
   return (
