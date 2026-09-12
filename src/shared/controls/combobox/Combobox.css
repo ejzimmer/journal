@@ -31,14 +31,17 @@
 
   .single-value-container {
     position: relative;
+    border: 1px solid var(--border-colour);
+    border-radius: 4px;
+    background: hsl(0 0% 100% / 0.5);
 
     input[role="combobox"] {
-      border: 1px solid var(--border-colour);
+      width: 100%;
+      border: none;
       font-size: inherit;
       padding: 8px;
       padding-inline-end: 28px;
-      border-radius: 4px;
-      background: hsl(0 0% 100% / 0.5);
+      background: transparent;
 
       &:focus-visible {
         outline: none;
@@ -67,8 +70,6 @@
     }
 
     &.showing-value input[role="combobox"] {
-      border-color: transparent;
-      background: transparent;
       color: transparent;
       caret-color: transparent;
     }
