@@ -19,6 +19,7 @@
     justify-content: center;
     gap: var(--shelf-gap);
     max-height: 100%;
+    overflow-y: auto;
   }
 
   .project-item {
@@ -27,6 +28,10 @@
 
     &.filtered-out {
       display: none;
+    }
+
+    &:has(.subtasks-section.visible) {
+      z-index: 1;
     }
   }
 

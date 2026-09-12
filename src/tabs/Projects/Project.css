@@ -16,10 +16,6 @@
   min-width: calc(var(--drawer-content-width, 0px) + 2 * var(--drawer-inset));
   transition: min-width 0.2s ease-out;
 
-  &:has(.subtasks-section.visible) {
-    z-index: 1;
-  }
-
   &:not(.in_progress) {
     button.expand {
       opacity: 0;
