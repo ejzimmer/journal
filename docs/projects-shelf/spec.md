@@ -1,7 +1,7 @@
 # Projects tab — shelf layout
 
-Design for reworking the projects tab. **Agreed but not implemented** — nothing in
-`src/` has changed. This document plus `prototype.html` are the whole output so far.
+Design for reworking the projects tab, now implemented in `src/tabs/Projects`.
+`prototype.html` remains as the visual reference this was built against.
 
 ![The shelf](./shelf.png)
 
@@ -64,15 +64,19 @@ slot.
 **The geometry rule** — everything else follows from this line:
 
 ```css
---small-h: 42px;
---shelf-gap: 10px;
---big-h: calc(var(--small-h) * 2 + var(--shelf-gap));
+--big-h = --small-h * 2 + --shelf-gap
 ```
 
-Every item on the shelf is then either one big-card-height or one
-small-card-height, so rows come out flush. Card heights are *declared*, not derived,
-which is why `box-sizing: border-box` is load-bearing here (the app already sets it
-globally in `src/index.css`).
+The implementation doesn't declare `--small-h`/`--big-h` as pixel values the way
+the prototype does. The ready/done and in-progress card paddings were already
+tuned (in the earlier card-restyle work) to a point where this equation holds
+naturally — a ready/done card renders at 47px, an in-progress one at 103px, and
+`--shelf-gap: 9px` (set on `.projects-container` in `index.css`) is exactly what
+makes `47 * 2 + 9 = 103`. So every item on the shelf ends up either one
+big-card-height or one small-card-height, and rows come out flush, without
+pinning card heights explicitly. **This is fragile**: if a future padding tweak
+moves either card's natural height, the packing goes ragged again with no error
+to catch it — worth a visual check after touching `Project.css`'s padding rules.
 
 **Stacks.** Two small cards go into a wrapper that is a single flex item, so the
 browser sees one big-card-shaped thing. The `.projects` flex-wrap shelf is otherwise
@@ -187,33 +191,17 @@ what keeps them identical — verified numerically (🚚: `0.24 × 0.855 + 0.76 
 the disc replacing the emoji is itself the signal that the project is done, so the
 tick doesn't have to carry it.
 
-## Changes to existing code
-
-**Delete the status sort** in `src/tabs/Projects/index.tsx:26-34`. Ordering becomes
-position-only, so marking something done no longer yanks it out from under the
-cursor. The existing move-to-end button covers the case where you do want it gone.
-
-**`openProjectIds` becomes a single id.** `Project.tsx` currently persists a Set of
-open projects to localStorage. Overlapping sheets would be a mess, so opening one
-closes the others.
-
-**Reuse what's already there.** `EmojiCheckbox` already takes `useTickForDone` and
-renders `<DoneTick />` (`TodayTask.tsx:49` uses it). `DoneTick.css` hardcodes
-`background: var(--success-colour)` and `DoneTick.tsx` hardcodes `colour="white"` —
-both need to become overridable, or the svg's `stroke` set from CSS.
-
-Keep using `Checkbox`, `EditableText`, `ButtonWithConfirmation`, `DragHandle` /
-`DraggableListItem` as-is.
-
 ## Pitfalls
 
-**The sheet must stay mounted.** A CSS transition needs a value to change on an
-element already in the document; an element added in its final state just appears.
-`Project.tsx:195` currently gates the subtask list behind `hasOpenedSubtasks &&`,
-which flips true in the same update as `subtasksVisible` — so the first open of any
-project mounts it already visible and doesn't animate. Barely noticeable today with a
-small height change; with the printer sheet the animation *is* the effect. Render the
-sheet unconditionally and let a class drive open/closed.
+**The sheet must stay mounted, but doesn't need to render open.** A CSS class
+transition needs a value to change on an element already in the document; an
+element added in its final state just appears. `Project.tsx` still gates the
+subtask list behind `hasOpenedSubtasks &&`, which flips true in the same update
+as `subtasksVisible` — so a class-driven transition would miss the first open.
+The fix that's actually in `useDrawer.ts` sidesteps this instead of avoiding it:
+the drawer's `height` starts at `0` in state regardless of `isVisible`, and only
+picks up its measured value in a later effect, so the animated property still
+changes across two renders even though the element mounts already `visible`.
 
 **The overlay gets clipped by a scrolling ancestor.** `.projects` currently gets a
 JS-computed height (`index.tsx:36-42`). The moment that container gets

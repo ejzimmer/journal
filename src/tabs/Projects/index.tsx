@@ -13,7 +13,8 @@ import {
 import { EmojiCheckbox } from "../../shared/controls/EmojiCheckbox"
 import { XIcon } from "../../shared/icons/X"
 import { sortByPosition } from "../../shared/drag-and-drop/utils"
-import { reorderProjects } from "./utils"
+import { packProjects, reorderProjects } from "./utils"
+import { OpenProjectProvider } from "./OpenProjectContext"
 
 export function Projects() {
   const containerRef = useRef<HTMLUListElement>(null)
@@ -27,6 +28,7 @@ export function Projects() {
     () => sortByPosition(value ? Object.values(value) : []),
     [value],
   )
+  const groups = useMemo(() => packProjects(sortedProjects), [sortedProjects])
 
   useEffect(() => {
     if (containerRef.current) {
@@ -45,6 +47,32 @@ export function Projects() {
     } else {
       setFilterCategories((prev) => prev.filter((f) => f !== category))
     }
+  }
+
+  const renderProject = (project: ProjectDetails) => {
+    const index = sortedProjects.indexOf(project)
+
+    return (
+      <FilteredProject
+        key={project.id}
+        project={project}
+        filter={filterCategories}
+      >
+        <Project
+          project={project}
+          onDelete={() => {
+            updateList(PROJECTS_KEY, reorderProjects(sortedProjects, index))
+            deleteItem(PROJECTS_KEY, project)
+          }}
+          onMoveToEnd={() =>
+            updateList(PROJECTS_KEY, [
+              ...reorderProjects(sortedProjects, index),
+              { ...project, position: sortedProjects.length - 1 },
+            ])
+          }
+        />
+      </FilteredProject>
+    )
   }
 
   return (
@@ -72,36 +100,26 @@ export function Projects() {
           <XIcon width=".6em" colour="var(--body-colour-mid)" />
         </button>
       </div>
-      <ul
-        className="projects"
-        ref={containerRef}
-        style={{ height: containerHeight }}
-      >
-        {sortedProjects.map((project, index) => (
-          <FilteredProject
-            key={project.id}
-            project={project}
-            filter={filterCategories}
-          >
-            <Project
-              project={project}
-              onDelete={() => {
-                updateList(PROJECTS_KEY, reorderProjects(sortedProjects, index))
-                deleteItem(PROJECTS_KEY, project)
-              }}
-              onMoveToEnd={() =>
-                updateList(PROJECTS_KEY, [
-                  ...reorderProjects(sortedProjects, index),
-                  { ...project, position: sortedProjects.length - 1 },
-                ])
-              }
-            />
-          </FilteredProject>
-        ))}
-        <li>
-          <AddProjectForm />
-        </li>
-      </ul>
+      <OpenProjectProvider>
+        <ul
+          className="projects"
+          ref={containerRef}
+          style={{ height: containerHeight }}
+        >
+          {groups.map((group) =>
+            group.length === 1 ? (
+              renderProject(group[0])
+            ) : (
+              <li className="stack" key={group.map((p) => p.id).join("-")}>
+                <ul className="stack-items">{group.map(renderProject)}</ul>
+              </li>
+            ),
+          )}
+          <li>
+            <AddProjectForm />
+          </li>
+        </ul>
+      </OpenProjectProvider>
     </div>
   )
 }
