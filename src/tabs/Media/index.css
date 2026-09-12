@@ -38,7 +38,7 @@
     padding: 12px;
     border-radius: 12px;
 
-    ul:first-of-type {
+    > ul:first-of-type {
       padding-inline-start: 8px;
       width: 100%;
     }

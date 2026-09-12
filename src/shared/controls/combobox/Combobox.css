@@ -10,6 +10,7 @@
   [popover] {
     position: fixed;
     overflow-y: auto;
+    padding: 0;
     border: none;
     border-radius: 6px;
     box-shadow:
@@ -35,6 +36,7 @@
       border: 1px solid var(--border-colour);
       font-size: inherit;
       padding: 8px;
+      padding-inline-end: 28px;
       border-radius: 4px;
       background: hsl(0 0% 100% / 0.5);
 
@@ -48,6 +50,19 @@
       top: 50%;
       left: 8px;
       transform: translateY(-50%);
+      pointer-events: none;
+    }
+
+    &::after {
+      content: "";
+      position: absolute;
+      top: 50%;
+      right: 10px;
+      width: 0;
+      height: 0;
+      border: 5px solid transparent;
+      border-top-color: var(--border-colour-hover);
+      transform: translateY(-25%);
       pointer-events: none;
     }
 
