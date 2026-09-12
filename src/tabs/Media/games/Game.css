@@ -5,7 +5,7 @@
     gap: 8px;
   }
 
-  .details button:not(.title) {
+  .details button {
     padding: 0;
     width: 24px;
     height: 24px;
@@ -21,7 +21,7 @@
     }
   }
 
-  .details.in_progress button:not(.title) {
+  .details.in_progress button {
     transform: scale(1.1);
     text-shadow: 1px 1px hsl(0 0 0/0.1);
     filter: grayscale(0) contrast(1);
@@ -29,16 +29,20 @@
   }
 
   .details button.title {
-    border: 0;
-    padding: 0;
+    width: auto;
     height: auto;
     font-size: 1em;
     text-align: start;
-    background: none;
+    transform: none;
+    text-shadow: none;
+    filter: none;
+    opacity: 1;
 
     &:hover,
     &:focus-visible {
       background: none;
+      filter: none;
+      opacity: 1;
       text-decoration: underline;
     }
   }

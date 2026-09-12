@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react"
+import { useRef, useState } from "react"
 import { FormControl } from "../../../shared/controls/FormControl"
 import { BookDetails, NewBook } from "../types"
 import { Combobox } from "../../../shared/controls/combobox/Combobox"
@@ -8,8 +8,9 @@ import { useMediaStorage } from "../MediaStorageContext"
 
 export function BookForm({ book }: { book?: BookDetails }) {
   const titleRef = useRef<HTMLInputElement>(null)
-  const [author, setAuthor] = useState<OptionType>()
-  const [series, setSeries] = useState<OptionType>()
+  const [author, setAuthor] = useState<OptionType | undefined>(
+    book?.author ? { id: book.author, label: book.author } : undefined,
+  )
 
   const {
     authors,
@@ -22,29 +23,21 @@ export function BookForm({ book }: { book?: BookDetails }) {
   } = useMediaStorage()
   const { closeModal } = useModal()
 
+  const currentSeries = book
+    ? bookSeries.find((series) => book.id in (series.items ?? {}))
+    : undefined
+
+  const [series, setSeries] = useState<OptionType | undefined>(
+    currentSeries
+      ? { id: currentSeries.id, label: currentSeries.name }
+      : undefined,
+  )
+
   const authorOptions = authors.map((name) => ({ id: name, label: name }))
   const seriesOptions = bookSeries.map((series) => ({
     id: series.id,
     label: series.name,
   }))
-  const currentSeries = book
-    ? bookSeries.find((series) => book.id in (series.items ?? {}))
-    : undefined
-
-  useEffect(() => {
-    if (!book) return
-
-    if (titleRef.current) titleRef.current.value = book.title
-    setAuthor(
-      book.author ? { id: book.author, label: book.author } : undefined,
-    )
-    setSeries(
-      currentSeries
-        ? { id: currentSeries.id, label: currentSeries.name }
-        : undefined,
-    )
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [book])
 
   const saveBook = (event: React.FormEvent) => {
     event.preventDefault()
@@ -98,7 +91,11 @@ export function BookForm({ book }: { book?: BookDetails }) {
     <form onSubmit={saveBook}>
       <Modal.Body>
         <div style={{ display: "flex", flexDirection: "column", gap: "18px" }}>
-          <FormControl label="Book title" ref={titleRef} />
+          <FormControl
+            label="Book title"
+            ref={titleRef}
+            defaultValue={book?.title}
+          />
           <Combobox
             label="Author name"
             value={author}

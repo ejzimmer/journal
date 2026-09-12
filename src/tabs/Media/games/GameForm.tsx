@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react"
+import { useRef, useState } from "react"
 import { FormControl } from "../../../shared/controls/FormControl"
 import { GameDetails, NewGame } from "../types"
 import { Combobox } from "../../../shared/controls/combobox/Combobox"
@@ -8,7 +8,6 @@ import { useMediaStorage } from "../MediaStorageContext"
 
 export function GameForm({ game }: { game?: GameDetails }) {
   const titleRef = useRef<HTMLInputElement>(null)
-  const [series, setSeries] = useState<OptionType>()
 
   const {
     gameSeries,
@@ -20,25 +19,20 @@ export function GameForm({ game }: { game?: GameDetails }) {
   } = useMediaStorage()
   const { closeModal } = useModal()
 
-  const seriesOptions = gameSeries.map((series) => ({
-    id: series.id,
-    label: series.name,
-  }))
   const currentSeries = game
     ? gameSeries.find((series) => game.id in (series.items ?? {}))
     : undefined
 
-  useEffect(() => {
-    if (!game) return
+  const [series, setSeries] = useState<OptionType | undefined>(
+    currentSeries
+      ? { id: currentSeries.id, label: currentSeries.name }
+      : undefined,
+  )
 
-    if (titleRef.current) titleRef.current.value = game.title
-    setSeries(
-      currentSeries
-        ? { id: currentSeries.id, label: currentSeries.name }
-        : undefined,
-    )
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [game])
+  const seriesOptions = gameSeries.map((series) => ({
+    id: series.id,
+    label: series.name,
+  }))
 
   const saveGame = (event: React.FormEvent) => {
     event.preventDefault()
@@ -82,7 +76,11 @@ export function GameForm({ game }: { game?: GameDetails }) {
     <form onSubmit={saveGame}>
       <Modal.Body>
         <div style={{ display: "flex", flexDirection: "column", gap: "18px" }}>
-          <FormControl label="Game title" ref={titleRef} />
+          <FormControl
+            label="Game title"
+            ref={titleRef}
+            defaultValue={game?.title}
+          />
           <Combobox
             label="Series name"
             value={series}
