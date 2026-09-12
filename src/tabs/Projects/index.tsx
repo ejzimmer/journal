@@ -1,11 +1,4 @@
-import {
-  CSSProperties,
-  useEffect,
-  useLayoutEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react"
+import { CSSProperties, useEffect, useMemo, useRef, useState } from "react"
 import { useStorageContext } from "../../shared/FirebaseContext"
 
 import "./index.css"
@@ -21,6 +14,7 @@ import { EmojiCheckbox } from "../../shared/controls/EmojiCheckbox"
 import { XIcon } from "../../shared/icons/X"
 import { sortByPosition } from "../../shared/drag-and-drop/utils"
 import { reorderProjects } from "./utils"
+import { useGridColumnSpan } from "./useGridColumnSpan"
 
 export function Projects() {
   const containerRef = useRef<HTMLUListElement>(null)
@@ -124,24 +118,7 @@ function FilteredProject({
   const isVisible = !categories.length || categories.includes(project.category)
   const rowSpan = (project.status ?? "ready") === "in_progress" ? 2 : 1
 
-  useLayoutEffect(() => {
-    const item = itemRef.current
-    if (!item || !isVisible) return
-
-    const style = getComputedStyle(item)
-    const columnUnit = parseFloat(style.getPropertyValue("--grid-unit"))
-    const gap = parseFloat(style.getPropertyValue("--shelf-gap"))
-
-    item.style.width = "max-content"
-    const naturalWidth = item.getBoundingClientRect().width
-    item.style.width = ""
-
-    const columnSpan = Math.max(
-      1,
-      Math.ceil((naturalWidth + gap) / (columnUnit + gap)),
-    )
-    item.style.setProperty("--col-span", String(columnSpan))
-  }, [project, isVisible])
+  useGridColumnSpan(itemRef, project, isVisible)
 
   return (
     <li
