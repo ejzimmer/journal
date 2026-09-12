@@ -10,6 +10,13 @@
   [popover] {
     position: fixed;
     overflow-y: auto;
+    border: none;
+    border-radius: 6px;
+    box-shadow:
+      2px 2px 2px hsl(0 0% 0%/0.1),
+      2px 2px 4px hsl(0 0% 0%/0.1),
+      2px 2px 8px hsl(0 0% 0%/0.1),
+      2px 2px 16px 8px hsl(0 0% 0%/0.1);
   }
 
   input[role="combobox"] {
