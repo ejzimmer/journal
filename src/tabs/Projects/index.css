@@ -1,4 +1,8 @@
 .projects-container {
+  --shelf-gap: 9px;
+  --small-h: 47px;
+  --big-h: calc(var(--small-h) * 2 + var(--shelf-gap));
+  --grid-unit: 8px;
   display: flex;
   flex-direction: column;
 
@@ -8,27 +12,21 @@
 
   .projects {
     padding: 0;
-    display: flex;
-    flex-wrap: wrap;
-    max-height: 100%;
-    gap: 2px;
-    align-content: start;
+    display: grid;
+    grid-auto-flow: dense;
+    grid-auto-rows: var(--small-h);
+    grid-template-columns: repeat(auto-fill, var(--grid-unit));
     justify-content: center;
+    gap: var(--shelf-gap);
+    max-height: 100%;
   }
 
-  li.project-item {
-    max-width: 80vw;
-    overflow: auto;
-    transition: max-width 1s;
+  .project-item {
+    grid-column: span var(--col-span, 1);
+    grid-row: span var(--row-span, 1);
 
     &.filtered-out {
-      max-width: 0;
-      height: 0;
-      overflow: hidden;
-    }
-
-    &:not(.filtered-out):has(.subtasks-section.visible) {
-      overflow: visible;
+      display: none;
     }
   }
 

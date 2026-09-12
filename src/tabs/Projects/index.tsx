@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react"
+import { CSSProperties, useEffect, useMemo, useRef, useState } from "react"
 import { useStorageContext } from "../../shared/FirebaseContext"
 
 import "./index.css"
@@ -14,6 +14,7 @@ import { EmojiCheckbox } from "../../shared/controls/EmojiCheckbox"
 import { XIcon } from "../../shared/icons/X"
 import { sortByPosition } from "../../shared/drag-and-drop/utils"
 import { reorderProjects } from "./utils"
+import { useGridColumnSpan } from "./useGridColumnSpan"
 
 export function Projects() {
   const containerRef = useRef<HTMLUListElement>(null)
@@ -98,10 +99,8 @@ export function Projects() {
             />
           </FilteredProject>
         ))}
-        <li>
-          <AddProjectForm />
-        </li>
       </ul>
+      <AddProjectForm />
     </div>
   )
 }
@@ -115,10 +114,18 @@ function FilteredProject({
   project: ProjectDetails
   children: React.ReactNode
 }) {
+  const itemRef = useRef<HTMLLIElement>(null)
   const isVisible = !categories.length || categories.includes(project.category)
+  const rowSpan = (project.status ?? "ready") === "in_progress" ? 2 : 1
+
+  useGridColumnSpan(itemRef, project, isVisible)
 
   return (
-    <li className={`project-item ${isVisible ? "" : "filtered-out"}`}>
+    <li
+      ref={itemRef}
+      className={`project-item ${isVisible ? "" : "filtered-out"}`}
+      style={{ "--row-span": rowSpan } as CSSProperties}
+    >
       {children}
     </li>
   )
