@@ -1,4 +1,11 @@
-import { useEffect, useMemo, useRef, useState } from "react"
+import {
+  CSSProperties,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react"
 import { useStorageContext } from "../../shared/FirebaseContext"
 
 import "./index.css"
@@ -13,7 +20,7 @@ import {
 import { EmojiCheckbox } from "../../shared/controls/EmojiCheckbox"
 import { XIcon } from "../../shared/icons/X"
 import { sortByPosition } from "../../shared/drag-and-drop/utils"
-import { packProjects, reorderProjects } from "./utils"
+import { reorderProjects } from "./utils"
 
 export function Projects() {
   const containerRef = useRef<HTMLUListElement>(null)
@@ -27,7 +34,6 @@ export function Projects() {
     () => sortByPosition(value ? Object.values(value) : []),
     [value],
   )
-  const groups = useMemo(() => packProjects(sortedProjects), [sortedProjects])
 
   useEffect(() => {
     if (containerRef.current) {
@@ -46,33 +52,6 @@ export function Projects() {
     } else {
       setFilterCategories((prev) => prev.filter((f) => f !== category))
     }
-  }
-
-  const renderProject = (project: ProjectDetails, as?: "li" | "div") => {
-    const index = sortedProjects.indexOf(project)
-
-    return (
-      <FilteredProject
-        key={project.id}
-        as={as}
-        project={project}
-        filter={filterCategories}
-      >
-        <Project
-          project={project}
-          onDelete={() => {
-            updateList(PROJECTS_KEY, reorderProjects(sortedProjects, index))
-            deleteItem(PROJECTS_KEY, project)
-          }}
-          onMoveToEnd={() =>
-            updateList(PROJECTS_KEY, [
-              ...reorderProjects(sortedProjects, index),
-              { ...project, position: sortedProjects.length - 1 },
-            ])
-          }
-        />
-      </FilteredProject>
-    )
   }
 
   return (
@@ -105,39 +84,72 @@ export function Projects() {
         ref={containerRef}
         style={{ height: containerHeight }}
       >
-        {groups.map((group) =>
-          group.length === 1 ? (
-            renderProject(group[0])
-          ) : (
-            <li className="stack" key={group.map((p) => p.id).join("-")}>
-              {group.map((project) => renderProject(project, "div"))}
-            </li>
-          ),
-        )}
-        <li>
-          <AddProjectForm />
-        </li>
+        {sortedProjects.map((project, index) => (
+          <FilteredProject
+            key={project.id}
+            project={project}
+            filter={filterCategories}
+          >
+            <Project
+              project={project}
+              onDelete={() => {
+                updateList(PROJECTS_KEY, reorderProjects(sortedProjects, index))
+                deleteItem(PROJECTS_KEY, project)
+              }}
+              onMoveToEnd={() =>
+                updateList(PROJECTS_KEY, [
+                  ...reorderProjects(sortedProjects, index),
+                  { ...project, position: sortedProjects.length - 1 },
+                ])
+              }
+            />
+          </FilteredProject>
+        ))}
       </ul>
+      <AddProjectForm />
     </div>
   )
 }
 
 function FilteredProject({
-  as: Tag = "li",
   filter: categories,
   project,
   children,
 }: {
-  as?: "li" | "div"
   filter: Category[]
   project: ProjectDetails
   children: React.ReactNode
 }) {
+  const itemRef = useRef<HTMLLIElement>(null)
   const isVisible = !categories.length || categories.includes(project.category)
+  const rowSpan = (project.status ?? "ready") === "in_progress" ? 2 : 1
+
+  useLayoutEffect(() => {
+    const item = itemRef.current
+    if (!item || !isVisible) return
+
+    const style = getComputedStyle(item)
+    const columnUnit = parseFloat(style.getPropertyValue("--grid-unit"))
+    const gap = parseFloat(style.getPropertyValue("--shelf-gap"))
+
+    item.style.width = "max-content"
+    const naturalWidth = item.getBoundingClientRect().width
+    item.style.width = ""
+
+    const columnSpan = Math.max(
+      1,
+      Math.ceil((naturalWidth + gap) / (columnUnit + gap)),
+    )
+    item.style.setProperty("--col-span", String(columnSpan))
+  }, [project, isVisible])
 
   return (
-    <Tag className={`project-item ${isVisible ? "" : "filtered-out"}`}>
+    <li
+      ref={itemRef}
+      className={`project-item ${isVisible ? "" : "filtered-out"}`}
+      style={{ "--row-span": rowSpan } as CSSProperties}
+    >
       {children}
-    </Tag>
+    </li>
   )
 }

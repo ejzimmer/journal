@@ -65,28 +65,3 @@ export function reorderProjects(
     .toSpliced(indexToRemove, 1)
     .map((project, index) => ({ ...project, position: index }))
 }
-
-export function packProjects(
-  projects: ProjectDetails[],
-): ProjectDetails[][] {
-  const groups: ProjectDetails[][] = []
-  let pending: ProjectDetails[] = []
-
-  for (const project of projects) {
-    if ((project.status ?? "ready") === "in_progress") {
-      groups.push([project])
-    } else {
-      pending.push(project)
-      if (pending.length === 2) {
-        groups.push(pending)
-        pending = []
-      }
-    }
-  }
-
-  if (pending.length) {
-    groups.push(pending)
-  }
-
-  return groups
-}
