@@ -2,8 +2,9 @@
   --cl: 85;
   --cc: 0.085;
   position: relative;
-  min-height: var(--spine-height, 178px);
-  padding: 17px 6px 56px;
+  padding-inline: 6px;
+  padding-block-start: 17px;
+  padding-block-end: 56px;
   border-radius: 3px 3px 1px 1px;
   background:
     linear-gradient(

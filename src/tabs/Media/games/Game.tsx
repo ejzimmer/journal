@@ -59,7 +59,7 @@ export function Game({ game }: { game: GameDetails }) {
       style={
         {
           "--hue": hue,
-          "--spine-height": `${getSpineHeight(game.title)}px`,
+          minHeight: getSpineHeight(game.title),
         } as CSSProperties
       }
     >

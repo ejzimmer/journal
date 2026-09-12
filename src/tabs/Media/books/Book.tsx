@@ -67,7 +67,7 @@ export function Book({ book }: { book: BookDetails }) {
       style={
         {
           "--hue": hue,
-          "--spine-height": `${getSpineHeight(book.title)}px`,
+          minHeight: getSpineHeight(book.title),
         } as CSSProperties
       }
     >
