@@ -76,7 +76,7 @@ export function Book({ book }: { book: BookDetails }) {
         aria-label={`${book.title}${book.author ? `, ${book.author}` : ""}, ${status}`}
         onClick={() => setIsEditFormOpen(true)}
       >
-        <span className="label">
+        <span className="spine-label">
           <span className="title-text">{book.title}</span>
           {book.author && <span className="author">{book.author}</span>}
         </span>

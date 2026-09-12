@@ -48,19 +48,19 @@
   }
 }
 
-.book .label {
+.book .spine-label {
   writing-mode: vertical-rl;
   text-orientation: mixed;
   max-height: 146px;
   text-align: center;
 }
 
-.book .label .title-text,
-.book .label .author {
+.book .spine-label .title-text,
+.book .spine-label .author {
   display: block;
 }
 
-.book .label .author {
+.book .spine-label .author {
   font-size: 0.84em;
   opacity: 0.7;
   font-style: italic;

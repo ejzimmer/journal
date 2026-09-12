@@ -48,14 +48,14 @@
   }
 }
 
-.game .label {
+.game .spine-label {
   writing-mode: vertical-rl;
   text-orientation: mixed;
   max-height: 102px;
   text-align: center;
 }
 
-.game .label .title-text {
+.game .spine-label .title-text {
   display: block;
 }
 

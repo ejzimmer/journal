@@ -68,7 +68,7 @@ export function Game({ game }: { game: GameDetails }) {
         aria-label={`${game.title}, ${status}`}
         onClick={() => setIsEditFormOpen(true)}
       >
-        <span className="label">
+        <span className="spine-label">
           <span className="title-text">{game.title}</span>
         </span>
       </button>
