@@ -34,10 +34,12 @@ function GameMediaList({
   games,
   bandHue,
   seriesId,
+  sharedTrim,
 }: {
   games?: Record<string, GameDetails>
   bandHue?: number
   seriesId?: string
+  sharedTrim?: boolean
 }) {
   const config = useGameFormConfig()
   return (
@@ -46,6 +48,7 @@ function GameMediaList({
       bandHue={bandHue}
       hue={(game) => getCoverHue(seriesId ?? game.title)}
       config={GAME_CONFIG}
+      sharedTrim={sharedTrim}
       editForm={(game) => ({ isOpen, onCancel }) => (
         <EditMediaForm
           item={game}
@@ -91,6 +94,7 @@ export function Games() {
               games={Object.fromEntries(
                 singleGames.map((game) => [game.id, game]),
               )}
+              sharedTrim={false}
             />
           </Shelf>
         )}

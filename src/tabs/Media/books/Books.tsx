@@ -36,9 +36,11 @@ const BOOK_CONFIG: StatusConfig<BookDetails, BookStatus> = {
 function BookMediaList({
   books,
   bandHue,
+  sharedTrim,
 }: {
   books?: Record<string, BookDetails>
   bandHue?: number
+  sharedTrim?: boolean
 }) {
   const config = useBookFormConfig()
   return (
@@ -47,6 +49,7 @@ function BookMediaList({
       bandHue={bandHue}
       hue={(book) => getCoverHue(book.author ?? book.title)}
       config={BOOK_CONFIG}
+      sharedTrim={sharedTrim}
       editForm={(book) => ({ isOpen, onCancel }) => (
         <EditMediaForm
           item={book}
@@ -88,6 +91,7 @@ export function Books() {
               books={Object.fromEntries(
                 singleBooks.map((book) => [book.id, book]),
               )}
+              sharedTrim={false}
             />
           </Shelf>
         )}
