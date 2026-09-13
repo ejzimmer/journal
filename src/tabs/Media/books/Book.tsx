@@ -1,21 +1,11 @@
-import { useState } from "react"
 import { BookDetails } from "../types"
 import { EditBookForm } from "./EditBookForm"
-import { useMediaStorage } from "../MediaStorageContext"
 import { getCoverHue } from "../coverHue"
-import { Spine } from "../Spine"
-import { nextInCycle } from "../statusCycle"
+import { MediaSpine, StatusConfig } from "../MediaSpine"
 
 const BOOK_STATUS_ORDER = ["unread", "reading", "listening", "read"] as const
 
 type BookStatus = (typeof BOOK_STATUS_ORDER)[number]
-
-function getBookStatus(book: BookDetails): BookStatus {
-  if (book.isDone) return "read"
-  if (book.medium === "📖") return "reading"
-  if (book.medium === "🎧") return "listening"
-  return "unread"
-}
 
 function getMediumForStatus(status: BookStatus): BookDetails["medium"] {
   if (status === "reading") return "📖"
@@ -23,22 +13,33 @@ function getMediumForStatus(status: BookStatus): BookDetails["medium"] {
   return null
 }
 
-const BOOK_STATUS_GLYPH: Record<BookStatus, string> = {
-  unread: "📖",
-  reading: "📖",
-  listening: "🎧",
-  read: "✓",
-}
-
-const BOOK_SPINE_STATUS: Record<BookStatus, "todo" | "active" | "done"> = {
-  unread: "todo",
-  reading: "active",
-  listening: "active",
-  read: "done",
-}
-
-function getSpineHeight(title: string) {
-  return 178 + Math.min(34, Math.round(title.length * 1.5))
+const BOOK_CONFIG: StatusConfig<BookDetails, BookStatus> = {
+  order: BOOK_STATUS_ORDER,
+  spineStatus: {
+    unread: "todo",
+    reading: "active",
+    listening: "active",
+    read: "done",
+  },
+  glyph: {
+    unread: "📖",
+    reading: "📖",
+    listening: "🎧",
+    read: "✓",
+  },
+  getStatus: (book) => {
+    if (book.isDone) return "read"
+    if (book.medium === "📖") return "reading"
+    if (book.medium === "🎧") return "listening"
+    return "unread"
+  },
+  applyStatus: (book, status) => ({
+    ...book,
+    medium: getMediumForStatus(status),
+    isDone: status === "read",
+  }),
+  getSpineHeight: (title) => 178 + Math.min(34, Math.round(title.length * 1.5)),
+  getAuthor: (book) => book.author,
 }
 
 export function Book({
@@ -48,40 +49,15 @@ export function Book({
   book: BookDetails
   bandHue?: number
 }) {
-  const { updateMedia } = useMediaStorage()
-  const [isEditFormOpen, setIsEditFormOpen] = useState(false)
-
-  const status = getBookStatus(book)
-  const nextStatus = nextInCycle(BOOK_STATUS_ORDER, status)
-  const hue = getCoverHue(book.author ?? book.title)
-
-  const cycleStatus = () => {
-    updateMedia({
-      ...book,
-      medium: getMediumForStatus(nextStatus),
-      isDone: nextStatus === "read",
-    })
-  }
-
   return (
-    <Spine
-      status={BOOK_SPINE_STATUS[status]}
-      hue={hue}
+    <MediaSpine
+      item={book}
       bandHue={bandHue}
-      minHeight={getSpineHeight(book.title)}
-      title={book.title}
-      author={book.author}
-      glyph={BOOK_STATUS_GLYPH[status]}
-      titleAriaLabel={`${book.title}${book.author ? `, ${book.author}` : ""}, ${status}`}
-      stampAriaLabel={`${book.title}: ${status}. Change to ${nextStatus}`}
-      onTitleClick={() => setIsEditFormOpen(true)}
-      onStampClick={cycleStatus}
-    >
-      <EditBookForm
-        book={book}
-        isOpen={isEditFormOpen}
-        onCancel={() => setIsEditFormOpen(false)}
-      />
-    </Spine>
+      hue={getCoverHue(book.author ?? book.title)}
+      config={BOOK_CONFIG}
+      editForm={({ isOpen, onCancel }) => (
+        <EditBookForm book={book} isOpen={isOpen} onCancel={onCancel} />
+      )}
+    />
   )
 }
