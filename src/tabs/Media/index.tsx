@@ -1,7 +1,7 @@
 import { Books } from "./books/Books"
 import { Games } from "./games/Games"
 import { MediaStorageProvider, useMediaStorage } from "./MediaStorageContext"
-import { Skeleton } from "../../shared/controls/Skeleton"
+import { MediaSkeleton } from "./MediaSkeleton"
 
 import "./index.css"
 
@@ -17,7 +17,7 @@ function MediaContent() {
   const { isLoading } = useMediaStorage()
 
   if (isLoading) {
-    return <Skeleton numRows={2} />
+    return <MediaSkeleton />
   }
 
   return (
