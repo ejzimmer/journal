@@ -36,11 +36,9 @@ const BOOK_CONFIG: StatusConfig<BookDetails, BookStatus> = {
 function BookMediaList({
   books,
   bandHue,
-  loose,
 }: {
   books?: Record<string, BookDetails>
   bandHue?: number
-  loose?: boolean
 }) {
   const config = useBookFormConfig()
   return (
@@ -49,7 +47,6 @@ function BookMediaList({
       bandHue={bandHue}
       hue={(book) => getCoverHue(book.author ?? book.title)}
       config={BOOK_CONFIG}
-      loose={loose}
       editForm={(book) => ({ isOpen, onCancel }) => (
         <EditMediaForm
           item={book}
@@ -85,16 +82,11 @@ export function Books() {
             <BookMediaList books={item.items} bandHue={item.bandHue} />
           </Shelf>
         ))}
-        {singleBooks.length > 0 && (
-          <Shelf>
-            <BookMediaList
-              books={Object.fromEntries(
-                singleBooks.map((book) => [book.id, book]),
-              )}
-              loose
-            />
+        {singleBooks.map((book) => (
+          <Shelf key={book.id} single>
+            <BookMediaList books={{ [book.id]: book }} />
           </Shelf>
-        )}
+        ))}
       </div>
       <AddMediaForm ariaLabel="Add a book" config={useBookFormConfig()} />
     </div>

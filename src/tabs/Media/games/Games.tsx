@@ -34,12 +34,10 @@ function GameMediaList({
   games,
   bandHue,
   seriesId,
-  loose,
 }: {
   games?: Record<string, GameDetails>
   bandHue?: number
   seriesId?: string
-  loose?: boolean
 }) {
   const config = useGameFormConfig()
   return (
@@ -48,7 +46,6 @@ function GameMediaList({
       bandHue={bandHue}
       hue={(game) => getCoverHue(seriesId ?? game.title)}
       config={GAME_CONFIG}
-      loose={loose}
       editForm={(game) => ({ isOpen, onCancel }) => (
         <EditMediaForm
           item={game}
@@ -88,16 +85,11 @@ export function Games() {
             />
           </Shelf>
         ))}
-        {singleGames.length > 0 && (
-          <Shelf>
-            <GameMediaList
-              games={Object.fromEntries(
-                singleGames.map((game) => [game.id, game]),
-              )}
-              loose
-            />
+        {singleGames.map((game) => (
+          <Shelf key={game.id} single>
+            <GameMediaList games={{ [game.id]: game }} />
           </Shelf>
-        )}
+        ))}
       </div>
       <AddMediaForm ariaLabel="Add a game" config={useGameFormConfig()} />
     </div>
