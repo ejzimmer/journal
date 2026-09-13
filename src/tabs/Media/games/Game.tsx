@@ -37,13 +37,21 @@ function getSpineHeight(title: string) {
   return 142 + Math.min(34, Math.round(title.length * 1.7))
 }
 
-export function Game({ game, band }: { game: GameDetails; band?: number }) {
+export function Game({
+  game,
+  band,
+  seriesId,
+}: {
+  game: GameDetails
+  band?: number
+  seriesId?: string
+}) {
   const { updateMedia } = useMediaStorage()
   const [isEditFormOpen, setIsEditFormOpen] = useState(false)
 
   const status = getGameStatus(game)
   const nextStatus = getNextGameStatus(status)
-  const hue = getCoverHue(game.title)
+  const hue = getCoverHue(seriesId ?? game.title)
 
   const cycleStatus = () => {
     updateMedia({

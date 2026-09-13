@@ -13,7 +13,7 @@ export function Series({ series }: { series: SeriesDetails<GameDetails> }) {
   return (
     <div className="run">
       <div className="run-books">
-        <GameList games={series.items} band={series.band} />
+        <GameList games={series.items} band={series.band} seriesId={series.id} />
       </div>
       <div className="run-label">
         <EditableText
