@@ -39,7 +39,7 @@ function getSpineHeight(title: string) {
   return 178 + Math.min(34, Math.round(title.length * 1.5))
 }
 
-export function Book({ book }: { book: BookDetails }) {
+export function Book({ book, band }: { book: BookDetails; band?: number }) {
   const { updateMedia } = useMediaStorage()
   const [isEditFormOpen, setIsEditFormOpen] = useState(false)
 
@@ -62,6 +62,7 @@ export function Book({ book }: { book: BookDetails }) {
       style={
         {
           "--hue": hue,
+          ...(band !== undefined && { "--band-hue": band }),
           minHeight: getSpineHeight(book.title),
         } as CSSProperties
       }
@@ -76,6 +77,13 @@ export function Book({ book }: { book: BookDetails }) {
           {book.author && <span className="author">{book.author}</span>}
         </span>
       </button>
+
+      {band !== undefined && (
+        <>
+          <span className="band band-head" aria-hidden="true" />
+          <span className="band band-tail" aria-hidden="true" />
+        </>
+      )}
 
       <button
         className="stamp"

@@ -1,30 +1,32 @@
-import { Fragment } from "react"
-import { AddBookForm } from "./AddBookForm"
-import { ReadingItemDetails } from "../types"
+import { isSeries } from "../types"
 import { Book } from "./Book"
 import { Series } from "./Series"
+import { AddBookForm } from "./AddBookForm"
 import { useMediaStorage } from "../MediaStorageContext"
-
-function getComponent<T extends ReadingItemDetails>(item: T) {
-  switch (item.type) {
-    case "book":
-      return <Book book={item} />
-    case "series":
-      return <Series series={item} />
-  }
-}
 
 export function Books() {
   const { books } = useMediaStorage()
 
+  const series = books.filter(isSeries)
+  const singles = books.filter((item) => !isSeries(item))
+
   return (
     <div className="books">
       <h2>Books</h2>
-      <ul>
-        {books.map((item) => (
-          <Fragment key={item.id}>{getComponent(item)}</Fragment>
+      <div className="case">
+        {series.map((item) => (
+          <Series key={item.id} series={item} />
         ))}
-      </ul>
+        {singles.length > 0 && (
+          <div className="run singles">
+            <ul className="run-books">
+              {singles.map((book) => (
+                <Book key={book.id} book={book} />
+              ))}
+            </ul>
+          </div>
+        )}
+      </div>
       <AddBookForm />
     </div>
   )

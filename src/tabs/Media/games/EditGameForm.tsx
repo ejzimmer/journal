@@ -13,7 +13,7 @@ export function EditGameForm({
 }) {
   return (
     <ModalDialog isOpen={isOpen} onCancel={onCancel}>
-      <GameForm game={game} />
+      {isOpen && <GameForm game={game} />}
     </ModalDialog>
   )
 }

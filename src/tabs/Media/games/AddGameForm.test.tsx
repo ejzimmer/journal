@@ -52,10 +52,14 @@ describe("AddGameForm", () => {
       )
       await user.click(screen.getByRole("button", { name: "Save" }))
 
-      expect(addMediaSeries).toHaveBeenCalledWith("Metroid", {
-        type: "game",
-        title: "Metroid Prime",
-      })
+      expect(addMediaSeries).toHaveBeenCalledWith(
+        "Metroid",
+        {
+          type: "game",
+          title: "Metroid Prime",
+        },
+        expect.any(Number),
+      )
     })
   })
 

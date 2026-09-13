@@ -96,7 +96,10 @@ describe("EditGameForm", () => {
     )
     await user.click(screen.getByRole("button", { name: "Save" }))
 
-    expect(moveMedia).toHaveBeenCalledWith(botw, { name: "Hyrule Warriors" })
+    expect(moveMedia).toHaveBeenCalledWith(botw, {
+      name: "Hyrule Warriors",
+      band: expect.any(Number),
+    })
   })
 
   it("deletes the game", async () => {

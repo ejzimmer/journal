@@ -147,10 +147,14 @@ describe("AddBookForm", () => {
       )
       await user.click(screen.getByRole("button", { name: "Save" }))
 
-      expect(addMediaSeries).toHaveBeenCalledWith("The Locked Tomb", {
-        type: "book",
-        title: "Gideon the Ninth",
-      })
+      expect(addMediaSeries).toHaveBeenCalledWith(
+        "The Locked Tomb",
+        {
+          type: "book",
+          title: "Gideon the Ninth",
+        },
+        expect.any(Number),
+      )
     })
   })
 
@@ -202,11 +206,15 @@ describe("AddBookForm", () => {
       )
       await user.click(screen.getByRole("button", { name: "Save" }))
 
-      expect(addMediaSeries).toHaveBeenCalledWith("Dirk Gently", {
-        type: "book",
-        title: "The Long Dark Teatime of the Soul",
-        author: "Douglas Adams",
-      })
+      expect(addMediaSeries).toHaveBeenCalledWith(
+        "Dirk Gently",
+        {
+          type: "book",
+          title: "The Long Dark Teatime of the Soul",
+          author: "Douglas Adams",
+        },
+        expect.any(Number),
+      )
     })
   })
 

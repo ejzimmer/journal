@@ -16,52 +16,94 @@
     flex-direction: column;
     padding-inline: 24px;
     padding-block-end: 24px;
-    border: 2px solid hsl(29, 94%, 50%);
-    background: hsla(29, 97%, 46%, 0.1);
-  }
 
-  ul {
-    padding: 0;
-    display: flex;
-    flex-wrap: wrap;
-    align-items: flex-end;
-    gap: 4px;
-  }
-
-  li {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-
-  li.series,
-  li.author {
-    flex-direction: column;
-    align-items: start;
-    margin-block: 24px;
-    padding: 12px;
-    border-radius: 12px;
-
-    > ul:first-of-type {
-      padding-inline-start: 8px;
-      width: 100%;
+    > button {
+      align-self: end;
     }
   }
 
-  li.series {
-    border: 2px solid hsla(184, 97%, 46%);
-    background: hsla(184, 97%, 46%, 0.1);
-  }
-  li.author {
-    border: 2px solid hsla(150, 97%, 46%);
-    background: hsla(150, 97%, 46%, 0.1);
-  }
-
-  li.author > div:first-child {
-    font-weight: bold;
+  & > .books {
+    --spine-h: 232px;
+    --shelf-y: 232px;
+    --pitch: 292px;
+    border-color: hsl(29, 94%, 50%);
+    background: hsla(29, 97%, 46%, 0.06);
   }
 
-  button {
-    align-self: end;
+  & > .games {
+    --spine-h: 188px;
+    --shelf-y: 188px;
+    --pitch: 248px;
+    border-color: hsl(187, 76%, 36%);
+    background: hsla(187, 76%, 36%, 0.06);
+  }
+
+  /* One board per row, drawn across the whole case, so the shelf runs
+     unbroken behind every series on that line. Margin, not padding — the
+     gradient is measured from the padding box. */
+  .case {
+    display: flex;
+    flex-wrap: wrap;
+    align-content: flex-start;
+    column-gap: 26px;
+    margin-block-start: 16px;
+    background-image: repeating-linear-gradient(
+      to bottom,
+      transparent 0 var(--shelf-y),
+      hsl(32 40% 80%) var(--shelf-y) calc(var(--shelf-y) + 4px),
+      hsl(30 32% 66%) calc(var(--shelf-y) + 4px) calc(var(--shelf-y) + 7px),
+      transparent calc(var(--shelf-y) + 7px) var(--pitch)
+    );
+  }
+
+  .run {
+    min-height: var(--pitch);
+    display: flex;
+    flex-direction: column;
+    flex: none;
+    min-width: 96px;
+  }
+
+  .run-books {
+    height: var(--spine-h);
+    flex: none;
+    display: flex;
+    align-items: flex-end;
+    padding-inline: 2px;
+    margin: 0;
+    list-style: none;
+  }
+
+  .run.singles .run-books {
+    gap: 4px;
+  }
+
+  /* A series is published to one trim size. Nothing has to compute that —
+     the set stretches its books to whichever of them is tallest. */
+  .ser-set {
+    display: flex;
+    align-items: stretch;
+    align-self: flex-end;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  /* A card in a holder on the shelf edge, written by hand */
+  .run-label {
+    margin-block-start: 5px;
+    align-self: flex-start;
+    margin-inline-start: 3px;
+    background: hsl(44 52% 97%);
+    border: 1px solid hsl(38 26% 82%);
+    border-radius: 2px;
+    box-shadow: 0 1px 2px hsl(32 30% 50% / 0.22);
+    padding: 2px 11px 3px;
+    font-family: "Dancing Script", "Segoe Script", "Snell Roundhand", cursive;
+    font-weight: 600;
+    font-size: 19px;
+    line-height: 1.15;
+    color: hsl(222 32% 32%);
+    white-space: nowrap;
   }
 }

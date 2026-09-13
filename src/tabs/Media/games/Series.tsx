@@ -11,16 +11,17 @@ export function Series({ series }: { series: SeriesDetails<GameDetails> }) {
   }
 
   return (
-    <li className="series">
-      <div>
+    <div className="run">
+      <div className="run-books">
+        <GameList games={series.items} band={series.band} />
+      </div>
+      <div className="run-label">
         <EditableText
           label="Series name"
           value={series.name}
           onChange={updateSeriesName}
-          style={{ fontWeight: "bold" }}
         />
       </div>
-      <GameList games={series.items} />
-    </li>
+    </div>
   )
 }

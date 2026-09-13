@@ -23,13 +23,13 @@ export type MediaStorageContextType = {
   isLoading: boolean
 
   addMedia: (media: NewMedia, seriesId?: string) => void
-  addMediaSeries: (name: string, media: NewMedia) => void
+  addMediaSeries: (name: string, media: NewMedia, band?: number) => void
   updateMedia: (media: MediaDetails) => void
-  updateMediaSeries: (series: MediaSeries, name: string) => void
+  updateMediaSeries: (series: MediaSeries, name: string, band?: number) => void
   deleteMedia: (media: MediaDetails) => void
   moveMedia: (
     media: MediaDetails,
-    destination?: { id: string } | { name: string },
+    destination?: { id: string } | { name: string; band?: number },
   ) => void
 }
 
@@ -106,20 +106,28 @@ export function MediaStorageProvider({ children }: { children: ReactNode }) {
     addMedia: (media, seriesId) => {
       addItem(getMediaPath(media.type, seriesId), media)
     },
-    addMediaSeries: (name, media) => {
+    addMediaSeries: (name, media, band) => {
       const key = getMediaKey(media.type)
-      const seriesId = addItem<MediaSeries>(key, { type: "series", name })
+      const seriesId = addItem<MediaSeries>(key, {
+        type: "series",
+        name,
+        ...(band !== undefined && { band }),
+      })
       addItem(`${key}/${seriesId}/items`, media)
     },
     updateMedia: (media) => {
       const currentSeries = findSeriesContaining(media)
       updateItem(getMediaPath(media.type, currentSeries?.id), media)
     },
-    updateMediaSeries: (series, name) => {
+    updateMediaSeries: (series, name, band) => {
       const key = bookSeries.some((entry) => entry.id === series.id)
         ? BOOKS_KEY
         : GAMES_KEY
-      updateItem(key, { ...series, name })
+      updateItem(key, {
+        ...series,
+        name,
+        ...(band !== undefined && { band }),
+      })
     },
     deleteMedia: (media) => {
       const series = findSeriesContaining(media)
@@ -135,6 +143,7 @@ export function MediaStorageProvider({ children }: { children: ReactNode }) {
         const seriesId = addItem<MediaSeries>(key, {
           type: "series",
           name: destination.name,
+          ...(destination.band !== undefined && { band: destination.band }),
         })
         moveMediaToSeriesId(media, seriesId ?? undefined)
       } else {

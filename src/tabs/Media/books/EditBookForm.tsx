@@ -13,7 +13,7 @@ export function EditBookForm({
 }) {
   return (
     <ModalDialog isOpen={isOpen} onCancel={onCancel}>
-      <BookForm book={book} />
+      {isOpen && <BookForm book={book} />}
     </ModalDialog>
   )
 }

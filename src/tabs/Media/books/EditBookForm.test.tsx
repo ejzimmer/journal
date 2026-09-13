@@ -112,7 +112,10 @@ describe("EditBookForm", () => {
     )
     await user.click(screen.getByRole("button", { name: "Save" }))
 
-    expect(moveMedia).toHaveBeenCalledWith(guards, { name: "The Long Earth" })
+    expect(moveMedia).toHaveBeenCalledWith(guards, {
+      name: "The Long Earth",
+      band: expect.any(Number),
+    })
   })
 
   it("deletes the book", async () => {

@@ -37,7 +37,7 @@ function getSpineHeight(title: string) {
   return 142 + Math.min(34, Math.round(title.length * 1.7))
 }
 
-export function Game({ game }: { game: GameDetails }) {
+export function Game({ game, band }: { game: GameDetails; band?: number }) {
   const { updateMedia } = useMediaStorage()
   const [isEditFormOpen, setIsEditFormOpen] = useState(false)
 
@@ -59,6 +59,7 @@ export function Game({ game }: { game: GameDetails }) {
       style={
         {
           "--hue": hue,
+          ...(band !== undefined && { "--band-hue": band }),
           minHeight: getSpineHeight(game.title),
         } as CSSProperties
       }
@@ -72,6 +73,13 @@ export function Game({ game }: { game: GameDetails }) {
           <span className="title-text">{game.title}</span>
         </span>
       </button>
+
+      {band !== undefined && (
+        <>
+          <span className="band band-head" aria-hidden="true" />
+          <span className="band band-tail" aria-hidden="true" />
+        </>
+      )}
 
       <button
         className="stamp"

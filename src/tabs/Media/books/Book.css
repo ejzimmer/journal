@@ -129,7 +129,41 @@
 }
 
 .book[data-status="read"] .stamp {
-  color: oklch(50% 0.13 var(--hue));
+  color: oklch(50% 0.13 var(--band-hue, var(--hue)));
   font-size: 17px;
   font-weight: 700;
+}
+
+/* A matched set: one trim height plus boxed-set bands at head and tail,
+   drawn over the title. The shelf card already names the series. */
+.book .band {
+  position: absolute;
+  inset-inline: 4px;
+  height: 22px;
+  z-index: 4;
+  pointer-events: none;
+}
+
+.book .band::before {
+  content: "";
+  position: absolute;
+  inset-inline: 0;
+  height: 6px;
+  background: oklch(58% 0.16 var(--band-hue));
+}
+
+.book .band-head {
+  inset-block-start: 0;
+}
+
+.book .band-head::before {
+  inset-block-start: 8px;
+}
+
+.book .band-tail {
+  inset-block-end: 0;
+}
+
+.book .band-tail::before {
+  inset-block-end: 9px;
 }

@@ -1,30 +1,32 @@
-import { Fragment } from "react"
-import { AddGameForm } from "./AddGameForm"
-import { PlayingItemDetails } from "../types"
+import { isSeries } from "../types"
 import { Game } from "./Game"
 import { Series } from "./Series"
+import { AddGameForm } from "./AddGameForm"
 import { useMediaStorage } from "../MediaStorageContext"
-
-function getComponent<T extends PlayingItemDetails>(item: T) {
-  switch (item.type) {
-    case "game":
-      return <Game game={item} />
-    case "series":
-      return <Series series={item} />
-  }
-}
 
 export function Games() {
   const { games } = useMediaStorage()
 
+  const series = games.filter(isSeries)
+  const singles = games.filter((item) => !isSeries(item))
+
   return (
     <div className="games">
       <h2>Games</h2>
-      <ul>
-        {games.map((item) => (
-          <Fragment key={item.id}>{getComponent(item)}</Fragment>
+      <div className="case">
+        {series.map((item) => (
+          <Series key={item.id} series={item} />
         ))}
-      </ul>
+        {singles.length > 0 && (
+          <div className="run singles">
+            <ul className="run-books">
+              {singles.map((game) => (
+                <Game key={game.id} game={game} />
+              ))}
+            </ul>
+          </div>
+        )}
+      </div>
       <AddGameForm />
     </div>
   )
