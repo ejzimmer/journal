@@ -10,27 +10,15 @@ const testingLibrary = require('eslint-plugin-testing-library');
 const globals = require('globals');
 const confusingBrowserGlobals = require('confusing-browser-globals');
 
-// This mirrors the rule set that used to come from `eslint-config-react-app`
-// (extends: react-app, react-app/jest), hand-ported to flat config because
-// that package only ships eslintrc-format configs and hard-pins an old
-// @typescript-eslint@^5 internally -- which is both no longer the current
-// major and (more importantly) incompatible with where TypeScript's own
-// classic API is headed. The rules below are the same curated subset CRA
-// used, not each plugin's own broader "recommended" preset -- several of
-// those (react/prop-types, several jsx-a11y interaction rules) don't apply
-// to this codebase's conventions and would add a pile of unrelated new
-// findings that were never part of what this migration is trying to do.
 module.exports = tseslint.config(
   {
     ignores: ['build/**'],
   },
   js.configs.recommended,
-  // Deliberately not tseslint.configs.recommended: that bundle adds a
-  // batch of typescript-eslint's own opinionated rules (no-explicit-any,
-  // etc.) that were never part of what eslint-config-react-app enabled.
-  // base + eslintRecommended is the parser setup plus "turn off core
-  // rules TS already checks better" -- the same intent as CRA's own
-  // per-file no-undef/no-dupe-class-members overrides below.
+  // tseslint.configs.base sets the parser; eslintRecommended turns off
+  // core rules TypeScript's own checker already covers better (no-undef,
+  // no-dupe-class-members, etc.) and enables a small set of modern-JS
+  // rules (no-var, prefer-const, prefer-rest-params, prefer-spread).
   tseslint.configs.base,
   tseslint.configs.eslintRecommended,
   {
@@ -222,15 +210,13 @@ module.exports = tseslint.config(
     },
   },
   {
-    // TypeScript-specific tuning, matching what eslint-config-react-app
-    // applied only to .ts(x) files on top of its own recommended rules.
+    // TypeScript-specific rule tuning.
     files: ['**/*.ts', '**/*.tsx'],
     rules: {
-      // These three are set again here (not just relying on
-      // tseslint.configs.eslintRecommended above) because flat config
-      // merges array entries in order regardless of `files` scoping --
-      // the unscoped rules block above this one would otherwise win and
-      // clobber them back on for .ts(x) files.
+      // Flat config merges array entries in order, regardless of `files`
+      // scoping: these three would otherwise be clobbered back on for
+      // .ts(x) files by the unscoped rules block above this one, which
+      // sets them for every file and comes later in the array.
       'default-case': 'off',
       'no-dupe-class-members': 'off',
       'no-undef': 'off',
@@ -294,9 +280,8 @@ module.exports = tseslint.config(
       'jest/valid-title': 'warn',
 
       // https://github.com/testing-library/eslint-plugin-testing-library
-      // Rule names below match v7 (some were renamed to the plural form,
-      // or merged/renamed, since the eslint-config-react-app version that
-      // last pinned this plugin at v5).
+      // Some rule names are plural in this version (await-async-queries,
+      // no-await-sync-queries) -- that's the current naming, not a typo.
       'testing-library/await-async-queries': 'error',
       'testing-library/await-async-utils': 'error',
       'testing-library/no-await-sync-queries': 'error',

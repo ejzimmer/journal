@@ -736,9 +736,7 @@ module.exports = function (webpackEnv) {
             '.cache/.eslintcache'
           ),
           // Picks up eslint.config.js from the project root, same as the
-          // `eslint` CLI -- there's a single flat config now instead of
-          // this plugin's own separate baseConfig plus package.json's
-          // eslintConfig.
+          // `eslint` CLI.
         }),
     ].filter(Boolean),
     // Turn off performance processing because we utilize
