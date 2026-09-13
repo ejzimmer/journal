@@ -39,7 +39,6 @@
     display: flex;
     flex-wrap: wrap;
     align-content: flex-start;
-    column-gap: var(--shelf-gap);
     margin-block-start: 16px;
     background-image: repeating-linear-gradient(
       to bottom,
@@ -52,19 +51,16 @@
   }
 
   .shelf {
+    position: relative;
     min-height: var(--shelf-spacing);
     display: flex;
     flex-direction: column;
     flex: none;
-    min-width: 96px;
+    padding-inline-end: var(--shelf-gap);
   }
 
   .shelf-single {
-    min-width: 0;
-  }
-
-  .shelf-single + .shelf-single {
-    margin-inline-start: calc(-1 * var(--shelf-gap));
+    padding-inline-end: 0;
   }
 
   .spines {
@@ -87,9 +83,9 @@
   }
 
   .shelf-label {
-    margin-block-start: 5px;
-    align-self: flex-start;
-    margin-inline-start: 3px;
+    position: absolute;
+    inset-block-start: calc(var(--shelf-height) + 5px);
+    inset-inline-start: 3px;
     background: hsl(44 52% 97%);
     border: 1px solid hsl(38 26% 82%);
     border-radius: 2px;
@@ -101,5 +97,10 @@
     line-height: 1.15;
     color: hsl(222 32% 32%);
     white-space: nowrap;
+  }
+
+  .shelf-label:not(:focus-within) {
+    max-width: calc(100% - 3px);
+    overflow: hidden;
   }
 }
