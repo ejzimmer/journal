@@ -2,7 +2,7 @@ import { ReactNode, useState } from "react"
 import { MediaDetails } from "./types"
 import { useMediaStorage } from "./MediaStorageContext"
 import { Spine } from "./Spine"
-import { getNextStatus } from "./statusCycle"
+import { getNextStatus } from "./nextStatus"
 
 export type StatusConfig<T extends MediaDetails, S extends string> = {
   order: readonly S[]
