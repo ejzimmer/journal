@@ -1,21 +1,15 @@
 import { CSSProperties, useState } from "react"
-import { BookDetails } from "../types"
+import {
+  BOOK_STATUS_ORDER,
+  BookDetails,
+  BookStatus,
+  getBookStatus,
+} from "../types"
 import { EditBookForm } from "./EditBookForm"
 import { useMediaStorage } from "../MediaStorageContext"
 import { getCoverHue } from "../coverHue"
 
 import "./Book.css"
-
-const BOOK_STATUS_ORDER = ["unread", "reading", "listening", "read"] as const
-
-type BookStatus = (typeof BOOK_STATUS_ORDER)[number]
-
-function getBookStatus(book: BookDetails): BookStatus {
-  if (book.isDone) return "read"
-  if (book.medium === "📖") return "reading"
-  if (book.medium === "🎧") return "listening"
-  return "unread"
-}
 
 function getNextBookStatus(status: BookStatus): BookStatus {
   const index = BOOK_STATUS_ORDER.indexOf(status)
