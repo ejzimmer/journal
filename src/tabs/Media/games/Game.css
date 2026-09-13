@@ -126,36 +126,19 @@
   font-weight: 700;
 }
 
-/* A matched set: one trim height plus boxed-set bands at head and tail,
-   drawn over the title. The shelf card already names the series. */
-.game .band {
+.game .series-band {
   position: absolute;
   inset-inline: 4px;
-  height: 22px;
+  height: 6px;
   z-index: 4;
   pointer-events: none;
-}
-
-.game .band::before {
-  content: "";
-  position: absolute;
-  inset-inline: 0;
-  height: 6px;
   background: oklch(58% 0.16 var(--band-hue));
 }
 
-.game .band-head {
-  inset-block-start: 0;
-}
-
-.game .band-head::before {
+.game .series-band-head {
   inset-block-start: 8px;
 }
 
-.game .band-tail {
-  inset-block-end: 0;
-}
-
-.game .band-tail::before {
+.game .series-band-tail {
   inset-block-end: 9px;
 }

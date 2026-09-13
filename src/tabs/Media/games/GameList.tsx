@@ -3,20 +3,25 @@ import { GameDetails } from "../types"
 
 export function GameList({
   games,
-  band,
+  bandHue,
   seriesId,
 }: {
   games?: Record<string, GameDetails>
-  band?: number
+  bandHue?: number
   seriesId?: string
 }) {
   const gameDetails = games ? Object.values(games) : undefined
 
   return (
     gameDetails && (
-      <ul className="ser-set">
+      <ul className="matched-set">
         {gameDetails.map((game) => (
-          <Game key={game.id} game={game} band={band} seriesId={seriesId} />
+          <Game
+            key={game.id}
+            game={game}
+            bandHue={bandHue}
+            seriesId={seriesId}
+          />
         ))}
       </ul>
     )

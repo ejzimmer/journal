@@ -1,4 +1,4 @@
-import { CSSProperties } from "react"
+import { CSSProperties, useId } from "react"
 import { BAND_COLOURS } from "./bandHue"
 
 import "./BandColourPicker.css"
@@ -9,26 +9,31 @@ export function BandColourPicker({
   onChange,
 }: {
   label: string
-  value: number
+  value?: number
   onChange: (hue: number) => void
 }) {
+  const name = useId()
+
   return (
-    <div className="band-colour-picker">
-      <span className="label">{label}</span>
+    <fieldset className="band-colour-picker">
+      <legend>{label}</legend>
       <div className="swatches">
         {BAND_COLOURS.map((colour) => (
-          <button
+          <label
             key={colour.hue}
-            type="button"
             className="swatch"
             style={{ "--hue": colour.hue } as CSSProperties}
-            aria-pressed={value === colour.hue}
-            aria-label={colour.name}
-            title={colour.name}
-            onClick={() => onChange(colour.hue)}
-          />
+          >
+            <input
+              type="radio"
+              name={name}
+              aria-label={colour.name}
+              checked={value === colour.hue}
+              onChange={() => onChange(colour.hue)}
+            />
+          </label>
         ))}
       </div>
-    </div>
+    </fieldset>
   )
 }

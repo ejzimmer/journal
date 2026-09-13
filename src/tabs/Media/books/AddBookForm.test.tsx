@@ -153,7 +153,7 @@ describe("AddBookForm", () => {
           type: "book",
           title: "Gideon the Ninth",
         },
-        expect.any(Number),
+        undefined,
       )
     })
   })
@@ -213,7 +213,7 @@ describe("AddBookForm", () => {
           title: "The Long Dark Teatime of the Soul",
           author: "Douglas Adams",
         },
-        expect.any(Number),
+        undefined,
       )
     })
   })

@@ -11,11 +11,11 @@ export function Series({ series }: { series: SeriesDetails<BookDetails> }) {
   }
 
   return (
-    <div className="run">
-      <div className="run-books">
-        <BookList books={series.items} band={series.band} />
+    <div className="shelf">
+      <div className="spines">
+        <BookList books={series.items} bandHue={series.bandHue} />
       </div>
-      <div className="run-label">
+      <div className="shelf-label">
         <EditableText
           label="Series name"
           value={series.name}

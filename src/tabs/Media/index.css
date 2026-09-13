@@ -24,7 +24,6 @@
 
   & > .books {
     --spine-h: 232px;
-    --shelf-y: 232px;
     --pitch: 292px;
     border-color: hsl(29, 94%, 50%);
     background: hsla(29, 97%, 46%, 0.06);
@@ -32,16 +31,12 @@
 
   & > .games {
     --spine-h: 188px;
-    --shelf-y: 188px;
     --pitch: 248px;
     border-color: hsl(187, 76%, 36%);
     background: hsla(187, 76%, 36%, 0.06);
   }
 
-  /* One board per row, drawn across the whole case, so the shelf runs
-     unbroken behind every series on that line. Margin, not padding — the
-     gradient is measured from the padding box. */
-  .case {
+  .shelves {
     display: flex;
     flex-wrap: wrap;
     align-content: flex-start;
@@ -49,14 +44,14 @@
     margin-block-start: 16px;
     background-image: repeating-linear-gradient(
       to bottom,
-      transparent 0 var(--shelf-y),
-      hsl(32 40% 80%) var(--shelf-y) calc(var(--shelf-y) + 4px),
-      hsl(30 32% 66%) calc(var(--shelf-y) + 4px) calc(var(--shelf-y) + 7px),
-      transparent calc(var(--shelf-y) + 7px) var(--pitch)
+      transparent 0 var(--spine-h),
+      hsl(32 40% 80%) var(--spine-h) calc(var(--spine-h) + 4px),
+      hsl(30 32% 66%) calc(var(--spine-h) + 4px) calc(var(--spine-h) + 7px),
+      transparent calc(var(--spine-h) + 7px) var(--pitch)
     );
   }
 
-  .run {
+  .shelf {
     min-height: var(--pitch);
     display: flex;
     flex-direction: column;
@@ -64,7 +59,7 @@
     min-width: 96px;
   }
 
-  .run-books {
+  .spines {
     height: var(--spine-h);
     flex: none;
     display: flex;
@@ -74,13 +69,7 @@
     list-style: none;
   }
 
-  .run.singles .run-books {
-    gap: 4px;
-  }
-
-  /* A series is published to one trim size. Nothing has to compute that —
-     the set stretches its books to whichever of them is tallest. */
-  .ser-set {
+  .matched-set {
     display: flex;
     align-items: stretch;
     align-self: flex-end;
@@ -89,8 +78,7 @@
     list-style: none;
   }
 
-  /* A card in a holder on the shelf edge, written by hand */
-  .run-label {
+  .shelf-label {
     margin-block-start: 5px;
     align-self: flex-start;
     margin-inline-start: 3px;
@@ -99,7 +87,7 @@
     border-radius: 2px;
     box-shadow: 0 1px 2px hsl(32 30% 50% / 0.22);
     padding: 2px 11px 3px;
-    font-family: "Dancing Script", "Segoe Script", "Snell Roundhand", cursive;
+    font-family: "Dancing Script", cursive;
     font-weight: 600;
     font-size: 19px;
     line-height: 1.15;

@@ -39,11 +39,11 @@ function getSpineHeight(title: string) {
 
 export function Game({
   game,
-  band,
+  bandHue,
   seriesId,
 }: {
   game: GameDetails
-  band?: number
+  bandHue?: number
   seriesId?: string
 }) {
   const { updateMedia } = useMediaStorage()
@@ -67,11 +67,15 @@ export function Game({
       style={
         {
           "--hue": hue,
-          ...(band !== undefined && { "--band-hue": band }),
+          ...(bandHue !== undefined && { "--band-hue": bandHue }),
           minHeight: getSpineHeight(game.title),
         } as CSSProperties
       }
     >
+      {bandHue !== undefined && (
+        <span className="series-band series-band-head" />
+      )}
+
       <button
         className="title"
         aria-label={`${game.title}, ${status}`}
@@ -82,13 +86,6 @@ export function Game({
         </span>
       </button>
 
-      {band !== undefined && (
-        <>
-          <span className="band band-head" aria-hidden="true" />
-          <span className="band band-tail" aria-hidden="true" />
-        </>
-      )}
-
       <button
         className="stamp"
         aria-label={`${game.title}: ${status}. Change to ${nextStatus}`}
@@ -96,6 +93,10 @@ export function Game({
       >
         {GAME_STATUS_GLYPH[status]}
       </button>
+
+      {bandHue !== undefined && (
+        <span className="series-band series-band-tail" />
+      )}
 
       <EditGameForm
         game={game}

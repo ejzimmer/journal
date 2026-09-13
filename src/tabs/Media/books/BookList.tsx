@@ -3,18 +3,18 @@ import { BookDetails } from "../types"
 
 export function BookList({
   books,
-  band,
+  bandHue,
 }: {
   books?: Record<string, BookDetails>
-  band?: number
+  bandHue?: number
 }) {
   const bookDetails = books ? Object.values(books) : undefined
 
   return (
     bookDetails && (
-      <ul className="ser-set">
+      <ul className="matched-set">
         {bookDetails.map((book) => (
-          <Book key={book.id} book={book} band={band} />
+          <Book key={book.id} book={book} bandHue={bandHue} />
         ))}
       </ul>
     )

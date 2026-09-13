@@ -58,7 +58,7 @@ describe("AddGameForm", () => {
           type: "game",
           title: "Metroid Prime",
         },
-        expect.any(Number),
+        undefined,
       )
     })
   })

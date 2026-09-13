@@ -6,7 +6,6 @@ import { OptionType } from "../../../shared/controls/combobox/types"
 import { Modal, useModal } from "../../../shared/controls/Modal"
 import { useMediaStorage } from "../MediaStorageContext"
 import { BandColourPicker } from "../BandColourPicker"
-import { getRandomBandHue } from "../bandHue"
 
 export function GameForm({ game }: { game?: GameDetails }) {
   const titleRef = useRef<HTMLInputElement>(null)
@@ -31,8 +30,7 @@ export function GameForm({ game }: { game?: GameDetails }) {
       ? { id: currentSeries.id, label: currentSeries.name }
       : undefined,
   )
-  const [band, setBand] = useState(currentSeries?.band ?? getRandomBandHue())
-  const [hasPickedBand, setHasPickedBand] = useState(false)
+  const [bandHue, setBandHue] = useState(currentSeries?.bandHue)
 
   const seriesOptions = gameSeries.map((series) => ({
     id: series.id,
@@ -42,16 +40,15 @@ export function GameForm({ game }: { game?: GameDetails }) {
   const changeSeries = (value?: OptionType) => {
     setSeries(value)
     const matchedSeries = value && gameSeries.find((s) => s.id === value.id)
-    if (matchedSeries?.band !== undefined) setBand(matchedSeries.band)
+    setBandHue(matchedSeries?.bandHue)
   }
 
-  const changeBand = (hue: number) => {
-    setBand(hue)
-    setHasPickedBand(true)
-  }
-
-  const persistBand = (target: SeriesDetails<GameDetails> | undefined) => {
-    if (target && hasPickedBand) updateMediaSeries(target, target.name, band)
+  const updateSeriesBandHue = (
+    target: SeriesDetails<GameDetails> | undefined,
+  ) => {
+    if (target && bandHue !== undefined && bandHue !== target.bandHue) {
+      updateMediaSeries(target, target.name, bandHue)
+    }
   }
 
   const saveGame = (event: React.FormEvent) => {
@@ -64,30 +61,30 @@ export function GameForm({ game }: { game?: GameDetails }) {
       const updatedGame: GameDetails = { ...game, title }
 
       if (series && series.id === "") {
-        moveMedia(updatedGame, { name: series.label, band })
+        moveMedia(updatedGame, { name: series.label, bandHue })
       } else if (series?.id !== currentSeries?.id) {
         moveMedia(updatedGame, series && { id: series.id })
-        persistBand(series && gameSeries.find((s) => s.id === series.id))
+        const target = series && gameSeries.find((s) => s.id === series.id)
+        updateSeriesBandHue(target)
       } else {
         updateMedia(updatedGame)
-        persistBand(currentSeries)
+        updateSeriesBandHue(currentSeries)
       }
     } else {
       const newGame: NewGame = { type: "game", title }
 
       if (series && series.id === "") {
-        addMediaSeries(series.label, newGame, band)
+        addMediaSeries(series.label, newGame, bandHue)
       } else if (series) {
         addMedia(newGame, series.id)
-        persistBand(gameSeries.find((s) => s.id === series.id))
+        updateSeriesBandHue(gameSeries.find((s) => s.id === series.id))
       } else {
         addMedia(newGame)
       }
 
       if (titleRef.current) titleRef.current.value = ""
       setSeries(undefined)
-      setBand(getRandomBandHue())
-      setHasPickedBand(false)
+      setBandHue(undefined)
     }
 
     closeModal()
@@ -116,8 +113,8 @@ export function GameForm({ game }: { game?: GameDetails }) {
           {series && (
             <BandColourPicker
               label={`${series.label} band colour`}
-              value={band}
-              onChange={changeBand}
+              value={bandHue}
+              onChange={setBandHue}
             />
           )}
         </div>

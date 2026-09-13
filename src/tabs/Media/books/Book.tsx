@@ -39,7 +39,13 @@ function getSpineHeight(title: string) {
   return 178 + Math.min(34, Math.round(title.length * 1.5))
 }
 
-export function Book({ book, band }: { book: BookDetails; band?: number }) {
+export function Book({
+  book,
+  bandHue,
+}: {
+  book: BookDetails
+  bandHue?: number
+}) {
   const { updateMedia } = useMediaStorage()
   const [isEditFormOpen, setIsEditFormOpen] = useState(false)
 
@@ -62,11 +68,15 @@ export function Book({ book, band }: { book: BookDetails; band?: number }) {
       style={
         {
           "--hue": hue,
-          ...(band !== undefined && { "--band-hue": band }),
+          ...(bandHue !== undefined && { "--band-hue": bandHue }),
           minHeight: getSpineHeight(book.title),
         } as CSSProperties
       }
     >
+      {bandHue !== undefined && (
+        <span className="series-band series-band-head" />
+      )}
+
       <button
         className="title"
         aria-label={`${book.title}${book.author ? `, ${book.author}` : ""}, ${status}`}
@@ -78,13 +88,6 @@ export function Book({ book, band }: { book: BookDetails; band?: number }) {
         </span>
       </button>
 
-      {band !== undefined && (
-        <>
-          <span className="band band-head" aria-hidden="true" />
-          <span className="band band-tail" aria-hidden="true" />
-        </>
-      )}
-
       <button
         className="stamp"
         aria-label={`${book.title}: ${status}. Change to ${nextStatus}`}
@@ -92,6 +95,10 @@ export function Book({ book, band }: { book: BookDetails; band?: number }) {
       >
         {BOOK_STATUS_GLYPH[status]}
       </button>
+
+      {bandHue !== undefined && (
+        <span className="series-band series-band-tail" />
+      )}
 
       <EditBookForm
         book={book}

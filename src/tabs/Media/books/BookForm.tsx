@@ -6,7 +6,6 @@ import { OptionType } from "../../../shared/controls/combobox/types"
 import { Modal, useModal } from "../../../shared/controls/Modal"
 import { useMediaStorage } from "../MediaStorageContext"
 import { BandColourPicker } from "../BandColourPicker"
-import { getRandomBandHue } from "../bandHue"
 
 export function BookForm({ book }: { book?: BookDetails }) {
   const titleRef = useRef<HTMLInputElement>(null)
@@ -35,8 +34,7 @@ export function BookForm({ book }: { book?: BookDetails }) {
       ? { id: currentSeries.id, label: currentSeries.name }
       : undefined,
   )
-  const [band, setBand] = useState(currentSeries?.band ?? getRandomBandHue())
-  const [hasPickedBand, setHasPickedBand] = useState(false)
+  const [bandHue, setBandHue] = useState(currentSeries?.bandHue)
 
   const authorOptions = authors.map((name) => ({ id: name, label: name }))
   const seriesOptions = bookSeries.map((series) => ({
@@ -47,16 +45,15 @@ export function BookForm({ book }: { book?: BookDetails }) {
   const changeSeries = (value?: OptionType) => {
     setSeries(value)
     const matchedSeries = value && bookSeries.find((s) => s.id === value.id)
-    if (matchedSeries?.band !== undefined) setBand(matchedSeries.band)
+    setBandHue(matchedSeries?.bandHue)
   }
 
-  const changeBand = (hue: number) => {
-    setBand(hue)
-    setHasPickedBand(true)
-  }
-
-  const persistBand = (target: SeriesDetails<BookDetails> | undefined) => {
-    if (target && hasPickedBand) updateMediaSeries(target, target.name, band)
+  const updateSeriesBandHue = (
+    target: SeriesDetails<BookDetails> | undefined,
+  ) => {
+    if (target && bandHue !== undefined && bandHue !== target.bandHue) {
+      updateMediaSeries(target, target.name, bandHue)
+    }
   }
 
   const saveBook = (event: React.FormEvent) => {
@@ -74,13 +71,14 @@ export function BookForm({ book }: { book?: BookDetails }) {
       }
 
       if (series && series.id === "") {
-        moveMedia(updatedBook, { name: series.label, band })
+        moveMedia(updatedBook, { name: series.label, bandHue })
       } else if (series?.id !== currentSeries?.id) {
         moveMedia(updatedBook, series && { id: series.id })
-        persistBand(series && bookSeries.find((s) => s.id === series.id))
+        const target = series && bookSeries.find((s) => s.id === series.id)
+        updateSeriesBandHue(target)
       } else {
         updateMedia(updatedBook)
-        persistBand(currentSeries)
+        updateSeriesBandHue(currentSeries)
       }
     } else {
       const newBook: NewBook = {
@@ -90,10 +88,10 @@ export function BookForm({ book }: { book?: BookDetails }) {
       }
 
       if (series && series.id === "") {
-        addMediaSeries(series.label, newBook, band)
+        addMediaSeries(series.label, newBook, bandHue)
       } else if (series) {
         addMedia(newBook, series.id)
-        persistBand(bookSeries.find((s) => s.id === series.id))
+        updateSeriesBandHue(bookSeries.find((s) => s.id === series.id))
       } else {
         addMedia(newBook)
       }
@@ -101,8 +99,7 @@ export function BookForm({ book }: { book?: BookDetails }) {
       if (titleRef.current) titleRef.current.value = ""
       setAuthor(undefined)
       setSeries(undefined)
-      setBand(getRandomBandHue())
-      setHasPickedBand(false)
+      setBandHue(undefined)
     }
 
     closeModal()
@@ -138,8 +135,8 @@ export function BookForm({ book }: { book?: BookDetails }) {
           {series && (
             <BandColourPicker
               label={`${series.label} band colour`}
-              value={band}
-              onChange={changeBand}
+              value={bandHue}
+              onChange={setBandHue}
             />
           )}
         </div>
