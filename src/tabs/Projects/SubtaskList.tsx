@@ -79,11 +79,7 @@ export function SubtaskList({ projectId, isVisible }: SubtasksProps) {
   const sortedTasks = useMemo(
     () =>
       sortByPosition(
-        subtasks.map((task) => ({
-          ...task,
-          parentId: projectId,
-          position: task.position ?? Infinity,
-        })),
+        subtasks.map((task) => ({ ...task, parentId: projectId })),
       ),
     [projectId, subtasks],
   )
@@ -120,16 +116,6 @@ export function SubtaskList({ projectId, isVisible }: SubtasksProps) {
       onSortDoneToEnd()
     }
   }, [loading, hasUnsortedDoneTasks, onSortDoneToEnd])
-
-  useEffect(() => {
-    const isMissingAPosition = subtasks.some((task) => task.position == null)
-    if (isMissingAPosition) {
-      updateList<ProjectSubtask>(
-        subtasksKey,
-        sortedTasks.map(({ parentId, ...task }) => task),
-      )
-    }
-  }, [subtasks, sortedTasks, subtasksKey, updateList])
 
   if (!project) {
     return null
