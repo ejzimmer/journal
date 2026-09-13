@@ -111,25 +111,27 @@ export function SubtaskList({ projectId, isVisible }: SubtasksProps) {
   }, [sortedTasks, subtasksKey, updateList])
 
   const hasSortedDoneTasksOnLoad = useRef(false)
+  const isMissingAPosition = subtasks.some((task) => task.position == null)
 
   useEffect(() => {
-    if (hasSortedDoneTasksOnLoad.current || loading) return
+    if (hasSortedDoneTasksOnLoad.current || loading || isMissingAPosition) {
+      return
+    }
     hasSortedDoneTasksOnLoad.current = true
 
     if (hasUnsortedDoneTasks) {
       onSortDoneToEnd()
     }
-  }, [loading, hasUnsortedDoneTasks, onSortDoneToEnd])
+  }, [loading, isMissingAPosition, hasUnsortedDoneTasks, onSortDoneToEnd])
 
   useEffect(() => {
-    const isMissingAPosition = subtasks.some((task) => task.position == null)
     if (isMissingAPosition) {
       updateList<ProjectSubtask>(
         subtasksKey,
         sortedTasks.map(({ parentId, ...task }) => task),
       )
     }
-  }, [subtasks, sortedTasks, subtasksKey, updateList])
+  }, [isMissingAPosition, sortedTasks, subtasksKey, updateList])
 
   if (!project) {
     return null
