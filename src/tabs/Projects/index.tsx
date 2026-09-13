@@ -1,4 +1,11 @@
-import { CSSProperties, useMemo, useRef, useState } from "react"
+import {
+  CSSProperties,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react"
 import { useStorageContext } from "../../shared/FirebaseContext"
 
 import "./index.css"
@@ -29,6 +36,38 @@ export function Projects() {
     () => sortByPosition(value ? Object.values(value) : []),
     [value],
   )
+
+  let seenDoneProject = false
+  const hasUnsortedDoneProjects = sortedProjects.some((project) => {
+    if ((project.status ?? "ready") === "done") {
+      seenDoneProject = true
+      return false
+    }
+    return seenDoneProject
+  })
+
+  const onSortDoneProjectsToEnd = useCallback(() => {
+    const reordered = sortedProjects
+      .toSorted(
+        (a, b) =>
+          Number((a.status ?? "ready") === "done") -
+          Number((b.status ?? "ready") === "done"),
+      )
+      .map((project, index) => ({ ...project, position: index }))
+
+    updateList<ProjectDetails>(PROJECTS_KEY, reordered)
+  }, [sortedProjects, updateList])
+
+  const hasSortedDoneProjectsOnLoad = useRef(false)
+
+  useEffect(() => {
+    if (hasSortedDoneProjectsOnLoad.current || loading) return
+    hasSortedDoneProjectsOnLoad.current = true
+
+    if (hasUnsortedDoneProjects) {
+      onSortDoneProjectsToEnd()
+    }
+  }, [loading, hasUnsortedDoneProjects, onSortDoneProjectsToEnd])
 
   const updateFilterCategories = (
     category: Category,
