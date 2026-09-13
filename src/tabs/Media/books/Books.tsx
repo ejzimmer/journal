@@ -28,7 +28,6 @@ const BOOK_CONFIG: StatusConfig<BookDetails, BookStatus> = {
   },
   getStatus: getBookStatus,
   applyStatus: (book, status) => ({ ...book, status }),
-  getSpineHeight: (title) => 178 + Math.min(34, Math.round(title.length * 1.5)),
   getAuthor: (book) => book.author,
 }
 

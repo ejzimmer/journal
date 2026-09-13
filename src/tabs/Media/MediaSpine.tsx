@@ -10,8 +10,11 @@ export type StatusConfig<T extends MediaDetails, S extends string> = {
   glyph: Record<S, string>
   getStatus: (item: T) => S
   applyStatus: (item: T, status: S) => T
-  getSpineHeight: (title: string) => number
   getAuthor?: (item: T) => string | undefined
+}
+
+function getSpineHeight(title: string) {
+  return 178 + Math.min(34, Math.round(title.length * 1.5))
 }
 
 export function MediaSpine<T extends MediaDetails, S extends string>({
@@ -43,7 +46,7 @@ export function MediaSpine<T extends MediaDetails, S extends string>({
       status={config.spineStatus[status]}
       hue={hue}
       bandHue={bandHue}
-      minHeight={config.getSpineHeight(item.title)}
+      minHeight={getSpineHeight(item.title)}
       title={item.title}
       author={author}
       glyph={config.glyph[status]}

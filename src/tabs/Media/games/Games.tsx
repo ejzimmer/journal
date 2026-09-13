@@ -26,7 +26,6 @@ const GAME_CONFIG: StatusConfig<GameDetails, GameStatus> = {
   },
   getStatus: getGameStatus,
   applyStatus: (game, status) => ({ ...game, status }),
-  getSpineHeight: (title) => 142 + Math.min(34, Math.round(title.length * 1.7)),
 }
 
 function GameMediaList({
