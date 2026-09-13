@@ -1,10 +1,10 @@
-import { useRef, useState } from "react"
+import { useRef } from "react"
 import { FormControl } from "../../../shared/controls/FormControl"
-import { GameDetails, NewGame, SeriesDetails } from "../types"
+import { GameDetails, NewGame } from "../types"
 import { Combobox } from "../../../shared/controls/combobox/Combobox"
-import { OptionType } from "../../../shared/controls/combobox/types"
 import { Modal, useModal } from "../../../shared/controls/Modal"
 import { useMediaStorage } from "../MediaStorageContext"
+import { useSeriesBand } from "../useSeriesBand"
 import { BandColourPicker } from "../BandColourPicker"
 
 export function GameForm({ game }: { game?: GameDetails }) {
@@ -15,41 +15,21 @@ export function GameForm({ game }: { game?: GameDetails }) {
     addMedia,
     addMediaSeries,
     updateMedia,
-    updateMediaSeries,
     moveMedia,
     deleteMedia,
   } = useMediaStorage()
   const { closeModal } = useModal()
 
-  const currentSeries = game
-    ? gameSeries.find((series) => game.id in (series.items ?? {}))
-    : undefined
-
-  const [series, setSeries] = useState<OptionType | undefined>(
-    currentSeries
-      ? { id: currentSeries.id, label: currentSeries.name }
-      : undefined,
-  )
-  const [bandHue, setBandHue] = useState(currentSeries?.bandHue)
-
-  const seriesOptions = gameSeries.map((series) => ({
-    id: series.id,
-    label: series.name,
-  }))
-
-  const changeSeries = (value?: OptionType) => {
-    setSeries(value)
-    const matchedSeries = value && gameSeries.find((s) => s.id === value.id)
-    setBandHue(matchedSeries?.bandHue)
-  }
-
-  const updateSeriesBandHue = (
-    target: SeriesDetails<GameDetails> | undefined,
-  ) => {
-    if (target && bandHue !== undefined && bandHue !== target.bandHue) {
-      updateMediaSeries(target, target.name, bandHue)
-    }
-  }
+  const {
+    currentSeries,
+    series,
+    bandHue,
+    setBandHue,
+    changeSeries,
+    updateSeriesBandHue,
+    reset: resetSeriesBand,
+    seriesOptions,
+  } = useSeriesBand(game, gameSeries)
 
   const saveGame = (event: React.FormEvent) => {
     event.preventDefault()
@@ -83,8 +63,7 @@ export function GameForm({ game }: { game?: GameDetails }) {
       }
 
       if (titleRef.current) titleRef.current.value = ""
-      setSeries(undefined)
-      setBandHue(undefined)
+      resetSeriesBand()
     }
 
     closeModal()

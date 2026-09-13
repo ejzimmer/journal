@@ -1,10 +1,11 @@
 import { useRef, useState } from "react"
 import { FormControl } from "../../../shared/controls/FormControl"
-import { BookDetails, NewBook, SeriesDetails } from "../types"
+import { BookDetails, NewBook } from "../types"
 import { Combobox } from "../../../shared/controls/combobox/Combobox"
 import { OptionType } from "../../../shared/controls/combobox/types"
 import { Modal, useModal } from "../../../shared/controls/Modal"
 import { useMediaStorage } from "../MediaStorageContext"
+import { useSeriesBand } from "../useSeriesBand"
 import { BandColourPicker } from "../BandColourPicker"
 
 export function BookForm({ book }: { book?: BookDetails }) {
@@ -19,42 +20,23 @@ export function BookForm({ book }: { book?: BookDetails }) {
     addMedia,
     addMediaSeries,
     updateMedia,
-    updateMediaSeries,
     moveMedia,
     deleteMedia,
   } = useMediaStorage()
   const { closeModal } = useModal()
 
-  const currentSeries = book
-    ? bookSeries.find((series) => book.id in (series.items ?? {}))
-    : undefined
-
-  const [series, setSeries] = useState<OptionType | undefined>(
-    currentSeries
-      ? { id: currentSeries.id, label: currentSeries.name }
-      : undefined,
-  )
-  const [bandHue, setBandHue] = useState(currentSeries?.bandHue)
+  const {
+    currentSeries,
+    series,
+    bandHue,
+    setBandHue,
+    changeSeries,
+    updateSeriesBandHue,
+    reset: resetSeriesBand,
+    seriesOptions,
+  } = useSeriesBand(book, bookSeries)
 
   const authorOptions = authors.map((name) => ({ id: name, label: name }))
-  const seriesOptions = bookSeries.map((series) => ({
-    id: series.id,
-    label: series.name,
-  }))
-
-  const changeSeries = (value?: OptionType) => {
-    setSeries(value)
-    const matchedSeries = value && bookSeries.find((s) => s.id === value.id)
-    setBandHue(matchedSeries?.bandHue)
-  }
-
-  const updateSeriesBandHue = (
-    target: SeriesDetails<BookDetails> | undefined,
-  ) => {
-    if (target && bandHue !== undefined && bandHue !== target.bandHue) {
-      updateMediaSeries(target, target.name, bandHue)
-    }
-  }
 
   const saveBook = (event: React.FormEvent) => {
     event.preventDefault()
@@ -98,8 +80,7 @@ export function BookForm({ book }: { book?: BookDetails }) {
 
       if (titleRef.current) titleRef.current.value = ""
       setAuthor(undefined)
-      setSeries(undefined)
-      setBandHue(undefined)
+      resetSeriesBand()
     }
 
     closeModal()
