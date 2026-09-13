@@ -4,6 +4,7 @@ import {
   GameStatus,
   getGameStatus,
   isSeries,
+  SeriesDetails,
 } from "../types"
 import { getCoverHue } from "../coverHue"
 import { MediaList } from "../MediaList"
@@ -60,28 +61,38 @@ function GameMediaList({
 export function Games() {
   const { games, updateMediaSeries } = useMediaStorage()
 
+  const series = games.filter(
+    (item): item is SeriesDetails<GameDetails> => isSeries(item),
+  )
+  const singleGames = games.filter(
+    (item): item is GameDetails => !isSeries(item),
+  )
+
   return (
     <div className="games">
       <h2>Games</h2>
       <div className="shelves">
-        {games.map((item) =>
-          isSeries(item) ? (
-            <Shelf
-              key={item.id}
-              label={item.name}
-              onRenameLabel={(name) => updateMediaSeries(item, name)}
-            >
-              <GameMediaList
-                games={item.items}
-                bandHue={item.bandHue}
-                seriesId={item.id}
-              />
-            </Shelf>
-          ) : (
-            <Shelf key={item.id}>
-              <GameMediaList games={{ [item.id]: item }} />
-            </Shelf>
-          ),
+        {series.map((item) => (
+          <Shelf
+            key={item.id}
+            label={item.name}
+            onRenameLabel={(name) => updateMediaSeries(item, name)}
+          >
+            <GameMediaList
+              games={item.items}
+              bandHue={item.bandHue}
+              seriesId={item.id}
+            />
+          </Shelf>
+        ))}
+        {singleGames.length > 0 && (
+          <Shelf>
+            <GameMediaList
+              games={Object.fromEntries(
+                singleGames.map((game) => [game.id, game]),
+              )}
+            />
+          </Shelf>
         )}
       </div>
       <AddMediaForm ariaLabel="Add a game" config={useGameFormConfig()} />
