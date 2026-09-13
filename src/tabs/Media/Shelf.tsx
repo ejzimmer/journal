@@ -21,12 +21,6 @@ export function Shelf({
             label="Series name"
             value={label}
             onChange={onRenameLabel}
-            style={{
-              display: "block",
-              overflow: "hidden",
-              textOverflow: "ellipsis",
-              whiteSpace: "nowrap",
-            }}
           />
         </div>
       )}
