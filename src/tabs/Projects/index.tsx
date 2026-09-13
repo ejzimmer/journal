@@ -1,4 +1,4 @@
-import { CSSProperties, useEffect, useMemo, useRef, useState } from "react"
+import { CSSProperties, useMemo, useRef, useState } from "react"
 import { useStorageContext } from "../../shared/FirebaseContext"
 
 import "./index.css"
@@ -17,8 +17,6 @@ import { reorderProjects } from "./utils"
 import { useGridColumnSpan } from "./useGridColumnSpan"
 
 export function Projects() {
-  const containerRef = useRef<HTMLUListElement>(null)
-  const [containerHeight, setContainerHeight] = useState<number>()
   const [filterCategories, setFilterCategories] = useState<Category[]>([])
 
   const { useValue, updateList, deleteItem } = useStorageContext()
@@ -28,14 +26,6 @@ export function Projects() {
     () => sortByPosition(value ? Object.values(value) : []),
     [value],
   )
-
-  useEffect(() => {
-    if (containerRef.current) {
-      setContainerHeight(
-        window.innerHeight - containerRef.current.getBoundingClientRect().top,
-      )
-    }
-  }, [])
 
   const updateFilterCategories = (
     category: Category,
@@ -73,11 +63,7 @@ export function Projects() {
           <XIcon width=".6em" colour="var(--body-colour-mid)" />
         </button>
       </div>
-      <ul
-        className="projects"
-        ref={containerRef}
-        style={{ height: containerHeight }}
-      >
+      <ul className="projects">
         {sortedProjects.map((project, index) => (
           <FilteredProject
             key={project.id}
