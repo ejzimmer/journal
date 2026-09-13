@@ -1,4 +1,11 @@
-import { CSSProperties, useEffect, useMemo, useRef, useState } from "react"
+import {
+  CSSProperties,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react"
 import { useStorageContext } from "../../shared/FirebaseContext"
 
 import "./index.css"
@@ -8,20 +15,19 @@ import {
   Category,
   PROJECT_COLOURS,
   ProjectDetails,
-  ProjectSubtask,
   PROJECTS_KEY,
 } from "../../shared/types"
 import { EmojiCheckbox } from "../../shared/controls/EmojiCheckbox"
 import { XIcon } from "../../shared/icons/X"
 import { sortByPosition } from "../../shared/drag-and-drop/utils"
-import { getSubtasksKey, reorderProjects } from "./utils"
+import { reorderProjects } from "./utils"
 import { useGridColumnSpan } from "./useGridColumnSpan"
 import { ProjectsSkeleton } from "./ProjectsSkeleton"
 
 export function Projects() {
   const [filterCategories, setFilterCategories] = useState<Category[]>([])
 
-  const { useValue, updateList, updateItem, deleteItem } = useStorageContext()
+  const { useValue, updateList, deleteItem } = useStorageContext()
 
   const { value, loading } = useValue<Record<string, ProjectDetails>>(
     PROJECTS_KEY,
@@ -31,32 +37,35 @@ export function Projects() {
     [value],
   )
 
-  const hasMigratedSubtaskPositions = useRef(false)
+  const hasUnsortedDoneProjects = sortedProjects.some(
+    (project, index) =>
+      index > 0 &&
+      (project.status ?? "ready") !== "done" &&
+      (sortedProjects[index - 1].status ?? "ready") === "done",
+  )
+
+  const onSortDoneProjectsToEnd = useCallback(() => {
+    const reordered = sortedProjects
+      .toSorted(
+        (a, b) =>
+          Number((a.status ?? "ready") === "done") -
+          Number((b.status ?? "ready") === "done"),
+      )
+      .map((project, index) => ({ ...project, position: index }))
+
+    updateList<ProjectDetails>(PROJECTS_KEY, reordered)
+  }, [sortedProjects, updateList])
+
+  const hasSortedDoneProjectsOnLoad = useRef(false)
+
   useEffect(() => {
-    if (loading || hasMigratedSubtaskPositions.current) return
-    hasMigratedSubtaskPositions.current = true
+    if (hasSortedDoneProjectsOnLoad.current || loading) return
+    hasSortedDoneProjectsOnLoad.current = true
 
-    sortedProjects.forEach((project) => {
-      const subtasks: ProjectSubtask[] = Object.values(project.subtasks ?? {})
-      if (!subtasks.some((task) => task.position == null)) return
-
-      const originalPositions = new Map(
-        subtasks.map((task) => [task.id, task.position]),
-      )
-      const fixedSubtasks = sortByPosition(
-        subtasks.map((task) => ({
-          ...task,
-          position: task.position ?? Infinity,
-        })),
-      )
-
-      fixedSubtasks.forEach((task) => {
-        if (task.position !== originalPositions.get(task.id)) {
-          updateItem<ProjectSubtask>(getSubtasksKey(project.id), task)
-        }
-      })
-    })
-  }, [loading, sortedProjects, updateItem])
+    if (hasUnsortedDoneProjects) {
+      onSortDoneProjectsToEnd()
+    }
+  }, [loading, hasUnsortedDoneProjects, onSortDoneProjectsToEnd])
 
   const updateFilterCategories = (
     category: Category,
