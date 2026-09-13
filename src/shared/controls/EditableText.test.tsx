@@ -29,7 +29,7 @@ describe("EditableLabel", () => {
       const input = getInput()
       expect(input).toBeInTheDocument()
       expect(input).toHaveValue(TEXT)
-      expect(queryText(TEXT)).not.toBeInTheDocument()
+      expect(queryText(TEXT)).not.toBeVisible()
     })
   })
 

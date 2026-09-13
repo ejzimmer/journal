@@ -16,16 +16,12 @@ export type EditableTextProps = {
   className?: string
 }
 
-function measureTextWidth(
-  canvas: HTMLCanvasElement,
-  font: string,
-  text: string,
-) {
-  const context = canvas.getContext("2d")
-  if (!context) return undefined
-
-  context.font = font
-  return context.measureText(text || " ").width
+const measureStyle: CSSProperties = {
+  position: "absolute",
+  visibility: "hidden",
+  height: 0,
+  overflow: "hidden",
+  whiteSpace: "pre",
 }
 
 export function EditableText({
@@ -40,7 +36,7 @@ export function EditableText({
   const [text, setText] = useState(value)
   const [inputWidth, setInputWidth] = useState<number>()
   const inputRef = useRef<HTMLInputElement>(null)
-  const measureCanvasRef = useRef<HTMLCanvasElement>(null)
+  const measureRef = useRef<HTMLSpanElement>(null)
 
   const startEditing = () => {
     setIsEditing(true)
@@ -54,17 +50,9 @@ export function EditableText({
   }, [isEditing, inputRef])
 
   useLayoutEffect(() => {
-    if (!isEditing || !inputRef.current) return
+    if (!isEditing || !measureRef.current) return
 
-    if (!measureCanvasRef.current) {
-      measureCanvasRef.current = document.createElement("canvas")
-    }
-
-    const font = getComputedStyle(inputRef.current).font
-    const textWidth = measureTextWidth(measureCanvasRef.current, font, text)
-    if (textWidth !== undefined) {
-      setInputWidth(textWidth + 12)
-    }
+    setInputWidth(measureRef.current.scrollWidth + 12)
   }, [isEditing, text])
 
   const handleSubmit = () => {
@@ -78,24 +66,33 @@ export function EditableText({
   }
 
   return isEditing ? (
-    <input
-      className={`editable-text ${className}`}
-      ref={inputRef}
-      onBlur={handleSubmit}
-      onKeyDown={(event) => {
-        if (event.key === "Enter") {
-          handleSubmit()
-          event.preventDefault()
-        } else if (event.key === "Escape") {
-          setText(value)
-          stopEditing()
-        }
-      }}
-      onChange={(event) => setText(event.target.value)}
-      value={text}
-      aria-label={label}
-      style={{ fontSize: ".8em", ...style, width: inputWidth }}
-    />
+    <>
+      <span
+        ref={measureRef}
+        aria-hidden="true"
+        style={{ fontSize: ".8em", ...style, ...measureStyle }}
+      >
+        {text || " "}
+      </span>
+      <input
+        className={`editable-text ${className}`}
+        ref={inputRef}
+        onBlur={handleSubmit}
+        onKeyDown={(event) => {
+          if (event.key === "Enter") {
+            handleSubmit()
+            event.preventDefault()
+          } else if (event.key === "Escape") {
+            setText(value)
+            stopEditing()
+          }
+        }}
+        onChange={(event) => setText(event.target.value)}
+        value={text}
+        aria-label={label}
+        style={{ fontSize: ".8em", ...style, width: inputWidth }}
+      />
+    </>
   ) : (
     <div
       tabIndex={0}
