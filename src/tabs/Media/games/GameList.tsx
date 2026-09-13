@@ -1,5 +1,29 @@
-import { Game } from "./Game"
-import { GameDetails } from "../types"
+import {
+  GAME_STATUS_ORDER,
+  GameDetails,
+  GameStatus,
+  getGameStatus,
+} from "../types"
+import { getCoverHue } from "../coverHue"
+import { MediaSpine, StatusConfig } from "../MediaSpine"
+import { EditGameForm } from "./EditGameForm"
+
+const GAME_CONFIG: StatusConfig<GameDetails, GameStatus> = {
+  order: GAME_STATUS_ORDER,
+  spineStatus: {
+    unplayed: "todo",
+    playing: "active",
+    played: "done",
+  },
+  glyph: {
+    unplayed: "🎮",
+    playing: "🎮",
+    played: "✓",
+  },
+  getStatus: getGameStatus,
+  applyStatus: (game, status) => ({ ...game, status }),
+  getSpineHeight: (title) => 142 + Math.min(34, Math.round(title.length * 1.7)),
+}
 
 export function GameList({
   games,
@@ -16,11 +40,15 @@ export function GameList({
     gameDetails && (
       <ul className="matched-set">
         {gameDetails.map((game) => (
-          <Game
+          <MediaSpine
             key={game.id}
-            game={game}
+            item={game}
             bandHue={bandHue}
-            seriesId={seriesId}
+            hue={getCoverHue(seriesId ?? game.title)}
+            config={GAME_CONFIG}
+            editForm={({ isOpen, onCancel }) => (
+              <EditGameForm game={game} isOpen={isOpen} onCancel={onCancel} />
+            )}
           />
         ))}
       </ul>
