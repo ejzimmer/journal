@@ -137,6 +137,23 @@ describe("MediaStorageContext", () => {
 
       expect(mediaStorage.authors).toEqual(["Terry Pratchett"])
     })
+
+    it("lists an author once even when they wrote multiple books", () => {
+      const mediaStorage = createMediaStorage(
+        createStoredMedia({
+          books: [
+            createBook("book-guards", "Guards! Guards!", {
+              author: "Terry Pratchett",
+            }),
+            createBook("book-nation", "Nation", {
+              author: "Terry Pratchett",
+            }),
+          ],
+        }),
+      )
+
+      expect(mediaStorage.authors).toEqual(["Terry Pratchett"])
+    })
   })
 
   describe("addMedia", () => {

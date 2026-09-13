@@ -1,9 +1,9 @@
-.game {
+.spine {
   --cover-lightness: 85;
   --cover-chroma: 0.085;
   position: relative;
   padding-inline: 6px;
-  padding-block-start: 17px;
+  padding-block-start: 22px;
   padding-block-end: 56px;
   border-start-start-radius: 3px;
   border-start-end-radius: 3px;
@@ -45,7 +45,7 @@
     transform: translateY(-3px);
   }
 
-  &[data-status="unplayed"] {
+  &.todo {
     --cover-lightness: 96;
     --cover-chroma: 0.022;
     color: oklch(48% 0.045 var(--hue));
@@ -55,7 +55,7 @@
   }
 }
 
-.game button.title {
+.spine button.title {
   align-self: center;
   border: 0;
   padding: 0;
@@ -75,17 +75,25 @@
   }
 }
 
-.game .spine-label {
+.spine .spine-label {
   writing-mode: vertical-rl;
-  max-height: 102px;
+  max-height: 141px;
   text-align: center;
 }
 
-.game .spine-label .title-text {
+.spine .spine-label .title-text,
+.spine .spine-label .author {
   display: block;
 }
 
-.game .stamp {
+.spine .spine-label .author {
+  font-size: 0.84em;
+  opacity: 0.7;
+  font-style: italic;
+  margin-block-start: 4px;
+}
+
+.spine .stamp {
   position: absolute;
   inset-block-end: 22px;
   inset-inline-start: 50%;
@@ -110,7 +118,7 @@
   }
 }
 
-.game[data-status="unplayed"] .stamp {
+.spine.todo .stamp {
   filter: grayscale(1) contrast(0.5);
   opacity: 0.45;
 
@@ -120,8 +128,23 @@
   }
 }
 
-.game[data-status="played"] .stamp {
-  color: oklch(50% 0.13 var(--hue));
+.spine.done .stamp {
+  color: oklch(50% 0.13 var(--band-hue, var(--hue)));
   font-size: 17px;
   font-weight: 700;
+}
+
+.spine .series-band {
+  position: absolute;
+  inset-inline: 4px;
+  height: 6px;
+  background: oklch(58% 0.16 var(--band-hue));
+}
+
+.spine .series-band-head {
+  inset-block-start: 8px;
+}
+
+.spine .series-band-tail {
+  inset-block-end: 9px;
 }
