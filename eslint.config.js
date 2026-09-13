@@ -15,10 +15,6 @@ module.exports = tseslint.config(
     ignores: ['build/**'],
   },
   js.configs.recommended,
-  // tseslint.configs.base sets the parser; eslintRecommended turns off
-  // core rules TypeScript's own checker already covers better (no-undef,
-  // no-dupe-class-members, etc.) and enables a small set of modern-JS
-  // rules (no-var, prefer-const, prefer-rest-params, prefer-spread).
   tseslint.configs.base,
   tseslint.configs.eslintRecommended,
   {
@@ -37,15 +33,11 @@ module.exports = tseslint.config(
       },
     },
     settings: {
-      // Hardcoded rather than 'detect': eslint-plugin-react's auto-detect
-      // path calls context.getFilename(), an ESLint Context API removed
-      // in newer ESLint versions.
       react: {
         version: '19',
       },
     },
     rules: {
-      // https://eslint.org/docs/rules/
       'array-callback-return': 'warn',
       'default-case': ['warn', { commentPattern: '^no default$' }],
       'dot-location': ['warn', 'property'],
@@ -160,7 +152,6 @@ module.exports = tseslint.config(
       'valid-typeof': 'warn',
       'getter-return': 'warn',
 
-      // https://github.com/jsx-eslint/eslint-plugin-react/tree/master/docs/rules
       'react/forbid-foreign-prop-types': ['warn', { allowInPropTypes: true }],
       'react/jsx-no-comment-textnodes': 'warn',
       'react/jsx-no-duplicate-props': 'warn',
@@ -180,11 +171,9 @@ module.exports = tseslint.config(
       'react/require-render-return': 'error',
       'react/style-prop-object': 'warn',
 
-      // https://github.com/facebook/react/tree/main/packages/eslint-plugin-react-hooks
       'react-hooks/rules-of-hooks': 'error',
       'react-hooks/exhaustive-deps': 'warn',
 
-      // https://github.com/jsx-eslint/eslint-plugin-jsx-a11y/tree/main/docs/rules
       'jsx-a11y/alt-text': 'warn',
       'jsx-a11y/anchor-has-content': 'warn',
       'jsx-a11y/anchor-is-valid': [
@@ -210,13 +199,8 @@ module.exports = tseslint.config(
     },
   },
   {
-    // TypeScript-specific rule tuning.
     files: ['**/*.ts', '**/*.tsx'],
     rules: {
-      // Flat config merges array entries in order, regardless of `files`
-      // scoping: these three would otherwise be clobbered back on for
-      // .ts(x) files by the unscoped rules block above this one, which
-      // sets them for every file and comes later in the array.
       'default-case': 'off',
       'no-dupe-class-members': 'off',
       'no-undef': 'off',
@@ -268,7 +252,6 @@ module.exports = tseslint.config(
       },
     },
     rules: {
-      // https://github.com/jest-community/eslint-plugin-jest
       'jest/no-conditional-expect': 'error',
       'jest/no-identical-title': 'error',
       'jest/no-interpolation-in-snapshots': 'error',
@@ -279,9 +262,6 @@ module.exports = tseslint.config(
       'jest/valid-expect-in-promise': 'error',
       'jest/valid-title': 'warn',
 
-      // https://github.com/testing-library/eslint-plugin-testing-library
-      // Some rule names are plural in this version (await-async-queries,
-      // no-await-sync-queries) -- that's the current naming, not a typo.
       'testing-library/await-async-queries': 'error',
       'testing-library/await-async-utils': 'error',
       'testing-library/no-await-sync-queries': 'error',
