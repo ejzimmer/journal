@@ -33,7 +33,9 @@ export function SubtaskList({ projectId, isVisible }: SubtasksProps) {
   const subtasksKey = getSubtasksKey(projectId)
 
   const { useValue, addItem, updateList } = useStorageContext()
-  const { value } = useValue<Record<string, ProjectSubtask>>(subtasksKey)
+  const { value, loading } = useValue<Record<string, ProjectSubtask>>(
+    subtasksKey,
+  )
   const subtasks = useMemo(() => (value ? Object.values(value) : []), [value])
   const { value: project } = useValue<ProjectDetails>(
     `${PROJECTS_KEY}/${projectId}`,
@@ -111,13 +113,13 @@ export function SubtaskList({ projectId, isVisible }: SubtasksProps) {
   const hasSortedDoneTasksOnLoad = useRef(false)
 
   useEffect(() => {
-    if (hasSortedDoneTasksOnLoad.current || subtasks.length === 0) return
+    if (hasSortedDoneTasksOnLoad.current || loading) return
     hasSortedDoneTasksOnLoad.current = true
 
     if (hasUnsortedDoneTasks) {
       onSortDoneToEnd()
     }
-  }, [subtasks, hasUnsortedDoneTasks, onSortDoneToEnd])
+  }, [loading, hasUnsortedDoneTasks, onSortDoneToEnd])
 
   useEffect(() => {
     const isMissingAPosition = subtasks.some((task) => task.position == null)
