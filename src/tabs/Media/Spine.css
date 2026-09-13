@@ -45,7 +45,7 @@
     transform: translateY(-3px);
   }
 
-  &[data-status="todo"] {
+  &.todo {
     --cover-lightness: 96;
     --cover-chroma: 0.022;
     color: oklch(48% 0.045 var(--hue));
@@ -118,7 +118,7 @@
   }
 }
 
-.spine[data-status="todo"] .stamp {
+.spine.todo .stamp {
   filter: grayscale(1) contrast(0.5);
   opacity: 0.45;
 
@@ -128,7 +128,7 @@
   }
 }
 
-.spine[data-status="done"] .stamp {
+.spine.done .stamp {
   color: oklch(50% 0.13 var(--band-hue, var(--hue)));
   font-size: 17px;
   font-weight: 700;

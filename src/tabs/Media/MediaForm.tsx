@@ -5,9 +5,8 @@ import { OptionType } from "../../shared/controls/combobox/types"
 import { Modal, useModal } from "../../shared/controls/Modal"
 import { ModalDialog } from "../../shared/controls/ModalDialog"
 import { BandColourPicker } from "./BandColourPicker"
-import { useSeriesBand } from "./useSeriesBand"
 import { useMediaStorage } from "./MediaStorageContext"
-import { MediaDetails, NewMedia, SeriesDetails } from "./types"
+import { MediaDetails, MediaSeries, NewMedia, SeriesDetails } from "./types"
 
 export type MediaFormConfig<T extends MediaDetails> = {
   typeLabel: string
@@ -33,20 +32,49 @@ export function MediaForm<T extends MediaDetails>({
       : undefined,
   )
 
-  const { addMedia, addMediaSeries, updateMedia, moveMedia, deleteMedia } =
-    useMediaStorage()
+  const {
+    addMedia,
+    addMediaSeries,
+    updateMedia,
+    updateMediaSeries,
+    moveMedia,
+    deleteMedia,
+  } = useMediaStorage()
   const { closeModal } = useModal()
 
-  const {
-    currentSeries,
-    series,
-    bandHue,
-    setBandHue,
-    changeSeries,
-    updateSeriesBandHue,
-    reset: resetSeriesBand,
-    seriesOptions,
-  } = useSeriesBand(item, config.seriesList)
+  const currentSeries = item
+    ? config.seriesList.find((series) => item.id in (series.items ?? {}))
+    : undefined
+
+  const [series, setSeries] = useState<OptionType | undefined>(
+    currentSeries
+      ? { id: currentSeries.id, label: currentSeries.name }
+      : undefined,
+  )
+  const [bandHue, setBandHue] = useState(currentSeries?.bandHue)
+
+  const changeSeries = (value?: OptionType) => {
+    setSeries(value)
+    const matchedSeries =
+      value && config.seriesList.find((s) => s.id === value.id)
+    setBandHue(matchedSeries?.bandHue)
+  }
+
+  const updateSeriesBandHue = (target: SeriesDetails<T> | undefined) => {
+    if (target && bandHue !== undefined && bandHue !== target.bandHue) {
+      updateMediaSeries(target as MediaSeries, target.name, bandHue)
+    }
+  }
+
+  const resetSeriesBand = () => {
+    setSeries(undefined)
+    setBandHue(undefined)
+  }
+
+  const seriesOptions = config.seriesList.map((s) => ({
+    id: s.id,
+    label: s.name,
+  }))
 
   const authorOptions = (config.authorOptions ?? []).map((name) => ({
     id: name,

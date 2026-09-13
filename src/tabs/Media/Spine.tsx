@@ -31,8 +31,7 @@ export function Spine({
 }) {
   return (
     <li
-      className="spine"
-      data-status={status}
+      className={`spine ${status}`}
       style={
         {
           "--hue": hue,

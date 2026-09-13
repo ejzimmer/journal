@@ -6,7 +6,8 @@ import {
   isSeries,
 } from "../types"
 import { getCoverHue } from "../coverHue"
-import { MediaList, StatusConfig } from "../MediaSpine"
+import { MediaList } from "../MediaList"
+import { StatusConfig } from "../MediaSpine"
 import { AddMediaForm, EditMediaForm } from "../MediaForm"
 import { useGameFormConfig } from "./gameFormConfig"
 import { Shelf } from "../Shelf"
@@ -25,7 +26,7 @@ const GAME_CONFIG: StatusConfig<GameDetails, GameStatus> = {
     played: "✓",
   },
   getStatus: getGameStatus,
-  applyStatus: (game, status) => ({ ...game, status }),
+  setStatus: (game, status) => ({ ...game, status }),
 }
 
 function GameMediaList({

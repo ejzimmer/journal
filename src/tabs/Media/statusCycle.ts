@@ -1,4 +1,4 @@
-export function nextInCycle<S extends string>(
+export function getNextStatus<S extends string>(
   order: readonly S[],
   status: S,
 ): S {

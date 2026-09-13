@@ -2,14 +2,14 @@ import { ReactNode, useState } from "react"
 import { MediaDetails } from "./types"
 import { useMediaStorage } from "./MediaStorageContext"
 import { Spine } from "./Spine"
-import { nextInCycle } from "./statusCycle"
+import { getNextStatus } from "./statusCycle"
 
 export type StatusConfig<T extends MediaDetails, S extends string> = {
   order: readonly S[]
   spineStatus: Record<S, "todo" | "active" | "done">
   glyph: Record<S, string>
   getStatus: (item: T) => S
-  applyStatus: (item: T, status: S) => T
+  setStatus: (item: T, status: S) => T
   getAuthor?: (item: T) => string | undefined
 }
 
@@ -34,11 +34,11 @@ export function MediaSpine<T extends MediaDetails, S extends string>({
   const [isEditFormOpen, setIsEditFormOpen] = useState(false)
 
   const status = config.getStatus(item)
-  const nextStatus = nextInCycle(config.order, status)
+  const nextStatus = getNextStatus(config.order, status)
   const author = config.getAuthor?.(item)
 
-  const cycleStatus = () => {
-    updateMedia(config.applyStatus(item, nextStatus))
+  const updateStatus = () => {
+    updateMedia(config.setStatus(item, nextStatus))
   }
 
   return (
@@ -53,47 +53,12 @@ export function MediaSpine<T extends MediaDetails, S extends string>({
       titleAriaLabel={`${item.title}${author ? `, ${author}` : ""}, ${status}`}
       stampAriaLabel={`${item.title}: ${status}. Change to ${nextStatus}`}
       onTitleClick={() => setIsEditFormOpen(true)}
-      onStampClick={cycleStatus}
+      onStampClick={updateStatus}
     >
       {editForm({
         isOpen: isEditFormOpen,
         onCancel: () => setIsEditFormOpen(false),
       })}
     </Spine>
-  )
-}
-
-export function MediaList<T extends MediaDetails, S extends string>({
-  items,
-  bandHue,
-  hue,
-  config,
-  editForm,
-}: {
-  items?: Record<string, T>
-  bandHue?: number
-  hue: (item: T) => number
-  config: StatusConfig<T, S>
-  editForm: (
-    item: T,
-  ) => (props: { isOpen: boolean; onCancel: () => void }) => ReactNode
-}) {
-  const itemDetails = items ? Object.values(items) : undefined
-
-  return (
-    itemDetails && (
-      <ul className="matched-set">
-        {itemDetails.map((item) => (
-          <MediaSpine
-            key={item.id}
-            item={item}
-            bandHue={bandHue}
-            hue={hue(item)}
-            config={config}
-            editForm={editForm(item)}
-          />
-        ))}
-      </ul>
-    )
   )
 }

@@ -6,7 +6,8 @@ import {
   isSeries,
 } from "../types"
 import { getCoverHue } from "../coverHue"
-import { MediaList, StatusConfig } from "../MediaSpine"
+import { MediaList } from "../MediaList"
+import { StatusConfig } from "../MediaSpine"
 import { AddMediaForm, EditMediaForm } from "../MediaForm"
 import { useBookFormConfig } from "./bookFormConfig"
 import { Shelf } from "../Shelf"
@@ -27,7 +28,7 @@ const BOOK_CONFIG: StatusConfig<BookDetails, BookStatus> = {
     read: "✓",
   },
   getStatus: getBookStatus,
-  applyStatus: (book, status) => ({ ...book, status }),
+  setStatus: (book, status) => ({ ...book, status }),
   getAuthor: (book) => book.author,
 }
 
