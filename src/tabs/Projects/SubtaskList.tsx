@@ -82,14 +82,12 @@ export function SubtaskList({ projectId, isVisible }: SubtasksProps) {
     [projectId, subtasks],
   )
 
-  let seenDoneTask = false
-  const hasUnsortedDoneTasks = sortedTasks.some((task) => {
-    if (task.status === "done") {
-      seenDoneTask = true
-      return false
-    }
-    return seenDoneTask
-  })
+  const hasUnsortedDoneTasks = sortedTasks.some(
+    (task, index) =>
+      index > 0 &&
+      task.status !== "done" &&
+      sortedTasks[index - 1].status === "done",
+  )
 
   const onSortDoneToEnd = useCallback(() => {
     const reordered = sortedTasks

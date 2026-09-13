@@ -37,14 +37,12 @@ export function Projects() {
     [value],
   )
 
-  let seenDoneProject = false
-  const hasUnsortedDoneProjects = sortedProjects.some((project) => {
-    if ((project.status ?? "ready") === "done") {
-      seenDoneProject = true
-      return false
-    }
-    return seenDoneProject
-  })
+  const hasUnsortedDoneProjects = sortedProjects.some(
+    (project, index) =>
+      index > 0 &&
+      (project.status ?? "ready") !== "done" &&
+      (sortedProjects[index - 1].status ?? "ready") === "done",
+  )
 
   const onSortDoneProjectsToEnd = useCallback(() => {
     const reordered = sortedProjects
