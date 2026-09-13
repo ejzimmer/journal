@@ -4,6 +4,7 @@ import { EditGameForm } from "./EditGameForm"
 import { useMediaStorage } from "../MediaStorageContext"
 import { getCoverHue } from "../coverHue"
 import { Spine } from "../Spine"
+import { nextInCycle } from "../statusCycle"
 
 const GAME_STATUS_ORDER = ["unplayed", "playing", "played"] as const
 
@@ -13,11 +14,6 @@ function getGameStatus(game: GameDetails): GameStatus {
   if (game.status === "done") return "played"
   if (game.status === "in_progress") return "playing"
   return "unplayed"
-}
-
-function getNextGameStatus(status: GameStatus): GameStatus {
-  const index = GAME_STATUS_ORDER.indexOf(status)
-  return GAME_STATUS_ORDER[(index + 1) % GAME_STATUS_ORDER.length]
 }
 
 function getStatusForGameStatus(status: GameStatus): GameDetails["status"] {
@@ -55,7 +51,7 @@ export function Game({
   const [isEditFormOpen, setIsEditFormOpen] = useState(false)
 
   const status = getGameStatus(game)
-  const nextStatus = getNextGameStatus(status)
+  const nextStatus = nextInCycle(GAME_STATUS_ORDER, status)
   const hue = getCoverHue(seriesId ?? game.title)
 
   const cycleStatus = () => {

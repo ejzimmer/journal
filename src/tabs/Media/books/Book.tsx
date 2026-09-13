@@ -4,6 +4,7 @@ import { EditBookForm } from "./EditBookForm"
 import { useMediaStorage } from "../MediaStorageContext"
 import { getCoverHue } from "../coverHue"
 import { Spine } from "../Spine"
+import { nextInCycle } from "../statusCycle"
 
 const BOOK_STATUS_ORDER = ["unread", "reading", "listening", "read"] as const
 
@@ -14,11 +15,6 @@ function getBookStatus(book: BookDetails): BookStatus {
   if (book.medium === "📖") return "reading"
   if (book.medium === "🎧") return "listening"
   return "unread"
-}
-
-function getNextBookStatus(status: BookStatus): BookStatus {
-  const index = BOOK_STATUS_ORDER.indexOf(status)
-  return BOOK_STATUS_ORDER[(index + 1) % BOOK_STATUS_ORDER.length]
 }
 
 function getMediumForStatus(status: BookStatus): BookDetails["medium"] {
@@ -56,7 +52,7 @@ export function Book({
   const [isEditFormOpen, setIsEditFormOpen] = useState(false)
 
   const status = getBookStatus(book)
-  const nextStatus = getNextBookStatus(status)
+  const nextStatus = nextInCycle(BOOK_STATUS_ORDER, status)
   const hue = getCoverHue(book.author ?? book.title)
 
   const cycleStatus = () => {
