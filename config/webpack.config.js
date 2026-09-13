@@ -735,8 +735,6 @@ module.exports = function (webpackEnv) {
             paths.appNodeModules,
             '.cache/.eslintcache'
           ),
-          // Picks up eslint.config.js from the project root, same as the
-          // `eslint` CLI.
         }),
     ].filter(Boolean),
     // Turn off performance processing because we utilize
