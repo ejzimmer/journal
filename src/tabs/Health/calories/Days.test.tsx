@@ -40,6 +40,17 @@ describe("Days", () => {
     expect(onSelectDay).toHaveBeenCalledWith("2026-01-05")
   })
 
+  it("shows the day's calorie balance alongside the running total", () => {
+    const days: Balance[] = mockDays.map((day) =>
+      day.day === 5 ? { ...day, balance: 19500, diff: 187 } : day,
+    )
+    render(<Days days={days} onSelectDay={jest.fn()} />)
+
+    const dot = screen.getByRole("button", { name: "update 5 Jan" })
+    expect(dot).toHaveTextContent("19,500")
+    expect(dot).toHaveTextContent("+187")
+  })
+
   it("doesn't show any period icons for a day with no trackers", () => {
     render(<Days days={mockDays} onSelectDay={jest.fn()} />)
 
