@@ -39,7 +39,6 @@
     display: flex;
     flex-wrap: wrap;
     align-content: flex-start;
-    column-gap: var(--shelf-gap);
     margin-block-start: 16px;
     background-image: repeating-linear-gradient(
       to bottom,
@@ -56,15 +55,15 @@
     display: flex;
     flex-direction: column;
     flex: none;
-    min-width: 96px;
+    padding-inline-end: var(--shelf-gap);
   }
 
   .shelf-single {
-    min-width: 0;
+    padding-inline-end: 0;
   }
 
-  .shelf-single + .shelf-single {
-    margin-inline-start: calc(-1 * var(--shelf-gap));
+  .shelf-single .spines {
+    padding-inline: 0;
   }
 
   .spines {
