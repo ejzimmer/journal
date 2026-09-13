@@ -4,8 +4,8 @@
   gap: 32px;
   font-size: 18px;
   justify-content: center;
-  --spine-h: 232px;
-  --pitch: 292px;
+  --shelf-height: 232px;
+  --shelf-spacing: 292px;
 
   h2 {
     margin-block-end: 0;
@@ -42,15 +42,16 @@
     margin-block-start: 16px;
     background-image: repeating-linear-gradient(
       to bottom,
-      transparent 0 var(--spine-h),
-      hsl(32 40% 80%) var(--spine-h) calc(var(--spine-h) + 4px),
-      hsl(30 32% 66%) calc(var(--spine-h) + 4px) calc(var(--spine-h) + 7px),
-      transparent calc(var(--spine-h) + 7px) var(--pitch)
+      transparent 0 var(--shelf-height),
+      hsl(32 40% 80%) var(--shelf-height) calc(var(--shelf-height) + 4px),
+      hsl(30 32% 66%) calc(var(--shelf-height) + 4px)
+        calc(var(--shelf-height) + 7px),
+      transparent calc(var(--shelf-height) + 7px) var(--shelf-spacing)
     );
   }
 
   .shelf {
-    min-height: var(--pitch);
+    min-height: var(--shelf-spacing);
     display: flex;
     flex-direction: column;
     flex: none;
@@ -58,7 +59,7 @@
   }
 
   .spines {
-    height: var(--spine-h);
+    height: var(--shelf-height);
     flex: none;
     display: flex;
     align-items: flex-end;

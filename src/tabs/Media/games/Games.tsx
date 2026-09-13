@@ -1,8 +1,55 @@
-import { isSeries } from "../types"
-import { GameList } from "./GameList"
+import {
+  GAME_STATUS_ORDER,
+  GameDetails,
+  GameStatus,
+  getGameStatus,
+  isSeries,
+} from "../types"
+import { getCoverHue } from "../coverHue"
+import { MediaList, StatusConfig } from "../MediaSpine"
 import { AddGameForm } from "./AddGameForm"
+import { EditGameForm } from "./EditGameForm"
 import { Shelf } from "../Shelf"
 import { useMediaStorage } from "../MediaStorageContext"
+
+const GAME_CONFIG: StatusConfig<GameDetails, GameStatus> = {
+  order: GAME_STATUS_ORDER,
+  spineStatus: {
+    unplayed: "todo",
+    playing: "active",
+    played: "done",
+  },
+  glyph: {
+    unplayed: "🎮",
+    playing: "🎮",
+    played: "✓",
+  },
+  getStatus: getGameStatus,
+  applyStatus: (game, status) => ({ ...game, status }),
+  getSpineHeight: (title) => 142 + Math.min(34, Math.round(title.length * 1.7)),
+}
+
+function GameMediaList({
+  games,
+  bandHue,
+  seriesId,
+}: {
+  games?: Record<string, GameDetails>
+  bandHue?: number
+  seriesId?: string
+}) {
+  return (
+    <MediaList
+      items={games}
+      bandHue={bandHue}
+      hue={(game) => getCoverHue(seriesId ?? game.title)}
+      config={GAME_CONFIG}
+      editForm={(game) => ({ isOpen, onCancel }) => (
+        <EditGameForm game={game} isOpen={isOpen} onCancel={onCancel} />
+      )}
+    />
+  )
+}
 
 export function Games() {
   const { games, updateMediaSeries } = useMediaStorage()
@@ -18,7 +65,7 @@ export function Games() {
               label={item.name}
               onRenameLabel={(name) => updateMediaSeries(item, name)}
             >
-              <GameList
+              <GameMediaList
                 games={item.items}
                 bandHue={item.bandHue}
                 seriesId={item.id}
@@ -26,7 +73,7 @@ export function Games() {
             </Shelf>
           ) : (
             <Shelf key={item.id}>
-              <GameList games={{ [item.id]: item }} />
+              <GameMediaList games={{ [item.id]: item }} />
             </Shelf>
           ),
         )}
