@@ -3,8 +3,8 @@
   border-radius: 7px;
   background-image: linear-gradient(
     to right,
-    var(--border-colour-hover) 45%,
-    var(--border-colour) 55%
+    hsl(214 32% 88%) 45%,
+    hsl(214 32% 94%) 55%
   );
   background-size: 200%;
   animation: project-skeleton-shimmer 2s ease-out infinite alternate;
