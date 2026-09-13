@@ -10,3 +10,7 @@ export const BAND_COLOURS = [
   { name: "Magenta", hue: 330 },
   { name: "Pink", hue: 355 },
 ]
+
+export function getRandomBandHue() {
+  return BAND_COLOURS[Math.floor(Math.random() * BAND_COLOURS.length)].hue
+}

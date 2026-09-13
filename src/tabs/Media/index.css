@@ -77,6 +77,10 @@
     list-style: none;
   }
 
+  .matched-set-loose {
+    align-items: flex-end;
+  }
+
   .shelf-label {
     margin-block-start: 5px;
     align-self: flex-start;

@@ -84,6 +84,7 @@
 .spine .spine-label .title-text,
 .spine .spine-label .author {
   display: block;
+  overflow-wrap: anywhere;
 }
 
 .spine .spine-label .author {

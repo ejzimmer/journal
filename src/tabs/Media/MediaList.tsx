@@ -8,6 +8,7 @@ export function MediaList<T extends MediaDetails, S extends string>({
   hue,
   config,
   editForm,
+  loose,
 }: {
   items?: Record<string, T>
   bandHue?: number
@@ -16,12 +17,13 @@ export function MediaList<T extends MediaDetails, S extends string>({
   editForm: (
     item: T,
   ) => (props: { isOpen: boolean; onCancel: () => void }) => ReactNode
+  loose?: boolean
 }) {
   const itemDetails = items ? Object.values(items) : undefined
 
   return (
     itemDetails && (
-      <ul className="matched-set">
+      <ul className={`matched-set${loose ? " matched-set-loose" : ""}`}>
         {itemDetails.map((item) => (
           <MediaSpine
             key={item.id}
