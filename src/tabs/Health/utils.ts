@@ -22,27 +22,28 @@ export function setupDays(dayData?: Record<string, DayData>): Balance[] {
   const numberOfDays = differenceInCalendarDays(today, newYearsDay) - 1
   const days = new Array<Balance>(numberOfDays)
 
+  let balance = STARTING_BALANCE
   for (let i = 0; i <= numberOfDays; i += 1) {
     const date = addDays(newYearsDay, i)
-    const previousBalance = i === 0 ? STARTING_BALANCE : days[i - 1].balance
     const { day, month } = formatDate(date)
     const id = formatDateId(date)
     const { consumed, expended, trackers } = dayData?.[id] ?? {}
-    const diff = consumed && expended && expended - consumed
+    const diff =
+      typeof consumed === "number" && typeof expended === "number"
+        ? expended - consumed
+        : undefined
+    balance -= diff ?? 0
 
-    const daySummary = {
+    days[i] = {
       id,
       day,
       month,
       monthNumber: date.getMonth() + 1,
       dayOfWeek: date.getDay(),
-      diff: typeof diff === "number" ? diff : undefined,
+      diff,
       trackers,
+      balance,
     }
-    days[i] =
-      typeof previousBalance === "number" && typeof diff === "number"
-        ? { ...daySummary, balance: previousBalance - diff }
-        : daySummary
   }
 
   return days

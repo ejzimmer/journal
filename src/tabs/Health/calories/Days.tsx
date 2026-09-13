@@ -52,13 +52,6 @@ export function Days({ days, onSelectDay }: DaysProps) {
                 {day.day} {day.month}
               </b>
               <div>{day.balance?.toLocaleString()}</div>
-              {typeof day.diff === "number" && (
-                <div>
-                  {day.diff.toLocaleString(undefined, {
-                    signDisplay: "exceptZero",
-                  })}
-                </div>
-              )}
             </div>
           </button>
           <PeriodIcons trackers={day.trackers} />
