@@ -1,4 +1,13 @@
-import { ref, set, onValue, Database, push, remove } from "firebase/database"
+import {
+  ref,
+  set,
+  onValue,
+  Database,
+  push,
+  remove,
+  get,
+  update,
+} from "firebase/database"
 import { createContext, useContext, useEffect, useState } from "react"
 
 type Item = { id: string }
@@ -15,6 +24,12 @@ export interface ContextType {
   updateList: <T extends Item>(listName: string, list: T[]) => void
   setValue: <T>(path: string, value: T) => void
   useValue: <T>(key?: string) => { value?: T; loading: boolean }
+  moveItemBetweenLists: <T extends { id: string; position: number }>(args: {
+    movedItem: T
+    sourceListId: string
+    targetListId: string
+    targetListItems?: T[]
+  }) => void
 }
 
 export const FirebaseContext = createContext<ContextType | undefined>(undefined)
@@ -49,6 +64,16 @@ export function createFirebaseContext(database: Database): ContextType {
       }
       const path = `${parent}/${item.id}`
       const reference = ref(database, path)
+      get(reference)
+        .then((snapshot) => {
+          if (!snapshot.exists()) {
+            console.error(
+              `deleteItem found nothing at "${path}" - remove() will succeed without deleting anything`,
+              item,
+            )
+          }
+        })
+        .catch(() => {})
       remove(reference).catch((error) => {
         console.error(`deleteItem failed for "${path}"`, error)
       })
@@ -66,6 +91,26 @@ export function createFirebaseContext(database: Database): ContextType {
     setValue: (path, value) => {
       set(ref(database, path), value)
     },
+    moveItemBetweenLists: ({
+      movedItem,
+      sourceListId,
+      targetListId,
+      targetListItems = [],
+    }) => {
+      const updates: Record<string, unknown> = {
+        [`${targetListId}/${movedItem.id}`]: movedItem,
+        [`${sourceListId}/${movedItem.id}`]: null,
+      }
+      targetListItems.forEach((existingItem) => {
+        updates[`${targetListId}/${existingItem.id}/position`] =
+          existingItem.position < movedItem.position
+            ? existingItem.position
+            : existingItem.position + 1
+      })
+      update(ref(database), updates).catch((error) => {
+        console.error("moveItemBetweenLists failed", updates, error)
+      })
+    },
     useValue: (key?: string) => {
       const [result, setResult] = useState<any>({ loading: true })
 
@@ -74,7 +119,7 @@ export function createFirebaseContext(database: Database): ContextType {
 
         const reference = ref(database, key)
 
-        onValue(reference, (snapshot) => {
+        return onValue(reference, (snapshot) => {
           if (snapshot.val())
             setResult({ value: snapshot.val(), loading: false })
           else setResult({ loading: false })

@@ -1,18 +1,22 @@
-import { FormEvent, useEffect, useId, useRef } from "react"
+import { FormEvent, useEffect, useId, useRef, useState } from "react"
 import { FormControl } from "../../../shared/controls/FormControl"
 import { XIcon } from "../../../shared/icons/X"
+import { PeriodCheckboxes } from "./PeriodCheckboxes"
 
 type CalorieFormProps = {
   date: { day: number; month: string }
   consumed?: number
   expended?: number
+  trackers?: string[]
   onClose: () => void
   onSubmit: ({
     consumed,
     expended,
+    trackers,
   }: {
     consumed: number
     expended: number
+    trackers: string[]
   }) => void
 }
 
@@ -20,11 +24,13 @@ export function CalorieForm({
   date,
   consumed,
   expended,
+  trackers: initialTrackers,
   onClose,
   onSubmit,
 }: CalorieFormProps) {
   const popoverRef = useRef<HTMLDivElement>(null)
   const dateHeadingId = useId()
+  const [trackers, setTrackers] = useState<string[]>(initialTrackers ?? [])
 
   useEffect(() => {
     popoverRef.current?.showPopover()
@@ -45,6 +51,7 @@ export function CalorieForm({
     onSubmit({
       consumed: Number.parseInt(consumedInput.value),
       expended: Number.parseInt(expendedInput.value),
+      trackers,
     })
     onClose()
   }
@@ -83,6 +90,7 @@ export function CalorieForm({
           defaultValue={`${expended ?? ""}`}
           size={4}
         />
+        <PeriodCheckboxes trackers={trackers} onChange={setTrackers} />
         <button type="submit" />
       </form>
     </div>

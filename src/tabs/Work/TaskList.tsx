@@ -67,7 +67,7 @@ export function TaskList({
     reorderTasks,
     addTask,
     getLabel,
-    addLabel,
+    changeLabels,
     removeLabel,
   } = useWorkStorage()
 
@@ -79,6 +79,11 @@ export function TaskList({
   const sortedList = useMemo(
     () => (list?.items ? sortByPosition(Object.values(list.items)) : []),
     [list?.items],
+  )
+
+  const notDoneCount = useMemo(
+    () => sortedList.filter((task) => task.status !== "done").length,
+    [sortedList],
   )
 
   const dragState = useDropTarget({
@@ -127,35 +132,29 @@ export function TaskList({
               <LabelsControl
                 value={listLabel ? [listLabel] : []}
                 onChange={(labels) => {
-                  const oldId = list.labelIds?.[0]
-                  if (oldId) {
-                    removeLabel(oldId, list)
-                  }
-                  const newLabel = labels[0]
-                  if (newLabel) {
-                    addLabel(newLabel, list)
-                  }
+                  changeLabels(labels, list)
                   setEditingLabel(false)
                 }}
                 label=""
                 isMulti={false}
                 autoFocus
+                onDismiss={() => setEditingLabel(false)}
               />
             ) : (
-              <>
-                <Labels
-                  labelIds={list.labelIds}
-                  onRemoveLabel={(id) => removeLabel(id, list)}
-                />
-                <button
-                  className="ghost"
-                  aria-label={`Change ${listLabel.value} label`}
-                  onClick={() => setEditingLabel(true)}
-                >
-                  ✏️
-                </button>
-              </>
+              <Labels
+                labelIds={list.labelIds}
+                onRemoveLabel={(id) => removeLabel(id, list)}
+                onEditLabel={() => setEditingLabel(true)}
+              />
             ))}
+          {notDoneCount > 0 && (
+            <span
+              className="task-count"
+              aria-label={`${notDoneCount} tasks remaining`}
+            >
+              ({notDoneCount})
+            </span>
+          )}
           <PostitModalDialog
             isOpen={confirmDeleteModalOpen}
             message={`Are you sure you want to delete list ${list.description}?`}

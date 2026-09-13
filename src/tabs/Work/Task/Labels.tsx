@@ -6,9 +6,11 @@ import { LabelColourPicker } from "./LabelColourPicker"
 export function Labels({
   labelIds,
   onRemoveLabel,
+  onEditLabel,
 }: {
   labelIds?: string[]
   onRemoveLabel: (id: string) => void
+  onEditLabel?: (id: string) => void
 }) {
   const { getLabel, updateLabel } = useWorkStorage()
 
@@ -28,7 +30,17 @@ export function Labels({
           className={`label-tag ${label.colour}`}
           style={{ marginBlockStart: "-16px" }}
         >
-          {label.value}
+          {onEditLabel ? (
+            <button
+              className="label-value"
+              aria-label={`Change ${label.value} label`}
+              onClick={() => onEditLabel(label.id)}
+            >
+              {label.value}
+            </button>
+          ) : (
+            label.value
+          )}
           <LabelColourPicker
             label={label.value}
             colour={label.colour}

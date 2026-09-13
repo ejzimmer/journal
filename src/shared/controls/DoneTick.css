@@ -1,8 +1,9 @@
 .done-tick {
-  width: 20px;
-  height: 20px;
+  width: 100%;
+  aspect-ratio: 1;
   border-radius: 50%;
   background: var(--success-colour);
+  color: white;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -10,7 +11,7 @@
   svg path {
     stroke-dasharray: 1;
     stroke-dashoffset: 1;
-    animation: draw-done-tick 0.3s ease forwards;
+    animation: draw-done-tick 0.6s ease forwards;
   }
 }
 

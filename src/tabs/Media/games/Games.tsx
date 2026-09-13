@@ -1,34 +1,97 @@
-import { Fragment } from "react"
-import { AddGameForm } from "./AddGameForm"
-import { GAMES_KEY, PlayingItemDetails } from "../types"
-import { Game } from "./Game"
-import { Series } from "./Series"
-import { useStorageContext } from "../../../shared/FirebaseContext"
+import {
+  GAME_STATUS_ORDER,
+  GameDetails,
+  GameStatus,
+  getGameStatus,
+  isSeries,
+  SeriesDetails,
+} from "../types"
+import { getCoverHue } from "../coverHue"
+import { MediaList } from "../MediaList"
+import { StatusConfig } from "../MediaSpine"
+import { AddMediaForm, EditMediaForm } from "../MediaForm"
+import { useGameFormConfig } from "./gameFormConfig"
+import { Shelf } from "../Shelf"
+import { useMediaStorage } from "../MediaStorageContext"
 
-function getComponent<T extends PlayingItemDetails>(item: T) {
-  switch (item.type) {
-    case "game":
-      return <Game game={item} path={GAMES_KEY} />
-    case "series":
-      return <Series series={item} path={GAMES_KEY} />
-  }
+const GAME_CONFIG: StatusConfig<GameDetails, GameStatus> = {
+  order: GAME_STATUS_ORDER,
+  spineStatus: {
+    unplayed: "todo",
+    playing: "active",
+    played: "done",
+  },
+  glyph: {
+    unplayed: "🎮",
+    playing: "🎮",
+    played: "✓",
+  },
+  getStatus: getGameStatus,
+  setStatus: (game, status) => ({ ...game, status }),
+}
+
+function GameMediaList({
+  games,
+  bandHue,
+  seriesId,
+}: {
+  games?: Record<string, GameDetails>
+  bandHue?: number
+  seriesId?: string
+}) {
+  const config = useGameFormConfig()
+  return (
+    <MediaList
+      items={games}
+      bandHue={bandHue}
+      hue={(game) => getCoverHue(seriesId ?? game.title)}
+      config={GAME_CONFIG}
+      editForm={(game) => ({ isOpen, onCancel }) => (
+        <EditMediaForm
+          item={game}
+          isOpen={isOpen}
+          onCancel={onCancel}
+          config={config}
+        />
+      )}
+    />
+  )
 }
 
 export function Games() {
-  const { useValue } = useStorageContext()
+  const { games, updateMediaSeries } = useMediaStorage()
 
-  const { value } = useValue<Record<string, PlayingItemDetails>>(GAMES_KEY)
-  const items = value ? Object.values(value) : []
+  const series = games.filter(
+    (item): item is SeriesDetails<GameDetails> => isSeries(item),
+  )
+  const singleGames = games.filter(
+    (item): item is GameDetails => !isSeries(item),
+  )
 
   return (
     <div className="games">
       <h2>Games</h2>
-      <ul>
-        {items.map((item) => (
-          <Fragment key={item.id}>{getComponent(item)}</Fragment>
+      <div className="shelves">
+        {series.map((item) => (
+          <Shelf
+            key={item.id}
+            label={item.name}
+            onRenameLabel={(name) => updateMediaSeries(item, name)}
+          >
+            <GameMediaList
+              games={item.items}
+              bandHue={item.bandHue}
+              seriesId={item.id}
+            />
+          </Shelf>
         ))}
-      </ul>
-      <AddGameForm />
+        {singleGames.map((game) => (
+          <Shelf key={game.id} single>
+            <GameMediaList games={{ [game.id]: game }} />
+          </Shelf>
+        ))}
+      </div>
+      <AddMediaForm ariaLabel="Add a game" config={useGameFormConfig()} />
     </div>
   )
 }

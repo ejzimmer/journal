@@ -38,17 +38,12 @@ export type CalendarTask = CalendarTaskDetails & TodoTask
 export const THIS_YEAR_PATH = "2026"
 
 export const DAILY_PATH = `${THIS_YEAR_PATH}/daily`
-export const HABITS = ["🇯🇵", "🇫🇷", "🧘", "🖍️", "🛼"] as const
-export type Habit = (typeof HABITS)[number]
 export type DayData = {
   id: string
   consumed?: number
   expended?: number
-  habits?: Record<Habit, boolean>
   trackers?: string[]
 }
-export const isHabit = (emoji: string): emoji is Habit =>
-  HABITS.includes(emoji as any)
 
 export const PROJECTS_KEY = "projects"
 export type ProjectSubtask = {
@@ -57,7 +52,7 @@ export type ProjectSubtask = {
   status: "ready" | "done"
   linkedId?: string
   category: Category
-  position?: number
+  position: number
 }
 export const PROJECT_COLOURS = {
   "🛒": "hsl(197 36% 70% /.5)",

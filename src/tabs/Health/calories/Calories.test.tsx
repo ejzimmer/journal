@@ -1,38 +1,16 @@
 import { render, screen } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
-import { ReactNode } from "react"
 import { Calories } from "./Calories"
 import { FirebaseContext } from "../../../shared/FirebaseContext"
 import { createMockFirebaseContext } from "../../../shared/mockFirebase"
 import { renderWithStorage } from "../../../shared/storageContextTestUtils"
 import { DAILY_PATH, DayData } from "../../../shared/types"
 
-function Wrapper({
-  children,
-  dailyData,
-}: {
-  children: ReactNode
-  dailyData?: Record<string, DayData>
-}) {
-  return (
-    <FirebaseContext.Provider
-      value={{
-        addItem: jest.fn(),
-        updateItem: jest.fn(),
-        deleteItem: jest.fn(),
-        updateList: jest.fn(),
-        setValue: jest.fn(),
-        useValue: jest.fn().mockReturnValue({ loading: false, value: dailyData }),
-      }}
-    >
-      {children}
-    </FirebaseContext.Provider>
-  )
-}
-
 function renderCalories(dailyData?: Record<string, DayData>) {
-  return render(<Calories />, {
-    wrapper: (props) => <Wrapper {...props} dailyData={dailyData} />,
+  return renderWithStorage(<Calories />, {
+    value: {
+      useValue: jest.fn().mockReturnValue({ loading: false, value: dailyData }),
+    },
   })
 }
 
@@ -59,8 +37,24 @@ describe("Calories", () => {
       ).toBeInTheDocument()
     })
 
+    it("doesn't show the form while daily data is still loading", () => {
+      renderWithStorage(<Calories />, {
+        value: {
+          useValue: jest
+            .fn()
+            .mockReturnValue({ loading: true, value: undefined }),
+        },
+      })
+
+      expect(
+        screen.queryByRole("textbox", { name: "In" }),
+      ).not.toBeInTheDocument()
+    })
+
     it("doesn't show the form when yesterday's calories are already recorded", () => {
-      renderCalories({ "6Jan": { id: "6Jan", consumed: 1800, expended: 2200 } })
+      renderCalories({
+        "2026-01-06": { id: "2026-01-06", consumed: 1800, expended: 2200 },
+      })
 
       expect(
         screen.queryByRole("textbox", { name: "In" }),
@@ -68,7 +62,9 @@ describe("Calories", () => {
     })
 
     it("shows the form when yesterday has an entry but calories haven't been recorded yet", () => {
-      renderCalories({ "6Jan": { id: "6Jan", habits: { "🧘": true } } as DayData })
+      renderCalories({
+        "2026-01-06": { id: "2026-01-06", trackers: ["🔴"] },
+      })
 
       expect(
         screen.getByRole("textbox", { name: "In" }),
@@ -78,22 +74,7 @@ describe("Calories", () => {
     it("dismisses the form without saving anything", async () => {
       const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime })
       const updateItem = jest.fn()
-      render(<Calories />, {
-        wrapper: ({ children }) => (
-          <FirebaseContext.Provider
-            value={{
-              addItem: jest.fn(),
-              updateItem,
-              deleteItem: jest.fn(),
-              updateList: jest.fn(),
-              setValue: jest.fn(),
-              useValue: jest.fn().mockReturnValue({ loading: false, value: undefined }),
-            }}
-          >
-            {children}
-          </FirebaseContext.Provider>
-        ),
-      })
+      renderWithStorage(<Calories />, { value: { updateItem } })
 
       await user.click(screen.getByRole("button", { name: "dismiss" }))
 
@@ -127,8 +108,8 @@ describe("Calories", () => {
       const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime })
       const updateItem = jest.fn()
       const dailyData = {
-        "3Jan": { id: "3Jan", consumed: 1500, expended: 2000 },
-        "6Jan": { id: "6Jan", consumed: 1800, expended: 2200 },
+        "2026-01-03": { id: "2026-01-03", consumed: 1500, expended: 2000 },
+        "2026-01-06": { id: "2026-01-06", consumed: 1800, expended: 2200 },
       }
 
       renderWithStorage(<Calories />, {
@@ -154,15 +135,19 @@ describe("Calories", () => {
 
       expect(updateItem).toHaveBeenCalledWith(
         DAILY_PATH,
-        expect.objectContaining({ id: "3Jan", consumed: 1600, expended: 2100 }),
+        expect.objectContaining({
+          id: "2026-01-03",
+          consumed: 1600,
+          expended: 2100,
+        }),
       )
     })
 
     it("switches to the newly clicked day's form when another dot is clicked while a form is already open", async () => {
       const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime })
       const dailyData = {
-        "2Jan": { id: "2Jan", consumed: 1200, expended: 2600 },
-        "6Jan": { id: "6Jan", consumed: 1800, expended: 2200 },
+        "2026-01-02": { id: "2026-01-02", consumed: 1200, expended: 2600 },
+        "2026-01-06": { id: "2026-01-06", consumed: 1800, expended: 2200 },
       }
 
       renderWithStorage(<Calories />, {
@@ -186,6 +171,97 @@ describe("Calories", () => {
         screen.queryByRole("heading", { name: "2 Jan" }),
       ).not.toBeInTheDocument()
       expect(screen.getByRole("textbox", { name: "In" })).toHaveValue("")
+    })
+  })
+
+  describe("period tracking", () => {
+    it("shows the period icon for a day that has tracker data", async () => {
+      const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime })
+      const dailyData = {
+        "2026-01-03": {
+          id: "2026-01-03",
+          consumed: 1500,
+          expended: 2000,
+          trackers: ["🔴"],
+        },
+      }
+
+      renderWithStorage(<Calories />, {
+        value: {
+          useValue: jest
+            .fn()
+            .mockReturnValue({ loading: false, value: dailyData }),
+        },
+      })
+
+      await user.click(screen.getByRole("radio", { name: "日" }))
+
+      expect(screen.getByRole("img", { name: "heavy flow" })).toBeInTheDocument()
+    })
+
+    it("shows a checkbox for each tracker in the calorie form, checked to match existing trackers", async () => {
+      const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime })
+      const dailyData = {
+        "2026-01-03": {
+          id: "2026-01-03",
+          consumed: 1500,
+          expended: 2000,
+          trackers: ["🔴"],
+        },
+      }
+
+      renderWithStorage(<Calories />, {
+        value: {
+          useValue: jest
+            .fn()
+            .mockReturnValue({ loading: false, value: dailyData }),
+        },
+      })
+
+      await user.click(screen.getByRole("radio", { name: "日" }))
+      await user.click(screen.getByRole("button", { name: "update 3 Jan" }))
+
+      expect(screen.getByRole("checkbox", { name: "light flow" })).not.toBeChecked()
+      expect(screen.getByRole("checkbox", { name: "heavy flow" })).toBeChecked()
+      expect(screen.getByRole("checkbox", { name: "ovary pain" })).not.toBeChecked()
+    })
+
+    it("saves the trackers selected in the calorie form", async () => {
+      const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime })
+      const updateItem = jest.fn()
+      const dailyData = {
+        "2026-01-03": {
+          id: "2026-01-03",
+          consumed: 1500,
+          expended: 2000,
+          trackers: ["🔴"],
+        },
+      }
+
+      renderWithStorage(<Calories />, {
+        value: {
+          updateItem,
+          useValue: jest
+            .fn()
+            .mockReturnValue({ loading: false, value: dailyData }),
+        },
+      })
+
+      await user.click(screen.getByRole("radio", { name: "日" }))
+      await user.click(screen.getByRole("button", { name: "update 3 Jan" }))
+
+      await user.click(screen.getByRole("checkbox", { name: "heavy flow" }))
+      await user.click(screen.getByRole("checkbox", { name: "ovary pain" }))
+      await user.click(screen.getByRole("textbox", { name: "In" }))
+      await user.keyboard("{Enter}")
+
+      expect(updateItem).toHaveBeenCalledWith(
+        DAILY_PATH,
+        expect.objectContaining({
+          id: "2026-01-03",
+          trackers: ["🥚"],
+        }),
+      )
     })
   })
 })

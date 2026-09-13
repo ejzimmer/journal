@@ -11,8 +11,8 @@ body {
   --body-colour: hsl(0 0% 20%);
   --body-colour-mid: hsl(0 0% 50%);
   --body-colour-light: hsl(0 0% 60%);
-  --border-colour: hsl(214 32% 91%);
-  --border-colour-hover: hsl(214 32% 80%);
+  --border-colour: hsl(214 32% 82%);
+  --border-colour-hover: hsl(214 32% 70%);
 
   --link-colour: hsl(211, 61%, 43%);
   --highlight-colour: hsla(59, 95%, 63%, 0.6);

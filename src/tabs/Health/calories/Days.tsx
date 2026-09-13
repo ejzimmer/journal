@@ -1,7 +1,8 @@
 import { CSSProperties, useMemo } from "react"
 
 import "./Days.css"
-import { Balance, getDayId } from "../utils"
+import { Balance } from "../utils"
+import { PeriodIcons } from "./PeriodIcons"
 
 type DaysProps = {
   days: Balance[]
@@ -29,7 +30,7 @@ export function Days({ days, onSelectDay }: DaysProps) {
     >
       {days.map((day, index) => (
         <li
-          key={`${day.day}-${day.month}`}
+          key={day.id}
           className="day-circle"
           style={
             {
@@ -44,7 +45,7 @@ export function Days({ days, onSelectDay }: DaysProps) {
             type="button"
             className="day-button"
             aria-label={`update ${day.day} ${day.month}`}
-            onClick={() => onSelectDay(getDayId(day))}
+            onClick={() => onSelectDay(day.id)}
           >
             <div className="day-details" style={{ textAlign: "center" }}>
               <b>
@@ -53,6 +54,7 @@ export function Days({ days, onSelectDay }: DaysProps) {
               <div>{day.balance?.toLocaleString()}</div>
             </div>
           </button>
+          <PeriodIcons trackers={day.trackers} />
         </li>
       ))}
     </ol>
@@ -67,5 +69,9 @@ function getDayColour(diff: number, maxDiff: number) {
   const intensity = maxDiff === 0 ? 1 : Math.min(Math.abs(diff) / maxDiff, 1)
   const hue = diff < 0 ? 77 : 104
 
-  return `lch(78% 230 ${hue} / ${intensity})`
+  // Linear interpolation between white (intensity 0) and the full colour (intensity 1).
+  const lightness = intensity * 78 + (1 - intensity) * 100
+  const chroma = intensity * 230
+
+  return `lch(${lightness}% ${chroma} ${hue})`
 }

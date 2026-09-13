@@ -1,21 +1,20 @@
 import { addDays, differenceInCalendarDays, startOfDay } from "date-fns"
 
-import { formatDate } from "../../shared/utils"
+import { formatDate, formatDateId } from "../../shared/utils"
 import { DayData } from "../../shared/types"
 
 export const STARTING_BALANCE = 19687
 
 export type Balance = {
+  id: string
   day: number
   month: string
   monthNumber: number
   dayOfWeek: number
   balance?: number
   diff?: number
+  trackers?: string[]
 }
-
-export const getDayId = (day: { day: number; month: string }) =>
-  `${day.day}${day.month}`
 
 export function setupDays(dayData?: Record<string, DayData>): Balance[] {
   const today = startOfDay(new Date())
@@ -27,15 +26,18 @@ export function setupDays(dayData?: Record<string, DayData>): Balance[] {
     const date = addDays(newYearsDay, i)
     const previousBalance = i === 0 ? STARTING_BALANCE : days[i - 1].balance
     const { day, month } = formatDate(date)
-    const { consumed, expended } = dayData?.[getDayId({ day, month })] ?? {}
+    const id = formatDateId(date)
+    const { consumed, expended, trackers } = dayData?.[id] ?? {}
     const diff = consumed && expended && expended - consumed
 
     const daySummary = {
+      id,
       day,
       month,
       monthNumber: date.getMonth() + 1,
       dayOfWeek: date.getDay(),
       diff: typeof diff === "number" ? diff : undefined,
+      trackers,
     }
     days[i] =
       typeof previousBalance === "number" && typeof diff === "number"

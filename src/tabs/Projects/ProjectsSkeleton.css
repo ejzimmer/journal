@@ -1,0 +1,20 @@
+.project-skeleton {
+  height: 100%;
+  border-radius: 7px;
+  background-image: linear-gradient(
+    to right,
+    hsl(214 32% 88%) 45%,
+    hsl(214 32% 94%) 55%
+  );
+  background-size: 200%;
+  animation: project-skeleton-shimmer 2s ease-out infinite alternate;
+}
+
+@keyframes project-skeleton-shimmer {
+  from {
+    background-position-x: 100%;
+  }
+  to {
+    background-position-x: 0;
+  }
+}

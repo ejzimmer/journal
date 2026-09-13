@@ -6,14 +6,16 @@
   gap: 3px;
   overflow-x: auto;
   overflow-y: hidden;
-  padding-block-start: 8px;
-  padding-inline: 6px;
+  /* leaves room for hovered circles at the edges of the grid to grow into,
+     since the overflow above would otherwise clip them */
+  padding: 26px;
   box-sizing: content-box;
   list-style-type: none;
   margin: 0;
 }
 
 .day-circle {
+  position: relative;
   padding: 8px;
   aspect-ratio: 1;
   align-self: center;
@@ -48,7 +50,7 @@
   }
 
   &:hover {
-    scale: 2;
+    scale: 2.2;
     z-index: 1;
 
     .day-details {
