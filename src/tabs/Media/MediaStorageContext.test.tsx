@@ -7,6 +7,8 @@ import {
   BOOKS_KEY,
   GameDetails,
   GAMES_KEY,
+  getBookStatus,
+  getGameStatus,
   PlayingItemDetails,
   ReadingItemDetails,
   SeriesDetails,
@@ -16,13 +18,19 @@ const createBook = (
   id: string,
   title: string,
   extra: Partial<BookDetails> = {},
-): BookDetails => ({ id, type: "book", title, ...extra })
+): BookDetails => {
+  const book: BookDetails = { id, type: "book", title, ...extra }
+  return { status: getBookStatus(book), ...book }
+}
 
 const createGame = (
   id: string,
   title: string,
   extra: Partial<GameDetails> = {},
-): GameDetails => ({ id, type: "game", title, ...extra })
+): GameDetails => {
+  const game: GameDetails = { id, type: "game", title, ...extra }
+  return { status: getGameStatus(game), ...game }
+}
 
 const indexById = <T extends { id: string }>(items: T[]): Record<string, T> =>
   Object.fromEntries(items.map((item) => [item.id, item]))
@@ -328,6 +336,90 @@ describe("MediaStorageContext", () => {
 
       expect(deleteItem).toHaveBeenCalledTimes(1)
       expect(deleteItem).toHaveBeenCalledWith(GAMES_KEY, portal)
+    })
+  })
+
+  describe("migrating stored status", () => {
+    it("writes the on-screen status onto a book stored without one", () => {
+      const updateItem = jest.fn()
+      const nightWatch: BookDetails = {
+        id: "book-nightwatch",
+        type: "book",
+        title: "Night Watch",
+        medium: "📖",
+      }
+      createMediaStorage({
+        ...createStoredMedia({ books: [nightWatch] }),
+        updateItem,
+      })
+
+      expect(updateItem).toHaveBeenCalledWith(BOOKS_KEY, {
+        ...nightWatch,
+        status: "reading",
+      })
+    })
+
+    it("writes the on-screen status onto a book inside a series", () => {
+      const updateItem = jest.fn()
+      const guards: BookDetails = {
+        id: "book-guards",
+        type: "book",
+        title: "Guards! Guards!",
+        isDone: true,
+      }
+      const discworld = createSeries("series-discworld", "Discworld", [
+        guards,
+      ])
+      createMediaStorage({
+        ...createStoredMedia({ books: [discworld] }),
+        updateItem,
+      })
+
+      expect(updateItem).toHaveBeenCalledWith(
+        `${BOOKS_KEY}/series-discworld/items`,
+        { ...guards, status: "read" },
+      )
+    })
+
+    it("translates a game's legacy status onto the on-screen value", () => {
+      const updateItem = jest.fn()
+      const totk: GameDetails = {
+        id: "game-totk",
+        type: "game",
+        title: "Tears of the Kingdom",
+        status: "in_progress",
+      }
+      createMediaStorage({
+        ...createStoredMedia({ games: [totk] }),
+        updateItem,
+      })
+
+      expect(updateItem).toHaveBeenCalledWith(GAMES_KEY, {
+        ...totk,
+        status: "playing",
+      })
+    })
+
+    it("leaves a book that already has the on-screen status alone", () => {
+      const updateItem = jest.fn()
+      const nation = createBook("book-nation", "Nation")
+      createMediaStorage({
+        ...createStoredMedia({ books: [nation] }),
+        updateItem,
+      })
+
+      expect(updateItem).not.toHaveBeenCalled()
+    })
+
+    it("leaves a game that already has the on-screen status alone", () => {
+      const updateItem = jest.fn()
+      const hades = createGame("game-hades", "Hades")
+      createMediaStorage({
+        ...createStoredMedia({ games: [hades] }),
+        updateItem,
+      })
+
+      expect(updateItem).not.toHaveBeenCalled()
     })
   })
 

@@ -1,20 +1,15 @@
 import { CSSProperties, useState } from "react"
-import { GameDetails } from "../types"
+import {
+  GAME_STATUS_ORDER,
+  GameDetails,
+  GameStatus,
+  getGameStatus,
+} from "../types"
 import { EditGameForm } from "./EditGameForm"
 import { useMediaStorage } from "../MediaStorageContext"
 import { getCoverHue } from "../coverHue"
 
 import "./Game.css"
-
-const GAME_STATUS_ORDER = ["unplayed", "playing", "played"] as const
-
-type GameStatus = (typeof GAME_STATUS_ORDER)[number]
-
-function getGameStatus(game: GameDetails): GameStatus {
-  if (game.status === "done") return "played"
-  if (game.status === "in_progress") return "playing"
-  return "unplayed"
-}
 
 function getNextGameStatus(status: GameStatus): GameStatus {
   const index = GAME_STATUS_ORDER.indexOf(status)
