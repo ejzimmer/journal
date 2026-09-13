@@ -119,7 +119,7 @@ export function createFirebaseContext(database: Database): ContextType {
 
         const reference = ref(database, key)
 
-        onValue(reference, (snapshot) => {
+        return onValue(reference, (snapshot) => {
           if (snapshot.val())
             setResult({ value: snapshot.val(), loading: false })
           else setResult({ loading: false })
