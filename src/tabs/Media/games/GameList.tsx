@@ -5,7 +5,7 @@ import {
   getGameStatus,
 } from "../types"
 import { getCoverHue } from "../coverHue"
-import { MediaSpine, StatusConfig } from "../MediaSpine"
+import { MediaList, StatusConfig } from "../MediaSpine"
 import { EditGameForm } from "./EditGameForm"
 
 const GAME_CONFIG: StatusConfig<GameDetails, GameStatus> = {
@@ -34,24 +34,15 @@ export function GameList({
   bandHue?: number
   seriesId?: string
 }) {
-  const gameDetails = games ? Object.values(games) : undefined
-
   return (
-    gameDetails && (
-      <ul className="matched-set">
-        {gameDetails.map((game) => (
-          <MediaSpine
-            key={game.id}
-            item={game}
-            bandHue={bandHue}
-            hue={getCoverHue(seriesId ?? game.title)}
-            config={GAME_CONFIG}
-            editForm={({ isOpen, onCancel }) => (
-              <EditGameForm game={game} isOpen={isOpen} onCancel={onCancel} />
-            )}
-          />
-        ))}
-      </ul>
-    )
+    <MediaList
+      items={games}
+      bandHue={bandHue}
+      hue={(game) => getCoverHue(seriesId ?? game.title)}
+      config={GAME_CONFIG}
+      editForm={(game) => ({ isOpen, onCancel }) => (
+        <EditGameForm game={game} isOpen={isOpen} onCancel={onCancel} />
+      )}
+    />
   )
 }
