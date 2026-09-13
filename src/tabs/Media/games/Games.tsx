@@ -7,9 +7,8 @@ import {
 } from "../types"
 import { getCoverHue } from "../coverHue"
 import { MediaList, StatusConfig } from "../MediaSpine"
-import { AddMediaForm } from "../MediaForm"
+import { AddMediaForm, EditMediaForm } from "../MediaForm"
 import { useGameFormConfig } from "./gameFormConfig"
-import { EditGameForm } from "./EditGameForm"
 import { Shelf } from "../Shelf"
 import { useMediaStorage } from "../MediaStorageContext"
 
@@ -38,6 +37,7 @@ function GameMediaList({
   bandHue?: number
   seriesId?: string
 }) {
+  const config = useGameFormConfig()
   return (
     <MediaList
       items={games}
@@ -45,7 +45,12 @@ function GameMediaList({
       hue={(game) => getCoverHue(seriesId ?? game.title)}
       config={GAME_CONFIG}
       editForm={(game) => ({ isOpen, onCancel }) => (
-        <EditGameForm game={game} isOpen={isOpen} onCancel={onCancel} />
+        <EditMediaForm
+          item={game}
+          isOpen={isOpen}
+          onCancel={onCancel}
+          config={config}
+        />
       )}
     />
   )
