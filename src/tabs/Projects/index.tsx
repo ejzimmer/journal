@@ -1,4 +1,4 @@
-import { CSSProperties, useEffect, useMemo, useRef, useState } from "react"
+import { CSSProperties, useMemo, useRef, useState } from "react"
 import { useStorageContext } from "../../shared/FirebaseContext"
 
 import "./index.css"
@@ -8,20 +8,19 @@ import {
   Category,
   PROJECT_COLOURS,
   ProjectDetails,
-  ProjectSubtask,
   PROJECTS_KEY,
 } from "../../shared/types"
 import { EmojiCheckbox } from "../../shared/controls/EmojiCheckbox"
 import { XIcon } from "../../shared/icons/X"
 import { sortByPosition } from "../../shared/drag-and-drop/utils"
-import { getSubtasksKey, reorderProjects } from "./utils"
+import { reorderProjects } from "./utils"
 import { useGridColumnSpan } from "./useGridColumnSpan"
 import { ProjectsSkeleton } from "./ProjectsSkeleton"
 
 export function Projects() {
   const [filterCategories, setFilterCategories] = useState<Category[]>([])
 
-  const { useValue, updateList, updateItem, deleteItem } = useStorageContext()
+  const { useValue, updateList, deleteItem } = useStorageContext()
 
   const { value, loading } = useValue<Record<string, ProjectDetails>>(
     PROJECTS_KEY,
@@ -30,33 +29,6 @@ export function Projects() {
     () => sortByPosition(value ? Object.values(value) : []),
     [value],
   )
-
-  const hasMigratedSubtaskPositions = useRef(false)
-  useEffect(() => {
-    if (loading || hasMigratedSubtaskPositions.current) return
-    hasMigratedSubtaskPositions.current = true
-
-    sortedProjects.forEach((project) => {
-      const subtasks: ProjectSubtask[] = Object.values(project.subtasks ?? {})
-      if (!subtasks.some((task) => task.position == null)) return
-
-      const originalPositions = new Map(
-        subtasks.map((task) => [task.id, task.position]),
-      )
-      const fixedSubtasks = sortByPosition(
-        subtasks.map((task) => ({
-          ...task,
-          position: task.position ?? Infinity,
-        })),
-      )
-
-      fixedSubtasks.forEach((task) => {
-        if (task.position !== originalPositions.get(task.id)) {
-          updateItem<ProjectSubtask>(getSubtasksKey(project.id), task)
-        }
-      })
-    })
-  }, [loading, sortedProjects, updateItem])
 
   const updateFilterCategories = (
     category: Category,
