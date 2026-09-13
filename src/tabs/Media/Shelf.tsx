@@ -4,14 +4,16 @@ import { EditableText } from "../../shared/controls/EditableText"
 export function Shelf({
   label,
   onRenameLabel,
+  single,
   children,
 }: {
   label?: string
   onRenameLabel?: (name: string) => void
+  single?: boolean
   children: ReactNode
 }) {
   return (
-    <div className="shelf">
+    <div className={`shelf${single ? " shelf-single" : ""}`}>
       <div className="spines">{children}</div>
       {label !== undefined && onRenameLabel && (
         <div className="shelf-label">
