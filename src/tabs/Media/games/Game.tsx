@@ -1,10 +1,9 @@
-import { CSSProperties, useState } from "react"
+import { useState } from "react"
 import { GameDetails } from "../types"
 import { EditGameForm } from "./EditGameForm"
 import { useMediaStorage } from "../MediaStorageContext"
 import { getCoverHue } from "../coverHue"
-
-import "./Game.css"
+import { Spine } from "../Spine"
 
 const GAME_STATUS_ORDER = ["unplayed", "playing", "played"] as const
 
@@ -31,6 +30,12 @@ const GAME_STATUS_GLYPH: Record<GameStatus, string> = {
   unplayed: "🎮",
   playing: "🎮",
   played: "✓",
+}
+
+const GAME_SPINE_STATUS: Record<GameStatus, "todo" | "active" | "done"> = {
+  unplayed: "todo",
+  playing: "active",
+  played: "done",
 }
 
 function getSpineHeight(title: string) {
@@ -61,48 +66,23 @@ export function Game({
   }
 
   return (
-    <li
-      className="game"
-      data-status={status}
-      style={
-        {
-          "--hue": hue,
-          ...(bandHue !== undefined && { "--band-hue": bandHue }),
-          minHeight: getSpineHeight(game.title),
-        } as CSSProperties
-      }
+    <Spine
+      status={GAME_SPINE_STATUS[status]}
+      hue={hue}
+      bandHue={bandHue}
+      minHeight={getSpineHeight(game.title)}
+      title={game.title}
+      glyph={GAME_STATUS_GLYPH[status]}
+      titleAriaLabel={`${game.title}, ${status}`}
+      stampAriaLabel={`${game.title}: ${status}. Change to ${nextStatus}`}
+      onTitleClick={() => setIsEditFormOpen(true)}
+      onStampClick={cycleStatus}
     >
-      {bandHue !== undefined && (
-        <span className="series-band series-band-head" />
-      )}
-
-      <button
-        className="title"
-        aria-label={`${game.title}, ${status}`}
-        onClick={() => setIsEditFormOpen(true)}
-      >
-        <span className="spine-label">
-          <span className="title-text">{game.title}</span>
-        </span>
-      </button>
-
-      <button
-        className="stamp"
-        aria-label={`${game.title}: ${status}. Change to ${nextStatus}`}
-        onClick={cycleStatus}
-      >
-        {GAME_STATUS_GLYPH[status]}
-      </button>
-
-      {bandHue !== undefined && (
-        <span className="series-band series-band-tail" />
-      )}
-
       <EditGameForm
         game={game}
         isOpen={isEditFormOpen}
         onCancel={() => setIsEditFormOpen(false)}
       />
-    </li>
+    </Spine>
   )
 }

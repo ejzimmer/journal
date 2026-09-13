@@ -1,11 +1,11 @@
 import { isSeries } from "../types"
-import { Game } from "./Game"
-import { Series } from "./Series"
+import { GameList } from "./GameList"
 import { AddGameForm } from "./AddGameForm"
+import { Shelf } from "../Shelf"
 import { useMediaStorage } from "../MediaStorageContext"
 
 export function Games() {
-  const { games } = useMediaStorage()
+  const { games, updateMediaSeries } = useMediaStorage()
 
   return (
     <div className="games">
@@ -13,13 +13,21 @@ export function Games() {
       <div className="shelves">
         {games.map((item) =>
           isSeries(item) ? (
-            <Series key={item.id} series={item} />
+            <Shelf
+              key={item.id}
+              label={item.name}
+              onRenameLabel={(name) => updateMediaSeries(item, name)}
+            >
+              <GameList
+                games={item.items}
+                bandHue={item.bandHue}
+                seriesId={item.id}
+              />
+            </Shelf>
           ) : (
-            <div className="shelf" key={item.id}>
-              <ul className="spines">
-                <Game game={item} />
-              </ul>
-            </div>
+            <Shelf key={item.id}>
+              <GameList games={{ [item.id]: item }} />
+            </Shelf>
           ),
         )}
       </div>

@@ -1,10 +1,9 @@
-import { CSSProperties, useState } from "react"
+import { useState } from "react"
 import { BookDetails } from "../types"
 import { EditBookForm } from "./EditBookForm"
 import { useMediaStorage } from "../MediaStorageContext"
 import { getCoverHue } from "../coverHue"
-
-import "./Book.css"
+import { Spine } from "../Spine"
 
 const BOOK_STATUS_ORDER = ["unread", "reading", "listening", "read"] as const
 
@@ -35,6 +34,13 @@ const BOOK_STATUS_GLYPH: Record<BookStatus, string> = {
   read: "✓",
 }
 
+const BOOK_SPINE_STATUS: Record<BookStatus, "todo" | "active" | "done"> = {
+  unread: "todo",
+  reading: "active",
+  listening: "active",
+  read: "done",
+}
+
 function getSpineHeight(title: string) {
   return 178 + Math.min(34, Math.round(title.length * 1.5))
 }
@@ -62,49 +68,24 @@ export function Book({
   }
 
   return (
-    <li
-      className="book"
-      data-status={status}
-      style={
-        {
-          "--hue": hue,
-          ...(bandHue !== undefined && { "--band-hue": bandHue }),
-          minHeight: getSpineHeight(book.title),
-        } as CSSProperties
-      }
+    <Spine
+      status={BOOK_SPINE_STATUS[status]}
+      hue={hue}
+      bandHue={bandHue}
+      minHeight={getSpineHeight(book.title)}
+      title={book.title}
+      author={book.author}
+      glyph={BOOK_STATUS_GLYPH[status]}
+      titleAriaLabel={`${book.title}${book.author ? `, ${book.author}` : ""}, ${status}`}
+      stampAriaLabel={`${book.title}: ${status}. Change to ${nextStatus}`}
+      onTitleClick={() => setIsEditFormOpen(true)}
+      onStampClick={cycleStatus}
     >
-      {bandHue !== undefined && (
-        <span className="series-band series-band-head" />
-      )}
-
-      <button
-        className="title"
-        aria-label={`${book.title}${book.author ? `, ${book.author}` : ""}, ${status}`}
-        onClick={() => setIsEditFormOpen(true)}
-      >
-        <span className="spine-label">
-          <span className="title-text">{book.title}</span>
-          {book.author && <span className="author">{book.author}</span>}
-        </span>
-      </button>
-
-      <button
-        className="stamp"
-        aria-label={`${book.title}: ${status}. Change to ${nextStatus}`}
-        onClick={cycleStatus}
-      >
-        {BOOK_STATUS_GLYPH[status]}
-      </button>
-
-      {bandHue !== undefined && (
-        <span className="series-band series-band-tail" />
-      )}
-
       <EditBookForm
         book={book}
         isOpen={isEditFormOpen}
         onCancel={() => setIsEditFormOpen(false)}
       />
-    </li>
+    </Spine>
   )
 }

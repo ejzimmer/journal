@@ -1,11 +1,11 @@
 import { isSeries } from "../types"
-import { Book } from "./Book"
-import { Series } from "./Series"
+import { BookList } from "./BookList"
 import { AddBookForm } from "./AddBookForm"
+import { Shelf } from "../Shelf"
 import { useMediaStorage } from "../MediaStorageContext"
 
 export function Books() {
-  const { books } = useMediaStorage()
+  const { books, updateMediaSeries } = useMediaStorage()
 
   return (
     <div className="books">
@@ -13,13 +13,17 @@ export function Books() {
       <div className="shelves">
         {books.map((item) =>
           isSeries(item) ? (
-            <Series key={item.id} series={item} />
+            <Shelf
+              key={item.id}
+              label={item.name}
+              onRenameLabel={(name) => updateMediaSeries(item, name)}
+            >
+              <BookList books={item.items} bandHue={item.bandHue} />
+            </Shelf>
           ) : (
-            <div className="shelf" key={item.id}>
-              <ul className="spines">
-                <Book book={item} />
-              </ul>
-            </div>
+            <Shelf key={item.id}>
+              <BookList books={{ [item.id]: item }} />
+            </Shelf>
           ),
         )}
       </div>

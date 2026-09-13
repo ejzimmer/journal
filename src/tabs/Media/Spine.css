@@ -1,4 +1,4 @@
-.book {
+.spine {
   --cover-lightness: 85;
   --cover-chroma: 0.085;
   position: relative;
@@ -45,7 +45,7 @@
     transform: translateY(-3px);
   }
 
-  &[data-status="unread"] {
+  &[data-status="todo"] {
     --cover-lightness: 96;
     --cover-chroma: 0.022;
     color: oklch(48% 0.045 var(--hue));
@@ -55,7 +55,7 @@
   }
 }
 
-.book button.title {
+.spine button.title {
   align-self: center;
   border: 0;
   padding: 0;
@@ -75,25 +75,25 @@
   }
 }
 
-.book .spine-label {
+.spine .spine-label {
   writing-mode: vertical-rl;
   max-height: 141px;
   text-align: center;
 }
 
-.book .spine-label .title-text,
-.book .spine-label .author {
+.spine .spine-label .title-text,
+.spine .spine-label .author {
   display: block;
 }
 
-.book .spine-label .author {
+.spine .spine-label .author {
   font-size: 0.84em;
   opacity: 0.7;
   font-style: italic;
   margin-block-start: 4px;
 }
 
-.book .stamp {
+.spine .stamp {
   position: absolute;
   inset-block-end: 22px;
   inset-inline-start: 50%;
@@ -118,7 +118,7 @@
   }
 }
 
-.book[data-status="unread"] .stamp {
+.spine[data-status="todo"] .stamp {
   filter: grayscale(1) contrast(0.5);
   opacity: 0.45;
 
@@ -128,25 +128,24 @@
   }
 }
 
-.book[data-status="read"] .stamp {
+.spine[data-status="done"] .stamp {
   color: oklch(50% 0.13 var(--band-hue, var(--hue)));
   font-size: 17px;
   font-weight: 700;
 }
 
-.book .series-band {
+.spine .series-band {
   position: absolute;
   inset-inline: 4px;
   height: 6px;
-  z-index: 4;
   pointer-events: none;
   background: oklch(58% 0.16 var(--band-hue));
 }
 
-.book .series-band-head {
+.spine .series-band-head {
   inset-block-start: 8px;
 }
 
-.book .series-band-tail {
+.spine .series-band-tail {
   inset-block-end: 9px;
 }

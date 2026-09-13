@@ -4,6 +4,8 @@
   gap: 32px;
   font-size: 18px;
   justify-content: center;
+  --spine-h: 232px;
+  --pitch: 292px;
 
   h2 {
     margin-block-end: 0;
@@ -23,15 +25,11 @@
   }
 
   & > .books {
-    --spine-h: 232px;
-    --pitch: 292px;
     border-color: hsl(29, 94%, 50%);
     background: hsla(29, 97%, 46%, 0.06);
   }
 
   & > .games {
-    --spine-h: 188px;
-    --pitch: 248px;
     border-color: hsl(187, 76%, 36%);
     background: hsla(187, 76%, 36%, 0.06);
   }
