@@ -121,33 +121,30 @@ const books = indexById<ReadingItemDetails>([
   createBookSeries("series-discworld", "Discworld", [
     createBook("book-guards", "Guards! Guards!", {
       author: "Terry Pratchett",
-      isDone: true,
-      medium: "📖",
+      status: "read",
     }),
     createBook("book-witches", "Witches Abroad", {
       author: "Terry Pratchett",
-      isDone: true,
-      medium: "🎧",
+      status: "read",
     }),
     createBook("book-nightwatch", "Night Watch", {
       author: "Terry Pratchett",
-      medium: "🎧",
+      status: "listening",
     }),
     createBook("book-thud", "Thud!", { author: "Terry Pratchett" }),
   ]),
   createBook("book-nation", "Nation", {
     author: "Terry Pratchett",
-    isDone: true,
-    medium: "📖",
+    status: "read",
   }),
   createBookSeries("series-earthsea", "Earthsea", [
     createBook("book-wizard", "A Wizard of Earthsea", {
       author: "Ursula Le Guin",
-      isDone: true,
+      status: "read",
     }),
     createBook("book-tombs", "The Tombs of Atuan", {
       author: "Ursula Le Guin",
-      medium: "📖",
+      status: "reading",
     }),
     createBook("book-shore", "The Farthest Shore", {
       author: "Ursula Le Guin",
@@ -155,7 +152,7 @@ const books = indexById<ReadingItemDetails>([
   ]),
   createBook("book-lefthand", "The Left Hand of Darkness", {
     author: "Ursula Le Guin",
-    isDone: true,
+    status: "read",
   }),
   createBook("book-dispossessed", "The Dispossessed", {
     author: "Ursula Le Guin",
@@ -163,12 +160,11 @@ const books = indexById<ReadingItemDetails>([
   createBookSeries("series-lockedtomb", "The Locked Tomb", [
     createBook("book-gideon", "Gideon the Ninth", {
       author: "Tamsyn Muir",
-      isDone: true,
-      medium: "🎧",
+      status: "read",
     }),
     createBook("book-harrow", "Harrow the Ninth", {
       author: "Tamsyn Muir",
-      medium: "🎧",
+      status: "listening",
     }),
     createBook("book-nona", "Nona the Ninth", { author: "Tamsyn Muir" }),
   ]),
@@ -178,15 +174,15 @@ const books = indexById<ReadingItemDetails>([
 
 const games = indexById<PlayingItemDetails>([
   createGameSeries("series-zelda", "The Legend of Zelda", [
-    createGame("game-botw", "Breath of the Wild", { status: "done" }),
-    createGame("game-totk", "Tears of the Kingdom", { status: "in_progress" }),
+    createGame("game-botw", "Breath of the Wild", { status: "played" }),
+    createGame("game-totk", "Tears of the Kingdom", { status: "playing" }),
     createGame("game-echoes", "Echoes of Wisdom"),
   ]),
   createGameSeries("series-portal", "Portal", [
-    createGame("game-portal", "Portal", { status: "done" }),
-    createGame("game-portal2", "Portal 2", { status: "done" }),
+    createGame("game-portal", "Portal", { status: "played" }),
+    createGame("game-portal2", "Portal 2", { status: "played" }),
   ]),
-  createGame("game-stardew", "Stardew Valley", { status: "in_progress" }),
+  createGame("game-stardew", "Stardew Valley", { status: "playing" }),
   createGame("game-hades", "Hades"),
   createGame("game-outer-wilds", "Outer Wilds"),
 ])

@@ -1,19 +1,10 @@
-import {
-  createContext,
-  ReactNode,
-  useContext,
-  useEffect,
-  useMemo,
-  useRef,
-} from "react"
+import { createContext, ReactNode, useContext, useMemo } from "react"
 import { useStorageContext } from "../../shared/FirebaseContext"
 import {
   BookDetails,
   BOOKS_KEY,
   GameDetails,
   GAMES_KEY,
-  getBookStatus,
-  getGameStatus,
   isSeries,
   MediaDetails,
   MediaSeries,
@@ -44,21 +35,6 @@ export type MediaStorageContextType = {
 
 const getMediaKey = (type: MediaDetails["type"]) =>
   type === "book" ? BOOKS_KEY : GAMES_KEY
-
-function forEachStoredItem<T extends BookDetails | GameDetails>(
-  entries: (T | SeriesDetails<T>)[],
-  visit: (item: T, seriesId?: string) => void,
-) {
-  entries.forEach((entry) => {
-    if (isSeries(entry)) {
-      Object.values(entry.items ?? {}).forEach((item) =>
-        visit(item, entry.id),
-      )
-    } else {
-      visit(entry)
-    }
-  })
-}
 
 function listAuthors(books: ReadingItemDetails[]) {
   const authors = new Set<string>()
@@ -118,32 +94,6 @@ export function MediaStorageProvider({ children }: { children: ReactNode }) {
     const key = getMediaKey(type)
     return seriesId ? `${key}/${seriesId}/items` : key
   }
-
-  const hasMigratedBookStatus = useRef(false)
-  useEffect(() => {
-    if (booksLoading || hasMigratedBookStatus.current) return
-    hasMigratedBookStatus.current = true
-
-    forEachStoredItem(books, (book, seriesId) => {
-      const status = getBookStatus(book)
-      if (book.status !== status) {
-        updateItem(getMediaPath("book", seriesId), { ...book, status })
-      }
-    })
-  }, [booksLoading, books, updateItem])
-
-  const hasMigratedGameStatus = useRef(false)
-  useEffect(() => {
-    if (gamesLoading || hasMigratedGameStatus.current) return
-    hasMigratedGameStatus.current = true
-
-    forEachStoredItem(games, (game, seriesId) => {
-      const status = getGameStatus(game)
-      if (game.status !== status) {
-        updateItem(getMediaPath("game", seriesId), { ...game, status })
-      }
-    })
-  }, [gamesLoading, games, updateItem])
 
   const value: MediaStorageContextType = {
     books,

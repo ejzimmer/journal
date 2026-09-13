@@ -16,12 +16,6 @@ function getNextGameStatus(status: GameStatus): GameStatus {
   return GAME_STATUS_ORDER[(index + 1) % GAME_STATUS_ORDER.length]
 }
 
-function getStatusForGameStatus(status: GameStatus): GameDetails["status"] {
-  if (status === "playing") return "in_progress"
-  if (status === "played") return "done"
-  return null
-}
-
 const GAME_STATUS_GLYPH: Record<GameStatus, string> = {
   unplayed: "🎮",
   playing: "🎮",
@@ -41,10 +35,7 @@ export function Game({ game }: { game: GameDetails }) {
   const hue = getCoverHue(game.title)
 
   const cycleStatus = () => {
-    updateMedia({
-      ...game,
-      status: getStatusForGameStatus(nextStatus),
-    })
+    updateMedia({ ...game, status: nextStatus })
   }
 
   return (

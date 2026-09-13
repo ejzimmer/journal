@@ -19,8 +19,6 @@ export type BookDetails = {
   type: "book"
   title: string
   author?: string
-  medium?: "📖" | "🎧" | null
-  isDone?: boolean
   status?: BookStatus
 }
 
@@ -28,21 +26,15 @@ export type GameDetails = {
   id: string
   type: "game"
   title: string
-  status?: null | "in_progress" | "done" | GameStatus
+  status?: GameStatus
 }
 
 export function getBookStatus(book: BookDetails): BookStatus {
-  if (book.isDone) return "read"
-  if (book.medium === "📖") return "reading"
-  if (book.medium === "🎧") return "listening"
-  return "unread"
+  return book.status ?? "unread"
 }
 
 export function getGameStatus(game: GameDetails): GameStatus {
-  if (game.status === "done" || game.status === "played") return "played"
-  if (game.status === "in_progress" || game.status === "playing")
-    return "playing"
-  return "unplayed"
+  return game.status ?? "unplayed"
 }
 
 export type NewBook = Omit<BookDetails, "id">

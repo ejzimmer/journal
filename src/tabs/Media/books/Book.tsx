@@ -16,12 +16,6 @@ function getNextBookStatus(status: BookStatus): BookStatus {
   return BOOK_STATUS_ORDER[(index + 1) % BOOK_STATUS_ORDER.length]
 }
 
-function getMediumForStatus(status: BookStatus): BookDetails["medium"] {
-  if (status === "reading") return "📖"
-  if (status === "listening") return "🎧"
-  return null
-}
-
 const BOOK_STATUS_GLYPH: Record<BookStatus, string> = {
   unread: "📖",
   reading: "📖",
@@ -42,11 +36,7 @@ export function Book({ book }: { book: BookDetails }) {
   const hue = getCoverHue(book.author ?? book.title)
 
   const cycleStatus = () => {
-    updateMedia({
-      ...book,
-      medium: getMediumForStatus(nextStatus),
-      isDone: nextStatus === "read",
-    })
+    updateMedia({ ...book, status: nextStatus })
   }
 
   return (
