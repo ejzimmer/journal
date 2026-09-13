@@ -15,13 +15,16 @@ import { XIcon } from "../../shared/icons/X"
 import { sortByPosition } from "../../shared/drag-and-drop/utils"
 import { reorderProjects } from "./utils"
 import { useGridColumnSpan } from "./useGridColumnSpan"
+import { ProjectsSkeleton } from "./ProjectsSkeleton"
 
 export function Projects() {
   const [filterCategories, setFilterCategories] = useState<Category[]>([])
 
   const { useValue, updateList, deleteItem } = useStorageContext()
 
-  const { value } = useValue<Record<string, ProjectDetails>>(PROJECTS_KEY)
+  const { value, loading } = useValue<Record<string, ProjectDetails>>(
+    PROJECTS_KEY,
+  )
   const sortedProjects = useMemo(
     () => sortByPosition(value ? Object.values(value) : []),
     [value],
@@ -64,27 +67,34 @@ export function Projects() {
         </button>
       </div>
       <ul className="projects">
-        {sortedProjects.map((project, index) => (
-          <FilteredProject
-            key={project.id}
-            project={project}
-            filter={filterCategories}
-          >
-            <Project
+        {loading ? (
+          <ProjectsSkeleton />
+        ) : (
+          sortedProjects.map((project, index) => (
+            <FilteredProject
+              key={project.id}
               project={project}
-              onDelete={() => {
-                updateList(PROJECTS_KEY, reorderProjects(sortedProjects, index))
-                deleteItem(PROJECTS_KEY, project)
-              }}
-              onMoveToEnd={() =>
-                updateList(PROJECTS_KEY, [
-                  ...reorderProjects(sortedProjects, index),
-                  { ...project, position: sortedProjects.length - 1 },
-                ])
-              }
-            />
-          </FilteredProject>
-        ))}
+              filter={filterCategories}
+            >
+              <Project
+                project={project}
+                onDelete={() => {
+                  updateList(
+                    PROJECTS_KEY,
+                    reorderProjects(sortedProjects, index),
+                  )
+                  deleteItem(PROJECTS_KEY, project)
+                }}
+                onMoveToEnd={() =>
+                  updateList(PROJECTS_KEY, [
+                    ...reorderProjects(sortedProjects, index),
+                    { ...project, position: sortedProjects.length - 1 },
+                  ])
+                }
+              />
+            </FilteredProject>
+          ))
+        )}
       </ul>
       <AddProjectForm />
     </div>
