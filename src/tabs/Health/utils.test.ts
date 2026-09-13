@@ -23,8 +23,6 @@ describe("setupDays", () => {
     expect(days[0].balance).toBe(STARTING_BALANCE)
     expect(days[1].balance).toBe(STARTING_BALANCE - 400)
 
-    // 3 Jan has no recorded data - it's not coloured or counted as a diff,
-    // but the running balance carries straight through it
     expect(days[2].diff).toBeUndefined()
     expect(days[2].balance).toBe(STARTING_BALANCE - 400)
 
