@@ -4,6 +4,7 @@ import {
   BookStatus,
   getBookStatus,
   isSeries,
+  SeriesDetails,
 } from "../types"
 import { getCoverHue } from "../coverHue"
 import { MediaList } from "../MediaList"
@@ -61,24 +62,34 @@ function BookMediaList({
 export function Books() {
   const { books, updateMediaSeries } = useMediaStorage()
 
+  const series = books.filter(
+    (item): item is SeriesDetails<BookDetails> => isSeries(item),
+  )
+  const singleBooks = books.filter(
+    (item): item is BookDetails => !isSeries(item),
+  )
+
   return (
     <div className="books">
       <h2>Books</h2>
       <div className="shelves">
-        {books.map((item) =>
-          isSeries(item) ? (
-            <Shelf
-              key={item.id}
-              label={item.name}
-              onRenameLabel={(name) => updateMediaSeries(item, name)}
-            >
-              <BookMediaList books={item.items} bandHue={item.bandHue} />
-            </Shelf>
-          ) : (
-            <Shelf key={item.id}>
-              <BookMediaList books={{ [item.id]: item }} />
-            </Shelf>
-          ),
+        {series.map((item) => (
+          <Shelf
+            key={item.id}
+            label={item.name}
+            onRenameLabel={(name) => updateMediaSeries(item, name)}
+          >
+            <BookMediaList books={item.items} bandHue={item.bandHue} />
+          </Shelf>
+        ))}
+        {singleBooks.length > 0 && (
+          <Shelf>
+            <BookMediaList
+              books={Object.fromEntries(
+                singleBooks.map((book) => [book.id, book]),
+              )}
+            />
+          </Shelf>
         )}
       </div>
       <AddMediaForm ariaLabel="Add a book" config={useBookFormConfig()} />
