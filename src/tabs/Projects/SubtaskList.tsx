@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react"
+import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { useStorageContext } from "../../shared/FirebaseContext"
 import { PlusIcon } from "../../shared/icons/Plus"
 import { SortIcon } from "../../shared/icons/Sort"
@@ -33,7 +33,9 @@ export function SubtaskList({ projectId, isVisible }: SubtasksProps) {
   const subtasksKey = getSubtasksKey(projectId)
 
   const { useValue, addItem, updateList } = useStorageContext()
-  const { value } = useValue<Record<string, ProjectSubtask>>(subtasksKey)
+  const { value, loading } = useValue<Record<string, ProjectSubtask>>(
+    subtasksKey,
+  )
   const subtasks = useMemo(() => (value ? Object.values(value) : []), [value])
   const { value: project } = useValue<ProjectDetails>(
     `${PROJECTS_KEY}/${projectId}`,
@@ -95,7 +97,7 @@ export function SubtaskList({ projectId, isVisible }: SubtasksProps) {
     return seenDoneTask
   })
 
-  const onSortDoneToEnd = () => {
+  const onSortDoneToEnd = useCallback(() => {
     const reordered = sortedTasks
       .toSorted(
         (a, b) => Number(a.status === "done") - Number(b.status === "done"),
@@ -106,7 +108,18 @@ export function SubtaskList({ projectId, isVisible }: SubtasksProps) {
       subtasksKey,
       reordered.map(({ parentId, ...task }) => task),
     )
-  }
+  }, [sortedTasks, subtasksKey, updateList])
+
+  const hasSortedDoneTasksOnLoad = useRef(false)
+
+  useEffect(() => {
+    if (hasSortedDoneTasksOnLoad.current || loading) return
+    hasSortedDoneTasksOnLoad.current = true
+
+    if (hasUnsortedDoneTasks) {
+      onSortDoneToEnd()
+    }
+  }, [loading, hasUnsortedDoneTasks, onSortDoneToEnd])
 
   useEffect(() => {
     const isMissingAPosition = subtasks.some((task) => task.position == null)
@@ -153,6 +166,7 @@ export function SubtaskList({ projectId, isVisible }: SubtasksProps) {
           display: "flex",
           alignItems: "center",
           paddingInlineStart: "12px",
+          paddingBlockEnd: "8px",
         }}
       >
         <AddSubtaskForm isFormVisible={formVisible} onAddSubtask={onAddTask} />
