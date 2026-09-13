@@ -232,7 +232,7 @@ describe("MediaStorageContext", () => {
         ...createStoredMedia({ books: [discworld] }),
         updateItem,
       })
-      const updated = { ...guards, isDone: true }
+      const updated = { ...guards, status: "read" as const }
 
       mediaStorage.updateMedia(updated)
 

@@ -1,16 +1,18 @@
-import { BookDetails } from "../types"
+import {
+  BOOK_STATUS_ORDER,
+  BookDetails,
+  BookStatus,
+  getBookStatus,
+} from "../types"
 import { EditBookForm } from "./EditBookForm"
 import { getCoverHue } from "../coverHue"
 import { MediaSpine, StatusConfig } from "../MediaSpine"
 
-const BOOK_STATUS_ORDER = ["unread", "reading", "listening", "read"] as const
-
-type BookStatus = (typeof BOOK_STATUS_ORDER)[number]
-
-function getMediumForStatus(status: BookStatus): BookDetails["medium"] {
-  if (status === "reading") return "📖"
-  if (status === "listening") return "🎧"
-  return null
+const BOOK_STATUS_GLYPH: Record<BookStatus, string> = {
+  unread: "📖",
+  reading: "📖",
+  listening: "🎧",
+  read: "✓",
 }
 
 const BOOK_CONFIG: StatusConfig<BookDetails, BookStatus> = {
@@ -21,23 +23,9 @@ const BOOK_CONFIG: StatusConfig<BookDetails, BookStatus> = {
     listening: "active",
     read: "done",
   },
-  glyph: {
-    unread: "📖",
-    reading: "📖",
-    listening: "🎧",
-    read: "✓",
-  },
-  getStatus: (book) => {
-    if (book.isDone) return "read"
-    if (book.medium === "📖") return "reading"
-    if (book.medium === "🎧") return "listening"
-    return "unread"
-  },
-  applyStatus: (book, status) => ({
-    ...book,
-    medium: getMediumForStatus(status),
-    isDone: status === "read",
-  }),
+  glyph: BOOK_STATUS_GLYPH,
+  getStatus: getBookStatus,
+  applyStatus: (book, status) => ({ ...book, status }),
   getSpineHeight: (title) => 178 + Math.min(34, Math.round(title.length * 1.5)),
   getAuthor: (book) => book.author,
 }

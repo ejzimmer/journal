@@ -28,7 +28,7 @@
       display: none;
     }
 
-    &:has(.subtasks-section.visible) {
+    &:has(.subtasks-section) {
       z-index: 1;
     }
   }

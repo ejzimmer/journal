@@ -9,20 +9,33 @@ export type SeriesDetails<T extends BookDetails | GameDetails> = {
   items?: Record<string, T>
 }
 
+export const BOOK_STATUS_ORDER = ["unread", "reading", "listening", "read"] as const
+export type BookStatus = (typeof BOOK_STATUS_ORDER)[number]
+
+export const GAME_STATUS_ORDER = ["unplayed", "playing", "played"] as const
+export type GameStatus = (typeof GAME_STATUS_ORDER)[number]
+
 export type BookDetails = {
   id: string
   type: "book"
   title: string
   author?: string
-  medium?: "📖" | "🎧" | null
-  isDone?: boolean
+  status?: BookStatus
 }
 
 export type GameDetails = {
   id: string
   type: "game"
   title: string
-  status?: null | "in_progress" | "done"
+  status?: GameStatus
+}
+
+export function getBookStatus(book: BookDetails): BookStatus {
+  return book.status ?? "unread"
+}
+
+export function getGameStatus(game: GameDetails): GameStatus {
+  return game.status ?? "unplayed"
 }
 
 export type NewBook = Omit<BookDetails, "id">
