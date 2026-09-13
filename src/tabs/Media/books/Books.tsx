@@ -7,7 +7,8 @@ import {
 } from "../types"
 import { getCoverHue } from "../coverHue"
 import { MediaList, StatusConfig } from "../MediaSpine"
-import { AddBookForm } from "./AddBookForm"
+import { AddMediaForm } from "../MediaForm"
+import { useBookFormConfig } from "./bookFormConfig"
 import { EditBookForm } from "./EditBookForm"
 import { Shelf } from "../Shelf"
 import { useMediaStorage } from "../MediaStorageContext"
@@ -74,7 +75,7 @@ export function Books() {
           ),
         )}
       </div>
-      <AddBookForm />
+      <AddMediaForm ariaLabel="Add a book" config={useBookFormConfig()} />
     </div>
   )
 }

@@ -1,5 +1,5 @@
 import { screen } from "@testing-library/react"
-import { AddGameForm } from "./AddGameForm"
+import { Games } from "./Games"
 import userEvent from "@testing-library/user-event"
 import { GameDetails, SeriesDetails } from "../types"
 import { renderWithMediaStorage } from "../mediaStorageTestUtils"
@@ -15,12 +15,12 @@ const zelda: SeriesDetails<GameDetails> = {
 
 const gameSeries = [zelda]
 
-describe("AddGameForm", () => {
+describe("Games", () => {
   describe("when the user enters a game title & submits the form", () => {
     it("creates a new game", async () => {
       const user = userEvent.setup()
       const addMedia = jest.fn()
-      renderWithMediaStorage(<AddGameForm />, { gameSeries, addMedia })
+      renderWithMediaStorage(<Games />, { gameSeries, addMedia })
 
       await user.click(screen.getByRole("button", { name: "Add a game" }))
       await user.type(
@@ -39,7 +39,7 @@ describe("AddGameForm", () => {
     it("creates a new series and adds the new game to its items", async () => {
       const user = userEvent.setup()
       const addMediaSeries = jest.fn()
-      renderWithMediaStorage(<AddGameForm />, { gameSeries, addMediaSeries })
+      renderWithMediaStorage(<Games />, { gameSeries, addMediaSeries })
 
       await user.click(screen.getByRole("button", { name: "Add a game" }))
       await user.type(
@@ -67,7 +67,7 @@ describe("AddGameForm", () => {
     it("adds the new game to the existing series", async () => {
       const user = userEvent.setup()
       const addMedia = jest.fn()
-      renderWithMediaStorage(<AddGameForm />, { gameSeries, addMedia })
+      renderWithMediaStorage(<Games />, { gameSeries, addMedia })
 
       await user.click(screen.getByRole("button", { name: "Add a game" }))
       await user.type(
@@ -89,7 +89,7 @@ describe("AddGameForm", () => {
   describe("After the form is submitted", () => {
     it("clears the form", async () => {
       const user = userEvent.setup()
-      renderWithMediaStorage(<AddGameForm />, { gameSeries })
+      renderWithMediaStorage(<Games />, { gameSeries })
 
       await user.click(screen.getByRole("button", { name: "Add a game" }))
       await user.type(

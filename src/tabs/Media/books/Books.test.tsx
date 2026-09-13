@@ -1,5 +1,5 @@
 import { screen } from "@testing-library/react"
-import { AddBookForm } from "./AddBookForm"
+import { Books } from "./Books"
 import userEvent from "@testing-library/user-event"
 import { BookDetails, SeriesDetails } from "../types"
 import { renderWithMediaStorage } from "../mediaStorageTestUtils"
@@ -30,12 +30,12 @@ const earthsea: SeriesDetails<BookDetails> = {
 const authors = ["Terry Pratchett", "Ursula Le Guin"]
 const bookSeries = [discworld, earthsea]
 
-describe("AddBookForm", () => {
+describe("Books", () => {
   describe("when the user enters a book title & submits the form", () => {
     it("creates a new book", async () => {
       const user = userEvent.setup()
       const addMedia = jest.fn()
-      renderWithMediaStorage(<AddBookForm />, { authors, bookSeries, addMedia })
+      renderWithMediaStorage(<Books />, { authors, bookSeries, addMedia })
 
       await user.click(screen.getByRole("button", { name: "Add a book" }))
       await user.type(
@@ -54,7 +54,7 @@ describe("AddBookForm", () => {
     it("creates the book with that author", async () => {
       const user = userEvent.setup()
       const addMedia = jest.fn()
-      renderWithMediaStorage(<AddBookForm />, { authors, bookSeries, addMedia })
+      renderWithMediaStorage(<Books />, { authors, bookSeries, addMedia })
 
       await user.click(screen.getByRole("button", { name: "Add a book" }))
       await user.type(
@@ -79,7 +79,7 @@ describe("AddBookForm", () => {
     it("creates the book with that author", async () => {
       const user = userEvent.setup()
       const addMedia = jest.fn()
-      renderWithMediaStorage(<AddBookForm />, { authors, bookSeries, addMedia })
+      renderWithMediaStorage(<Books />, { authors, bookSeries, addMedia })
 
       await user.click(screen.getByRole("button", { name: "Add a book" }))
       await user.type(
@@ -102,7 +102,7 @@ describe("AddBookForm", () => {
   describe("the author options", () => {
     it("include the authors of books in a series", async () => {
       const user = userEvent.setup()
-      renderWithMediaStorage(<AddBookForm />, { authors, bookSeries })
+      renderWithMediaStorage(<Books />, { authors, bookSeries })
 
       await user.click(screen.getByRole("button", { name: "Add a book" }))
 
@@ -116,7 +116,7 @@ describe("AddBookForm", () => {
 
     it("list each author once", async () => {
       const user = userEvent.setup()
-      renderWithMediaStorage(<AddBookForm />, { authors, bookSeries })
+      renderWithMediaStorage(<Books />, { authors, bookSeries })
 
       await user.click(screen.getByRole("button", { name: "Add a book" }))
 
@@ -130,7 +130,7 @@ describe("AddBookForm", () => {
     it("creates a new series and adds the new book to its items", async () => {
       const user = userEvent.setup()
       const addMediaSeries = jest.fn()
-      renderWithMediaStorage(<AddBookForm />, {
+      renderWithMediaStorage(<Books />, {
         authors,
         bookSeries,
         addMediaSeries,
@@ -162,7 +162,7 @@ describe("AddBookForm", () => {
     it("adds the new book to the existing series", async () => {
       const user = userEvent.setup()
       const addMedia = jest.fn()
-      renderWithMediaStorage(<AddBookForm />, { authors, bookSeries, addMedia })
+      renderWithMediaStorage(<Books />, { authors, bookSeries, addMedia })
 
       await user.click(screen.getByRole("button", { name: "Add a book" }))
       await user.type(
@@ -185,7 +185,7 @@ describe("AddBookForm", () => {
     it("adds the book to the series, with its author", async () => {
       const user = userEvent.setup()
       const addMediaSeries = jest.fn()
-      renderWithMediaStorage(<AddBookForm />, {
+      renderWithMediaStorage(<Books />, {
         authors,
         bookSeries,
         addMediaSeries,
@@ -221,7 +221,7 @@ describe("AddBookForm", () => {
   describe("After the form is submitted", () => {
     it("clears the form", async () => {
       const user = userEvent.setup()
-      renderWithMediaStorage(<AddBookForm />, { authors, bookSeries })
+      renderWithMediaStorage(<Books />, { authors, bookSeries })
 
       await user.click(screen.getByRole("button", { name: "Add a book" }))
       await user.type(

@@ -7,7 +7,8 @@ import {
 } from "../types"
 import { getCoverHue } from "../coverHue"
 import { MediaList, StatusConfig } from "../MediaSpine"
-import { AddGameForm } from "./AddGameForm"
+import { AddMediaForm } from "../MediaForm"
+import { useGameFormConfig } from "./gameFormConfig"
 import { EditGameForm } from "./EditGameForm"
 import { Shelf } from "../Shelf"
 import { useMediaStorage } from "../MediaStorageContext"
@@ -77,7 +78,7 @@ export function Games() {
           ),
         )}
       </div>
-      <AddGameForm />
+      <AddMediaForm ariaLabel="Add a game" config={useGameFormConfig()} />
     </div>
   )
 }
