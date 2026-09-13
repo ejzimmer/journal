@@ -3,6 +3,7 @@ import { FormControl } from "../../shared/controls/FormControl"
 import { Combobox } from "../../shared/controls/combobox/Combobox"
 import { OptionType } from "../../shared/controls/combobox/types"
 import { Modal, useModal } from "../../shared/controls/Modal"
+import { ModalDialog } from "../../shared/controls/ModalDialog"
 import { BandColourPicker } from "./BandColourPicker"
 import { useSeriesBand } from "./useSeriesBand"
 import { useMediaStorage } from "./MediaStorageContext"
@@ -139,5 +140,43 @@ export function MediaForm<T extends MediaDetails>({
         <Modal.Action className="primary">Save</Modal.Action>
       </Modal.Footer>
     </form>
+  )
+}
+
+export function AddMediaForm<T extends MediaDetails>({
+  ariaLabel,
+  config,
+}: {
+  ariaLabel: string
+  config: MediaFormConfig<T>
+}) {
+  return (
+    <Modal
+      trigger={(props) => (
+        <button {...props} className="outline icon" aria-label={ariaLabel}>
+          +
+        </button>
+      )}
+    >
+      <MediaForm config={config} />
+    </Modal>
+  )
+}
+
+export function EditMediaForm<T extends MediaDetails>({
+  item,
+  isOpen,
+  onCancel,
+  config,
+}: {
+  item: T
+  isOpen: boolean
+  onCancel: () => void
+  config: MediaFormConfig<T>
+}) {
+  return (
+    <ModalDialog isOpen={isOpen} onCancel={onCancel}>
+      {isOpen && <MediaForm item={item} config={config} />}
+    </ModalDialog>
   )
 }

@@ -1,6 +1,6 @@
 import { BookDetails } from "../types"
-import { ModalDialog } from "../../../shared/controls/ModalDialog"
-import { BookForm } from "./BookForm"
+import { EditMediaForm } from "../MediaForm"
+import { useBookFormConfig } from "./bookFormConfig"
 
 export function EditBookForm({
   book,
@@ -12,8 +12,11 @@ export function EditBookForm({
   onCancel: () => void
 }) {
   return (
-    <ModalDialog isOpen={isOpen} onCancel={onCancel}>
-      {isOpen && <BookForm book={book} />}
-    </ModalDialog>
+    <EditMediaForm
+      item={book}
+      isOpen={isOpen}
+      onCancel={onCancel}
+      config={useBookFormConfig()}
+    />
   )
 }

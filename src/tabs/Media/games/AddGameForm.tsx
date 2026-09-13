@@ -1,16 +1,6 @@
-import { Modal } from "../../../shared/controls/Modal"
-import { GameForm } from "./GameForm"
+import { AddMediaForm } from "../MediaForm"
+import { useGameFormConfig } from "./gameFormConfig"
 
 export function AddGameForm() {
-  return (
-    <Modal
-      trigger={(props) => (
-        <button {...props} className="outline icon" aria-label="Add a game">
-          +
-        </button>
-      )}
-    >
-      <GameForm />
-    </Modal>
-  )
+  return <AddMediaForm ariaLabel="Add a game" config={useGameFormConfig()} />
 }

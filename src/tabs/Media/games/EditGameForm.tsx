@@ -1,6 +1,6 @@
 import { GameDetails } from "../types"
-import { ModalDialog } from "../../../shared/controls/ModalDialog"
-import { GameForm } from "./GameForm"
+import { EditMediaForm } from "../MediaForm"
+import { useGameFormConfig } from "./gameFormConfig"
 
 export function EditGameForm({
   game,
@@ -12,8 +12,11 @@ export function EditGameForm({
   onCancel: () => void
 }) {
   return (
-    <ModalDialog isOpen={isOpen} onCancel={onCancel}>
-      {isOpen && <GameForm game={game} />}
-    </ModalDialog>
+    <EditMediaForm
+      item={game}
+      isOpen={isOpen}
+      onCancel={onCancel}
+      config={useGameFormConfig()}
+    />
   )
 }

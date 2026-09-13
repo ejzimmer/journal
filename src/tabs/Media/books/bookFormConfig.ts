@@ -1,26 +1,24 @@
 import { BookDetails, NewBook } from "../types"
 import { useMediaStorage } from "../MediaStorageContext"
-import { MediaForm, MediaFormConfig } from "../MediaForm"
+import { MediaFormConfig } from "../MediaForm"
 
-export function BookForm({ book }: { book?: BookDetails }) {
+export function useBookFormConfig(): MediaFormConfig<BookDetails> {
   const { authors, bookSeries } = useMediaStorage()
 
-  const config: MediaFormConfig<BookDetails> = {
+  return {
     typeLabel: "Book",
     seriesList: bookSeries,
     authorOptions: authors,
-    getAuthor: (existingBook) => existingBook.author,
+    getAuthor: (book) => book.author,
     buildNew: (title, author) =>
       ({
         type: "book",
         title,
         ...(author && { author }),
       }) satisfies NewBook,
-    buildUpdated: (existingBook, title, author) => {
-      const { author: _author, ...bookWithoutAuthor } = existingBook
+    buildUpdated: (book, title, author) => {
+      const { author: _author, ...bookWithoutAuthor } = book
       return { ...bookWithoutAuthor, title, ...(author && { author }) }
     },
   }
-
-  return <MediaForm item={book} config={config} />
 }
