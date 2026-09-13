@@ -6,14 +6,9 @@ import { getCoverHue } from "../coverHue"
 
 import "./Book.css"
 
-type BookStatus = "unread" | "reading" | "listening" | "read"
+const BOOK_STATUS_ORDER = ["unread", "reading", "listening", "read"] as const
 
-const BOOK_STATUS_ORDER: BookStatus[] = [
-  "unread",
-  "reading",
-  "listening",
-  "read",
-]
+type BookStatus = (typeof BOOK_STATUS_ORDER)[number]
 
 function getBookStatus(book: BookDetails): BookStatus {
   if (book.isDone) return "read"

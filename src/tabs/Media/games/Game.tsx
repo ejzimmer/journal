@@ -6,9 +6,9 @@ import { getCoverHue } from "../coverHue"
 
 import "./Game.css"
 
-type GameStatus = "unplayed" | "playing" | "played"
+const GAME_STATUS_ORDER = ["unplayed", "playing", "played"] as const
 
-const GAME_STATUS_ORDER: GameStatus[] = ["unplayed", "playing", "played"]
+type GameStatus = (typeof GAME_STATUS_ORDER)[number]
 
 function getGameStatus(game: GameDetails): GameStatus {
   if (game.status === "done") return "played"
