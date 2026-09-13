@@ -62,6 +62,10 @@
     padding-inline-end: 0;
   }
 
+  .shelf-single .spines {
+    padding-inline: 0;
+  }
+
   .spines {
     height: var(--shelf-height);
     flex: none;
