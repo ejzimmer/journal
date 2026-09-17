@@ -8,11 +8,9 @@ import {
   draggable,
   dropTargetForElements,
 } from "@atlaskit/pragmatic-drag-and-drop/element/adapter"
-import {
-  attachClosestEdge,
-  extractClosestEdge,
-} from "@atlaskit/pragmatic-drag-and-drop-hitbox/closest-edge"
-import { Edge } from "@atlaskit/pragmatic-drag-and-drop-hitbox/dist/types/types"
+import { attachClosestEdge } from "@atlaskit/pragmatic-drag-and-drop-hitbox/closest-edge/attach-closest-edge"
+import { extractClosestEdge } from "@atlaskit/pragmatic-drag-and-drop-hitbox/closest-edge/extract-closest-edge"
+import { Edge } from "@atlaskit/pragmatic-drag-and-drop-hitbox/types"
 import { Draggable, DraggingState, IDLE, draggableTypeKey } from "./types"
 
 import "./drag-and-drop.css"

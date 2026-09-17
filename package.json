@@ -6,8 +6,8 @@
     "node": "26.x"
   },
   "dependencies": {
-    "@atlaskit/pragmatic-drag-and-drop": "^1.4.0",
-    "@atlaskit/pragmatic-drag-and-drop-hitbox": "^1.0.3",
+    "@atlaskit/pragmatic-drag-and-drop": "^3.1.0",
+    "@atlaskit/pragmatic-drag-and-drop-hitbox": "^2.2.2",
     "@babel/core": "^7.16.0",
     "@babel/plugin-transform-react-jsx": "^7.27.1",
     "@pmmmwh/react-refresh-webpack-plugin": "^0.5.3",
