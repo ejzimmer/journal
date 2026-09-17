@@ -5,7 +5,7 @@ import {
   draggableTypeKey,
   OrderedListItem,
 } from "./types"
-import { Edge } from "@atlaskit/pragmatic-drag-and-drop-hitbox/closest-edge"
+import { Edge } from "@atlaskit/pragmatic-drag-and-drop-hitbox/types"
 
 export const isDraggable = (item: any): item is Draggable =>
   draggableTypeKey in item
