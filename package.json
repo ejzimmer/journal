@@ -58,7 +58,7 @@
     "react-dev-utils": "^12.0.1",
     "react-dom": "19",
     "react-refresh": "^0.11.0",
-    "react-router-dom": "^6.17.0",
+    "react-router-dom": "^7.18.4",
     "resolve-url-loader": "^4.0.0",
     "sass-loader": "^12.3.0",
     "semver": "^7.3.5",
