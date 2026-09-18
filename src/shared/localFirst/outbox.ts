@@ -1,9 +1,7 @@
 import { createStore, del, entries, keys, set } from "idb-keyval"
 import { pathsAreRelated } from "./pathTree"
 
-export type OutboxOp =
-  | { path: string; value: unknown }
-  | { updates: Record<string, unknown> }
+export type OutboxOp = { updates: Record<string, unknown> }
 
 export type StoredOutboxOp = OutboxOp & { id: number }
 
@@ -35,15 +33,10 @@ export function createOutbox(dbName: string): Outbox {
   }
 }
 
-export function outboxTouchesPath(
-  ops: StoredOutboxOp[],
-  path: string,
-): boolean {
+export function opsTouchPath(ops: StoredOutboxOp[], path: string): boolean {
   return ops.some((op) =>
-    "path" in op
-      ? pathsAreRelated(op.path, path)
-      : Object.keys(op.updates).some((updatePath) =>
-          pathsAreRelated(updatePath, path),
-        ),
+    Object.keys(op.updates).some((updatePath) =>
+      pathsAreRelated(updatePath, path),
+    ),
   )
 }

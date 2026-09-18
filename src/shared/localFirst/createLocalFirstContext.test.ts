@@ -2,16 +2,11 @@ import "fake-indexeddb/auto"
 import { renderHook, waitFor } from "@testing-library/react"
 import { createLocalFirstContext } from "./createLocalFirstContext"
 
-const mockSet = jest.fn().mockResolvedValue(undefined)
-const mockRemove = jest.fn().mockResolvedValue(undefined)
 const mockUpdate = jest.fn().mockResolvedValue(undefined)
 const mockOnValueCallbacks = new Map<string, (snapshot: { val: () => unknown }) => void>()
 
 jest.mock("firebase/database", () => ({
   ref: (_database: unknown, path?: string) => ({ path }),
-  set: (reference: { path: string }, value: unknown) =>
-    mockSet(reference.path, value),
-  remove: (reference: { path: string }) => mockRemove(reference.path),
   update: (_reference: unknown, updates: Record<string, unknown>) =>
     mockUpdate(updates),
   onValue: (
@@ -74,14 +69,13 @@ describe("createLocalFirstContext", () => {
     })
 
     await waitFor(() => {
-      expect(mockSet).toHaveBeenCalledWith(
-        `work/${id}`,
-        expect.objectContaining({ description: "Chores" }),
-      )
+      expect(mockUpdate).toHaveBeenCalledWith({
+        [`work/${id}`]: expect.objectContaining({ description: "Chores" }),
+      })
     })
   })
 
-  it("deleteItem removes the item locally and calls remove on the real database", async () => {
+  it("deleteItem removes the item locally and syncs the deletion to the real database", async () => {
     const context = await setUpContext()
     const item = { id: "task1", description: "Chores" }
     context.updateItem("work", item)
@@ -94,7 +88,7 @@ describe("createLocalFirstContext", () => {
     expect(result.current.value).toBeUndefined()
 
     await waitFor(() => {
-      expect(mockRemove).toHaveBeenCalledWith("work/task1")
+      expect(mockUpdate).toHaveBeenCalledWith({ "work/task1": null })
     })
   })
 
@@ -158,7 +152,7 @@ describe("createLocalFirstContext", () => {
 
   it("ignores a stale remote snapshot while a local write for that key is still unsynced", async () => {
     const context = await setUpContext()
-    mockSet.mockImplementation(() => new Promise(() => {}))
+    mockUpdate.mockImplementation(() => new Promise(() => {}))
     const item = { id: "task1", description: "Local edit" }
 
     context.updateItem("work", item)

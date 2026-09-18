@@ -2,7 +2,7 @@ import { Database, onValue, ref } from "firebase/database"
 import { useEffect, useSyncExternalStore } from "react"
 import { ContextType } from "../FirebaseContext"
 import { createLocalStore } from "./localStore"
-import { createOutbox, outboxTouchesPath } from "./outbox"
+import { createOutbox, opsTouchPath } from "./outbox"
 import { createSyncEngine } from "./syncEngine"
 
 export function createLocalFirstContext(
@@ -17,23 +17,22 @@ export function createLocalFirstContext(
   const keysWithRemoteListener = new Set<string>()
 
   function registerRemoteListener(key: string) {
-    if (keysWithRemoteListener.has(key)) return
+    if (keysWithRemoteListener.has(key)) {
+      return
+    }
     keysWithRemoteListener.add(key)
 
     onValue(ref(database, key), async (snapshot) => {
       const pendingOps = await outbox.list()
-      if (outboxTouchesPath(pendingOps, key)) return
+      if (opsTouchPath(pendingOps, key)) {
+        return
+      }
 
       localStore.writePath(key, snapshot.val())
     })
   }
 
-  function write(path: string, value: unknown) {
-    localStore.writePath(path, value)
-    void outbox.enqueue({ path, value }).then(() => syncEngine.notifyChange())
-  }
-
-  function writeMulti(updates: Record<string, unknown>) {
+  function write(updates: Record<string, unknown>) {
     Object.entries(updates).forEach(([path, value]) =>
       localStore.writePath(path, value),
     )
@@ -43,12 +42,12 @@ export function createLocalFirstContext(
   const context: ContextType = {
     addItem: (parent, item) => {
       const id = crypto.randomUUID()
-      write(`${parent}/${id}`, { ...item, id })
+      write({ [`${parent}/${id}`]: { ...item, id } })
       return id
     },
     updateItem: (parent, item) => {
       const path = item.id ? `${parent}/${item.id}` : parent
-      write(path, item)
+      write({ [path]: item })
     },
     deleteItem: (parent, item) => {
       if (!item.id) {
@@ -58,7 +57,7 @@ export function createLocalFirstContext(
         )
         return
       }
-      write(`${parent}/${item.id}`, null)
+      write({ [`${parent}/${item.id}`]: null })
     },
     updateList: (listName, list) => {
       const map = list.reduce(
@@ -68,10 +67,10 @@ export function createLocalFirstContext(
         },
         {} as Record<string, unknown>,
       )
-      write(listName, map)
+      write({ [listName]: map })
     },
     setValue: (path, value) => {
-      write(path, value)
+      write({ [path]: value })
     },
     moveItemBetweenLists: ({
       movedItem,
@@ -89,7 +88,7 @@ export function createLocalFirstContext(
             ? existingItem.position
             : existingItem.position + 1
       })
-      writeMulti(updates)
+      write(updates)
     },
     useValue: <T,>(key?: string) => {
       useEffect(() => {

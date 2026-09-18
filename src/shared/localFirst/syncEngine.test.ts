@@ -1,23 +1,14 @@
 import "fake-indexeddb/auto"
-import { createOutbox, Outbox, StoredOutboxOp } from "./outbox"
+import { createOutbox, Outbox } from "./outbox"
 import { createSyncEngine } from "./syncEngine"
 
-const mockSet = jest.fn().mockResolvedValue(undefined)
-const mockRemove = jest.fn().mockResolvedValue(undefined)
 const mockUpdate = jest.fn().mockResolvedValue(undefined)
 
 jest.mock("firebase/database", () => ({
   ref: (_database: unknown, path?: string) => ({ path }),
-  set: (reference: { path: string }, value: unknown) =>
-    mockSet(reference.path, value),
-  remove: (reference: { path: string }) => mockRemove(reference.path),
   update: (_reference: unknown, updates: Record<string, unknown>) =>
     mockUpdate(updates),
 }))
-
-function pathOf(op: StoredOutboxOp): string | undefined {
-  return "path" in op ? op.path : undefined
-}
 
 function uniqueDbName() {
   return `sync-engine-test-${Math.random()}`
@@ -45,49 +36,44 @@ describe("createSyncEngine", () => {
   })
 
   it("drains a write op against the real database and removes it from the outbox", async () => {
-    await outbox.enqueue({ path: "work/list1", value: { id: "list1" } })
+    await outbox.enqueue({ updates: { "work/list1": { id: "list1" } } })
     const engine = createSyncEngine(fakeDatabase(), outbox)
 
     engine.start()
     await flushMicrotasks()
 
-    expect(mockSet).toHaveBeenCalledWith("work/list1", { id: "list1" })
+    expect(mockUpdate).toHaveBeenCalledWith({ "work/list1": { id: "list1" } })
     expect(await outbox.list()).toEqual([])
   })
 
-  it("calls remove (not set) for a delete op", async () => {
-    await outbox.enqueue({ path: "work/list1", value: null })
-    const engine = createSyncEngine(fakeDatabase(), outbox)
-
-    engine.start()
-    await flushMicrotasks()
-
-    expect(mockRemove).toHaveBeenCalledWith("work/list1")
-    expect(mockSet).not.toHaveBeenCalled()
-  })
-
   it("drains multiple ops in order", async () => {
-    await outbox.enqueue({ path: "a", value: 1 })
-    await outbox.enqueue({ path: "b", value: 2 })
+    await outbox.enqueue({ updates: { a: 1 } })
+    await outbox.enqueue({ updates: { b: 2 } })
     const engine = createSyncEngine(fakeDatabase(), outbox)
 
     engine.start()
     await flushMicrotasks()
 
-    expect(mockSet.mock.calls.map((call) => call[0])).toEqual(["a", "b"])
+    expect(mockUpdate.mock.calls.map((call) => call[0])).toEqual([
+      { a: 1 },
+      { b: 2 },
+    ])
   })
 
   it("stops draining after a failure and leaves the op in the outbox", async () => {
-    mockSet.mockRejectedValueOnce(new Error("offline"))
-    await outbox.enqueue({ path: "a", value: 1 })
-    await outbox.enqueue({ path: "b", value: 2 })
+    mockUpdate.mockRejectedValueOnce(new Error("offline"))
+    await outbox.enqueue({ updates: { a: 1 } })
+    await outbox.enqueue({ updates: { b: 2 } })
     const engine = createSyncEngine(fakeDatabase(), outbox)
 
     engine.start()
     await flushMicrotasks()
 
-    expect(mockSet).toHaveBeenCalledTimes(1)
-    expect((await outbox.list()).map(pathOf)).toEqual(["a", "b"])
+    expect(mockUpdate).toHaveBeenCalledTimes(1)
+    expect((await outbox.list()).map((op) => op.updates)).toEqual([
+      { a: 1 },
+      { b: 2 },
+    ])
   })
 
   it("drains a multi-write op as a single atomic update", async () => {
@@ -107,28 +93,28 @@ describe("createSyncEngine", () => {
       value: false,
       configurable: true,
     })
-    await outbox.enqueue({ path: "a", value: 1 })
+    await outbox.enqueue({ updates: { a: 1 } })
     const engine = createSyncEngine(fakeDatabase(), outbox)
 
     engine.start()
     await flushMicrotasks()
 
-    expect(mockSet).not.toHaveBeenCalled()
+    expect(mockUpdate).not.toHaveBeenCalled()
   })
 
   it("retries a failed op once notified again", async () => {
-    mockSet.mockRejectedValueOnce(new Error("offline"))
-    await outbox.enqueue({ path: "a", value: 1 })
+    mockUpdate.mockRejectedValueOnce(new Error("offline"))
+    await outbox.enqueue({ updates: { a: 1 } })
     const engine = createSyncEngine(fakeDatabase(), outbox)
 
     engine.start()
     await flushMicrotasks()
-    expect(mockSet).toHaveBeenCalledTimes(1)
+    expect(mockUpdate).toHaveBeenCalledTimes(1)
 
     engine.notifyChange()
     await flushMicrotasks()
 
-    expect(mockSet).toHaveBeenCalledTimes(2)
+    expect(mockUpdate).toHaveBeenCalledTimes(2)
     expect(await outbox.list()).toEqual([])
   })
 })
