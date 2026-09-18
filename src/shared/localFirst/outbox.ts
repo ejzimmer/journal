@@ -1,12 +1,18 @@
 import { createStore, del, entries, keys, set } from "idb-keyval"
 import { pathsAreRelated } from "./pathTree"
 
-export type OutboxOp = {
-  path: string
-  // undefined/null means "delete this path", matching Firebase Realtime
-  // Database's own semantics for a null write.
-  value: unknown
-}
+export type OutboxOp =
+  | {
+      path: string
+      // undefined/null means "delete this path", matching Firebase Realtime
+      // Database's own semantics for a null write.
+      value: unknown
+    }
+  | {
+      // Several paths written together as one atomic Firebase multi-location
+      // update, e.g. moving an item between two lists in one commit.
+      updates: Record<string, unknown>
+    }
 
 export type StoredOutboxOp = OutboxOp & { id: number }
 
@@ -42,5 +48,11 @@ export function outboxTouchesPath(
   ops: StoredOutboxOp[],
   path: string,
 ): boolean {
-  return ops.some((op) => pathsAreRelated(op.path, path))
+  return ops.some((op) =>
+    "path" in op
+      ? pathsAreRelated(op.path, path)
+      : Object.keys(op.updates).some((updatePath) =>
+          pathsAreRelated(updatePath, path),
+        ),
+  )
 }

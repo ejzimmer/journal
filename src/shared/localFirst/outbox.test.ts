@@ -1,8 +1,12 @@
 import "fake-indexeddb/auto"
-import { createOutbox, outboxTouchesPath } from "./outbox"
+import { createOutbox, outboxTouchesPath, StoredOutboxOp } from "./outbox"
 
 function uniqueDbName() {
   return `outbox-test-${Math.random()}`
+}
+
+function pathOf(op: StoredOutboxOp): string | undefined {
+  return "path" in op ? op.path : undefined
 }
 
 describe("createOutbox", () => {
@@ -14,7 +18,7 @@ describe("createOutbox", () => {
     await outbox.enqueue({ path: "c", value: 3 })
 
     const ops = await outbox.list()
-    expect(ops.map((op) => op.path)).toEqual(["a", "b", "c"])
+    expect(ops.map(pathOf)).toEqual(["a", "b", "c"])
   })
 
   it("removes an op by id", async () => {
@@ -26,7 +30,7 @@ describe("createOutbox", () => {
     await outbox.remove(first.id)
 
     const remaining = await outbox.list()
-    expect(remaining.map((op) => op.path)).toEqual(["b"])
+    expect(remaining.map(pathOf)).toEqual(["b"])
   })
 
   it("persists across separate outbox instances for the same db name", async () => {
@@ -36,7 +40,7 @@ describe("createOutbox", () => {
 
     const outbox2 = createOutbox(dbName)
     const ops = await outbox2.list()
-    expect(ops.map((op) => op.path)).toEqual(["a"])
+    expect(ops.map(pathOf)).toEqual(["a"])
   })
 })
 
@@ -54,5 +58,32 @@ describe("outboxTouchesPath", () => {
   it("is false when nothing pending touches the path", () => {
     const ops = [{ id: 1, path: "work/list1", value: {} }]
     expect(outboxTouchesPath(ops, "labels")).toBe(false)
+  })
+
+  it("is true when a multi-write op's updates include the path", () => {
+    const ops = [
+      {
+        id: 1,
+        updates: { "work/list1/task1": {}, "work/list2/task1": null },
+      },
+    ]
+    expect(outboxTouchesPath(ops, "work/list2/task1")).toBe(true)
+  })
+
+  it("is false when a multi-write op's updates don't include the path", () => {
+    const ops = [{ id: 1, updates: { "work/list1/task1": {} } }]
+    expect(outboxTouchesPath(ops, "labels")).toBe(false)
+  })
+})
+
+describe("createOutbox multi-write ops", () => {
+  it("enqueues and lists an atomic multi-path update", async () => {
+    const outbox = createOutbox(uniqueDbName())
+    const updates = { "work/list1/task1": null, "work/list2/task1": {} }
+
+    await outbox.enqueue({ updates })
+
+    const [op] = await outbox.list()
+    expect(op).toEqual({ id: 1, updates })
   })
 })

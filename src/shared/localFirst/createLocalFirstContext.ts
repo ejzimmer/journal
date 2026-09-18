@@ -2,8 +2,7 @@ import { Database, onValue, ref } from "firebase/database"
 import { useEffect, useSyncExternalStore } from "react"
 import { ContextType } from "../FirebaseContext"
 import { createLocalStore } from "./localStore"
-import { createOutbox } from "./outbox"
-import { pathsAreRelated } from "./pathTree"
+import { createOutbox, outboxTouchesPath } from "./outbox"
 import { createSyncEngine } from "./syncEngine"
 
 export function createLocalFirstContext(
@@ -26,9 +25,7 @@ export function createLocalFirstContext(
 
     onValue(ref(database, key), async (snapshot) => {
       const pendingOps = await outbox.list()
-      const hasUnsyncedLocalWrite = pendingOps.some((op) =>
-        pathsAreRelated(op.path, key),
-      )
+      const hasUnsyncedLocalWrite = outboxTouchesPath(pendingOps, key)
       // A local write under this key hasn't reached the server yet, so this
       // snapshot predates it - applying it now would overwrite the pending
       // change with stale data. The next snapshot after the outbox drains
@@ -42,6 +39,13 @@ export function createLocalFirstContext(
   function write(path: string, value: unknown) {
     localStore.writePath(path, value)
     void outbox.enqueue({ path, value }).then(() => syncEngine.notifyChange())
+  }
+
+  function writeMulti(updates: Record<string, unknown>) {
+    Object.entries(updates).forEach(([path, value]) =>
+      localStore.writePath(path, value),
+    )
+    void outbox.enqueue({ updates }).then(() => syncEngine.notifyChange())
   }
 
   const context: ContextType = {
@@ -76,6 +80,24 @@ export function createLocalFirstContext(
     },
     setValue: (path, value) => {
       write(path, value)
+    },
+    moveItemBetweenLists: ({
+      movedItem,
+      sourceListId,
+      targetListId,
+      targetListItems = [],
+    }) => {
+      const updates: Record<string, unknown> = {
+        [`${targetListId}/${movedItem.id}`]: movedItem,
+        [`${sourceListId}/${movedItem.id}`]: null,
+      }
+      targetListItems.forEach((existingItem) => {
+        updates[`${targetListId}/${existingItem.id}/position`] =
+          existingItem.position < movedItem.position
+            ? existingItem.position
+            : existingItem.position + 1
+      })
+      writeMulti(updates)
     },
     useValue: <T,>(key?: string) => {
       useEffect(() => {

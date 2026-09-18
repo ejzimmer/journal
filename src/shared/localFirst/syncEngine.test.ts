@@ -1,16 +1,23 @@
 import "fake-indexeddb/auto"
-import { createOutbox, Outbox } from "./outbox"
+import { createOutbox, Outbox, StoredOutboxOp } from "./outbox"
 import { createSyncEngine } from "./syncEngine"
 
 const mockSet = jest.fn().mockResolvedValue(undefined)
 const mockRemove = jest.fn().mockResolvedValue(undefined)
+const mockUpdate = jest.fn().mockResolvedValue(undefined)
 
 jest.mock("firebase/database", () => ({
-  ref: (_database: unknown, path: string) => ({ path }),
+  ref: (_database: unknown, path?: string) => ({ path }),
   set: (reference: { path: string }, value: unknown) =>
     mockSet(reference.path, value),
   remove: (reference: { path: string }) => mockRemove(reference.path),
+  update: (_reference: unknown, updates: Record<string, unknown>) =>
+    mockUpdate(updates),
 }))
+
+function pathOf(op: StoredOutboxOp): string | undefined {
+  return "path" in op ? op.path : undefined
+}
 
 function uniqueDbName() {
   return `sync-engine-test-${Math.random()}`
@@ -83,7 +90,19 @@ describe("createSyncEngine", () => {
     await flushMicrotasks()
 
     expect(mockSet).toHaveBeenCalledTimes(1)
-    expect((await outbox.list()).map((op) => op.path)).toEqual(["a", "b"])
+    expect((await outbox.list()).map(pathOf)).toEqual(["a", "b"])
+  })
+
+  it("drains a multi-write op as a single atomic update", async () => {
+    const updates = { "work/list1/task1": null, "work/list2/task1": {} }
+    await outbox.enqueue({ updates })
+    const engine = createSyncEngine(fakeDatabase(), outbox)
+
+    engine.start()
+    await flushMicrotasks()
+
+    expect(mockUpdate).toHaveBeenCalledWith(updates)
+    expect(await outbox.list()).toEqual([])
   })
 
   it("doesn't attempt to drain while offline", async () => {

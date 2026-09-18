@@ -1,4 +1,4 @@
-import { Database, ref, remove, set } from "firebase/database"
+import { Database, ref, remove, set, update } from "firebase/database"
 import { Outbox } from "./outbox"
 
 const INITIAL_BACKOFF_MS = 1000
@@ -27,7 +27,9 @@ export function createSyncEngine(
         if (!next) return
 
         try {
-          if (next.value === undefined || next.value === null) {
+          if ("updates" in next) {
+            await update(ref(database), next.updates)
+          } else if (next.value === undefined || next.value === null) {
             await remove(ref(database, next.path))
           } else {
             await set(ref(database, next.path), next.value)
@@ -35,7 +37,8 @@ export function createSyncEngine(
           await outbox.remove(next.id)
           backoffMs = INITIAL_BACKOFF_MS
         } catch (error) {
-          console.error(`Failed to sync "${next.path}", will retry`, error)
+          const description = "updates" in next ? next.updates : next.path
+          console.error(`Failed to sync ${JSON.stringify(description)}, will retry`, error)
           scheduleRetry()
           return
         }

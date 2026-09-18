@@ -4,13 +4,16 @@ import { createLocalFirstContext } from "./createLocalFirstContext"
 
 const mockSet = jest.fn().mockResolvedValue(undefined)
 const mockRemove = jest.fn().mockResolvedValue(undefined)
+const mockUpdate = jest.fn().mockResolvedValue(undefined)
 const mockOnValueCallbacks = new Map<string, (snapshot: { val: () => unknown }) => void>()
 
 jest.mock("firebase/database", () => ({
-  ref: (_database: unknown, path: string) => ({ path }),
+  ref: (_database: unknown, path?: string) => ({ path }),
   set: (reference: { path: string }, value: unknown) =>
     mockSet(reference.path, value),
   remove: (reference: { path: string }) => mockRemove(reference.path),
+  update: (_reference: unknown, updates: Record<string, unknown>) =>
+    mockUpdate(updates),
   onValue: (
     reference: { path: string },
     callback: (snapshot: { val: () => unknown }) => void,
@@ -112,6 +115,38 @@ describe("createLocalFirstContext", () => {
     await waitFor(() => {
       expect(result.current.value).toEqual({
         task1: { id: "task1", description: "Remote" },
+      })
+    })
+  })
+
+  it("moveItemBetweenLists writes both lists locally and syncs as one atomic update", async () => {
+    const context = await setUpContext()
+    const movedItem = { id: "task1", position: 0 }
+    const stayingItem = { id: "task2", position: 0 }
+    context.updateItem("work/list2/items", stayingItem)
+
+    context.moveItemBetweenLists({
+      movedItem,
+      sourceListId: "work/list1/items",
+      targetListId: "work/list2/items",
+      targetListItems: [stayingItem],
+    })
+
+    const { result: source } = renderHook(() =>
+      context.useValue<Record<string, unknown>>("work/list1/items"),
+    )
+    const { result: target } = renderHook(() =>
+      context.useValue<Record<string, unknown>>("work/list2/items"),
+    )
+    expect(source.current.value?.task1).toBeUndefined()
+    expect(target.current.value?.task1).toEqual(movedItem)
+    expect(target.current.value?.task2).toEqual({ id: "task2", position: 1 })
+
+    await waitFor(() => {
+      expect(mockUpdate).toHaveBeenCalledWith({
+        "work/list2/items/task1": movedItem,
+        "work/list1/items/task1": null,
+        "work/list2/items/task2/position": 1,
       })
     })
   })
