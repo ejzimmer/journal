@@ -48,6 +48,25 @@ describe("createOutbox", () => {
     const [op] = await outbox.list()
     expect(op).toEqual({ id: 1, updates })
   })
+
+  it("peekFront returns the oldest op without removing it", async () => {
+    const outbox = createOutbox(uniqueDbName())
+    await outbox.enqueue({ updates: { a: 1 } })
+    await outbox.enqueue({ updates: { b: 2 } })
+
+    const front = await outbox.peekFront()
+
+    expect(front?.updates).toEqual({ a: 1 })
+    expect((await outbox.list()).map((op) => op.updates)).toEqual([
+      { a: 1 },
+      { b: 2 },
+    ])
+  })
+
+  it("peekFront returns undefined for an empty outbox", async () => {
+    const outbox = createOutbox(uniqueDbName())
+    expect(await outbox.peekFront()).toBeUndefined()
+  })
 })
 
 describe("opsTouchPath", () => {
