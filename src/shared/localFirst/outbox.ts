@@ -2,17 +2,8 @@ import { createStore, del, entries, keys, set } from "idb-keyval"
 import { pathsAreRelated } from "./pathTree"
 
 export type OutboxOp =
-  | {
-      path: string
-      // undefined/null means "delete this path", matching Firebase Realtime
-      // Database's own semantics for a null write.
-      value: unknown
-    }
-  | {
-      // Several paths written together as one atomic Firebase multi-location
-      // update, e.g. moving an item between two lists in one commit.
-      updates: Record<string, unknown>
-    }
+  | { path: string; value: unknown }
+  | { updates: Record<string, unknown> }
 
 export type StoredOutboxOp = OutboxOp & { id: number }
 

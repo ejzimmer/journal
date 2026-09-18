@@ -64,7 +64,6 @@ describe("createLocalStore", () => {
     await store1.hydrate()
     store1.writePath("work/list1", { id: "list1", description: "Chores" })
 
-    // writePath persists asynchronously (fire-and-forget); give it a tick.
     await new Promise((resolve) => setTimeout(resolve, 0))
 
     const store2 = createLocalStore(dbName)

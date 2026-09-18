@@ -27,9 +27,6 @@ function fakeDatabase() {
   return {} as import("firebase/database").Database
 }
 
-// IndexedDB (even the fake one) resolves across several real event-loop
-// turns - opening a connection, then a transaction, then a request - so a
-// single setTimeout(0) isn't always enough to observe a drain settle.
 async function flushMicrotasks() {
   for (let i = 0; i < 10; i++) {
     await new Promise((resolve) => setTimeout(resolve, 0))

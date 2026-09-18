@@ -9,9 +9,6 @@ export function createLocalFirstContext(
   database: Database,
   dbName = "journal-local-first",
 ): { context: ContextType; hydrate: () => Promise<void> } {
-  // Separate IndexedDB databases: idb-keyval's createStore only creates its
-  // named object store when the database is first opened, so two stores
-  // can't share one db name without an explicit shared upgrade step.
   const localStore = createLocalStore(`${dbName}-local`)
   const outbox = createOutbox(`${dbName}-outbox`)
   const syncEngine = createSyncEngine(database, outbox)
@@ -19,18 +16,13 @@ export function createLocalFirstContext(
 
   const keysWithRemoteListener = new Set<string>()
 
-  function ensureRemoteListener(key: string) {
+  function registerRemoteListener(key: string) {
     if (keysWithRemoteListener.has(key)) return
     keysWithRemoteListener.add(key)
 
     onValue(ref(database, key), async (snapshot) => {
       const pendingOps = await outbox.list()
-      const hasUnsyncedLocalWrite = outboxTouchesPath(pendingOps, key)
-      // A local write under this key hasn't reached the server yet, so this
-      // snapshot predates it - applying it now would overwrite the pending
-      // change with stale data. The next snapshot after the outbox drains
-      // will reflect our own write instead.
-      if (hasUnsyncedLocalWrite) return
+      if (outboxTouchesPath(pendingOps, key)) return
 
       localStore.writePath(key, snapshot.val())
     })
@@ -101,7 +93,7 @@ export function createLocalFirstContext(
     },
     useValue: <T,>(key?: string) => {
       useEffect(() => {
-        if (key) ensureRemoteListener(key)
+        if (key) registerRemoteListener(key)
       }, [key])
 
       const value = useSyncExternalStore(

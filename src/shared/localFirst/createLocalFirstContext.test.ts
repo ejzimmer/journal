@@ -31,6 +31,12 @@ function uniqueDbName() {
   return `local-first-context-test-${Math.random()}`
 }
 
+async function flushMicrotasks() {
+  for (let i = 0; i < 10; i++) {
+    await new Promise((resolve) => setTimeout(resolve, 0))
+  }
+}
+
 async function setUpContext() {
   const { context, hydrate } = createLocalFirstContext(
     {} as import("firebase/database").Database,
@@ -107,7 +113,6 @@ describe("createLocalFirstContext", () => {
       context.useValue<Record<string, unknown>>("work"),
     )
 
-    // Subscribing triggers the remote listener registration.
     await waitFor(() => expect(mockOnValueCallbacks.has("work")).toBe(true))
 
     fireRemoteSnapshot("work", { task1: { id: "task1", description: "Remote" } })
@@ -153,7 +158,7 @@ describe("createLocalFirstContext", () => {
 
   it("ignores a stale remote snapshot while a local write for that key is still unsynced", async () => {
     const context = await setUpContext()
-    mockSet.mockImplementation(() => new Promise(() => {})) // never resolves
+    mockSet.mockImplementation(() => new Promise(() => {}))
     const item = { id: "task1", description: "Local edit" }
 
     context.updateItem("work", item)
@@ -164,8 +169,7 @@ describe("createLocalFirstContext", () => {
     await waitFor(() => expect(mockOnValueCallbacks.has("work")).toBe(true))
 
     fireRemoteSnapshot("work", { task1: { id: "task1", description: "Stale" } })
-    // Give the outbox-check microtask a chance to run.
-    await new Promise((resolve) => setTimeout(resolve, 0))
+    await flushMicrotasks()
 
     expect(result.current.value).toEqual({ task1: item })
   })

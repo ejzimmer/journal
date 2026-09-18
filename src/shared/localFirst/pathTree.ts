@@ -16,9 +16,6 @@ export function cloneDeep<T>(value: T): T {
   return JSON.parse(JSON.stringify(value))
 }
 
-// Mirrors Firebase Realtime Database's own semantics: writing null/undefined
-// deletes the node, and a node left with no children after a delete
-// disappears too, all the way up to (but not including) the root.
 export function setAtPath(root: Tree, path: string, value: unknown): Tree {
   const segments = path.split("/")
   const last = segments.pop()!
@@ -50,8 +47,6 @@ export function setAtPath(root: Tree, path: string, value: unknown): Tree {
   return node
 }
 
-// Two paths are "related" if a change to one could affect what the other
-// resolves to: an exact match, or either path is nested inside the other.
 export function pathsAreRelated(a: string, b: string): boolean {
   return a === b || a.startsWith(`${b}/`) || b.startsWith(`${a}/`)
 }
