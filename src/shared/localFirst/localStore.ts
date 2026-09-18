@@ -1,5 +1,5 @@
 import { createStore, get, set } from "idb-keyval"
-import { cloneDeep, getAtPath, pathsAreRelated, setAtPath, Tree } from "./pathTree"
+import { getAtPath, pathsAreRelated, setAtPath, Tree } from "./pathTree"
 
 const ROOT_KEY = "tree"
 
@@ -26,7 +26,7 @@ export function createLocalStore(dbName: string): LocalStore {
   return {
     async hydrate() {
       const saved = await get<Tree>(ROOT_KEY, store)
-      data = saved ? cloneDeep(saved) : {}
+      data = saved ?? {}
     },
     readPath<T>(path: string) {
       return getAtPath(data, path) as T | undefined

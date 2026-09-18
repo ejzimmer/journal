@@ -84,6 +84,7 @@ describe("createSyncEngine", () => {
     engine.start()
     await flushMicrotasks()
 
+    expect(mockUpdate).toHaveBeenCalledTimes(1)
     expect(mockUpdate).toHaveBeenCalledWith(updates)
     expect(await outbox.list()).toEqual([])
   })

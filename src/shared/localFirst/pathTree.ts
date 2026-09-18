@@ -9,13 +9,6 @@ export function getAtPath(root: Tree, path: string): unknown {
     )
 }
 
-export function cloneDeep<T>(value: T): T {
-  if (typeof structuredClone === "function") {
-    return structuredClone(value)
-  }
-  return JSON.parse(JSON.stringify(value))
-}
-
 export function setAtPath(root: Tree, path: string, value: unknown): Tree {
   const segments = path.split("/")
   const last = segments.pop()!

@@ -22,7 +22,7 @@ export function createSyncEngine(
     draining = true
 
     try {
-      while (typeof navigator === "undefined" || navigator.onLine) {
+      while (navigator.onLine) {
         const next = await outbox.peekFront()
         if (!next) return
 
