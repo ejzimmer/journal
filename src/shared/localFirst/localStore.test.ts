@@ -24,7 +24,7 @@ describe("createLocalStore", () => {
     })
   })
 
-  it("notifies subscribers of a related path on write", async () => {
+  it("notifies subscribers watching an ancestor key when a nested path is written", async () => {
     const store = createLocalStore(uniqueDbName())
     await store.hydrate()
     const onChange = jest.fn()

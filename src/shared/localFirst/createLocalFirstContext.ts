@@ -100,7 +100,6 @@ export function createLocalFirstContext(
         () => (key ? localStore.readPath<T>(key) : undefined),
       )
 
-      if (!key || value === undefined) return { loading: false }
       return { value, loading: false }
     },
   }
