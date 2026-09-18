@@ -1,5 +1,4 @@
-import endOfDay from "date-fns/endOfDay"
-import isSameWeek from "date-fns/isSameWeek"
+import { endOfDay, isSameWeek } from "date-fns"
 import { EditableDate } from "../../../shared/controls/EditableDate"
 
 type DueDateProps = {
