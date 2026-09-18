@@ -1,6 +1,5 @@
 import { CSSProperties } from "react"
-import isSameDay from "date-fns/isSameDay"
-import differenceInDays from "date-fns/differenceInDays"
+import { isSameDay, differenceInDays } from "date-fns"
 import { WeeklyTask } from "../../../shared/types"
 import { dateToWeekday } from "./utils"
 
