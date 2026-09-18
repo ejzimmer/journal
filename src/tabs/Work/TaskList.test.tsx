@@ -29,6 +29,32 @@ const unlabelledList: WorkTask = {
   parentId: "work",
   lastStatusUpdate: 0,
   position: 1,
+  items: {
+    "task-1": {
+      id: "task-1",
+      description: "not done",
+      status: "not_started",
+      parentId: "list-2",
+      lastStatusUpdate: 0,
+      position: 0,
+    },
+    "task-2": {
+      id: "task-2",
+      description: "also not done",
+      status: "not_started",
+      parentId: "list-2",
+      lastStatusUpdate: 0,
+      position: 1,
+    },
+    "task-3": {
+      id: "task-3",
+      description: "done",
+      status: "done",
+      parentId: "list-2",
+      lastStatusUpdate: 0,
+      position: 2,
+    },
+  },
 }
 
 const lists: Record<string, WorkTask> = {
@@ -67,13 +93,16 @@ function createStorageContext(): WorkStorageContextType {
 }
 
 describe("TaskList label", () => {
-  it("shows the label and an edit button when the list has a label", () => {
+  it("opens the label picker when the label text is clicked", async () => {
+    const user = userEvent.setup()
     renderTaskList(labelledList.id, createStorageContext())
 
-    expect(screen.getByText("a11y")).toBeInTheDocument()
-    expect(
-      screen.getByRole("button", { name: "Change a11y label" }),
-    ).toBeInTheDocument()
+    const labelText = screen.getByRole("button", { name: "Change a11y label" })
+    expect(labelText).toHaveTextContent("a11y")
+
+    await user.click(labelText)
+
+    expect(screen.getByRole("combobox")).toBeInTheDocument()
   })
 
   it("doesn't show a label or edit button when the list has none", () => {
@@ -107,13 +136,52 @@ describe("TaskList label", () => {
     await user.click(screen.getByRole("button", { name: "Change a11y label" }))
     await user.click(screen.getByRole("option", { name: "urgent" }))
 
-    expect(storageContext.removeLabel).toHaveBeenCalledWith(
-      a11yLabel.id,
+    expect(storageContext.changeLabels).toHaveBeenCalledWith(
+      [{ value: urgentLabel.value, colour: urgentLabel.colour }],
       labelledList,
     )
-    expect(storageContext.addLabel).toHaveBeenCalledWith(
-      { value: urgentLabel.value, colour: urgentLabel.colour },
-      labelledList,
-    )
+    expect(storageContext.removeLabel).not.toHaveBeenCalled()
+  })
+
+  it("brings the edit button back when the label picker is dismissed", async () => {
+    const user = userEvent.setup()
+    renderTaskList(labelledList.id, createStorageContext())
+
+    await user.click(screen.getByRole("button", { name: "Change a11y label" }))
+    expect(
+      screen.queryByRole("button", { name: "Change a11y label" }),
+    ).not.toBeInTheDocument()
+
+    await user.click(document.body)
+
+    expect(
+      screen.getByRole("button", { name: "Change a11y label" }),
+    ).toBeInTheDocument()
+  })
+
+  it("brings the edit button back when the label picker is cancelled with escape", async () => {
+    const user = userEvent.setup()
+    renderTaskList(labelledList.id, createStorageContext())
+
+    await user.click(screen.getByRole("button", { name: "Change a11y label" }))
+    await user.keyboard("{Escape}")
+
+    expect(
+      screen.getByRole("button", { name: "Change a11y label" }),
+    ).toBeInTheDocument()
+  })
+})
+
+describe("TaskList count", () => {
+  it("shows the number of not-done items in the list", () => {
+    renderTaskList(unlabelledList.id, createStorageContext())
+
+    expect(screen.getByLabelText("2 tasks remaining")).toHaveTextContent("(2)")
+  })
+
+  it("hides the count for a list with no items", () => {
+    renderTaskList(labelledList.id, createStorageContext())
+
+    expect(screen.queryByLabelText(/tasks remaining/)).not.toBeInTheDocument()
   })
 })

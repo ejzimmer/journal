@@ -1,6 +1,5 @@
 import { CSSProperties } from "react"
-import isSameDay from "date-fns/isSameDay"
-import differenceInDays from "date-fns/differenceInDays"
+import { isSameDay, differenceInDays } from "date-fns"
 import { WeeklyTask } from "../../../shared/types"
 import { dateToWeekday } from "./utils"
 
@@ -23,7 +22,7 @@ export function ProgressIndicator({
     ? differenceInDays(new Date(), mostRecentlyDone)
     : 0
   const fillOpacity =
-    daysSinceDone > 2 ? Math.max(0, 1 - 0.05 * (daysSinceDone - 2)) : 1
+    daysSinceDone > 2 ? Math.max(0, 1 - 0.2 * (daysSinceDone - 2)) : 1
 
   return (
     <div className="indicators">

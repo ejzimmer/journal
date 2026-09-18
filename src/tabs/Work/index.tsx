@@ -12,8 +12,7 @@ import { WorkStorageProvider, useWorkStorage } from "./WorkStorageContext"
 
 import "./index.css"
 import { MoveToOtherLists } from "./MoveToOtherLists"
-import { addSourceListLabel } from "./labelUtils"
-import { moveTaskBetweenLists } from "./moveTaskBetweenLists"
+import { getAppendPosition } from "./taskPosition"
 import { ListDestination, getDestinationListIndex } from "./listDestination"
 
 export function Work() {
@@ -31,7 +30,7 @@ function WorkContent() {
     isLoading: listsLoading,
     addList,
     addTask,
-    deleteTask,
+    moveTask,
     reorderTasks,
   } = useWorkStorage()
 
@@ -69,15 +68,18 @@ function WorkContent() {
         return
       }
 
-      moveTaskBetweenLists(
-        { addTask, deleteTask },
+      moveTask({
         task,
-        currentListId,
-        orderedLists[currentIndex],
-        targetList,
-      )
+        movedItem: {
+          ...task,
+          position: getAppendPosition(targetList),
+          lastStatusUpdate: Date.now(),
+        },
+        sourceListId: `${WORK_KEY}/${currentListId}/items`,
+        targetListId: `${WORK_KEY}/${targetList.id}/items`,
+      })
     },
-    [orderedLists, addTask, deleteTask],
+    [orderedLists, moveTask],
   )
 
   const onUpdate = useCallback(() => {
@@ -141,7 +143,7 @@ function WorkContent() {
     canDrop: ({ source }) => isDraggable(source.data),
     getData: () => ({ id: WORK_KEY }),
   })
-  useDraggableList({
+  useDraggableList<WorkTask>({
     listId: WORK_KEY,
     canDropSourceOnTarget: (source, target) => {
       if (!isDraggable(target)) {
@@ -175,11 +177,20 @@ function WorkContent() {
     getAxis: (source) => {
       return source[draggableTypeKey] === "task" ? "vertical" : "horizontal"
     },
-    onMove: (item: WorkTask, sourceListId: string) => {
-      const [, sourceListKey] = sourceListId.split("/")
-      const sourceList = sourceListKey ? lists?.[sourceListKey] : undefined
-      return sourceList ? addSourceListLabel(item, sourceList) : item
-    },
+    moveItemBetweenLists: ({
+      item,
+      movedItem,
+      sourceListId,
+      targetListId,
+      targetListItems,
+    }) =>
+      moveTask({
+        task: item,
+        movedItem,
+        sourceListId,
+        targetListId,
+        targetListItems,
+      }),
   })
 
   if (listsLoading) {

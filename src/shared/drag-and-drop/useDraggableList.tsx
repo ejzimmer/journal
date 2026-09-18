@@ -1,4 +1,4 @@
-import { extractClosestEdge } from "@atlaskit/pragmatic-drag-and-drop-hitbox/closest-edge"
+import { extractClosestEdge } from "@atlaskit/pragmatic-drag-and-drop-hitbox/closest-edge/extract-closest-edge"
 import { reorderWithEdge } from "@atlaskit/pragmatic-drag-and-drop-hitbox/util/reorder-with-edge"
 import { monitorForElements } from "@atlaskit/pragmatic-drag-and-drop/element/adapter"
 import { useEffect, useCallback } from "react"
@@ -16,7 +16,15 @@ type UseDraggableArgs<T> = {
   canDropSourceOnTarget: (source: Draggable, target: DropTarget) => boolean
   getTargetListId: (source: Draggable, target: DropTarget) => string
   getAxis: (source: Draggable) => "horizontal" | "vertical"
-  onMove?: (item: T, sourceListId: string, targetListId: string) => T
+  moveItemBetweenLists?: (args: {
+    item: T
+    movedItem: T
+    sourceListId: string
+    targetListId: string
+    targetListItems?: T[]
+  }) => void
+  useValue?: <U>(key?: string) => { value?: U; loading: boolean }
+  updateList?: <U extends { id: string }>(listName: string, list: U[]) => void
 }
 
 export function useDraggableList<
@@ -26,9 +34,13 @@ export function useDraggableList<
   canDropSourceOnTarget,
   getTargetListId,
   getAxis,
-  onMove,
+  moveItemBetweenLists,
+  useValue: useValueProp,
+  updateList: updateListProp,
 }: UseDraggableArgs<T>) {
-  const { useValue, updateList, addItem, deleteItem } = useStorageContext()
+  const storageContext = useStorageContext()
+  const useValue = useValueProp ?? storageContext.useValue
+  const updateList = updateListProp ?? storageContext.updateList
 
   const { value } = useValue<Record<string, T>>(listId)
 
@@ -133,47 +145,34 @@ export function useDraggableList<
           >
           const sortedTarget = sortByPosition(Object.values(targetList))
 
-          // Make a space for the new item
-          updateList(
-            targetListId,
-            sortedTarget.map((item) =>
-              item.position < targetListIndex
-                ? item
-                : { ...item, position: item.position + 1 },
-            ),
-          )
-
-          // Add the new item to the list
           const item = getItemByPath(
             `${sourceData.parentId}/${sourceData.id}`,
             value,
           )
-          const movedItem = onMove
-            ? onMove(item, sourceData.parentId, targetListId)
-            : item
-          addItem(targetListId, {
-            ...movedItem,
-            position: targetListIndex,
-          })
 
-          // Remove the item from the old list
-          deleteItem(sourceData.parentId, item)
+          moveItemBetweenLists?.({
+            item,
+            movedItem: { ...item, position: targetListIndex },
+            sourceListId: sourceData.parentId,
+            targetListId,
+            targetListItems: sortedTarget,
+          })
         } else {
           const list = getItemByPath(sourceData.parentId, value)
           const item = list[sourceData.id]
-          const movedItem = onMove
-            ? onMove(item, sourceData.parentId, targetListId)
-            : item
 
-          addItem(targetListId, movedItem)
-          deleteItem(sourceData.parentId, item)
+          moveItemBetweenLists?.({
+            item,
+            movedItem: item,
+            sourceListId: sourceData.parentId,
+            targetListId,
+          })
         }
       },
     })
   }, [
     value,
-    addItem,
-    deleteItem,
+    moveItemBetweenLists,
     getDestinationIndex,
     updatePosition,
     updateList,
@@ -181,6 +180,5 @@ export function useDraggableList<
     getTargetListId,
     getAxis,
     getItemByPath,
-    onMove,
   ])
 }

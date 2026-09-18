@@ -7,6 +7,7 @@ import {
   useRef,
 } from "react"
 import { useStorageContext } from "../../shared/FirebaseContext"
+import { addSourceListLabel } from "./labelUtils"
 import {
   Colour,
   Label,
@@ -34,9 +35,15 @@ export type WorkStorageContextType = {
   ) => void
   updateTask: (listId: string, task: WorkTask) => void
   deleteTask: (listId: string, task: WorkTask) => void
+  moveTask: (args: {
+    task: WorkTask
+    movedItem: WorkTask
+    sourceListId: string
+    targetListId: string
+    targetListItems?: WorkTask[]
+  }) => void
   reorderTasks: <T extends { id: string }>(listId: string, tasks: T[]) => void
 
-  addSubtask: (listId: string, taskId: string, description: string) => void
   deleteSubtask: (listId: string, taskId: string, subtask: Subtask) => void
   updateSubtasksList: (
     listId: string,
@@ -50,6 +57,7 @@ export type WorkStorageContextType = {
   labels: StoredLabel[]
   getLabel: (id: string) => StoredLabel | undefined
   addLabel: (label: Label, entity: WorkTask) => void
+  changeLabels: (labels: Label[], entity: WorkTask) => void
   removeLabel: (id: string, entity: WorkTask) => void
   updateLabel: (id: string, colour: Colour) => void
 }
@@ -64,6 +72,7 @@ export function WorkStorageProvider({ children }: { children: ReactNode }) {
     updateItem,
     deleteItem,
     updateList: updateItemsList,
+    moveItemBetweenLists,
     useValue,
   } = useStorageContext()
 
@@ -153,8 +162,26 @@ export function WorkStorageProvider({ children }: { children: ReactNode }) {
     }
   }
 
+  const diffLabelIds = (
+    oldLabelIds: string[] = [],
+    newLabelIds: string[] = [],
+  ) => ({
+    removed: new Set(oldLabelIds.filter((id) => !newLabelIds.includes(id))),
+    added: new Set(newLabelIds.filter((id) => !oldLabelIds.includes(id))),
+  })
+
+  const applyLabelUsage = (removed: Set<string>, added: Set<string>) => {
+    removed.forEach((id) => markUnusedLabel(id))
+    added.forEach((id) => markLabelAsUsed(id))
+  }
+
   const updateList = (list: WorkTask) => {
+    const previousList = lists?.[list.id]
     updateItem(WORK_KEY, list)
+    if (!previousList) return
+
+    const { removed, added } = diffLabelIds(previousList.labelIds, list.labelIds)
+    applyLabelUsage(removed, added)
   }
 
   const updateTask = (listId: string, task: WorkTask) => {
@@ -162,24 +189,17 @@ export function WorkStorageProvider({ children }: { children: ReactNode }) {
     updateItem(`${WORK_KEY}/${listId}/items`, task)
     if (!previousTask) return
 
-    const oldLabelIds = previousTask.labelIds ?? []
+    const { removed, added } = diffLabelIds(previousTask.labelIds, task.labelIds)
     const newLabelIds = task.labelIds ?? []
-    const removedLabelIds = new Set(
-      oldLabelIds.filter((id) => !newLabelIds.includes(id)),
-    )
-    const addedLabelIds = new Set(
-      newLabelIds.filter((id) => !oldLabelIds.includes(id)),
-    )
 
     if (previousTask.status !== "done" && task.status === "done") {
-      newLabelIds.forEach((id) => removedLabelIds.add(id))
+      newLabelIds.forEach((id) => removed.add(id))
     }
     if (previousTask.status === "done" && task.status !== "done") {
-      newLabelIds.forEach((id) => addedLabelIds.add(id))
+      newLabelIds.forEach((id) => added.add(id))
     }
 
-    removedLabelIds.forEach((id) => markUnusedLabel(id))
-    addedLabelIds.forEach((id) => markLabelAsUsed(id))
+    applyLabelUsage(removed, added)
   }
 
   const value: WorkStorageContextType = {
@@ -217,13 +237,25 @@ export function WorkStorageProvider({ children }: { children: ReactNode }) {
       deleteItem(`${WORK_KEY}/${listId}/items`, task)
       task.labelIds?.forEach((id) => markUnusedLabel(id))
     },
+    moveTask: ({ task, movedItem, sourceListId, targetListId, targetListItems }) => {
+      const [, sourceListKey] = sourceListId.split("/")
+      const sourceList = sourceListKey ? lists?.[sourceListKey] : undefined
+      const labelledItem = sourceList
+        ? addSourceListLabel(movedItem, sourceList)
+        : movedItem
+
+      moveItemBetweenLists({
+        movedItem: { ...labelledItem, parentId: targetListId },
+        sourceListId,
+        targetListId,
+        targetListItems,
+      })
+      task.labelIds?.forEach((id) => markUnusedLabel(id))
+    },
     reorderTasks: (listId, tasks) => {
       updateItemsList(`${WORK_KEY}/${listId}/items`, tasks)
     },
 
-    addSubtask: (listId, taskId, description) => {
-      addItem(`${WORK_KEY}/${listId}/items/${taskId}/subtasks`, { description })
-    },
     deleteSubtask: (listId, taskId, subtask) => {
       deleteItem(`${WORK_KEY}/${listId}/items/${taskId}/subtasks`, subtask)
     },
@@ -244,6 +276,15 @@ export function WorkStorageProvider({ children }: { children: ReactNode }) {
       const id = upsertLabel(label)
       const labelIds = Array.from(new Set([...(entity.labelIds ?? []), id]))
       updateItem(entity.parentId, { ...entity, labelIds })
+    },
+    changeLabels: (labels, entity) => {
+      const labelIds = Array.from(
+        new Set(labels.map((label) => upsertLabel(label))),
+      )
+      updateItem(entity.parentId, { ...entity, labelIds })
+
+      const { removed, added } = diffLabelIds(entity.labelIds, labelIds)
+      applyLabelUsage(removed, added)
     },
     removeLabel: (id, entity) => {
       const labelIds = (entity.labelIds ?? []).filter(

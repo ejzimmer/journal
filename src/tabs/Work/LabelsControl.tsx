@@ -10,6 +10,7 @@ export type LabelsControlProps = {
   hideLabel?: boolean
   isMulti?: boolean
   autoFocus?: boolean
+  onDismiss?: () => void
 }
 
 type LabelOption = {
@@ -22,7 +23,7 @@ const isColour = (text?: string): text is Colour =>
   !!(text && COLOURS.find((c) => c === text))
 
 export function getNextColour(colours: Colour[]): Colour {
-  let firstUnused = COLOURS.find((c) => !colours.includes(c))
+  const firstUnused = COLOURS.find((c) => !colours.includes(c))
   if (firstUnused) {
     return firstUnused
   }
@@ -58,6 +59,7 @@ export function LabelsControl({
   label,
   isMulti = true,
   autoFocus,
+  onDismiss,
 }: LabelsControlProps) {
   const { labels } = useWorkStorage()
 
@@ -94,6 +96,7 @@ export function LabelsControl({
       Value={Option}
       hideSelectedOptions
       autoFocus={autoFocus}
+      onDismiss={onDismiss}
     />
   )
 }

@@ -1,34 +1,16 @@
-import { endOfDay, isAfter, subDays } from "date-fns"
 import { AddThisWeekTaskForm } from "./AddThisWeekTaskForm"
 import { ThisWeekTask } from "./ThisWeekTask"
 import { WEEKLY_KEY, WeeklyTask } from "../../../shared/types"
 import { useRef } from "react"
 import { useStorageContext } from "../../../shared/FirebaseContext"
-
-export function refreshTasks(
-  tasks: WeeklyTask[],
-  updateTask: (task: WeeklyTask) => void,
-) {
-  tasks.forEach((task) => {
-    if (!task.completed) return
-
-    const completed: (number | null)[] = Array.isArray(task.completed)
-      ? task.completed
-      : Object.values(task.completed)
-
-    const updatedCompleted = completed.filter((date) => {
-      return date && isAfter(date, endOfDay(subDays(new Date(), 7)))
-    })
-    if (updatedCompleted.length !== task.completed.length) {
-      updateTask({ ...task, completed: updatedCompleted })
-    }
-  })
-}
+import { useWeeklyReset } from "./useWeeklyReset"
 
 export function ThisWeekList() {
   const listRef = useRef<HTMLOListElement>(null)
-  const { useValue, updateItem } = useStorageContext()
+  const { useValue } = useStorageContext()
   const { value } = useValue<Record<string, WeeklyTask>>(WEEKLY_KEY)
+
+  useWeeklyReset()
 
   const taskOrder = useRef<string[]>([])
 
@@ -48,10 +30,6 @@ export function ThisWeekList() {
   }
 
   const tasks = value ? taskOrder.current.map((id) => value[id]) : []
-
-  refreshTasks(tasks, (task) => {
-    updateItem<WeeklyTask>(WEEKLY_KEY, task)
-  })
 
   return (
     <div className="todo-task-list weekly">

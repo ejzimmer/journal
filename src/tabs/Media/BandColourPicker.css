@@ -1,0 +1,57 @@
+.band-colour-picker {
+  border: 0;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+
+  legend {
+    padding: 0;
+    font-weight: bold;
+    margin-block-end: 5px;
+  }
+
+  .swatches {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .swatch {
+    position: relative;
+    display: block;
+    width: 24px;
+    aspect-ratio: 1;
+    border-radius: 6px;
+    background: oklch(58% 0.16 var(--hue));
+    cursor: pointer;
+    transition: transform 0.12s;
+
+    &:hover {
+      transform: scale(1.12);
+    }
+
+    &:has(input:checked) {
+      box-shadow:
+        0 0 0 2px white inset,
+        0 0 0 2px var(--body-colour);
+    }
+
+    &:has(input:focus-visible) {
+      outline: 2px solid white;
+      outline-offset: 2px;
+      box-shadow:
+        0 0 0 2px white inset,
+        0 0 0 2px var(--body-colour);
+    }
+
+    input {
+      position: absolute;
+      inset: 0;
+      margin: 0;
+      opacity: 0;
+      cursor: pointer;
+    }
+  }
+}

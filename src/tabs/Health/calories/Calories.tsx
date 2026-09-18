@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react"
 import { useStorageContext } from "../../../shared/FirebaseContext"
 import { DayData, DAILY_PATH } from "../../../shared/types"
-import { getDayId, setupDays } from "../utils"
+import { setupDays } from "../utils"
 import { Switch } from "../../../shared/controls/Switch"
 import { Days } from "./Days"
 import { WeeklyCalorieTracker } from "./WeeklyCalorieTracker"
@@ -16,20 +16,20 @@ export function Calories() {
   const [selectedDayId, setSelectedDayId] = useState<string | null>(null)
 
   const { useValue, updateItem } = useStorageContext()
-  const { value } = useValue<Record<string, DayData>>(DAILY_PATH)
+  const { value, loading } = useValue<Record<string, DayData>>(DAILY_PATH)
 
   const days = useMemo(() => setupDays(value), [value])
   const yesterday = days[days.length - 1]
-  const yesterdayId = yesterday && getDayId(yesterday)
+  const yesterdayId = yesterday && yesterday.id
   const caloriesRecordedYesterday = typeof yesterday?.diff === "number"
 
   const activeDayId =
     selectedDayId ??
-    (yesterdayId && !caloriesRecordedYesterday && !dismissed
+    (!loading && yesterdayId && !caloriesRecordedYesterday && !dismissed
       ? yesterdayId
       : null)
   const activeDay = activeDayId
-    ? days.find((day) => getDayId(day) === activeDayId)
+    ? days.find((day) => day.id === activeDayId)
     : undefined
   const activeDayData = activeDayId ? value?.[activeDayId] : undefined
 
@@ -70,13 +70,15 @@ export function Calories() {
             date={{ day: activeDay.day, month: activeDay.month }}
             consumed={activeDayData?.consumed}
             expended={activeDayData?.expended}
+            trackers={activeDayData?.trackers}
             onClose={closeForm}
-            onSubmit={({ consumed, expended }) => {
+            onSubmit={({ consumed, expended, trackers }) => {
               updateItem<DayData>(DAILY_PATH, {
                 ...(activeDayData ?? { id: activeDayId }),
                 id: activeDayId,
                 consumed,
                 expended,
+                trackers,
               })
             }}
           />

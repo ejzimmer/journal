@@ -1,4 +1,4 @@
-import { Edge } from "@atlaskit/pragmatic-drag-and-drop-hitbox/dist/types/types"
+import { Edge } from "@atlaskit/pragmatic-drag-and-drop-hitbox/types"
 
 export type Position = "start" | "middle" | "end"
 export type Destination = "start" | "previous" | "next" | "end"

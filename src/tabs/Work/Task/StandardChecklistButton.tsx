@@ -5,13 +5,11 @@ import { STANDARD_CHECKLIST } from "../types"
 type StandardChecklistButtonProps = {
   listId: string
   taskId: string
-  onAdd?: () => void
 }
 
 export function StandardChecklistButton({
   listId,
   taskId,
-  onAdd,
 }: StandardChecklistButtonProps) {
   const { getTask, updateSubtasksList } = useWorkStorage()
 
@@ -40,7 +38,6 @@ export function StandardChecklistButton({
         })),
     ]
     updateSubtasksList(listId, taskId, [...existing, ...newSubtasks])
-    onAdd?.()
   }
 
   return (

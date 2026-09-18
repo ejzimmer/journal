@@ -39,7 +39,7 @@ function FormBody({
   }
 
   return (
-    <form onSubmit={handleSubmit} ref={formRef}>
+    <form onSubmit={handleSubmit} ref={ref}>
       <Modal.Body>
         <div style={{ display: "flex", flexDirection: "column", gap: "18px" }}>
           {children}

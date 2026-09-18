@@ -1,36 +1,125 @@
 .project {
-  --project-colour-light: color(from var(--project-colour) srgb r g b / 0.2);
+  --project-colour-solid: color(from var(--project-colour) srgb r g b / 1);
+  --card-colour: var(--project-colour);
+  --card-border-colour: var(--project-colour-solid);
+  --card-border-width: 2px;
+  --radius: 7px;
+  --drawer-inset: calc(var(--radius) - var(--card-border-width));
+  --card-max: min(840px, 80vw);
+  position: relative;
   flex-shrink: 0;
-  border: 1px solid var(--border-colour);
   list-style-type: none;
-  background: var(--project-colour-light);
+  border-radius: var(--radius);
   font-size: 18px;
   align-self: start;
+  height: 100%;
+  min-width: calc(var(--drawer-content-width, 0px) + 2 * var(--drawer-inset));
+  transition: min-width 0.2s ease-out;
+
+  &:not(.in_progress) {
+    button.expand {
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+
+    &:hover button.expand,
+    &:focus-within button.expand,
+    button.expand.expanded {
+      opacity: 1;
+    }
+
+    .subtasks-section {
+      --seam-shadow-opacity: 0.15;
+    }
+  }
+
+  &.ready {
+    --card-colour: color(from var(--project-colour) srgb r g b / 0.13);
+    --card-border-colour: color(from var(--project-colour) srgb r g b / 0.38);
+    --card-border-width: 1px;
+
+    .project-name,
+    label.emoji-checkbox {
+      opacity: 0.6;
+    }
+  }
 
   &.in_progress {
-    outline: 2px solid color(from var(--project-colour) srgb r g b / 1);
-    outline-offset: -2px;
-    background:
-      linear-gradient(45deg, white, transparent), var(--project-colour-light);
+    --card-colour: color(from var(--project-colour) srgb r g b / 0.42);
+    --card-border-colour: color(from var(--project-colour) srgb r g b / 0.9);
+
+    .project-details {
+      padding-block: 8px 9px;
+      box-shadow: 0 2px 7px color(from var(--project-colour) srgb r g b / 0.32);
+    }
+
+    .project-name {
+      font-weight: 500;
+    }
+
+    label.emoji-checkbox {
+      font-size: 1.35em;
+      text-shadow: none;
+    }
   }
 
   &.done {
-    filter: grayscale(0.5);
-    opacity: 0.5;
-    text-decoration: line-through;
-  }
-  label.emoji-checkbox.done {
-    filter: none;
-    text-shadow: 1px 1px 4px hsl(0 0 0 /0.4);
+    --tint-strength: 24%;
+    --card-colour: color-mix(
+      in srgb,
+      var(--project-colour-solid) var(--tint-strength),
+      transparent
+    );
+    --card-border-colour: color(from var(--project-colour) srgb r g b / 0.45);
+    --card-border-width: 1px;
+    --done-ink: hsl(0 0% 34%);
+    --done-mark: hsl(0 0% 52% / 0.5);
+    --done-glyph: color-mix(
+      in srgb,
+      var(--project-colour-solid) var(--tint-strength),
+      white
+    );
+
+    .project-details {
+      box-shadow: inset 0 1px 3px
+        color(from var(--project-colour) srgb r g b / 0.3);
+    }
+
+    .project-name {
+      color: var(--done-ink);
+    }
+
+    .done-tick {
+      background: var(--done-mark);
+      color: var(--done-glyph);
+    }
   }
 
   .project-details {
     display: flex;
-    gap: 4px;
-    align-items: center;
+    flex-direction: column;
+    height: 100%;
     padding-inline: 10px;
     padding-block: 5px;
-    background: var(--project-colour);
+    background: var(--card-colour);
+    border: var(--card-border-width) solid var(--card-border-colour);
+    border-radius: var(--radius);
+  }
+
+  .project-main-row {
+    display: flex;
+    gap: 4px;
+    align-items: center;
+  }
+
+  .project-meta-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-block-start: 6px;
+    padding-block-start: 7px;
+    border-block-start: 1px solid
+      color(from var(--project-colour) srgb r g b / 0.45);
   }
 
   button path {
@@ -38,7 +127,8 @@
   }
 
   button.expand:focus {
-    outline: 2px solid var(--project-colour-light);
+    outline: 2px solid var(--project-colour-solid);
+    outline-offset: 1px;
   }
   button.expand path {
     transform-origin: center;
@@ -52,37 +142,44 @@
     display: flex;
     align-items: center;
     gap: 4px;
-    margin-inline-end: 8px;
+    margin-inline-start: auto;
   }
 
   .project-action-button {
-    opacity: 0;
+    opacity: 0.5;
     transition: all 0.2s;
     font-size: 1em;
     text-shadow: 1px 1px hsl(0 0 0/0.3);
   }
 
-  &:not(.done) {
-    &:hover,
-    &:focus-visible {
-      .project-action-button {
-        opacity: 1;
-      }
+  &:hover,
+  &:focus-within {
+    .project-action-button {
+      opacity: 1;
     }
   }
 
   .subtasks-section {
-    opacity: 0;
+    --seam-shadow-opacity: 0.35;
+    --seam-shadow: linear-gradient(
+      to bottom,
+      hsl(0 0% 0% / var(--seam-shadow-opacity)),
+      transparent
+    );
+    position: absolute;
+    inset-block-start: 100%;
+    inset-inline: var(--drawer-inset);
+    max-width: var(--card-max);
     overflow: hidden;
-    transition:
-      height 0.2s ease-out,
-      opacity 0.1s 0.2s linear;
+    background: var(--seam-shadow) top / 100% 8px no-repeat, white;
+    transition: height 0.2s ease-out;
 
     &.visible {
-      opacity: 1;
-      margin-block-end: 12px;
-      margin-block-start: 8px;
       overflow: visible;
+      border: 1px solid var(--card-border-colour);
+      border-top: none;
+      border-end-start-radius: var(--radius);
+      border-end-end-radius: var(--radius);
     }
   }
 
@@ -151,7 +248,11 @@
     }
   }
 
-  ol.subtasks,
+  ol.subtasks {
+    padding-inline-start: 5.5px;
+    padding-inline-end: 12px;
+  }
+
   form.add-subtask-form.visible {
     padding-inline-start: 24px;
     padding-inline-end: 0px;
@@ -164,11 +265,13 @@
 
     label.checkbox .control {
       width: 1.2em;
-      color: var(--body-colour-mid);
+      color: var(--project-colour);
       border: 2px solid;
 
-      &:has(+ :focus) {
+      &:has(+ :checked) {
+        background: var(--project-colour);
         border-color: var(--project-colour);
+        color: white;
       }
     }
 
@@ -190,13 +293,32 @@
   }
 
   .subtasks-progress {
-    margin-inline-start: 1em;
-    font-size: 0.9em;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-grow: 1;
+    min-width: 0;
+  }
+
+  .subtasks-progress-track {
+    flex-grow: 1;
+    height: 6px;
     border-radius: 1000px;
-    padding-block: 4px;
-    padding-inline: 8px;
-    background: hsl(0 0 100% /0.4);
-    --project-colour-shadow: color(from var(--project-colour) srgb r g b / 0.6);
-    box-shadow: inset 2px 2px 2px var(--project-colour-shadow);
+    overflow: hidden;
+    background: color(from var(--project-colour) srgb r g b / 0.3);
+  }
+
+  .subtasks-progress-fill {
+    height: 100%;
+    border-radius: 1000px;
+    background: var(--project-colour-solid);
+    transition: width 0.3s cubic-bezier(0.2, 0.7, 0.3, 1);
+  }
+
+  .subtasks-progress-count {
+    font-size: 0.72em;
+    white-space: nowrap;
+    font-variant-numeric: tabular-nums;
+    color: hsl(0 0% 26%);
   }
 }

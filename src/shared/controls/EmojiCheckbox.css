@@ -3,6 +3,12 @@
   text-shadow: 1px 1px hsl(0 0 0/0.1);
   transition: inherit;
   cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.25em;
+  aspect-ratio: 1;
+  padding: 2px;
 
   &.done,
   &.finished {

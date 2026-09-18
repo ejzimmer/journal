@@ -24,6 +24,7 @@ export function Combobox<T extends OptionType>({
   inputSize,
   ariaLabel,
   autoFocus,
+  onDismiss,
 }: ComboboxProps<T>) {
   const inputId = useId()
   const containerRef = useRef<HTMLDivElement>(null)
@@ -70,10 +71,14 @@ export function Combobox<T extends OptionType>({
     },
     [hidePopover, isMultiValue],
   )
+  const dismiss = () => {
+    reset(true)
+    onDismiss?.()
+  }
+
   useClickOutside({
     elementRef: containerRef,
-    onClickOutside: () => reset(true),
-    shouldListen: !!containerRef.current,
+    onClickOutside: dismiss,
   })
 
   const updateValue = (option: T) => {
@@ -111,6 +116,10 @@ export function Combobox<T extends OptionType>({
         reset()
         break
       }
+      case "Escape":
+        event.stopPropagation()
+        dismiss()
+        break
       default:
         showPopover()
     }
@@ -151,6 +160,7 @@ export function Combobox<T extends OptionType>({
             Value={Value}
             size={inputSize}
             ariaLabel={ariaLabel}
+            autoFocus={autoFocus}
           />
         ) : (
           <SingleValueInput
@@ -173,6 +183,7 @@ export function Combobox<T extends OptionType>({
             onClick={togglePopover}
             size={inputSize}
             ariaLabel={ariaLabel}
+            autoFocus={autoFocus}
           >
             {Value && value ? <Value value={value} /> : null}
           </SingleValueInput>

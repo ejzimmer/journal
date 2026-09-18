@@ -1,0 +1,40 @@
+.media-skeleton-label {
+  visibility: hidden;
+  position: absolute;
+  width: 0;
+  height: 0;
+}
+
+.spine-skeleton,
+.shelf-label-skeleton {
+  background-image: linear-gradient(
+    to right,
+    var(--border-colour-hover) 45%,
+    var(--border-colour) 55%
+  );
+  background-size: 200%;
+  animation: spine-skeleton-shimmer 2s ease-out infinite alternate;
+}
+
+.spine-skeleton {
+  flex: none;
+  align-self: stretch;
+  border-start-start-radius: 3px;
+  border-start-end-radius: 3px;
+  border-end-end-radius: 1px;
+  border-end-start-radius: 1px;
+}
+
+.shelf-label-skeleton {
+  width: 64px;
+  height: 17px;
+}
+
+@keyframes spine-skeleton-shimmer {
+  from {
+    background-position-x: 100%;
+  }
+  to {
+    background-position-x: 0;
+  }
+}

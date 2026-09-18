@@ -1,40 +1,17 @@
-import { isBefore, isSameDay, startOfDay } from "date-fns"
 import { AddDueDateTaskForm } from "./AddDueDateTaskForm"
 import { DueDateTask } from "./DueDateTask"
 
 import "./DueDateTask.css"
 import { useStorageContext } from "../../../shared/FirebaseContext"
 import { CalendarTask, CALENDAR_KEY } from "../../../shared/types"
-
-const readyToDelete = (task: CalendarTask) => {
-  const today = startOfDay(new Date())
-  return (
-    task.status === "finished" &&
-    isBefore(task.dueDate, today) &&
-    isBefore(task.statusUpdateDate, today)
-  )
-}
-
-const taskIsToday = (task: CalendarTask) => isSameDay(task.dueDate, new Date())
+import { useDueDateReset } from "./useDueDateReset"
 
 export function DueDateList() {
-  const { useValue, deleteItem, updateItem } = useStorageContext()
+  const { useValue } = useStorageContext()
   const { value } = useValue<Record<string, CalendarTask>>(CALENDAR_KEY)
   const tasks = value ? Object.values(value) : []
 
-  const readyToReset = tasks.some(readyToDelete)
-  if (readyToReset) {
-    const finishedTasks = tasks.filter(readyToDelete)
-    finishedTasks.forEach((task) =>
-      deleteItem<CalendarTask>(CALENDAR_KEY, task),
-    )
-    const todayTasks = tasks.filter(
-      (task) => taskIsToday(task) && task.status === "paused",
-    )
-    todayTasks.forEach((task) =>
-      updateItem(CALENDAR_KEY, { ...task, status: "ready" }),
-    )
-  }
+  useDueDateReset()
 
   return (
     <div className="todo-task-list calendar">

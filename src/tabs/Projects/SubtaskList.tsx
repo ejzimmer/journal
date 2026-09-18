@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react"
+import { useCallback, useMemo, useRef, useState } from "react"
 import { useStorageContext } from "../../shared/FirebaseContext"
 import { PlusIcon } from "../../shared/icons/Plus"
 import { SortIcon } from "../../shared/icons/Sort"
@@ -18,6 +18,7 @@ import {
 import { useDropTarget } from "../../shared/drag-and-drop/useDropTarget"
 import { isDraggable, sortByPosition } from "../../shared/drag-and-drop/utils"
 import { useDraggableList } from "../../shared/drag-and-drop/useDraggableList"
+import { useDrawer } from "./useDrawer"
 
 type SubtasksProps = {
   projectId: string
@@ -26,10 +27,9 @@ type SubtasksProps = {
 
 export function SubtaskList({ projectId, isVisible }: SubtasksProps) {
   const [formVisible, setFormVisible] = useState(false)
-  const [containerHeight, setContainerHeight] = useState(0)
-  const containerRef = useRef<HTMLDivElement>(null)
+  const drawerRef = useRef<HTMLDivElement>(null)
   const listRef = useRef<HTMLOListElement>(null)
-  const formContainerRef = useRef<HTMLDivElement>(null)
+  const formRef = useRef<HTMLDivElement>(null)
   const subtasksKey = getSubtasksKey(projectId)
 
   const { useValue, addItem, updateList } = useStorageContext()
@@ -51,13 +51,14 @@ export function SubtaskList({ projectId, isVisible }: SubtasksProps) {
     })
   }
 
-  useEffect(() => {
-    if (listRef.current && formContainerRef.current) {
-      setContainerHeight(
-        listRef.current.clientHeight + formContainerRef.current.clientHeight,
-      )
-    }
-  }, [subtasks, isProjectLoaded])
+  const drawerHeight = useDrawer({
+    drawerRef,
+    listRef,
+    formRef,
+    subtasks,
+    isProjectLoaded,
+    isOpen: isVisible,
+  })
 
   useDropTarget({
     dropTargetRef: listRef,
@@ -76,25 +77,19 @@ export function SubtaskList({ projectId, isVisible }: SubtasksProps) {
   const sortedTasks = useMemo(
     () =>
       sortByPosition(
-        subtasks.map((task) => ({
-          ...task,
-          parentId: projectId,
-          position: task.position ?? Infinity,
-        })),
+        subtasks.map((task) => ({ ...task, parentId: projectId })),
       ),
     [projectId, subtasks],
   )
 
-  let seenDoneTask = false
-  const hasUnsortedDoneTasks = sortedTasks.some((task) => {
-    if (task.status === "done") {
-      seenDoneTask = true
-      return false
-    }
-    return seenDoneTask
-  })
+  const hasUnsortedDoneTasks = sortedTasks.some(
+    (task, index) =>
+      index > 0 &&
+      task.status !== "done" &&
+      sortedTasks[index - 1].status === "done",
+  )
 
-  const onSortDoneToEnd = () => {
+  const onSortDoneToEnd = useCallback(() => {
     const reordered = sortedTasks
       .toSorted(
         (a, b) => Number(a.status === "done") - Number(b.status === "done"),
@@ -105,17 +100,7 @@ export function SubtaskList({ projectId, isVisible }: SubtasksProps) {
       subtasksKey,
       reordered.map(({ parentId, ...task }) => task),
     )
-  }
-
-  useEffect(() => {
-    const isMissingAPosition = subtasks.some((task) => task.position == null)
-    if (isMissingAPosition) {
-      updateList<ProjectSubtask>(
-        subtasksKey,
-        sortedTasks.map(({ parentId, ...task }) => task),
-      )
-    }
-  }, [subtasks, sortedTasks, subtasksKey, updateList])
+  }, [sortedTasks, subtasksKey, updateList])
 
   if (!project) {
     return null
@@ -124,8 +109,8 @@ export function SubtaskList({ projectId, isVisible }: SubtasksProps) {
   return (
     <div
       className={`subtasks-section ${isVisible ? "visible" : ""}`}
-      style={{ height: isVisible ? containerHeight : 0 }}
-      ref={containerRef}
+      style={{ height: drawerHeight }}
+      ref={drawerRef}
     >
       <ol className="subtasks" ref={listRef}>
         {sortedTasks.map((task, index) => (
@@ -147,11 +132,12 @@ export function SubtaskList({ projectId, isVisible }: SubtasksProps) {
         ))}
       </ol>
       <div
-        ref={formContainerRef}
+        ref={formRef}
         style={{
           display: "flex",
           alignItems: "center",
           paddingInlineStart: "12px",
+          paddingBlockEnd: "8px",
         }}
       >
         <AddSubtaskForm isFormVisible={formVisible} onAddSubtask={onAddTask} />

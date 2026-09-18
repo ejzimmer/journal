@@ -53,8 +53,15 @@ ol.work-lists > li {
       gap: 2px;
     }
 
-    button.ghost {
+    & > button.ghost {
       padding: 4px;
+    }
+
+    .task-count {
+      margin-inline-start: auto;
+      font-size: 1.4em;
+      font-weight: bold;
+      color: var(--body-colour-light);
     }
   }
 
@@ -127,7 +134,7 @@ ol.work-lists > li {
       opacity: 1;
     }
 
-    &:has(form.add-subtask:focus-within) .add-metadata {
+    &:has(form.subtasks.editing:focus-within) .add-metadata {
       opacity: 0.4;
     }
 
@@ -210,13 +217,21 @@ ol.work-lists > li {
       }
 
       form.subtasks.editing {
+        display: inline-flex;
+        flex-direction: row;
+        align-items: baseline;
+
+        .bracket {
+          color: var(--body-colour-mid);
+        }
+
         input {
           font: inherit;
           color: var(--body-colour);
           border: none;
-          border-bottom: 1px solid var(--body-colour-light);
           background: transparent;
           width: 16em;
+          margin-block-end: 0;
 
           &:focus {
             outline: none;
@@ -224,28 +239,6 @@ ol.work-lists > li {
         }
       }
 
-      form.add-subtask {
-        display: flex;
-        flex-direction: row;
-        align-items: center;
-        gap: 4px;
-
-        > button {
-          margin-block-end: var(--baseline-nudge);
-        }
-
-        input {
-          font: inherit;
-          border: none;
-          border-bottom: 1px solid var(--body-colour-light);
-          background: transparent;
-          width: 8em;
-
-          &:focus {
-            outline: none;
-          }
-        }
-      }
     }
 
     button.add-metadata {
@@ -350,6 +343,25 @@ form.add-task {
 }
 
 .label-tag {
+  button.label-value {
+    font: inherit;
+    color: inherit;
+    text-transform: inherit;
+    background: none;
+    border: 0;
+    border-radius: 0;
+    height: auto;
+    line-height: inherit;
+    padding: 0;
+    margin-inline-start: 0;
+    cursor: pointer;
+
+    &:hover,
+    &:focus-visible {
+      background: none;
+    }
+  }
+
   button {
     padding: 2px;
     margin-inline-start: 4px;

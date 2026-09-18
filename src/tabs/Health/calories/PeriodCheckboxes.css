@@ -1,0 +1,29 @@
+.period-checkboxes {
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+}
+
+.period-checkbox {
+  display: flex;
+  cursor: pointer;
+  opacity: 0.4;
+  filter: grayscale(50%);
+  transition:
+    opacity 0.2s,
+    filter 0.2s;
+
+  input {
+    width: 0;
+    height: 0;
+    overflow: hidden;
+    position: fixed;
+  }
+
+  &:hover,
+  &:has(:focus-visible),
+  &:has(:checked) {
+    opacity: 1;
+    filter: none;
+  }
+}

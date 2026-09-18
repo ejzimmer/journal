@@ -1,4 +1,4 @@
-import { Edge } from "@atlaskit/pragmatic-drag-and-drop-hitbox/closest-edge"
+import { Edge } from "@atlaskit/pragmatic-drag-and-drop-hitbox/types"
 
 import { Destination, draggableTypeKey } from "../../shared/drag-and-drop/types"
 
