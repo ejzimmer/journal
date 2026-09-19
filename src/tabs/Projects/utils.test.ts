@@ -1,0 +1,131 @@
+import { ProjectDetails, PROJECTS_KEY } from "../../shared/types"
+import { moveProjectToEnd, moveProjectToStart } from "./utils"
+
+const createProjects = (
+  statuses: ProjectDetails["status"][],
+): ProjectDetails[] =>
+  statuses.map((status, index) => ({
+    id: `project-${index}`,
+    parentId: PROJECTS_KEY,
+    description: `Project ${index}`,
+    category: "🧶",
+    status,
+    position: index,
+  }))
+
+const getIds = (projects: ProjectDetails[]) =>
+  projects.map((project) => project.id)
+
+describe("moveProjectToStart", () => {
+  it("moves the project to the start when the first project isn't in progress", () => {
+    const projects = createProjects(["ready", "ready", "in_progress"])
+
+    expect(getIds(moveProjectToStart(projects, 2))).toEqual([
+      "project-2",
+      "project-0",
+      "project-1",
+    ])
+  })
+
+  it("moves the project after the leading in progress projects", () => {
+    const projects = createProjects([
+      "in_progress",
+      "in_progress",
+      "in_progress",
+      "ready",
+      "in_progress",
+    ])
+
+    expect(getIds(moveProjectToStart(projects, 4))).toEqual([
+      "project-0",
+      "project-1",
+      "project-2",
+      "project-4",
+      "project-3",
+    ])
+  })
+
+  it("ignores in progress projects that don't lead the list", () => {
+    const projects = createProjects([
+      "ready",
+      "in_progress",
+      "in_progress",
+      "in_progress",
+    ])
+
+    expect(getIds(moveProjectToStart(projects, 3))).toEqual([
+      "project-3",
+      "project-0",
+      "project-1",
+      "project-2",
+    ])
+  })
+
+  it("moves the project to the end when every other project is in progress", () => {
+    const projects = createProjects(["in_progress", "in_progress", "ready"])
+
+    expect(getIds(moveProjectToStart(projects, 2))).toEqual([
+      "project-0",
+      "project-1",
+      "project-2",
+    ])
+  })
+
+  it("treats a project with no status as not in progress", () => {
+    const projects = createProjects([undefined, "in_progress"])
+
+    expect(getIds(moveProjectToStart(projects, 1))).toEqual([
+      "project-1",
+      "project-0",
+    ])
+  })
+
+  it("renumbers positions", () => {
+    const projects = createProjects(["ready", "ready", "in_progress"])
+
+    expect(
+      moveProjectToStart(projects, 2).map((project) => project.position),
+    ).toEqual([0, 1, 2])
+  })
+})
+
+describe("moveProjectToEnd", () => {
+  it("moves the project to just before the done projects", () => {
+    const projects = createProjects(["in_progress", "ready", "done", "done"])
+
+    expect(getIds(moveProjectToEnd(projects, 0))).toEqual([
+      "project-1",
+      "project-0",
+      "project-2",
+      "project-3",
+    ])
+  })
+
+  it("moves the project to the end when no projects are done", () => {
+    const projects = createProjects(["in_progress", "ready", "ready"])
+
+    expect(getIds(moveProjectToEnd(projects, 0))).toEqual([
+      "project-1",
+      "project-2",
+      "project-0",
+    ])
+  })
+
+  it("leaves the project in place when it already sits before the done projects", () => {
+    const projects = createProjects(["ready", "in_progress", "done"])
+
+    expect(getIds(moveProjectToEnd(projects, 1))).toEqual([
+      "project-0",
+      "project-1",
+      "project-2",
+    ])
+  })
+
+  it("renumbers positions", () => {
+    const projects = createProjects(["in_progress", "ready", "done"])
+
+    expect(
+      moveProjectToEnd(projects, 0).map((project) => project.position),
+    ).toEqual([0, 1, 2])
+  })
+})

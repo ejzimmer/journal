@@ -20,7 +20,7 @@ import {
 import { EmojiCheckbox } from "../../shared/controls/EmojiCheckbox"
 import { XIcon } from "../../shared/icons/X"
 import { sortByPosition } from "../../shared/drag-and-drop/utils"
-import { reorderProjects } from "./utils"
+import { moveProjectToEnd, moveProjectToStart, reorderProjects } from "./utils"
 import { useGridColumnSpan } from "./useGridColumnSpan"
 import { ProjectsSkeleton } from "./ProjectsSkeleton"
 
@@ -122,11 +122,17 @@ export function Projects() {
                   )
                   deleteItem(PROJECTS_KEY, project)
                 }}
+                onMoveToStart={() =>
+                  updateList(
+                    PROJECTS_KEY,
+                    moveProjectToStart(sortedProjects, index),
+                  )
+                }
                 onMoveToEnd={() =>
-                  updateList(PROJECTS_KEY, [
-                    ...reorderProjects(sortedProjects, index),
-                    { ...project, position: sortedProjects.length - 1 },
-                  ])
+                  updateList(
+                    PROJECTS_KEY,
+                    moveProjectToEnd(sortedProjects, index),
+                  )
                 }
               />
             </FilteredProject>

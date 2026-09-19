@@ -65,3 +65,42 @@ export function reorderProjects(
     .toSpliced(indexToRemove, 1)
     .map((project, index) => ({ ...project, position: index }))
 }
+
+const getStatus = (project: ProjectDetails) => project.status ?? "ready"
+
+function moveProject(
+  projects: ProjectDetails[],
+  indexToMove: number,
+  findDestination: (remainingProjects: ProjectDetails[]) => number,
+) {
+  const remainingProjects = projects.toSpliced(indexToMove, 1)
+  const destination = findDestination(remainingProjects)
+
+  return remainingProjects
+    .toSpliced(
+      destination === -1 ? remainingProjects.length : destination,
+      0,
+      projects[indexToMove],
+    )
+    .map((project, index) => ({ ...project, position: index }))
+}
+
+export function moveProjectToStart(
+  projects: ProjectDetails[],
+  indexToMove: number,
+) {
+  return moveProject(projects, indexToMove, (remainingProjects) =>
+    remainingProjects.findIndex(
+      (project) => getStatus(project) !== "in_progress",
+    ),
+  )
+}
+
+export function moveProjectToEnd(
+  projects: ProjectDetails[],
+  indexToMove: number,
+) {
+  return moveProject(projects, indexToMove, (remainingProjects) =>
+    remainingProjects.findIndex((project) => getStatus(project) === "done"),
+  )
+}
