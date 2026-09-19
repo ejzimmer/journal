@@ -94,6 +94,35 @@ describe("createLocalFirstContext", () => {
     })
   })
 
+  it("ignores a write that matches what is already stored", async () => {
+    const context = await setUpContext()
+    const item = { id: "task1", description: "Chores" }
+    context.updateItem("work", item)
+    await flushMicrotasks()
+    mockUpdate.mockClear()
+
+    const { result } = renderHook(() =>
+      context.useValue<Record<string, unknown>>("work"),
+    )
+    const storedBefore = result.current.value
+
+    context.updateItem("work", { ...item })
+    await flushMicrotasks()
+
+    expect(result.current.value).toBe(storedBefore)
+    expect(mockUpdate).not.toHaveBeenCalled()
+  })
+
+  it("still writes a deletion for a value that is already gone", async () => {
+    const context = await setUpContext()
+
+    context.deleteItem("work", { id: "task1", description: "Chores" })
+
+    await waitFor(() => {
+      expect(mockUpdate).toHaveBeenCalledWith({ "work/task1": null })
+    })
+  })
+
   it("setValue stores a bare primitive, not just objects", async () => {
     const context = await setUpContext()
 
