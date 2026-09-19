@@ -21,7 +21,9 @@ export function useDrawer({
   isFormOpen,
 }: DrawerParams) {
   const [openHeight, setOpenHeight] = useState(0)
+  const [isCollapsing, setIsCollapsing] = useState(false)
   const hasScrolledIntoView = useRef(false)
+  const wasOpen = useRef(isOpen)
 
   const measureDrawer = useCallback(() => {
     const drawer = drawerRef.current
@@ -47,6 +49,13 @@ export function useDrawer({
   }, [measureDrawer, subtasks, isProjectLoaded, isFormOpen])
 
   useEffect(() => {
+    if (wasOpen.current === isOpen) return
+    wasOpen.current = isOpen
+
+    setIsCollapsing(!isOpen && openHeight > 0)
+  }, [isOpen, openHeight])
+
+  useEffect(() => {
     const drawer = drawerRef.current
     if (!drawer) return
 
@@ -54,9 +63,18 @@ export function useDrawer({
       if (event.propertyName === "min-width") measureDrawer()
     }
 
+    const stopCollapsingWhenClosed = (event: TransitionEvent) => {
+      if (event.target === drawer && event.propertyName === "height") {
+        setIsCollapsing(false)
+      }
+    }
+
     drawer.addEventListener("transitionend", remeasureWhenFormSettles)
-    return () =>
+    drawer.addEventListener("transitionend", stopCollapsingWhenClosed)
+    return () => {
       drawer.removeEventListener("transitionend", remeasureWhenFormSettles)
+      drawer.removeEventListener("transitionend", stopCollapsingWhenClosed)
+    }
   }, [drawerRef, measureDrawer, isProjectLoaded])
 
   useEffect(() => {
@@ -81,5 +99,5 @@ export function useDrawer({
     }
   }, [drawerRef, isOpen, openHeight])
 
-  return isOpen ? openHeight : 0
+  return { height: isOpen ? openHeight : 0, isRaised: isOpen || isCollapsing }
 }

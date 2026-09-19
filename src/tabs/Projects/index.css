@@ -27,6 +27,10 @@
     &.filtered-out {
       display: none;
     }
+
+    &:has(.subtasks-section.raised) {
+      z-index: 1;
+    }
   }
 
   .projects-filter {

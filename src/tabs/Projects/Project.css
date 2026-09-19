@@ -95,6 +95,10 @@
     }
   }
 
+  &:has(.subtasks-section.raised) .project-details {
+    background: linear-gradient(var(--card-colour), var(--card-colour)), white;
+  }
+
   .project-details {
     display: flex;
     flex-direction: column;
@@ -175,7 +179,6 @@
     transition: height 0.2s ease-out;
 
     &.visible {
-      z-index: 1;
       overflow: visible;
       border: 1px solid var(--card-border-colour);
       border-top: none;
