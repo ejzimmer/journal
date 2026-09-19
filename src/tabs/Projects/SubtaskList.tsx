@@ -58,6 +58,7 @@ export function SubtaskList({ projectId, isVisible }: SubtasksProps) {
     subtasks,
     isProjectLoaded,
     isOpen: isVisible,
+    isFormOpen: formVisible,
   })
 
   useDropTarget({

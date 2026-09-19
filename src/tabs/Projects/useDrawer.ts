@@ -1,4 +1,4 @@
-import { RefObject, useEffect, useRef, useState } from "react"
+import { RefObject, useCallback, useEffect, useRef, useState } from "react"
 import { ProjectSubtask } from "../../shared/types"
 
 type DrawerParams = {
@@ -8,6 +8,7 @@ type DrawerParams = {
   subtasks: ProjectSubtask[]
   isProjectLoaded: boolean
   isOpen: boolean
+  isFormOpen: boolean
 }
 
 export function useDrawer({
@@ -17,11 +18,12 @@ export function useDrawer({
   subtasks,
   isProjectLoaded,
   isOpen,
+  isFormOpen,
 }: DrawerParams) {
   const [openHeight, setOpenHeight] = useState(0)
   const hasScrolledIntoView = useRef(false)
 
-  useEffect(() => {
+  const measureDrawer = useCallback(() => {
     const drawer = drawerRef.current
     if (!drawer || !listRef.current || !formRef.current) return
 
@@ -29,14 +31,33 @@ export function useDrawer({
     if (!card) return
 
     card.style.removeProperty("--drawer-content-width")
+    drawer.classList.add("measuring")
     drawer.style.width = "max-content"
 
     const contentWidth = Math.ceil(drawer.getBoundingClientRect().width)
     setOpenHeight(listRef.current.clientHeight + formRef.current.clientHeight)
 
     drawer.style.width = ""
+    drawer.classList.remove("measuring")
     card.style.setProperty("--drawer-content-width", `${contentWidth}px`)
-  }, [drawerRef, listRef, formRef, subtasks, isProjectLoaded])
+  }, [drawerRef, listRef, formRef])
+
+  useEffect(() => {
+    measureDrawer()
+  }, [measureDrawer, subtasks, isProjectLoaded, isFormOpen])
+
+  useEffect(() => {
+    const drawer = drawerRef.current
+    if (!drawer) return
+
+    const remeasureWhenFormSettles = (event: TransitionEvent) => {
+      if (event.propertyName === "min-width") measureDrawer()
+    }
+
+    drawer.addEventListener("transitionend", remeasureWhenFormSettles)
+    return () =>
+      drawer.removeEventListener("transitionend", remeasureWhenFormSettles)
+  }, [drawerRef, measureDrawer, isProjectLoaded])
 
   useEffect(() => {
     if (!isOpen) {

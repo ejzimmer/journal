@@ -27,10 +27,6 @@
     &.filtered-out {
       display: none;
     }
-
-    &:has(.subtasks-section) {
-      z-index: 1;
-    }
   }
 
   .projects-filter {

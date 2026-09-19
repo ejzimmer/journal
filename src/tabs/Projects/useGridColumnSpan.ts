@@ -48,7 +48,10 @@ export function useGridColumnSpan(
     })
 
     const card = item.firstElementChild
-    if (!card || typeof ResizeObserver === "undefined") {
+    if (
+      !(card instanceof HTMLElement) ||
+      typeof ResizeObserver === "undefined"
+    ) {
       return () => {
         cancelled = true
       }
@@ -57,10 +60,18 @@ export function useGridColumnSpan(
     const resizeObserver = new ResizeObserver(measureOnNextFrame)
     resizeObserver.observe(card)
 
+    const measureWhenCardSettles = (event: TransitionEvent) => {
+      if (event.target === card && event.propertyName === "min-width") {
+        measureOnNextFrame()
+      }
+    }
+    card.addEventListener("transitionend", measureWhenCardSettles)
+
     return () => {
       cancelled = true
       cancelAnimationFrame(frame)
       resizeObserver.disconnect()
+      card.removeEventListener("transitionend", measureWhenCardSettles)
     }
   }, [itemRef, project, isVisible])
 }
