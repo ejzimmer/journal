@@ -73,6 +73,14 @@ document.addEventListener("click", (event) => {
 // jsdom doesn't implement scrollIntoView.
 Element.prototype.scrollIntoView = function mock() {}
 
+// jsdom doesn't implement structuredClone, which fake-indexeddb relies on.
+// A JSON round-trip is an adequate stand-in for the plain data this app
+// stores (no Dates, Maps, or other structured-clone-only types).
+if (typeof structuredClone === "undefined") {
+  ;(globalThis as { structuredClone?: typeof structuredClone }).structuredClone =
+    (value: unknown) => JSON.parse(JSON.stringify(value))
+}
+
 // jsdom doesn't do layout, so every element reports a zero rect at the
 // origin. Return a plausible on-screen rect instead so code that measures
 // element position (e.g. popover placement) behaves sensibly in tests.
