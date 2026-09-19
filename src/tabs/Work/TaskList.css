@@ -314,7 +314,7 @@ form.add-task {
   input.description {
     --underline-colour: var(--body-colour-light);
     --underline-width: 2px;
-    --descender-room: 6px;
+    --descender-room: 0.5em;
     flex-grow: 1;
     align-self: flex-end;
     font-size: inherit;
