@@ -14,10 +14,8 @@
     position: relative;
 
     .progress-bar {
-      --hue: 140;
-      --chroma-top: 0.207;
-      --chroma-bottom: 0.19;
-      --lit: var(--glow-strength, 1);
+      --light: hsl(108, 81%, 66%);
+      --dark: hsl(108, 81%, 36%);
       --segment: calc(100% / var(--segments));
       display: flex;
       width: 160px;
@@ -35,9 +33,8 @@
         inset 0 0 1px hsl(0 0 0 / 0.5);
 
       &.done-today {
-        --hue: 250;
-        --chroma-top: 0.075;
-        --chroma-bottom: 0.13;
+        --light: oklch(0.855 0.075 250);
+        --dark: oklch(0.635 0.13 250);
       }
 
       &:hover ~ .dates-popover {
@@ -47,6 +44,7 @@
       button {
         appearance: none;
         -webkit-appearance: none;
+        height: 100%;
         padding: 0;
         border: none;
         background-color: transparent;
@@ -60,43 +58,18 @@
       }
 
       .done {
-        --segment: calc(100% / var(--segments));
-        --lightness-top: calc(0.62 + 0.235 * var(--lit));
-        --lightness-bottom: calc(0.45 + 0.185 * var(--lit));
-        --fill-top: oklch(
-          var(--lightness-top)
-            calc(var(--chroma-top) * (0.5 + 0.5 * var(--lit))) var(--hue)
-        );
-        --fill-bottom: oklch(
-          var(--lightness-bottom)
-            calc(var(--chroma-bottom) * (0.5 + 0.5 * var(--lit))) var(--hue)
-        );
-        --glow-colour: oklch(
-          var(--lightness-top) var(--chroma-top) var(--hue) /
-            calc(0.55 * var(--lit))
-        );
-        --glow-radius: calc(9px * var(--lit));
         border-start-start-radius: 100px;
         border-end-start-radius: 100px;
         background-image:
-          repeating-linear-gradient(
-            to right,
-            transparent 0 calc(var(--segment) - 1px),
-            hsl(0 0% 100% / 0.65) calc(var(--segment) - 1px) var(--segment)
-          ),
           linear-gradient(
-            var(--fill-bottom),
-            var(--fill-top) 45%,
-            var(--fill-bottom)
-          );
-        box-shadow:
-          0 0 var(--glow-radius) var(--glow-colour),
-          0 0 calc(var(--glow-radius) * 2.2)
-            oklch(
-              var(--lightness-top) var(--chroma-top) var(--hue) /
-                calc(0.28 * var(--lit))
-            ),
-          inset 0 0 7px oklch(0.97 0.05 var(--hue) / calc(0.6 * var(--lit)));
+            to right,
+            var(--dark),
+            transparent 6%,
+            transparent 94%,
+            var(--dark)
+          ),
+          linear-gradient(var(--dark), var(--light), var(--dark));
+        opacity: var(--fill-opacity, 1);
 
         &:last-child {
           border-radius: 100px;

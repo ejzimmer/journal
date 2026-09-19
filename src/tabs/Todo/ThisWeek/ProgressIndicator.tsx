@@ -29,7 +29,7 @@ export function ProgressIndicator({
   const daysSinceDone = mostRecentlyDone
     ? differenceInDays(new Date(), mostRecentlyDone)
     : 0
-  const glowStrength =
+  const fillOpacity =
     daysSinceDone > 2 ? Math.max(0, 1 - 0.2 * (daysSinceDone - 2)) : 1
 
   return (
@@ -41,7 +41,7 @@ export function ProgressIndicator({
         style={
           {
             "--segments": frequency,
-            "--glow-strength": glowStrength,
+            "--fill-opacity": fillOpacity,
           } as CSSProperties
         }
       >
@@ -50,12 +50,7 @@ export function ProgressIndicator({
             className="done"
             aria-label="Remove a done"
             onClick={onRemoveDone}
-            style={
-              {
-                "--segments": filledSegments,
-                width: `${(filledSegments / frequency) * 100}%`,
-              } as CSSProperties
-            }
+            style={{ width: `${(filledSegments / frequency) * 100}%` }}
           />
         )}
         {filledSegments < frequency && (
