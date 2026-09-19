@@ -110,7 +110,11 @@ export function Task({ task, listId, dragHandle }: TaskProps) {
           <DueDate dueDate={task.dueDate} onChange={onChangeDueDate} />
         )}
 
-        <UpdateLabels onAddLabel={(label) => addLabel(label, task)} />
+        <UpdateLabels
+          onChangeLabels={(labels) =>
+            labels.forEach((label) => addLabel(label, task))
+          }
+        />
 
         {hasLabels && (
           <DueDate dueDate={task.dueDate} onChange={onChangeDueDate} />

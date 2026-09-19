@@ -7,6 +7,7 @@ export type LabelsControlProps = {
   value: Label[]
   onChange: (value: Label[]) => void
   label: string
+  ariaLabel?: string
   hideLabel?: boolean
   isMulti?: boolean
   autoFocus?: boolean
@@ -57,6 +58,7 @@ export function LabelsControl({
   value,
   onChange,
   label,
+  ariaLabel,
   isMulti = true,
   autoFocus,
   onDismiss,
@@ -90,6 +92,7 @@ export function LabelsControl({
     <Combobox
       {...valueProps}
       label={label}
+      ariaLabel={ariaLabel}
       options={options}
       createOption={createOption}
       Option={Option}

@@ -13,6 +13,7 @@ export function DueDate({ dueDate, onChange }: DueDateProps) {
     </div>
   ) : (
     <button
+      type="button"
       className="add-metadata ghost calendar"
       style={{ fontSize: ".8em" }}
       onClick={() => onChange(new Date().getTime())}

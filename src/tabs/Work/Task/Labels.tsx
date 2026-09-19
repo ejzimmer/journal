@@ -1,7 +1,6 @@
-import { XIcon } from "../../../shared/icons/X"
+import { LabelTags } from "../LabelTags"
 import { useWorkStorage } from "../WorkStorageContext"
 import { StoredLabel } from "../types"
-import { LabelColourPicker } from "./LabelColourPicker"
 
 export function Labels({
   labelIds,
@@ -18,43 +17,12 @@ export function Labels({
     ?.map((id) => getLabel(id))
     .filter((label): label is StoredLabel => !!label)
 
-  if (!labels || labels.length === 0) {
-    return null
-  }
-
   return (
-    <ul className="labels">
-      {labels.map((label) => (
-        <li
-          key={label.id}
-          className={`label-tag ${label.colour}`}
-          style={{ marginBlockStart: "-16px" }}
-        >
-          {onEditLabel ? (
-            <button
-              className="label-value"
-              aria-label={`Change ${label.value} label`}
-              onClick={() => onEditLabel(label.id)}
-            >
-              {label.value}
-            </button>
-          ) : (
-            label.value
-          )}
-          <LabelColourPicker
-            label={label.value}
-            colour={label.colour}
-            onChange={(colour) => updateLabel(label.id, colour)}
-          />
-          <button
-            className="ghost transient"
-            aria-label={`Remove ${label.value}`}
-            onClick={() => onRemoveLabel(label.id)}
-          >
-            <XIcon width="16px" />
-          </button>
-        </li>
-      ))}
-    </ul>
+    <LabelTags
+      labels={labels ?? []}
+      onRemoveLabel={onRemoveLabel}
+      onChangeColour={updateLabel}
+      onEditLabel={onEditLabel}
+    />
   )
 }
