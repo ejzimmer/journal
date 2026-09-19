@@ -17,7 +17,6 @@ type AddTaskFormProps = {
 }
 
 export function AddTaskForm({ onSubmit, onClose }: AddTaskFormProps) {
-  const formRef = useRef<HTMLFormElement>(null)
   const descriptionRef = useRef<HTMLInputElement>(null)
   const [dueDate, setDueDate] = useState<number>()
   const [labels, setLabels] = useState<Label[]>([])
@@ -48,35 +47,15 @@ export function AddTaskForm({ onSubmit, onClose }: AddTaskFormProps) {
     onClose()
   }
 
-  const handleBlur = () => {
-    requestAnimationFrame(() => {
-      if (
-        !formRef.current?.contains(document.activeElement) &&
-        !descriptionRef.current?.value
-      ) {
-        onClose()
-      }
-    })
-  }
-
-  const addLabel = (label: Label) => {
+  const addLabel = (label: Label) =>
     setLabels((current) =>
       current.some(({ value }) => value === label.value)
         ? current
         : [...current, label],
     )
-    descriptionRef.current?.focus()
-  }
 
-  const removeLabel = (value: string) => {
+  const removeLabel = (value: string) =>
     setLabels((current) => current.filter((label) => label.value !== value))
-    descriptionRef.current?.focus()
-  }
-
-  const changeDueDate = (date: number) => {
-    setDueDate(date)
-    descriptionRef.current?.focus()
-  }
 
   useEffect(() => {
     descriptionRef.current?.focus()
@@ -84,10 +63,8 @@ export function AddTaskForm({ onSubmit, onClose }: AddTaskFormProps) {
 
   return (
     <form
-      ref={formRef}
       onSubmit={handleSubmit}
       onKeyDown={handleCancel}
-      onBlur={handleBlur}
       className="add-task"
     >
       <input
@@ -112,7 +89,7 @@ export function AddTaskForm({ onSubmit, onClose }: AddTaskFormProps) {
           ))}
         </ul>
       )}
-      <DueDate dueDate={dueDate} onChange={changeDueDate} />
+      <DueDate dueDate={dueDate} onChange={setDueDate} />
       <UpdateLabels onAddLabel={addLabel} />
       <button
         aria-label="submit"

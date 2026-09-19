@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { TagIcon } from "../../../shared/icons/Tag"
 import { LabelsControl } from "../LabelsControl"
 import { Label } from "../types"
@@ -9,6 +9,19 @@ export function UpdateLabels({
   onAddLabel: (label: Label) => void
 }) {
   const [addingLabel, setAddingLabel] = useState(false)
+  const addLabelButtonRef = useRef<HTMLButtonElement>(null)
+  const hasOpenedLabelsControl = useRef(false)
+
+  useEffect(() => {
+    if (addingLabel) {
+      hasOpenedLabelsControl.current = true
+      return
+    }
+
+    if (hasOpenedLabelsControl.current) {
+      addLabelButtonRef.current?.focus()
+    }
+  }, [addingLabel])
 
   return addingLabel ? (
     <LabelsControl
@@ -19,11 +32,11 @@ export function UpdateLabels({
       }}
       label=""
       ariaLabel="Labels"
-      autoFocus
       onDismiss={() => setAddingLabel(false)}
     />
   ) : (
     <button
+      ref={addLabelButtonRef}
       type="button"
       className="add-metadata ghost"
       aria-label="Add label"

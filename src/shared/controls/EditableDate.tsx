@@ -16,6 +16,8 @@ export function EditableDate({ onChange, value, ...props }: Props) {
   )
   const [isEditing, setIsEditing] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
+  const displayRef = useRef<HTMLDivElement>(null)
+  const hasStartedEditing = useRef(false)
   const startEditing = () => {
     setIsEditing(true)
   }
@@ -23,9 +25,15 @@ export function EditableDate({ onChange, value, ...props }: Props) {
 
   useEffect(() => {
     if (isEditing) {
+      hasStartedEditing.current = true
       inputRef.current?.focus()
+      return
     }
-  }, [isEditing, inputRef])
+
+    if (hasStartedEditing.current) {
+      displayRef.current?.focus()
+    }
+  }, [isEditing])
 
   const handleSubmit = () => {
     const inputValue = inputRef.current?.value ?? ""
@@ -54,7 +62,18 @@ export function EditableDate({ onChange, value, ...props }: Props) {
       {...props}
     />
   ) : (
-    <div {...props} tabIndex={0} onFocus={startEditing} onClick={startEditing}>
+    <div
+      {...props}
+      ref={displayRef}
+      tabIndex={0}
+      onClick={startEditing}
+      onKeyDown={(event) => {
+        if (event.key === "Enter" || event.key === " ") {
+          event.preventDefault()
+          startEditing()
+        }
+      }}
+    >
       {format(value, "dd MMM")}
     </div>
   )

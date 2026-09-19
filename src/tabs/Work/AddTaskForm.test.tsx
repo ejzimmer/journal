@@ -160,31 +160,38 @@ describe("AddTaskForm", () => {
     expect(onClose).not.toHaveBeenCalled()
   })
 
-  it("stays open when the due date is set before a description is typed", async () => {
+  it("stays open when the user clicks outside it", async () => {
     const user = userEvent.setup()
     const onClose = jest.fn()
     render(<AddTaskForm {...commonProps} onClose={onClose} />, {
       wrapper: Wrapper,
     })
 
-    await user.click(screen.getByRole("button", { name: "📅" }))
+    await user.click(document.body)
     await flushAnimationFrame()
 
     expect(onClose).not.toHaveBeenCalled()
+    expect(
+      screen.getByRole("textbox", { name: "Description" }),
+    ).toBeInTheDocument()
   })
 
-  it("stays open when the label picker is opened before a description is typed", async () => {
+  it("returns focus to the add label button when the label picker closes", async () => {
     const user = userEvent.setup()
-    const onClose = jest.fn()
-    render(<AddTaskForm {...commonProps} onClose={onClose} />, {
-      wrapper: Wrapper,
-    })
+    render(<AddTaskForm {...commonProps} />, { wrapper: Wrapper })
 
-    await user.click(screen.getByRole("button", { name: "Add label" }))
-    await flushAnimationFrame()
+    await addLabel(user, "PR")
 
-    expect(onClose).not.toHaveBeenCalled()
-    expect(screen.getByRole("combobox", { name: "Labels" })).toHaveFocus()
+    expect(screen.getByRole("button", { name: "Add label" })).toHaveFocus()
+  })
+
+  it("returns focus to the due date when the date input closes", async () => {
+    const user = userEvent.setup()
+    render(<AddTaskForm {...commonProps} />, { wrapper: Wrapper })
+
+    await setDueDate(user, "2026-01-01")
+
+    expect(screen.getByText("01 Jan")).toHaveFocus()
   })
 
   describe("when the user presses the Escape key", () => {
