@@ -2,6 +2,7 @@ import { useContext, useEffect, useMemo, useRef, useState } from "react"
 import { EmojiCheckbox } from "./EmojiCheckbox"
 import { CategoriesContext } from "../../tabs/Todo"
 import { Combobox } from "./combobox/Combobox"
+import { useFormToggle } from "./useFormToggle"
 
 import "./EditableDescription.css"
 
@@ -26,11 +27,13 @@ export function EditableDescription({
   useTickForDone,
 }: EditableDescriptionProps) {
   const inputRef = useRef<HTMLInputElement>(null)
-  const [inEditMode, setInEditMode] = useState(false)
+  const {
+    isFormOpen: inEditMode,
+    triggerRef: displayRef,
+    openForm: startEditing,
+    closeForm: stopEditing,
+  } = useFormToggle<HTMLDivElement>()
   const [inputValue, setInputValue] = useState(description)
-
-  const startEditing = () => setInEditMode(true)
-  const stopEditing = () => setInEditMode(false)
 
   const categories = useContext(CategoriesContext)
   if (!categories) {
@@ -93,7 +96,19 @@ export function EditableDescription({
         onChange={() => onChange({ isChecked: !isChecked })}
         useTickForDone={useTickForDone}
       />
-      <div tabIndex={0} onFocus={startEditing} onClick={startEditing}>
+      <div
+        ref={displayRef}
+        role="button"
+        tabIndex={0}
+        aria-label={description}
+        onClick={startEditing}
+        onKeyDown={(event) => {
+          if (event.key === "Enter" || event.key === " ") {
+            event.preventDefault()
+            startEditing()
+          }
+        }}
+      >
         {description}
       </div>
     </div>

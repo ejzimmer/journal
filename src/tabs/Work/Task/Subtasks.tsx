@@ -1,9 +1,10 @@
-import { FormEvent, KeyboardEvent, useRef, useState } from "react"
+import { FormEvent, KeyboardEvent, useRef } from "react"
 import { sortByPosition } from "../../../shared/drag-and-drop/utils"
 import { useWorkStorage } from "../WorkStorageContext"
 import { Subtask } from "../types"
 import { BracketsIcon } from "../../../shared/icons/Brackets"
 import { StandardChecklistButton } from "./StandardChecklistButton"
+import { useFormToggle } from "../../../shared/controls/useFormToggle"
 
 type SubtasksProps = {
   subtasks?: Record<string, Subtask>
@@ -13,7 +14,12 @@ type SubtasksProps = {
 
 export function Subtasks({ subtasks, listId, taskId }: SubtasksProps) {
   const { deleteSubtask, updateSubtasksList } = useWorkStorage()
-  const [isEditing, setIsEditing] = useState(false)
+  const {
+    isFormOpen: isEditing,
+    triggerRef,
+    openForm: startEditing,
+    closeForm,
+  } = useFormToggle<HTMLElement>()
   const inputRef = useRef<HTMLInputElement>(null)
 
   const sorted = sortByPosition(Object.values(subtasks ?? {}))
@@ -43,15 +49,11 @@ export function Subtasks({ subtasks, listId, taskId }: SubtasksProps) {
 
   const stopEditing = (shouldSave: boolean) => {
     if (shouldSave) save()
-    setIsEditing(false)
+    closeForm()
   }
 
   const handleSubmit = (event: FormEvent) => {
     event.preventDefault()
-    stopEditing(true)
-  }
-
-  const handleBlur = () => {
     stopEditing(true)
   }
 
@@ -63,7 +65,7 @@ export function Subtasks({ subtasks, listId, taskId }: SubtasksProps) {
 
   if (isEditing) {
     return (
-      <form className="subtasks editing" onSubmit={handleSubmit} onBlur={handleBlur}>
+      <form className="subtasks editing" onSubmit={handleSubmit}>
         <span className="bracket">[</span>
         <input
           ref={inputRef}
@@ -81,7 +83,14 @@ export function Subtasks({ subtasks, listId, taskId }: SubtasksProps) {
   return (
     <>
       {hasSubtasks ? (
-        <span className="subtasks" onClick={() => setIsEditing(true)}>
+        <span
+          ref={(element) => {
+            triggerRef.current = element
+          }}
+          className="subtasks"
+          tabIndex={-1}
+          onClick={startEditing}
+        >
           [
           {sorted.map((subtask, index) => (
             <span key={subtask.id}>
@@ -102,10 +111,13 @@ export function Subtasks({ subtasks, listId, taskId }: SubtasksProps) {
         </span>
       ) : (
         <button
+          ref={(element) => {
+            triggerRef.current = element
+          }}
           type="button"
           className="add-metadata ghost"
           aria-label="Add subtask"
-          onClick={() => setIsEditing(true)}
+          onClick={startEditing}
         >
           <BracketsIcon width="16px" />
         </button>

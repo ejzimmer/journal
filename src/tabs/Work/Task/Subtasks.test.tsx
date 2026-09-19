@@ -184,7 +184,7 @@ describe("Subtasks", () => {
     ])
   })
 
-  it("saves the edited list when the field loses focus", async () => {
+  it("keeps editing without saving when the field loses focus", async () => {
     const user = userEvent.setup()
     const { container, storageContext } = renderWithContext({
       a: { id: "a", description: "test", position: 0 },
@@ -196,10 +196,10 @@ describe("Subtasks", () => {
     await user.type(input, "test, extra")
     await user.tab()
 
-    expect(storageContext.updateSubtasksList).toHaveBeenCalledWith("list-1", "task-1", [
-      { id: "a", description: "test", position: 0 },
-      { id: expect.any(String), description: "extra", position: 1 },
-    ])
+    expect(
+      screen.getByRole("textbox", { name: "Edit subtasks" }),
+    ).toBeInTheDocument()
+    expect(storageContext.updateSubtasksList).not.toHaveBeenCalled()
   })
 
   it("filters out blank entries when saving", async () => {
