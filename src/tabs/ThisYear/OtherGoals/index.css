@@ -122,6 +122,10 @@ ul.other-goals {
       grid-column: 2;
       display: flex;
 
+      .tooltip-container:hover .tooltip {
+        opacity: 1;
+      }
+
       label.emoji-checkbox {
         opacity: 0.4;
         filter: grayscale(100%);
