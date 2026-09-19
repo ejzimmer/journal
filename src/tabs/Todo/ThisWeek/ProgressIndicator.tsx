@@ -1,49 +1,77 @@
-import { CSSProperties } from "react"
+import { CSSProperties, MouseEvent } from "react"
 import { isSameDay, differenceInDays } from "date-fns"
 import { WeeklyTask } from "../../../shared/types"
-import { dateToWeekday } from "./utils"
+import { dateToWeekday, getCompletedDates } from "./utils"
 
-type ProgressIndicatorProps = Pick<WeeklyTask, "completed" | "frequency">
+type ProgressIndicatorProps = Pick<
+  WeeklyTask,
+  "completed" | "frequency" | "description"
+> & {
+  onAddDone: (event: MouseEvent) => void
+  onRemoveDone: () => void
+}
+
 export function ProgressIndicator({
   completed,
   frequency,
+  description,
+  onAddDone,
+  onRemoveDone,
 }: ProgressIndicatorProps) {
-  const completedList = Array.isArray(completed)
-    ? completed
-    : (Object.values(completed ?? {}) as number[])
-  const numberDone = (completedList.filter((date) => !!date) ?? []).length
+  const completedDates = getCompletedDates(completed)
+  const numberDone = completedDates.length
   const remainder = Math.max(numberDone - frequency, 0)
-  const percent = (1 / frequency) * 100
+  const filledSegments = Math.min(numberDone, frequency)
 
-  const mostRecentlyDone = completedList.at(-1)
-  const doneToday = mostRecentlyDone && isSameDay(mostRecentlyDone, new Date())
-
+  const mostRecentlyDone = numberDone ? Math.max(...completedDates) : undefined
+  const doneToday =
+    !!mostRecentlyDone && isSameDay(mostRecentlyDone, new Date())
   const daysSinceDone = mostRecentlyDone
     ? differenceInDays(new Date(), mostRecentlyDone)
     : 0
-  const fillOpacity =
+  const glowStrength =
     daysSinceDone > 2 ? Math.max(0, 1 - 0.2 * (daysSinceDone - 2)) : 1
 
   return (
     <div className="indicators">
-      <progress
-        max={frequency}
-        value={numberDone}
-        className={`${numberDone >= frequency ? "full" : ""} ${doneToday ? "done-today" : ""}`}
+      <div
+        role="group"
+        aria-label={`${description}: ${numberDone} of ${frequency} done`}
+        className={`progress-bar ${doneToday ? "done-today" : ""}`}
         style={
           {
-            backgroundColor: "#eee",
-            backgroundImage: `repeating-linear-gradient(to right, transparent, transparent ${percent}%, var(--body-colour-light) ${percent}%, var(--body-colour-light) calc(${percent}% + 1px))`,
-            "--fill-opacity": fillOpacity,
+            "--segments": frequency,
+            "--glow-strength": glowStrength,
           } as CSSProperties
         }
-      />
+      >
+        {filledSegments > 0 && (
+          <button
+            className="done"
+            aria-label="Remove a done"
+            onClick={onRemoveDone}
+            style={
+              {
+                "--segments": filledSegments,
+                width: `${(filledSegments / frequency) * 100}%`,
+              } as CSSProperties
+            }
+          />
+        )}
+        {filledSegments < frequency && (
+          <button
+            className="not-done"
+            aria-label="Mark done"
+            onClick={onAddDone}
+          />
+        )}
+      </div>
       {remainder > 0 && <span className="remainder">+{remainder}</span>}
       {numberDone > 0 && (
         <ol className="dates-popover">
-          {completedList.map(
-            (date) => date && <li key={date}>{dateToWeekday(date)}</li>,
-          )}
+          {completedDates.map((date) => (
+            <li key={date}>{dateToWeekday(date)}</li>
+          ))}
         </ol>
       )}
     </div>

@@ -13,61 +13,94 @@
   .indicators {
     position: relative;
 
-    progress {
-      --light: hsl(108, 81%, 66%);
-      --dark: hsl(108, 81%, 36%);
-      appearance: none;
-      -webkit-appearance: none;
-      border-radius: 100px;
-      border: 2px solid white;
-      box-shadow:
-        1px 1px 2px hsl(0 0 0 /0.6),
-        inset 0 0 1px hsl(0 0 0/0.5);
+    .progress-bar {
+      --hue: 140;
+      --chroma-top: 0.207;
+      --chroma-bottom: 0.19;
+      --lit: var(--glow-strength, 1);
+      --segment: calc(100% / var(--segments));
+      display: flex;
+      width: 160px;
       height: 25px;
+      border: 2px solid white;
+      border-radius: 100px;
+      background-color: #eee;
+      background-image: repeating-linear-gradient(
+        to right,
+        transparent 0 calc(var(--segment) - 1px),
+        var(--body-colour-light) calc(var(--segment) - 1px) var(--segment)
+      );
+      box-shadow:
+        1px 1px 2px hsl(0 0 0 / 0.6),
+        inset 0 0 1px hsl(0 0 0 / 0.5);
 
       &.done-today {
-        --light: hsl(211, 81%, 66%);
-        --dark: hsl(211, 81%, 36%);
-      }
-
-      &::-moz-progress-bar {
-        background:
-          linear-gradient(
-            to right,
-            var(--dark),
-            transparent 6%,
-            transparent 94%,
-            var(--dark)
-          ),
-          linear-gradient(var(--dark), var(--light), var(--dark));
-        opacity: var(--fill-opacity, 1);
-      }
-      &::-webkit-progress-value {
-        background:
-          linear-gradient(
-            to right,
-            var(--dark),
-            transparent 6%,
-            transparent 94%,
-            var(--dark)
-          ),
-          linear-gradient(var(--dark), var(--light), var(--dark));
-        border-top-left-radius: 100px;
-        border-bottom-left-radius: 100px;
-        opacity: var(--fill-opacity, 1);
-      }
-
-      &.full::-webkit-progress-value {
-        border-radius: 100px;
-      }
-
-      &::-webkit-progress-bar {
-        border-radius: 100px;
-        background: inherit;
+        --hue: 250;
+        --chroma-top: 0.075;
+        --chroma-bottom: 0.13;
       }
 
       &:hover ~ .dates-popover {
         opacity: 1;
+      }
+
+      button {
+        appearance: none;
+        -webkit-appearance: none;
+        padding: 0;
+        border: none;
+        background-color: transparent;
+        cursor: pointer;
+      }
+
+      .not-done {
+        flex-grow: 1;
+        border-start-end-radius: 100px;
+        border-end-end-radius: 100px;
+      }
+
+      .done {
+        --segment: calc(100% / var(--segments));
+        --lightness-top: calc(0.62 + 0.235 * var(--lit));
+        --lightness-bottom: calc(0.45 + 0.185 * var(--lit));
+        --fill-top: oklch(
+          var(--lightness-top)
+            calc(var(--chroma-top) * (0.5 + 0.5 * var(--lit))) var(--hue)
+        );
+        --fill-bottom: oklch(
+          var(--lightness-bottom)
+            calc(var(--chroma-bottom) * (0.5 + 0.5 * var(--lit))) var(--hue)
+        );
+        --glow-colour: oklch(
+          var(--lightness-top) var(--chroma-top) var(--hue) /
+            calc(0.55 * var(--lit))
+        );
+        --glow-radius: calc(9px * var(--lit));
+        border-start-start-radius: 100px;
+        border-end-start-radius: 100px;
+        background-image:
+          repeating-linear-gradient(
+            to right,
+            transparent 0 calc(var(--segment) - 1px),
+            hsl(0 0% 100% / 0.65) calc(var(--segment) - 1px) var(--segment)
+          ),
+          linear-gradient(
+            var(--fill-bottom),
+            var(--fill-top) 45%,
+            var(--fill-bottom)
+          );
+        box-shadow:
+          0 0 var(--glow-radius) var(--glow-colour),
+          0 0 calc(var(--glow-radius) * 2.2)
+            oklch(
+              var(--lightness-top) var(--chroma-top) var(--hue) /
+                calc(0.28 * var(--lit))
+            ),
+          inset 0 0 7px oklch(0.97 0.05 var(--hue) / calc(0.6 * var(--lit)));
+
+        &:last-child {
+          border-radius: 100px;
+        }
       }
     }
   }
