@@ -19,7 +19,7 @@ const commonProps = {
 const enterDueDate = async (
   user: ReturnType<typeof userEvent.setup>,
   date: string,
-  finishWith: "{Enter}" | "{Escape}" = "{Enter}",
+  finalKey: "{Enter}" | "{Escape}" = "{Enter}",
 ) => {
   await user.click(screen.getByRole("button", { name: "📅" }))
   await user.click(screen.getByRole("button", { name: /^Due date/ }))
@@ -27,7 +27,7 @@ const enterDueDate = async (
   fireEvent.change(screen.getByLabelText("Due date"), {
     target: { value: date },
   })
-  await user.keyboard(finishWith)
+  await user.keyboard(finalKey)
 }
 
 const addLabel = async (

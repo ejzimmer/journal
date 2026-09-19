@@ -27,17 +27,14 @@ export function EditableDate({ onChange, value, ...props }: Props) {
     }
   }
 
-  const submitDate = () => {
+  const handleSubmit = (focusButton = false) => {
     const inputValue = inputRef.current?.value ?? ""
     const date = parse(inputValue, "yyyy-MM-dd", new Date()).getTime()
     if (date !== value) {
       onChange(date)
     }
-  }
 
-  const handleBlur = () => {
-    submitDate()
-    stopEditing()
+    stopEditing(focusButton)
   }
 
   return isEditing ? (
@@ -45,12 +42,11 @@ export function EditableDate({ onChange, value, ...props }: Props) {
       type="date"
       ref={inputRef}
       autoFocus
-      onBlur={handleBlur}
+      onBlur={() => handleSubmit()}
       onKeyDown={(event) => {
         if (event.key === "Enter") {
           event.preventDefault()
-          submitDate()
-          stopEditing(true)
+          handleSubmit(true)
         }
 
         if (event.key === "Escape") {
