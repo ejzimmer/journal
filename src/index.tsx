@@ -28,9 +28,6 @@ const { context: contextValue, hydrate } = createLocalFirstContext(
   getDatabase(initializeApp(firebaseConfig)),
 )
 
-// Registered synchronously (not after hydrate resolves): the registration
-// helper waits on the window "load" event, which can fire before an async
-// IndexedDB read finishes, so it must not be delayed behind one.
 serviceWorkerRegistration.register({ onUpdate: setWaitingRegistration })
 
 hydrate().then(() => {

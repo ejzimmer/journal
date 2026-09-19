@@ -39,7 +39,7 @@ describe("createSyncEngine", () => {
     await outbox.enqueue({ updates: { "work/list1": { id: "list1" } } })
     const engine = createSyncEngine(fakeDatabase(), outbox)
 
-    engine.start()
+    engine.startSyncing()
     await flushMicrotasks()
 
     expect(mockUpdate).toHaveBeenCalledWith({ "work/list1": { id: "list1" } })
@@ -51,7 +51,7 @@ describe("createSyncEngine", () => {
     await outbox.enqueue({ updates: { b: 2 } })
     const engine = createSyncEngine(fakeDatabase(), outbox)
 
-    engine.start()
+    engine.startSyncing()
     await flushMicrotasks()
 
     expect(mockUpdate.mock.calls.map((call) => call[0])).toEqual([
@@ -66,7 +66,7 @@ describe("createSyncEngine", () => {
     await outbox.enqueue({ updates: { b: 2 } })
     const engine = createSyncEngine(fakeDatabase(), outbox)
 
-    engine.start()
+    engine.startSyncing()
     await flushMicrotasks()
 
     expect(mockUpdate).toHaveBeenCalledTimes(1)
@@ -81,7 +81,7 @@ describe("createSyncEngine", () => {
     await outbox.enqueue({ updates })
     const engine = createSyncEngine(fakeDatabase(), outbox)
 
-    engine.start()
+    engine.startSyncing()
     await flushMicrotasks()
 
     expect(mockUpdate).toHaveBeenCalledTimes(1)
@@ -97,10 +97,25 @@ describe("createSyncEngine", () => {
     await outbox.enqueue({ updates: { a: 1 } })
     const engine = createSyncEngine(fakeDatabase(), outbox)
 
-    engine.start()
+    engine.startSyncing()
     await flushMicrotasks()
 
     expect(mockUpdate).not.toHaveBeenCalled()
+  })
+
+  it("only registers one online listener even if startSyncing is called twice", () => {
+    const addEventListenerSpy = jest.spyOn(window, "addEventListener")
+    const engine = createSyncEngine(fakeDatabase(), outbox)
+
+    engine.startSyncing()
+    engine.startSyncing()
+
+    const onlineListenerCalls = addEventListenerSpy.mock.calls.filter(
+      ([eventName]) => eventName === "online",
+    )
+    expect(onlineListenerCalls).toHaveLength(1)
+
+    addEventListenerSpy.mockRestore()
   })
 
   it("retries a failed op once notified again", async () => {
@@ -108,7 +123,7 @@ describe("createSyncEngine", () => {
     await outbox.enqueue({ updates: { a: 1 } })
     const engine = createSyncEngine(fakeDatabase(), outbox)
 
-    engine.start()
+    engine.startSyncing()
     await flushMicrotasks()
     expect(mockUpdate).toHaveBeenCalledTimes(1)
 

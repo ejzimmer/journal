@@ -5,7 +5,7 @@ const INITIAL_BACKOFF_MS = 1000
 const MAX_BACKOFF_MS = 30000
 
 export type SyncEngine = {
-  start: () => void
+  startSyncing: () => void
   notifyChange: () => void
 }
 
@@ -14,6 +14,7 @@ export function createSyncEngine(
   outbox: Outbox,
 ): SyncEngine {
   let draining = false
+  let syncing = false
   let retryTimer: ReturnType<typeof setTimeout> | undefined
   let backoffMs = INITIAL_BACKOFF_MS
 
@@ -54,14 +55,15 @@ export function createSyncEngine(
   }
 
   return {
-    start() {
+    startSyncing() {
+      if (syncing) return
+      syncing = true
+
       void drain()
-      if (typeof window !== "undefined") {
-        window.addEventListener("online", () => {
-          backoffMs = INITIAL_BACKOFF_MS
-          void drain()
-        })
-      }
+      window.addEventListener("online", () => {
+        backoffMs = INITIAL_BACKOFF_MS
+        void drain()
+      })
     },
     notifyChange() {
       void drain()

@@ -12,7 +12,7 @@ export function createLocalFirstContext(
   const localStore = createLocalStore(`${dbName}-local`)
   const outbox = createOutbox(`${dbName}-outbox`)
   const syncEngine = createSyncEngine(database, outbox)
-  syncEngine.start()
+  syncEngine.startSyncing()
 
   const keysWithRemoteListener = new Set<string>()
 
