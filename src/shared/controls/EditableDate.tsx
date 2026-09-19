@@ -20,10 +20,11 @@ export function EditableDate({ onChange, value, ...props }: Props) {
   const displayRef = useRef<HTMLDivElement>(null)
 
   const startEditing = () => setIsEditing(true)
-  const stopEditing = () => setIsEditing(false)
-  const stopEditingAndFocusDate = () => {
-    flushSync(stopEditing)
-    displayRef.current?.focus()
+  const stopEditing = (focusButton = false) => {
+    flushSync(() => setIsEditing(false))
+    if (focusButton) {
+      displayRef.current?.focus()
+    }
   }
 
   const submitDate = () => {
@@ -49,13 +50,13 @@ export function EditableDate({ onChange, value, ...props }: Props) {
         if (event.key === "Enter") {
           event.preventDefault()
           submitDate()
-          stopEditingAndFocusDate()
+          stopEditing(true)
         }
 
         if (event.key === "Escape") {
           event.stopPropagation()
           setEditingValue(format(new Date(value), "yyyy-MM-dd"))
-          stopEditingAndFocusDate()
+          stopEditing(true)
         }
       }}
       value={editingValue}
