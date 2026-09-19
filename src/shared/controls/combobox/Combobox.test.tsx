@@ -382,15 +382,22 @@ describe("Combobox", () => {
         expect(onChange).toHaveBeenCalledWith([options[0], options[2]])
       })
 
-      it("highlights an exact match ahead of an earlier partial match", async () => {
+      it("only matches options from the start of the label", async () => {
         const user = userEvent.setup()
-        render(<Combobox {...multivalueProps} />)
+        const onChange = jest.fn()
+        render(<Combobox {...multivalueProps} onChange={onChange} />)
+        const input = screen.getByRole("combobox")
 
-        await user.type(screen.getByRole("combobox"), "grapefruit")
+        await user.type(input, "range")
 
-        expect(screen.getByRole("option", { name: "grapefruit" })).toHaveClass(
-          "highlighted"
-        )
+        expect(screen.queryByRole("option")).not.toBeInTheDocument()
+
+        await user.type(input, "{Enter}")
+
+        expect(onChange).toHaveBeenCalledWith([
+          options[0],
+          { id: "5", label: "range" },
+        ])
       })
 
       it("doesn't highlight an option that's already selected", async () => {
@@ -574,14 +581,14 @@ describe("Combobox", () => {
         render(<Combobox {...commonProps} onChange={onChange} />)
         const input = screen.getByRole("combobox")
 
-        // Orange is highlighted
-        await user.type(input, "{ArrowDown}{ArrowDown}")
+        // Grape is highlighted
+        await user.type(input, "{ArrowDown}{ArrowDown}{ArrowDown}")
         await user.type(input, "g")
 
-        expect(screen.getAllByRole("option")).toHaveLength(3)
+        expect(screen.getAllByRole("option")).toHaveLength(2)
         await user.type(input, "{Enter}")
 
-        expect(onChange).toHaveBeenCalledWith(options[1])
+        expect(onChange).toHaveBeenCalledWith(options[2])
       })
     })
 

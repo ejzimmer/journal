@@ -6,7 +6,7 @@ import { SingleValueInput } from "./SingleValueInput"
 import { MultiValueInput } from "./MultiValueInput"
 
 import "./Combobox.css"
-import { findBestMatch, isSelected } from "./utils"
+import { isSelected } from "./utils"
 import { Popover } from "./Popover"
 import { useClickOutside } from "./useClickOutside"
 import { useKeyboardNavigation } from "./useKeyboardNavigation"
@@ -42,20 +42,17 @@ export function Combobox<T extends OptionType>({
   }, [])
 
   const [searchTerm, setSearchTerm] = useState("")
+  const search = searchTerm.trimStart().toLowerCase()
   const displayedOptions = (
-    searchTerm
-      ? options.filter((o) =>
-          o.label.toLowerCase().includes(searchTerm.trimStart().toLowerCase()),
-        )
+    search
+      ? options.filter((o) => o.label.toLowerCase().startsWith(search))
       : options
   ).filter((option) => !hideSelectedOptions || !isSelected({ value, option }))
 
-  const defaultHighlightedOption = isMultiValue
-    ? findBestMatch(
-        displayedOptions.filter((option) => !isSelected({ value, option })),
-        searchTerm
-      )
-    : undefined
+  const defaultHighlightedOption =
+    isMultiValue && search
+      ? displayedOptions.find((option) => !isSelected({ value, option }))
+      : undefined
 
   const { highlightedOption, onArrowKeyDown } = useKeyboardNavigation({
     value: isMultiValue ? undefined : value,
