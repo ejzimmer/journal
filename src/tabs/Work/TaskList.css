@@ -84,6 +84,22 @@ ol.work-lists > li {
     }
   }
 
+  .due-date {
+    color: var(--body-colour-light);
+    border: 2px solid;
+    font-weight: bold;
+    font-size: 16px;
+    font-family: sans-serif;
+    padding: 4px;
+
+    &.due-this-week {
+      color: var(--action-colour);
+    }
+    &.due-today {
+      color: var(--error-colour);
+    }
+  }
+
   li.task {
     min-height: calc(var(--line-gap) + var(--line-width));
     position: relative;
@@ -164,22 +180,6 @@ ol.work-lists > li {
       > .due-date,
       > .subtasks {
         margin-block-end: var(--baseline-nudge);
-      }
-
-      .due-date {
-        color: var(--body-colour-light);
-        border: 2px solid;
-        font-weight: bold;
-        font-size: 16px;
-        font-family: sans-serif;
-        padding: 4px;
-
-        &.due-this-week {
-          color: var(--action-colour);
-        }
-        &.due-today {
-          color: var(--error-colour);
-        }
       }
 
       .combobox .multi-value-container {
@@ -282,21 +282,56 @@ input.inline {
   }
 }
 
+li.add-task-row {
+  padding-inline-start: var(--margin-width);
+}
+
+li.task + li.add-task-row {
+  margin-block-start: calc(var(--line-gap) + var(--line-width));
+}
+
 form.add-task {
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+  min-height: calc(var(--line-gap) + var(--line-width));
+  padding-inline: 4px;
+  font-size: 1.7rem;
+
   input {
     font-size: 1.4rem;
     font-family: inherit;
   }
 
-  .button-container {
-    display: flex;
-    justify-content: end;
-    gap: 4px;
+  input.description {
+    flex-grow: 1;
+    align-self: flex-end;
+    font-size: inherit;
+    border: 0;
+    border-block-end: 1px solid var(--body-colour-light);
+    border-radius: 0;
+    background: transparent;
+    line-height: 1;
+    padding-block: 0;
 
-    button {
-      padding: 8px;
-      background: white;
+    &:focus {
+      outline: none;
+      border-block-end-color: var(--body-colour);
     }
+  }
+
+  ul.labels {
+    list-style-type: none;
+    display: flex;
+    gap: 2px;
+    margin: 0;
+    padding: 0;
+  }
+
+  button.icon {
+    height: 32px;
+    padding: 6px;
+    background: white;
   }
 
   [role="option"] {

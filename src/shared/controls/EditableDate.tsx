@@ -44,6 +44,7 @@ export function EditableDate({ onChange, value, ...props }: Props) {
       onBlur={handleSubmit}
       onKeyDown={(event) => {
         if (event.key === "Enter") {
+          event.preventDefault()
           handleSubmit()
         }
       }}

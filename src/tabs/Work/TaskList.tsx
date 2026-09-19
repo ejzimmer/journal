@@ -210,7 +210,7 @@ export function TaskList({
             />
           ))}
           {addTaskFormVisible && (
-            <li style={{ paddingInlineStart: "var(--margin-width)" }}>
+            <li className="add-task-row">
               <AddTaskForm
                 onSubmit={(newTask) => addTask(listId, newTask)}
                 onClose={() => {
