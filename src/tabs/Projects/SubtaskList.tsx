@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useRef, useState } from "react"
+import { useCallback, useMemo, useRef } from "react"
 import { useStorageContext } from "../../shared/FirebaseContext"
 import { PlusIcon } from "../../shared/icons/Plus"
 import { SortIcon } from "../../shared/icons/Sort"
@@ -19,6 +19,7 @@ import { useDropTarget } from "../../shared/drag-and-drop/useDropTarget"
 import { isDraggable, sortByPosition } from "../../shared/drag-and-drop/utils"
 import { useDraggableList } from "../../shared/drag-and-drop/useDraggableList"
 import { useDrawer } from "./useDrawer"
+import { useFormToggle } from "../../shared/controls/useFormToggle"
 
 type SubtasksProps = {
   projectId: string
@@ -26,7 +27,7 @@ type SubtasksProps = {
 }
 
 export function SubtaskList({ projectId, isVisible }: SubtasksProps) {
-  const [formVisible, setFormVisible] = useState(false)
+  const { isFormOpen, triggerRef, toggleForm } = useFormToggle()
   const drawerRef = useRef<HTMLDivElement>(null)
   const listRef = useRef<HTMLOListElement>(null)
   const formRef = useRef<HTMLDivElement>(null)
@@ -58,7 +59,7 @@ export function SubtaskList({ projectId, isVisible }: SubtasksProps) {
     subtasks,
     isProjectLoaded,
     isOpen: isVisible,
-    isFormOpen: formVisible,
+    isFormOpen,
   })
 
   useDropTarget({
@@ -143,10 +144,11 @@ export function SubtaskList({ projectId, isVisible }: SubtasksProps) {
           paddingBlockEnd: "8px",
         }}
       >
-        <AddSubtaskForm isFormVisible={formVisible} onAddSubtask={onAddTask} />
+        <AddSubtaskForm isFormVisible={isFormOpen} onAddSubtask={onAddTask} />
         <button
-          className={`icon ghost show-form ${formVisible ? "form-visible" : ""}`}
-          onClick={() => setFormVisible(!formVisible)}
+          ref={triggerRef}
+          className={`icon ghost show-form ${isFormOpen ? "form-visible" : ""}`}
+          onClick={toggleForm}
           style={{ alignSelf: "baseline", marginInlineEnd: "12px" }}
         >
           <PlusIcon width="16px" colour="var(--action-colour)" />

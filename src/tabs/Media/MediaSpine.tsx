@@ -1,8 +1,9 @@
-import { ReactNode, useState } from "react"
+import { ReactNode } from "react"
 import { MediaDetails } from "./types"
 import { useMediaStorage } from "./MediaStorageContext"
 import { Spine } from "./Spine"
 import { getNextStatus } from "./nextStatus"
+import { useFormToggle } from "../../shared/controls/useFormToggle"
 
 export type StatusConfig<T extends MediaDetails, S extends string> = {
   order: readonly S[]
@@ -31,7 +32,7 @@ export function MediaSpine<T extends MediaDetails, S extends string>({
   editForm: (props: { isOpen: boolean; onCancel: () => void }) => ReactNode
 }) {
   const { updateMedia } = useMediaStorage()
-  const [isEditFormOpen, setIsEditFormOpen] = useState(false)
+  const { isFormOpen, triggerRef, openForm, closeForm } = useFormToggle()
 
   const status = config.getStatus(item)
   const nextStatus = getNextStatus(config.order, status)
@@ -52,13 +53,11 @@ export function MediaSpine<T extends MediaDetails, S extends string>({
       glyph={config.glyph[status]}
       titleAriaLabel={`${item.title}${author ? `, ${author}` : ""}, ${status}`}
       stampAriaLabel={`${item.title}: ${status}. Change to ${nextStatus}`}
-      onTitleClick={() => setIsEditFormOpen(true)}
+      titleRef={triggerRef}
+      onTitleClick={openForm}
       onStampClick={updateStatus}
     >
-      {editForm({
-        isOpen: isEditFormOpen,
-        onCancel: () => setIsEditFormOpen(false),
-      })}
+      {editForm({ isOpen: isFormOpen, onCancel: closeForm })}
     </Spine>
   )
 }
