@@ -349,6 +349,10 @@ form.add-task {
     padding: 0;
   }
 
+  &:has(.combobox) > ul.labels {
+    display: none;
+  }
+
   button.icon {
     height: 32px;
     padding: 6px;
