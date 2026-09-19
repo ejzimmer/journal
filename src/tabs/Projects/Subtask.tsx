@@ -54,7 +54,6 @@ export function Subtask({ path, dragHandle, project, ...task }: SubtaskProps) {
         [draggableTypeKey]: `subtask-${path}`,
         id: task.id,
         parentId: path,
-        position: task.position,
       })}
       dragPreview={<DragPreview task={task} />}
       isDroppable={(data) =>

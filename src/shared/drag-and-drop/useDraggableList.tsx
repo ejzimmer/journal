@@ -9,7 +9,7 @@ import {
   OrderedListItem,
   draggableTypeKey,
 } from "./types"
-import { isDraggable, sortByPosition } from "./utils"
+import { isDraggable, renumberPositions, sortByPosition } from "./utils"
 
 type UseDraggableArgs<T> = {
   listId: string
@@ -44,15 +44,22 @@ export function useDraggableList<
 
   const { value } = useValue<Record<string, T>>(listId)
 
-  const getDestinationIndex = useCallback((target?: DropTarget) => {
-    if (!isDraggable(target)) {
-      return 0
-    }
+  const getDestinationIndex = useCallback(
+    (sortedList: T[], target?: DropTarget) => {
+      if (!isDraggable(target)) {
+        return 0
+      }
 
-    const closestEdge = extractClosestEdge(target)
-    const targetIndex = target.position as number
-    return closestEdge === "bottom" ? targetIndex + 1 : targetIndex
-  }, [])
+      const targetIndex = sortedList.findIndex((item) => item.id === target.id)
+      if (targetIndex === -1) {
+        return 0
+      }
+
+      const closestEdge = extractClosestEdge(target)
+      return closestEdge === "bottom" ? targetIndex + 1 : targetIndex
+    },
+    [],
+  )
 
   const getItemByPath = useCallback(
     (path: string, value: Record<string, any>) => {
@@ -76,12 +83,12 @@ export function useDraggableList<
     ({
       listId,
       dropTargetData,
-      sourcePosition,
+      sourceId,
       axis,
     }: {
       listId: string
       dropTargetData: DropTarget
-      sourcePosition: number
+      sourceId: string
       axis: "horizontal" | "vertical"
     }) => {
       if (!isDraggable(dropTargetData) || !value) {
@@ -89,15 +96,24 @@ export function useDraggableList<
       }
 
       const list = getItemByPath(listId, value) as Record<string, T>
-      const closestEdgeOfTarget = extractClosestEdge(dropTargetData)
+      const sortedList = sortByPosition(Object.values(list))
+      const startIndex = sortedList.findIndex((item) => item.id === sourceId)
+      const indexOfTarget = sortedList.findIndex(
+        (item) => item.id === dropTargetData.id,
+      )
+      if (startIndex === -1 || indexOfTarget === -1) {
+        return
+      }
 
-      const reorderedList = reorderWithEdge({
-        list: sortByPosition(Object.values(list)),
-        startIndex: sourcePosition,
-        indexOfTarget: dropTargetData.position,
-        closestEdgeOfTarget,
-        axis,
-      }).map((item, index) => ({ ...item, position: index }))
+      const reorderedList = renumberPositions(
+        reorderWithEdge({
+          list: sortedList,
+          startIndex,
+          indexOfTarget,
+          closestEdgeOfTarget: extractClosestEdge(dropTargetData),
+          axis,
+        }),
+      )
 
       updateList(listId, reorderedList)
     },
@@ -131,19 +147,24 @@ export function useDraggableList<
           updatePosition({
             listId: targetListId,
             dropTargetData,
-            sourcePosition: sourceData.position,
+            sourceId: sourceData.id,
             axis: getAxis(sourceData),
           })
         } else if (
           isDraggable(dropTargetData) &&
           dropTargetData[draggableTypeKey] === sourceData[draggableTypeKey]
         ) {
-          const targetListIndex = getDestinationIndex(dropTargetData)
           const targetList = getItemByPath(targetListId, value) as Record<
             string,
             T
           >
-          const sortedTarget = sortByPosition(Object.values(targetList))
+          const sortedTarget = renumberPositions(
+            sortByPosition(Object.values(targetList)),
+          )
+          const targetListIndex = getDestinationIndex(
+            sortedTarget,
+            dropTargetData,
+          )
 
           const item = getItemByPath(
             `${sourceData.parentId}/${sourceData.id}`,

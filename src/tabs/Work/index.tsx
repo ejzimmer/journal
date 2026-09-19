@@ -6,7 +6,11 @@ import { Skeleton } from "../../shared/controls/Skeleton"
 import { draggableTypeKey } from "../../shared/drag-and-drop/types"
 import { WorkTask, WORK_KEY } from "./types"
 import { useDraggableList } from "../../shared/drag-and-drop/useDraggableList"
-import { isDraggable, sortByPosition } from "../../shared/drag-and-drop/utils"
+import {
+  isDraggable,
+  renumberPositions,
+  sortByPosition,
+} from "../../shared/drag-and-drop/utils"
 import { useDropTarget } from "../../shared/drag-and-drop/useDropTarget"
 import { WorkStorageProvider, useWorkStorage } from "./WorkStorageContext"
 
@@ -123,10 +127,7 @@ function WorkContent() {
         }),
       )
 
-      const orderedNotDone = sortByPosition(notDone).map((task, index) => ({
-        ...task,
-        position: index,
-      }))
+      const orderedNotDone = renumberPositions(sortByPosition(notDone))
       reorderTasks(list.id, orderedNotDone)
     })
   }, [lists, addTask, orderedLists, doneList, reorderTasks])

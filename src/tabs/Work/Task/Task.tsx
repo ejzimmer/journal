@@ -49,7 +49,6 @@ export function Task({ task, listId, dragHandle }: TaskProps) {
         [draggableTypeKey]: "task",
         id: task.id,
         parentId: `${WORK_KEY}/${listId}/items`,
-        position: task.position,
       })}
       dragPreview={<DragPreview task={task} />}
       isDroppable={isTask}

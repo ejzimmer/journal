@@ -5,7 +5,7 @@ import { ArrowToTopIcon } from "../icons/ArrowToTop"
 import { ArrowUpIcon } from "../icons/ArrowUp"
 import { DragHandleIcon } from "../icons/DragHandle"
 import { Menu, MenuHandle } from "../controls/Menu"
-import { Destination, OrderedListItem } from "./types"
+import { Destination, SortableItem } from "./types"
 import { getPosition, onChangePosition } from "./utils"
 
 export type AdditionalActions = {
@@ -14,9 +14,9 @@ export type AdditionalActions = {
 }
 
 type DragHandleProps = {
-  list: OrderedListItem[]
+  list: SortableItem[]
   index: number
-  onReorder: (list: OrderedListItem[]) => void
+  onReorder: (list: SortableItem[]) => void
   additionalActions?: AdditionalActions
 }
 
