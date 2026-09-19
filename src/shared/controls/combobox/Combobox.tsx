@@ -42,16 +42,19 @@ export function Combobox<T extends OptionType>({
   }, [])
 
   const [searchTerm, setSearchTerm] = useState("")
+  const search = searchTerm.trimStart().toLowerCase()
   const displayedOptions = (
-    searchTerm
-      ? options.filter((o) =>
-          o.label.toLowerCase().includes(searchTerm.trimStart().toLowerCase()),
-        )
+    search
+      ? options.filter((o) => o.label.toLowerCase().startsWith(search))
       : options
   ).filter((option) => !hideSelectedOptions || !isSelected({ value, option }))
 
+  const firstMatchingOption = search
+    ? displayedOptions.find((option) => !isSelected({ value, option }))
+    : undefined
+
   const { highlightedOption, onArrowKeyDown } = useKeyboardNavigation({
-    value: isMultiValue ? undefined : value,
+    value: isMultiValue ? firstMatchingOption : value,
     options: displayedOptions,
     onChange: (selectedOption: T) => {
       if (popoverState !== "open") {
@@ -127,7 +130,11 @@ export function Combobox<T extends OptionType>({
 
   const addOption = (label: string) => {
     const existingOption = options.find((o) => o.label === label)
-    if (existingOption && isMultiValue && value.includes(existingOption)) {
+    if (
+      existingOption &&
+      isMultiValue &&
+      isSelected({ value, option: existingOption })
+    ) {
       return
     }
     updateValue(existingOption ?? createOption(label))
