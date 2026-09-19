@@ -95,6 +95,10 @@
     }
   }
 
+  &:has(.subtasks-section.raised) .project-details {
+    background: linear-gradient(var(--card-colour), var(--card-colour)), white;
+  }
+
   .project-details {
     display: flex;
     flex-direction: column;
@@ -181,6 +185,11 @@
       border-end-start-radius: var(--radius);
       border-end-end-radius: var(--radius);
     }
+
+    &.measuring form.add-subtask-form.visible {
+      width: var(--form-target-width);
+      max-width: none;
+    }
   }
 
   input {
@@ -216,6 +225,10 @@
 
     &.visible {
       opacity: 1;
+    }
+
+    &.visible.has-description {
+      max-width: max-content;
     }
 
     input {

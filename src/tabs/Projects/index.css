@@ -28,7 +28,7 @@
       display: none;
     }
 
-    &:has(.subtasks-section) {
+    &:has(.subtasks-section.raised) {
       z-index: 1;
     }
   }
