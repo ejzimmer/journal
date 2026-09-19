@@ -23,12 +23,13 @@ export function AddSubtaskForm({
   return (
     <form
       ref={formRef}
-      className={`add-subtask-form ${isFormVisible ? "visible" : ""}`}
+      className={`add-subtask-form ${isFormVisible ? "visible" : ""} ${
+        description ? "has-description" : ""
+      }`}
       style={
         {
           "--form-target-width": `${formWidthRef.current}px`,
           minWidth: isFormVisible ? formWidthRef.current : 0,
-          maxWidth: isFormVisible && description.length ? "max-content" : 0,
         } as CSSProperties
       }
       onSubmit={(event) => {
