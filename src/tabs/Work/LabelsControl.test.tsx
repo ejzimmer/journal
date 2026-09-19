@@ -123,6 +123,23 @@ describe("LabelsControl", () => {
     })
   })
 
+  describe("when the user types part of a tag that's in the list of options and presses enter", () => {
+    it("selects the matching option instead of creating a new one", async () => {
+      const user = userEvent.setup()
+      const onChange = jest.fn()
+      render(
+        <LabelsControl {...commonProps} value={[]} onChange={onChange} />,
+        {
+          wrapper: Wrapper,
+        },
+      )
+
+      await user.type(screen.getByRole("combobox"), "a11{Enter}")
+
+      expect(onChange).toHaveBeenCalledWith([mockValues[0]])
+    })
+  })
+
   describe("when the user types a tag that's in the list of options and presses enter", () => {
     it("updates the value, using the value and colour already in the list of options", async () => {
       const user = userEvent.setup()

@@ -4,20 +4,24 @@ import { OptionType } from "./types"
 export function useKeyboardNavigation<T extends OptionType>({
   value,
   options,
+  defaultHighlightedOption,
   onChange,
 }: {
   value?: T
   options: T[]
+  defaultHighlightedOption?: T
   onChange: (value: T) => void
 }) {
   const selectedIndex = value ? options.findIndex((o) => o.id === value.id) : -1
 
-  const [highlightedOption, setHighlightedOption] = useState(
+  const [navigatedOption, setNavigatedOption] = useState(
     selectedIndex > -1 ? options[selectedIndex] : undefined
   )
-  if (highlightedOption && !options.includes(highlightedOption)) {
-    setHighlightedOption(undefined)
+  if (navigatedOption && !options.includes(navigatedOption)) {
+    setNavigatedOption(undefined)
   }
+
+  const highlightedOption = navigatedOption ?? defaultHighlightedOption
 
   const onArrowKeyDown = (direction: "up" | "down") => {
     const highlightedIndex = options.findIndex((o) => o === highlightedOption)
@@ -37,7 +41,7 @@ export function useKeyboardNavigation<T extends OptionType>({
     newHighlightedIndex: number
   ) => {
     onChange(options[newSelectedIndex % options.length])
-    setHighlightedOption(options[newHighlightedIndex % options.length])
+    setNavigatedOption(options[newHighlightedIndex % options.length])
   }
 
   return { highlightedOption, onArrowKeyDown }

@@ -6,7 +6,7 @@ import { SingleValueInput } from "./SingleValueInput"
 import { MultiValueInput } from "./MultiValueInput"
 
 import "./Combobox.css"
-import { isSelected } from "./utils"
+import { findBestMatch, isSelected } from "./utils"
 import { Popover } from "./Popover"
 import { useClickOutside } from "./useClickOutside"
 import { useKeyboardNavigation } from "./useKeyboardNavigation"
@@ -50,9 +50,17 @@ export function Combobox<T extends OptionType>({
       : options
   ).filter((option) => !hideSelectedOptions || !isSelected({ value, option }))
 
+  const defaultHighlightedOption = isMultiValue
+    ? findBestMatch(
+        displayedOptions.filter((option) => !isSelected({ value, option })),
+        searchTerm
+      )
+    : undefined
+
   const { highlightedOption, onArrowKeyDown } = useKeyboardNavigation({
     value: isMultiValue ? undefined : value,
     options: displayedOptions,
+    defaultHighlightedOption,
     onChange: (selectedOption: T) => {
       if (popoverState !== "open") {
         if (isMultiValue) {
@@ -127,7 +135,11 @@ export function Combobox<T extends OptionType>({
 
   const addOption = (label: string) => {
     const existingOption = options.find((o) => o.label === label)
-    if (existingOption && isMultiValue && value.includes(existingOption)) {
+    if (
+      existingOption &&
+      isMultiValue &&
+      isSelected({ value, option: existingOption })
+    ) {
       return
     }
     updateValue(existingOption ?? createOption(label))

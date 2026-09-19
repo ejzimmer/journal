@@ -350,8 +350,82 @@ describe("Combobox", () => {
         await user.type(input, "gr")
         expect(popover.showPopover).toHaveBeenCalled()
         expect(onChange).not.toHaveBeenCalled()
-        await user.type(input, "{ArrowDown}{Enter}")
+        await user.type(input, "{Enter}")
         expect(onChange).toHaveBeenCalledWith([options[0], options[2]])
+      })
+
+      it("highlights the first matching option & selects it on enter, instead of creating a new option", async () => {
+        const user = userEvent.setup()
+        const onChange = jest.fn()
+        const createOption = jest.fn()
+        render(
+          <Combobox
+            {...multivalueProps}
+            onChange={onChange}
+            createOption={createOption}
+          />
+        )
+        const input = screen.getByRole("combobox")
+
+        await user.type(input, "gr")
+
+        expect(screen.getByRole("option", { name: "grape" })).toHaveClass(
+          "highlighted"
+        )
+        expect(
+          screen.getByRole("option", { name: "grapefruit" })
+        ).not.toHaveClass("highlighted")
+
+        await user.type(input, "{Enter}")
+
+        expect(createOption).not.toHaveBeenCalled()
+        expect(onChange).toHaveBeenCalledWith([options[0], options[2]])
+      })
+
+      it("highlights an exact match ahead of an earlier partial match", async () => {
+        const user = userEvent.setup()
+        render(<Combobox {...multivalueProps} />)
+
+        await user.type(screen.getByRole("combobox"), "grapefruit")
+
+        expect(screen.getByRole("option", { name: "grapefruit" })).toHaveClass(
+          "highlighted"
+        )
+      })
+
+      it("doesn't highlight an option that's already selected", async () => {
+        const user = userEvent.setup()
+        render(
+          <Combobox {...multivalueProps} value={[options[0], options[2]]} />
+        )
+
+        await user.type(screen.getByRole("combobox"), "gr")
+
+        expect(screen.getByRole("option", { name: "grape" })).not.toHaveClass(
+          "highlighted"
+        )
+        expect(screen.getByRole("option", { name: "grapefruit" })).toHaveClass(
+          "highlighted"
+        )
+      })
+
+      describe("and presses the down arrow", () => {
+        it("moves the highlight past the first matching option", async () => {
+          const user = userEvent.setup()
+          const onChange = jest.fn()
+          render(<Combobox {...multivalueProps} onChange={onChange} />)
+          const input = screen.getByRole("combobox")
+
+          await user.type(input, "gr{ArrowDown}")
+
+          expect(
+            screen.getByRole("option", { name: "grapefruit" })
+          ).toHaveClass("highlighted")
+
+          await user.type(input, "{Enter}")
+
+          expect(onChange).toHaveBeenCalledWith([options[0], options[3]])
+        })
       })
 
       describe("and the text matches an existing option label exactly", () => {

@@ -13,3 +13,15 @@ export const isSelected = <T extends OptionType>({
     return value?.id === option.id
   }
 }
+
+export const findBestMatch = <T extends OptionType>(
+  options: T[],
+  searchTerm: string
+): T | undefined => {
+  const search = searchTerm.trim().toLowerCase()
+  if (!search) return undefined
+
+  return (
+    options.find((option) => option.label.toLowerCase() === search) ?? options[0]
+  )
+}
