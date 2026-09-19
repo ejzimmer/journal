@@ -127,7 +127,12 @@ function WorkContent() {
         ...task,
         position: index,
       }))
-      reorderTasks(list.id, orderedNotDone)
+      const positionsChanged = orderedNotDone.some(
+        (task) => list.items?.[task.id]?.position !== task.position,
+      )
+      if (done.length > 0 || positionsChanged) {
+        reorderTasks(list.id, orderedNotDone)
+      }
     })
   }, [lists, addTask, orderedLists, doneList, reorderTasks])
 
