@@ -18,10 +18,13 @@ export function UpdateLabels({
         setAddingLabel(false)
       }}
       label=""
+      ariaLabel="Labels"
+      autoFocus
       onDismiss={() => setAddingLabel(false)}
     />
   ) : (
     <button
+      type="button"
       className="add-metadata ghost"
       aria-label="Add label"
       onClick={() => setAddingLabel(true)}

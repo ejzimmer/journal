@@ -59,15 +59,24 @@ export function AddTaskForm({ onSubmit, onClose }: AddTaskFormProps) {
     })
   }
 
-  const addLabel = (label: Label) =>
+  const addLabel = (label: Label) => {
     setLabels((current) =>
       current.some(({ value }) => value === label.value)
         ? current
         : [...current, label],
     )
+    descriptionRef.current?.focus()
+  }
 
-  const removeLabel = (value: string) =>
+  const removeLabel = (value: string) => {
     setLabels((current) => current.filter((label) => label.value !== value))
+    descriptionRef.current?.focus()
+  }
+
+  const changeDueDate = (date: number) => {
+    setDueDate(date)
+    descriptionRef.current?.focus()
+  }
 
   useEffect(() => {
     descriptionRef.current?.focus()
@@ -103,7 +112,7 @@ export function AddTaskForm({ onSubmit, onClose }: AddTaskFormProps) {
           ))}
         </ul>
       )}
-      <DueDate dueDate={dueDate} onChange={setDueDate} />
+      <DueDate dueDate={dueDate} onChange={changeDueDate} />
       <UpdateLabels onAddLabel={addLabel} />
       <button
         aria-label="submit"

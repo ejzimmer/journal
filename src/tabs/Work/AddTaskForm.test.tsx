@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from "@testing-library/react"
+import { act, fireEvent, render, screen } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 import { parse } from "date-fns"
 import { AddTaskForm } from "./AddTaskForm"
@@ -29,12 +29,21 @@ const setDueDate = async (
   await user.keyboard("{Enter}")
 }
 
+const flushAnimationFrame = () =>
+  act(
+    () =>
+      new Promise((resolve) => requestAnimationFrame(() => resolve(undefined))),
+  )
+
 const addLabel = async (
   user: ReturnType<typeof userEvent.setup>,
   value: string,
 ) => {
   await user.click(screen.getByRole("button", { name: "Add label" }))
-  await user.type(screen.getByRole("combobox"), `${value}{Enter}`)
+  await user.type(
+    screen.getByRole("combobox", { name: "Labels" }),
+    `${value}{Enter}`,
+  )
 }
 
 describe("AddTaskForm", () => {
@@ -130,6 +139,52 @@ describe("AddTaskForm", () => {
       description: "Approve PR",
       labels: [],
     })
+  })
+
+  it("doesn't submit the task when the due date and label controls are opened", async () => {
+    const user = userEvent.setup()
+    const onSubmit = jest.fn()
+    const onClose = jest.fn()
+    render(<AddTaskForm onSubmit={onSubmit} onClose={onClose} />, {
+      wrapper: Wrapper,
+    })
+
+    const descriptionInput = screen.getByRole("textbox", {
+      name: "Description",
+    })
+    await user.type(descriptionInput, "Approve PR")
+    await user.click(screen.getByRole("button", { name: "📅" }))
+    await user.click(screen.getByRole("button", { name: "Add label" }))
+
+    expect(onSubmit).not.toHaveBeenCalled()
+    expect(onClose).not.toHaveBeenCalled()
+  })
+
+  it("stays open when the due date is set before a description is typed", async () => {
+    const user = userEvent.setup()
+    const onClose = jest.fn()
+    render(<AddTaskForm {...commonProps} onClose={onClose} />, {
+      wrapper: Wrapper,
+    })
+
+    await user.click(screen.getByRole("button", { name: "📅" }))
+    await flushAnimationFrame()
+
+    expect(onClose).not.toHaveBeenCalled()
+  })
+
+  it("stays open when the label picker is opened before a description is typed", async () => {
+    const user = userEvent.setup()
+    const onClose = jest.fn()
+    render(<AddTaskForm {...commonProps} onClose={onClose} />, {
+      wrapper: Wrapper,
+    })
+
+    await user.click(screen.getByRole("button", { name: "Add label" }))
+    await flushAnimationFrame()
+
+    expect(onClose).not.toHaveBeenCalled()
+    expect(screen.getByRole("combobox", { name: "Labels" })).toHaveFocus()
   })
 
   describe("when the user presses the Escape key", () => {
