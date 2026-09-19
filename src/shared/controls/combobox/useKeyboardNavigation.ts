@@ -4,44 +4,30 @@ import { OptionType } from "./types"
 export function useKeyboardNavigation<T extends OptionType>({
   value,
   options,
-  defaultHighlightedOption,
   onChange,
 }: {
   value?: T
   options: T[]
-  defaultHighlightedOption?: T
   onChange: (value: T) => void
 }) {
-  const selectedIndex = value ? options.findIndex((o) => o.id === value.id) : -1
-
-  const [navigatedOption, setNavigatedOption] = useState(
-    selectedIndex > -1 ? options[selectedIndex] : undefined
-  )
+  const [navigatedOption, setNavigatedOption] = useState<T>()
   if (navigatedOption && !options.includes(navigatedOption)) {
     setNavigatedOption(undefined)
   }
 
-  const highlightedOption = navigatedOption ?? defaultHighlightedOption
+  const highlightedOption =
+    navigatedOption ?? options.find((option) => option.id === value?.id)
 
   const onArrowKeyDown = (direction: "up" | "down") => {
     const highlightedIndex = options.findIndex((o) => o === highlightedOption)
+    const nextIndex =
+      direction === "up"
+        ? Math.max(highlightedIndex, 0) - 1 + options.length
+        : highlightedIndex + 1
+    const nextOption = options[nextIndex % options.length]
 
-    if (direction === "up") {
-      const newSelectedIndex = Math.max(selectedIndex, 0) - 1 + options.length
-      const newHighlightedIndex =
-        Math.max(highlightedIndex, 0) - 1 + options.length
-      onUpdateHighlightedOption(newSelectedIndex, newHighlightedIndex)
-    } else {
-      onUpdateHighlightedOption(selectedIndex + 1, highlightedIndex + 1)
-    }
-  }
-
-  const onUpdateHighlightedOption = (
-    newSelectedIndex: number,
-    newHighlightedIndex: number
-  ) => {
-    onChange(options[newSelectedIndex % options.length])
-    setNavigatedOption(options[newHighlightedIndex % options.length])
+    onChange(nextOption)
+    setNavigatedOption(nextOption)
   }
 
   return { highlightedOption, onArrowKeyDown }

@@ -49,15 +49,13 @@ export function Combobox<T extends OptionType>({
       : options
   ).filter((option) => !hideSelectedOptions || !isSelected({ value, option }))
 
-  const defaultHighlightedOption =
-    isMultiValue && search
-      ? displayedOptions.find((option) => !isSelected({ value, option }))
-      : undefined
+  const firstMatchingOption = search
+    ? displayedOptions.find((option) => !isSelected({ value, option }))
+    : undefined
 
   const { highlightedOption, onArrowKeyDown } = useKeyboardNavigation({
-    value: isMultiValue ? undefined : value,
+    value: isMultiValue ? firstMatchingOption : value,
     options: displayedOptions,
-    defaultHighlightedOption,
     onChange: (selectedOption: T) => {
       if (popoverState !== "open") {
         if (isMultiValue) {
