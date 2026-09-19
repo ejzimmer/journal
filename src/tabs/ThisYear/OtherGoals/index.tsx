@@ -68,24 +68,28 @@ const getComponent = (goal: Goal, onUpdate: (goal: Goal) => void) => {
         {goal.times.map((times, timesesIndex) => (
           <div className="completions" key={times.id}>
             {Array.from({ length: times.total }).map((_, index) => (
-              <EmojiCheckbox
-                key={index}
-                label={times.id + index}
-                emoji="✅"
-                isChecked={!!(times.completed && index < times.completed)}
-                onChange={() => {
-                  const isChecked = index < (times.completed ?? 0)
-                  const completed =
-                    (times.completed ?? 0) + (isChecked ? -1 : 1)
-                  onUpdate({
-                    ...goal,
-                    times: goal.times.with(timesesIndex, {
-                      ...times,
-                      completed,
-                    }),
-                  })
-                }}
-              />
+              <div className="tooltip-container" key={index}>
+                <div className="tooltip-anchor">
+                  <EmojiCheckbox
+                    label={times.id + index}
+                    emoji="✅"
+                    isChecked={!!(times.completed && index < times.completed)}
+                    onChange={() => {
+                      const isChecked = index < (times.completed ?? 0)
+                      const completed =
+                        (times.completed ?? 0) + (isChecked ? -1 : 1)
+                      onUpdate({
+                        ...goal,
+                        times: goal.times.with(timesesIndex, {
+                          ...times,
+                          completed,
+                        }),
+                      })
+                    }}
+                  />
+                </div>
+                <div className="tooltip">{index + 1}</div>
+              </div>
             ))}
           </div>
         ))}
