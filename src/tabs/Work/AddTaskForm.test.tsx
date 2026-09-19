@@ -1,6 +1,6 @@
 import { act, fireEvent, render, screen } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
-import { parse } from "date-fns"
+import { format, parse } from "date-fns"
 import { AddTaskForm } from "./AddTaskForm"
 import { WorkStorageContext } from "./WorkStorageContext"
 import { createWorkStorageContext } from "./workStorageTestUtils"
@@ -192,6 +192,32 @@ describe("AddTaskForm", () => {
     await setDueDate(user, "2026-01-01")
 
     expect(screen.getByText("01 Jan")).toHaveFocus()
+  })
+
+  it("abandons the date edit, not the form, when Escape closes the date input", async () => {
+    const user = userEvent.setup()
+    const onClose = jest.fn()
+    render(<AddTaskForm {...commonProps} onClose={onClose} />, {
+      wrapper: Wrapper,
+    })
+
+    const today = new Date()
+    await user.click(screen.getByRole("button", { name: "📅" }))
+    await user.click(screen.getByText(format(today, "dd MMM")))
+    // Testing library doesn't handle date inputs well
+    fireEvent.change(screen.getByLabelText("Due date"), {
+      target: { value: "2026-01-01" },
+    })
+    await user.keyboard("{Escape}")
+
+    expect(onClose).not.toHaveBeenCalled()
+    expect(screen.queryByLabelText("Due date")).not.toBeInTheDocument()
+
+    await user.click(screen.getByText(format(today, "dd MMM")))
+
+    expect(screen.getByLabelText("Due date")).toHaveValue(
+      format(today, "yyyy-MM-dd"),
+    )
   })
 
   describe("when the user presses the Escape key", () => {

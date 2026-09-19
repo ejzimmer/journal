@@ -35,6 +35,11 @@ export function EditableDate({ onChange, value, ...props }: Props) {
     }
   }, [isEditing])
 
+  const cancelEditing = () => {
+    setEditingValue(format(new Date(value), "yyyy-MM-dd"))
+    stopEditing()
+  }
+
   const handleSubmit = () => {
     const inputValue = inputRef.current?.value ?? ""
     const date = parse(inputValue, "yyyy-MM-dd", new Date()).getTime()
@@ -54,6 +59,11 @@ export function EditableDate({ onChange, value, ...props }: Props) {
         if (event.key === "Enter") {
           event.preventDefault()
           handleSubmit()
+        }
+
+        if (event.key === "Escape") {
+          event.stopPropagation()
+          cancelEditing()
         }
       }}
       value={editingValue}
