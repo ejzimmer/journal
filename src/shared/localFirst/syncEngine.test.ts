@@ -18,6 +18,8 @@ function fakeDatabase() {
   return {} as import("firebase/database").Database
 }
 
+// idb-keyval's reads/writes resolve over several real event-loop turns, not
+// one microtask, so this loops a few real timer ticks to let them settle.
 async function flushMicrotasks() {
   for (let i = 0; i < 10; i++) {
     await new Promise((resolve) => setTimeout(resolve, 0))
