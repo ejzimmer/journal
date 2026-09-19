@@ -51,6 +51,10 @@ ol.work-lists > li {
       padding: 0;
       display: flex;
       gap: 2px;
+
+      .label-tag {
+        margin-block-start: -16px;
+      }
     }
 
     & > button.ghost {
@@ -173,6 +177,10 @@ ol.work-lists > li {
         display: flex;
         gap: 2px;
         align-self: end;
+
+        .label-tag {
+          margin-block-start: -16px;
+        }
       }
 
       > button,
@@ -304,19 +312,30 @@ form.add-task {
   }
 
   input.description {
+    --underline-colour: var(--body-colour-light);
+    --descender-room: 6px;
     flex-grow: 1;
     align-self: flex-end;
     font-size: inherit;
-    border: 0;
-    border-block-end: 1px solid var(--body-colour-light);
-    border-radius: 0;
-    background: transparent;
     line-height: 1;
-    padding-block: 0;
+    border: 0;
+    border-radius: 0;
+    height: calc(
+      var(--line-gap) + var(--line-width) + var(--descender-room)
+    );
+    margin-block-end: calc(-1 * var(--descender-room));
+    padding-block: calc(-1 * var(--baseline-nudge)) 0;
+    background: linear-gradient(
+      to top,
+      transparent var(--descender-room),
+      var(--underline-colour) var(--descender-room),
+      var(--underline-colour) calc(var(--descender-room) + 1px),
+      transparent calc(var(--descender-room) + 1px)
+    );
 
     &:focus {
+      --underline-colour: var(--body-colour);
       outline: none;
-      border-block-end-color: var(--body-colour);
     }
   }
 

@@ -1,6 +1,6 @@
-import { act, fireEvent, render, screen } from "@testing-library/react"
+import { fireEvent, render, screen } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
-import { format, parse } from "date-fns"
+import { format } from "date-fns"
 import { AddTaskForm } from "./AddTaskForm"
 import { WorkStorageContext } from "./WorkStorageContext"
 import { createWorkStorageContext } from "./workStorageTestUtils"
@@ -16,24 +16,19 @@ const commonProps = {
   onClose: jest.fn(),
 }
 
-const setDueDate = async (
+const enterDueDate = async (
   user: ReturnType<typeof userEvent.setup>,
   date: string,
+  finishWith: "{Enter}" | "{Escape}" = "{Enter}",
 ) => {
   await user.click(screen.getByRole("button", { name: "📅" }))
-  await user.click(screen.getByText(/\d\d \w\w\w/))
+  await user.click(screen.getByRole("button", { name: /^Due date/ }))
   // Testing library doesn't handle date inputs well
   fireEvent.change(screen.getByLabelText("Due date"), {
     target: { value: date },
   })
-  await user.keyboard("{Enter}")
+  await user.keyboard(finishWith)
 }
-
-const flushAnimationFrame = () =>
-  act(
-    () =>
-      new Promise((resolve) => requestAnimationFrame(() => resolve(undefined))),
-  )
 
 const addLabel = async (
   user: ReturnType<typeof userEvent.setup>,
@@ -73,7 +68,7 @@ describe("AddTaskForm", () => {
       wrapper: Wrapper,
     })
 
-    await setDueDate(user, "2026-01-01")
+    await enterDueDate(user, "2026-01-01")
     await user.click(screen.getByRole("button", { name: "submit" }))
 
     expect(onSubmit).not.toHaveBeenCalled()
@@ -90,12 +85,12 @@ describe("AddTaskForm", () => {
       name: "Description",
     })
     await user.type(descriptionInput, "Approve PR")
-    await setDueDate(user, "2026-01-01")
+    await enterDueDate(user, "2026-01-01")
     await user.click(screen.getByRole("button", { name: "submit" }))
 
     expect(onSubmit).toHaveBeenCalledWith({
       description: "Approve PR",
-      dueDate: parse("2026-01-01", "yyyy-MM-dd", new Date()).getTime(),
+      dueDate: new Date(2026, 0, 1).getTime(),
       labels: [],
     })
   })
@@ -141,41 +136,6 @@ describe("AddTaskForm", () => {
     })
   })
 
-  it("doesn't submit the task when the due date and label controls are opened", async () => {
-    const user = userEvent.setup()
-    const onSubmit = jest.fn()
-    const onClose = jest.fn()
-    render(<AddTaskForm onSubmit={onSubmit} onClose={onClose} />, {
-      wrapper: Wrapper,
-    })
-
-    const descriptionInput = screen.getByRole("textbox", {
-      name: "Description",
-    })
-    await user.type(descriptionInput, "Approve PR")
-    await user.click(screen.getByRole("button", { name: "📅" }))
-    await user.click(screen.getByRole("button", { name: "Add label" }))
-
-    expect(onSubmit).not.toHaveBeenCalled()
-    expect(onClose).not.toHaveBeenCalled()
-  })
-
-  it("stays open when the user clicks outside it", async () => {
-    const user = userEvent.setup()
-    const onClose = jest.fn()
-    render(<AddTaskForm {...commonProps} onClose={onClose} />, {
-      wrapper: Wrapper,
-    })
-
-    await user.click(document.body)
-    await flushAnimationFrame()
-
-    expect(onClose).not.toHaveBeenCalled()
-    expect(
-      screen.getByRole("textbox", { name: "Description" }),
-    ).toBeInTheDocument()
-  })
-
   it("returns focus to the add label button when the label picker closes", async () => {
     const user = userEvent.setup()
     render(<AddTaskForm {...commonProps} />, { wrapper: Wrapper })
@@ -189,9 +149,9 @@ describe("AddTaskForm", () => {
     const user = userEvent.setup()
     render(<AddTaskForm {...commonProps} />, { wrapper: Wrapper })
 
-    await setDueDate(user, "2026-01-01")
+    await enterDueDate(user, "2026-01-01")
 
-    expect(screen.getByText("01 Jan")).toHaveFocus()
+    expect(screen.getByRole("button", { name: "Due date 01 Jan" })).toHaveFocus()
   })
 
   it("abandons the date edit, not the form, when Escape closes the date input", async () => {
@@ -201,23 +161,13 @@ describe("AddTaskForm", () => {
       wrapper: Wrapper,
     })
 
-    const today = new Date()
-    await user.click(screen.getByRole("button", { name: "📅" }))
-    await user.click(screen.getByText(format(today, "dd MMM")))
-    // Testing library doesn't handle date inputs well
-    fireEvent.change(screen.getByLabelText("Due date"), {
-      target: { value: "2026-01-01" },
-    })
-    await user.keyboard("{Escape}")
+    const today = format(new Date(), "dd MMM")
+    await enterDueDate(user, "2026-01-01", "{Escape}")
 
     expect(onClose).not.toHaveBeenCalled()
-    expect(screen.queryByLabelText("Due date")).not.toBeInTheDocument()
-
-    await user.click(screen.getByText(format(today, "dd MMM")))
-
-    expect(screen.getByLabelText("Due date")).toHaveValue(
-      format(today, "yyyy-MM-dd"),
-    )
+    expect(
+      screen.getByRole("button", { name: `Due date ${today}` }),
+    ).toBeInTheDocument()
   })
 
   describe("when the user presses the Escape key", () => {

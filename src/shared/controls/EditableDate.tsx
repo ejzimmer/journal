@@ -1,5 +1,6 @@
 import { format, parse } from "date-fns"
-import { useEffect, useRef, useState } from "react"
+import { useRef, useState } from "react"
+import { flushSync } from "react-dom"
 
 interface Props
   extends Omit<
@@ -17,36 +18,24 @@ export function EditableDate({ onChange, value, ...props }: Props) {
   const [isEditing, setIsEditing] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
   const displayRef = useRef<HTMLDivElement>(null)
-  const hasStartedEditing = useRef(false)
-  const startEditing = () => {
-    setIsEditing(true)
-  }
+
+  const startEditing = () => setIsEditing(true)
   const stopEditing = () => setIsEditing(false)
-
-  useEffect(() => {
-    if (isEditing) {
-      hasStartedEditing.current = true
-      inputRef.current?.focus()
-      return
-    }
-
-    if (hasStartedEditing.current) {
-      displayRef.current?.focus()
-    }
-  }, [isEditing])
-
-  const cancelEditing = () => {
-    setEditingValue(format(new Date(value), "yyyy-MM-dd"))
-    stopEditing()
+  const stopEditingAndFocusDate = () => {
+    flushSync(stopEditing)
+    displayRef.current?.focus()
   }
 
-  const handleSubmit = () => {
+  const submitDate = () => {
     const inputValue = inputRef.current?.value ?? ""
     const date = parse(inputValue, "yyyy-MM-dd", new Date()).getTime()
     if (date !== value) {
       onChange(date)
     }
+  }
 
+  const handleBlur = () => {
+    submitDate()
     stopEditing()
   }
 
@@ -54,16 +43,19 @@ export function EditableDate({ onChange, value, ...props }: Props) {
     <input
       type="date"
       ref={inputRef}
-      onBlur={handleSubmit}
+      autoFocus
+      onBlur={handleBlur}
       onKeyDown={(event) => {
         if (event.key === "Enter") {
           event.preventDefault()
-          handleSubmit()
+          submitDate()
+          stopEditingAndFocusDate()
         }
 
         if (event.key === "Escape") {
           event.stopPropagation()
-          cancelEditing()
+          setEditingValue(format(new Date(value), "yyyy-MM-dd"))
+          stopEditingAndFocusDate()
         }
       }}
       value={editingValue}
@@ -75,7 +67,9 @@ export function EditableDate({ onChange, value, ...props }: Props) {
     <div
       {...props}
       ref={displayRef}
+      role="button"
       tabIndex={0}
+      aria-label={`Due date ${format(value, "dd MMM")}`}
       onClick={startEditing}
       onKeyDown={(event) => {
         if (event.key === "Enter" || event.key === " ") {

@@ -1,9 +1,10 @@
-import { useEffect, useRef, useState } from "react"
+import { useRef, useState } from "react"
 import { TickIcon } from "../../shared/icons/Tick"
 import { XIcon } from "../../shared/icons/X"
+import { LabelTags } from "./LabelTags"
 import { DueDate } from "./Task/DueDate"
 import { UpdateLabels } from "./Task/UpdateLabels"
-import { Label } from "./types"
+import { Colour, Label } from "./types"
 
 type NewTask = {
   description: string
@@ -47,19 +48,10 @@ export function AddTaskForm({ onSubmit, onClose }: AddTaskFormProps) {
     onClose()
   }
 
-  const addLabel = (label: Label) =>
-    setLabels((current) =>
-      current.some(({ value }) => value === label.value)
-        ? current
-        : [...current, label],
+  const changeColour = (value: string, colour: Colour) =>
+    setLabels(
+      labels.map((label) => (label.value === value ? { ...label, colour } : label)),
     )
-
-  const removeLabel = (value: string) =>
-    setLabels((current) => current.filter((label) => label.value !== value))
-
-  useEffect(() => {
-    descriptionRef.current?.focus()
-  }, [])
 
   return (
     <form
@@ -71,26 +63,17 @@ export function AddTaskForm({ onSubmit, onClose }: AddTaskFormProps) {
         aria-label="Description"
         ref={descriptionRef}
         className="description"
+        autoFocus
       />
-      {labels.length > 0 && (
-        <ul className="labels">
-          {labels.map((label) => (
-            <li key={label.value} className={`label-tag ${label.colour}`}>
-              {label.value}
-              <button
-                type="button"
-                className="ghost transient"
-                aria-label={`Remove ${label.value}`}
-                onClick={() => removeLabel(label.value)}
-              >
-                <XIcon width="16px" />
-              </button>
-            </li>
-          ))}
-        </ul>
-      )}
+      <LabelTags
+        labels={labels.map((label) => ({ ...label, id: label.value }))}
+        onRemoveLabel={(value) =>
+          setLabels(labels.filter((label) => label.value !== value))
+        }
+        onChangeColour={changeColour}
+      />
+      <UpdateLabels labels={labels} onChangeLabels={setLabels} />
       <DueDate dueDate={dueDate} onChange={setDueDate} />
-      <UpdateLabels onAddLabel={addLabel} />
       <button
         aria-label="submit"
         className="icon outline"

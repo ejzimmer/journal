@@ -1,38 +1,34 @@
-import { useEffect, useRef, useState } from "react"
+import { useRef, useState } from "react"
+import { flushSync } from "react-dom"
 import { TagIcon } from "../../../shared/icons/Tag"
 import { LabelsControl } from "../LabelsControl"
 import { Label } from "../types"
 
 export function UpdateLabels({
-  onAddLabel,
+  labels = [],
+  onChangeLabels,
 }: {
-  onAddLabel: (label: Label) => void
+  labels?: Label[]
+  onChangeLabels: (labels: Label[]) => void
 }) {
   const [addingLabel, setAddingLabel] = useState(false)
   const addLabelButtonRef = useRef<HTMLButtonElement>(null)
-  const hasOpenedLabelsControl = useRef(false)
 
-  useEffect(() => {
-    if (addingLabel) {
-      hasOpenedLabelsControl.current = true
-      return
-    }
-
-    if (hasOpenedLabelsControl.current) {
-      addLabelButtonRef.current?.focus()
-    }
-  }, [addingLabel])
+  const stopAddingLabel = () => {
+    flushSync(() => setAddingLabel(false))
+    addLabelButtonRef.current?.focus()
+  }
 
   return addingLabel ? (
     <LabelsControl
-      value={[]}
+      value={labels}
       onChange={(labels) => {
-        labels.forEach(onAddLabel)
-        setAddingLabel(false)
+        onChangeLabels(labels)
+        stopAddingLabel()
       }}
       label=""
       ariaLabel="Labels"
-      onDismiss={() => setAddingLabel(false)}
+      onDismiss={stopAddingLabel}
     />
   ) : (
     <button
