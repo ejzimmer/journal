@@ -26,9 +26,8 @@ function uniqueDbName() {
   return `local-first-context-test-${Math.random()}`
 }
 
-// fake-indexeddb (idb-keyval's IndexedDB backend in tests) grabs Node's real
-// setImmediate to schedule its callbacks, bypassing Jest's fake timers - so
-// we wait for it the old-fashioned way, with real timers.
+// idb-keyval uses an implementation of setImmediate which doesn't work with
+// Jest fakeTimer utils, so we need to do this the old fashioned way
 async function flushMicrotasks() {
   for (let i = 0; i < 10; i++) {
     await new Promise((resolve) => setTimeout(resolve, 0))
