@@ -18,8 +18,9 @@ function fakeDatabase() {
   return {} as import("firebase/database").Database
 }
 
-// idb-keyval's reads/writes resolve over several real event-loop turns, not
-// one microtask, so this loops a few real timer ticks to let them settle.
+// fake-indexeddb (idb-keyval's IndexedDB backend in tests) grabs Node's real
+// setImmediate to schedule its callbacks, bypassing Jest's fake timers - so
+// we wait for it the old-fashioned way, with real timers.
 async function flushMicrotasks() {
   for (let i = 0; i < 10; i++) {
     await new Promise((resolve) => setTimeout(resolve, 0))
