@@ -3,14 +3,11 @@ import { ThisWeekTask } from "./ThisWeekTask"
 import { WEEKLY_KEY, WeeklyTask } from "../../../shared/types"
 import { useRef } from "react"
 import { useStorageContext } from "../../../shared/FirebaseContext"
-import { useWeeklyReset } from "./useWeeklyReset"
 
 export function ThisWeekList() {
   const listRef = useRef<HTMLOListElement>(null)
   const { useValue } = useStorageContext()
   const { value } = useValue<Record<string, WeeklyTask>>(WEEKLY_KEY)
-
-  useWeeklyReset()
 
   const taskOrder = useRef<string[]>([])
 

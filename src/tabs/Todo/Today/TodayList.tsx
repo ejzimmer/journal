@@ -1,7 +1,6 @@
 import { TodayTask } from "./TodayTask"
 
 import { AddTodayTaskForm } from "./AddTodayTaskForm"
-import { isBefore, startOfDay } from "date-fns"
 import { DailyTask, DAILY_KEY } from "../../../shared/types"
 import { useRef } from "react"
 import { useStorageContext } from "../../../shared/FirebaseContext"
@@ -18,41 +17,12 @@ import {
   isDraggable,
   sortByPosition,
 } from "../../../shared/drag-and-drop/utils"
-import { useDailyReset } from "./useDailyReset"
-
-const updatedYesterday = (task: DailyTask, status: DailyTask["status"]) =>
-  task.status === status && isBefore(task.lastCompleted, startOfDay(new Date()))
 
 export function TodayList() {
   const listRef = useRef<HTMLOListElement>(null)
-  const { useValue, deleteItem, updateList, updateItem } = useStorageContext()
+  const { useValue, updateList, updateItem } = useStorageContext()
   const { value } = useValue<Record<string, DailyTask>>(DAILY_KEY)
   const tasks = value ? sortByPosition(Object.values(value)) : []
-
-  const { finishedTasks, unfinishedTasks } = tasks.reduce(
-    (sortedTasks: Record<string, DailyTask[]>, task) => {
-      if (updatedYesterday(task, "finished")) {
-        sortedTasks.finishedTasks.push(task)
-      } else {
-        sortedTasks.unfinishedTasks.push(task)
-      }
-      return sortedTasks
-    },
-    {
-      finishedTasks: [],
-      unfinishedTasks: [],
-    },
-  )
-
-  finishedTasks.forEach((task) => deleteItem<DailyTask>(DAILY_KEY, task))
-  if (finishedTasks.length) {
-    updateList(
-      DAILY_KEY,
-      unfinishedTasks.map((task, index) => ({ ...task, position: index })),
-    )
-  }
-
-  useDailyReset()
 
   useDropTarget({
     dropTargetRef: listRef,

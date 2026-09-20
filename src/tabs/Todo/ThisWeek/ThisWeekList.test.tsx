@@ -1,6 +1,6 @@
 import { subDays } from "date-fns"
 import { WeeklyTask } from "../../../shared/types"
-import { refreshTasks } from "./useWeeklyReset"
+import { refreshTasks } from "./useWeeklyTaskUpdate"
 
 const mockTask: WeeklyTask = {
   id: "2",

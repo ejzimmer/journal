@@ -10,6 +10,8 @@ import "./App.css"
 import { Loading } from "./shared/loading"
 import { TopNav } from "./TopNav"
 import { AppRoutes } from "./AppRoutes"
+import { DailyJobs } from "./DailyJobs"
+import { DailyJobsProvider } from "./shared/dailyJobs/DailyJobsContext"
 
 export function App() {
   const [isLoading, setIsLoading] = useState(true)
@@ -51,11 +53,12 @@ export function App() {
   }
 
   return (
-    <>
+    <DailyJobsProvider>
+      <DailyJobs />
       <TopNav />
       <div className="main-content">
         <AppRoutes />
       </div>
-    </>
+    </DailyJobsProvider>
   )
 }
