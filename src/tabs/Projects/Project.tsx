@@ -18,8 +18,8 @@ import { EditableText } from "../../shared/controls/EditableText"
 
 type ProjectProps = {
   project: ProjectDetails
-  onMoveToStart: () => void
-  onMoveToEnd: () => void
+  onMoveToStart?: () => void
+  onMoveToEnd?: () => void
   onDelete: () => void
 }
 
@@ -152,21 +152,28 @@ export function Project({
           <div className="project-meta-row">
             <SubtaskProgress subtasks={subtasks} doneSubtasks={doneSubtasks} />
             <div className="project-actions">
-              <button
-                className="icon ghost project-action-button"
-                onClick={onMoveToStart}
-                aria-label="Move to start"
-              >
-                <ArrowToStartIcon width="20px" colour="var(--action-colour)" />
-              </button>
+              {onMoveToStart && (
+                <button
+                  className="icon ghost project-action-button"
+                  onClick={onMoveToStart}
+                  aria-label="Move to start"
+                >
+                  <ArrowToStartIcon
+                    width="20px"
+                    colour="var(--action-colour)"
+                  />
+                </button>
+              )}
 
-              <button
-                className="icon ghost project-action-button"
-                onClick={onMoveToEnd}
-                aria-label="Move to end"
-              >
-                <ArrowToEndIcon width="20px" colour="var(--action-colour)" />
-              </button>
+              {onMoveToEnd && (
+                <button
+                  className="icon ghost project-action-button"
+                  onClick={onMoveToEnd}
+                  aria-label="Move to end"
+                >
+                  <ArrowToEndIcon width="20px" colour="var(--action-colour)" />
+                </button>
+              )}
 
               {expandButton}
             </div>

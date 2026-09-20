@@ -1,5 +1,10 @@
 import { ProjectDetails, PROJECTS_KEY } from "../../shared/types"
-import { moveProjectToEnd, moveProjectToStart } from "./utils"
+import {
+  isProjectAtEnd,
+  isProjectAtStart,
+  moveProjectToEnd,
+  moveProjectToStart,
+} from "./utils"
 
 const createProjects = (
   statuses: ProjectDetails["status"][],
@@ -61,13 +66,28 @@ describe("moveProjectToStart", () => {
     ])
   })
 
-  it("moves the project to the end when every other project is in progress", () => {
-    const projects = createProjects(["in_progress", "in_progress", "ready"])
+  it("leaves a project inside the leading in progress run where it is", () => {
+    const projects = createProjects([
+      "in_progress",
+      "in_progress",
+      "in_progress",
+      "ready",
+    ])
 
-    expect(getIds(moveProjectToStart(projects, 2))).toEqual([
+    expect(getIds(moveProjectToStart(projects, 1))).toEqual([
       "project-0",
       "project-1",
       "project-2",
+      "project-3",
+    ])
+  })
+
+  it("never moves a project further from the start", () => {
+    const projects = createProjects(["in_progress", "in_progress"])
+
+    expect(getIds(moveProjectToStart(projects, 0))).toEqual([
+      "project-0",
+      "project-1",
     ])
   })
 
@@ -127,5 +147,69 @@ describe("moveProjectToEnd", () => {
     expect(
       moveProjectToEnd(projects, 0).map((project) => project.position),
     ).toEqual([0, 1, 2])
+  })
+})
+
+describe("isProjectAtStart", () => {
+  it("is true for the first project when nothing is in progress before it", () => {
+    const projects = createProjects(["in_progress", "ready", "ready"])
+
+    expect(isProjectAtStart(projects, 0)).toBe(true)
+  })
+
+  it("is true for a project already sitting after the leading in progress run", () => {
+    const projects = createProjects(["in_progress", "in_progress", "ready"])
+
+    expect(isProjectAtStart(projects, 1)).toBe(true)
+  })
+
+  it("is true for the first project even when the one after it is in progress", () => {
+    const projects = createProjects(["in_progress", "in_progress", "ready"])
+
+    expect(isProjectAtStart(projects, 0)).toBe(true)
+  })
+
+  it("is false for a project below the leading in progress run", () => {
+    const projects = createProjects(["in_progress", "ready", "in_progress"])
+
+    expect(isProjectAtStart(projects, 2)).toBe(false)
+  })
+
+  it("is true for the only project in the list", () => {
+    const projects = createProjects(["in_progress"])
+
+    expect(isProjectAtStart(projects, 0)).toBe(true)
+  })
+})
+
+describe("isProjectAtEnd", () => {
+  it("is true for a project already directly before the done projects", () => {
+    const projects = createProjects(["ready", "in_progress", "done"])
+
+    expect(isProjectAtEnd(projects, 1)).toBe(true)
+  })
+
+  it("is true for the last project when nothing is done", () => {
+    const projects = createProjects(["ready", "ready", "in_progress"])
+
+    expect(isProjectAtEnd(projects, 2)).toBe(true)
+  })
+
+  it("is false for a project above other unfinished projects", () => {
+    const projects = createProjects(["in_progress", "ready", "done"])
+
+    expect(isProjectAtEnd(projects, 0)).toBe(false)
+  })
+
+  it("is true for the only project in the list", () => {
+    const projects = createProjects(["in_progress"])
+
+    expect(isProjectAtEnd(projects, 0)).toBe(true)
+  })
+
+  it("is true for the last project even when a done project sits above it", () => {
+    const projects = createProjects(["done", "in_progress"])
+
+    expect(isProjectAtEnd(projects, 1)).toBe(true)
   })
 })

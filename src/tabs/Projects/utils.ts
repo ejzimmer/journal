@@ -68,7 +68,7 @@ export function reorderProjects(
 
 const getStatus = (project: ProjectDetails) => project.status ?? "ready"
 
-function moveProject(
+function getDestination(
   projects: ProjectDetails[],
   indexToMove: number,
   findDestination: (remainingProjects: ProjectDetails[]) => number,
@@ -76,31 +76,56 @@ function moveProject(
   const remainingProjects = projects.toSpliced(indexToMove, 1)
   const destination = findDestination(remainingProjects)
 
-  return remainingProjects
-    .toSpliced(
-      destination === -1 ? remainingProjects.length : destination,
-      0,
-      projects[indexToMove],
-    )
+  return destination === -1 ? remainingProjects.length : destination
+}
+
+const getStartDestination = (projects: ProjectDetails[], indexToMove: number) =>
+  Math.min(
+    getDestination(projects, indexToMove, (remainingProjects) =>
+      remainingProjects.findIndex(
+        (project) => getStatus(project) !== "in_progress",
+      ),
+    ),
+    indexToMove,
+  )
+
+const getEndDestination = (projects: ProjectDetails[], indexToMove: number) =>
+  Math.max(
+    getDestination(projects, indexToMove, (remainingProjects) =>
+      remainingProjects.findIndex((project) => getStatus(project) === "done"),
+    ),
+    indexToMove,
+  )
+
+function moveProject(
+  projects: ProjectDetails[],
+  indexToMove: number,
+  destination: number,
+) {
+  return projects
+    .toSpliced(indexToMove, 1)
+    .toSpliced(destination, 0, projects[indexToMove])
     .map((project, index) => ({ ...project, position: index }))
 }
 
-export function moveProjectToStart(
+export const moveProjectToStart = (
   projects: ProjectDetails[],
   indexToMove: number,
-) {
-  return moveProject(projects, indexToMove, (remainingProjects) =>
-    remainingProjects.findIndex(
-      (project) => getStatus(project) !== "in_progress",
-    ),
-  )
-}
+) =>
+  moveProject(projects, indexToMove, getStartDestination(projects, indexToMove))
 
-export function moveProjectToEnd(
+export const moveProjectToEnd = (
   projects: ProjectDetails[],
   indexToMove: number,
-) {
-  return moveProject(projects, indexToMove, (remainingProjects) =>
-    remainingProjects.findIndex((project) => getStatus(project) === "done"),
-  )
-}
+) =>
+  moveProject(projects, indexToMove, getEndDestination(projects, indexToMove))
+
+export const isProjectAtStart = (
+  projects: ProjectDetails[],
+  indexToMove: number,
+) => getStartDestination(projects, indexToMove) === indexToMove
+
+export const isProjectAtEnd = (
+  projects: ProjectDetails[],
+  indexToMove: number,
+) => getEndDestination(projects, indexToMove) === indexToMove
