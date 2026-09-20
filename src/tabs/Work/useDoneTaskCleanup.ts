@@ -1,7 +1,10 @@
 import { isBefore, startOfDay } from "date-fns"
 import { useStorageContext } from "../../shared/FirebaseContext"
 import { useDailyJob } from "../../shared/dailyJobs/DailyJobsContext"
-import { sortByPosition } from "../../shared/drag-and-drop/utils"
+import {
+  renumberPositions,
+  sortByPosition,
+} from "../../shared/drag-and-drop/utils"
 import { WorkTask, WORK_CLEANUP_KEY, WORK_KEY } from "./types"
 
 const finishedBeforeToday = (task: WorkTask) =>
@@ -49,10 +52,7 @@ export function useDoneTaskCleanup() {
           }),
         )
 
-        const orderedNotDone = sortByPosition(notDone).map((task, index) => ({
-          ...task,
-          position: index,
-        }))
+        const orderedNotDone = renumberPositions(sortByPosition(notDone))
         const positionsChanged = orderedNotDone.some(
           (task) => list.items?.[task.id]?.position !== task.position,
         )

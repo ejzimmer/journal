@@ -13,10 +13,15 @@ import { getSubtasksKey } from "./utils"
 import { DragHandle } from "../../shared/drag-and-drop/DragHandle"
 import {
   draggableTypeKey,
-  OrderedListItem,
+  SortableItem,
 } from "../../shared/drag-and-drop/types"
 import { useDropTarget } from "../../shared/drag-and-drop/useDropTarget"
-import { isDraggable, sortByPosition } from "../../shared/drag-and-drop/utils"
+import {
+  getNextPosition,
+  isDraggable,
+  renumberPositions,
+  sortByPosition,
+} from "../../shared/drag-and-drop/utils"
 import { useDraggableList } from "../../shared/drag-and-drop/useDraggableList"
 import { useDrawer } from "./useDrawer"
 
@@ -47,7 +52,7 @@ export function SubtaskList({ projectId, isVisible }: SubtasksProps) {
       description,
       status: "ready",
       category: project.category,
-      position: subtasks.length,
+      position: getNextPosition(subtasks),
     })
   }
 
@@ -75,13 +80,7 @@ export function SubtaskList({ projectId, isVisible }: SubtasksProps) {
     getAxis: () => "vertical",
   })
 
-  const sortedTasks = useMemo(
-    () =>
-      sortByPosition(
-        subtasks.map((task) => ({ ...task, parentId: projectId })),
-      ),
-    [projectId, subtasks],
-  )
+  const sortedTasks = useMemo(() => sortByPosition(subtasks), [subtasks])
 
   const hasUnsortedDoneTasks = sortedTasks.some(
     (task, index) =>
@@ -91,16 +90,13 @@ export function SubtaskList({ projectId, isVisible }: SubtasksProps) {
   )
 
   const onSortDoneToEnd = useCallback(() => {
-    const reordered = sortedTasks
-      .toSorted(
+    const reordered = renumberPositions(
+      sortedTasks.toSorted(
         (a, b) => Number(a.status === "done") - Number(b.status === "done"),
-      )
-      .map((task, index) => ({ ...task, position: index }))
-
-    updateList<ProjectSubtask>(
-      subtasksKey,
-      reordered.map(({ parentId, ...task }) => task),
+      ),
     )
+
+    updateList<ProjectSubtask>(subtasksKey, reordered)
   }, [sortedTasks, subtasksKey, updateList])
 
   if (!project) {
@@ -126,7 +122,7 @@ export function SubtaskList({ projectId, isVisible }: SubtasksProps) {
               <DragHandle
                 list={sortedTasks}
                 index={index}
-                onReorder={(tasks: OrderedListItem[]) => {
+                onReorder={(tasks: SortableItem[]) => {
                   updateList(subtasksKey, tasks)
                 }}
               />

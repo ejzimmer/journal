@@ -19,8 +19,17 @@ import {
 } from "../../shared/types"
 import { EmojiCheckbox } from "../../shared/controls/EmojiCheckbox"
 import { XIcon } from "../../shared/icons/X"
-import { sortByPosition } from "../../shared/drag-and-drop/utils"
-import { reorderProjects } from "./utils"
+import {
+  renumberPositions,
+  sortByPosition,
+} from "../../shared/drag-and-drop/utils"
+import {
+  isProjectAtEnd,
+  isProjectAtStart,
+  moveProjectToEnd,
+  moveProjectToStart,
+  reorderProjects,
+} from "./utils"
 import { useGridColumnSpan } from "./useGridColumnSpan"
 import { ProjectsSkeleton } from "./ProjectsSkeleton"
 
@@ -45,13 +54,13 @@ export function Projects() {
   )
 
   const onSortDoneProjectsToEnd = useCallback(() => {
-    const reordered = sortedProjects
-      .toSorted(
+    const reordered = renumberPositions(
+      sortedProjects.toSorted(
         (a, b) =>
           Number((a.status ?? "ready") === "done") -
           Number((b.status ?? "ready") === "done"),
-      )
-      .map((project, index) => ({ ...project, position: index }))
+      ),
+    )
 
     updateList<ProjectDetails>(PROJECTS_KEY, reordered)
   }, [sortedProjects, updateList])
@@ -122,11 +131,23 @@ export function Projects() {
                   )
                   deleteItem(PROJECTS_KEY, project)
                 }}
-                onMoveToEnd={() =>
-                  updateList(PROJECTS_KEY, [
-                    ...reorderProjects(sortedProjects, index),
-                    { ...project, position: sortedProjects.length - 1 },
-                  ])
+                onMoveToStart={
+                  isProjectAtStart(sortedProjects, index)
+                    ? undefined
+                    : () =>
+                        updateList(
+                          PROJECTS_KEY,
+                          moveProjectToStart(sortedProjects, index),
+                        )
+                }
+                onMoveToEnd={
+                  isProjectAtEnd(sortedProjects, index)
+                    ? undefined
+                    : () =>
+                        updateList(
+                          PROJECTS_KEY,
+                          moveProjectToEnd(sortedProjects, index),
+                        )
                 }
               />
             </FilteredProject>

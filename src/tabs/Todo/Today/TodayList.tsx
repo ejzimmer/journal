@@ -7,7 +7,7 @@ import { useStorageContext } from "../../../shared/FirebaseContext"
 import { DraggableListItem } from "../../../shared/drag-and-drop/DraggableListItem"
 import {
   draggableTypeKey,
-  OrderedListItem,
+  SortableItem,
 } from "../../../shared/drag-and-drop/types"
 import { DragPreview } from "../DragPreview"
 import { DragHandle } from "../../../shared/drag-and-drop/DragHandle"
@@ -50,7 +50,6 @@ export function TodayList() {
                 [draggableTypeKey]: "日",
                 id: task.id,
                 parentId: DAILY_KEY,
-                position: task.position,
               })}
               dragPreview={<DragPreview task={task} />}
               isDroppable={(data) => data[draggableTypeKey] === "日"}
@@ -59,7 +58,7 @@ export function TodayList() {
                 <DragHandle
                   list={tasks}
                   index={index}
-                  onReorder={(tasks: OrderedListItem[]) => {
+                  onReorder={(tasks: SortableItem[]) => {
                     updateList(DAILY_KEY, tasks)
                   }}
                 />
