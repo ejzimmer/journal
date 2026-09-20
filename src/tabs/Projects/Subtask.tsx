@@ -66,6 +66,7 @@ export function Subtask({ path, dragHandle, project, ...task }: SubtaskProps) {
       <Checkbox
         isChecked={task.status === "done"}
         onChange={handleChange}
+        useTickForDone
         aria-label={`${task.description} ${task.status}`}
       />
       <EditableText
