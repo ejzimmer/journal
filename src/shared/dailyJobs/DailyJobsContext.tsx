@@ -7,7 +7,7 @@ import {
   useRef,
   useState,
 } from "react"
-import { hoursToMilliseconds, isBefore, startOfDay } from "date-fns"
+import { addDays, isBefore, startOfDay } from "date-fns"
 import { useStorageContext } from "../FirebaseContext"
 
 export type DailyJob = {
@@ -22,22 +22,21 @@ type RegisterJob = (job: ScheduledJob) => () => void
 
 const DailyJobsContext = createContext<RegisterJob | undefined>(undefined)
 
-const NEW_DAY_CHECK_INTERVAL = hoursToMilliseconds(2)
-
 function useToday() {
   const [today, setToday] = useState(() => startOfDay(new Date()).getTime())
 
   useEffect(() => {
     const updateToday = () => setToday(startOfDay(new Date()).getTime())
 
-    const interval = setInterval(updateToday, NEW_DAY_CHECK_INTERVAL)
+    const millisecondsUntilTomorrow = addDays(today, 1).getTime() - Date.now()
+    const timeout = setTimeout(updateToday, millisecondsUntilTomorrow)
     document.addEventListener("visibilitychange", updateToday)
 
     return () => {
-      clearInterval(interval)
+      clearTimeout(timeout)
       document.removeEventListener("visibilitychange", updateToday)
     }
-  }, [])
+  }, [today])
 
   return today
 }

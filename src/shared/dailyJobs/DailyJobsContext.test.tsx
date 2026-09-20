@@ -119,7 +119,7 @@ describe("daily jobs", () => {
     expect(updateTasks).toHaveBeenCalledTimes(1)
   })
 
-  describe("when the app is left open overnight", () => {
+  describe("when the app is left open across midnight", () => {
     beforeEach(() => {
       jest.useFakeTimers()
       jest.setSystemTime(new Date("2026-09-19T22:00:00"))
@@ -129,7 +129,7 @@ describe("daily jobs", () => {
       jest.useRealTimers()
     })
 
-    it("runs each job again on the new day", () => {
+    it("runs each job again once midnight passes", () => {
       const run = jest.fn()
 
       renderDailyJob(
@@ -143,6 +143,39 @@ describe("daily jobs", () => {
       })
 
       expect(run).toHaveBeenCalledTimes(2)
+    })
+
+    it("runs each job again when the tab is revisited on the new day", () => {
+      const run = jest.fn()
+
+      renderDailyJob(
+        () => useDailyJob({ lastRunKey: LAST_RUN_KEY, run }),
+        createDailyJobsStorage({}),
+      )
+      expect(run).toHaveBeenCalledTimes(1)
+
+      act(() => {
+        jest.setSystemTime(new Date("2026-09-20T08:00:00"))
+        document.dispatchEvent(new Event("visibilitychange"))
+      })
+
+      expect(run).toHaveBeenCalledTimes(2)
+    })
+
+    it("doesn't run a job again when the tab is revisited on the same day", () => {
+      const run = jest.fn()
+
+      renderDailyJob(
+        () => useDailyJob({ lastRunKey: LAST_RUN_KEY, run }),
+        createDailyJobsStorage({}),
+      )
+
+      act(() => {
+        jest.setSystemTime(new Date("2026-09-19T23:30:00"))
+        document.dispatchEvent(new Event("visibilitychange"))
+      })
+
+      expect(run).toHaveBeenCalledTimes(1)
     })
   })
 })
