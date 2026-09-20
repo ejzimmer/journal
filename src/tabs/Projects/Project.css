@@ -289,6 +289,10 @@
       border: 2px solid;
     }
 
+    .done-tick {
+      background: var(--project-colour-solid);
+    }
+
     label:has(:checked) + div {
       text-decoration: line-through;
       opacity: 0.6;
