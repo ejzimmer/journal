@@ -11,14 +11,15 @@ import {
   PROJECTS_KEY,
   ProjectSubtask,
 } from "../../shared/types"
-import { ButtonWithConfirmation } from "../../shared/controls/ButtonWithConfirmation"
-import { getSubtasksKey, useLinkedTasks } from "./utils"
+import { useLinkedTasks } from "./utils"
 import { ArrowToEndIcon } from "../../shared/icons/ArrowToEnd"
+import { ArrowToStartIcon } from "../../shared/icons/ArrowToStart"
 import { EditableText } from "../../shared/controls/EditableText"
 
 type ProjectProps = {
   project: ProjectDetails
-  onMoveToEnd: () => void
+  onMoveToStart?: () => void
+  onMoveToEnd?: () => void
   onDelete: () => void
 }
 
@@ -50,7 +51,12 @@ function setProjectOpen(projectId: string, isOpen: boolean) {
   }
 }
 
-export function Project({ project, onMoveToEnd, onDelete }: ProjectProps) {
+export function Project({
+  project,
+  onMoveToStart,
+  onMoveToEnd,
+  onDelete,
+}: ProjectProps) {
   const [subtasksVisible, setSubtasksVisible] = useState(() =>
     getOpenProjectIds().has(project.id),
   )
@@ -60,8 +66,7 @@ export function Project({ project, onMoveToEnd, onDelete }: ProjectProps) {
 
   const { updateItem } = useStorageContext()
 
-  const { createLinkedTask: createDailyTask, updateLinkedTask } =
-    useLinkedTasks(project.linkedTaskId)
+  const { updateLinkedTask } = useLinkedTasks(project.linkedTaskId)
 
   const projectColour = {
     "--project-colour":
@@ -86,43 +91,6 @@ export function Project({ project, onMoveToEnd, onDelete }: ProjectProps) {
       status: status === "in_progress" ? "finished" : "ready",
       lastCompleted: new Date().getTime(),
     })
-  }
-
-  const onAddToTodo = () => {
-    if (project.subtasks) {
-      Object.values(project.subtasks).forEach((task) => {
-        if (task.status === "done" || task.linkedId) {
-          return
-        }
-
-        const linkedId = createDailyTask({
-          description: task.description,
-          category: task.category,
-          linkedTaskId: getSubtasksKey(project.id, task.id),
-        })
-
-        if (linkedId) {
-          updateItem<ProjectSubtask>(getSubtasksKey(project.id), {
-            ...task,
-            linkedId,
-          })
-        }
-      })
-    } else {
-      const linkedTaskId = createDailyTask({
-        description: project.description,
-        category: project.category,
-        linkedTaskId: `${PROJECTS_KEY}/${project.id}`,
-      })
-
-      if (linkedTaskId) {
-        updateItem<ProjectDetails>(PROJECTS_KEY, {
-          ...project,
-          linkedTaskId,
-        })
-      }
-    }
-    return true
   }
 
   const subtasks = Object.values(project.subtasks ?? {})
@@ -184,20 +152,28 @@ export function Project({ project, onMoveToEnd, onDelete }: ProjectProps) {
           <div className="project-meta-row">
             <SubtaskProgress subtasks={subtasks} doneSubtasks={doneSubtasks} />
             <div className="project-actions">
-              <ButtonWithConfirmation
-                className="icon ghost project-action-button"
-                onClick={onAddToTodo}
-                confirmationMessage="Copied!"
-              >
-                🔗
-              </ButtonWithConfirmation>
+              {onMoveToStart && (
+                <button
+                  className="icon ghost project-action-button"
+                  onClick={onMoveToStart}
+                  aria-label="Move to start"
+                >
+                  <ArrowToStartIcon
+                    width="20px"
+                    colour="var(--action-colour)"
+                  />
+                </button>
+              )}
 
-              <button
-                className="icon ghost project-action-button"
-                onClick={onMoveToEnd}
-              >
-                <ArrowToEndIcon width="20px" colour="var(--action-colour)" />
-              </button>
+              {onMoveToEnd && (
+                <button
+                  className="icon ghost project-action-button"
+                  onClick={onMoveToEnd}
+                  aria-label="Move to end"
+                >
+                  <ArrowToEndIcon width="20px" colour="var(--action-colour)" />
+                </button>
+              )}
 
               {expandButton}
             </div>
