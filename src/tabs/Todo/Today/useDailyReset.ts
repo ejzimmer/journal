@@ -1,4 +1,4 @@
-import { isBefore, startOfDay } from "date-fns"
+import { isBeforeToday } from "../../../shared/dates"
 import { useStorageContext } from "../../../shared/FirebaseContext"
 import { useDailyJob } from "../../../shared/dailyJobs/DailyJobsContext"
 import {
@@ -8,8 +8,7 @@ import {
 import { DAILY_KEY, DAILY_RESET_KEY, DailyTask } from "../../../shared/types"
 
 const finishedBeforeToday = (task: DailyTask) =>
-  task.status === "finished" &&
-  isBefore(task.lastCompleted, startOfDay(new Date()))
+  task.status === "finished" && isBeforeToday(task.lastCompleted)
 
 const readyForToday = (task: DailyTask) =>
   task.status === "done"

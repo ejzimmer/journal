@@ -1,4 +1,4 @@
-import { isBefore, isSameDay, startOfDay } from "date-fns"
+import { isBeforeToday, isToday } from "../../../shared/dates"
 import { useStorageContext } from "../../../shared/FirebaseContext"
 import { useDailyJob } from "../../../shared/dailyJobs/DailyJobsContext"
 import {
@@ -7,16 +7,12 @@ import {
   CalendarTask,
 } from "../../../shared/types"
 
-const readyToDelete = (task: CalendarTask) => {
-  const today = startOfDay(new Date())
-  return (
-    task.status === "finished" &&
-    isBefore(task.dueDate, today) &&
-    isBefore(task.statusUpdateDate, today)
-  )
-}
+const readyToDelete = (task: CalendarTask) =>
+  task.status === "finished" &&
+  isBeforeToday(task.dueDate) &&
+  isBeforeToday(task.statusUpdateDate)
 
-const taskIsToday = (task: CalendarTask) => isSameDay(task.dueDate, new Date())
+const taskIsToday = (task: CalendarTask) => isToday(task.dueDate)
 
 export function useDueDateReset() {
   const { useValue, deleteItem, updateItem } = useStorageContext()

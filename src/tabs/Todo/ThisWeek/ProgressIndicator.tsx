@@ -1,5 +1,5 @@
 import { CSSProperties, MouseEvent } from "react"
-import { isSameDay, differenceInDays } from "date-fns"
+import { getDaysSince, isToday } from "../../../shared/dates"
 import { WeeklyTask } from "../../../shared/types"
 import { dateToWeekday, getCompletedDates } from "./utils"
 
@@ -24,11 +24,8 @@ export function ProgressIndicator({
   const filledSegments = Math.min(numberDone, frequency)
 
   const mostRecentlyDone = numberDone ? Math.max(...completedDates) : undefined
-  const doneToday =
-    !!mostRecentlyDone && isSameDay(mostRecentlyDone, new Date())
-  const daysSinceDone = mostRecentlyDone
-    ? differenceInDays(new Date(), mostRecentlyDone)
-    : 0
+  const doneToday = !!mostRecentlyDone && isToday(mostRecentlyDone)
+  const daysSinceDone = mostRecentlyDone ? getDaysSince(mostRecentlyDone) : 0
   const fillOpacity =
     daysSinceDone > 2 ? Math.max(0, 1 - 0.2 * (daysSinceDone - 2)) : 1
 

@@ -1,6 +1,4 @@
-import { addDays, differenceInCalendarDays, startOfDay } from "date-fns"
-
-import { formatDate, formatDateId } from "../../shared/utils"
+import { formatDate, formatDateId, getToday } from "../../shared/dates"
 import { DayData } from "../../shared/types"
 
 export const STARTING_BALANCE = 19687
@@ -17,14 +15,14 @@ export type Balance = {
 }
 
 export function setupDays(dayData?: Record<string, DayData>): Balance[] {
-  const today = startOfDay(new Date())
-  const newYearsDay = startOfDay(new Date("2026-01-01"))
-  const numberOfDays = differenceInCalendarDays(today, newYearsDay) - 1
+  const today = getToday()
+  const newYearsDay = Temporal.PlainDate.from("2026-01-01")
+  const numberOfDays = today.since(newYearsDay, { largestUnit: "day" }).days - 1
   const days = new Array<Balance>(numberOfDays)
 
   let balance = STARTING_BALANCE
   for (let i = 0; i <= numberOfDays; i += 1) {
-    const date = addDays(newYearsDay, i)
+    const date = newYearsDay.add({ days: i })
     const { day, month } = formatDate(date)
     const id = formatDateId(date)
     const { consumed, expended, trackers } = dayData?.[id] ?? {}
@@ -38,8 +36,8 @@ export function setupDays(dayData?: Record<string, DayData>): Balance[] {
       id,
       day,
       month,
-      monthNumber: date.getMonth() + 1,
-      dayOfWeek: date.getDay(),
+      monthNumber: date.month,
+      dayOfWeek: date.dayOfWeek,
       diff,
       trackers,
       balance,

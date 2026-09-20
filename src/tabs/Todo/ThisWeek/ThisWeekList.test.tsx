@@ -1,4 +1,8 @@
-import { subDays } from "date-fns"
+import { getTimestampDaysAgo } from "../../../shared/dateTestUtils"
+
+const lateInTheDay = Temporal.Duration.from({ hours: 23 }).total(
+  "milliseconds",
+)
 import { WeeklyTask } from "../../../shared/types"
 import { refreshTasks } from "./useWeeklyReset"
 
@@ -32,10 +36,7 @@ describe("updating done tasks", () => {
 
   describe("when the task hasn't been completed in the last 7 days", () => {
     it("does nothing", () => {
-      const completed = [
-        subDays(new Date(), 4).getTime(),
-        subDays(new Date(), 2).getTime(),
-      ]
+      const completed = [getTimestampDaysAgo(4), getTimestampDaysAgo(2)]
       const updateTask = jest.fn()
       refreshTasks([{ ...mockTask, completed }], updateTask)
 
@@ -46,10 +47,10 @@ describe("updating done tasks", () => {
   describe("when the task was completed more than 7 days ago", () => {
     it("calls update task with the outdated completed tasks removed", () => {
       const completed = [
-        subDays(new Date(), 12).getTime(),
-        subDays(new Date(), 8).getTime(),
-        subDays(new Date(), 4).getTime(),
-        subDays(new Date(), 2).getTime(),
+        getTimestampDaysAgo(12),
+        getTimestampDaysAgo(8),
+        getTimestampDaysAgo(4),
+        getTimestampDaysAgo(2),
       ]
       const updateTask = jest.fn()
       refreshTasks([{ ...mockTask, completed }], updateTask)
@@ -64,10 +65,10 @@ describe("updating done tasks", () => {
   describe("when the task was completed exactly 7 days ago", () => {
     it("calls update task with the outdated completed tasks removed", () => {
       const completed = [
-        subDays(new Date(), 12).getTime(),
-        new Date("2026-02-21T23:10:57.000Z").getTime(), // 7 days ago, but later in the day
-        subDays(new Date(), 4).getTime(),
-        subDays(new Date(), 2).getTime(),
+        getTimestampDaysAgo(12),
+        getTimestampDaysAgo(7) + lateInTheDay,
+        getTimestampDaysAgo(4),
+        getTimestampDaysAgo(2),
       ]
       const updateTask = jest.fn()
       refreshTasks([{ ...mockTask, completed }], updateTask)
@@ -82,9 +83,9 @@ describe("updating done tasks", () => {
   describe("when the completed array is actually a record", () => {
     it("deals with that too", () => {
       const completed = {
-        "1": subDays(new Date(), 8).getTime(),
-        "2": subDays(new Date(), 4).getTime(),
-        "3": subDays(new Date(), 2).getTime(),
+        "1": getTimestampDaysAgo(8),
+        "2": getTimestampDaysAgo(4),
+        "3": getTimestampDaysAgo(2),
       } as unknown as number[] // Firebase turns sparse arrays into objects
       const updateTask = jest.fn()
       refreshTasks([{ ...mockTask, completed }], updateTask)

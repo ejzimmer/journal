@@ -1,6 +1,6 @@
 import { fireEvent, render, screen } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
-import { format } from "date-fns"
+import { formatDayAndMonth, getToday } from "../../shared/dates"
 import { AddTaskForm } from "./AddTaskForm"
 import { WorkStorageContext } from "./WorkStorageContext"
 import { createWorkStorageContext } from "./workStorageTestUtils"
@@ -161,7 +161,7 @@ describe("AddTaskForm", () => {
       wrapper: Wrapper,
     })
 
-    const today = format(new Date(), "dd MMM")
+    const today = formatDayAndMonth(getToday())
     await enterDueDate(user, "2026-01-01", "{Escape}")
 
     expect(onClose).not.toHaveBeenCalled()

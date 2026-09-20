@@ -20,7 +20,7 @@ export function Days({ days, onSelectDay }: DaysProps) {
     [days],
   )
   const popDelays = useMemo(() => days.map(() => Math.random() * 0.3), [days])
-  const startingIndex = days[0] ? weekday(days[0]) : 1
+  const startingIndex = days[0]?.dayOfWeek ?? 1
 
   return (
     <ol
@@ -60,10 +60,6 @@ export function Days({ days, onSelectDay }: DaysProps) {
     </ol>
   )
 }
-
-const weekday = (day: Balance) =>
-  Temporal.PlainDate.from({ year: 2026, month: day.monthNumber, day: day.day })
-    .dayOfWeek
 
 function getDayColour(diff: number, maxDiff: number) {
   const intensity = maxDiff === 0 ? 1 : Math.min(Math.abs(diff) / maxDiff, 1)
