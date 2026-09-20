@@ -32,63 +32,77 @@ function resetTasks(tasks: CalendarTask[]) {
 }
 
 describe("resetting due date tasks", () => {
-  it("deletes tasks finished before today", () => {
-    const task = createTask("renew-passport", {
-      status: "finished",
-      dueDate: subDays(new Date(), 2).getTime(),
-      statusUpdateDate: subDays(new Date(), 1).getTime(),
-    })
-    const storage = resetTasks([task])
-
-    expect(storage.deleteItem).toHaveBeenCalledWith(CALENDAR_KEY, task)
-  })
-
-  it("keeps tasks finished today", () => {
-    const storage = resetTasks([
-      createTask("renew-passport", {
+  describe("a finished task", () => {
+    it("is deleted once it's been finished since an earlier day", () => {
+      const task = createTask("renew-passport", {
         status: "finished",
         dueDate: subDays(new Date(), 2).getTime(),
-      }),
-    ])
+        statusUpdateDate: subDays(new Date(), 1).getTime(),
+      })
+      const storage = resetTasks([task])
 
-    expect(storage.deleteItem).not.toHaveBeenCalled()
+      expect(storage.deleteItem).toHaveBeenCalledWith(CALENDAR_KEY, task)
+    })
+
+    it("is kept if it was finished today", () => {
+      const storage = resetTasks([
+        createTask("renew-passport", {
+          status: "finished",
+          dueDate: subDays(new Date(), 2).getTime(),
+        }),
+      ])
+
+      expect(storage.deleteItem).not.toHaveBeenCalled()
+    })
   })
 
-  it("wakes up paused tasks that are due today", () => {
-    const storage = resetTasks([createTask("pay-rates", { status: "paused" })])
+  describe("a paused task", () => {
+    it("wakes up on the day it's due", () => {
+      const storage = resetTasks([createTask("pay-rates", { status: "paused" })])
 
-    expect(storage.updateItem).toHaveBeenCalledWith(
-      CALENDAR_KEY,
-      expect.objectContaining({ id: "pay-rates", status: "ready" }),
-    )
+      expect(storage.updateItem).toHaveBeenCalledWith(
+        CALENDAR_KEY,
+        expect.objectContaining({ id: "pay-rates", status: "ready" }),
+      )
+    })
+
+    it("stays paused while it isn't due yet", () => {
+      const storage = resetTasks([
+        createTask("pay-rates", {
+          status: "paused",
+          dueDate: addDays(new Date(), 3).getTime(),
+        }),
+      ])
+
+      expect(storage.updateItem).not.toHaveBeenCalled()
+    })
   })
 
-  it("leaves paused tasks that aren't due yet", () => {
-    const storage = resetTasks([
-      createTask("pay-rates", {
-        status: "paused",
-        dueDate: addDays(new Date(), 3).getTime(),
-      }),
-    ])
+  describe("when the tasks haven't arrived yet", () => {
+    it("resets nothing", () => {
+      const storage = createDailyJobsStorage({})
 
-    expect(storage.updateItem).not.toHaveBeenCalled()
-  })
+      renderDailyJob(useDueDateReset, storage)
 
-  it("waits for the tasks to arrive before resetting them", () => {
-    const storedValues: Record<string, unknown> = {}
-    const storage = createDailyJobsStorage(storedValues)
+      expect(storage.updateItem).not.toHaveBeenCalled()
+      expect(storage.deleteItem).not.toHaveBeenCalled()
+    })
 
-    const { rerender } = renderDailyJob(useDueDateReset, storage)
-    expect(storage.updateItem).not.toHaveBeenCalled()
+    it("resets them once they arrive", () => {
+      const storedValues: Record<string, unknown> = {}
+      const storage = createDailyJobsStorage(storedValues)
 
-    storedValues[CALENDAR_KEY] = indexById([
-      createTask("pay-rates", { status: "paused" }),
-    ])
-    rerender()
+      const { rerender } = renderDailyJob(useDueDateReset, storage)
 
-    expect(storage.updateItem).toHaveBeenCalledWith(
-      CALENDAR_KEY,
-      expect.objectContaining({ id: "pay-rates", status: "ready" }),
-    )
+      storedValues[CALENDAR_KEY] = indexById([
+        createTask("pay-rates", { status: "paused" }),
+      ])
+      rerender()
+
+      expect(storage.updateItem).toHaveBeenCalledWith(
+        CALENDAR_KEY,
+        expect.objectContaining({ id: "pay-rates", status: "ready" }),
+      )
+    })
   })
 })

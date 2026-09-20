@@ -34,70 +34,85 @@ function resetTasks(tasks: DailyTask[]) {
 }
 
 describe("resetting daily tasks", () => {
-  it("makes tasks done on an earlier day ready again", () => {
-    const storage = resetTasks([
-      createTask("washing-up", { status: "done", position: 0 }),
-      createTask("exercise", { status: "ready", position: 1 }),
-    ])
+  describe("a task done on an earlier day", () => {
+    it("is ready again", () => {
+      const storage = resetTasks([
+        createTask("washing-up", { status: "done", position: 0 }),
+        createTask("exercise", { status: "ready", position: 1 }),
+      ])
 
-    expect(storage.updateList).toHaveBeenCalledWith(DAILY_KEY, [
-      expect.objectContaining({ id: "washing-up", status: "ready" }),
-      expect.objectContaining({ id: "exercise", status: "ready" }),
-    ])
+      expect(storage.updateList).toHaveBeenCalledWith(DAILY_KEY, [
+        expect.objectContaining({ id: "washing-up", status: "ready" }),
+        expect.objectContaining({ id: "exercise", status: "ready" }),
+      ])
+    })
   })
 
-  it("removes one-off tasks finished on an earlier day", () => {
-    const storage = resetTasks([
-      createTask("book-flights", { type: "一度", status: "finished" }),
-      createTask("exercise", { position: 1 }),
-    ])
+  describe("a one-off task finished on an earlier day", () => {
+    it("is removed", () => {
+      const storage = resetTasks([
+        createTask("book-flights", { type: "一度", status: "finished" }),
+        createTask("exercise", { position: 1 }),
+      ])
 
-    expect(storage.updateList).toHaveBeenCalledWith(DAILY_KEY, [
-      expect.objectContaining({ id: "exercise" }),
-    ])
+      expect(storage.updateList).toHaveBeenCalledWith(DAILY_KEY, [
+        expect.objectContaining({ id: "exercise" }),
+      ])
+    })
+
+    it("leaves no gap in the positions behind it", () => {
+      const storage = resetTasks([
+        createTask("book-flights", { type: "一度", status: "finished" }),
+        createTask("exercise", { position: 1 }),
+        createTask("washing-up", { position: 2 }),
+      ])
+
+      expect(storage.updateList).toHaveBeenCalledWith(DAILY_KEY, [
+        expect.objectContaining({ id: "exercise", position: 0 }),
+        expect.objectContaining({ id: "washing-up", position: 1 }),
+      ])
+    })
   })
 
-  it("keeps tasks finished today", () => {
-    const storage = resetTasks([
-      createTask("book-flights", {
-        type: "一度",
-        status: "finished",
-        lastCompleted: new Date().getTime(),
-      }),
-    ])
+  describe("a one-off task finished today", () => {
+    it("is left alone", () => {
+      const storage = resetTasks([
+        createTask("book-flights", {
+          type: "一度",
+          status: "finished",
+          lastCompleted: new Date().getTime(),
+        }),
+      ])
 
-    expect(storage.updateList).toHaveBeenCalledWith(DAILY_KEY, [
-      expect.objectContaining({ id: "book-flights", status: "finished" }),
-    ])
+      expect(storage.updateList).toHaveBeenCalledWith(DAILY_KEY, [
+        expect.objectContaining({ id: "book-flights", status: "finished" }),
+      ])
+    })
   })
 
-  it("closes the gaps left by the tasks it removed", () => {
-    const storage = resetTasks([
-      createTask("book-flights", { type: "一度", status: "finished" }),
-      createTask("exercise", { position: 1 }),
-      createTask("washing-up", { position: 2 }),
-    ])
+  describe("when the tasks haven't arrived yet", () => {
+    it("resets nothing", () => {
+      const storage = createDailyJobsStorage({})
 
-    expect(storage.updateList).toHaveBeenCalledWith(DAILY_KEY, [
-      expect.objectContaining({ id: "exercise", position: 0 }),
-      expect.objectContaining({ id: "washing-up", position: 1 }),
-    ])
-  })
+      renderDailyJob(useDailyReset, storage)
 
-  it("waits for the tasks to arrive before resetting them", () => {
-    const storedValues: Record<string, unknown> = {}
-    const storage = createDailyJobsStorage(storedValues)
+      expect(storage.updateList).not.toHaveBeenCalled()
+    })
 
-    const { rerender } = renderDailyJob(useDailyReset, storage)
-    expect(storage.updateList).not.toHaveBeenCalled()
+    it("resets them once they arrive", () => {
+      const storedValues: Record<string, unknown> = {}
+      const storage = createDailyJobsStorage(storedValues)
 
-    storedValues[DAILY_KEY] = indexById([
-      createTask("washing-up", { status: "done" }),
-    ])
-    rerender()
+      const { rerender } = renderDailyJob(useDailyReset, storage)
 
-    expect(storage.updateList).toHaveBeenCalledWith(DAILY_KEY, [
-      expect.objectContaining({ id: "washing-up", status: "ready" }),
-    ])
+      storedValues[DAILY_KEY] = indexById([
+        createTask("washing-up", { status: "done" }),
+      ])
+      rerender()
+
+      expect(storage.updateList).toHaveBeenCalledWith(DAILY_KEY, [
+        expect.objectContaining({ id: "washing-up", status: "ready" }),
+      ])
+    })
   })
 })

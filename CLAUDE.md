@@ -29,3 +29,11 @@ A code comment should explain the code that's actually there - never an alternat
 That narrative belongs in the PR description or commit message, where "here's what I tried and why I changed direction" actually has the surrounding context to land in. In the code itself, only document a non-obvious property of the code as it stands - e.g. "this edge is stable regardless of the box's height" is fine; "this doesn't need the max-height reset the earlier version had" is not, because the earlier version is gone and nobody reading this file will ever see it.
 
 Before finishing any change, reread new comments as if you have no memory of the debugging session that produced them - if a comment only makes sense to someone who watched you write and discard code, cut it or rewrite it to describe only what's actually there.
+
+## Group tests in describe blocks
+
+Don't write a test file as a flat list of `it`s. Group them in `describe` blocks - by the thing under test, and then by the condition it's under - and work out the groupings yourself rather than waiting to be given them. Nested describes are good: `describe("paused tasks") > describe("when one is due today") > it("wakes it up")`.
+
+The point is that the name of a test should read as a sentence with the describes above it, so a failure tells you the situation as well as the broken expectation. It also stops the same setup being restated in every test name, keeps related cases next to each other, and makes a missing case obvious - an empty branch of the tree is easier to spot than an absence in a list.
+
+This applies to a file with three tests in it, not just to big ones.

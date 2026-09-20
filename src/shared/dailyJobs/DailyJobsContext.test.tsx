@@ -5,118 +5,155 @@ import { createDailyJobsStorage, renderDailyJob } from "./dailyJobsTestUtils"
 
 const LAST_RUN_KEY = "job-last-run"
 
+const renderJob = (run: () => void, storedValues: Record<string, unknown>) => {
+  const storage = createDailyJobsStorage(storedValues)
+  const { rerender } = renderDailyJob(
+    () => useDailyJob({ lastRunKey: LAST_RUN_KEY, run }),
+    storage,
+  )
+
+  return { storage, rerender }
+}
+
 describe("daily jobs", () => {
-  it("runs a job that hasn't run today", () => {
-    const run = jest.fn()
-    const storage = createDailyJobsStorage({})
+  describe("when the app is opened", () => {
+    describe("and the job hasn't run today", () => {
+      it("runs the job", () => {
+        const run = jest.fn()
 
-    renderDailyJob(() => useDailyJob({ lastRunKey: LAST_RUN_KEY, run }), storage)
+        renderJob(run, {})
 
-    expect(run).toHaveBeenCalledTimes(1)
-    expect(storage.setValue).toHaveBeenCalledWith(
-      LAST_RUN_KEY,
-      expect.any(Number),
-    )
-  })
+        expect(run).toHaveBeenCalledTimes(1)
+      })
 
-  it("runs a job that last ran on an earlier day", () => {
-    const run = jest.fn()
-    const storage = createDailyJobsStorage({
-      [LAST_RUN_KEY]: subDays(new Date(), 1).getTime(),
+      it("records when it ran", () => {
+        const run = jest.fn()
+
+        const { storage } = renderJob(run, {})
+
+        expect(storage.setValue).toHaveBeenCalledWith(
+          LAST_RUN_KEY,
+          expect.any(Number),
+        )
+      })
     })
 
-    renderDailyJob(() => useDailyJob({ lastRunKey: LAST_RUN_KEY, run }), storage)
+    describe("and the job last ran on an earlier day", () => {
+      it("runs the job", () => {
+        const run = jest.fn()
 
-    expect(run).toHaveBeenCalledTimes(1)
-  })
+        renderJob(run, { [LAST_RUN_KEY]: subDays(new Date(), 1).getTime() })
 
-  it("doesn't run a job that has already run today", () => {
-    const run = jest.fn()
-    const storage = createDailyJobsStorage({
-      [LAST_RUN_KEY]: new Date().getTime(),
+        expect(run).toHaveBeenCalledTimes(1)
+      })
     })
 
-    renderDailyJob(() => useDailyJob({ lastRunKey: LAST_RUN_KEY, run }), storage)
+    describe("and the job has already run today", () => {
+      it("doesn't run the job", () => {
+        const run = jest.fn()
 
-    expect(run).not.toHaveBeenCalled()
+        renderJob(run, { [LAST_RUN_KEY]: new Date().getTime() })
+
+        expect(run).not.toHaveBeenCalled()
+      })
+    })
+
+    describe("and several jobs are registered", () => {
+      it("runs all of them", () => {
+        const cleanUpTasks = jest.fn()
+        const updateTasks = jest.fn()
+
+        renderDailyJob(() => {
+          useDailyJob({ lastRunKey: "clean-up-last-run", run: cleanUpTasks })
+          useDailyJob({ lastRunKey: "update-last-run", run: updateTasks })
+        }, createDailyJobsStorage({}))
+
+        expect(cleanUpTasks).toHaveBeenCalledTimes(1)
+        expect(updateTasks).toHaveBeenCalledTimes(1)
+      })
+    })
   })
 
-  it("waits for the last run time to load before running a job", () => {
-    const run = jest.fn()
-    const storage = createDailyJobsStorage(
-      {},
-      { useValue: () => ({ value: undefined, loading: true }) },
-    )
+  describe("while the job's data is still loading", () => {
+    describe("when the last run time hasn't loaded", () => {
+      it("doesn't run the job", () => {
+        const run = jest.fn()
+        const storage = createDailyJobsStorage(
+          {},
+          { useValue: () => ({ value: undefined, loading: true }) },
+        )
 
-    renderDailyJob(() => useDailyJob({ lastRunKey: LAST_RUN_KEY, run }), storage)
+        renderDailyJob(
+          () => useDailyJob({ lastRunKey: LAST_RUN_KEY, run }),
+          storage,
+        )
 
-    expect(run).not.toHaveBeenCalled()
+        expect(run).not.toHaveBeenCalled()
+      })
+    })
+
+    describe("when the job isn't ready", () => {
+      it("doesn't run the job", () => {
+        const run = jest.fn()
+
+        renderDailyJob(
+          () => useDailyJob({ lastRunKey: LAST_RUN_KEY, isReady: false, run }),
+          createDailyJobsStorage({}),
+        )
+
+        expect(run).not.toHaveBeenCalled()
+      })
+
+      it("runs the job once it becomes ready", () => {
+        const run = jest.fn()
+        let isReady = false
+
+        const { rerender } = renderDailyJob(
+          () => useDailyJob({ lastRunKey: LAST_RUN_KEY, isReady, run }),
+          createDailyJobsStorage({}),
+        )
+
+        isReady = true
+        rerender()
+
+        expect(run).toHaveBeenCalledTimes(1)
+      })
+
+      it("runs it against the data from the render it became ready on", () => {
+        const seenData: string[] = []
+        let job: DailyJob = {
+          lastRunKey: LAST_RUN_KEY,
+          isReady: false,
+          run: () => seenData.push("stale data"),
+        }
+
+        const { rerender } = renderDailyJob(
+          () => useDailyJob(job),
+          createDailyJobsStorage({}),
+        )
+
+        job = {
+          lastRunKey: LAST_RUN_KEY,
+          isReady: true,
+          run: () => seenData.push("fresh data"),
+        }
+        rerender()
+
+        expect(seenData).toEqual(["fresh data"])
+      })
+    })
   })
 
-  it("runs a job once, however often its component re-renders", () => {
-    const run = jest.fn()
-    const storage = createDailyJobsStorage({})
+  describe("when a job has run in this session", () => {
+    it("doesn't run it again, however often its component re-renders", () => {
+      const run = jest.fn()
 
-    const { rerender } = renderDailyJob(
-      () => useDailyJob({ lastRunKey: LAST_RUN_KEY, run }),
-      storage,
-    )
-    rerender()
-    rerender()
+      const { rerender } = renderJob(run, {})
+      rerender()
+      rerender()
 
-    expect(run).toHaveBeenCalledTimes(1)
-  })
-
-  it("waits until a job's data is ready", () => {
-    const run = jest.fn()
-    const storage = createDailyJobsStorage({})
-    let isReady = false
-
-    const { rerender } = renderDailyJob(
-      () => useDailyJob({ lastRunKey: LAST_RUN_KEY, isReady, run }),
-      storage,
-    )
-    expect(run).not.toHaveBeenCalled()
-
-    isReady = true
-    rerender()
-
-    expect(run).toHaveBeenCalledTimes(1)
-  })
-
-  it("runs a job with the most recent version of its data", () => {
-    const seenData: string[] = []
-    const storage = createDailyJobsStorage({})
-    let job: DailyJob = {
-      lastRunKey: LAST_RUN_KEY,
-      isReady: false,
-      run: () => seenData.push("stale data"),
-    }
-
-    const { rerender } = renderDailyJob(() => useDailyJob(job), storage)
-
-    job = {
-      lastRunKey: LAST_RUN_KEY,
-      isReady: true,
-      run: () => seenData.push("fresh data"),
-    }
-    rerender()
-
-    expect(seenData).toEqual(["fresh data"])
-  })
-
-  it("runs every registered job", () => {
-    const cleanUpTasks = jest.fn()
-    const updateTasks = jest.fn()
-    const storage = createDailyJobsStorage({})
-
-    renderDailyJob(() => {
-      useDailyJob({ lastRunKey: "clean-up-last-run", run: cleanUpTasks })
-      useDailyJob({ lastRunKey: "update-last-run", run: updateTasks })
-    }, storage)
-
-    expect(cleanUpTasks).toHaveBeenCalledTimes(1)
-    expect(updateTasks).toHaveBeenCalledTimes(1)
+      expect(run).toHaveBeenCalledTimes(1)
+    })
   })
 
   describe("when the app is left open across midnight", () => {
@@ -129,53 +166,50 @@ describe("daily jobs", () => {
       jest.useRealTimers()
     })
 
-    it("runs each job again once midnight passes", () => {
-      const run = jest.fn()
+    describe("and midnight passes with the tab open", () => {
+      it("runs each job again", () => {
+        const run = jest.fn()
 
-      renderDailyJob(
-        () => useDailyJob({ lastRunKey: LAST_RUN_KEY, run }),
-        createDailyJobsStorage({}),
-      )
-      expect(run).toHaveBeenCalledTimes(1)
+        renderJob(run, {})
+        expect(run).toHaveBeenCalledTimes(1)
 
-      act(() => {
-        jest.advanceTimersByTime(hoursToMilliseconds(4))
+        act(() => {
+          jest.advanceTimersByTime(hoursToMilliseconds(4))
+        })
+
+        expect(run).toHaveBeenCalledTimes(2)
       })
-
-      expect(run).toHaveBeenCalledTimes(2)
     })
 
-    it("runs each job again when the tab is revisited on the new day", () => {
-      const run = jest.fn()
+    describe("and the tab is revisited on the new day", () => {
+      it("runs each job again", () => {
+        const run = jest.fn()
 
-      renderDailyJob(
-        () => useDailyJob({ lastRunKey: LAST_RUN_KEY, run }),
-        createDailyJobsStorage({}),
-      )
-      expect(run).toHaveBeenCalledTimes(1)
+        renderJob(run, {})
+        expect(run).toHaveBeenCalledTimes(1)
 
-      act(() => {
-        jest.setSystemTime(new Date("2026-09-20T08:00:00"))
-        document.dispatchEvent(new Event("visibilitychange"))
+        act(() => {
+          jest.setSystemTime(new Date("2026-09-20T08:00:00"))
+          document.dispatchEvent(new Event("visibilitychange"))
+        })
+
+        expect(run).toHaveBeenCalledTimes(2)
       })
-
-      expect(run).toHaveBeenCalledTimes(2)
     })
 
-    it("doesn't run a job again when the tab is revisited on the same day", () => {
-      const run = jest.fn()
+    describe("and the tab is revisited on the same day", () => {
+      it("doesn't run a job again", () => {
+        const run = jest.fn()
 
-      renderDailyJob(
-        () => useDailyJob({ lastRunKey: LAST_RUN_KEY, run }),
-        createDailyJobsStorage({}),
-      )
+        renderJob(run, {})
 
-      act(() => {
-        jest.setSystemTime(new Date("2026-09-19T23:30:00"))
-        document.dispatchEvent(new Event("visibilitychange"))
+        act(() => {
+          jest.setSystemTime(new Date("2026-09-19T23:30:00"))
+          document.dispatchEvent(new Event("visibilitychange"))
+        })
+
+        expect(run).toHaveBeenCalledTimes(1)
       })
-
-      expect(run).toHaveBeenCalledTimes(1)
     })
   })
 })
