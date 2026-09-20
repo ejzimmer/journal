@@ -43,24 +43,21 @@ function useToday() {
 }
 
 export function DailyJobsProvider({ children }: { children: ReactNode }) {
-  const [jobs, setJobs] = useState<Record<string, RegisteredJob>>({})
+  const [jobs, setJobs] = useState<RegisteredJob[]>([])
   const today = useToday()
 
   const registerJob = useCallback((job: RegisteredJob) => {
-    setJobs((registered) => ({ ...registered, [job.lastRunKey]: job }))
+    setJobs((jobs) => [
+      ...jobs.filter((other) => other.lastRunKey !== job.lastRunKey),
+      job,
+    ])
 
-    return () =>
-      setJobs((registered) => {
-        if (registered[job.lastRunKey] !== job) return registered
-
-        const { [job.lastRunKey]: unregistered, ...rest } = registered
-        return rest
-      })
+    return () => setJobs((jobs) => jobs.filter((other) => other !== job))
   }, [])
 
   return (
     <DailyJobsContext.Provider value={registerJob}>
-      {Object.values(jobs).map((job) => (
+      {jobs.map((job) => (
         <DailyJobRunner key={job.lastRunKey} job={job} today={today} />
       ))}
       {children}
@@ -71,14 +68,16 @@ export function DailyJobsProvider({ children }: { children: ReactNode }) {
 function DailyJobRunner({ job, today }: { job: RegisteredJob; today: number }) {
   const { useValue, setValue } = useStorageContext()
   const { value: lastRun, loading } = useValue<number>(job.lastRunKey)
-  const lastRunDay = useRef<number>(undefined)
+  const dayRunInThisSession = useRef<number>(undefined)
 
   useEffect(() => {
     if (loading) return
-    if (lastRunDay.current === today) return
-    if (lastRun !== undefined && !isBefore(lastRun, today)) return
 
-    lastRunDay.current = today
+    const alreadyRunThisSession = dayRunInThisSession.current === today
+    const alreadyRunToday = lastRun !== undefined && !isBefore(lastRun, today)
+    if (alreadyRunThisSession || alreadyRunToday) return
+
+    dayRunInThisSession.current = today
     job.run()
     setValue(job.lastRunKey, new Date().getTime())
   }, [job, today, lastRun, loading, setValue])
@@ -97,15 +96,15 @@ function useRegisterJob(): RegisterJob {
 
 export function useDailyJob({ lastRunKey, isReady = true, run }: DailyJob) {
   const registerJob = useRegisterJob()
-  const latestRun = useRef(run)
-  latestRun.current = run
+  const runWithCurrentData = useRef(run)
+  runWithCurrentData.current = run
 
   useEffect(() => {
     if (!isReady) return
 
     return registerJob({
       lastRunKey,
-      run: () => latestRun.current(),
+      run: () => runWithCurrentData.current(),
     })
   }, [registerJob, lastRunKey, isReady])
 }
