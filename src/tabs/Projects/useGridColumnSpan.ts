@@ -36,12 +36,6 @@ export function useGridColumnSpan(
 
     let cancelled = false
     let frame = 0
-    const measureOnNextFrame = () => {
-      cancelAnimationFrame(frame)
-      frame = requestAnimationFrame(() => {
-        if (!cancelled) measureColumnSpan()
-      })
-    }
 
     document.fonts?.ready.then(() => {
       if (!cancelled) measureColumnSpan()
@@ -57,8 +51,33 @@ export function useGridColumnSpan(
       }
     }
 
-    const resizeObserver = new ResizeObserver(measureOnNextFrame)
+    const resizeObserver = new ResizeObserver(() => measureOnNextFrame())
+
+    let observedName: Element | null = null
+    const observeProjectName = () => {
+      const name = card.querySelector(".project-name")
+      if (name === observedName) return
+
+      if (observedName) resizeObserver.unobserve(observedName)
+      observedName = name
+      if (name) resizeObserver.observe(name)
+    }
+
+    const measureOnNextFrame = () => {
+      cancelAnimationFrame(frame)
+      frame = requestAnimationFrame(() => {
+        if (cancelled) return
+        measureColumnSpan()
+        observeProjectName()
+      })
+    }
+
     resizeObserver.observe(card)
+
+    const mainRow = card.querySelector(".project-main-row")
+    if (mainRow) resizeObserver.observe(mainRow)
+
+    observeProjectName()
 
     const measureWhenCardSettles = (event: TransitionEvent) => {
       if (event.target === card && event.propertyName === "min-width") {

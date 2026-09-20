@@ -116,6 +116,10 @@
     align-items: center;
   }
 
+  .project-name {
+    white-space: nowrap;
+  }
+
   .project-meta-row {
     display: flex;
     align-items: center;
@@ -276,16 +280,17 @@
     gap: 4px;
     align-items: center;
 
+    label.checkbox {
+      --checkbox-size: 1.2em;
+    }
+
     label.checkbox .control {
-      width: 1.2em;
       color: var(--project-colour);
       border: 2px solid;
+    }
 
-      &:has(+ :checked) {
-        background: var(--project-colour);
-        border-color: var(--project-colour);
-        color: white;
-      }
+    .done-tick {
+      background: var(--project-colour-solid);
     }
 
     label:has(:checked) + div {
