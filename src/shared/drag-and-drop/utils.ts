@@ -3,7 +3,7 @@ import {
   Destination,
   Draggable,
   draggableTypeKey,
-  OrderedListItem,
+  SortableItem,
 } from "./types"
 import { Edge } from "@atlaskit/pragmatic-drag-and-drop-hitbox/types"
 
@@ -21,10 +21,20 @@ export function getPosition(index: number, listLength: number) {
   return "middle"
 }
 
-export function sortByPosition<T extends { position: number }>(list: T[]) {
-  return list
-    .toSorted((a, b) => a.position - b.position)
-    .map((item, index) => ({ ...item, position: index }))
+export function sortByPosition<T extends SortableItem>(list: T[]) {
+  return list.toSorted(
+    (a, b) => a.position - b.position || a.id.localeCompare(b.id),
+  )
+}
+
+export function renumberPositions<T extends SortableItem>(list: T[]) {
+  return list.map((item, index) => ({ ...item, position: index }))
+}
+
+export function getNextPosition(list: SortableItem[]) {
+  const positions = list.map((item) => item.position).filter(Number.isFinite)
+
+  return positions.length ? Math.max(...positions) + 1 : 0
 }
 
 const getTarget = (
@@ -54,18 +64,20 @@ const getTarget = (
 }
 
 export const onChangePosition = (
-  list: OrderedListItem[],
+  list: SortableItem[],
   originIndex: number,
   destination: Destination,
-  onReorder: (list: OrderedListItem[]) => void,
+  onReorder: (list: SortableItem[]) => void,
 ) => {
   const sortedList = sortByPosition(list)
   onReorder(
-    reorderWithEdge({
-      list: sortedList,
-      startIndex: originIndex,
-      ...getTarget(originIndex, destination, list.length),
-      axis: "vertical",
-    }).map((item, index) => ({ ...item, position: index })),
+    renumberPositions(
+      reorderWithEdge({
+        list: sortedList,
+        startIndex: originIndex,
+        ...getTarget(originIndex, destination, list.length),
+        axis: "vertical",
+      }),
+    ),
   )
 }
