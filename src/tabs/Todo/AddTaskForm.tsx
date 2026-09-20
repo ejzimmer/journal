@@ -9,6 +9,7 @@ import { FormControl } from "../../shared/controls/FormControl"
 import { Combobox } from "../../shared/controls/combobox/Combobox"
 import { OptionType } from "../../shared/controls/combobox/types"
 import { CATEGORIES } from "../../shared/utils"
+import { useFormToggle } from "../../shared/controls/useFormToggle"
 
 type AddTaskFormProps<T> = {
   listId: string
@@ -44,7 +45,8 @@ export function AddTaskForm<T>({
   const formHeightRef = useRef(0)
   const descriptionRef = useRef<HTMLInputElement>(null)
 
-  const [formVisible, setFormVisible] = useState(false)
+  const { isFormOpen, triggerRef, toggleForm, closeForm, closeFormOnEscape } =
+    useFormToggle()
 
   useEffect(() => {
     if (formRef.current) {
@@ -78,16 +80,18 @@ export function AddTaskForm<T>({
   return (
     <>
       <button
-        className={`icon subtle ${formVisible ? "form-visible" : ""}`}
-        onClick={() => setFormVisible(!formVisible)}
+        ref={triggerRef}
+        className={`icon subtle ${isFormOpen ? "form-visible" : ""}`}
+        onClick={toggleForm}
       >
         <PlusIcon width="16px" />
       </button>
       <form
         ref={formRef}
-        className={formVisible ? "add-task-form visible" : "add-task-form"}
-        style={{ height: formVisible ? formHeightRef.current : 0 }}
+        className={isFormOpen ? "add-task-form visible" : "add-task-form"}
+        style={{ height: isFormOpen ? formHeightRef.current : 0 }}
         onSubmit={handleSubmit}
+        onKeyDown={closeFormOnEscape}
       >
         <div className="description">
           <FormControl
@@ -120,7 +124,7 @@ export function AddTaskForm<T>({
           <button
             type="reset"
             className="icon secondary"
-            onClick={() => setFormVisible(false)}
+            onClick={closeForm}
             aria-label="Cancel"
           >
             <XIcon colour="var(--error-colour)" width="20px" />

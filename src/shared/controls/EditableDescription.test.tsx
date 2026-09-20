@@ -75,18 +75,31 @@ describe("EditableDescription", () => {
     })
   })
 
-  describe("when the user tabs to the description text", () => {
+  describe("when the user presses enter on the description text", () => {
     it("switches to edit mode", async () => {
       const user = userEvent.setup()
       render(<EditableDescription {...commonProps} />, { wrapper: Wrapper })
 
       await user.tab()
       await user.tab()
+      await user.keyboard("{Enter}")
 
       expectToBeInEditMode()
       const textInput = screen.getByRole("textbox", { name: "Description" })
       expect(textInput).toHaveValue("Brush teeth")
       expect(textInput).toHaveFocus()
+    })
+  })
+
+  describe("when the user leaves edit mode", () => {
+    it("returns focus to the description text", async () => {
+      const user = userEvent.setup()
+      render(<EditableDescription {...commonProps} />, { wrapper: Wrapper })
+
+      await user.click(screen.getByText("Brush teeth"))
+      await user.keyboard("{Escape}")
+
+      expect(screen.getByText("Brush teeth")).toHaveFocus()
     })
   })
 

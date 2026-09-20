@@ -203,7 +203,18 @@ ol.work-lists > li {
 
       span.subtasks {
         color: var(--body-colour-mid);
-        cursor: text;
+
+        button.edit-subtasks {
+          all: unset;
+          font: inherit;
+          color: inherit;
+          cursor: text;
+
+          &:focus-visible {
+            outline: 1px solid currentColor;
+            outline-offset: 2px;
+          }
+        }
 
         button.subtask {
           all: unset;

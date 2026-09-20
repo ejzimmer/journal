@@ -1,4 +1,4 @@
-import { CSSProperties, ReactNode } from "react"
+import { CSSProperties, ReactNode, RefObject } from "react"
 
 import "./Spine.css"
 
@@ -12,6 +12,7 @@ export function Spine({
   glyph,
   titleAriaLabel,
   stampAriaLabel,
+  titleRef,
   onTitleClick,
   onStampClick,
   children,
@@ -25,6 +26,7 @@ export function Spine({
   glyph: string
   titleAriaLabel: string
   stampAriaLabel: string
+  titleRef?: RefObject<HTMLButtonElement | null>
   onTitleClick: () => void
   onStampClick: () => void
   children?: ReactNode
@@ -45,6 +47,7 @@ export function Spine({
       )}
 
       <button
+        ref={titleRef}
         className="title"
         aria-label={titleAriaLabel}
         onClick={onTitleClick}
