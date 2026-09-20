@@ -136,7 +136,7 @@ describe("ThisWeekTask", () => {
           { value: { useValue, updateItem } },
         )
 
-        await user.click(screen.getByRole("button", { name: "Remove a done" }))
+        await user.click(screen.getByRole("button", { name: "Undo" }))
 
         expect(updateItem).toHaveBeenCalledWith(
           expect.anything(),
@@ -161,9 +161,7 @@ describe("ThisWeekTask", () => {
         expect(
           screen.queryByRole("button", { name: "Mark done" }),
         ).not.toBeInTheDocument()
-        expect(
-          screen.getByRole("button", { name: "Remove a done" }),
-        ).toBeInTheDocument()
+        expect(screen.getByRole("button", { name: "Undo" })).toBeInTheDocument()
       })
     })
 
@@ -177,7 +175,7 @@ describe("ThisWeekTask", () => {
         )
 
         expect(
-          screen.queryByRole("button", { name: "Remove a done" }),
+          screen.queryByRole("button", { name: "Undo" }),
         ).not.toBeInTheDocument()
         expect(
           screen.getByRole("button", { name: "Mark done" }),

@@ -7,16 +7,16 @@ type ProgressIndicatorProps = Pick<
   WeeklyTask,
   "completed" | "frequency" | "description"
 > & {
-  onAddDone: (event: MouseEvent) => void
-  onRemoveDone: () => void
+  onAdd: (event: MouseEvent) => void
+  onRemove: () => void
 }
 
 export function ProgressIndicator({
   completed,
   frequency,
   description,
-  onAddDone,
-  onRemoveDone,
+  onAdd,
+  onRemove,
 }: ProgressIndicatorProps) {
   const completedDates = getCompletedDates(completed)
   const numberDone = completedDates.length
@@ -48,17 +48,13 @@ export function ProgressIndicator({
         {filledSegments > 0 && (
           <button
             className="done"
-            aria-label="Remove a done"
-            onClick={onRemoveDone}
+            aria-label="Undo"
+            onClick={onRemove}
             style={{ width: `${(filledSegments / frequency) * 100}%` }}
           />
         )}
         {filledSegments < frequency && (
-          <button
-            className="not-done"
-            aria-label="Mark done"
-            onClick={onAddDone}
-          />
+          <button className="not-done" aria-label="Mark done" onClick={onAdd} />
         )}
       </div>
       {remainder > 0 && <span className="remainder">+{remainder}</span>}

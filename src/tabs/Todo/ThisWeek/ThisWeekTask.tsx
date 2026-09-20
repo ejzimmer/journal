@@ -138,8 +138,8 @@ export function ThisWeekTask({ task }: { task: WeeklyTask }) {
         completed={task.completed}
         frequency={task.frequency}
         description={task.description}
-        onAddDone={addDone}
-        onRemoveDone={removeLastDone}
+        onAdd={addDone}
+        onRemove={removeLastDone}
       />
     </>
   )
