@@ -23,6 +23,28 @@ function ToggledForm() {
   )
 }
 
+function ToggledFormWithTextTrigger() {
+  const { isFormOpen, triggerRef, openForm, openFormOnEnterOrSpace } =
+    useFormToggle<HTMLDivElement>()
+
+  return isFormOpen ? (
+    <form aria-label="Edit thing">
+      <input aria-label="Description" />
+    </form>
+  ) : (
+    <div
+      ref={triggerRef}
+      role="button"
+      tabIndex={0}
+      aria-label="Edit thing"
+      onClick={openForm}
+      onKeyDown={openFormOnEnterOrSpace}
+    >
+      A thing
+    </div>
+  )
+}
+
 describe("useFormToggle", () => {
   it("shows the form when the trigger is clicked", async () => {
     const user = userEvent.setup()
@@ -41,10 +63,11 @@ describe("useFormToggle", () => {
 
     const trigger = screen.getByRole("button", { name: "Add thing" })
     await user.click(trigger)
+    const form = screen.getByRole("form", { name: "Add thing" })
     await user.click(screen.getByRole("textbox", { name: "Description" }))
     await user.click(screen.getByRole("button", { name: "Cancel" }))
 
-    expect(screen.queryByRole("form")).not.toBeInTheDocument()
+    expect(form).not.toBeInTheDocument()
     expect(trigger).toHaveFocus()
   })
 
@@ -54,10 +77,11 @@ describe("useFormToggle", () => {
 
     const trigger = screen.getByRole("button", { name: "Add thing" })
     await user.click(trigger)
+    const form = screen.getByRole("form", { name: "Add thing" })
     await user.type(screen.getByRole("textbox", { name: "Description" }), "hi")
     await user.keyboard("{Escape}")
 
-    expect(screen.queryByRole("form")).not.toBeInTheDocument()
+    expect(form).not.toBeInTheDocument()
     expect(trigger).toHaveFocus()
   })
 
@@ -67,9 +91,32 @@ describe("useFormToggle", () => {
 
     const trigger = screen.getByRole("button", { name: "Add thing" })
     await user.click(trigger)
+    const form = screen.getByRole("form", { name: "Add thing" })
     await user.click(trigger)
 
-    expect(screen.queryByRole("form")).not.toBeInTheDocument()
+    expect(form).not.toBeInTheDocument()
     expect(trigger).toHaveFocus()
+  })
+
+  describe("a trigger that isn't a button", () => {
+    it("opens the form when enter is pressed", async () => {
+      const user = userEvent.setup()
+      render(<ToggledFormWithTextTrigger />)
+
+      await user.tab()
+      await user.keyboard("{Enter}")
+
+      expect(screen.getByRole("form", { name: "Edit thing" })).toBeInTheDocument()
+    })
+
+    it("opens the form when space is pressed", async () => {
+      const user = userEvent.setup()
+      render(<ToggledFormWithTextTrigger />)
+
+      await user.tab()
+      await user.keyboard(" ")
+
+      expect(screen.getByRole("form", { name: "Edit thing" })).toBeInTheDocument()
+    })
   })
 })

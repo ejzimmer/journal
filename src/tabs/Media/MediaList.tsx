@@ -1,21 +1,23 @@
-import { ReactNode } from "react"
+import { ComponentType } from "react"
 import { MediaDetails } from "./types"
-import { MediaSpine, StatusConfig } from "./MediaSpine"
+import {
+  MediaEditFormProps,
+  MediaSpine,
+  StatusConfig,
+} from "./MediaSpine"
 
 export function MediaList<T extends MediaDetails, S extends string>({
   items,
   bandHue,
   hue,
   config,
-  editForm,
+  EditForm,
 }: {
   items?: Record<string, T>
   bandHue?: number
   hue: (item: T) => number
   config: StatusConfig<T, S>
-  editForm: (
-    item: T,
-  ) => (props: { isOpen: boolean; onCancel: () => void }) => ReactNode
+  EditForm: ComponentType<MediaEditFormProps<T>>
 }) {
   const itemDetails = items ? Object.values(items) : undefined
 
@@ -29,7 +31,7 @@ export function MediaList<T extends MediaDetails, S extends string>({
             bandHue={bandHue}
             hue={hue(item)}
             config={config}
-            editForm={editForm(item)}
+            EditForm={EditForm}
           />
         ))}
       </ul>

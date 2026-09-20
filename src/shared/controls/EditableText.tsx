@@ -32,6 +32,7 @@ export function EditableText({
     triggerRef: displayRef,
     openForm: startEditing,
     closeForm: stopEditing,
+    openFormOnEnterOrSpace,
   } = useFormToggle<HTMLDivElement>()
   const [text, setText] = useState(value)
   const [inputWidth, setInputWidth] = useState<number>()
@@ -94,12 +95,7 @@ export function EditableText({
       tabIndex={0}
       aria-label={label}
       onClick={startEditing}
-      onKeyDown={(event) => {
-        if (event.key === "Enter" || event.key === " ") {
-          event.preventDefault()
-          startEditing()
-        }
-      }}
+        onKeyDown={openFormOnEnterOrSpace}
       style={style}
       className={className}
     >

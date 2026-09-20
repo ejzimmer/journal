@@ -20,6 +20,7 @@ export function EditableDate({ onChange, value, ...props }: Props) {
     triggerRef: displayRef,
     openForm: startEditing,
     closeForm: stopEditing,
+    openFormOnEnterOrSpace,
   } = useFormToggle<HTMLDivElement>()
   const inputRef = useRef<HTMLInputElement>(null)
 
@@ -63,12 +64,7 @@ export function EditableDate({ onChange, value, ...props }: Props) {
       tabIndex={0}
       aria-label={`Due date ${format(value, "dd MMM")}`}
       onClick={startEditing}
-      onKeyDown={(event) => {
-        if (event.key === "Enter" || event.key === " ") {
-          event.preventDefault()
-          startEditing()
-        }
-      }}
+        onKeyDown={openFormOnEnterOrSpace}
     >
       {format(value, "dd MMM")}
     </div>

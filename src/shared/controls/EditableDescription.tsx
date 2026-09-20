@@ -32,6 +32,7 @@ export function EditableDescription({
     triggerRef: displayRef,
     openForm: startEditing,
     closeForm: stopEditing,
+    openFormOnEnterOrSpace,
   } = useFormToggle<HTMLDivElement>()
   const [inputValue, setInputValue] = useState(description)
 
@@ -102,12 +103,7 @@ export function EditableDescription({
         tabIndex={0}
         aria-label={description}
         onClick={startEditing}
-        onKeyDown={(event) => {
-          if (event.key === "Enter" || event.key === " ") {
-            event.preventDefault()
-            startEditing()
-          }
-        }}
+        onKeyDown={openFormOnEnterOrSpace}
       >
         {description}
       </div>

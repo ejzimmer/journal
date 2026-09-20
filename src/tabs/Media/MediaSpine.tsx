@@ -1,9 +1,15 @@
-import { ReactNode } from "react"
+import { ComponentType } from "react"
 import { MediaDetails } from "./types"
 import { useMediaStorage } from "./MediaStorageContext"
 import { Spine } from "./Spine"
 import { getNextStatus } from "./nextStatus"
 import { useFormToggle } from "../../shared/controls/useFormToggle"
+
+export type MediaEditFormProps<T extends MediaDetails> = {
+  item: T
+  isOpen: boolean
+  onCancel: () => void
+}
 
 export type StatusConfig<T extends MediaDetails, S extends string> = {
   order: readonly S[]
@@ -23,13 +29,13 @@ export function MediaSpine<T extends MediaDetails, S extends string>({
   bandHue,
   hue,
   config,
-  editForm,
+  EditForm,
 }: {
   item: T
   bandHue?: number
   hue: number
   config: StatusConfig<T, S>
-  editForm: (props: { isOpen: boolean; onCancel: () => void }) => ReactNode
+  EditForm: ComponentType<MediaEditFormProps<T>>
 }) {
   const { updateMedia } = useMediaStorage()
   const { isFormOpen, triggerRef, openForm, closeForm } = useFormToggle()
@@ -57,7 +63,7 @@ export function MediaSpine<T extends MediaDetails, S extends string>({
       onTitleClick={openForm}
       onStampClick={updateStatus}
     >
-      {editForm({ isOpen: isFormOpen, onCancel: closeForm })}
+      <EditForm item={item} isOpen={isFormOpen} onCancel={closeForm} />
     </Spine>
   )
 }

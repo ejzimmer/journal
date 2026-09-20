@@ -16,6 +16,7 @@ export function ThisWeekTask({ task }: { task: WeeklyTask }) {
     triggerRef: descriptionDisplayRef,
     openForm: switchToEditMode,
     closeForm: switchToViewMode,
+    openFormOnEnterOrSpace,
   } = useFormToggle<HTMLDivElement>()
 
   const descriptionRef = useRef<HTMLInputElement>(null)
@@ -141,12 +142,7 @@ export function ThisWeekTask({ task }: { task: WeeklyTask }) {
           tabIndex={0}
           aria-label={task.description}
           onClick={switchToEditMode}
-          onKeyDown={(event) => {
-            if (event.key === "Enter" || event.key === " ") {
-              event.preventDefault()
-              switchToEditMode()
-            }
-          }}
+        onKeyDown={openFormOnEnterOrSpace}
         >
           {task.description}
         </div>

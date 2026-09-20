@@ -26,6 +26,13 @@ export function useFormToggle<T extends HTMLElement = HTMLButtonElement>() {
     }
   }
 
+  const openFormOnEnterOrSpace = (event: React.KeyboardEvent) => {
+    if (event.key === "Enter" || event.key === " ") {
+      event.preventDefault()
+      openForm()
+    }
+  }
+
   return {
     isFormOpen,
     triggerRef,
@@ -33,5 +40,6 @@ export function useFormToggle<T extends HTMLElement = HTMLButtonElement>() {
     closeForm,
     toggleForm,
     closeFormOnEscape,
+    openFormOnEnterOrSpace,
   }
 }
