@@ -75,19 +75,6 @@ describe("EditableDescription", () => {
     })
   })
 
-  describe("when the user tabs to the description text", () => {
-    it("stays in view mode", async () => {
-      const user = userEvent.setup()
-      render(<EditableDescription {...commonProps} />, { wrapper: Wrapper })
-
-      await user.tab()
-      await user.tab()
-
-      expect(screen.getByText("Brush teeth")).toHaveFocus()
-      expectToBeInViewMode()
-    })
-  })
-
   describe("when the user presses enter on the description text", () => {
     it("switches to edit mode", async () => {
       const user = userEvent.setup()

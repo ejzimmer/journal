@@ -1,4 +1,11 @@
-import { FormEvent, KeyboardEvent, useRef } from "react"
+import {
+  Fragment,
+  FormEvent,
+  KeyboardEvent,
+  ReactNode,
+  RefObject,
+  useRef,
+} from "react"
 import { sortByPosition } from "../../../shared/drag-and-drop/utils"
 import { useWorkStorage } from "../WorkStorageContext"
 import { Subtask } from "../types"
@@ -19,7 +26,7 @@ export function Subtasks({ subtasks, listId, taskId }: SubtasksProps) {
     triggerRef,
     openForm: startEditing,
     closeForm,
-  } = useFormToggle<HTMLElement>()
+  } = useFormToggle()
   const inputRef = useRef<HTMLInputElement>(null)
 
   const sorted = sortByPosition(Object.values(subtasks ?? {}))
@@ -83,37 +90,31 @@ export function Subtasks({ subtasks, listId, taskId }: SubtasksProps) {
   return (
     <>
       {hasSubtasks ? (
-        <span
-          ref={(element) => {
-            triggerRef.current = element
-          }}
-          className="subtasks"
-          tabIndex={-1}
-          onClick={startEditing}
-        >
-          [
+        <span className="subtasks">
+          <EditSubtasksButton ref={triggerRef} onClick={startEditing}>
+            [
+          </EditSubtasksButton>
           {sorted.map((subtask, index) => (
-            <span key={subtask.id}>
+            <Fragment key={subtask.id}>
+              {index > 0 && (
+                <EditSubtasksButton onClick={startEditing}>
+                  ,&nbsp;
+                </EditSubtasksButton>
+              )}
               <button
                 type="button"
                 className="subtask"
-                onClick={(event) => {
-                  event.stopPropagation()
-                  deleteSubtask(listId, taskId, subtask)
-                }}
+                onClick={() => deleteSubtask(listId, taskId, subtask)}
               >
                 {subtask.description}
               </button>
-              {index < sorted.length - 1 ? ", " : ""}
-            </span>
+            </Fragment>
           ))}
-          ]
+          <EditSubtasksButton onClick={startEditing}>]</EditSubtasksButton>
         </span>
       ) : (
         <button
-          ref={(element) => {
-            triggerRef.current = element
-          }}
+          ref={triggerRef}
           type="button"
           className="add-metadata ghost"
           aria-label="Add subtask"
@@ -124,5 +125,27 @@ export function Subtasks({ subtasks, listId, taskId }: SubtasksProps) {
       )}
       <StandardChecklistButton listId={listId} taskId={taskId} />
     </>
+  )
+}
+
+function EditSubtasksButton({
+  ref,
+  onClick,
+  children,
+}: {
+  ref?: RefObject<HTMLButtonElement | null>
+  onClick: () => void
+  children: ReactNode
+}) {
+  return (
+    <button
+      ref={ref}
+      type="button"
+      className="edit-subtasks"
+      aria-label="Edit subtasks"
+      onClick={onClick}
+    >
+      {children}
+    </button>
   )
 }
