@@ -3,6 +3,7 @@ import { useEffect, useSyncExternalStore } from "react"
 import { ContextType } from "../FirebaseContext"
 import { createLocalStore } from "./localStore"
 import { createOutbox, opsTouchPath } from "./outbox"
+import { valuesAreEqual } from "./pathTree"
 import { createSyncEngine } from "./syncEngine"
 
 export function createLocalFirstContext(
@@ -33,10 +34,20 @@ export function createLocalFirstContext(
   }
 
   function write(updates: Record<string, unknown>) {
-    Object.entries(updates).forEach(([path, value]) =>
-      localStore.writePath(path, value),
+    const changes = Object.entries(updates).filter(
+      ([path, value]) =>
+        value === null ||
+        value === undefined ||
+        !valuesAreEqual(localStore.readPath(path), value),
     )
-    void outbox.enqueue({ updates }).then(() => syncEngine.notifyChange())
+    if (changes.length === 0) {
+      return
+    }
+
+    changes.forEach(([path, value]) => localStore.writePath(path, value))
+    void outbox
+      .enqueue({ updates: Object.fromEntries(changes) })
+      .then(() => syncEngine.notifyChange())
   }
 
   const context: ContextType = {

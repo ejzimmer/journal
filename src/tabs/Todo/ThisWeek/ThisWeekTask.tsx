@@ -8,6 +8,7 @@ import { CategoriesContext } from ".."
 import { ProgressIndicator } from "./ProgressIndicator"
 import { subDays } from "date-fns"
 import { useFormToggle } from "../../../shared/controls/useFormToggle"
+import { getCompletedDates } from "./utils"
 
 export function ThisWeekTask({ task }: { task: WeeklyTask }) {
   const {
@@ -64,25 +65,25 @@ export function ThisWeekTask({ task }: { task: WeeklyTask }) {
     [categories],
   )
 
-  const handleClick = (event: React.MouseEvent) => {
-    if (!task.completed) {
-      task.completed = []
-    }
+  const completedDates = getCompletedDates(task.completed)
 
-    const completed = Array.isArray(task.completed)
-      ? task.completed
-      : (Object.values(task.completed ?? {}) as number[])
+  const addDone = (event: React.MouseEvent) => {
     const completedDate = event.ctrlKey
       ? subDays(new Date(), 1).getTime()
       : Date.now()
 
+    onChange({ ...task, completed: [...completedDates, completedDate] })
+  }
+
+  const removeLastDone = () => {
+    onChange({ ...task, completed: completedDates.slice(0, -1) })
+  }
+
+  const handleClick = (event: React.MouseEvent) => {
     if (event.shiftKey) {
-      onChange({ ...task, completed: task.completed.slice(0, -1) })
+      removeLastDone()
     } else {
-      onChange({
-        ...task,
-        completed: [...completed.filter(Boolean), completedDate],
-      })
+      addDone(event)
     }
   }
 
@@ -153,6 +154,9 @@ export function ThisWeekTask({ task }: { task: WeeklyTask }) {
       <ProgressIndicator
         completed={task.completed}
         frequency={task.frequency}
+        description={task.description}
+        onAdd={addDone}
+        onRemove={removeLastDone}
       />
     </>
   )

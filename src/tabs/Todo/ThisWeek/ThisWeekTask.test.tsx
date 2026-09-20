@@ -3,7 +3,7 @@ import { ThisWeekTask } from "./ThisWeekTask"
 import { WeeklyTask } from "../../../shared/types"
 import userEvent from "@testing-library/user-event"
 import { CategoriesContext } from ".."
-import { subDays } from "date-fns"
+import { isSameDay, subDays } from "date-fns"
 import { ContextType } from "../../../shared/FirebaseContext"
 import { renderWithStorage } from "../../../shared/storageContextTestUtils"
 
@@ -32,7 +32,7 @@ const expectToBeInViewMode = () => {
   ).toBeInTheDocument()
   expect(screen.queryByRole("textbox")).not.toBeInTheDocument()
   expect(screen.queryByRole("spinbutton")).not.toBeInTheDocument()
-  expect(screen.getByRole("progressbar")).toBeInTheDocument()
+  expect(screen.getByRole("group")).toBeInTheDocument()
 }
 
 describe("ThisWeekTask", () => {
@@ -82,6 +82,107 @@ describe("ThisWeekTask", () => {
       })
     })
 
+    describe("when the user clicks the unfilled part of the bar", () => {
+      it("adds a done for today", async () => {
+        const user = userEvent.setup()
+        const updateItem = jest.fn()
+        renderWithStorage(
+          <CategoriesContext.Provider value={["🧘", "💪"]}>
+            <ThisWeekTask task={task} />
+          </CategoriesContext.Provider>,
+          { value: { useValue, updateItem } },
+        )
+
+        await user.click(screen.getByRole("button", { name: "Mark done" }))
+
+        expect(updateItem).toHaveBeenCalledWith(
+          expect.anything(),
+          expect.objectContaining({
+            completed: [...task.completed!, expect.any(Number)],
+          }),
+        )
+      })
+    })
+
+    describe("when the user ctrl+clicks the unfilled part of the bar", () => {
+      it("adds a done for yesterday", async () => {
+        const user = userEvent.setup()
+        const updateItem = jest.fn()
+        renderWithStorage(
+          <CategoriesContext.Provider value={["🧘", "💪"]}>
+            <ThisWeekTask task={task} />
+          </CategoriesContext.Provider>,
+          { value: { useValue, updateItem } },
+        )
+
+        await user.keyboard("{Control>}")
+        await user.click(screen.getByRole("button", { name: "Mark done" }))
+
+        const [, updated] = updateItem.mock.calls[0]
+        expect(
+          isSameDay(updated.completed.at(-1), subDays(new Date(), 1)),
+        ).toBe(true)
+      })
+    })
+
+    describe("when the user clicks the filled part of the bar", () => {
+      it("removes the most recently completed item", async () => {
+        const user = userEvent.setup()
+        const updateItem = jest.fn()
+        renderWithStorage(
+          <CategoriesContext.Provider value={["🧘", "💪"]}>
+            <ThisWeekTask task={task} />
+          </CategoriesContext.Provider>,
+          { value: { useValue, updateItem } },
+        )
+
+        await user.click(screen.getByRole("button", { name: "Undo" }))
+
+        expect(updateItem).toHaveBeenCalledWith(
+          expect.anything(),
+          expect.objectContaining({
+            completed: [task.completed?.[0]],
+          }),
+        )
+      })
+    })
+
+    describe("when the task has been completed enough times", () => {
+      it("has nothing left to click to mark it done", () => {
+        renderWithStorage(
+          <CategoriesContext.Provider value={["🧘", "💪"]}>
+            <ThisWeekTask
+              task={{ ...task, completed: [...task.completed!, Date.now()] }}
+            />
+          </CategoriesContext.Provider>,
+          { value: { useValue } },
+        )
+
+        expect(
+          screen.queryByRole("button", { name: "Mark done" }),
+        ).not.toBeInTheDocument()
+        expect(screen.getByRole("button", { name: "Undo" })).toBeInTheDocument()
+      })
+    })
+
+    describe("when the task has never been completed", () => {
+      it("has nothing left to click to remove a done", () => {
+        renderWithStorage(
+          <CategoriesContext.Provider value={["🧘", "💪"]}>
+            <ThisWeekTask task={{ ...task, completed: [] }} />
+          </CategoriesContext.Provider>,
+          { value: { useValue } },
+        )
+
+        expect(
+          screen.queryByRole("button", { name: "Undo" }),
+        ).not.toBeInTheDocument()
+        expect(
+          screen.getByRole("button", { name: "Mark done" }),
+        ).toBeInTheDocument()
+      })
+    })
+
     describe("when the user clicks the description", () => {
       it("goes into edit mode", async () => {
         const user = userEvent.setup()
@@ -107,7 +208,7 @@ describe("ThisWeekTask", () => {
         })
         expect(descriptionInput).toHaveValue(task.description)
 
-        expect(screen.queryByRole("progressbar")).not.toBeInTheDocument()
+        expect(screen.queryByRole("group")).not.toBeInTheDocument()
         const frequencyInput = screen.getByRole("spinbutton", {
           name: "Frequency",
         })
@@ -123,8 +224,11 @@ describe("ThisWeekTask", () => {
         { value: { useValue } },
       )
 
-      const progress = screen.getByRole("progressbar")
-      expect(progress).toHaveValue(2)
+      expect(
+        screen.getByRole("group", {
+          name: `${task.description}: 2 of ${task.frequency} done`,
+        }),
+      ).toBeInTheDocument()
       const completedList = screen.getAllByRole("listitem")
       completedList.forEach((item) =>
         expect(item.textContent).toMatch(
@@ -262,10 +366,11 @@ describe("ThisWeekTask", () => {
         expect(onChange).not.toHaveBeenCalled()
         expect(onDelete).not.toHaveBeenCalled()
         expectToBeInViewMode()
-        expect(screen.getByRole("progressbar")).toHaveAttribute(
-          "max",
-          `${task.frequency}`,
-        )
+        expect(
+          screen.getByRole("group", {
+            name: `${task.description}: 2 of ${task.frequency} done`,
+          }),
+        ).toBeInTheDocument()
       })
     })
 

@@ -9,15 +9,20 @@ export type DraggingState =
   | { type: "is-dragging-over"; closestEdge: Edge | null }
 export const IDLE: DraggingState = { type: "idle" }
 
-export type OrderedListItem = {
+export type SortableItem = {
   id: string
-  parentId: string
   position: number
+}
+
+export type OrderedListItem = SortableItem & {
+  parentId: string
 }
 
 export const draggableTypeKey = Symbol("draggableType")
 
-export type Draggable = OrderedListItem & {
+export type Draggable = {
+  id: string
+  parentId: string
   [draggableTypeKey]: string
 }
 

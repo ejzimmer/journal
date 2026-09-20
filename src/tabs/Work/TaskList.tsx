@@ -23,7 +23,6 @@ function getListData(list: WorkTask, parentId: string) {
     [draggableTypeKey]: "list",
     id: list.id,
     parentId: parentId,
-    position: list.position,
   }
 }
 

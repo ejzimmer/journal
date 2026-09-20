@@ -9,6 +9,7 @@ import {
   PROJECTS_KEY,
 } from "../../shared/types"
 import { CATEGORIES } from "../../shared/utils"
+import { getNextPosition } from "../../shared/drag-and-drop/utils"
 
 const allCategories = Array.from(new Set([...categories, ...CATEGORIES]))
 
@@ -17,7 +18,7 @@ export function AddProjectForm() {
   const [category, setCategory] = useState<Category>("🧹")
 
   const { useValue, addItem } = useStorageContext()
-  const { value } = useValue(PROJECTS_KEY)
+  const { value } = useValue<Record<string, ProjectDetails>>(PROJECTS_KEY)
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
@@ -30,7 +31,7 @@ export function AddProjectForm() {
       description,
       category,
       parentId: PROJECTS_KEY,
-      position: value ? Object.keys(value).length : 0,
+      position: getNextPosition(value ? Object.values(value) : []),
     })
 
     setDescription("")
