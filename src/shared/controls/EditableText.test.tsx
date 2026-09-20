@@ -1,4 +1,4 @@
-import { act, render, screen } from "@testing-library/react"
+import { render, screen } from "@testing-library/react"
 import { EditableText } from "./EditableText"
 import userEvent from "@testing-library/user-event"
 
@@ -18,58 +18,57 @@ describe("EditableLabel", () => {
     expect(queryInput()).not.toBeInTheDocument()
   })
 
-  describe("when the element gains focus", () => {
+  describe("when the element is clicked", () => {
     it("renders an input", async () => {
+      const user = userEvent.setup()
       render(<EditableText {...defaultProps} />)
 
-      act(() => {
-        getText(TEXT).focus()
-      })
+      await user.click(getText(TEXT))
 
       const input = getInput()
       expect(input).toBeInTheDocument()
       expect(input).toHaveValue(TEXT)
-      expect(queryText(TEXT)).not.toBeVisible()
+      expect(getText(TEXT)).not.toBeVisible()
     })
   })
 
-  describe("when the element loses focus", () => {
-    describe("when the description has not changed", () => {
-      it("renders plain text and does not call onChange", async () => {
-        const user = userEvent.setup()
+  describe("when the user presses enter on the element", () => {
+    it("renders an input", async () => {
+      const user = userEvent.setup()
+      render(<EditableText {...defaultProps} />)
 
-        const onChange = jest.fn()
-        const { container } = render(
-          <EditableText {...defaultProps} onChange={onChange} />,
-        )
+      await user.tab()
+      await user.keyboard("{Enter}")
 
-        await user.click(getText(TEXT))
-        await user.click(container)
-
-        expect(getText(TEXT)).toBeInTheDocument()
-        expect(queryInput()).not.toBeInTheDocument()
-        expect(onChange).not.toHaveBeenCalled()
-      })
+      expect(getInput()).toHaveValue(TEXT)
     })
+  })
 
-    describe("when the description has changed", () => {
-      it("renders plain text and calls onUpdate", async () => {
-        const user = userEvent.setup()
-        const onChange = jest.fn()
-        const { container } = render(
-          <EditableText {...defaultProps} onChange={onChange} />,
-        )
+  describe("when the user presses escape", () => {
+    it("renders plain text without calling onChange", async () => {
+      const user = userEvent.setup()
+      const onChange = jest.fn()
+      render(<EditableText {...defaultProps} onChange={onChange} />)
 
-        await user.click(getText(TEXT))
-        const input = getInput()
-        await user.clear(input)
-        await user.type(input, "Buy pattern")
-        await user.click(container)
+      await user.click(getText(TEXT))
+      const input = getInput()
+      await user.clear(input)
+      await user.type(input, "Buy pattern{Escape}")
 
-        expect(screen.getByText(TEXT)).toBeInTheDocument()
-        expect(screen.queryByRole("textbox")).not.toBeInTheDocument()
-        expect(onChange).toHaveBeenCalledWith("Buy pattern")
-      })
+      expect(input).not.toBeInTheDocument()
+      expect(onChange).not.toHaveBeenCalled()
+    })
+  })
+
+  describe("when editing finishes", () => {
+    it("returns focus to the text", async () => {
+      const user = userEvent.setup()
+      render(<EditableText {...defaultProps} />)
+
+      await user.click(getText(TEXT))
+      await user.keyboard("{Enter}")
+
+      expect(getText(TEXT)).toHaveFocus()
     })
   })
 
@@ -81,10 +80,11 @@ describe("EditableLabel", () => {
         render(<EditableText {...defaultProps} onChange={onChange} />)
 
         await user.click(getText(TEXT))
-        await user.type(getInput(), "{Enter}")
+        const input = getInput()
+        await user.type(input, "{Enter}")
 
         expect(getText(TEXT)).toBeInTheDocument()
-        expect(queryInput()).not.toBeInTheDocument()
+        expect(input).not.toBeInTheDocument()
         expect(onChange).not.toHaveBeenCalled()
       })
     })
@@ -101,8 +101,8 @@ describe("EditableLabel", () => {
         await user.type(input, "Buy pattern")
         await user.keyboard("{Enter}")
 
-        expect(screen.getByText(TEXT)).toBeInTheDocument()
-        expect(screen.queryByRole("textbox")).not.toBeInTheDocument()
+        expect(getText(TEXT)).toBeInTheDocument()
+        expect(input).not.toBeInTheDocument()
         expect(onChange).toHaveBeenCalledWith("Buy pattern")
       })
     })
@@ -134,6 +134,6 @@ describe("EditableLabel", () => {
 })
 
 const getText = (content: string) => screen.getByText(content)
-const queryText = (content: string) => screen.queryByText(content)
 const getInput = () => screen.getByRole("textbox")
 const queryInput = () => screen.queryByRole("textbox")
+

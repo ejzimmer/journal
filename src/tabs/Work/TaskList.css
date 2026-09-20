@@ -203,7 +203,18 @@ ol.work-lists > li {
 
       span.subtasks {
         color: var(--body-colour-mid);
-        cursor: text;
+
+        button.edit-subtasks {
+          all: unset;
+          font: inherit;
+          color: inherit;
+          cursor: text;
+
+          &:focus-visible {
+            outline: 1px solid currentColor;
+            outline-offset: 2px;
+          }
+        }
 
         button.subtask {
           all: unset;
@@ -314,7 +325,8 @@ form.add-task {
   input.description {
     --underline-colour: var(--body-colour-light);
     --underline-width: 2px;
-    --descender-room: 6px;
+    --descender-room: 0.5em;
+    --baseline-drop: 0.66em;
     flex-grow: 1;
     align-self: flex-end;
     font-size: inherit;
@@ -325,7 +337,7 @@ form.add-task {
       var(--line-gap) + var(--line-width) + var(--descender-room)
     );
     margin-block-end: calc(-1 * var(--descender-room));
-    padding-block: calc(-1 * var(--baseline-nudge)) 0;
+    padding-block: calc(var(--baseline-drop) - var(--descender-room)) 0;
     background: linear-gradient(
       to top,
       transparent calc(var(--descender-room) + 1px - var(--underline-width)),

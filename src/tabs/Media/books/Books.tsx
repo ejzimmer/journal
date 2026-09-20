@@ -8,7 +8,7 @@ import {
 } from "../types"
 import { getCoverHue } from "../coverHue"
 import { MediaList } from "../MediaList"
-import { StatusConfig } from "../MediaSpine"
+import { MediaEditFormProps, StatusConfig } from "../MediaSpine"
 import { AddMediaForm, EditMediaForm } from "../MediaForm"
 import { useBookFormConfig } from "./bookFormConfig"
 import { Shelf } from "../Shelf"
@@ -33,6 +33,17 @@ const BOOK_CONFIG: StatusConfig<BookDetails, BookStatus> = {
   getAuthor: (book) => book.author,
 }
 
+function EditBookForm({ item, isOpen, onCancel }: MediaEditFormProps<BookDetails>) {
+  return (
+    <EditMediaForm
+      item={item}
+      isOpen={isOpen}
+      onCancel={onCancel}
+      config={useBookFormConfig()}
+    />
+  )
+}
+
 function BookMediaList({
   books,
   bandHue,
@@ -40,21 +51,13 @@ function BookMediaList({
   books?: Record<string, BookDetails>
   bandHue?: number
 }) {
-  const config = useBookFormConfig()
   return (
     <MediaList
       items={books}
       bandHue={bandHue}
       hue={(book) => getCoverHue(book.author ?? book.title)}
       config={BOOK_CONFIG}
-      editForm={(book) => ({ isOpen, onCancel }) => (
-        <EditMediaForm
-          item={book}
-          isOpen={isOpen}
-          onCancel={onCancel}
-          config={config}
-        />
-      )}
+      EditForm={EditBookForm}
     />
   )
 }

@@ -1,6 +1,5 @@
-import { useRef, useState } from "react"
-import { flushSync } from "react-dom"
 import { TagIcon } from "../../../shared/icons/Tag"
+import { useFormToggle } from "../../../shared/controls/useFormToggle"
 import { LabelsControl } from "../LabelsControl"
 import { Label } from "../types"
 
@@ -11,32 +10,27 @@ export function UpdateLabels({
   labels?: Label[]
   onChangeLabels: (labels: Label[]) => void
 }) {
-  const [addingLabel, setAddingLabel] = useState(false)
-  const addLabelButtonRef = useRef<HTMLButtonElement>(null)
+  const { isFormOpen, triggerRef, openForm, closeForm } = useFormToggle()
 
-  const stopAddingLabel = () => {
-    flushSync(() => setAddingLabel(false))
-    addLabelButtonRef.current?.focus()
-  }
-
-  return addingLabel ? (
+  return isFormOpen ? (
     <LabelsControl
       value={labels}
       onChange={(labels) => {
         onChangeLabels(labels)
-        stopAddingLabel()
+        closeForm()
       }}
       label=""
       ariaLabel="Labels"
-      onDismiss={stopAddingLabel}
+      autoFocus
+      onDismiss={closeForm}
     />
   ) : (
     <button
-      ref={addLabelButtonRef}
+      ref={triggerRef}
       type="button"
       className="add-metadata ghost"
       aria-label="Add label"
-      onClick={() => setAddingLabel(true)}
+      onClick={openForm}
     >
       <TagIcon width="28px" />
     </button>

@@ -1,10 +1,5 @@
-import {
-  CSSProperties,
-  useEffect,
-  useLayoutEffect,
-  useRef,
-  useState,
-} from "react"
+import { CSSProperties, useEffect, useLayoutEffect, useRef, useState } from "react"
+import { useFormToggle } from "./useFormToggle"
 import "./EditableText.css"
 
 export type EditableTextProps = {
@@ -32,16 +27,17 @@ export function EditableText({
   style,
   className = "",
 }: EditableTextProps) {
-  const [isEditing, setIsEditing] = useState(false)
+  const {
+    isFormOpen: isEditing,
+    triggerRef: displayRef,
+    openForm: startEditing,
+    closeForm: stopEditing,
+    openFormOnEnterOrSpace,
+  } = useFormToggle<HTMLDivElement>()
   const [text, setText] = useState(value)
   const [inputWidth, setInputWidth] = useState<number>()
   const inputRef = useRef<HTMLInputElement>(null)
   const measureRef = useRef<HTMLSpanElement>(null)
-
-  const startEditing = () => {
-    setIsEditing(true)
-  }
-  const stopEditing = () => setIsEditing(false)
 
   useEffect(() => {
     if (isEditing) {
@@ -77,7 +73,6 @@ export function EditableText({
       <input
         className={`editable-text ${className}`}
         ref={inputRef}
-        onBlur={handleSubmit}
         onKeyDown={(event) => {
           if (event.key === "Enter") {
             handleSubmit()
@@ -95,9 +90,12 @@ export function EditableText({
     </>
   ) : (
     <div
+      ref={displayRef}
+      role="button"
       tabIndex={0}
-      onFocus={startEditing}
+      aria-label={label}
       onClick={startEditing}
+        onKeyDown={openFormOnEnterOrSpace}
       style={style}
       className={className}
     >

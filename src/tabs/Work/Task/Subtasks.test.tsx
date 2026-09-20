@@ -15,6 +15,9 @@ function renderWithContext(
   )
 }
 
+const openEditor = (user: ReturnType<typeof userEvent.setup>) =>
+  user.click(screen.getAllByRole("button", { name: "Edit subtasks" })[0])
+
 describe("Subtasks", () => {
   it("shows the add subtask and add standard checklist buttons when there are no subtasks", () => {
     renderWithContext(undefined)
@@ -27,15 +30,30 @@ describe("Subtasks", () => {
     ).toBeInTheDocument()
   })
 
-  it("renders subtask descriptions in position order, separated by commas", () => {
-    const { container } = renderWithContext({
+  it("renders subtask descriptions in position order", () => {
+    renderWithContext({
       b: { id: "b", description: "create PR", position: 1 },
       a: { id: "a", description: "test", position: 0 },
     })
 
-    expect(container.querySelector(".subtasks")).toHaveTextContent(
-      "[test, create PR]",
-    )
+    expect(
+      screen
+        .getAllByRole("button", { name: /test|create PR/ })
+        .map((subtask) => subtask.textContent),
+    ).toEqual(["test", "create PR"])
+  })
+
+  it("wraps the subtasks in brackets and comma separators that open the editor", () => {
+    renderWithContext({
+      b: { id: "b", description: "create PR", position: 1 },
+      a: { id: "a", description: "test", position: 0 },
+    })
+
+    expect(
+      screen
+        .getAllByRole("button", { name: "Edit subtasks" })
+        .map((button) => button.textContent),
+    ).toEqual(["[", ",\u00a0", "]"])
   })
 
   it("doesn't show the add subtask button once there are subtasks", () => {
@@ -72,7 +90,7 @@ describe("Subtasks", () => {
     ).not.toBeInTheDocument()
   })
 
-  it("deletes a subtask when it's clicked, without opening edit mode", async () => {
+  it("deletes a subtask when it's clicked", async () => {
     const user = userEvent.setup()
     const subtask = { id: "a", description: "test", position: 0 }
     const { storageContext } = renderWithContext({ a: subtask })
@@ -84,19 +102,16 @@ describe("Subtasks", () => {
       "task-1",
       subtask,
     )
-    expect(
-      screen.queryByRole("textbox", { name: "Edit subtasks" }),
-    ).not.toBeInTheDocument()
   })
 
-  it("switches to edit mode when clicking anywhere that isn't a subtask", async () => {
+  it("opens the editor prefilled with the current list when a bracket is clicked", async () => {
     const user = userEvent.setup()
-    const { container } = renderWithContext({
+    renderWithContext({
       a: { id: "a", description: "test", position: 0 },
       b: { id: "b", description: "build", position: 1 },
     })
 
-    await user.click(container.querySelector(".subtasks")!)
+    await openEditor(user)
 
     expect(
       screen.getByRole("textbox", { name: "Edit subtasks" }),
@@ -167,12 +182,12 @@ describe("Subtasks", () => {
 
   it("parses the edited text into a new subtask list when Enter is pressed", async () => {
     const user = userEvent.setup()
-    const { container, storageContext } = renderWithContext({
+    const { storageContext } = renderWithContext({
       a: { id: "a", description: "test", position: 0 },
       b: { id: "b", description: "build", position: 1 },
     })
 
-    await user.click(container.querySelector(".subtasks")!)
+    await openEditor(user)
     const input = screen.getByRole("textbox", { name: "Edit subtasks" })
     await user.clear(input)
     await user.type(input, "test, review, build{Enter}")
@@ -184,31 +199,13 @@ describe("Subtasks", () => {
     ])
   })
 
-  it("saves the edited list when the field loses focus", async () => {
-    const user = userEvent.setup()
-    const { container, storageContext } = renderWithContext({
-      a: { id: "a", description: "test", position: 0 },
-    })
-
-    await user.click(container.querySelector(".subtasks")!)
-    const input = screen.getByRole("textbox", { name: "Edit subtasks" })
-    await user.clear(input)
-    await user.type(input, "test, extra")
-    await user.tab()
-
-    expect(storageContext.updateSubtasksList).toHaveBeenCalledWith("list-1", "task-1", [
-      { id: "a", description: "test", position: 0 },
-      { id: expect.any(String), description: "extra", position: 1 },
-    ])
-  })
-
   it("filters out blank entries when saving", async () => {
     const user = userEvent.setup()
-    const { container, storageContext } = renderWithContext({
+    const { storageContext } = renderWithContext({
       a: { id: "a", description: "test", position: 0 },
     })
 
-    await user.click(container.querySelector(".subtasks")!)
+    await openEditor(user)
     const input = screen.getByRole("textbox", { name: "Edit subtasks" })
     await user.clear(input)
     await user.type(input, "test, , build,{Enter}")
@@ -221,21 +218,27 @@ describe("Subtasks", () => {
 
   it("cancels without saving when Escape is pressed while editing an existing list", async () => {
     const user = userEvent.setup()
-    const { container, storageContext } = renderWithContext({
+    const { storageContext } = renderWithContext({
       a: { id: "a", description: "test", position: 0 },
     })
 
-    await user.click(container.querySelector(".subtasks")!)
-    await user.type(
-      screen.getByRole("textbox", { name: "Edit subtasks" }),
-      ", extra",
-    )
+    await openEditor(user)
+    const input = screen.getByRole("textbox", { name: "Edit subtasks" })
+    await user.type(input, ", extra")
     await user.keyboard("{Escape}")
 
     expect(storageContext.updateSubtasksList).not.toHaveBeenCalled()
-    expect(
-      screen.queryByRole("textbox", { name: "Edit subtasks" }),
-    ).not.toBeInTheDocument()
+    expect(input).not.toBeInTheDocument()
     expect(screen.getByRole("button", { name: "test" })).toBeInTheDocument()
+  })
+
+  it("returns focus to the brackets when the editor closes", async () => {
+    const user = userEvent.setup()
+    renderWithContext({ a: { id: "a", description: "test", position: 0 } })
+
+    await openEditor(user)
+    await user.keyboard("{Escape}")
+
+    expect(screen.getAllByRole("button", { name: "Edit subtasks" })[0]).toHaveFocus()
   })
 })

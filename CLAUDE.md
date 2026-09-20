@@ -30,6 +30,28 @@ That narrative belongs in the PR description or commit message, where "here's wh
 
 Before finishing any change, reread new comments as if you have no memory of the debugging session that produced them - if a comment only makes sense to someone who watched you write and discard code, cut it or rewrite it to describe only what's actually there.
 
+## Test the current behaviour, not the change
+
+A test describes what the code does today, for someone who never saw the version before it. Write it that way: if a change removes close-on-blur, the test worth having is one that pins down what closing the form *does* require, not one that memorialises what used to happen. A test that only makes sense as a diff against an earlier implementation is the test equivalent of a comment about an abandoned approach.
+
+The tell is an assertion that something *didn't* happen where nothing gave it any reason to happen. `expect(onSubmit).not.toHaveBeenCalled()` after a validation error is a real test - submission was attempted and the code stopped it. The same assertion when nobody clicked submit tests nothing; it would pass against an empty component. Likewise "expect the form not to submit" is a claim about behaviour, while "expect the input to still be on the screen" after an unrelated click is just restating that React didn't unmount something for no reason.
+
+Before writing a negative assertion, ask what would have to be true for the thing to happen at all. If the answer is "nothing in this test", cut the assertion and test the positive path instead.
+
+## Don't assert absence with queryBy
+
+`expect(screen.queryByRole("textbox")).not.toBeInTheDocument()` usually tests nothing. If the input gains a label, changes role, or the whole block stops rendering for an unrelated reason, the query returns null and the test still passes - including in exactly the broken state it was meant to catch.
+
+When the point is that an element *disappears*, grab it with `getBy` while it's still there, hold the reference, and assert on that reference afterwards:
+
+```js
+const input = screen.getByRole("textbox", { name: "Description" })
+await user.keyboard("{Escape}")
+expect(input).not.toBeInTheDocument()
+```
+
+That version fails if the element is still mounted, and it also fails at the `getBy` if the starting state was never right. Reach for `queryBy` only when the element genuinely never existed in the test - and then consider whether the assertion is earning its place at all.
+
 ## Group tests in describe blocks
 
 Don't write a test file as a flat list of `it`s. Group them in `describe` blocks - by the thing under test, and then by the condition it's under - and work out the groupings yourself rather than waiting to be given them. Nested describes are good: `describe("paused tasks") > describe("when one is due today") > it("wakes it up")`.
@@ -37,3 +59,7 @@ Don't write a test file as a flat list of `it`s. Group them in `describe` blocks
 The point is that the name of a test should read as a sentence with the describes above it, so a failure tells you the situation as well as the broken expectation. It also stops the same setup being restated in every test name, keeps related cases next to each other, and makes a missing case obvious - an empty branch of the tree is easier to spot than an absence in a list.
 
 This applies to a file with three tests in it, not just to big ones.
+
+## Don't resolve review comments
+
+Reply to review comments, push the fix, and leave the thread open. Resolving is the reviewer's call - it's how they track what they've checked, and closing a thread on their behalf hides it from them before they've seen the change. This holds even when the comment is unambiguous and the fix is obviously what was asked for.

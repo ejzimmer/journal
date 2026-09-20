@@ -1,11 +1,4 @@
-import {
-  useState,
-  MouseEvent,
-  FocusEvent,
-  useRef,
-  useMemo,
-  JSX,
-} from "react"
+import { useState, MouseEvent, useMemo, JSX } from "react"
 import { EditableText } from "../../shared/controls/EditableText"
 import { AddTaskForm } from "./AddTaskForm"
 import { Task } from "./Task/Task"
@@ -23,6 +16,7 @@ import { useDropTarget } from "../../shared/drag-and-drop/useDropTarget"
 import { sortByPosition } from "../../shared/drag-and-drop/utils"
 import { Labels } from "./Task/Labels"
 import { LabelsControl } from "./LabelsControl"
+import { useFormToggle } from "../../shared/controls/useFormToggle"
 
 function getListData(list: WorkTask, parentId: string) {
   return {
@@ -45,15 +39,19 @@ export function TaskList({
   additionalMoveDestinations: (task: WorkTask) => JSX.Element
   onMoveTaskToList?: (task: WorkTask, destination: ListDestination) => void
 }) {
-  const listRef = useRef<HTMLOListElement>(null)
   const [confirmDeleteModalOpen, setConfirmDeleteModalOpen] = useState(false)
   const [editingLabel, setEditingLabel] = useState(false)
 
-  const [addTaskFormVisible, setAddTaskFormVisible] = useState(false)
-  const showTaskForm = (event: MouseEvent | FocusEvent) => {
+  const {
+    isFormOpen: addTaskFormVisible,
+    triggerRef: listRef,
+    openForm,
+    closeForm,
+  } = useFormToggle<HTMLOListElement>()
+  const showTaskForm = (event: MouseEvent) => {
     event.stopPropagation()
     if (event.target === listRef.current) {
-      setAddTaskFormVisible(true)
+      openForm()
     }
   }
 
@@ -165,8 +163,8 @@ export function TaskList({
         </div>
         <ol
           ref={listRef}
+          tabIndex={-1}
           onClick={showTaskForm}
-          onFocus={showTaskForm}
           className={`tasks ${dragState}`}
         >
           {sortedList?.map((task, index) => (
@@ -212,9 +210,7 @@ export function TaskList({
             <li className="add-task-row">
               <AddTaskForm
                 onSubmit={(newTask) => addTask(listId, newTask)}
-                onClose={() => {
-                  setAddTaskFormVisible(false)
-                }}
+                onClose={closeForm}
               />
             </li>
           )}

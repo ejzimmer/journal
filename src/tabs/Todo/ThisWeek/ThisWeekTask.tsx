@@ -1,4 +1,4 @@
-import { SubmitEvent, useContext, useMemo, useRef, useState } from "react"
+import { SubmitEvent, useContext, useMemo, useRef } from "react"
 
 import "./ThisWeekTask.css"
 import { useStorageContext } from "../../../shared/FirebaseContext"
@@ -7,12 +7,17 @@ import { Combobox } from "../../../shared/controls/combobox/Combobox"
 import { CategoriesContext } from ".."
 import { ProgressIndicator } from "./ProgressIndicator"
 import { subDays } from "date-fns"
+import { useFormToggle } from "../../../shared/controls/useFormToggle"
 import { getCompletedDates } from "./utils"
 
 export function ThisWeekTask({ task }: { task: WeeklyTask }) {
-  const [inEditMode, setInEditMode] = useState(false)
-  const switchToViewMode = () => setInEditMode(false)
-  const switchToEditMode = () => setInEditMode(true)
+  const {
+    isFormOpen: inEditMode,
+    triggerRef: descriptionDisplayRef,
+    openForm: switchToEditMode,
+    closeForm: switchToViewMode,
+    openFormOnEnterOrSpace,
+  } = useFormToggle<HTMLDivElement>()
 
   const descriptionRef = useRef<HTMLInputElement>(null)
   const frequencyRef = useRef<HTMLInputElement>(null)
@@ -109,6 +114,7 @@ export function ThisWeekTask({ task }: { task: WeeklyTask }) {
         />
         <input
           ref={descriptionRef}
+          autoFocus
           aria-label="Description"
           defaultValue={task.description}
         />
@@ -130,7 +136,14 @@ export function ThisWeekTask({ task }: { task: WeeklyTask }) {
         {task.category}
       </button>
       <div style={{ flexGrow: 1 }}>
-        <div tabIndex={0} onClick={switchToEditMode}>
+        <div
+          ref={descriptionDisplayRef}
+          role="button"
+          tabIndex={0}
+          aria-label={task.description}
+          onClick={switchToEditMode}
+        onKeyDown={openFormOnEnterOrSpace}
+        >
           {task.description}
         </div>
       </div>

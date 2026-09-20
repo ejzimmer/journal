@@ -1,9 +1,17 @@
-import { FormEvent, KeyboardEvent, useRef, useState } from "react"
+import {
+  Fragment,
+  FormEvent,
+  KeyboardEvent,
+  ReactNode,
+  RefObject,
+  useRef,
+} from "react"
 import { sortByPosition } from "../../../shared/drag-and-drop/utils"
 import { useWorkStorage } from "../WorkStorageContext"
 import { Subtask } from "../types"
 import { BracketsIcon } from "../../../shared/icons/Brackets"
 import { StandardChecklistButton } from "./StandardChecklistButton"
+import { useFormToggle } from "../../../shared/controls/useFormToggle"
 
 type SubtasksProps = {
   subtasks?: Record<string, Subtask>
@@ -13,7 +21,12 @@ type SubtasksProps = {
 
 export function Subtasks({ subtasks, listId, taskId }: SubtasksProps) {
   const { deleteSubtask, updateSubtasksList } = useWorkStorage()
-  const [isEditing, setIsEditing] = useState(false)
+  const {
+    isFormOpen: isEditing,
+    triggerRef,
+    openForm: startEditing,
+    closeForm,
+  } = useFormToggle()
   const inputRef = useRef<HTMLInputElement>(null)
 
   const sorted = sortByPosition(Object.values(subtasks ?? {}))
@@ -43,15 +56,11 @@ export function Subtasks({ subtasks, listId, taskId }: SubtasksProps) {
 
   const stopEditing = (shouldSave: boolean) => {
     if (shouldSave) save()
-    setIsEditing(false)
+    closeForm()
   }
 
   const handleSubmit = (event: FormEvent) => {
     event.preventDefault()
-    stopEditing(true)
-  }
-
-  const handleBlur = () => {
     stopEditing(true)
   }
 
@@ -63,7 +72,7 @@ export function Subtasks({ subtasks, listId, taskId }: SubtasksProps) {
 
   if (isEditing) {
     return (
-      <form className="subtasks editing" onSubmit={handleSubmit} onBlur={handleBlur}>
+      <form className="subtasks editing" onSubmit={handleSubmit}>
         <span className="bracket">[</span>
         <input
           ref={inputRef}
@@ -81,36 +90,62 @@ export function Subtasks({ subtasks, listId, taskId }: SubtasksProps) {
   return (
     <>
       {hasSubtasks ? (
-        <span className="subtasks" onClick={() => setIsEditing(true)}>
-          [
+        <span className="subtasks">
+          <EditSubtasksButton ref={triggerRef} onClick={startEditing}>
+            [
+          </EditSubtasksButton>
           {sorted.map((subtask, index) => (
-            <span key={subtask.id}>
+            <Fragment key={subtask.id}>
+              {index > 0 && (
+                <EditSubtasksButton onClick={startEditing}>
+                  ,&nbsp;
+                </EditSubtasksButton>
+              )}
               <button
                 type="button"
                 className="subtask"
-                onClick={(event) => {
-                  event.stopPropagation()
-                  deleteSubtask(listId, taskId, subtask)
-                }}
+                onClick={() => deleteSubtask(listId, taskId, subtask)}
               >
                 {subtask.description}
               </button>
-              {index < sorted.length - 1 ? ", " : ""}
-            </span>
+            </Fragment>
           ))}
-          ]
+          <EditSubtasksButton onClick={startEditing}>]</EditSubtasksButton>
         </span>
       ) : (
         <button
+          ref={triggerRef}
           type="button"
           className="add-metadata ghost"
           aria-label="Add subtask"
-          onClick={() => setIsEditing(true)}
+          onClick={startEditing}
         >
           <BracketsIcon width="16px" />
         </button>
       )}
       <StandardChecklistButton listId={listId} taskId={taskId} />
     </>
+  )
+}
+
+function EditSubtasksButton({
+  ref,
+  onClick,
+  children,
+}: {
+  ref?: RefObject<HTMLButtonElement | null>
+  onClick: () => void
+  children: ReactNode
+}) {
+  return (
+    <button
+      ref={ref}
+      type="button"
+      className="edit-subtasks"
+      aria-label="Edit subtasks"
+      onClick={onClick}
+    >
+      {children}
+    </button>
   )
 }
