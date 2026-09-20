@@ -1,8 +1,11 @@
 import "fake-indexeddb/auto"
 import { render, screen } from "@testing-library/react"
-import { FirebaseContext } from "../../shared/FirebaseContext"
+import { ContextType, FirebaseContext } from "../../shared/FirebaseContext"
 import { createLocalFirstContext } from "../../shared/localFirst/createLocalFirstContext"
+import { DailyJobsProvider } from "../../shared/dailyJobs/DailyJobsContext"
 import { Work } from "./index"
+import { WorkTask } from "./types"
+import { useDoneTaskCleanup } from "./useDoneTaskCleanup"
 
 jest.mock("firebase/database", () => ({
   ref: (_database: unknown, path?: string) => ({ path }),
@@ -41,6 +44,25 @@ const createTask = (
   lastStatusUpdate: now,
 })
 
+function DoneTaskCleanup() {
+  useDoneTaskCleanup()
+  return null
+}
+
+function TaskPositions({ context }: { context: ContextType }) {
+  const { value } = context.useValue<Record<string, WorkTask>>(
+    "work/list-today/items",
+  )
+
+  return (
+    <div data-testid="positions">
+      {Object.values(value ?? {})
+        .map((task) => `${task.description}: ${task.position}`)
+        .join(", ")}
+    </div>
+  )
+}
+
 async function renderWork(lists: Record<string, unknown>) {
   const { context, hydrate } = createLocalFirstContext(
     {} as import("firebase/database").Database,
@@ -51,7 +73,11 @@ async function renderWork(lists: Record<string, unknown>) {
 
   render(
     <FirebaseContext.Provider value={context}>
-      <Work />
+      <DailyJobsProvider>
+        <DoneTaskCleanup />
+        <Work />
+        <TaskPositions context={context} />
+      </DailyJobsProvider>
     </FirebaseContext.Provider>,
   )
 }
@@ -78,6 +104,8 @@ describe("Work", () => {
       "list-done": createList("list-done", "Done", 1),
     })
 
-    expect(await screen.findByText("Fix the thing")).toBeInTheDocument()
+    expect(await screen.findByTestId("positions")).toHaveTextContent(
+      "Fix the thing: 0, Another thing: 1",
+    )
   })
 })

@@ -1,16 +1,11 @@
-import { useCallback, useEffect, useMemo, useRef } from "react"
+import { useCallback, useMemo, useRef } from "react"
 import { NewListModal } from "./NewListModal"
 import { TaskList } from "./TaskList"
-import { hoursToMilliseconds, isBefore, startOfDay } from "date-fns"
 import { Skeleton } from "../../shared/controls/Skeleton"
 import { draggableTypeKey } from "../../shared/drag-and-drop/types"
 import { WorkTask, WORK_KEY } from "./types"
 import { useDraggableList } from "../../shared/drag-and-drop/useDraggableList"
-import {
-  isDraggable,
-  renumberPositions,
-  sortByPosition,
-} from "../../shared/drag-and-drop/utils"
+import { isDraggable, sortByPosition } from "../../shared/drag-and-drop/utils"
 import { useDropTarget } from "../../shared/drag-and-drop/useDropTarget"
 import { WorkStorageProvider, useWorkStorage } from "./WorkStorageContext"
 
@@ -29,14 +24,7 @@ export function Work() {
 
 function WorkContent() {
   const dropTargetRef = useRef<HTMLOListElement>(null)
-  const {
-    lists,
-    isLoading: listsLoading,
-    addList,
-    addTask,
-    moveTask,
-    reorderTasks,
-  } = useWorkStorage()
+  const { lists, isLoading: listsLoading, addList, moveTask } = useWorkStorage()
 
   const doneList = useMemo(() => {
     return (
@@ -85,64 +73,6 @@ function WorkContent() {
     },
     [orderedLists, moveTask],
   )
-
-  const onUpdate = useCallback(() => {
-    if (!lists) return
-
-    if (!doneList) {
-      return
-    }
-
-    orderedLists.forEach((list) => {
-      if (list === doneList || !list.items) {
-        return
-      }
-
-      const { done, notDone } = Object.values(list.items).reduce(
-        (
-          { done, notDone }: { done: WorkTask[]; notDone: WorkTask[] },
-          task,
-        ) => {
-          if (
-            task.status === "done" &&
-            isBefore(task.lastStatusUpdate, startOfDay(new Date()))
-          ) {
-            done.push(task)
-          } else {
-            notDone.push(task)
-          }
-
-          return { done, notDone }
-        },
-        {
-          done: [],
-          notDone: [],
-        },
-      )
-
-      done.forEach((task) =>
-        addTask(doneList.id, {
-          ...task,
-          lastStatusUpdate: new Date().getTime(),
-        }),
-      )
-
-      const orderedNotDone = renumberPositions(sortByPosition(notDone))
-      const positionsChanged = orderedNotDone.some(
-        (task) => list.items?.[task.id]?.position !== task.position,
-      )
-      if (done.length > 0 || positionsChanged) {
-        reorderTasks(list.id, orderedNotDone)
-      }
-    })
-  }, [lists, addTask, orderedLists, doneList, reorderTasks])
-
-  useEffect(() => {
-    onUpdate()
-    const interval = setInterval(onUpdate, hoursToMilliseconds(1))
-
-    return () => clearInterval(interval)
-  }, [onUpdate])
 
   useDropTarget({
     dropTargetRef,
