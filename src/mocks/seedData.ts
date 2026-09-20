@@ -10,6 +10,7 @@ import {
   ProjectSubtask,
   PROJECTS_KEY,
 } from '../shared/types';
+import { Yarn } from '../tabs/ThisYear/YarnTracking/types';
 import {
   BookDetails,
   GameDetails,
@@ -265,6 +266,31 @@ const projects = indexById<ProjectDetails>([
   }),
 ]);
 
+const yarn: Yarn = {
+  chunky: {
+    id: 'chunky',
+    history: { '26-01': 400, '26-03': 320, '26-06': 250, '26-09': 180 },
+  },
+  dk: {
+    id: 'dk',
+    history: { '26-01': 620, '26-02': 700, '26-05': 540, '26-08': 480 },
+  },
+  '4 ply': {
+    id: '4 ply',
+    history: { '26-01': 300, '26-04': 260, '26-07': 410 },
+  },
+  sock: {
+    id: 'sock',
+    history: {
+      '26-01': 1150,
+      '26-02': 1080,
+      '26-03': 995,
+      '26-06': 870,
+      '26-09': 795,
+    },
+  },
+};
+
 export const seedData = {
   [WORK_KEY]: {
     [backlog.id]: { ...backlog, items: { [backlogTask.id]: backlogTask } },
@@ -284,4 +310,5 @@ export const seedData = {
     games,
   },
   [PROJECTS_KEY]: projects,
+  '2026': { yarn },
 };
