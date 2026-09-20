@@ -8,7 +8,7 @@ import { useStorageContext } from "../../../shared/FirebaseContext"
 import { DraggableListItem } from "../../../shared/drag-and-drop/DraggableListItem"
 import {
   draggableTypeKey,
-  OrderedListItem,
+  SortableItem,
 } from "../../../shared/drag-and-drop/types"
 import { DragPreview } from "../DragPreview"
 import { DragHandle } from "../../../shared/drag-and-drop/DragHandle"
@@ -16,6 +16,7 @@ import { useDropTarget } from "../../../shared/drag-and-drop/useDropTarget"
 import { useDraggableList } from "../../../shared/drag-and-drop/useDraggableList"
 import {
   isDraggable,
+  renumberPositions,
   sortByPosition,
 } from "../../../shared/drag-and-drop/utils"
 import { useDailyReset } from "./useDailyReset"
@@ -46,10 +47,7 @@ export function TodayList() {
 
   finishedTasks.forEach((task) => deleteItem<DailyTask>(DAILY_KEY, task))
   if (finishedTasks.length) {
-    updateList(
-      DAILY_KEY,
-      unfinishedTasks.map((task, index) => ({ ...task, position: index })),
-    )
+    updateList(DAILY_KEY, renumberPositions(unfinishedTasks))
   }
 
   useDailyReset()
@@ -80,7 +78,6 @@ export function TodayList() {
                 [draggableTypeKey]: "日",
                 id: task.id,
                 parentId: DAILY_KEY,
-                position: task.position,
               })}
               dragPreview={<DragPreview task={task} />}
               isDroppable={(data) => data[draggableTypeKey] === "日"}
@@ -89,7 +86,7 @@ export function TodayList() {
                 <DragHandle
                   list={tasks}
                   index={index}
-                  onReorder={(tasks: OrderedListItem[]) => {
+                  onReorder={(tasks: SortableItem[]) => {
                     updateList(DAILY_KEY, tasks)
                   }}
                 />

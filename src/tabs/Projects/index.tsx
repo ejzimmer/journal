@@ -19,7 +19,10 @@ import {
 } from "../../shared/types"
 import { EmojiCheckbox } from "../../shared/controls/EmojiCheckbox"
 import { XIcon } from "../../shared/icons/X"
-import { sortByPosition } from "../../shared/drag-and-drop/utils"
+import {
+  renumberPositions,
+  sortByPosition,
+} from "../../shared/drag-and-drop/utils"
 import {
   isProjectAtEnd,
   isProjectAtStart,
@@ -51,13 +54,13 @@ export function Projects() {
   )
 
   const onSortDoneProjectsToEnd = useCallback(() => {
-    const reordered = sortedProjects
-      .toSorted(
+    const reordered = renumberPositions(
+      sortedProjects.toSorted(
         (a, b) =>
           Number((a.status ?? "ready") === "done") -
           Number((b.status ?? "ready") === "done"),
-      )
-      .map((project, index) => ({ ...project, position: index }))
+      ),
+    )
 
     updateList<ProjectDetails>(PROJECTS_KEY, reordered)
   }, [sortedProjects, updateList])

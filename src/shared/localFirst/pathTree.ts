@@ -40,6 +40,27 @@ export function setAtPath(root: Tree, path: string, value: unknown): Tree {
   return node
 }
 
+export function valuesAreEqual(a: unknown, b: unknown): boolean {
+  if (Object.is(a, b)) return true
+  if (
+    typeof a !== "object" ||
+    typeof b !== "object" ||
+    a === null ||
+    b === null
+  ) {
+    return false
+  }
+
+  const aKeys = Object.keys(a)
+  const bKeys = Object.keys(b)
+  return (
+    aKeys.length === bKeys.length &&
+    aKeys.every((key) =>
+      valuesAreEqual((a as Tree)[key], (b as Tree)[key]),
+    )
+  )
+}
+
 export function pathsAreRelated(a: string, b: string): boolean {
   return a === b || a.startsWith(`${b}/`) || b.startsWith(`${a}/`)
 }

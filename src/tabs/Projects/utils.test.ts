@@ -213,3 +213,25 @@ describe("isProjectAtEnd", () => {
     expect(isProjectAtEnd(projects, 1)).toBe(true)
   })
 })
+
+describe("moving a project with gaps in the stored positions", () => {
+  const projects: ProjectDetails[] = [
+    { ...createProjects(["ready"])[0], position: 2 },
+    { ...createProjects(["ready"])[0], id: "project-gap", position: 7 },
+    { ...createProjects(["in_progress"])[0], id: "project-move", position: 9 },
+  ]
+
+  it("moves by list order rather than stored position", () => {
+    expect(getIds(moveProjectToStart(projects, 2))).toEqual([
+      "project-move",
+      "project-0",
+      "project-gap",
+    ])
+  })
+
+  it("closes the gaps when it renumbers", () => {
+    expect(
+      moveProjectToStart(projects, 2).map((project) => project.position),
+    ).toEqual([0, 1, 2])
+  })
+})

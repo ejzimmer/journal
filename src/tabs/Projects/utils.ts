@@ -7,6 +7,7 @@ import {
   PROJECTS_KEY,
 } from "../../shared/types"
 import { OrderedListItem } from "../../shared/drag-and-drop/types"
+import { renumberPositions } from "../../shared/drag-and-drop/utils"
 
 export const getSubtasksKey = (projectId: string, subtaskId?: string) => {
   const key = PROJECTS_KEY + `/${projectId}/subtasks`
@@ -61,9 +62,7 @@ export function reorderProjects(
   projects: ProjectDetails[],
   indexToRemove: number,
 ) {
-  return projects
-    .toSpliced(indexToRemove, 1)
-    .map((project, index) => ({ ...project, position: index }))
+  return renumberPositions(projects.toSpliced(indexToRemove, 1))
 }
 
 const getStatus = (project: ProjectDetails) => project.status ?? "ready"
@@ -102,10 +101,11 @@ function moveProject(
   indexToMove: number,
   destination: number,
 ) {
-  return projects
-    .toSpliced(indexToMove, 1)
-    .toSpliced(destination, 0, projects[indexToMove])
-    .map((project, index) => ({ ...project, position: index }))
+  return renumberPositions(
+    projects
+      .toSpliced(indexToMove, 1)
+      .toSpliced(destination, 0, projects[indexToMove]),
+  )
 }
 
 export const moveProjectToStart = (

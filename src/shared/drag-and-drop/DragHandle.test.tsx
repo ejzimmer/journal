@@ -2,12 +2,12 @@ import { useState } from "react"
 import { render, screen } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 import { DragHandle } from "./DragHandle"
-import { OrderedListItem } from "./types"
+import { SortableItem } from "./types"
 
-const list: OrderedListItem[] = [
-  { id: "a", parentId: "list", position: 0 },
-  { id: "b", parentId: "list", position: 1 },
-  { id: "c", parentId: "list", position: 2 },
+const list: SortableItem[] = [
+  { id: "a", position: 0 },
+  { id: "b", position: 1 },
+  { id: "c", position: 2 },
 ]
 
 function focusHandle() {
@@ -26,7 +26,7 @@ describe("DragHandle keyboard shortcuts", () => {
 
       expect(onReorder).toHaveBeenCalledTimes(1)
       const reordered = onReorder.mock.calls[0][0]
-      expect(reordered.map((item: OrderedListItem) => item.id)).toEqual([
+      expect(reordered.map((item: SortableItem) => item.id)).toEqual([
         "b",
         "a",
         "c",
@@ -43,7 +43,7 @@ describe("DragHandle keyboard shortcuts", () => {
 
       expect(onReorder).toHaveBeenCalledTimes(1)
       const reordered = onReorder.mock.calls[0][0]
-      expect(reordered.map((item: OrderedListItem) => item.id)).toEqual([
+      expect(reordered.map((item: SortableItem) => item.id)).toEqual([
         "b",
         "a",
         "c",
@@ -114,7 +114,7 @@ describe("DragHandle keyboard shortcuts", () => {
 
       expect(onReorder).toHaveBeenCalledTimes(1)
       const reordered = onReorder.mock.calls[0][0]
-      expect(reordered.map((item: OrderedListItem) => item.id)).toEqual([
+      expect(reordered.map((item: SortableItem) => item.id)).toEqual([
         "c",
         "a",
         "b",
@@ -131,7 +131,7 @@ describe("DragHandle keyboard shortcuts", () => {
 
       expect(onReorder).toHaveBeenCalledTimes(1)
       const reordered = onReorder.mock.calls[0][0]
-      expect(reordered.map((item: OrderedListItem) => item.id)).toEqual([
+      expect(reordered.map((item: SortableItem) => item.id)).toEqual([
         "b",
         "c",
         "a",
@@ -236,7 +236,7 @@ describe("DragHandle keyboard shortcuts", () => {
     function ReorderableList({
       initialList,
     }: {
-      initialList: OrderedListItem[]
+      initialList: SortableItem[]
     }) {
       const [items, setItems] = useState(initialList)
       return (
