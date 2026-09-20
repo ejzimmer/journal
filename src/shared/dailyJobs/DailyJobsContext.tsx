@@ -7,7 +7,7 @@ import {
   useRef,
   useState,
 } from "react"
-import { isBefore, minutesToMilliseconds, startOfDay } from "date-fns"
+import { hoursToMilliseconds, isBefore, startOfDay } from "date-fns"
 import { useStorageContext } from "../FirebaseContext"
 
 export type DailyJob = {
@@ -16,26 +16,26 @@ export type DailyJob = {
   run: () => void
 }
 
-type RegisteredJob = Omit<DailyJob, "isReady">
+type ScheduledJob = Omit<DailyJob, "isReady">
 
-type RegisterJob = (job: RegisteredJob) => () => void
+type RegisterJob = (job: ScheduledJob) => () => void
 
 const DailyJobsContext = createContext<RegisterJob | undefined>(undefined)
 
-const NEW_DAY_CHECK_INTERVAL = minutesToMilliseconds(1)
+const NEW_DAY_CHECK_INTERVAL = hoursToMilliseconds(2)
 
 function useToday() {
   const [today, setToday] = useState(() => startOfDay(new Date()).getTime())
 
   useEffect(() => {
-    const checkForNewDay = () => setToday(startOfDay(new Date()).getTime())
+    const updateToday = () => setToday(startOfDay(new Date()).getTime())
 
-    const interval = setInterval(checkForNewDay, NEW_DAY_CHECK_INTERVAL)
-    document.addEventListener("visibilitychange", checkForNewDay)
+    const interval = setInterval(updateToday, NEW_DAY_CHECK_INTERVAL)
+    document.addEventListener("visibilitychange", updateToday)
 
     return () => {
       clearInterval(interval)
-      document.removeEventListener("visibilitychange", checkForNewDay)
+      document.removeEventListener("visibilitychange", updateToday)
     }
   }, [])
 
@@ -43,16 +43,19 @@ function useToday() {
 }
 
 export function DailyJobsProvider({ children }: { children: ReactNode }) {
-  const [jobs, setJobs] = useState<RegisteredJob[]>([])
+  const [jobs, setJobs] = useState<ScheduledJob[]>([])
   const today = useToday()
 
-  const registerJob = useCallback((job: RegisteredJob) => {
+  const registerJob = useCallback((job: ScheduledJob) => {
     setJobs((jobs) => [
       ...jobs.filter((other) => other.lastRunKey !== job.lastRunKey),
       job,
     ])
 
-    return () => setJobs((jobs) => jobs.filter((other) => other !== job))
+    const unregisterJob = () =>
+      setJobs((jobs) => jobs.filter((other) => other !== job))
+
+    return unregisterJob
   }, [])
 
   return (
@@ -65,7 +68,7 @@ export function DailyJobsProvider({ children }: { children: ReactNode }) {
   )
 }
 
-function DailyJobRunner({ job, today }: { job: RegisteredJob; today: number }) {
+function DailyJobRunner({ job, today }: { job: ScheduledJob; today: number }) {
   const { useValue, setValue } = useStorageContext()
   const { value: lastRun, loading } = useValue<number>(job.lastRunKey)
   const dayRunInThisSession = useRef<number>(undefined)
@@ -96,15 +99,19 @@ function useRegisterJob(): RegisterJob {
 
 export function useDailyJob({ lastRunKey, isReady = true, run }: DailyJob) {
   const registerJob = useRegisterJob()
+  // the job is registered once, so it reads its callback from a ref to run
+  // against the data from the latest render rather than the one it registered on
   const runWithCurrentData = useRef(run)
   runWithCurrentData.current = run
 
   useEffect(() => {
     if (!isReady) return
 
-    return registerJob({
+    const unregisterJob = registerJob({
       lastRunKey,
       run: () => runWithCurrentData.current(),
     })
+
+    return unregisterJob
   }, [registerJob, lastRunKey, isReady])
 }

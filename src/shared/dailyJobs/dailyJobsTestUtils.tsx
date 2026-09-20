@@ -1,5 +1,5 @@
 import { ReactNode } from "react"
-import { render } from "@testing-library/react"
+import { renderHook } from "@testing-library/react"
 import { ContextType, FirebaseContext } from "../FirebaseContext"
 import { createStorageContext } from "../storageContextTestUtils"
 import { DailyJobsProvider } from "./DailyJobsContext"
@@ -20,10 +20,12 @@ export function createDailyJobsStorage(
   })
 }
 
-export function renderDailyJobs(jobs: ReactNode, storage: ContextType) {
-  return render(
-    <FirebaseContext.Provider value={storage}>
-      <DailyJobsProvider>{jobs}</DailyJobsProvider>
-    </FirebaseContext.Provider>,
-  )
+export function renderDailyJob(useJob: () => void, storage: ContextType) {
+  return renderHook(useJob, {
+    wrapper: ({ children }: { children: ReactNode }) => (
+      <FirebaseContext.Provider value={storage}>
+        <DailyJobsProvider>{children}</DailyJobsProvider>
+      </FirebaseContext.Provider>
+    ),
+  })
 }

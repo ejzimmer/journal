@@ -1,7 +1,7 @@
 import { subDays } from "date-fns"
 import {
   createDailyJobsStorage,
-  renderDailyJobs,
+  renderDailyJob,
 } from "../../shared/dailyJobs/dailyJobsTestUtils"
 import { WorkTask, WORK_KEY } from "./types"
 import { useDoneTaskCleanup } from "./useDoneTaskCleanup"
@@ -18,7 +18,7 @@ const createList = (
   parentId: WORK_KEY,
   lastStatusUpdate: new Date().getTime(),
   position,
-  items: Object.fromEntries(items.map((item) => [item.id, item])),
+  items: indexById(items),
 })
 
 const createTask = (
@@ -35,23 +35,20 @@ const createTask = (
   ...overrides,
 })
 
-function DoneTaskCleanup() {
-  useDoneTaskCleanup()
-  return null
+function indexById(items: WorkTask[]) {
+  return Object.fromEntries(items.map((item) => [item.id, item]))
 }
 
-function runCleanup(lists: WorkTask[]) {
-  const storage = createDailyJobsStorage({
-    [WORK_KEY]: Object.fromEntries(lists.map((list) => [list.id, list])),
-  })
-  renderDailyJobs(<DoneTaskCleanup />, storage)
+function cleanUpLists(lists: WorkTask[]) {
+  const storage = createDailyJobsStorage({ [WORK_KEY]: indexById(lists) })
+  renderDailyJob(useDoneTaskCleanup, storage)
 
   return storage
 }
 
 describe("cleaning up done work tasks", () => {
   it("moves tasks done on an earlier day to the done list", () => {
-    const storage = runCleanup([
+    const storage = cleanUpLists([
       createList("today", "Today", 0, [
         createTask("today", "fix-the-thing", {
           status: "done",
@@ -75,7 +72,7 @@ describe("cleaning up done work tasks", () => {
   })
 
   it("leaves tasks finished today where they are", () => {
-    const storage = runCleanup([
+    const storage = cleanUpLists([
       createList("today", "Today", 0, [
         createTask("today", "fix-the-thing", { status: "done" }),
       ]),
@@ -87,7 +84,7 @@ describe("cleaning up done work tasks", () => {
   })
 
   it("tidies up positions that are out of order", () => {
-    const storage = runCleanup([
+    const storage = cleanUpLists([
       createList("today", "Today", 0, [
         createTask("today", "fix-the-thing", { position: 7 }),
         createTask("today", "another-thing", { position: 9 }),
@@ -102,7 +99,7 @@ describe("cleaning up done work tasks", () => {
   })
 
   it("leaves lists whose positions are already in order alone", () => {
-    const storage = runCleanup([
+    const storage = cleanUpLists([
       createList("today", "Today", 0, [
         createTask("today", "fix-the-thing", { position: 0 }),
         createTask("today", "another-thing", { position: 1 }),
@@ -114,7 +111,7 @@ describe("cleaning up done work tasks", () => {
   })
 
   it("does nothing without a done list", () => {
-    const storage = runCleanup([
+    const storage = cleanUpLists([
       createList("today", "Today", 0, [
         createTask("today", "fix-the-thing", {
           status: "done",
@@ -127,11 +124,27 @@ describe("cleaning up done work tasks", () => {
     expect(storage.updateList).not.toHaveBeenCalled()
   })
 
-  it("does nothing until the lists have loaded", () => {
-    const storage = createDailyJobsStorage()
-    renderDailyJobs(<DoneTaskCleanup />, storage)
+  it("waits for the lists to arrive before cleaning them up", () => {
+    const storedValues: Record<string, unknown> = {}
+    const storage = createDailyJobsStorage(storedValues)
 
+    const { rerender } = renderDailyJob(useDoneTaskCleanup, storage)
     expect(storage.addItem).not.toHaveBeenCalled()
-    expect(storage.updateList).not.toHaveBeenCalled()
+
+    storedValues[WORK_KEY] = indexById([
+      createList("today", "Today", 0, [
+        createTask("today", "fix-the-thing", {
+          status: "done",
+          lastStatusUpdate: subDays(new Date(), 1).getTime(),
+        }),
+      ]),
+      createList("done", "Done", 1),
+    ])
+    rerender()
+
+    expect(storage.addItem).toHaveBeenCalledWith(
+      `${WORK_KEY}/done/items`,
+      expect.objectContaining({ description: "fix-the-thing" }),
+    )
   })
 })

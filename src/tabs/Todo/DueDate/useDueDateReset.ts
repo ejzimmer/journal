@@ -18,7 +18,7 @@ const readyToDelete = (task: CalendarTask) => {
 
 const taskIsToday = (task: CalendarTask) => isSameDay(task.dueDate, new Date())
 
-export function useDueDateTaskCleanup() {
+export function useDueDateReset() {
   const { useValue, deleteItem, updateItem } = useStorageContext()
   const { value: tasksById } = useValue<Record<string, CalendarTask>>(
     CALENDAR_KEY,

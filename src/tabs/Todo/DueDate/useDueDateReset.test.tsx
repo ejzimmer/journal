@@ -1,10 +1,10 @@
 import { addDays, subDays } from "date-fns"
 import {
   createDailyJobsStorage,
-  renderDailyJobs,
+  renderDailyJob,
 } from "../../../shared/dailyJobs/dailyJobsTestUtils"
 import { CALENDAR_KEY, CalendarTask } from "../../../shared/types"
-import { useDueDateTaskCleanup } from "./useDueDateTaskCleanup"
+import { useDueDateReset } from "./useDueDateReset"
 
 const createTask = (
   id: string,
@@ -21,34 +21,30 @@ const createTask = (
   ...overrides,
 })
 
-function DueDateTaskCleanup() {
-  useDueDateTaskCleanup()
-  return null
-}
+const indexById = (tasks: CalendarTask[]) =>
+  Object.fromEntries(tasks.map((task) => [task.id, task]))
 
-function runCleanup(tasks: CalendarTask[]) {
-  const storage = createDailyJobsStorage({
-    [CALENDAR_KEY]: Object.fromEntries(tasks.map((task) => [task.id, task])),
-  })
-  renderDailyJobs(<DueDateTaskCleanup />, storage)
+function resetTasks(tasks: CalendarTask[]) {
+  const storage = createDailyJobsStorage({ [CALENDAR_KEY]: indexById(tasks) })
+  renderDailyJob(useDueDateReset, storage)
 
   return storage
 }
 
-describe("cleaning up due date tasks", () => {
+describe("resetting due date tasks", () => {
   it("deletes tasks finished before today", () => {
     const task = createTask("renew-passport", {
       status: "finished",
       dueDate: subDays(new Date(), 2).getTime(),
       statusUpdateDate: subDays(new Date(), 1).getTime(),
     })
-    const storage = runCleanup([task])
+    const storage = resetTasks([task])
 
     expect(storage.deleteItem).toHaveBeenCalledWith(CALENDAR_KEY, task)
   })
 
   it("keeps tasks finished today", () => {
-    const storage = runCleanup([
+    const storage = resetTasks([
       createTask("renew-passport", {
         status: "finished",
         dueDate: subDays(new Date(), 2).getTime(),
@@ -59,7 +55,7 @@ describe("cleaning up due date tasks", () => {
   })
 
   it("wakes up paused tasks that are due today", () => {
-    const storage = runCleanup([createTask("pay-rates", { status: "paused" })])
+    const storage = resetTasks([createTask("pay-rates", { status: "paused" })])
 
     expect(storage.updateItem).toHaveBeenCalledWith(
       CALENDAR_KEY,
@@ -68,7 +64,7 @@ describe("cleaning up due date tasks", () => {
   })
 
   it("leaves paused tasks that aren't due yet", () => {
-    const storage = runCleanup([
+    const storage = resetTasks([
       createTask("pay-rates", {
         status: "paused",
         dueDate: addDays(new Date(), 3).getTime(),
@@ -78,11 +74,21 @@ describe("cleaning up due date tasks", () => {
     expect(storage.updateItem).not.toHaveBeenCalled()
   })
 
-  it("does nothing until the tasks have loaded", () => {
-    const storage = createDailyJobsStorage()
-    renderDailyJobs(<DueDateTaskCleanup />, storage)
+  it("waits for the tasks to arrive before resetting them", () => {
+    const storedValues: Record<string, unknown> = {}
+    const storage = createDailyJobsStorage(storedValues)
 
-    expect(storage.deleteItem).not.toHaveBeenCalled()
+    const { rerender } = renderDailyJob(useDueDateReset, storage)
     expect(storage.updateItem).not.toHaveBeenCalled()
+
+    storedValues[CALENDAR_KEY] = indexById([
+      createTask("pay-rates", { status: "paused" }),
+    ])
+    rerender()
+
+    expect(storage.updateItem).toHaveBeenCalledWith(
+      CALENDAR_KEY,
+      expect.objectContaining({ id: "pay-rates", status: "ready" }),
+    )
   })
 })

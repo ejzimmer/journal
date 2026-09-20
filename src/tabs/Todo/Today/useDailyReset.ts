@@ -16,7 +16,7 @@ const readyForToday = (task: DailyTask) =>
     ? { ...task, status: "ready" as const, lastCompleted: new Date().getTime() }
     : task
 
-export function useDailyTaskCleanup() {
+export function useDailyReset() {
   const { useValue, updateList } = useStorageContext()
   const { value: tasksById } = useValue<Record<string, DailyTask>>(DAILY_KEY)
 

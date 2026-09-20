@@ -1,12 +1,12 @@
-import { useDailyTaskCleanup } from "./tabs/Todo/Today/useDailyTaskCleanup"
-import { useWeeklyTaskUpdate } from "./tabs/Todo/ThisWeek/useWeeklyTaskUpdate"
-import { useDueDateTaskCleanup } from "./tabs/Todo/DueDate/useDueDateTaskCleanup"
+import { useDailyReset } from "./tabs/Todo/Today/useDailyReset"
+import { useWeeklyReset } from "./tabs/Todo/ThisWeek/useWeeklyReset"
+import { useDueDateReset } from "./tabs/Todo/DueDate/useDueDateReset"
 import { useDoneTaskCleanup } from "./tabs/Work/useDoneTaskCleanup"
 
 export function DailyJobs() {
-  useDailyTaskCleanup()
-  useWeeklyTaskUpdate()
-  useDueDateTaskCleanup()
+  useDailyReset()
+  useWeeklyReset()
+  useDueDateReset()
   useDoneTaskCleanup()
 
   return null

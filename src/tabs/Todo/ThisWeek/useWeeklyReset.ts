@@ -23,7 +23,7 @@ export function refreshTasks(
   })
 }
 
-export function useWeeklyTaskUpdate() {
+export function useWeeklyReset() {
   const { useValue, updateItem } = useStorageContext()
   const { value: tasksById } = useValue<Record<string, WeeklyTask>>(WEEKLY_KEY)
 
