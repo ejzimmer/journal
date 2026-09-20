@@ -1,3 +1,5 @@
+import { WeeklyTask } from "../../../shared/types"
+
 const dateFormatter = Intl.DateTimeFormat("en-AU", {
   weekday: "short",
   day: "numeric",
@@ -15,4 +17,12 @@ export const dateToWeekday = (date: number) => {
   }
 
   return `${formatted}${suffixes[suffixIndex] ?? "th"}`
+}
+
+export const getCompletedDates = (completed: WeeklyTask["completed"]) => {
+  const dates = Array.isArray(completed)
+    ? completed
+    : (Object.values(completed ?? {}) as (number | null)[])
+
+  return dates.filter((date): date is number => !!date)
 }
