@@ -4,7 +4,7 @@
 
 When a change affects anything visible in the UI (layout, colour, sizing, new components, etc.), capture screenshots showing the change, as long as capturing one is feasible (e.g. via the mock Firebase dev server + a headless browser), and show them in chat rather than attaching them to the PR. Prefer before/after or open/closed states where relevant. Skip this only when no visible surface changed, or a screenshot genuinely can't be captured.
 
-Don't commit screenshots into the repo to get them into a PR description - GitHub's API doesn't take image attachments directly, and committing PNGs just to work around that leaves them sitting in history for no lasting benefit. The PR description can describe what was verified in words; the actual images belong in chat, where they're free to include without that tradeoff.
+Don't commit screenshots into the repo to get them into a PR - GitHub's API doesn't take image attachments directly, and committing PNGs just to work around that leaves them sitting in history for no lasting benefit. Say what you verified in chat, along with the images themselves, where they're free to include without that tradeoff.
 
 ## No module-level variables for cross-component state
 
@@ -63,3 +63,9 @@ This applies to a file with three tests in it, not just to big ones.
 ## Don't resolve review comments
 
 Reply to review comments, push the fix, and leave the thread open. Resolving is the reviewer's call - it's how they track what they've checked, and closing a thread on their behalf hides it from them before they've seen the change. This holds even when the comment is unambiguous and the fix is obviously what was asked for.
+
+## Don't write PR descriptions
+
+Open the PR with a title and an empty body. A description only ever restates what's already been said in chat or what the diff and the commit messages say themselves, and those are easier to trust because they can't drift from the code the way a summary written beside it does. Put the reasoning for a change in its commit message, where it belongs.
+
+Don't report back on the description either - not writing one, updating one, or what went in it.
