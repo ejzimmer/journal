@@ -51,3 +51,7 @@ expect(input).not.toBeInTheDocument()
 ```
 
 That version fails if the element is still mounted, and it also fails at the `getBy` if the starting state was never right. Reach for `queryBy` only when the element genuinely never existed in the test - and then consider whether the assertion is earning its place at all.
+
+## Don't resolve review comments
+
+Reply to review comments, push the fix, and leave the thread open. Resolving is the reviewer's call - it's how they track what they've checked, and closing a thread on their behalf hides it from them before they've seen the change. This holds even when the comment is unambiguous and the fix is obviously what was asked for.
