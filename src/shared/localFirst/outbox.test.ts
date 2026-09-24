@@ -67,6 +67,25 @@ describe('createOutbox', () => {
     const outbox = createOutbox(uniqueDbName());
     expect(await outbox.peekFront()).toBeUndefined();
   });
+
+  describe('when ops are enqueued without waiting for each other', () => {
+    it('keeps every op, in the order they were enqueued', async () => {
+      const outbox = createOutbox(uniqueDbName());
+
+      await Promise.all([
+        outbox.enqueue({ updates: { a: 1 } }),
+        outbox.enqueue({ updates: { b: 2 } }),
+        outbox.enqueue({ updates: { c: 3 } }),
+      ]);
+
+      const ops = await outbox.list();
+      expect(ops.map((op) => op.updates)).toEqual([
+        { a: 1 },
+        { b: 2 },
+        { c: 3 },
+      ]);
+    });
+  });
 });
 
 describe('opsTouchPath', () => {
