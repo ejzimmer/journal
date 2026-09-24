@@ -1,4 +1,4 @@
-import { createStore, del, entries, keys, set } from 'idb-keyval';
+import { createStore, del, entries, promisifyRequest } from 'idb-keyval';
 import { pathsAreRelated } from './pathTree';
 
 export type OutboxOp = { updates: Record<string, unknown> };
@@ -21,11 +21,15 @@ export function createOutbox(dbName: string): Outbox {
   }
 
   return {
-    async enqueue(op) {
-      const existingIds = (await keys(store)) as number[];
-      const nextId =
-        existingIds.length === 0 ? 1 : Math.max(...existingIds) + 1;
-      await set(nextId, op, store);
+    enqueue(op) {
+      return store('readwrite', (objectStore) => {
+        const lastEntry = objectStore.openCursor(null, 'prev');
+        lastEntry.onsuccess = () => {
+          const lastId = (lastEntry.result?.key as number | undefined) ?? 0;
+          objectStore.put(op, lastId + 1);
+        };
+        return promisifyRequest(objectStore.transaction);
+      });
     },
     list,
     async peekFront() {
