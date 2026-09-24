@@ -1,4 +1,4 @@
-import { isBefore, startOfDay } from 'date-fns';
+import { isBeforeToday } from '../../shared/dates';
 import { useStorageContext } from '../../shared/FirebaseContext';
 import { useDailyJob } from '../../shared/dailyJobs/DailyJobsContext';
 import {
@@ -8,8 +8,7 @@ import {
 import { WorkTask, WORK_CLEANUP_KEY, WORK_KEY } from './types';
 
 const finishedBeforeToday = (task: WorkTask) =>
-  task.status === 'done' &&
-  isBefore(task.lastStatusUpdate, startOfDay(new Date()));
+  task.status === 'done' && isBeforeToday(task.lastStatusUpdate);
 
 export function useDoneTaskCleanup() {
   const { useValue, addItem, updateList } = useStorageContext();

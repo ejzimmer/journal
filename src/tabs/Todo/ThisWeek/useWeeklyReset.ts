@@ -1,4 +1,4 @@
-import { endOfDay, isAfter, subDays } from 'date-fns';
+import { getDaysSince } from '../../../shared/dates';
 import { useStorageContext } from '../../../shared/FirebaseContext';
 import { useDailyJob } from '../../../shared/dailyJobs/DailyJobsContext';
 import {
@@ -18,9 +18,9 @@ export function refreshTasks(
       ? task.completed
       : Object.values(task.completed);
 
-    const updatedCompleted = completed.filter((date) => {
-      return date && isAfter(date, endOfDay(subDays(new Date(), 7)));
-    });
+    const updatedCompleted = completed.filter(
+      (date) => date && getDaysSince(date) < 7,
+    );
     if (updatedCompleted.length !== task.completed.length) {
       updateTask({ ...task, completed: updatedCompleted });
     }

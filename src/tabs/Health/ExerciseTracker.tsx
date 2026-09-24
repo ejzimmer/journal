@@ -1,10 +1,10 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { PlusIcon } from '../../shared/icons/Plus';
-import { formatDate } from '../../shared/utils';
+import { formatDate } from '../../shared/dates';
 import './ExerciseTracker.css';
 
 type Update = {
-  date: Date;
+  date: Temporal.PlainDate;
   update: string;
   recommendation?: 'up' | 'stay' | 'down';
 };

@@ -1,4 +1,4 @@
-import { subDays } from 'date-fns';
+import { getTimestampDaysAgo } from '../../../shared/dateTestUtils';
 import {
   createDailyJobsStorage,
   renderDailyJob,
@@ -6,7 +6,7 @@ import {
 import { DAILY_KEY, DailyTask } from '../../../shared/types';
 import { useDailyReset } from './useDailyReset';
 
-const yesterday = () => subDays(new Date(), 1).getTime();
+const yesterday = () => getTimestampDaysAgo(1);
 
 const createTask = (
   id: string,

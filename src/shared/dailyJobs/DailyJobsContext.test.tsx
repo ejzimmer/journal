@@ -1,5 +1,5 @@
 import { act } from '@testing-library/react';
-import { hoursToMilliseconds, subDays } from 'date-fns';
+import { getTimestampDaysAgo } from '../dateTestUtils';
 import { DailyJob, useDailyJob } from './DailyJobsContext';
 import { createDailyJobsStorage, renderDailyJob } from './dailyJobsTestUtils';
 
@@ -42,7 +42,7 @@ describe('daily jobs', () => {
       it('runs the job', () => {
         const run = jest.fn();
 
-        renderJob(run, { [LAST_RUN_KEY]: subDays(new Date(), 1).getTime() });
+        renderJob(run, { [LAST_RUN_KEY]: getTimestampDaysAgo(1) });
 
         expect(run).toHaveBeenCalledTimes(1);
       });
@@ -174,7 +174,9 @@ describe('daily jobs', () => {
         expect(run).toHaveBeenCalledTimes(1);
 
         act(() => {
-          jest.advanceTimersByTime(hoursToMilliseconds(4));
+          jest.advanceTimersByTime(
+            Temporal.Duration.from({ hours: 4 }).total('milliseconds'),
+          );
         });
 
         expect(run).toHaveBeenCalledTimes(2);

@@ -1,7 +1,7 @@
 import { EditableDate } from '../../../shared/controls/EditableDate';
 import { useStorageContext } from '../../../shared/FirebaseContext';
 import { CalendarTask, CALENDAR_KEY, STATUSES } from '../../../shared/types';
-import { differenceInDays, isSameDay, startOfDay } from 'date-fns';
+import { getDateFromTimestamp, getToday } from '../../../shared/dates';
 import { Switch } from '../../../shared/controls/Switch';
 import { PlayButtonIcon } from '../../../shared/icons/PlayButton';
 import { PauseButtonIcon } from '../../../shared/icons/PauseButton';
@@ -10,16 +10,17 @@ import { IconProps } from '../../../shared/icons/types';
 import { EditableDescription } from '../../../shared/controls/EditableDescription';
 
 const getDateClass = (task: CalendarTask) => {
-  const today = startOfDay(Date.now());
-  const dueDateDay = startOfDay(task.dueDate);
-  if (dueDateDay < today) {
+  const today = getToday();
+  const dueDateDay = getDateFromTimestamp(task.dueDate);
+  const daysUntilDue = dueDateDay.since(today, { largestUnit: 'day' }).days;
+
+  if (daysUntilDue < 0) {
     return 'past';
   }
-  if (isSameDay(dueDateDay, today)) {
+  if (daysUntilDue === 0) {
     return 'now';
   }
-
-  if (differenceInDays(dueDateDay, today) <= 7) {
+  if (daysUntilDue <= 7) {
     return 'this-week';
   }
 

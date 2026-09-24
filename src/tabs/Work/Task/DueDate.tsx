@@ -1,4 +1,9 @@
-import { endOfDay, isSameWeek } from 'date-fns';
+import {
+  getDateFromTimestamp,
+  getStartOfWeek,
+  getToday,
+  isAfterToday,
+} from '../../../shared/dates';
 import { EditableDate } from '../../../shared/controls/EditableDate';
 
 type DueDateProps = {
@@ -24,6 +29,10 @@ export function DueDate({ dueDate, onChange }: DueDateProps) {
 }
 
 const dueToday = (dueDate: number) =>
-  dueDate < endOfDay(new Date()).getTime() ? 'due-today' : '';
+  isAfterToday(dueDate) ? '' : 'due-today';
 const dueThisWeek = (dueDate: number) =>
-  isSameWeek(dueDate, new Date(), { weekStartsOn: 1 }) ? 'due-this-week' : '';
+  getStartOfWeek(getDateFromTimestamp(dueDate)).equals(
+    getStartOfWeek(getToday()),
+  )
+    ? 'due-this-week'
+    : '';

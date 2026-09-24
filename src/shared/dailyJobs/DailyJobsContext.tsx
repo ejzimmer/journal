@@ -7,7 +7,11 @@ import {
   useRef,
   useState,
 } from 'react';
-import { addDays, isBefore, startOfDay } from 'date-fns';
+import {
+  getDateFromTimestamp,
+  getMillisecondsUntilTomorrow,
+  getToday,
+} from '../dates';
 import { useStorageContext } from '../FirebaseContext';
 
 export type DailyJob = {
@@ -23,13 +27,12 @@ type RegisterJob = (job: ScheduledJob) => () => void;
 const DailyJobsContext = createContext<RegisterJob | undefined>(undefined);
 
 function useToday() {
-  const [today, setToday] = useState(() => startOfDay(new Date()).getTime());
+  const [today, setToday] = useState(() => getToday().toString());
 
   useEffect(() => {
-    const updateToday = () => setToday(startOfDay(new Date()).getTime());
+    const updateToday = () => setToday(getToday().toString());
 
-    const millisecondsUntilTomorrow = addDays(today, 1).getTime() - Date.now();
-    const timeout = setTimeout(updateToday, millisecondsUntilTomorrow);
+    const timeout = setTimeout(updateToday, getMillisecondsUntilTomorrow());
     document.addEventListener('visibilitychange', updateToday);
 
     return () => {
@@ -67,16 +70,18 @@ export function DailyJobsProvider({ children }: { children: ReactNode }) {
   );
 }
 
-function DailyJobRunner({ job, today }: { job: ScheduledJob; today: number }) {
+function DailyJobRunner({ job, today }: { job: ScheduledJob; today: string }) {
   const { useValue, setValue } = useStorageContext();
   const { value: lastRun, loading } = useValue<number>(job.lastRunKey);
-  const dayRunInThisSession = useRef<number>(undefined);
+  const dayRunInThisSession = useRef<string>(undefined);
 
   useEffect(() => {
     if (loading) return;
 
     const alreadyRunThisSession = dayRunInThisSession.current === today;
-    const alreadyRunToday = lastRun !== undefined && !isBefore(lastRun, today);
+    const alreadyRunToday =
+      lastRun !== undefined &&
+      Temporal.PlainDate.compare(getDateFromTimestamp(lastRun), today) >= 0;
     if (alreadyRunThisSession || alreadyRunToday) return;
 
     dayRunInThisSession.current = today;

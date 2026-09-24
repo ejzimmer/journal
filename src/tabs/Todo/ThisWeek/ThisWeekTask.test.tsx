@@ -3,7 +3,8 @@ import { ThisWeekTask } from './ThisWeekTask';
 import { WeeklyTask } from '../../../shared/types';
 import userEvent from '@testing-library/user-event';
 import { CategoriesContext } from '..';
-import { isSameDay, subDays } from 'date-fns';
+import { getDateFromTimestamp, getToday } from '../../../shared/dates';
+import { getTimestampDaysAgo } from '../../../shared/dateTestUtils';
 import { ContextType } from '../../../shared/FirebaseContext';
 import { renderWithStorage } from '../../../shared/storageContextTestUtils';
 
@@ -14,10 +15,7 @@ const task: WeeklyTask = {
   position: 4,
   description: 'Strength training',
   category: '💪',
-  completed: [
-    subDays(new Date(), 4).getTime(),
-    subDays(new Date(), 2).getTime(),
-  ],
+  completed: [getTimestampDaysAgo(4), getTimestampDaysAgo(2)],
 };
 
 const useValue: ContextType['useValue'] = () => ({
@@ -119,9 +117,9 @@ describe('ThisWeekTask', () => {
         await user.click(screen.getByRole('button', { name: 'Mark done' }));
 
         const [, updated] = updateItem.mock.calls[0];
-        expect(
-          isSameDay(updated.completed.at(-1), subDays(new Date(), 1)),
-        ).toBe(true);
+        expect(getDateFromTimestamp(updated.completed.at(-1)).toString()).toBe(
+          getToday().subtract({ days: 1 }).toString(),
+        );
       });
     });
 
@@ -242,11 +240,11 @@ describe('ThisWeekTask', () => {
     describe('when the item has been completed more times than necessary', () => {
       it('also shows the overflow', () => {
         const tooMuchComplete = [
-          subDays(new Date(), 7).getTime(),
-          subDays(new Date(), 6).getTime(),
-          subDays(new Date(), 5).getTime(),
+          getTimestampDaysAgo(7),
+          getTimestampDaysAgo(6),
+          getTimestampDaysAgo(5),
           ...task.completed!,
-          subDays(new Date(), 1).getTime(),
+          getTimestampDaysAgo(1),
         ];
         renderWithStorage(
           <CategoriesContext.Provider value={['🧘', '💪']}>
