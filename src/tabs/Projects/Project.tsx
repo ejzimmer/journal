@@ -68,13 +68,6 @@ export function Project({
 
   const { updateLinkedTask } = useLinkedTasks(project.linkedTaskId);
 
-  const projectColour = {
-    '--project-colour':
-      project.category in PROJECT_COLOURS
-        ? PROJECT_COLOURS[project.category]
-        : 'white',
-  } as CSSProperties;
-
   const onChangeStatus = () => {
     if (status === 'in_progress') {
       updateItem(PROJECTS_KEY, { ...project, status: 'done' });
@@ -95,6 +88,18 @@ export function Project({
 
   const subtasks = Object.values(project.subtasks ?? {});
   const doneSubtasks = subtasks.filter((subtask) => subtask.status === 'done');
+  const longestSubtaskLength = Math.max(
+    0,
+    ...subtasks.map((subtask) => subtask.description.length),
+  );
+
+  const cardStyle = {
+    '--project-colour':
+      project.category in PROJECT_COLOURS
+        ? PROJECT_COLOURS[project.category]
+        : 'white',
+    '--longest-subtask-chars': longestSubtaskLength,
+  } as CSSProperties;
 
   if (status === 'ready' && doneSubtasks.length > 0) {
     updateItem<ProjectDetails>(PROJECTS_KEY, {
@@ -119,7 +124,7 @@ export function Project({
   );
 
   return (
-    <div className={`project ${status}`} style={projectColour}>
+    <div className={`project ${status}`} style={cardStyle}>
       <div className="project-details">
         <div className="project-main-row">
           <EmojiCheckbox
