@@ -1,29 +1,29 @@
-import { useState, MouseEvent, useMemo, JSX } from "react"
-import { EditableText } from "../../shared/controls/EditableText"
-import { AddTaskForm } from "./AddTaskForm"
-import { Task } from "./Task/Task"
-import { isList, isTask } from "./drag-utils"
+import { useState, MouseEvent, useMemo, JSX } from 'react';
+import { EditableText } from '../../shared/controls/EditableText';
+import { AddTaskForm } from './AddTaskForm';
+import { Task } from './Task/Task';
+import { isList, isTask } from './drag-utils';
 
-import "./TaskList.css"
-import { DragHandle } from "../../shared/drag-and-drop/DragHandle"
-import { draggableTypeKey } from "../../shared/drag-and-drop/types"
-import { DraggableListItem } from "../../shared/drag-and-drop/DraggableListItem"
-import { ListDestination } from "./listDestination"
-import { PostitModalDialog } from "./PostitModal"
-import { WorkTask } from "./types"
-import { useWorkStorage } from "./WorkStorageContext"
-import { useDropTarget } from "../../shared/drag-and-drop/useDropTarget"
-import { sortByPosition } from "../../shared/drag-and-drop/utils"
-import { Labels } from "./Task/Labels"
-import { LabelsControl } from "./LabelsControl"
-import { useFormToggle } from "../../shared/controls/useFormToggle"
+import './TaskList.css';
+import { DragHandle } from '../../shared/drag-and-drop/DragHandle';
+import { draggableTypeKey } from '../../shared/drag-and-drop/types';
+import { DraggableListItem } from '../../shared/drag-and-drop/DraggableListItem';
+import { ListDestination } from './listDestination';
+import { PostitModalDialog } from './PostitModal';
+import { WorkTask } from './types';
+import { useWorkStorage } from './WorkStorageContext';
+import { useDropTarget } from '../../shared/drag-and-drop/useDropTarget';
+import { sortByPosition } from '../../shared/drag-and-drop/utils';
+import { Labels } from './Task/Labels';
+import { LabelsControl } from './LabelsControl';
+import { useFormToggle } from '../../shared/controls/useFormToggle';
 
 function getListData(list: WorkTask, parentId: string) {
   return {
-    [draggableTypeKey]: "list",
+    [draggableTypeKey]: 'list',
     id: list.id,
     parentId: parentId,
-  }
+  };
 }
 
 export function TaskList({
@@ -33,27 +33,27 @@ export function TaskList({
   additionalMoveDestinations,
   onMoveTaskToList,
 }: {
-  index: number
-  listId: string
-  parentListId: string
-  additionalMoveDestinations: (task: WorkTask) => JSX.Element
-  onMoveTaskToList?: (task: WorkTask, destination: ListDestination) => void
+  index: number;
+  listId: string;
+  parentListId: string;
+  additionalMoveDestinations: (task: WorkTask) => JSX.Element;
+  onMoveTaskToList?: (task: WorkTask, destination: ListDestination) => void;
 }) {
-  const [confirmDeleteModalOpen, setConfirmDeleteModalOpen] = useState(false)
-  const [editingLabel, setEditingLabel] = useState(false)
+  const [confirmDeleteModalOpen, setConfirmDeleteModalOpen] = useState(false);
+  const [editingLabel, setEditingLabel] = useState(false);
 
   const {
     isFormOpen: addTaskFormVisible,
     triggerRef: listRef,
     openForm,
     closeForm,
-  } = useFormToggle<HTMLOListElement>()
+  } = useFormToggle<HTMLOListElement>();
   const showTaskForm = (event: MouseEvent) => {
-    event.stopPropagation()
+    event.stopPropagation();
     if (event.target === listRef.current) {
-      openForm()
+      openForm();
     }
-  }
+  };
 
   const {
     lists,
@@ -66,31 +66,31 @@ export function TaskList({
     getLabel,
     changeLabels,
     removeLabel,
-  } = useWorkStorage()
+  } = useWorkStorage();
 
-  const list = getList(listId)
+  const list = getList(listId);
   const listLabel = list?.labelIds?.[0]
     ? getLabel(list.labelIds[0])
-    : undefined
+    : undefined;
 
   const sortedList = useMemo(
     () => (list?.items ? sortByPosition(Object.values(list.items)) : []),
     [list?.items],
-  )
+  );
 
   const notDoneCount = useMemo(
-    () => sortedList.filter((task) => task.status !== "done").length,
+    () => sortedList.filter((task) => task.status !== 'done').length,
     [sortedList],
-  )
+  );
 
   const dragState = useDropTarget({
     dropTargetRef: listRef,
     canDrop: ({ source }) => isTask(source.data),
     getData: () => (list ? getListData(list, parentListId) : {}),
-  })
+  });
 
   if (!list) {
-    return
+    return;
   }
 
   return (
@@ -98,13 +98,13 @@ export function TaskList({
       getData={() => getListData(list, parentListId)}
       dragPreview={<DragPreview list={list} />}
       isDroppable={isList}
-      allowedEdges={["left", "right"]}
+      allowedEdges={['left', 'right']}
       dragHandle={
         <DragHandle
           list={Object.values(lists ?? {})}
           index={index}
           onReorder={(reorderedList) => {
-            reorderLists(reorderedList)
+            reorderLists(reorderedList);
           }}
         />
       }
@@ -117,9 +117,9 @@ export function TaskList({
               value={list.description}
               onChange={(description) => {
                 if (description) {
-                  updateList({ ...list, description })
+                  updateList({ ...list, description });
                 } else {
-                  setConfirmDeleteModalOpen(true)
+                  setConfirmDeleteModalOpen(true);
                 }
               }}
             />
@@ -129,8 +129,8 @@ export function TaskList({
               <LabelsControl
                 value={listLabel ? [listLabel] : []}
                 onChange={(labels) => {
-                  changeLabels(labels, list)
-                  setEditingLabel(false)
+                  changeLabels(labels, list);
+                  setEditingLabel(false);
                 }}
                 label=""
                 isMulti={false}
@@ -156,7 +156,7 @@ export function TaskList({
             isOpen={confirmDeleteModalOpen}
             message={`Are you sure you want to delete list ${list.description}?`}
             onConfirm={() => {
-              deleteList(list)
+              deleteList(list);
             }}
             onCancel={() => setConfirmDeleteModalOpen(false)}
           />
@@ -184,20 +184,20 @@ export function TaskList({
                     onKeyDown: onMoveTaskToList
                       ? (event) => {
                           switch (event.key) {
-                            case "ArrowLeft":
-                              event.preventDefault()
+                            case 'ArrowLeft':
+                              event.preventDefault();
                               onMoveTaskToList(
                                 task,
-                                event.shiftKey ? "first" : "previous",
-                              )
-                              break
-                            case "ArrowRight":
-                              event.preventDefault()
+                                event.shiftKey ? 'first' : 'previous',
+                              );
+                              break;
+                            case 'ArrowRight':
+                              event.preventDefault();
                               onMoveTaskToList(
                                 task,
-                                event.shiftKey ? "last" : "next",
-                              )
-                              break
+                                event.shiftKey ? 'last' : 'next',
+                              );
+                              break;
                           }
                         }
                       : undefined,
@@ -217,25 +217,25 @@ export function TaskList({
         </ol>
       </div>
     </DraggableListItem>
-  )
+  );
 }
 
 function DragPreview({ list }: { list: WorkTask }) {
   return (
     <div
       style={{
-        border: "1px solid",
-        paddingInline: "20px",
-        paddingBlockEnd: "10px",
-        paddingBlockStart: "5px",
+        border: '1px solid',
+        paddingInline: '20px',
+        paddingBlockEnd: '10px',
+        paddingBlockStart: '5px',
       }}
     >
       <h2>{list.description}</h2>
-      <ol style={{ padding: 0, marginInline: "10px" }}>
+      <ol style={{ padding: 0, marginInline: '10px' }}>
         {Object.values(list.items ?? {}).map((item) => (
           <li key={item.id}>{item.description}</li>
         ))}
       </ol>
     </div>
-  )
+  );
 }

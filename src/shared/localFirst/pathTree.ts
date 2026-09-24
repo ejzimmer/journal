@@ -1,66 +1,66 @@
-export type Tree = Record<string, unknown>
+export type Tree = Record<string, unknown>;
 
 export function getAtPath(root: Tree, path: string): unknown {
   return path
-    .split("/")
+    .split('/')
     .reduce<unknown>(
       (node, segment) => (node as Tree | undefined)?.[segment],
       root,
-    )
+    );
 }
 
 export function setAtPath(root: Tree, path: string, value: unknown): Tree {
-  const segments = path.split("/")
-  const last = segments.pop()!
+  const segments = path.split('/');
+  const last = segments.pop()!;
 
-  const chain: Tree[] = [root]
+  const chain: Tree[] = [root];
   for (const segment of segments) {
-    const child = chain[chain.length - 1][segment]
-    chain.push(typeof child === "object" && child !== null ? (child as Tree) : {})
+    const child = chain[chain.length - 1][segment];
+    chain.push(
+      typeof child === 'object' && child !== null ? (child as Tree) : {},
+    );
   }
 
-  const isDelete = value === undefined || value === null
-  let node = { ...chain[chain.length - 1] }
+  const isDelete = value === undefined || value === null;
+  let node = { ...chain[chain.length - 1] };
   if (isDelete) {
-    delete node[last]
+    delete node[last];
   } else {
-    node[last] = value
+    node[last] = value;
   }
 
   for (let i = segments.length - 1; i >= 0; i--) {
-    const parent = { ...chain[i] }
+    const parent = { ...chain[i] };
     if (isDelete && Object.keys(node).length === 0) {
-      delete parent[segments[i]]
+      delete parent[segments[i]];
     } else {
-      parent[segments[i]] = node
+      parent[segments[i]] = node;
     }
-    node = parent
+    node = parent;
   }
 
-  return node
+  return node;
 }
 
 export function valuesAreEqual(a: unknown, b: unknown): boolean {
-  if (Object.is(a, b)) return true
+  if (Object.is(a, b)) return true;
   if (
-    typeof a !== "object" ||
-    typeof b !== "object" ||
+    typeof a !== 'object' ||
+    typeof b !== 'object' ||
     a === null ||
     b === null
   ) {
-    return false
+    return false;
   }
 
-  const aKeys = Object.keys(a)
-  const bKeys = Object.keys(b)
+  const aKeys = Object.keys(a);
+  const bKeys = Object.keys(b);
   return (
     aKeys.length === bKeys.length &&
-    aKeys.every((key) =>
-      valuesAreEqual((a as Tree)[key], (b as Tree)[key]),
-    )
-  )
+    aKeys.every((key) => valuesAreEqual((a as Tree)[key], (b as Tree)[key]))
+  );
 }
 
 export function pathsAreRelated(a: string, b: string): boolean {
-  return a === b || a.startsWith(`${b}/`) || b.startsWith(`${a}/`)
+  return a === b || a.startsWith(`${b}/`) || b.startsWith(`${a}/`);
 }

@@ -83,7 +83,9 @@
     "start:mock": "REACT_APP_USE_MOCK_FIREBASE=true node scripts/start.js",
     "build": "node scripts/build.js",
     "test": "jest",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
   },
   "browserslist": {
     "production": [
@@ -171,6 +173,7 @@
     "fake-indexeddb": "^6.2.5",
     "globals": "^17.11.0",
     "jest-environment-jsdom": "^30.0.5",
+    "prettier": "^3.9.8",
     "typescript-eslint": "^8.68.0"
   }
 }

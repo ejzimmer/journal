@@ -1,8 +1,8 @@
-import { IconProps } from "./types"
+import { IconProps } from './types';
 
 export function ArrowRightIcon({
-  width = "100%",
-  colour = "currentColor",
+  width = '100%',
+  colour = 'currentColor',
 }: IconProps) {
   return (
     <svg
@@ -17,5 +17,5 @@ export function ArrowRightIcon({
       <path d="M12,3 L18,10 12,17" />
       <path d="M2,10 L18,10" />
     </svg>
-  )
+  );
 }

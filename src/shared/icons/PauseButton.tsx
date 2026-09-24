@@ -1,8 +1,8 @@
-import { IconProps } from "./types"
+import { IconProps } from './types';
 
 export function PauseButtonIcon({
-  width = "100%",
-  colour = "currentColor",
+  width = '100%',
+  colour = 'currentColor',
 }: IconProps) {
   return (
     <svg
@@ -17,5 +17,5 @@ export function PauseButtonIcon({
       <rect x="2" y="2" width="5" height="16" />
       <rect x="12" y="2" width="5" height="16" />
     </svg>
-  )
+  );
 }

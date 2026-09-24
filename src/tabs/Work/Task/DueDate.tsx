@@ -3,13 +3,13 @@ import {
   getStartOfWeek,
   getToday,
   isAfterToday,
-} from "../../../shared/dates"
-import { EditableDate } from "../../../shared/controls/EditableDate"
+} from '../../../shared/dates';
+import { EditableDate } from '../../../shared/controls/EditableDate';
 
 type DueDateProps = {
-  dueDate?: number
-  onChange: (dueDate: number) => void
-}
+  dueDate?: number;
+  onChange: (dueDate: number) => void;
+};
 
 export function DueDate({ dueDate, onChange }: DueDateProps) {
   return dueDate ? (
@@ -20,18 +20,19 @@ export function DueDate({ dueDate, onChange }: DueDateProps) {
     <button
       type="button"
       className="add-metadata ghost calendar"
-      style={{ fontSize: ".8em" }}
+      style={{ fontSize: '.8em' }}
       onClick={() => onChange(new Date().getTime())}
     >
       📅
     </button>
-  )
+  );
 }
 
-const dueToday = (dueDate: number) => (isAfterToday(dueDate) ? "" : "due-today")
+const dueToday = (dueDate: number) =>
+  isAfterToday(dueDate) ? '' : 'due-today';
 const dueThisWeek = (dueDate: number) =>
   getStartOfWeek(getDateFromTimestamp(dueDate)).equals(
     getStartOfWeek(getToday()),
   )
-    ? "due-this-week"
-    : ""
+    ? 'due-this-week'
+    : '';

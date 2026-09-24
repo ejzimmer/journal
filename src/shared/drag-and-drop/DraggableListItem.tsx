@@ -1,30 +1,30 @@
-import { setCustomNativeDragPreview } from "@atlaskit/pragmatic-drag-and-drop/element/set-custom-native-drag-preview"
-import { preserveOffsetOnSource } from "@atlaskit/pragmatic-drag-and-drop/element/preserve-offset-on-source"
-import { combine } from "@atlaskit/pragmatic-drag-and-drop/combine"
-import { ReactNode, useRef, useState, useEffect, ReactElement } from "react"
-import { createPortal } from "react-dom"
-import invariant from "tiny-invariant"
+import { setCustomNativeDragPreview } from '@atlaskit/pragmatic-drag-and-drop/element/set-custom-native-drag-preview';
+import { preserveOffsetOnSource } from '@atlaskit/pragmatic-drag-and-drop/element/preserve-offset-on-source';
+import { combine } from '@atlaskit/pragmatic-drag-and-drop/combine';
+import { ReactNode, useRef, useState, useEffect, ReactElement } from 'react';
+import { createPortal } from 'react-dom';
+import invariant from 'tiny-invariant';
 import {
   draggable,
   dropTargetForElements,
-} from "@atlaskit/pragmatic-drag-and-drop/element/adapter"
-import { attachClosestEdge } from "@atlaskit/pragmatic-drag-and-drop-hitbox/closest-edge/attach-closest-edge"
-import { extractClosestEdge } from "@atlaskit/pragmatic-drag-and-drop-hitbox/closest-edge/extract-closest-edge"
-import { Edge } from "@atlaskit/pragmatic-drag-and-drop-hitbox/types"
-import { Draggable, DraggingState, IDLE, draggableTypeKey } from "./types"
+} from '@atlaskit/pragmatic-drag-and-drop/element/adapter';
+import { attachClosestEdge } from '@atlaskit/pragmatic-drag-and-drop-hitbox/closest-edge/attach-closest-edge';
+import { extractClosestEdge } from '@atlaskit/pragmatic-drag-and-drop-hitbox/closest-edge/extract-closest-edge';
+import { Edge } from '@atlaskit/pragmatic-drag-and-drop-hitbox/types';
+import { Draggable, DraggingState, IDLE, draggableTypeKey } from './types';
 
-import "./drag-and-drop.css"
+import './drag-and-drop.css';
 
 type DraggableListItemProps = {
-  getData: () => Draggable
-  dragPreview: ReactNode
-  isDroppable: (data: any) => boolean
-  allowedEdges: Edge[]
-  dragHandle: ReactElement
-  children: ReactNode
-  className?: string
-  style?: React.CSSProperties
-}
+  getData: () => Draggable;
+  dragPreview: ReactNode;
+  isDroppable: (data: any) => boolean;
+  allowedEdges: Edge[];
+  dragHandle: ReactElement;
+  children: ReactNode;
+  className?: string;
+  style?: React.CSSProperties;
+};
 
 export function DraggableListItem({
   getData,
@@ -36,22 +36,22 @@ export function DraggableListItem({
   className,
   style,
 }: DraggableListItemProps) {
-  const listItemRef = useRef<HTMLLIElement | null>(null)
-  const dragHandleMountRef = useRef<HTMLSpanElement | null>(null)
-  const [draggingState, setDraggingState] = useState<DraggingState>(IDLE)
+  const listItemRef = useRef<HTMLLIElement | null>(null);
+  const dragHandleMountRef = useRef<HTMLSpanElement | null>(null);
+  const [draggingState, setDraggingState] = useState<DraggingState>(IDLE);
 
   useEffect(() => {
-    const row = listItemRef.current
-    const dragSource = dragHandleMountRef.current
-    if (!row || !dragSource) return
+    const row = listItemRef.current;
+    const dragSource = dragHandleMountRef.current;
+    if (!row || !dragSource) return;
 
-    invariant(row)
-    invariant(dragSource)
+    invariant(row);
+    invariant(dragSource);
     return combine(
       draggable({
         element: dragSource,
         getInitialData() {
-          return getData()
+          return getData();
         },
         onGenerateDragPreview({ nativeSetDragImage, location }) {
           setCustomNativeDragPreview({
@@ -61,90 +61,90 @@ export function DraggableListItem({
               input: location.current.input,
             }),
             render({ container }) {
-              setDraggingState({ type: "preview", container })
+              setDraggingState({ type: 'preview', container });
             },
-          })
+          });
         },
         onDrop() {
-          setDraggingState(IDLE)
+          setDraggingState(IDLE);
         },
       }),
       dropTargetForElements({
         element: row,
         canDrop({ source }) {
-          const sourceData = source.data as Draggable
-          const targetData = getData()
+          const sourceData = source.data as Draggable;
+          const targetData = getData();
           if (
             sourceData.id === targetData.id &&
             sourceData.parentId === targetData.parentId &&
             sourceData[draggableTypeKey] === targetData[draggableTypeKey]
           ) {
-            return false
+            return false;
           }
-          return isDroppable(source.data)
+          return isDroppable(source.data);
         },
         getData({ input }) {
-          const data = getData()
+          const data = getData();
           return attachClosestEdge(data, {
             element: row,
             input,
             allowedEdges,
-          })
+          });
         },
         getIsSticky() {
-          return true
+          return true;
         },
         onDragEnter({ self }) {
-          const closestEdge = extractClosestEdge(self.data)
-          setDraggingState({ type: "is-dragging-over", closestEdge })
+          const closestEdge = extractClosestEdge(self.data);
+          setDraggingState({ type: 'is-dragging-over', closestEdge });
         },
         onDrag({ self }) {
-          const closestEdge = extractClosestEdge(self.data)
+          const closestEdge = extractClosestEdge(self.data);
 
           // Only need to update react state if something has changed.
           // Prevents re-rendering.
           setDraggingState((current) => {
             if (
-              current.type === "is-dragging-over" &&
+              current.type === 'is-dragging-over' &&
               current.closestEdge === closestEdge
             ) {
-              return current
+              return current;
             }
-            return { type: "is-dragging-over", closestEdge }
-          })
+            return { type: 'is-dragging-over', closestEdge };
+          });
         },
         onDragLeave() {
-          setDraggingState(IDLE)
+          setDraggingState(IDLE);
         },
         onDrop() {
-          setDraggingState(IDLE)
+          setDraggingState(IDLE);
         },
       }),
-    )
-  }, [allowedEdges, getData, isDroppable])
+    );
+  }, [allowedEdges, getData, isDroppable]);
 
   return (
     <>
       <li
         ref={listItemRef}
-        className={`${className ?? ""} draggable-item`}
+        className={`${className ?? ''} draggable-item`}
         style={style}
       >
         <span ref={dragHandleMountRef} className="drag-handle-mount">
           {dragHandle}
         </span>
         {children}
-        {draggingState.type === "is-dragging-over" &&
+        {draggingState.type === 'is-dragging-over' &&
         draggingState.closestEdge ? (
           <DropIndicator edge={draggingState.closestEdge} />
         ) : null}
       </li>
-      {draggingState.type === "preview" &&
+      {draggingState.type === 'preview' &&
         createPortal(dragPreview, draggingState.container)}
     </>
-  )
+  );
 }
 
 function DropIndicator({ edge }: { edge: Edge }) {
-  return <div className={`drop-indicator ${edge}`} />
+  return <div className={`drop-indicator ${edge}`} />;
 }

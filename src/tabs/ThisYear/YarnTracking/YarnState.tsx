@@ -1,21 +1,21 @@
-import { KEY, Yarn } from "./types"
+import { KEY, Yarn } from './types';
 
-import "./YarnState.css"
-import { useStorageContext } from "../../../shared/FirebaseContext"
-import { getHistoryByMonth } from "./utils"
-import { MonthlyBalance } from "./MonthlyBalance"
+import './YarnState.css';
+import { useStorageContext } from '../../../shared/FirebaseContext';
+import { getHistoryByMonth } from './utils';
+import { MonthlyBalance } from './MonthlyBalance';
 
 export function YarnState() {
-  const { useValue } = useStorageContext()
+  const { useValue } = useStorageContext();
 
-  const { value } = useValue<Yarn>(KEY)
+  const { value } = useValue<Yarn>(KEY);
 
   if (!value) {
-    return <>Loading...</>
+    return <>Loading...</>;
   }
 
-  const monthEntries = Object.entries(getHistoryByMonth(value))
-  const maxTotal = Math.max(...monthEntries.map(([, month]) => month.total))
+  const monthEntries = Object.entries(getHistoryByMonth(value));
+  const maxTotal = Math.max(...monthEntries.map(([, month]) => month.total));
 
   return (
     <div className="yarn-state">
@@ -23,7 +23,7 @@ export function YarnState() {
         {monthEntries.map(([id, month], index) => (
           <li key={id} style={{ width: `${(month.total / maxTotal) * 100}%` }}>
             <MonthLabel
-              monthNumber={id.split("-")[1]}
+              monthNumber={id.split('-')[1]}
               monthTotal={month.total}
               isLastMonth={index === monthEntries.length - 1}
             />
@@ -32,7 +32,7 @@ export function YarnState() {
         ))}
       </ol>
     </div>
-  )
+  );
 }
 
 function MonthLabel({
@@ -40,20 +40,20 @@ function MonthLabel({
   monthTotal,
   isLastMonth,
 }: {
-  monthNumber: string
-  monthTotal: number
-  isLastMonth: boolean
+  monthNumber: string;
+  monthTotal: number;
+  isLastMonth: boolean;
 }) {
   const monthName = new Date(`2000-${monthNumber}-01`).toLocaleString(
-    "default",
+    'default',
     {
-      month: "long",
+      month: 'long',
     },
-  )
+  );
 
   return (
     <div className="label">
-      {isLastMonth ? "Current" : monthName}: {monthTotal.toLocaleString()}g
+      {isLastMonth ? 'Current' : monthName}: {monthTotal.toLocaleString()}g
     </div>
-  )
+  );
 }

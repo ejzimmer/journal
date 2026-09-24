@@ -1,23 +1,29 @@
-import { CSSProperties, useEffect, useLayoutEffect, useRef, useState } from "react"
-import { useFormToggle } from "./useFormToggle"
-import "./EditableText.css"
+import {
+  CSSProperties,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from 'react';
+import { useFormToggle } from './useFormToggle';
+import './EditableText.css';
 
 export type EditableTextProps = {
-  value: string
-  onChange: (text: string) => void
-  onDelete?: () => void
-  label: string
-  style?: CSSProperties
-  className?: string
-}
+  value: string;
+  onChange: (text: string) => void;
+  onDelete?: () => void;
+  label: string;
+  style?: CSSProperties;
+  className?: string;
+};
 
 const measureStyle: CSSProperties = {
-  position: "absolute",
-  visibility: "hidden",
+  position: 'absolute',
+  visibility: 'hidden',
   height: 0,
-  overflow: "hidden",
-  whiteSpace: "pre",
-}
+  overflow: 'hidden',
+  whiteSpace: 'pre',
+};
 
 export function EditableText({
   value,
@@ -25,7 +31,7 @@ export function EditableText({
   onDelete,
   label,
   style,
-  className = "",
+  className = '',
 }: EditableTextProps) {
   const {
     isFormOpen: isEditing,
@@ -33,59 +39,59 @@ export function EditableText({
     openForm: startEditing,
     closeForm: stopEditing,
     openFormOnEnterOrSpace,
-  } = useFormToggle<HTMLDivElement>()
-  const [text, setText] = useState(value)
-  const [inputWidth, setInputWidth] = useState<number>()
-  const inputRef = useRef<HTMLInputElement>(null)
-  const measureRef = useRef<HTMLSpanElement>(null)
+  } = useFormToggle<HTMLDivElement>();
+  const [text, setText] = useState(value);
+  const [inputWidth, setInputWidth] = useState<number>();
+  const inputRef = useRef<HTMLInputElement>(null);
+  const measureRef = useRef<HTMLSpanElement>(null);
 
   useEffect(() => {
     if (isEditing) {
-      inputRef.current?.focus()
+      inputRef.current?.focus();
     }
-  }, [isEditing, inputRef])
+  }, [isEditing, inputRef]);
 
   useLayoutEffect(() => {
-    if (!isEditing || !measureRef.current) return
+    if (!isEditing || !measureRef.current) return;
 
-    setInputWidth(measureRef.current.scrollWidth + 12)
-  }, [isEditing, text])
+    setInputWidth(measureRef.current.scrollWidth + 12);
+  }, [isEditing, text]);
 
   const handleSubmit = () => {
     if (value && !text && onDelete) {
-      onDelete()
+      onDelete();
     } else if (value !== text) {
-      onChange(text)
+      onChange(text);
     }
 
-    stopEditing()
-  }
+    stopEditing();
+  };
 
   return isEditing ? (
     <>
       <span
         ref={measureRef}
         aria-hidden="true"
-        style={{ fontSize: ".8em", ...style, ...measureStyle }}
+        style={{ fontSize: '.8em', ...style, ...measureStyle }}
       >
-        {text || " "}
+        {text || ' '}
       </span>
       <input
         className={`editable-text ${className}`}
         ref={inputRef}
         onKeyDown={(event) => {
-          if (event.key === "Enter") {
-            handleSubmit()
-            event.preventDefault()
-          } else if (event.key === "Escape") {
-            setText(value)
-            stopEditing()
+          if (event.key === 'Enter') {
+            handleSubmit();
+            event.preventDefault();
+          } else if (event.key === 'Escape') {
+            setText(value);
+            stopEditing();
           }
         }}
         onChange={(event) => setText(event.target.value)}
         value={text}
         aria-label={label}
-        style={{ fontSize: ".8em", ...style, width: inputWidth }}
+        style={{ fontSize: '.8em', ...style, width: inputWidth }}
       />
     </>
   ) : (
@@ -95,11 +101,11 @@ export function EditableText({
       tabIndex={0}
       aria-label={label}
       onClick={startEditing}
-        onKeyDown={openFormOnEnterOrSpace}
+      onKeyDown={openFormOnEnterOrSpace}
       style={style}
       className={className}
     >
       {value}
     </div>
-  )
+  );
 }

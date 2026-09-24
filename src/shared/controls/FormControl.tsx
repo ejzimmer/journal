@@ -1,19 +1,19 @@
-import { forwardRef, useId } from "react"
-import "./FormControl.css"
-import { XIcon } from "../icons/X"
+import { forwardRef, useId } from 'react';
+import './FormControl.css';
+import { XIcon } from '../icons/X';
 
 type FormControlProps = {
-  label: string | React.ReactElement
-  value?: string
-  onChange?: (value: string) => void
-  errors?: string[] | false
-  type?: HTMLInputElement["type"]
-  size?: HTMLInputElement["size"]
-  defaultValue?: string
-  hideLabel?: boolean
-  pattern?: string
-  inputClass?: string
-}
+  label: string | React.ReactElement;
+  value?: string;
+  onChange?: (value: string) => void;
+  errors?: string[] | false;
+  type?: HTMLInputElement['type'];
+  size?: HTMLInputElement['size'];
+  defaultValue?: string;
+  hideLabel?: boolean;
+  pattern?: string;
+  inputClass?: string;
+};
 
 export const FormControl = forwardRef<HTMLInputElement, FormControlProps>(
   (
@@ -22,7 +22,7 @@ export const FormControl = forwardRef<HTMLInputElement, FormControlProps>(
       defaultValue,
       value,
       onChange,
-      type = "text",
+      type = 'text',
       errors,
       hideLabel,
       inputClass,
@@ -30,11 +30,11 @@ export const FormControl = forwardRef<HTMLInputElement, FormControlProps>(
     },
     ref,
   ) => {
-    const inputId = useId()
-    const descriptionId = useId()
+    const inputId = useId();
+    const descriptionId = useId();
 
     return (
-      <div className={`form-control ${errors ? "error" : ""}`}>
+      <div className={`form-control ${errors ? 'error' : ''}`}>
         {!hideLabel && <label htmlFor={inputId}>{label}</label>}
         <input
           type={type}
@@ -51,7 +51,7 @@ export const FormControl = forwardRef<HTMLInputElement, FormControlProps>(
         {errors && (
           <div
             id={descriptionId}
-            style={{ display: "flex", flexDirection: "column" }}
+            style={{ display: 'flex', flexDirection: 'column' }}
           >
             {errors.map((error) => (
               <div key={error} className="validation-error">
@@ -62,6 +62,6 @@ export const FormControl = forwardRef<HTMLInputElement, FormControlProps>(
           </div>
         )}
       </div>
-    )
+    );
   },
-)
+);

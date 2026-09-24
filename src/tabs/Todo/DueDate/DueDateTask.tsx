@@ -1,39 +1,39 @@
-import { EditableDate } from "../../../shared/controls/EditableDate"
-import { useStorageContext } from "../../../shared/FirebaseContext"
-import { CalendarTask, CALENDAR_KEY, STATUSES } from "../../../shared/types"
-import { getDateFromTimestamp, getToday } from "../../../shared/dates"
-import { Switch } from "../../../shared/controls/Switch"
-import { PlayButtonIcon } from "../../../shared/icons/PlayButton"
-import { PauseButtonIcon } from "../../../shared/icons/PauseButton"
-import { TickIcon } from "../../../shared/icons/Tick"
-import { IconProps } from "../../../shared/icons/types"
-import { EditableDescription } from "../../../shared/controls/EditableDescription"
+import { EditableDate } from '../../../shared/controls/EditableDate';
+import { useStorageContext } from '../../../shared/FirebaseContext';
+import { CalendarTask, CALENDAR_KEY, STATUSES } from '../../../shared/types';
+import { getDateFromTimestamp, getToday } from '../../../shared/dates';
+import { Switch } from '../../../shared/controls/Switch';
+import { PlayButtonIcon } from '../../../shared/icons/PlayButton';
+import { PauseButtonIcon } from '../../../shared/icons/PauseButton';
+import { TickIcon } from '../../../shared/icons/Tick';
+import { IconProps } from '../../../shared/icons/types';
+import { EditableDescription } from '../../../shared/controls/EditableDescription';
 
 const getDateClass = (task: CalendarTask) => {
-  const today = getToday()
-  const dueDateDay = getDateFromTimestamp(task.dueDate)
-  const daysUntilDue = dueDateDay.since(today, { largestUnit: "day" }).days
+  const today = getToday();
+  const dueDateDay = getDateFromTimestamp(task.dueDate);
+  const daysUntilDue = dueDateDay.since(today, { largestUnit: 'day' }).days;
 
   if (daysUntilDue < 0) {
-    return "past"
+    return 'past';
   }
   if (daysUntilDue === 0) {
-    return "now"
+    return 'now';
   }
   if (daysUntilDue <= 7) {
-    return "this-week"
+    return 'this-week';
   }
 
-  return ""
-}
+  return '';
+};
 
 export function DueDateTask({ task }: { task: CalendarTask }) {
-  const { updateItem, deleteItem } = useStorageContext()
+  const { updateItem, deleteItem } = useStorageContext();
 
-  const onChange = (task: CalendarTask) => updateItem(CALENDAR_KEY, task)
+  const onChange = (task: CalendarTask) => updateItem(CALENDAR_KEY, task);
   const onDelete = () => {
-    deleteItem<CalendarTask>(CALENDAR_KEY, task)
-  }
+    deleteItem<CalendarTask>(CALENDAR_KEY, task);
+  };
 
   return (
     <>
@@ -48,12 +48,12 @@ export function DueDateTask({ task }: { task: CalendarTask }) {
           description={task.description}
           isChecked={false}
           onChange={(change) => {
-            if ("description" in change && change.description === "") {
-              onDelete()
-            } else if ("description" in change) {
-              onChange({ ...task, description: change.description })
-            } else if ("category" in change) {
-              onChange({ ...task, category: change.category })
+            if ('description' in change && change.description === '') {
+              onDelete();
+            } else if ('description' in change) {
+              onChange({ ...task, description: change.description });
+            } else if ('category' in change) {
+              onChange({ ...task, category: change.category });
             }
           }}
         />
@@ -68,16 +68,16 @@ export function DueDateTask({ task }: { task: CalendarTask }) {
         Option={StatusOption}
       />
     </>
-  )
+  );
 }
 
-const statusIconMapping: Record<CalendarTask["status"], React.FC<IconProps>> = {
+const statusIconMapping: Record<CalendarTask['status'], React.FC<IconProps>> = {
   ready: PlayButtonIcon,
   paused: PauseButtonIcon,
   finished: TickIcon,
-}
+};
 
-function StatusOption({ value }: { value: CalendarTask["status"] }) {
-  const Icon = statusIconMapping[value]
-  return <Icon colour="currentColor" width="12px" />
+function StatusOption({ value }: { value: CalendarTask['status'] }) {
+  const Icon = statusIconMapping[value];
+  return <Icon colour="currentColor" width="12px" />;
 }

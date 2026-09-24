@@ -5,55 +5,52 @@ import {
   useId,
   useRef,
   useState,
-} from "react"
-import "./WorktreeMenu.css"
+} from 'react';
+import './WorktreeMenu.css';
 
 // Starting tilt for each item (by position), so they don't all fly out
 // from the same angle when the menu opens.
-const JITTER_DEGREES = [-6, 4, -3, 8]
+const JITTER_DEGREES = [-6, 4, -3, 8];
 
 // Below this much space to the left, the full circle would spill off the
 // page, so the menu switches to a half-circle on the right instead.
-const LEFT_EDGE_THRESHOLD_PX = 90
+const LEFT_EDGE_THRESHOLD_PX = 90;
 
 export type WorktreeMenuOption = {
-  key: string
-  label: string
-  content: ReactNode
-  className?: string
-  onSelect: () => void
-}
+  key: string;
+  label: string;
+  content: ReactNode;
+  className?: string;
+  onSelect: () => void;
+};
 
 type WorktreeMenuProps = {
-  trigger: (props: {
-    popoverTarget: string
-    className: string
-  }) => ReactNode
-  options: WorktreeMenuOption[]
-}
+  trigger: (props: { popoverTarget: string; className: string }) => ReactNode;
+  options: WorktreeMenuOption[];
+};
 
 export function WorktreeMenu({ trigger: Trigger, options }: WorktreeMenuProps) {
-  const id = useId()
-  const anchorRef = useRef<HTMLSpanElement>(null)
-  const popoverRef = useRef<HTMLDivElement>(null)
-  const [layout, setLayout] = useState<"full" | "half">("full")
+  const id = useId();
+  const anchorRef = useRef<HTMLSpanElement>(null);
+  const popoverRef = useRef<HTMLDivElement>(null);
+  const [layout, setLayout] = useState<'full' | 'half'>('full');
 
-  const close = () => popoverRef.current?.hidePopover()
+  const close = () => popoverRef.current?.hidePopover();
 
   useEffect(() => {
-    const popover = popoverRef.current
-    const anchor = anchorRef.current
-    if (!popover || !anchor) return
+    const popover = popoverRef.current;
+    const anchor = anchorRef.current;
+    if (!popover || !anchor) return;
 
     const onBeforeToggle = (event: Event) => {
-      if ((event as ToggleEvent).newState !== "open") return
-      const { left } = anchor.getBoundingClientRect()
-      setLayout(left < LEFT_EDGE_THRESHOLD_PX ? "half" : "full")
-    }
+      if ((event as ToggleEvent).newState !== 'open') return;
+      const { left } = anchor.getBoundingClientRect();
+      setLayout(left < LEFT_EDGE_THRESHOLD_PX ? 'half' : 'full');
+    };
 
-    popover.addEventListener("beforetoggle", onBeforeToggle)
-    return () => popover.removeEventListener("beforetoggle", onBeforeToggle)
-  }, [])
+    popover.addEventListener('beforetoggle', onBeforeToggle);
+    return () => popover.removeEventListener('beforetoggle', onBeforeToggle);
+  }, []);
 
   return (
     <span className="worktree-menu-anchor" ref={anchorRef}>
@@ -69,16 +66,16 @@ export function WorktreeMenu({ trigger: Trigger, options }: WorktreeMenuProps) {
           <button
             key={key}
             aria-label={label}
-            className={`worktree-menu-item ${className ?? ""}`}
+            className={`worktree-menu-item ${className ?? ''}`}
             style={
               {
-                "--index": index,
-                "--jitter": `${JITTER_DEGREES[index]}deg`,
+                '--index': index,
+                '--jitter': `${JITTER_DEGREES[index]}deg`,
               } as CSSProperties
             }
             onClick={() => {
-              onSelect()
-              close()
+              onSelect();
+              close();
             }}
           >
             {content}
@@ -86,5 +83,5 @@ export function WorktreeMenu({ trigger: Trigger, options }: WorktreeMenuProps) {
         ))}
       </div>
     </span>
-  )
+  );
 }

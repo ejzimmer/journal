@@ -1,9 +1,9 @@
-import { IconProps } from "./types"
+import { IconProps } from './types';
 
 export function TickIcon({
-  width = "100%",
-  colour = "currentColor",
-  strokeWidth = "2",
+  width = '100%',
+  colour = 'currentColor',
+  strokeWidth = '2',
 }: IconProps) {
   return (
     <svg
@@ -16,5 +16,5 @@ export function TickIcon({
     >
       <path d="M2,12 L8,18 18,3" pathLength="1" />
     </svg>
-  )
+  );
 }

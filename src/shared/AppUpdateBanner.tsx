@@ -1,23 +1,23 @@
-import { useEffect, useSyncExternalStore } from "react"
-import { getWaitingRegistration, subscribe } from "./appUpdateStore"
-import "./AppUpdateBanner.css"
+import { useEffect, useSyncExternalStore } from 'react';
+import { getWaitingRegistration, subscribe } from './appUpdateStore';
+import './AppUpdateBanner.css';
 
 export function AppUpdateBanner() {
   const waitingRegistration = useSyncExternalStore(
     subscribe,
     getWaitingRegistration,
-  )
+  );
 
   useEffect(() => {
-    if (!waitingRegistration) return
+    if (!waitingRegistration) return;
 
-    const reload = () => window.location.reload()
-    navigator.serviceWorker.addEventListener("controllerchange", reload)
+    const reload = () => window.location.reload();
+    navigator.serviceWorker.addEventListener('controllerchange', reload);
     return () =>
-      navigator.serviceWorker.removeEventListener("controllerchange", reload)
-  }, [waitingRegistration])
+      navigator.serviceWorker.removeEventListener('controllerchange', reload);
+  }, [waitingRegistration]);
 
-  if (!waitingRegistration) return null
+  if (!waitingRegistration) return null;
 
   return (
     <div className="app-update-banner">
@@ -25,11 +25,11 @@ export function AppUpdateBanner() {
       <button
         className="primary"
         onClick={() =>
-          waitingRegistration.waiting?.postMessage({ type: "SKIP_WAITING" })
+          waitingRegistration.waiting?.postMessage({ type: 'SKIP_WAITING' })
         }
       >
         Refresh
       </button>
     </div>
-  )
+  );
 }

@@ -1,6 +1,9 @@
-import { ReactElement } from "react"
-import { render } from "@testing-library/react"
-import { WorkStorageContext, WorkStorageContextType } from "./WorkStorageContext"
+import { ReactElement } from 'react';
+import { render } from '@testing-library/react';
+import {
+  WorkStorageContext,
+  WorkStorageContextType,
+} from './WorkStorageContext';
 
 export function createWorkStorageContext(
   overrides: Partial<WorkStorageContextType> = {},
@@ -28,18 +31,18 @@ export function createWorkStorageContext(
     removeLabel: jest.fn(),
     updateLabel: jest.fn(),
     ...overrides,
-  }
+  };
 }
 
 export function renderWithWorkStorage(
   ui: ReactElement,
   overrides: Partial<WorkStorageContextType> = {},
 ) {
-  const storageContext = createWorkStorageContext(overrides)
+  const storageContext = createWorkStorageContext(overrides);
   const result = render(
     <WorkStorageContext.Provider value={storageContext}>
       {ui}
     </WorkStorageContext.Provider>,
-  )
-  return { ...result, storageContext }
+  );
+  return { ...result, storageContext };
 }

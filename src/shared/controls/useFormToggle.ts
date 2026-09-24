@@ -1,37 +1,37 @@
-import { useRef, useState } from "react"
-import { flushSync } from "react-dom"
+import { useRef, useState } from 'react';
+import { flushSync } from 'react-dom';
 
 export function useFormToggle<T extends HTMLElement = HTMLButtonElement>() {
-  const [isFormOpen, setIsFormOpen] = useState(false)
-  const triggerRef = useRef<T>(null)
+  const [isFormOpen, setIsFormOpen] = useState(false);
+  const triggerRef = useRef<T>(null);
 
-  const openForm = () => setIsFormOpen(true)
+  const openForm = () => setIsFormOpen(true);
 
   const closeForm = () => {
-    flushSync(() => setIsFormOpen(false))
-    triggerRef.current?.focus()
-  }
+    flushSync(() => setIsFormOpen(false));
+    triggerRef.current?.focus();
+  };
 
   const toggleForm = () => {
     if (isFormOpen) {
-      closeForm()
+      closeForm();
     } else {
-      openForm()
+      openForm();
     }
-  }
+  };
 
   const closeFormOnEscape = (event: React.KeyboardEvent) => {
-    if (event.key === "Escape") {
-      closeForm()
+    if (event.key === 'Escape') {
+      closeForm();
     }
-  }
+  };
 
   const openFormOnEnterOrSpace = (event: React.KeyboardEvent) => {
-    if (event.key === "Enter" || event.key === " ") {
-      event.preventDefault()
-      openForm()
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      openForm();
     }
-  }
+  };
 
   return {
     isFormOpen,
@@ -41,5 +41,5 @@ export function useFormToggle<T extends HTMLElement = HTMLButtonElement>() {
     toggleForm,
     closeFormOnEscape,
     openFormOnEnterOrSpace,
-  }
+  };
 }

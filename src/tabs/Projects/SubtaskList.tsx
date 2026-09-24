@@ -1,63 +1,67 @@
-import { useCallback, useMemo, useRef } from "react"
-import { useStorageContext } from "../../shared/FirebaseContext"
-import { PlusIcon } from "../../shared/icons/Plus"
-import { SortIcon } from "../../shared/icons/Sort"
-import { Subtask } from "./Subtask"
-import { AddSubtaskForm } from "./AddSubtaskForm"
+import { useCallback, useMemo, useRef } from 'react';
+import { useStorageContext } from '../../shared/FirebaseContext';
+import { PlusIcon } from '../../shared/icons/Plus';
+import { SortIcon } from '../../shared/icons/Sort';
+import { Subtask } from './Subtask';
+import { AddSubtaskForm } from './AddSubtaskForm';
 import {
   PROJECTS_KEY,
   ProjectSubtask,
   ProjectDetails,
-} from "../../shared/types"
-import { getSubtasksKey } from "./utils"
-import { DragHandle } from "../../shared/drag-and-drop/DragHandle"
+} from '../../shared/types';
+import { getSubtasksKey } from './utils';
+import { DragHandle } from '../../shared/drag-and-drop/DragHandle';
 import {
   draggableTypeKey,
   SortableItem,
-} from "../../shared/drag-and-drop/types"
-import { useDropTarget } from "../../shared/drag-and-drop/useDropTarget"
+} from '../../shared/drag-and-drop/types';
+import { useDropTarget } from '../../shared/drag-and-drop/useDropTarget';
 import {
   getNextPosition,
   isDraggable,
   renumberPositions,
   sortByPosition,
-} from "../../shared/drag-and-drop/utils"
-import { useDraggableList } from "../../shared/drag-and-drop/useDraggableList"
-import { useDrawer } from "./useDrawer"
-import { useFormToggle } from "../../shared/controls/useFormToggle"
+} from '../../shared/drag-and-drop/utils';
+import { useDraggableList } from '../../shared/drag-and-drop/useDraggableList';
+import { useDrawer } from './useDrawer';
+import { useFormToggle } from '../../shared/controls/useFormToggle';
 
 type SubtasksProps = {
-  projectId: string
-  isVisible: boolean
-}
+  projectId: string;
+  isVisible: boolean;
+};
 
 export function SubtaskList({ projectId, isVisible }: SubtasksProps) {
-  const { isFormOpen, triggerRef, toggleForm } = useFormToggle()
-  const drawerRef = useRef<HTMLDivElement>(null)
-  const listRef = useRef<HTMLOListElement>(null)
-  const formRef = useRef<HTMLDivElement>(null)
-  const subtasksKey = getSubtasksKey(projectId)
+  const { isFormOpen, triggerRef, toggleForm } = useFormToggle();
+  const drawerRef = useRef<HTMLDivElement>(null);
+  const listRef = useRef<HTMLOListElement>(null);
+  const formRef = useRef<HTMLDivElement>(null);
+  const subtasksKey = getSubtasksKey(projectId);
 
-  const { useValue, addItem, updateList } = useStorageContext()
-  const { value } = useValue<Record<string, ProjectSubtask>>(subtasksKey)
-  const subtasks = useMemo(() => (value ? Object.values(value) : []), [value])
+  const { useValue, addItem, updateList } = useStorageContext();
+  const { value } = useValue<Record<string, ProjectSubtask>>(subtasksKey);
+  const subtasks = useMemo(() => (value ? Object.values(value) : []), [value]);
   const { value: project } = useValue<ProjectDetails>(
     `${PROJECTS_KEY}/${projectId}`,
-  )
-  const isProjectLoaded = Boolean(project)
+  );
+  const isProjectLoaded = Boolean(project);
 
   const onAddTask = (description: string) => {
-    if (!project) return
+    if (!project) return;
 
     addItem<ProjectSubtask>(subtasksKey, {
       description,
-      status: "ready",
+      status: 'ready',
       category: project.category,
       position: getNextPosition(subtasks),
-    })
-  }
+    });
+  };
 
-  const { height: drawerHeight, isRaised } = useDrawer({
+  const {
+    height: drawerHeight,
+    isRaised,
+    isSettled,
+  } = useDrawer({
     drawerRef,
     listRef,
     formRef,
@@ -65,50 +69,50 @@ export function SubtaskList({ projectId, isVisible }: SubtasksProps) {
     isProjectLoaded,
     isOpen: isVisible,
     isFormOpen,
-  })
+  });
 
   useDropTarget({
     dropTargetRef: listRef,
     canDrop: ({ source }) => isDraggable(source.data),
     getData: () => ({ listId: subtasksKey }),
-  })
+  });
   useDraggableList({
     listId: subtasksKey,
     canDropSourceOnTarget: (source) => {
-      return source[draggableTypeKey] === `subtask-${subtasksKey}`
+      return source[draggableTypeKey] === `subtask-${subtasksKey}`;
     },
     getTargetListId: (source) => source.parentId,
-    getAxis: () => "vertical",
-  })
+    getAxis: () => 'vertical',
+  });
 
-  const sortedTasks = useMemo(() => sortByPosition(subtasks), [subtasks])
+  const sortedTasks = useMemo(() => sortByPosition(subtasks), [subtasks]);
 
   const hasUnsortedDoneTasks = sortedTasks.some(
     (task, index) =>
       index > 0 &&
-      task.status !== "done" &&
-      sortedTasks[index - 1].status === "done",
-  )
+      task.status !== 'done' &&
+      sortedTasks[index - 1].status === 'done',
+  );
 
   const onSortDoneToEnd = useCallback(() => {
     const reordered = renumberPositions(
       sortedTasks.toSorted(
-        (a, b) => Number(a.status === "done") - Number(b.status === "done"),
+        (a, b) => Number(a.status === 'done') - Number(b.status === 'done'),
       ),
-    )
+    );
 
-    updateList<ProjectSubtask>(subtasksKey, reordered)
-  }, [sortedTasks, subtasksKey, updateList])
+    updateList<ProjectSubtask>(subtasksKey, reordered);
+  }, [sortedTasks, subtasksKey, updateList]);
 
   if (!project) {
-    return null
+    return null;
   }
 
   return (
     <div
-      className={`subtasks-section ${isVisible ? "visible" : ""} ${
-        isRaised ? "raised" : ""
-      }`}
+      className={`subtasks-section ${isVisible ? 'visible' : ''} ${
+        isRaised ? 'raised' : ''
+      } ${isSettled ? 'settled' : ''}`}
       style={{ height: drawerHeight }}
       ref={drawerRef}
     >
@@ -124,7 +128,7 @@ export function SubtaskList({ projectId, isVisible }: SubtasksProps) {
                 list={sortedTasks}
                 index={index}
                 onReorder={(tasks: SortableItem[]) => {
-                  updateList(subtasksKey, tasks)
+                  updateList(subtasksKey, tasks);
                 }}
               />
             }
@@ -134,18 +138,18 @@ export function SubtaskList({ projectId, isVisible }: SubtasksProps) {
       <div
         ref={formRef}
         style={{
-          display: "flex",
-          alignItems: "center",
-          paddingInlineStart: "12px",
-          paddingBlockEnd: "8px",
+          display: 'flex',
+          alignItems: 'center',
+          paddingInlineStart: '12px',
+          paddingBlockEnd: '8px',
         }}
       >
         <AddSubtaskForm isFormVisible={isFormOpen} onAddSubtask={onAddTask} />
         <button
           ref={triggerRef}
-          className={`icon ghost show-form ${isFormOpen ? "form-visible" : ""}`}
+          className={`icon ghost show-form ${isFormOpen ? 'form-visible' : ''}`}
           onClick={toggleForm}
-          style={{ alignSelf: "baseline", marginInlineEnd: "12px" }}
+          style={{ alignSelf: 'baseline', marginInlineEnd: '12px' }}
         >
           <PlusIcon width="16px" colour="var(--action-colour)" />
         </button>
@@ -155,12 +159,12 @@ export function SubtaskList({ projectId, isVisible }: SubtasksProps) {
             onClick={onSortDoneToEnd}
             title="Move done subtasks to the end"
             aria-label="Move done subtasks to the end"
-            style={{ alignSelf: "baseline" }}
+            style={{ alignSelf: 'baseline' }}
           >
             <SortIcon width="16px" colour="var(--action-colour)" />
           </button>
         )}
       </div>
     </div>
-  )
+  );
 }

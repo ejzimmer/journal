@@ -1,32 +1,32 @@
-import { AddThisWeekTaskForm } from "./AddThisWeekTaskForm"
-import { ThisWeekTask } from "./ThisWeekTask"
-import { WEEKLY_KEY, WeeklyTask } from "../../../shared/types"
-import { useRef } from "react"
-import { useStorageContext } from "../../../shared/FirebaseContext"
+import { AddThisWeekTaskForm } from './AddThisWeekTaskForm';
+import { ThisWeekTask } from './ThisWeekTask';
+import { WEEKLY_KEY, WeeklyTask } from '../../../shared/types';
+import { useRef } from 'react';
+import { useStorageContext } from '../../../shared/FirebaseContext';
 
 export function ThisWeekList() {
-  const listRef = useRef<HTMLOListElement>(null)
-  const { useValue } = useStorageContext()
-  const { value } = useValue<Record<string, WeeklyTask>>(WEEKLY_KEY)
+  const listRef = useRef<HTMLOListElement>(null);
+  const { useValue } = useStorageContext();
+  const { value } = useValue<Record<string, WeeklyTask>>(WEEKLY_KEY);
 
-  const taskOrder = useRef<string[]>([])
+  const taskOrder = useRef<string[]>([]);
 
   if (value && taskOrder.current.length !== Object.values(value).length) {
     taskOrder.current = Object.values(value)
       .toSorted((a, b) => {
-        const aUrgency = a.frequency - (a.completed?.length ?? 0)
-        const bUrgency = b.frequency - (b.completed?.length ?? 0)
+        const aUrgency = a.frequency - (a.completed?.length ?? 0);
+        const bUrgency = b.frequency - (b.completed?.length ?? 0);
 
         if (aUrgency === bUrgency) {
-          return (a.completed?.at(-1) ?? 0) - (b.completed?.at(-1) ?? 0)
+          return (a.completed?.at(-1) ?? 0) - (b.completed?.at(-1) ?? 0);
         }
 
-        return bUrgency - aUrgency
+        return bUrgency - aUrgency;
       })
-      .map((task) => task.id)
+      .map((task) => task.id);
   }
 
-  const tasks = value ? taskOrder.current.map((id) => value[id]) : []
+  const tasks = value ? taskOrder.current.map((id) => value[id]) : [];
 
   return (
     <div className="todo-task-list weekly">
@@ -43,5 +43,5 @@ export function ThisWeekList() {
       )}
       <AddThisWeekTaskForm />
     </div>
-  )
+  );
 }

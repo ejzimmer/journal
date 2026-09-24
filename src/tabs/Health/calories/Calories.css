@@ -1,7 +1,7 @@
 .tracker-switch {
-  [role="radiogroup"].switch {
+  [role='radiogroup'].switch {
     border-radius: 999px;
-    font-family: "Yuji Syuku", serif;
+    font-family: 'Yuji Syuku', serif;
     font-size: 1.15em;
     box-shadow:
       inset 2px 2px 5px hsl(0 0% 0% / 0.35),
@@ -38,7 +38,7 @@
     }
 
     &::before {
-      content: "";
+      content: '';
       position: absolute;
       top: 50%;
       left: 25%;
@@ -56,7 +56,7 @@
       z-index: -1;
     }
 
-    &:has(input[value="日"]:checked)::before {
+    &:has(input[value='日']:checked)::before {
       left: 75%;
     }
   }
@@ -140,7 +140,7 @@
     align-items: center;
     gap: 8px;
 
-    button[type="submit"] {
+    button[type='submit'] {
       display: none;
     }
   }

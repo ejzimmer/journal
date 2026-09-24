@@ -1,25 +1,25 @@
-import { useRef, useState } from "react"
-import { COLOURS, Colour } from "../types"
-import { ColourWheelIcon } from "../../../shared/icons/ColourWheel"
-import { useClickOutside } from "../../../shared/controls/combobox/useClickOutside"
+import { useRef, useState } from 'react';
+import { COLOURS, Colour } from '../types';
+import { ColourWheelIcon } from '../../../shared/icons/ColourWheel';
+import { useClickOutside } from '../../../shared/controls/combobox/useClickOutside';
 
 export function LabelColourPicker({
   label,
   colour,
   onChange,
 }: {
-  label: string
-  colour: Colour
-  onChange: (colour: Colour) => void
+  label: string;
+  colour: Colour;
+  onChange: (colour: Colour) => void;
 }) {
-  const [isOpen, setIsOpen] = useState(false)
-  const containerRef = useRef<HTMLDivElement>(null)
+  const [isOpen, setIsOpen] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   useClickOutside({
     elementRef: containerRef,
     onClickOutside: () => setIsOpen(false),
     shouldListen: isOpen,
-  })
+  });
 
   return (
     <div className="label-colour-picker" ref={containerRef}>
@@ -41,8 +41,8 @@ export function LabelColourPicker({
                 aria-label={option}
                 aria-pressed={option === colour}
                 onClick={() => {
-                  onChange(option)
-                  setIsOpen(false)
+                  onChange(option);
+                  setIsOpen(false);
                 }}
               />
             </li>
@@ -50,5 +50,5 @@ export function LabelColourPicker({
         </ul>
       )}
     </div>
-  )
+  );
 }

@@ -1,15 +1,26 @@
 label.checkbox {
+  --checkbox-size: 0.8em;
   cursor: pointer;
 
   .control {
     color: var(--body-colour-light);
     border: 2px solid;
-    width: 0.8em;
+    width: var(--checkbox-size);
     aspect-ratio: 1;
     border-radius: 4px;
 
     svg {
       display: none;
+    }
+  }
+
+  &.tick-for-done {
+    display: inline-flex;
+    width: var(--checkbox-size);
+    aspect-ratio: 1;
+
+    .control {
+      border-radius: 50%;
     }
   }
 

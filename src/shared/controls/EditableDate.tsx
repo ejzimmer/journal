@@ -1,46 +1,45 @@
-import { useRef, useState } from "react"
+import { useRef, useState } from 'react';
 import {
   formatDayAndMonth,
   getDateFromTimestamp,
   getTimestampFromDate,
-} from "../dates"
-import { useFormToggle } from "./useFormToggle"
+} from '../dates';
+import { useFormToggle } from './useFormToggle';
 
-interface Props
-  extends Omit<
-    React.HTMLAttributes<HTMLDivElement>,
-    "children" | "style" | "onChange"
-  > {
-  onChange: (date: number) => void
-  value: number
+interface Props extends Omit<
+  React.HTMLAttributes<HTMLDivElement>,
+  'children' | 'style' | 'onChange'
+> {
+  onChange: (date: number) => void;
+  value: number;
 }
 
 export function EditableDate({ onChange, value, ...props }: Props) {
   const [editingValue, setEditingValue] = useState(
     getDateFromTimestamp(value).toString(),
-  )
+  );
   const {
     isFormOpen: isEditing,
     triggerRef: displayRef,
     openForm: startEditing,
     closeForm: stopEditing,
     openFormOnEnterOrSpace,
-  } = useFormToggle<HTMLDivElement>()
-  const inputRef = useRef<HTMLInputElement>(null)
+  } = useFormToggle<HTMLDivElement>();
+  const inputRef = useRef<HTMLInputElement>(null);
 
   const handleSubmit = () => {
-    const inputValue = inputRef.current?.value
+    const inputValue = inputRef.current?.value;
     if (inputValue) {
-      const date = getTimestampFromDate(Temporal.PlainDate.from(inputValue))
+      const date = getTimestampFromDate(Temporal.PlainDate.from(inputValue));
       if (date !== value) {
-        onChange(date)
+        onChange(date);
       }
     }
 
-    stopEditing()
-  }
+    stopEditing();
+  };
 
-  const displayedDate = formatDayAndMonth(getDateFromTimestamp(value))
+  const displayedDate = formatDayAndMonth(getDateFromTimestamp(value));
 
   return isEditing ? (
     <input
@@ -48,15 +47,15 @@ export function EditableDate({ onChange, value, ...props }: Props) {
       ref={inputRef}
       autoFocus
       onKeyDown={(event) => {
-        if (event.key === "Enter") {
-          event.preventDefault()
-          handleSubmit()
+        if (event.key === 'Enter') {
+          event.preventDefault();
+          handleSubmit();
         }
 
-        if (event.key === "Escape") {
-          event.stopPropagation()
-          setEditingValue(getDateFromTimestamp(value).toString())
-          stopEditing()
+        if (event.key === 'Escape') {
+          event.stopPropagation();
+          setEditingValue(getDateFromTimestamp(value).toString());
+          stopEditing();
         }
       }}
       value={editingValue}
@@ -76,5 +75,5 @@ export function EditableDate({ onChange, value, ...props }: Props) {
     >
       {displayedDate}
     </div>
-  )
+  );
 }

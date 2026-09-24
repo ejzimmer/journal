@@ -1,9 +1,9 @@
-import { IconProps } from "./types"
+import { IconProps } from './types';
 
 export function ChecklistIcon({
-  width = "100%",
-  colour = "currentColor",
-  strokeWidth = "2",
+  width = '100%',
+  colour = 'currentColor',
+  strokeWidth = '2',
 }: IconProps) {
   return (
     <svg
@@ -21,5 +21,5 @@ export function ChecklistIcon({
       <circle cx="3" cy="15.5" r="1.5" stroke="none" />
       <line x1="8" y1="15.5" x2="18" y2="15.5" />
     </svg>
-  )
+  );
 }

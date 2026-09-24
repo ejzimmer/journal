@@ -5,32 +5,36 @@ import {
   getGameStatus,
   isSeries,
   SeriesDetails,
-} from "../types"
-import { getCoverHue } from "../coverHue"
-import { MediaList } from "../MediaList"
-import { MediaEditFormProps, StatusConfig } from "../MediaSpine"
-import { AddMediaForm, EditMediaForm } from "../MediaForm"
-import { useGameFormConfig } from "./gameFormConfig"
-import { Shelf } from "../Shelf"
-import { useMediaStorage } from "../MediaStorageContext"
+} from '../types';
+import { getCoverHue } from '../coverHue';
+import { MediaList } from '../MediaList';
+import { MediaEditFormProps, StatusConfig } from '../MediaSpine';
+import { AddMediaForm, EditMediaForm } from '../MediaForm';
+import { useGameFormConfig } from './gameFormConfig';
+import { Shelf } from '../Shelf';
+import { useMediaStorage } from '../MediaStorageContext';
 
 const GAME_CONFIG: StatusConfig<GameDetails, GameStatus> = {
   order: GAME_STATUS_ORDER,
   spineStatus: {
-    unplayed: "todo",
-    playing: "active",
-    played: "done",
+    unplayed: 'todo',
+    playing: 'active',
+    played: 'done',
   },
   glyph: {
-    unplayed: "🎮",
-    playing: "🎮",
-    played: "✓",
+    unplayed: '🎮',
+    playing: '🎮',
+    played: '✓',
   },
   getStatus: getGameStatus,
   setStatus: (game, status) => ({ ...game, status }),
-}
+};
 
-function EditGameForm({ item, isOpen, onCancel }: MediaEditFormProps<GameDetails>) {
+function EditGameForm({
+  item,
+  isOpen,
+  onCancel,
+}: MediaEditFormProps<GameDetails>) {
   return (
     <EditMediaForm
       item={item}
@@ -38,7 +42,7 @@ function EditGameForm({ item, isOpen, onCancel }: MediaEditFormProps<GameDetails
       onCancel={onCancel}
       config={useGameFormConfig()}
     />
-  )
+  );
 }
 
 function GameMediaList({
@@ -46,9 +50,9 @@ function GameMediaList({
   bandHue,
   seriesId,
 }: {
-  games?: Record<string, GameDetails>
-  bandHue?: number
-  seriesId?: string
+  games?: Record<string, GameDetails>;
+  bandHue?: number;
+  seriesId?: string;
 }) {
   return (
     <MediaList
@@ -58,18 +62,18 @@ function GameMediaList({
       config={GAME_CONFIG}
       EditForm={EditGameForm}
     />
-  )
+  );
 }
 
 export function Games() {
-  const { games, updateMediaSeries } = useMediaStorage()
+  const { games, updateMediaSeries } = useMediaStorage();
 
-  const series = games.filter(
-    (item): item is SeriesDetails<GameDetails> => isSeries(item),
-  )
+  const series = games.filter((item): item is SeriesDetails<GameDetails> =>
+    isSeries(item),
+  );
   const singleGames = games.filter(
     (item): item is GameDetails => !isSeries(item),
-  )
+  );
 
   return (
     <div className="games">
@@ -96,5 +100,5 @@ export function Games() {
       </div>
       <AddMediaForm ariaLabel="Add a game" config={useGameFormConfig()} />
     </div>
-  )
+  );
 }

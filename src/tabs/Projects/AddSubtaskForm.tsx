@@ -1,47 +1,42 @@
-import { CSSProperties, useRef, useState, useEffect } from "react"
-import { TickIcon } from "../../shared/icons/Tick"
+import { useRef, useState, useEffect } from 'react';
+import { TickIcon } from '../../shared/icons/Tick';
 
 type AddSubtaskFormProps = {
-  isFormVisible: boolean
-  onAddSubtask: (description: string) => void
-}
+  isFormVisible: boolean;
+  onAddSubtask: (description: string) => void;
+};
 
 export function AddSubtaskForm({
   isFormVisible,
   onAddSubtask,
 }: AddSubtaskFormProps) {
-  const formRef = useRef<HTMLFormElement>(null)
-  const formWidthRef = useRef(0)
-  const [description, setDescription] = useState("")
+  const formRef = useRef<HTMLFormElement>(null);
+  const formWidthRef = useRef(0);
+  const [description, setDescription] = useState('');
 
   useEffect(() => {
     if (formRef.current) {
-      formWidthRef.current = formRef.current.scrollWidth + 30
+      formWidthRef.current = formRef.current.scrollWidth + 30;
     }
-  }, [])
+  }, []);
 
   return (
     <form
       ref={formRef}
-      className={`add-subtask-form ${isFormVisible ? "visible" : ""} ${
-        description ? "has-description" : ""
+      className={`add-subtask-form ${isFormVisible ? 'visible' : ''} ${
+        description ? 'has-description' : ''
       }`}
-      style={
-        {
-          "--form-target-width": `${formWidthRef.current}px`,
-          minWidth: isFormVisible ? formWidthRef.current : 0,
-        } as CSSProperties
-      }
+      style={{ minWidth: isFormVisible ? formWidthRef.current : 0 }}
       onSubmit={(event) => {
-        event.preventDefault()
+        event.preventDefault();
 
-        const trimmedDescription = description.trim()
+        const trimmedDescription = description.trim();
         if (!trimmedDescription) {
-          return
+          return;
         }
 
-        onAddSubtask(trimmedDescription)
-        setDescription("")
+        onAddSubtask(trimmedDescription);
+        setDescription('');
       }}
     >
       <input
@@ -55,5 +50,5 @@ export function AddSubtaskForm({
         <TickIcon width="16px" colour="var(--action-colour)" />
       </button>
     </form>
-  )
+  );
 }

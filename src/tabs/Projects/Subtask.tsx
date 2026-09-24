@@ -1,52 +1,52 @@
-import { ReactElement } from "react"
-import { Checkbox } from "../../shared/controls/Checkbox"
-import { useStorageContext } from "../../shared/FirebaseContext"
-import { ProjectDetails, ProjectSubtask } from "../../shared/types"
-import { ButtonWithConfirmation } from "../../shared/controls/ButtonWithConfirmation"
-import { useLinkedTasks } from "./utils"
-import { EditableText } from "../../shared/controls/EditableText"
-import { DraggableListItem } from "../../shared/drag-and-drop/DraggableListItem"
-import { draggableTypeKey } from "../../shared/drag-and-drop/types"
+import { ReactElement } from 'react';
+import { Checkbox } from '../../shared/controls/Checkbox';
+import { useStorageContext } from '../../shared/FirebaseContext';
+import { ProjectDetails, ProjectSubtask } from '../../shared/types';
+import { ButtonWithConfirmation } from '../../shared/controls/ButtonWithConfirmation';
+import { useLinkedTasks } from './utils';
+import { EditableText } from '../../shared/controls/EditableText';
+import { DraggableListItem } from '../../shared/drag-and-drop/DraggableListItem';
+import { draggableTypeKey } from '../../shared/drag-and-drop/types';
 
 type SubtaskProps = ProjectSubtask & {
-  project: ProjectDetails
-  path: string
-  dragHandle: ReactElement
-}
+  project: ProjectDetails;
+  path: string;
+  dragHandle: ReactElement;
+};
 
 export function Subtask({ path, dragHandle, project, ...task }: SubtaskProps) {
-  const { updateItem, deleteItem } = useStorageContext()
+  const { updateItem, deleteItem } = useStorageContext();
 
   const {
     linkedTask,
     createLinkedTask: createDailyTask,
     updateLinkedTask,
-  } = useLinkedTasks(task.linkedId)
+  } = useLinkedTasks(task.linkedId);
 
   const updateTask = (task: ProjectSubtask) => {
-    updateItem<ProjectSubtask>(path, task)
-  }
+    updateItem<ProjectSubtask>(path, task);
+  };
 
   const onAddToTodo = () => {
     const linkedId = createDailyTask({
       description: `${project.description}: ${task.description}`,
       category: task.category,
       linkedTaskId: `${path}/${task.id}`,
-    })
+    });
 
-    if (linkedId) updateTask({ ...task, linkedId })
-    return !!linkedId
-  }
+    if (linkedId) updateTask({ ...task, linkedId });
+    return !!linkedId;
+  };
 
   const handleChange = () => {
-    const status = task.status === "done" ? "ready" : "done"
-    updateTask({ ...task, status })
+    const status = task.status === 'done' ? 'ready' : 'done';
+    updateTask({ ...task, status });
 
     updateLinkedTask({
       status,
       lastCompleted: new Date().getTime(),
-    })
-  }
+    });
+  };
 
   return (
     <DraggableListItem
@@ -59,39 +59,40 @@ export function Subtask({ path, dragHandle, project, ...task }: SubtaskProps) {
       isDroppable={(data) =>
         draggableTypeKey in data && data[draggableTypeKey] === `subtask-${path}`
       }
-      allowedEdges={["top", "bottom"]}
+      allowedEdges={['top', 'bottom']}
       dragHandle={dragHandle}
       className="subtask"
     >
       <Checkbox
-        isChecked={task.status === "done"}
+        isChecked={task.status === 'done'}
         onChange={handleChange}
+        useTickForDone
         aria-label={`${task.description} ${task.status}`}
       />
       <EditableText
         label="project"
         value={task.description}
         onChange={(description) => {
-          updateTask({ ...task, description })
+          updateTask({ ...task, description });
         }}
         onDelete={() => deleteItem(path, task)}
-        style={{ fontSize: "1em" }}
+        style={{ fontSize: '1em' }}
       />
       {!linkedTask ? (
         <ButtonWithConfirmation
-          className={`icon ghost copy-button ${linkedTask ? "linked" : ""}`}
+          className={`icon ghost copy-button ${linkedTask ? 'linked' : ''}`}
           onClick={onAddToTodo}
           confirmationMessage="Copied!"
         >
-          <span style={{ fontSize: ".7em" }}>🔗</span>
+          <span style={{ fontSize: '.7em' }}>🔗</span>
         </ButtonWithConfirmation>
       ) : (
         <>🔗</>
       )}
     </DraggableListItem>
-  )
+  );
 }
 
 function DragPreview({ task }: { task: ProjectSubtask }) {
-  return <div>{task.description}</div>
+  return <div>{task.description}</div>;
 }

@@ -1,44 +1,44 @@
-import { useRef, useState } from "react"
-import { useStorageContext } from "../../../shared/FirebaseContext"
-import { KEY, Yarn, YarnType } from "./types"
-import { Switch } from "../../../shared/controls/Switch"
+import { useRef, useState } from 'react';
+import { useStorageContext } from '../../../shared/FirebaseContext';
+import { KEY, Yarn, YarnType } from './types';
+import { Switch } from '../../../shared/controls/Switch';
 
-import "./Form.css"
-import { TickIcon } from "../../../shared/icons/Tick"
-import { getMonthId } from "./utils"
+import './Form.css';
+import { TickIcon } from '../../../shared/icons/Tick';
+import { getMonthId } from './utils';
 
 export function YarnTrackingForm() {
-  const { useValue, updateItem } = useStorageContext()
-  const { value } = useValue<Yarn>(KEY)
-  const yarnTypes = Object.keys(value ?? {})
+  const { useValue, updateItem } = useStorageContext();
+  const { value } = useValue<Yarn>(KEY);
+  const yarnTypes = Object.keys(value ?? {});
 
-  const yarnTypeRef = useRef<HTMLSelectElement>(null)
-  const amountRef = useRef<HTMLInputElement>(null)
-  const [operation, setOperation] = useState<"+" | "-">("-")
+  const yarnTypeRef = useRef<HTMLSelectElement>(null);
+  const amountRef = useRef<HTMLInputElement>(null);
+  const [operation, setOperation] = useState<'+' | '-'>('-');
 
   const updateYarn = (event: React.FormEvent) => {
-    event.preventDefault()
+    event.preventDefault();
 
     if (!value) {
-      return
+      return;
     }
 
-    const yarnType = yarnTypeRef.current?.value
+    const yarnType = yarnTypeRef.current?.value;
     const amount =
-      amountRef.current?.value && Number.parseFloat(amountRef.current.value)
+      amountRef.current?.value && Number.parseFloat(amountRef.current.value);
 
     if (!yarnType || !operation || !amount) {
-      return
+      return;
     }
 
-    const yarnDetails = value[yarnType]
-    const currentBalance = Object.values(yarnDetails.history).at(-1) ?? 0
+    const yarnDetails = value[yarnType];
+    const currentBalance = Object.values(yarnDetails.history).at(-1) ?? 0;
 
     // eslint-disable-next-line no-eval
-    const newBalance = eval(`${currentBalance}${operation}${amount}`)
+    const newBalance = eval(`${currentBalance}${operation}${amount}`);
 
-    const today = new Date()
-    const key = getMonthId(today.getFullYear(), today.getMonth())
+    const today = new Date();
+    const key = getMonthId(today.getFullYear(), today.getMonth());
 
     updateItem<YarnType>(`${KEY}`, {
       id: yarnType,
@@ -46,8 +46,8 @@ export function YarnTrackingForm() {
         ...yarnDetails.history,
         [key]: newBalance,
       },
-    })
-  }
+    });
+  };
 
   return (
     <form onSubmit={updateYarn} className="yarn-tracking-form">
@@ -59,7 +59,7 @@ export function YarnTrackingForm() {
         ))}
       </select>
       <Switch
-        options={["-", "+"]}
+        options={['-', '+']}
         value={operation}
         onChange={setOperation}
         name="yarn-tracking"
@@ -69,5 +69,5 @@ export function YarnTrackingForm() {
         <TickIcon width="18px" colour="var(--success-colour)" />
       </button>
     </form>
-  )
+  );
 }

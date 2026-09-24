@@ -1,27 +1,27 @@
-import { ComponentType } from "react"
-import { MediaDetails } from "./types"
-import { useMediaStorage } from "./MediaStorageContext"
-import { Spine } from "./Spine"
-import { getNextStatus } from "./nextStatus"
-import { useFormToggle } from "../../shared/controls/useFormToggle"
+import { ComponentType } from 'react';
+import { MediaDetails } from './types';
+import { useMediaStorage } from './MediaStorageContext';
+import { Spine } from './Spine';
+import { getNextStatus } from './nextStatus';
+import { useFormToggle } from '../../shared/controls/useFormToggle';
 
 export type MediaEditFormProps<T extends MediaDetails> = {
-  item: T
-  isOpen: boolean
-  onCancel: () => void
-}
+  item: T;
+  isOpen: boolean;
+  onCancel: () => void;
+};
 
 export type StatusConfig<T extends MediaDetails, S extends string> = {
-  order: readonly S[]
-  spineStatus: Record<S, "todo" | "active" | "done">
-  glyph: Record<S, string>
-  getStatus: (item: T) => S
-  setStatus: (item: T, status: S) => T
-  getAuthor?: (item: T) => string | undefined
-}
+  order: readonly S[];
+  spineStatus: Record<S, 'todo' | 'active' | 'done'>;
+  glyph: Record<S, string>;
+  getStatus: (item: T) => S;
+  setStatus: (item: T, status: S) => T;
+  getAuthor?: (item: T) => string | undefined;
+};
 
 function getSpineHeight(title: string) {
-  return 178 + Math.min(34, Math.round(title.length * 1.5))
+  return 178 + Math.min(34, Math.round(title.length * 1.5));
 }
 
 export function MediaSpine<T extends MediaDetails, S extends string>({
@@ -31,22 +31,22 @@ export function MediaSpine<T extends MediaDetails, S extends string>({
   config,
   EditForm,
 }: {
-  item: T
-  bandHue?: number
-  hue: number
-  config: StatusConfig<T, S>
-  EditForm: ComponentType<MediaEditFormProps<T>>
+  item: T;
+  bandHue?: number;
+  hue: number;
+  config: StatusConfig<T, S>;
+  EditForm: ComponentType<MediaEditFormProps<T>>;
 }) {
-  const { updateMedia } = useMediaStorage()
-  const { isFormOpen, triggerRef, openForm, closeForm } = useFormToggle()
+  const { updateMedia } = useMediaStorage();
+  const { isFormOpen, triggerRef, openForm, closeForm } = useFormToggle();
 
-  const status = config.getStatus(item)
-  const nextStatus = getNextStatus(config.order, status)
-  const author = config.getAuthor?.(item)
+  const status = config.getStatus(item);
+  const nextStatus = getNextStatus(config.order, status);
+  const author = config.getAuthor?.(item);
 
   const updateStatus = () => {
-    updateMedia(config.setStatus(item, nextStatus))
-  }
+    updateMedia(config.setStatus(item, nextStatus));
+  };
 
   return (
     <Spine
@@ -57,7 +57,7 @@ export function MediaSpine<T extends MediaDetails, S extends string>({
       title={item.title}
       author={author}
       glyph={config.glyph[status]}
-      titleAriaLabel={`${item.title}${author ? `, ${author}` : ""}, ${status}`}
+      titleAriaLabel={`${item.title}${author ? `, ${author}` : ''}, ${status}`}
       stampAriaLabel={`${item.title}: ${status}. Change to ${nextStatus}`}
       titleRef={triggerRef}
       onTitleClick={openForm}
@@ -65,5 +65,5 @@ export function MediaSpine<T extends MediaDetails, S extends string>({
     >
       <EditForm item={item} isOpen={isFormOpen} onCancel={closeForm} />
     </Spine>
-  )
+  );
 }

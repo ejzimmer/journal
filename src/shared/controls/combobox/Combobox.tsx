@@ -1,15 +1,15 @@
-import React, { useCallback, useEffect, useId, useRef, useState } from "react"
-import { OptionType, ComboboxProps } from "./types"
-import { usePopoverState } from "./usePopoverState"
-import { usePopoverPlacement } from "./usePopoverPlacement"
-import { SingleValueInput } from "./SingleValueInput"
-import { MultiValueInput } from "./MultiValueInput"
+import React, { useCallback, useEffect, useId, useRef, useState } from 'react';
+import { OptionType, ComboboxProps } from './types';
+import { usePopoverState } from './usePopoverState';
+import { usePopoverPlacement } from './usePopoverPlacement';
+import { SingleValueInput } from './SingleValueInput';
+import { MultiValueInput } from './MultiValueInput';
 
-import "./Combobox.css"
-import { isSelected } from "./utils"
-import { Popover } from "./Popover"
-import { useClickOutside } from "./useClickOutside"
-import { useKeyboardNavigation } from "./useKeyboardNavigation"
+import './Combobox.css';
+import { isSelected } from './utils';
+import { Popover } from './Popover';
+import { useClickOutside } from './useClickOutside';
+import { useKeyboardNavigation } from './useKeyboardNavigation';
 
 export function Combobox<T extends OptionType>({
   isMultiValue,
@@ -26,119 +26,119 @@ export function Combobox<T extends OptionType>({
   autoFocus,
   onDismiss,
 }: ComboboxProps<T>) {
-  const inputId = useId()
-  const containerRef = useRef<HTMLDivElement>(null)
+  const inputId = useId();
+  const containerRef = useRef<HTMLDivElement>(null);
 
-  const popoverId = useId()
-  const popoverRef = useRef<HTMLDivElement>(null)
+  const popoverId = useId();
+  const popoverRef = useRef<HTMLDivElement>(null);
   const { popoverState, hidePopover, showPopover, togglePopover } =
-    usePopoverState(popoverRef)
+    usePopoverState(popoverRef);
   const { placement, maxHeight, top, bottom, left, minWidth } =
-    usePopoverPlacement(popoverState, containerRef, popoverRef, hidePopover)
+    usePopoverPlacement(popoverState, containerRef, popoverRef, hidePopover);
 
   useEffect(() => {
-    if (autoFocus) showPopover()
+    if (autoFocus) showPopover();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, []);
 
-  const [searchTerm, setSearchTerm] = useState("")
-  const search = searchTerm.trimStart().toLowerCase()
+  const [searchTerm, setSearchTerm] = useState('');
+  const search = searchTerm.trimStart().toLowerCase();
   const displayedOptions = (
     search
       ? options.filter((o) => o.label.toLowerCase().startsWith(search))
       : options
-  ).filter((option) => !hideSelectedOptions || !isSelected({ value, option }))
+  ).filter((option) => !hideSelectedOptions || !isSelected({ value, option }));
 
   const firstMatchingOption = search
     ? displayedOptions.find((option) => !isSelected({ value, option }))
-    : undefined
+    : undefined;
 
   const { highlightedOption, onArrowKeyDown } = useKeyboardNavigation({
     value: isMultiValue ? firstMatchingOption : value,
     options: displayedOptions,
     onChange: (selectedOption: T) => {
-      if (popoverState !== "open") {
+      if (popoverState !== 'open') {
         if (isMultiValue) {
-          showPopover()
+          showPopover();
         } else {
-          updateValue(selectedOption)
+          updateValue(selectedOption);
         }
       }
     },
-  })
+  });
 
   const reset = useCallback(
     (alwayClosePopover?: boolean) => {
-      if (!isMultiValue || alwayClosePopover) hidePopover()
-      setSearchTerm("")
+      if (!isMultiValue || alwayClosePopover) hidePopover();
+      setSearchTerm('');
     },
     [hidePopover, isMultiValue],
-  )
+  );
   const dismiss = () => {
-    reset(true)
-    onDismiss?.()
-  }
+    reset(true);
+    onDismiss?.();
+  };
 
   useClickOutside({
     elementRef: containerRef,
     onClickOutside: dismiss,
-  })
+  });
 
   const updateValue = (option: T) => {
     if (isMultiValue) {
-      const index = value.findIndex((v) => option.id === v.id)
+      const index = value.findIndex((v) => option.id === v.id);
       if (index > -1) {
-        onChange(value.toSpliced(index, 1))
+        onChange(value.toSpliced(index, 1));
       } else {
-        onChange([...value, option])
+        onChange([...value, option]);
       }
     } else {
-      onChange(option)
+      onChange(option);
     }
-  }
+  };
 
   const handleKeyDown = (event: React.KeyboardEvent) => {
     switch (event.key) {
-      case "Enter":
-        event.stopPropagation()
-        event.preventDefault()
+      case 'Enter':
+        event.stopPropagation();
+        event.preventDefault();
         if (highlightedOption) {
-          updateValue(highlightedOption)
+          updateValue(highlightedOption);
         } else if (isMultiValue && searchTerm) {
-          addOption(searchTerm)
+          addOption(searchTerm);
         }
-        reset()
-        break
-      case "ArrowDown":
-        onArrowKeyDown("down")
-        break
-      case "ArrowUp":
-        onArrowKeyDown("up")
-        break
-      case "Tab": {
-        reset()
-        break
+        reset();
+        break;
+      case 'ArrowDown':
+        onArrowKeyDown('down');
+        break;
+      case 'ArrowUp':
+        onArrowKeyDown('up');
+        break;
+      case 'Tab': {
+        reset();
+        break;
       }
-      case "Escape":
-        event.stopPropagation()
-        dismiss()
-        break
+      case 'Escape':
+        event.stopPropagation();
+        dismiss();
+        break;
       default:
-        showPopover()
+        showPopover();
     }
-  }
+  };
 
   const addOption = (label: string) => {
-    const existingOption = options.find((o) => o.label === label)
+    const existingOption = options.find((o) => o.label === label);
     if (
       existingOption &&
       isMultiValue &&
       isSelected({ value, option: existingOption })
     ) {
-      return
+      return;
     }
-    updateValue(existingOption ?? createOption(label))
-  }
+    updateValue(existingOption ?? createOption(label));
+  };
 
   return (
     <div className="combobox-field">
@@ -156,12 +156,12 @@ export function Combobox<T extends OptionType>({
             onRemoveAll={() => onChange([])}
             searchInputValue={searchTerm}
             onChangeSearchTerm={(event) => {
-              const value = event.target.value ?? ""
-              setSearchTerm(value)
+              const value = event.target.value ?? '';
+              setSearchTerm(value);
             }}
             id={inputId}
             popoverId={popoverId}
-            isPopoverOpen={popoverState === "open"}
+            isPopoverOpen={popoverState === 'open'}
             onKeyDown={handleKeyDown}
             onClick={togglePopover}
             Value={Value}
@@ -176,16 +176,16 @@ export function Combobox<T extends OptionType>({
             onChangeSearchTerm={(
               event: React.ChangeEvent<HTMLInputElement>,
             ) => {
-              const value = event.target.value ?? ""
-              setSearchTerm(value)
+              const value = event.target.value ?? '';
+              setSearchTerm(value);
 
               if (value.trim()) {
-                addOption(value)
+                addOption(value);
               }
             }}
             id={inputId}
             popoverId={popoverId}
-            isPopoverOpen={popoverState === "open"}
+            isPopoverOpen={popoverState === 'open'}
             onKeyDown={handleKeyDown}
             onClick={togglePopover}
             size={inputSize}
@@ -207,13 +207,13 @@ export function Combobox<T extends OptionType>({
           options={displayedOptions}
           selected={value}
           onClick={(option) => {
-            updateValue(option)
-            reset()
+            updateValue(option);
+            reset();
           }}
           highlightedOption={highlightedOption}
           Option={Option}
         />
       </div>
     </div>
-  )
+  );
 }

@@ -1,28 +1,28 @@
-import { useEffect, useMemo, useRef, useState } from "react"
-import { PlusIcon } from "../../shared/icons/Plus"
-import { formatDate } from "../../shared/dates"
-import "./ExerciseTracker.css"
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { PlusIcon } from '../../shared/icons/Plus';
+import { formatDate } from '../../shared/dates';
+import './ExerciseTracker.css';
 
 type Update = {
-  date: Temporal.PlainDate
-  update: string
-  recommendation?: "up" | "stay" | "down"
-}
+  date: Temporal.PlainDate;
+  update: string;
+  recommendation?: 'up' | 'stay' | 'down';
+};
 
 type Exercise = {
-  name: string
-  updates: Update[]
-}
+  name: string;
+  updates: Update[];
+};
 
 type ExerciseTrackerProps = {
-  exercises: Exercise[]
-}
+  exercises: Exercise[];
+};
 
 export function ExerciseTracker({ exercises }: ExerciseTrackerProps) {
   const numberOfColumns = exercises.reduce(
     (highest, exercise) => Math.max(highest, exercise.updates.length),
     0,
-  )
+  );
 
   return (
     <table className="exercise-tracker">
@@ -36,17 +36,17 @@ export function ExerciseTracker({ exercises }: ExerciseTrackerProps) {
         ))}
       </tbody>
     </table>
-  )
+  );
 }
 
 type ExerciseRowProps = {
-  exercise: Exercise
-  maxColumns: number
-}
+  exercise: Exercise;
+  maxColumns: number;
+};
 
 function ExerciseRow({ exercise, maxColumns }: ExerciseRowProps) {
-  const [showForm, setShowForm] = useState(false)
-  const dateInputRef = useRef<HTMLInputElement>(null)
+  const [showForm, setShowForm] = useState(false);
+  const dateInputRef = useRef<HTMLInputElement>(null);
 
   const emptyCells = useMemo(
     () =>
@@ -54,17 +54,17 @@ function ExerciseRow({ exercise, maxColumns }: ExerciseRowProps) {
         length: maxColumns - exercise.updates.length,
       }),
     [maxColumns, exercise],
-  )
+  );
 
   useEffect(() => {
-    dateInputRef.current?.focus()
-  }, [showForm])
+    dateInputRef.current?.focus();
+  }, [showForm]);
 
   return (
     <tr>
       <th role="rowheader">{exercise.name}</th>
       {exercise.updates.map(({ date, update }) => {
-        const { day, month, year } = formatDate(date)
+        const { day, month, year } = formatDate(date);
         return (
           <td key={date.toString()}>
             <div className="date">
@@ -72,7 +72,7 @@ function ExerciseRow({ exercise, maxColumns }: ExerciseRowProps) {
             </div>
             {update}
           </td>
-        )
+        );
       })}
       {emptyCells.length > 0 && (
         <td>
@@ -89,7 +89,7 @@ function ExerciseRow({ exercise, maxColumns }: ExerciseRowProps) {
       <td>
         <button
           className="secondary-clear"
-          style={{ color: "var(--action-colour)" }}
+          style={{ color: 'var(--action-colour)' }}
           aria-label={`Record ${exercise.name}`}
           onClick={() => setShowForm(true)}
         >
@@ -97,5 +97,5 @@ function ExerciseRow({ exercise, maxColumns }: ExerciseRowProps) {
         </button>
       </td>
     </tr>
-  )
+  );
 }

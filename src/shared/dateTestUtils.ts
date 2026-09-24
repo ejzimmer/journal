@@ -1,7 +1,7 @@
-import { getTimestampFromDate, getToday } from "./dates"
+import { getTimestampFromDate, getToday } from './dates';
 
 export const getTimestampDaysAgo = (days: number) =>
-  getTimestampFromDate(getToday().subtract({ days }))
+  getTimestampFromDate(getToday().subtract({ days }));
 
 export const getTimestampDaysAhead = (days: number) =>
-  getTimestampFromDate(getToday().add({ days }))
+  getTimestampFromDate(getToday().add({ days }));

@@ -1,4 +1,4 @@
-import { WorkTask } from "./types"
+import { WorkTask } from './types';
 
 export function getAppendPosition(list: WorkTask): number {
   return list.items
@@ -7,5 +7,5 @@ export function getAppendPosition(list: WorkTask): number {
           item.position ? Math.max(highest, item.position) : highest,
         0,
       )
-    : 0
+    : 0;
 }

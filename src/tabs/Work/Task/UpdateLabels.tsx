@@ -1,23 +1,23 @@
-import { TagIcon } from "../../../shared/icons/Tag"
-import { useFormToggle } from "../../../shared/controls/useFormToggle"
-import { LabelsControl } from "../LabelsControl"
-import { Label } from "../types"
+import { TagIcon } from '../../../shared/icons/Tag';
+import { useFormToggle } from '../../../shared/controls/useFormToggle';
+import { LabelsControl } from '../LabelsControl';
+import { Label } from '../types';
 
 export function UpdateLabels({
   labels = [],
   onChangeLabels,
 }: {
-  labels?: Label[]
-  onChangeLabels: (labels: Label[]) => void
+  labels?: Label[];
+  onChangeLabels: (labels: Label[]) => void;
 }) {
-  const { isFormOpen, triggerRef, openForm, closeForm } = useFormToggle()
+  const { isFormOpen, triggerRef, openForm, closeForm } = useFormToggle();
 
   return isFormOpen ? (
     <LabelsControl
       value={labels}
       onChange={(labels) => {
-        onChangeLabels(labels)
-        closeForm()
+        onChangeLabels(labels);
+        closeForm();
       }}
       label=""
       ariaLabel="Labels"
@@ -34,5 +34,5 @@ export function UpdateLabels({
     >
       <TagIcon width="28px" />
     </button>
-  )
+  );
 }

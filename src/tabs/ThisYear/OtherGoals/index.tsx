@@ -1,29 +1,29 @@
-import { useMemo } from "react"
-import { useStorageContext } from "../../../shared/FirebaseContext"
-import { Book, Reading } from "./Reading"
+import { useMemo } from 'react';
+import { useStorageContext } from '../../../shared/FirebaseContext';
+import { Book, Reading } from './Reading';
 
-import "./index.css"
-import { BasicGoal, BasicGoalData } from "./BasicGoal"
-import { Bikes, BikesGoal } from "./Bikes"
-import { EmojiCheckbox } from "../../../shared/controls/EmojiCheckbox"
-import { GameGoal, GameGoalData } from "./GameGoals"
+import './index.css';
+import { BasicGoal, BasicGoalData } from './BasicGoal';
+import { Bikes, BikesGoal } from './Bikes';
+import { EmojiCheckbox } from '../../../shared/controls/EmojiCheckbox';
+import { GameGoal, GameGoalData } from './GameGoals';
 
 type DiscreteTimesGoal = {
-  id?: string
-  description: string
-  times: { id: string; total: number; completed?: number }[]
-}
+  id?: string;
+  description: string;
+  times: { id: string; total: number; completed?: number }[];
+};
 
-type Goal = Book | BasicGoalData | BikesGoal | DiscreteTimesGoal | GameGoalData
+type Goal = Book | BasicGoalData | BikesGoal | DiscreteTimesGoal | GameGoalData;
 
-const path = "2026/other_goals"
+const path = '2026/other_goals';
 const hasId = (book: Goal): book is Required<Goal> =>
-  typeof book.id === "string"
+  typeof book.id === 'string';
 
 export function OtherGoals() {
-  const { useValue, updateItem, addItem } = useStorageContext()
+  const { useValue, updateItem, addItem } = useStorageContext();
 
-  const { value } = useValue<Record<string, Goal>>(path)
+  const { value } = useValue<Record<string, Goal>>(path);
   const goals = useMemo(
     () =>
       value
@@ -32,15 +32,15 @@ export function OtherGoals() {
           )
         : [],
     [value],
-  )
+  );
 
   const onUpdate = (goal: Goal) => {
     if (hasId(goal)) {
-      updateItem(path, goal)
+      updateItem(path, goal);
     } else {
-      addItem<Goal>(path, goal)
+      addItem<Goal>(path, goal);
     }
-  }
+  };
 
   return (
     <ul className="other-goals">
@@ -48,27 +48,27 @@ export function OtherGoals() {
         <li key={goal.id}>{getComponent(goal, onUpdate)}</li>
       ))}
     </ul>
-  )
+  );
 }
 
 const isDiscreteTimesGoal = (goal: Goal): goal is DiscreteTimesGoal =>
-  "times" in goal
+  'times' in goal;
 const isBikes = (goal: Goal): goal is BikesGoal =>
-  "bikes" in goal && Array.isArray(goal.bikes)
+  'bikes' in goal && Array.isArray(goal.bikes);
 const isGame = (goal: Goal): goal is GameGoalData =>
-  "name" in goal && goal.name === "Wind Waker"
+  'name' in goal && goal.name === 'Wind Waker';
 
 const getComponent = (goal: Goal, onUpdate: (goal: Goal) => void) => {
-  if ("title" in goal) {
-    return <Reading book={goal} onChange={onUpdate} />
+  if ('title' in goal) {
+    return <Reading book={goal} onChange={onUpdate} />;
   } else if (isDiscreteTimesGoal(goal)) {
     return (
-      <div className={`discrete-times-goal ${isDone(goal) ? "done" : ""}`}>
+      <div className={`discrete-times-goal ${isDone(goal) ? 'done' : ''}`}>
         <div className="description">{goal.description}</div>
         {goal.times.map((times, timesesIndex) => (
           <div className="completions" key={times.id}>
             {Array.from({ length: times.total }).map((_, index) => {
-              const isChecked = index < (times.completed ?? 0)
+              const isChecked = index < (times.completed ?? 0);
 
               return (
                 <div className="tooltip-container" key={index}>
@@ -79,55 +79,55 @@ const getComponent = (goal: Goal, onUpdate: (goal: Goal) => void) => {
                       isChecked={isChecked}
                       onChange={() => {
                         const completed =
-                          (times.completed ?? 0) + (isChecked ? -1 : 1)
+                          (times.completed ?? 0) + (isChecked ? -1 : 1);
                         onUpdate({
                           ...goal,
                           times: goal.times.with(timesesIndex, {
                             ...times,
                             completed,
                           }),
-                        })
+                        });
                       }}
                     />
                   </div>
                   {isChecked && <div className="tooltip">{index + 1}</div>}
                 </div>
-              )
+              );
             })}
           </div>
         ))}
       </div>
-    )
+    );
   } else if (isBikes(goal)) {
-    return <Bikes goal={goal} onChange={onUpdate} />
+    return <Bikes goal={goal} onChange={onUpdate} />;
   } else if (isGame(goal)) {
-    return <GameGoal goal={goal} onChange={onUpdate} />
+    return <GameGoal goal={goal} onChange={onUpdate} />;
   } else {
-    return <BasicGoal goal={goal} onChange={onUpdate} />
+    return <BasicGoal goal={goal} onChange={onUpdate} />;
   }
-}
+};
 
 function isDone(task: any) {
-  if ("status" in task) {
-    return task.status === "done"
+  if ('status' in task) {
+    return task.status === 'done';
   }
 
-  if ("times" in task && Array.isArray(task.times)) {
+  if ('times' in task && Array.isArray(task.times)) {
     return task.times.every(
       (time: { completed: number; total: number }) =>
         time.completed === time.total,
-    )
+    );
   }
 
-  if ("volumes" in task && Array.isArray(task.volumes)) {
+  if ('volumes' in task && Array.isArray(task.volumes)) {
     return task.volumes.every(
       (volume: { readPages: number; totalPages: number }) =>
         volume.readPages === volume.totalPages,
-    )
+    );
   }
 
-  if ("bikes" in task && Array.isArray(task.bikes)) {
-    return task.bikes.every((bike: { isDone: boolean }) => bike.isDone)
+  if ('bikes' in task && Array.isArray(task.bikes)) {
+    return task.bikes.every((bike: { isDone: boolean }) => bike.isDone);
   }
-  return false
+  return false;
 }

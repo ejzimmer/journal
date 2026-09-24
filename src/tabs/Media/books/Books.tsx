@@ -5,35 +5,39 @@ import {
   getBookStatus,
   isSeries,
   SeriesDetails,
-} from "../types"
-import { getCoverHue } from "../coverHue"
-import { MediaList } from "../MediaList"
-import { MediaEditFormProps, StatusConfig } from "../MediaSpine"
-import { AddMediaForm, EditMediaForm } from "../MediaForm"
-import { useBookFormConfig } from "./bookFormConfig"
-import { Shelf } from "../Shelf"
-import { useMediaStorage } from "../MediaStorageContext"
+} from '../types';
+import { getCoverHue } from '../coverHue';
+import { MediaList } from '../MediaList';
+import { MediaEditFormProps, StatusConfig } from '../MediaSpine';
+import { AddMediaForm, EditMediaForm } from '../MediaForm';
+import { useBookFormConfig } from './bookFormConfig';
+import { Shelf } from '../Shelf';
+import { useMediaStorage } from '../MediaStorageContext';
 
 const BOOK_CONFIG: StatusConfig<BookDetails, BookStatus> = {
   order: BOOK_STATUS_ORDER,
   spineStatus: {
-    unread: "todo",
-    reading: "active",
-    listening: "active",
-    read: "done",
+    unread: 'todo',
+    reading: 'active',
+    listening: 'active',
+    read: 'done',
   },
   glyph: {
-    unread: "📖",
-    reading: "📖",
-    listening: "🎧",
-    read: "✓",
+    unread: '📖',
+    reading: '📖',
+    listening: '🎧',
+    read: '✓',
   },
   getStatus: getBookStatus,
   setStatus: (book, status) => ({ ...book, status }),
   getAuthor: (book) => book.author,
-}
+};
 
-function EditBookForm({ item, isOpen, onCancel }: MediaEditFormProps<BookDetails>) {
+function EditBookForm({
+  item,
+  isOpen,
+  onCancel,
+}: MediaEditFormProps<BookDetails>) {
   return (
     <EditMediaForm
       item={item}
@@ -41,15 +45,15 @@ function EditBookForm({ item, isOpen, onCancel }: MediaEditFormProps<BookDetails
       onCancel={onCancel}
       config={useBookFormConfig()}
     />
-  )
+  );
 }
 
 function BookMediaList({
   books,
   bandHue,
 }: {
-  books?: Record<string, BookDetails>
-  bandHue?: number
+  books?: Record<string, BookDetails>;
+  bandHue?: number;
 }) {
   return (
     <MediaList
@@ -59,18 +63,18 @@ function BookMediaList({
       config={BOOK_CONFIG}
       EditForm={EditBookForm}
     />
-  )
+  );
 }
 
 export function Books() {
-  const { books, updateMediaSeries } = useMediaStorage()
+  const { books, updateMediaSeries } = useMediaStorage();
 
-  const series = books.filter(
-    (item): item is SeriesDetails<BookDetails> => isSeries(item),
-  )
+  const series = books.filter((item): item is SeriesDetails<BookDetails> =>
+    isSeries(item),
+  );
   const singleBooks = books.filter(
     (item): item is BookDetails => !isSeries(item),
-  )
+  );
 
   return (
     <div className="books">
@@ -93,5 +97,5 @@ export function Books() {
       </div>
       <AddMediaForm ariaLabel="Add a book" config={useBookFormConfig()} />
     </div>
-  )
+  );
 }

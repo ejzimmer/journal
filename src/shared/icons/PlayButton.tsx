@@ -1,8 +1,8 @@
-import { IconProps } from "./types"
+import { IconProps } from './types';
 
 export function PlayButtonIcon({
-  width = "100%",
-  colour = "currentColor",
+  width = '100%',
+  colour = 'currentColor',
 }: IconProps) {
   return (
     <svg
@@ -16,5 +16,5 @@ export function PlayButtonIcon({
     >
       <path d="M4,4 L16,10 4,16z" />
     </svg>
-  )
+  );
 }

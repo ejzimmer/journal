@@ -3,9 +3,9 @@ import {
   ConfirmationModalDialog,
   ConfirmationModalDialogProps,
   ConfirmationModalProps,
-} from "../../shared/controls/ConfirmationModal"
+} from '../../shared/controls/ConfirmationModal';
 
-import "./PostitModal.css"
+import './PostitModal.css';
 
 export function PostitModal(props: ConfirmationModalProps) {
   return (
@@ -16,7 +16,7 @@ export function PostitModal(props: ConfirmationModalProps) {
         cancelButtonText="No"
       />
     </div>
-  )
+  );
 }
 
 export function PostitModalDialog(props: ConfirmationModalDialogProps) {
@@ -28,5 +28,5 @@ export function PostitModalDialog(props: ConfirmationModalDialogProps) {
         cancelButtonText="No"
       />
     </div>
-  )
+  );
 }

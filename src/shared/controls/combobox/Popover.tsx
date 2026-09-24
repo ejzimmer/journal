@@ -1,25 +1,25 @@
-import { useEffect, useRef } from "react"
-import { OptionType } from "./types"
-import { isSelected } from "./utils"
-import { PopoverPlacement } from "./usePopoverPlacement"
+import { useEffect, useRef } from 'react';
+import { OptionType } from './types';
+import { isSelected } from './utils';
+import { PopoverPlacement } from './usePopoverPlacement';
 
 type PopoverProps<T> = {
-  popoverRef: React.RefObject<HTMLDivElement | null>
-  popoverId: string
-  placement: PopoverPlacement
-  maxHeight: number
-  top?: number
-  bottom?: number
-  left: number
-  minWidth: number
-  options: T[]
-  selected?: T | T[]
-  onClick: (option: T) => void
-  highlightedOption?: T
+  popoverRef: React.RefObject<HTMLDivElement | null>;
+  popoverId: string;
+  placement: PopoverPlacement;
+  maxHeight: number;
+  top?: number;
+  bottom?: number;
+  left: number;
+  minWidth: number;
+  options: T[];
+  selected?: T | T[];
+  onClick: (option: T) => void;
+  highlightedOption?: T;
   Option?: React.FC<{
-    value: T
-  }>
-}
+    value: T;
+  }>;
+};
 
 export function Popover<T extends OptionType>({
   popoverRef,
@@ -36,11 +36,11 @@ export function Popover<T extends OptionType>({
   highlightedOption,
   Option,
 }: PopoverProps<T>) {
-  const highlightedRef = useRef<HTMLLIElement>(null)
+  const highlightedRef = useRef<HTMLLIElement>(null);
 
   useEffect(() => {
-    highlightedRef.current?.scrollIntoView({ block: "nearest" })
-  }, [highlightedOption])
+    highlightedRef.current?.scrollIntoView({ block: 'nearest' });
+  }, [highlightedOption]);
 
   return (
     <div
@@ -55,8 +55,8 @@ export function Popover<T extends OptionType>({
           // not positioning from must be set to "auto" explicitly -
           // otherwise that leftover 0 wins over the side we do set, once
           // height ends up over-constrained between the two.
-          top: top !== undefined ? `${top}px` : "auto",
-          bottom: bottom !== undefined ? `${bottom}px` : "auto",
+          top: top !== undefined ? `${top}px` : 'auto',
+          bottom: bottom !== undefined ? `${bottom}px` : 'auto',
           left: `${left}px`,
           minWidth: `${minWidth}px`,
           maxHeight: `${maxHeight}px`,
@@ -66,26 +66,26 @@ export function Popover<T extends OptionType>({
       {options.length ? (
         <ul className="options">
           {options.map((option) => {
-            const isHighlighted = option === highlightedOption
+            const isHighlighted = option === highlightedOption;
             return (
               <li
                 key={option.id}
                 ref={isHighlighted ? highlightedRef : undefined}
                 role="option"
                 aria-selected={
-                  isSelected({ value: selected, option }) ? "true" : "false"
+                  isSelected({ value: selected, option }) ? 'true' : 'false'
                 }
                 onClick={() => onClick(option)}
-                className={isHighlighted ? "highlighted" : ""}
+                className={isHighlighted ? 'highlighted' : ''}
               >
                 {Option ? <Option value={option} /> : option.label}
               </li>
-            )
+            );
           })}
         </ul>
       ) : (
-        <div style={{ padding: "20px 30px" }}>No options</div>
+        <div style={{ padding: '20px 30px' }}>No options</div>
       )}
     </div>
-  )
+  );
 }

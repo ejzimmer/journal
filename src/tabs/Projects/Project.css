@@ -5,7 +5,7 @@
   --card-border-width: 2px;
   --radius: 7px;
   --drawer-inset: calc(var(--radius) - var(--card-border-width));
-  --card-max: min(840px, 80vw);
+  --card-min: 320px;
   position: relative;
   flex-shrink: 0;
   list-style-type: none;
@@ -13,8 +13,7 @@
   font-size: 18px;
   align-self: start;
   height: 100%;
-  min-width: calc(var(--drawer-content-width, 0px) + 2 * var(--drawer-inset));
-  transition: min-width 0.2s ease-out;
+  min-width: var(--card-min);
 
   &:not(.in_progress) {
     button.expand {
@@ -116,6 +115,10 @@
     align-items: center;
   }
 
+  .project-name {
+    white-space: nowrap;
+  }
+
   .project-meta-row {
     display: flex;
     align-items: center;
@@ -173,22 +176,21 @@
     position: absolute;
     inset-block-start: 100%;
     inset-inline: var(--drawer-inset);
-    max-width: var(--card-max);
     overflow: hidden;
-    background: var(--seam-shadow) top / 100% 8px no-repeat, white;
+    background:
+      var(--seam-shadow) top / 100% 8px no-repeat,
+      white;
     transition: height 0.2s ease-out;
 
     &.visible {
-      overflow: visible;
       border: 1px solid var(--card-border-colour);
       border-top: none;
       border-end-start-radius: var(--radius);
       border-end-end-radius: var(--radius);
     }
 
-    &.measuring form.add-subtask-form.visible {
-      width: var(--form-target-width);
-      max-width: none;
+    &.settled {
+      overflow: visible;
     }
   }
 
@@ -276,16 +278,17 @@
     gap: 4px;
     align-items: center;
 
+    label.checkbox {
+      --checkbox-size: 1.2em;
+    }
+
     label.checkbox .control {
-      width: 1.2em;
       color: var(--project-colour);
       border: 2px solid;
+    }
 
-      &:has(+ :checked) {
-        background: var(--project-colour);
-        border-color: var(--project-colour);
-        color: white;
-      }
+    .done-tick {
+      background: var(--project-colour-solid);
     }
 
     label:has(:checked) + div {

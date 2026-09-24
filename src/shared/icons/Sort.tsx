@@ -1,8 +1,8 @@
-import { IconProps } from "./types"
+import { IconProps } from './types';
 
 export function SortIcon({
-  width = "100%",
-  colour = "currentColor",
+  width = '100%',
+  colour = 'currentColor',
 }: IconProps) {
   return (
     <svg
@@ -19,5 +19,5 @@ export function SortIcon({
       <path d="M12,14 L15,18 18,14" />
       <path d="M15,5 L15,18" />
     </svg>
-  )
+  );
 }

@@ -49,7 +49,7 @@
   }
 
   li:not(:last-child) .station::after {
-    content: "";
+    content: '';
     width: 24px;
     height: 10px;
     background: var(--hurstbridge-red);

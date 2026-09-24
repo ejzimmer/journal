@@ -1,12 +1,12 @@
-import { EmojiCheckbox } from "../../../shared/controls/EmojiCheckbox"
+import { EmojiCheckbox } from '../../../shared/controls/EmojiCheckbox';
 
-type Bike = { name: string; icon: string; isDone: boolean }
-export type BikesGoal = { id: string; bikes: Bike[] }
+type Bike = { name: string; icon: string; isDone: boolean };
+export type BikesGoal = { id: string; bikes: Bike[] };
 
 type BikesProps = {
-  goal: BikesGoal
-  onChange: (goal: BikesGoal) => void
-}
+  goal: BikesGoal;
+  onChange: (goal: BikesGoal) => void;
+};
 
 export function Bikes({ goal, onChange }: BikesProps) {
   return (
@@ -31,5 +31,5 @@ export function Bikes({ goal, onChange }: BikesProps) {
         </li>
       ))}
     </ul>
-  )
+  );
 }

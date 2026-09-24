@@ -1,14 +1,14 @@
-import { ChangeEvent } from "react"
-import { DoneTick } from "./DoneTick"
-import "./EmojiCheckbox.css"
+import { ChangeEvent } from 'react';
+import { DoneTick } from './DoneTick';
+import './EmojiCheckbox.css';
 
 type EmojiCheckboxProps = {
-  emoji: string | React.ReactElement
-  isChecked: boolean
-  onChange: (event: React.ChangeEvent<HTMLInputElement>) => void
-  label: string
-  useTickForDone?: boolean
-}
+  emoji: string | React.ReactElement;
+  isChecked: boolean;
+  onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  label: string;
+  useTickForDone?: boolean;
+};
 
 export function EmojiCheckbox({
   emoji,
@@ -17,7 +17,7 @@ export function EmojiCheckbox({
   label,
   useTickForDone,
 }: EmojiCheckboxProps) {
-  const checkedClass = isChecked ? (useTickForDone ? "done-icon" : "done") : ""
+  const checkedClass = isChecked ? (useTickForDone ? 'done-icon' : 'done') : '';
 
   return (
     <label className={`emoji-checkbox ${checkedClass}`}>
@@ -29,15 +29,15 @@ export function EmojiCheckbox({
       />
       {isChecked && useTickForDone ? (
         <DoneTick />
-      ) : typeof emoji === "string" ? (
-        emoji.startsWith(".") ? (
+      ) : typeof emoji === 'string' ? (
+        emoji.startsWith('.') ? (
           <img
             src={emoji}
             alt=""
             style={{
-              verticalAlign: "bottom",
-              maxWidth: "24px",
-              maxHeight: "24px",
+              verticalAlign: 'bottom',
+              maxWidth: '24px',
+              maxHeight: '24px',
             }}
           />
         ) : (
@@ -47,5 +47,5 @@ export function EmojiCheckbox({
         emoji
       )}
     </label>
-  )
+  );
 }

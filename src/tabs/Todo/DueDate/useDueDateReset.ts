@@ -1,40 +1,39 @@
-import { isBeforeToday, isToday } from "../../../shared/dates"
-import { useStorageContext } from "../../../shared/FirebaseContext"
-import { useDailyJob } from "../../../shared/dailyJobs/DailyJobsContext"
+import { isBeforeToday, isToday } from '../../../shared/dates';
+import { useStorageContext } from '../../../shared/FirebaseContext';
+import { useDailyJob } from '../../../shared/dailyJobs/DailyJobsContext';
 import {
   CALENDAR_KEY,
   CALENDAR_RESET_KEY,
   CalendarTask,
-} from "../../../shared/types"
+} from '../../../shared/types';
 
 const readyToDelete = (task: CalendarTask) =>
-  task.status === "finished" &&
+  task.status === 'finished' &&
   isBeforeToday(task.dueDate) &&
-  isBeforeToday(task.statusUpdateDate)
+  isBeforeToday(task.statusUpdateDate);
 
-const taskIsToday = (task: CalendarTask) => isToday(task.dueDate)
+const taskIsToday = (task: CalendarTask) => isToday(task.dueDate);
 
 export function useDueDateReset() {
-  const { useValue, deleteItem, updateItem } = useStorageContext()
-  const { value: tasksById } = useValue<Record<string, CalendarTask>>(
-    CALENDAR_KEY,
-  )
+  const { useValue, deleteItem, updateItem } = useStorageContext();
+  const { value: tasksById } =
+    useValue<Record<string, CalendarTask>>(CALENDAR_KEY);
 
   useDailyJob({
     lastRunKey: CALENDAR_RESET_KEY,
     isReady: tasksById !== undefined,
     run: () => {
-      const tasks = Object.values(tasksById ?? {})
+      const tasks = Object.values(tasksById ?? {});
 
       tasks
         .filter(readyToDelete)
-        .forEach((task) => deleteItem<CalendarTask>(CALENDAR_KEY, task))
+        .forEach((task) => deleteItem<CalendarTask>(CALENDAR_KEY, task));
 
       tasks
-        .filter((task) => taskIsToday(task) && task.status === "paused")
+        .filter((task) => taskIsToday(task) && task.status === 'paused')
         .forEach((task) =>
-          updateItem(CALENDAR_KEY, { ...task, status: "ready" }),
-        )
+          updateItem(CALENDAR_KEY, { ...task, status: 'ready' }),
+        );
     },
-  })
+  });
 }

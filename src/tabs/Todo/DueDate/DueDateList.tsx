@@ -1,14 +1,14 @@
-import { AddDueDateTaskForm } from "./AddDueDateTaskForm"
-import { DueDateTask } from "./DueDateTask"
+import { AddDueDateTaskForm } from './AddDueDateTaskForm';
+import { DueDateTask } from './DueDateTask';
 
-import "./DueDateTask.css"
-import { useStorageContext } from "../../../shared/FirebaseContext"
-import { CalendarTask, CALENDAR_KEY } from "../../../shared/types"
+import './DueDateTask.css';
+import { useStorageContext } from '../../../shared/FirebaseContext';
+import { CalendarTask, CALENDAR_KEY } from '../../../shared/types';
 
 export function DueDateList() {
-  const { useValue } = useStorageContext()
-  const { value } = useValue<Record<string, CalendarTask>>(CALENDAR_KEY)
-  const tasks = value ? Object.values(value) : []
+  const { useValue } = useStorageContext();
+  const { value } = useValue<Record<string, CalendarTask>>(CALENDAR_KEY);
+  const tasks = value ? Object.values(value) : [];
 
   return (
     <div className="todo-task-list calendar">
@@ -27,5 +27,5 @@ export function DueDateList() {
       )}
       <AddDueDateTaskForm />
     </div>
-  )
+  );
 }
