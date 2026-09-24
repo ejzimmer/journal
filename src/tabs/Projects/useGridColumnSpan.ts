@@ -79,18 +79,10 @@ export function useGridColumnSpan(
 
     observeProjectName();
 
-    const measureWhenCardSettles = (event: TransitionEvent) => {
-      if (event.target === card && event.propertyName === 'min-width') {
-        measureOnNextFrame();
-      }
-    };
-    card.addEventListener('transitionend', measureWhenCardSettles);
-
     return () => {
       cancelled = true;
       cancelAnimationFrame(frame);
       resizeObserver.disconnect();
-      card.removeEventListener('transitionend', measureWhenCardSettles);
     };
   }, [itemRef, project, isVisible]);
 }

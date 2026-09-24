@@ -1,4 +1,4 @@
-import { CSSProperties, useRef, useState, useEffect } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import { TickIcon } from '../../shared/icons/Tick';
 
 type AddSubtaskFormProps = {
@@ -26,12 +26,7 @@ export function AddSubtaskForm({
       className={`add-subtask-form ${isFormVisible ? 'visible' : ''} ${
         description ? 'has-description' : ''
       }`}
-      style={
-        {
-          '--form-target-width': `${formWidthRef.current}px`,
-          minWidth: isFormVisible ? formWidthRef.current : 0,
-        } as CSSProperties
-      }
+      style={{ minWidth: isFormVisible ? formWidthRef.current : 0 }}
       onSubmit={(event) => {
         event.preventDefault();
 

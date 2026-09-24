@@ -1,4 +1,11 @@
-import { RefObject, useCallback, useEffect, useRef, useState } from 'react';
+import {
+  RefObject,
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from 'react';
 import { ProjectSubtask } from '../../shared/types';
 
 type DrawerParams = {
@@ -21,61 +28,44 @@ export function useDrawer({
   isFormOpen,
 }: DrawerParams) {
   const [openHeight, setOpenHeight] = useState(0);
-  const [isCollapsing, setIsCollapsing] = useState(false);
+  const [isAnimating, setIsAnimating] = useState(false);
   const hasScrolledIntoView = useRef(false);
-  const wasOpen = useRef(isOpen);
 
-  const measureDrawer = useCallback(() => {
-    const drawer = drawerRef.current;
-    if (!drawer || !listRef.current || !formRef.current) return;
+  const height = isOpen ? openHeight : 0;
+  const lastRenderedHeight = useRef(height);
 
-    const card = drawer.parentElement;
-    if (!card) return;
+  const measureDrawerHeight = useCallback(() => {
+    if (!listRef.current || !formRef.current) return;
 
-    card.style.removeProperty('--drawer-content-width');
-    drawer.classList.add('measuring');
-    drawer.style.width = 'max-content';
-
-    const contentWidth = Math.ceil(drawer.getBoundingClientRect().width);
     setOpenHeight(listRef.current.clientHeight + formRef.current.clientHeight);
-
-    drawer.style.width = '';
-    drawer.classList.remove('measuring');
-    card.style.setProperty('--drawer-content-width', `${contentWidth}px`);
-  }, [drawerRef, listRef, formRef]);
+  }, [listRef, formRef]);
 
   useEffect(() => {
-    measureDrawer();
-  }, [measureDrawer, subtasks, isProjectLoaded, isFormOpen]);
+    measureDrawerHeight();
+  }, [measureDrawerHeight, subtasks, isProjectLoaded, isFormOpen]);
 
-  useEffect(() => {
-    if (wasOpen.current === isOpen) return;
-    wasOpen.current = isOpen;
+  useLayoutEffect(() => {
+    if (lastRenderedHeight.current === height) return;
+    lastRenderedHeight.current = height;
 
-    setIsCollapsing(!isOpen && openHeight > 0);
-  }, [isOpen, openHeight]);
+    setIsAnimating(true);
+  }, [height]);
 
   useEffect(() => {
     const drawer = drawerRef.current;
     if (!drawer) return;
 
-    const remeasureWhenFormSettles = (event: TransitionEvent) => {
-      if (event.propertyName === 'min-width') measureDrawer();
-    };
-
-    const stopCollapsingWhenClosed = (event: TransitionEvent) => {
+    const stopAnimatingWhenSettled = (event: TransitionEvent) => {
       if (event.target === drawer && event.propertyName === 'height') {
-        setIsCollapsing(false);
+        setIsAnimating(false);
       }
     };
 
-    drawer.addEventListener('transitionend', remeasureWhenFormSettles);
-    drawer.addEventListener('transitionend', stopCollapsingWhenClosed);
+    drawer.addEventListener('transitionend', stopAnimatingWhenSettled);
     return () => {
-      drawer.removeEventListener('transitionend', remeasureWhenFormSettles);
-      drawer.removeEventListener('transitionend', stopCollapsingWhenClosed);
+      drawer.removeEventListener('transitionend', stopAnimatingWhenSettled);
     };
-  }, [drawerRef, measureDrawer, isProjectLoaded]);
+  }, [drawerRef, isProjectLoaded]);
 
   useEffect(() => {
     if (!isOpen) {
@@ -99,5 +89,9 @@ export function useDrawer({
     }
   }, [drawerRef, isOpen, openHeight]);
 
-  return { height: isOpen ? openHeight : 0, isRaised: isOpen || isCollapsing };
+  return {
+    height,
+    isRaised: isOpen || isAnimating,
+    isSettled: isOpen && !isAnimating,
+  };
 }
