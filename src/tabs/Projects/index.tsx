@@ -5,87 +5,86 @@ import {
   useMemo,
   useRef,
   useState,
-} from "react"
-import { useStorageContext } from "../../shared/FirebaseContext"
+} from 'react';
+import { useStorageContext } from '../../shared/FirebaseContext';
 
-import "./index.css"
-import { Project } from "./Project"
-import { AddProjectForm } from "./AddProjectForm"
+import './index.css';
+import { Project } from './Project';
+import { AddProjectForm } from './AddProjectForm';
 import {
   Category,
   PROJECT_COLOURS,
   ProjectDetails,
   PROJECTS_KEY,
-} from "../../shared/types"
-import { EmojiCheckbox } from "../../shared/controls/EmojiCheckbox"
-import { XIcon } from "../../shared/icons/X"
+} from '../../shared/types';
+import { EmojiCheckbox } from '../../shared/controls/EmojiCheckbox';
+import { XIcon } from '../../shared/icons/X';
 import {
   renumberPositions,
   sortByPosition,
-} from "../../shared/drag-and-drop/utils"
+} from '../../shared/drag-and-drop/utils';
 import {
   isProjectAtEnd,
   isProjectAtStart,
   moveProjectToEnd,
   moveProjectToStart,
   reorderProjects,
-} from "./utils"
-import { useGridColumnSpan } from "./useGridColumnSpan"
-import { ProjectsSkeleton } from "./ProjectsSkeleton"
+} from './utils';
+import { useGridColumnSpan } from './useGridColumnSpan';
+import { ProjectsSkeleton } from './ProjectsSkeleton';
 
 export function Projects() {
-  const [filterCategories, setFilterCategories] = useState<Category[]>([])
+  const [filterCategories, setFilterCategories] = useState<Category[]>([]);
 
-  const { useValue, updateList, deleteItem } = useStorageContext()
+  const { useValue, updateList, deleteItem } = useStorageContext();
 
-  const { value, loading } = useValue<Record<string, ProjectDetails>>(
-    PROJECTS_KEY,
-  )
+  const { value, loading } =
+    useValue<Record<string, ProjectDetails>>(PROJECTS_KEY);
   const sortedProjects = useMemo(
     () => sortByPosition(value ? Object.values(value) : []),
     [value],
-  )
+  );
 
   const hasUnsortedDoneProjects = sortedProjects.some(
     (project, index) =>
       index > 0 &&
-      (project.status ?? "ready") !== "done" &&
-      (sortedProjects[index - 1].status ?? "ready") === "done",
-  )
+      (project.status ?? 'ready') !== 'done' &&
+      (sortedProjects[index - 1].status ?? 'ready') === 'done',
+  );
 
   const onSortDoneProjectsToEnd = useCallback(() => {
     const reordered = renumberPositions(
       sortedProjects.toSorted(
         (a, b) =>
-          Number((a.status ?? "ready") === "done") -
-          Number((b.status ?? "ready") === "done"),
+          Number((a.status ?? 'ready') === 'done') -
+          Number((b.status ?? 'ready') === 'done'),
       ),
-    )
+    );
 
-    updateList<ProjectDetails>(PROJECTS_KEY, reordered)
-  }, [sortedProjects, updateList])
+    updateList<ProjectDetails>(PROJECTS_KEY, reordered);
+  }, [sortedProjects, updateList]);
 
-  const hasSortedDoneProjectsOnLoad = useRef(false)
+  const hasSortedDoneProjectsOnLoad = useRef(false);
 
   useEffect(() => {
-    if (hasSortedDoneProjectsOnLoad.current || loading) return
-    hasSortedDoneProjectsOnLoad.current = true
+    if (hasSortedDoneProjectsOnLoad.current || loading) return;
+    hasSortedDoneProjectsOnLoad.current = true;
 
     if (hasUnsortedDoneProjects) {
-      onSortDoneProjectsToEnd()
+      onSortDoneProjectsToEnd();
     }
-  }, [loading, hasUnsortedDoneProjects, onSortDoneProjectsToEnd])
+  }, [loading, hasUnsortedDoneProjects, onSortDoneProjectsToEnd]);
 
   const updateFilterCategories = (
     category: Category,
-    action: "add" | "remove",
+    action: 'add' | 'remove',
   ) => {
-    if (action === "add") {
-      setFilterCategories((prev) => [...prev, category])
+    if (action === 'add') {
+      setFilterCategories((prev) => [...prev, category]);
     } else {
-      setFilterCategories((prev) => prev.filter((f) => f !== category))
+      setFilterCategories((prev) => prev.filter((f) => f !== category));
     }
-  }
+  };
 
   return (
     <div className="projects-container">
@@ -98,7 +97,7 @@ export function Projects() {
             onChange={() =>
               updateFilterCategories(
                 category,
-                filterCategories.includes(category) ? "remove" : "add",
+                filterCategories.includes(category) ? 'remove' : 'add',
               )
             }
             label={`Filter by ${category}`}
@@ -106,7 +105,7 @@ export function Projects() {
         ))}
         <button
           className="icon ghost"
-          style={{ marginInlineEnd: "8px" }}
+          style={{ marginInlineEnd: '8px' }}
           onClick={() => setFilterCategories([])}
         >
           <XIcon width=".6em" colour="var(--body-colour-mid)" />
@@ -128,8 +127,8 @@ export function Projects() {
                   updateList(
                     PROJECTS_KEY,
                     reorderProjects(sortedProjects, index),
-                  )
-                  deleteItem(PROJECTS_KEY, project)
+                  );
+                  deleteItem(PROJECTS_KEY, project);
                 }}
                 onMoveToStart={
                   isProjectAtStart(sortedProjects, index)
@@ -156,7 +155,7 @@ export function Projects() {
       </ul>
       <AddProjectForm />
     </div>
-  )
+  );
 }
 
 function FilteredProject({
@@ -164,23 +163,23 @@ function FilteredProject({
   project,
   children,
 }: {
-  filter: Category[]
-  project: ProjectDetails
-  children: React.ReactNode
+  filter: Category[];
+  project: ProjectDetails;
+  children: React.ReactNode;
 }) {
-  const itemRef = useRef<HTMLLIElement>(null)
-  const isVisible = !categories.length || categories.includes(project.category)
-  const rowSpan = (project.status ?? "ready") === "in_progress" ? 2 : 1
+  const itemRef = useRef<HTMLLIElement>(null);
+  const isVisible = !categories.length || categories.includes(project.category);
+  const rowSpan = (project.status ?? 'ready') === 'in_progress' ? 2 : 1;
 
-  useGridColumnSpan(itemRef, project, isVisible)
+  useGridColumnSpan(itemRef, project, isVisible);
 
   return (
     <li
       ref={itemRef}
-      className={`project-item ${isVisible ? "" : "filtered-out"}`}
-      style={{ "--row-span": rowSpan } as CSSProperties}
+      className={`project-item ${isVisible ? '' : 'filtered-out'}`}
+      style={{ '--row-span': rowSpan } as CSSProperties}
     >
       {children}
     </li>
-  )
+  );
 }

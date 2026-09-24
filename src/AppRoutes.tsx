@@ -1,6 +1,6 @@
-import { Routes, Route } from "react-router-dom"
-import { Todo } from "./tabs/Todo"
-import { TABS } from "./tabConfig"
+import { Routes, Route } from 'react-router-dom';
+import { Todo } from './tabs/Todo';
+import { TABS } from './tabConfig';
 
 export function AppRoutes() {
   return (
@@ -10,5 +10,5 @@ export function AppRoutes() {
       ))}
       <Route path="/" element={<Todo />} />
     </Routes>
-  )
+  );
 }

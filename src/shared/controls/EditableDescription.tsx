@@ -1,23 +1,21 @@
-import { useContext, useEffect, useMemo, useRef, useState } from "react"
-import { EmojiCheckbox } from "./EmojiCheckbox"
-import { CategoriesContext } from "../../tabs/Todo"
-import { Combobox } from "./combobox/Combobox"
-import { useFormToggle } from "./useFormToggle"
+import { useContext, useEffect, useMemo, useRef, useState } from 'react';
+import { EmojiCheckbox } from './EmojiCheckbox';
+import { CategoriesContext } from '../../tabs/Todo';
+import { Combobox } from './combobox/Combobox';
+import { useFormToggle } from './useFormToggle';
 
-import "./EditableDescription.css"
+import './EditableDescription.css';
 
 type Change =
-  | { isChecked: boolean }
-  | { category: string }
-  | { description: string }
+  { isChecked: boolean } | { category: string } | { description: string };
 
 export type EditableDescriptionProps = {
-  category: string
-  description: string
-  isChecked: boolean
-  onChange: (change: Change) => void
-  useTickForDone?: boolean
-}
+  category: string;
+  description: string;
+  isChecked: boolean;
+  onChange: (change: Change) => void;
+  useTickForDone?: boolean;
+};
 
 export function EditableDescription({
   category,
@@ -26,42 +24,42 @@ export function EditableDescription({
   onChange,
   useTickForDone,
 }: EditableDescriptionProps) {
-  const inputRef = useRef<HTMLInputElement>(null)
+  const inputRef = useRef<HTMLInputElement>(null);
   const {
     isFormOpen: inEditMode,
     triggerRef: displayRef,
     openForm: startEditing,
     closeForm: stopEditing,
     openFormOnEnterOrSpace,
-  } = useFormToggle<HTMLDivElement>()
-  const [inputValue, setInputValue] = useState(description)
+  } = useFormToggle<HTMLDivElement>();
+  const [inputValue, setInputValue] = useState(description);
 
-  const categories = useContext(CategoriesContext)
+  const categories = useContext(CategoriesContext);
   if (!categories) {
-    throw new Error("Missing categories context provider")
+    throw new Error('Missing categories context provider');
   }
   const categoryOptions = useMemo(
     () => categories.map((category) => ({ id: category, label: category })),
     [categories],
-  )
+  );
 
   useEffect(() => {
     if (inputRef.current && inEditMode) {
-      inputRef.current.focus()
+      inputRef.current.focus();
     }
-  }, [inEditMode])
+  }, [inEditMode]);
 
   if (inEditMode) {
     return (
       <div
         className="editable-description"
         onKeyDown={({ key }) => {
-          if (key === "Enter" && inputValue !== description) {
-            onChange({ description: inputValue })
+          if (key === 'Enter' && inputValue !== description) {
+            onChange({ description: inputValue });
           }
 
-          if (["Enter", "Escape"].includes(key)) {
-            stopEditing()
+          if (['Enter', 'Escape'].includes(key)) {
+            stopEditing();
           }
         }}
       >
@@ -70,8 +68,8 @@ export function EditableDescription({
           options={categoryOptions}
           createOption={(value) => ({ id: value, label: value })}
           onChange={(value) => {
-            onChange({ category: value.id })
-            stopEditing()
+            onChange({ category: value.id });
+            stopEditing();
           }}
           inputSize={1}
           ariaLabel="Category"
@@ -85,7 +83,7 @@ export function EditableDescription({
           size={inputValue.length}
         />
       </div>
-    )
+    );
   }
 
   return (
@@ -108,5 +106,5 @@ export function EditableDescription({
         {description}
       </div>
     </div>
-  )
+  );
 }

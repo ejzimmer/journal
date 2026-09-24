@@ -1,5 +1,5 @@
-import { CSSProperties } from "react"
-import "./ProjectsSkeleton.css"
+import { CSSProperties } from 'react';
+import './ProjectsSkeleton.css';
 
 const SKELETON_CARDS = [
   { colSpan: 18, rowSpan: 1 },
@@ -10,7 +10,7 @@ const SKELETON_CARDS = [
   { colSpan: 22, rowSpan: 1 },
   { colSpan: 14, rowSpan: 1 },
   { colSpan: 19, rowSpan: 1 },
-]
+];
 
 export function ProjectsSkeleton() {
   return (
@@ -22,12 +22,12 @@ export function ProjectsSkeleton() {
           aria-hidden="true"
           style={
             {
-              "--col-span": colSpan,
-              "--row-span": rowSpan,
+              '--col-span': colSpan,
+              '--row-span': rowSpan,
             } as CSSProperties
           }
         />
       ))}
     </>
-  )
+  );
 }

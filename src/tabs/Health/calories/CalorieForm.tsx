@@ -1,24 +1,24 @@
-import { FormEvent, useEffect, useId, useRef, useState } from "react"
-import { FormControl } from "../../../shared/controls/FormControl"
-import { XIcon } from "../../../shared/icons/X"
-import { PeriodCheckboxes } from "./PeriodCheckboxes"
+import { FormEvent, useEffect, useId, useRef, useState } from 'react';
+import { FormControl } from '../../../shared/controls/FormControl';
+import { XIcon } from '../../../shared/icons/X';
+import { PeriodCheckboxes } from './PeriodCheckboxes';
 
 type CalorieFormProps = {
-  date: { day: number; month: string }
-  consumed?: number
-  expended?: number
-  trackers?: string[]
-  onClose: () => void
+  date: { day: number; month: string };
+  consumed?: number;
+  expended?: number;
+  trackers?: string[];
+  onClose: () => void;
   onSubmit: ({
     consumed,
     expended,
     trackers,
   }: {
-    consumed: number
-    expended: number
-    trackers: string[]
-  }) => void
-}
+    consumed: number;
+    expended: number;
+    trackers: string[];
+  }) => void;
+};
 
 export function CalorieForm({
   date,
@@ -28,33 +28,33 @@ export function CalorieForm({
   onClose,
   onSubmit,
 }: CalorieFormProps) {
-  const popoverRef = useRef<HTMLDivElement>(null)
-  const dateHeadingId = useId()
-  const [trackers, setTrackers] = useState<string[]>(initialTrackers ?? [])
+  const popoverRef = useRef<HTMLDivElement>(null);
+  const dateHeadingId = useId();
+  const [trackers, setTrackers] = useState<string[]>(initialTrackers ?? []);
 
   useEffect(() => {
-    popoverRef.current?.showPopover()
-  }, [])
+    popoverRef.current?.showPopover();
+  }, []);
 
   const handleSubmit = (event: FormEvent) => {
-    event.preventDefault()
+    event.preventDefault();
     const [consumedElement, expendedElement] = (event.target as HTMLFormElement)
-      .elements
+      .elements;
 
-    const consumedInput = consumedElement as HTMLInputElement
-    const expendedInput = expendedElement as HTMLInputElement
+    const consumedInput = consumedElement as HTMLInputElement;
+    const expendedInput = expendedElement as HTMLInputElement;
 
     if (!consumedInput.value || !expendedInput.value) {
-      return
+      return;
     }
 
     onSubmit({
       consumed: Number.parseInt(consumedInput.value),
       expended: Number.parseInt(expendedInput.value),
       trackers,
-    })
-    onClose()
-  }
+    });
+    onClose();
+  };
 
   return (
     <div
@@ -64,12 +64,16 @@ export function CalorieForm({
       role="dialog"
       aria-labelledby={dateHeadingId}
       onToggle={(event) => {
-        if (event.newState === "closed") {
-          onClose()
+        if (event.newState === 'closed') {
+          onClose();
         }
       }}
     >
-      <button className="icon ghost dismiss" aria-label="dismiss" onClick={onClose}>
+      <button
+        className="icon ghost dismiss"
+        aria-label="dismiss"
+        onClick={onClose}
+      >
         <XIcon width="16px" />
       </button>
       <h2 id={dateHeadingId}>
@@ -80,19 +84,19 @@ export function CalorieForm({
           hideLabel
           pattern="[0-9]{1,4}"
           label="In"
-          defaultValue={`${consumed ?? ""}`}
+          defaultValue={`${consumed ?? ''}`}
           size={4}
         />
         <FormControl
           hideLabel
           pattern="[0-9]{1,4}"
           label="Out"
-          defaultValue={`${expended ?? ""}`}
+          defaultValue={`${expended ?? ''}`}
           size={4}
         />
         <PeriodCheckboxes trackers={trackers} onChange={setTrackers} />
         <button type="submit" />
       </form>
     </div>
-  )
+  );
 }

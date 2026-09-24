@@ -1,9 +1,9 @@
-import { IconProps } from "./types"
-import "./RubbishBin.css"
+import { IconProps } from './types';
+import './RubbishBin.css';
 
 export function RubbishBinIcon({
-  width = "100%",
-  colour = "currentColor",
+  width = '100%',
+  colour = 'currentColor',
   shouldAnimate,
 }: IconProps & { shouldAnimate?: boolean }) {
   return (
@@ -15,7 +15,7 @@ export function RubbishBinIcon({
       strokeLinejoin="round"
       width={width}
       fill="none"
-      className={`rubbish-bin ${shouldAnimate ? "animate" : ""}`}
+      className={`rubbish-bin ${shouldAnimate ? 'animate' : ''}`}
     >
       <path d="M2,6 L4,22 16,22, 18,6z" />
       <line x1="8" y1="9" x2="8" y2="18" />
@@ -25,5 +25,5 @@ export function RubbishBinIcon({
         <line x1="9" y1="3" x2="11" y2="3" />
       </g>
     </svg>
-  )
+  );
 }

@@ -1,6 +1,6 @@
-import { IconProps } from "./types"
+import { IconProps } from './types';
 
-export function ColourWheelIcon({ width = "100%" }: IconProps) {
+export function ColourWheelIcon({ width = '100%' }: IconProps) {
   return (
     <svg viewBox="0 0 20 20" width={width}>
       <path d="M10,10 L10,2 A8,8 0 0,1 16.93,6 Z" fill="#e74c3c" />
@@ -18,5 +18,5 @@ export function ColourWheelIcon({ width = "100%" }: IconProps) {
         strokeOpacity="0.3"
       />
     </svg>
-  )
+  );
 }

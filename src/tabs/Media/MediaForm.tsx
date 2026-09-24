@@ -1,36 +1,34 @@
-import { FormEvent, useRef, useState } from "react"
-import { FormControl } from "../../shared/controls/FormControl"
-import { Combobox } from "../../shared/controls/combobox/Combobox"
-import { OptionType } from "../../shared/controls/combobox/types"
-import { Modal, useModal } from "../../shared/controls/Modal"
-import { ModalDialog } from "../../shared/controls/ModalDialog"
-import { BandColourPicker } from "./BandColourPicker"
-import { useMediaStorage } from "./MediaStorageContext"
-import { MediaDetails, MediaSeries, NewMedia, SeriesDetails } from "./types"
+import { FormEvent, useRef, useState } from 'react';
+import { FormControl } from '../../shared/controls/FormControl';
+import { Combobox } from '../../shared/controls/combobox/Combobox';
+import { OptionType } from '../../shared/controls/combobox/types';
+import { Modal, useModal } from '../../shared/controls/Modal';
+import { ModalDialog } from '../../shared/controls/ModalDialog';
+import { BandColourPicker } from './BandColourPicker';
+import { useMediaStorage } from './MediaStorageContext';
+import { MediaDetails, MediaSeries, NewMedia, SeriesDetails } from './types';
 
 export type MediaFormConfig<T extends MediaDetails> = {
-  typeLabel: string
-  seriesList: SeriesDetails<T>[]
-  authorOptions?: string[]
-  getAuthor?: (item: T) => string | undefined
-  buildNew: (title: string, author?: string) => Omit<T, "id">
-  buildUpdated: (item: T, title: string, author?: string) => T
-}
+  typeLabel: string;
+  seriesList: SeriesDetails<T>[];
+  authorOptions?: string[];
+  getAuthor?: (item: T) => string | undefined;
+  buildNew: (title: string, author?: string) => Omit<T, 'id'>;
+  buildUpdated: (item: T, title: string, author?: string) => T;
+};
 
 export function MediaForm<T extends MediaDetails>({
   item,
   config,
 }: {
-  item?: T
-  config: MediaFormConfig<T>
+  item?: T;
+  config: MediaFormConfig<T>;
 }) {
-  const titleRef = useRef<HTMLInputElement>(null)
-  const existingAuthor = item && config.getAuthor?.(item)
+  const titleRef = useRef<HTMLInputElement>(null);
+  const existingAuthor = item && config.getAuthor?.(item);
   const [author, setAuthor] = useState<OptionType | undefined>(
-    existingAuthor
-      ? { id: existingAuthor, label: existingAuthor }
-      : undefined,
-  )
+    existingAuthor ? { id: existingAuthor, label: existingAuthor } : undefined,
+  );
 
   const {
     addMedia,
@@ -39,95 +37,96 @@ export function MediaForm<T extends MediaDetails>({
     updateMediaSeries,
     moveMedia,
     deleteMedia,
-  } = useMediaStorage()
-  const { closeModal } = useModal()
+  } = useMediaStorage();
+  const { closeModal } = useModal();
 
   const currentSeries = item
     ? config.seriesList.find((series) => item.id in (series.items ?? {}))
-    : undefined
+    : undefined;
 
   const [series, setSeries] = useState<OptionType | undefined>(
     currentSeries
       ? { id: currentSeries.id, label: currentSeries.name }
       : undefined,
-  )
-  const [bandHue, setBandHue] = useState(currentSeries?.bandHue)
+  );
+  const [bandHue, setBandHue] = useState(currentSeries?.bandHue);
 
   const changeSeries = (value?: OptionType) => {
-    setSeries(value)
+    setSeries(value);
     const matchedSeries =
-      value && config.seriesList.find((s) => s.id === value.id)
-    setBandHue(matchedSeries?.bandHue)
-  }
+      value && config.seriesList.find((s) => s.id === value.id);
+    setBandHue(matchedSeries?.bandHue);
+  };
 
   const updateSeriesBandHue = (target: SeriesDetails<T> | undefined) => {
     if (target && bandHue !== undefined && bandHue !== target.bandHue) {
-      updateMediaSeries(target as MediaSeries, target.name, bandHue)
+      updateMediaSeries(target as MediaSeries, target.name, bandHue);
     }
-  }
+  };
 
   const resetSeriesBand = () => {
-    setSeries(undefined)
-    setBandHue(undefined)
-  }
+    setSeries(undefined);
+    setBandHue(undefined);
+  };
 
   const seriesOptions = config.seriesList.map((s) => ({
     id: s.id,
     label: s.name,
-  }))
+  }));
 
   const authorOptions = (config.authorOptions ?? []).map((name) => ({
     id: name,
     label: name,
-  }))
+  }));
 
   const saveItem = (event: FormEvent) => {
-    event.preventDefault()
+    event.preventDefault();
 
-    const title = titleRef.current?.value
-    if (!title) return
+    const title = titleRef.current?.value;
+    if (!title) return;
 
     if (item) {
-      const updatedItem = config.buildUpdated(item, title, author?.label)
+      const updatedItem = config.buildUpdated(item, title, author?.label);
 
-      if (series && series.id === "") {
-        moveMedia(updatedItem, { name: series.label, bandHue })
+      if (series && series.id === '') {
+        moveMedia(updatedItem, { name: series.label, bandHue });
       } else if (series?.id !== currentSeries?.id) {
-        moveMedia(updatedItem, series && { id: series.id })
-        const target = series && config.seriesList.find((s) => s.id === series.id)
-        updateSeriesBandHue(target)
+        moveMedia(updatedItem, series && { id: series.id });
+        const target =
+          series && config.seriesList.find((s) => s.id === series.id);
+        updateSeriesBandHue(target);
       } else {
-        updateMedia(updatedItem)
-        updateSeriesBandHue(currentSeries)
+        updateMedia(updatedItem);
+        updateSeriesBandHue(currentSeries);
       }
     } else {
-      const newItem = config.buildNew(title, author?.label) as NewMedia
+      const newItem = config.buildNew(title, author?.label) as NewMedia;
 
-      if (series && series.id === "") {
-        addMediaSeries(series.label, newItem, bandHue)
+      if (series && series.id === '') {
+        addMediaSeries(series.label, newItem, bandHue);
       } else if (series) {
-        addMedia(newItem, series.id)
-        updateSeriesBandHue(config.seriesList.find((s) => s.id === series.id))
+        addMedia(newItem, series.id);
+        updateSeriesBandHue(config.seriesList.find((s) => s.id === series.id));
       } else {
-        addMedia(newItem)
+        addMedia(newItem);
       }
 
-      if (titleRef.current) titleRef.current.value = ""
-      setAuthor(undefined)
-      resetSeriesBand()
+      if (titleRef.current) titleRef.current.value = '';
+      setAuthor(undefined);
+      resetSeriesBand();
     }
 
-    closeModal()
-  }
+    closeModal();
+  };
 
   const removeItem = () => {
-    if (item) deleteMedia(item)
-  }
+    if (item) deleteMedia(item);
+  };
 
   return (
     <form onSubmit={saveItem}>
       <Modal.Body>
-        <div style={{ display: "flex", flexDirection: "column", gap: "18px" }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '18px' }}>
           <FormControl
             label={`${config.typeLabel} title`}
             ref={titleRef}
@@ -138,7 +137,7 @@ export function MediaForm<T extends MediaDetails>({
               label="Author name"
               value={author}
               options={authorOptions}
-              createOption={(label) => ({ id: "", label })}
+              createOption={(label) => ({ id: '', label })}
               onChange={setAuthor}
             />
           )}
@@ -146,7 +145,7 @@ export function MediaForm<T extends MediaDetails>({
             label="Series name"
             value={series}
             options={seriesOptions}
-            createOption={(label) => ({ id: "", label })}
+            createOption={(label) => ({ id: '', label })}
             onChange={changeSeries}
           />
           {series && (
@@ -168,15 +167,15 @@ export function MediaForm<T extends MediaDetails>({
         <Modal.Action className="primary">Save</Modal.Action>
       </Modal.Footer>
     </form>
-  )
+  );
 }
 
 export function AddMediaForm<T extends MediaDetails>({
   ariaLabel,
   config,
 }: {
-  ariaLabel: string
-  config: MediaFormConfig<T>
+  ariaLabel: string;
+  config: MediaFormConfig<T>;
 }) {
   return (
     <Modal
@@ -188,7 +187,7 @@ export function AddMediaForm<T extends MediaDetails>({
     >
       <MediaForm config={config} />
     </Modal>
-  )
+  );
 }
 
 export function EditMediaForm<T extends MediaDetails>({
@@ -197,14 +196,14 @@ export function EditMediaForm<T extends MediaDetails>({
   onCancel,
   config,
 }: {
-  item: T
-  isOpen: boolean
-  onCancel: () => void
-  config: MediaFormConfig<T>
+  item: T;
+  isOpen: boolean;
+  onCancel: () => void;
+  config: MediaFormConfig<T>;
 }) {
   return (
     <ModalDialog isOpen={isOpen} onCancel={onCancel}>
       {isOpen && <MediaForm item={item} config={config} />}
     </ModalDialog>
-  )
+  );
 }

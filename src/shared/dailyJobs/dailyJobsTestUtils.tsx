@@ -1,8 +1,8 @@
-import { ReactNode } from "react"
-import { renderHook } from "@testing-library/react"
-import { ContextType, FirebaseContext } from "../FirebaseContext"
-import { createStorageContext } from "../storageContextTestUtils"
-import { DailyJobsProvider } from "./DailyJobsContext"
+import { ReactNode } from 'react';
+import { renderHook } from '@testing-library/react';
+import { ContextType, FirebaseContext } from '../FirebaseContext';
+import { createStorageContext } from '../storageContextTestUtils';
+import { DailyJobsProvider } from './DailyJobsContext';
 
 export function createDailyJobsStorage(
   storedValues: Record<string, unknown> = {},
@@ -14,10 +14,10 @@ export function createDailyJobsStorage(
       loading: false,
     }),
     setValue: jest.fn((path: string, value: unknown) => {
-      storedValues[path] = value
+      storedValues[path] = value;
     }),
     ...overrides,
-  })
+  });
 }
 
 export function renderDailyJob(useJob: () => void, storage: ContextType) {
@@ -27,5 +27,5 @@ export function renderDailyJob(useJob: () => void, storage: ContextType) {
         <DailyJobsProvider>{children}</DailyJobsProvider>
       </FirebaseContext.Provider>
     ),
-  })
+  });
 }

@@ -1,15 +1,15 @@
-import { BloodDropIcon } from "../../../shared/icons/BloodDrop"
-import { BloodDropsIcon } from "../../../shared/icons/BloodDrops"
-import { LightningBoltIcon } from "../../../shared/icons/LightningBolt"
-import "./PeriodIcons.css"
+import { BloodDropIcon } from '../../../shared/icons/BloodDrop';
+import { BloodDropsIcon } from '../../../shared/icons/BloodDrops';
+import { LightningBoltIcon } from '../../../shared/icons/LightningBolt';
+import './PeriodIcons.css';
 
-export const LIGHT_FLOW = "🟤"
-export const HEAVY_FLOW = "🔴"
-export const OVARY_PAIN = "🥚"
+export const LIGHT_FLOW = '🟤';
+export const HEAVY_FLOW = '🔴';
+export const OVARY_PAIN = '🥚';
 
 export function PeriodIcons({ trackers }: { trackers?: string[] }) {
   if (!trackers?.length) {
-    return null
+    return null;
   }
 
   return (
@@ -30,5 +30,5 @@ export function PeriodIcons({ trackers }: { trackers?: string[] }) {
         </span>
       )}
     </div>
-  )
+  );
 }

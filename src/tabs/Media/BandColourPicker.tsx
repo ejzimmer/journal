@@ -1,18 +1,18 @@
-import { CSSProperties, useId } from "react"
-import { BAND_COLOURS } from "./bandHue"
+import { CSSProperties, useId } from 'react';
+import { BAND_COLOURS } from './bandHue';
 
-import "./BandColourPicker.css"
+import './BandColourPicker.css';
 
 export function BandColourPicker({
   label,
   value,
   onChange,
 }: {
-  label: string
-  value?: number
-  onChange: (hue: number) => void
+  label: string;
+  value?: number;
+  onChange: (hue: number) => void;
 }) {
-  const name = useId()
+  const name = useId();
 
   return (
     <fieldset className="band-colour-picker">
@@ -22,7 +22,7 @@ export function BandColourPicker({
           <label
             key={colour.hue}
             className="swatch"
-            style={{ "--hue": colour.hue } as CSSProperties}
+            style={{ '--hue': colour.hue } as CSSProperties}
           >
             <input
               type="radio"
@@ -35,5 +35,5 @@ export function BandColourPicker({
         ))}
       </div>
     </fieldset>
-  )
+  );
 }

@@ -1,9 +1,9 @@
-import { ReactElement } from "react"
-import { render } from "@testing-library/react"
+import { ReactElement } from 'react';
+import { render } from '@testing-library/react';
 import {
   MediaStorageContext,
   MediaStorageContextType,
-} from "./MediaStorageContext"
+} from './MediaStorageContext';
 
 export function createMediaStorageContext(
   overrides: Partial<MediaStorageContextType> = {},
@@ -22,18 +22,18 @@ export function createMediaStorageContext(
     deleteMedia: jest.fn(),
     moveMedia: jest.fn(),
     ...overrides,
-  }
+  };
 }
 
 export function renderWithMediaStorage(
   ui: ReactElement,
   overrides: Partial<MediaStorageContextType> = {},
 ) {
-  const storageContext = createMediaStorageContext(overrides)
+  const storageContext = createMediaStorageContext(overrides);
   const result = render(
     <MediaStorageContext.Provider value={storageContext}>
       {ui}
     </MediaStorageContext.Provider>,
-  )
-  return { ...result, storageContext }
+  );
+  return { ...result, storageContext };
 }

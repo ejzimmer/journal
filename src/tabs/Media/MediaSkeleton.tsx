@@ -1,21 +1,21 @@
-import "./MediaSkeleton.css"
+import './MediaSkeleton.css';
 
-type ShelfSpec = { heights: number[]; hasLabel?: boolean }
+type ShelfSpec = { heights: number[]; hasLabel?: boolean };
 
 const BOOK_SHELVES: ShelfSpec[] = [
   { heights: [182, 198, 172], hasLabel: true },
   { heights: [204, 188], hasLabel: true },
   { heights: [176] },
-]
+];
 
 const GAME_SHELVES: ShelfSpec[] = [
   { heights: [190, 172, 200], hasLabel: true },
   { heights: [180] },
-]
+];
 
 function ShelfSkeleton({ heights, hasLabel }: ShelfSpec) {
   return (
-    <div className={`shelf${hasLabel ? "" : " shelf-single"}`}>
+    <div className={`shelf${hasLabel ? '' : ' shelf-single'}`}>
       <div className="spines">
         <ul className="matched-set">
           {heights.map((height, index) => (
@@ -35,12 +35,12 @@ function ShelfSkeleton({ heights, hasLabel }: ShelfSpec) {
         <div className="shelf-label">
           <div
             className="shelf-label-skeleton"
-            style={{ animationDelay: "0.3s" }}
+            style={{ animationDelay: '0.3s' }}
           />
         </div>
       )}
     </div>
-  )
+  );
 }
 
 export function MediaSkeleton() {
@@ -66,5 +66,5 @@ export function MediaSkeleton() {
         </div>
       </div>
     </div>
-  )
+  );
 }

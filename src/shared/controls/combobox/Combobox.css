@@ -20,7 +20,7 @@
       2px 2px 16px 8px hsl(0 0% 0%/0.1);
   }
 
-  input[role="combobox"] {
+  input[role='combobox'] {
     padding-inline: 8px;
   }
   ul.options {
@@ -35,7 +35,7 @@
     border-radius: 4px;
     background: hsl(0 0% 100% / 0.5);
 
-    input[role="combobox"] {
+    input[role='combobox'] {
       width: 100%;
       border: none;
       font-size: inherit;
@@ -57,7 +57,7 @@
     }
 
     &::after {
-      content: "";
+      content: '';
       position: absolute;
       top: 50%;
       right: 10px;
@@ -69,7 +69,7 @@
       pointer-events: none;
     }
 
-    &.showing-value input[role="combobox"] {
+    &.showing-value input[role='combobox'] {
       color: transparent;
       caret-color: transparent;
     }
@@ -129,7 +129,7 @@
     }
   }
 
-  [role="option"] {
+  [role='option'] {
     padding: 8px;
 
     &:not(:last-child) {
@@ -137,7 +137,7 @@
       margin: 0;
     }
 
-    &[aria-selected="true"] {
+    &[aria-selected='true'] {
       background: var(--action-colour);
       color: white;
     }

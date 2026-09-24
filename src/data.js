@@ -6,18 +6,18 @@ const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 export const BACKEND_DATA = [
   {
     id: commentid(),
-    content: "Hi everyone!",
-    author: "You",
+    content: 'Hi everyone!',
+    author: 'You',
     children: [
       {
         id: commentid(),
-        content: "Hi! How are you?",
-        author: "l33t_c0der",
+        content: 'Hi! How are you?',
+        author: 'l33t_c0der',
         children: [
           {
             id: commentid(),
             content: "I'm good, thanks!",
-            author: "You",
+            author: 'You',
             children: [],
           },
         ],
@@ -26,46 +26,46 @@ export const BACKEND_DATA = [
   },
   {
     id: commentid(),
-    content: "Spicy programming topics?",
-    author: "l33t_c0der",
+    content: 'Spicy programming topics?',
+    author: 'l33t_c0der',
     children: [
       {
         id: commentid(),
-        content: "Tabs or spaces?",
-        author: "l33t_c0der",
+        content: 'Tabs or spaces?',
+        author: 'l33t_c0der',
         children: [
           {
             id: commentid(),
-            content: "Spaces!",
-            author: "JS_coder",
+            content: 'Spaces!',
+            author: 'JS_coder',
             children: [],
           },
           {
             id: commentid(),
-            content: "Tabs!!!",
-            author: "C_coder",
+            content: 'Tabs!!!',
+            author: 'C_coder',
             children: [],
           },
           {
             id: commentid(),
-            content: "But spaces are more precise!",
-            author: "JS_coder",
+            content: 'But spaces are more precise!',
+            author: 'JS_coder',
             children: [],
           },
         ],
       },
       {
         id: commentid(),
-        content: "Semicolons are considered harmful.",
-        author: "JS_coder",
+        content: 'Semicolons are considered harmful.',
+        author: 'JS_coder',
         children: [],
       },
     ],
   },
   {
     id: commentid(),
-    content: "Garbage collection is overrated.",
-    author: "C_coder",
+    content: 'Garbage collection is overrated.',
+    author: 'C_coder',
     children: [],
   },
 ];
@@ -78,6 +78,6 @@ export async function fetchComments() {
 
 export async function postComment({ content }, parentId = null) {
   await sleep(1500);
-  return { id: commentid(), author: "You", content, children: [] };
+  return { id: commentid(), author: 'You', content, children: [] };
 }
 // --- End of public API ---

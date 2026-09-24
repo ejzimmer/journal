@@ -1,27 +1,30 @@
-import { Edge } from "@atlaskit/pragmatic-drag-and-drop-hitbox/types"
+import { Edge } from '@atlaskit/pragmatic-drag-and-drop-hitbox/types';
 
-import { Destination, draggableTypeKey } from "../../shared/drag-and-drop/types"
+import {
+  Destination,
+  draggableTypeKey,
+} from '../../shared/drag-and-drop/types';
 
 export function isTask(data: any): boolean {
-  return draggableTypeKey in data && data[draggableTypeKey] === "task"
+  return draggableTypeKey in data && data[draggableTypeKey] === 'task';
 }
 
 export function isList(data: any): boolean {
-  return draggableTypeKey in data && data[draggableTypeKey] === "list"
+  return draggableTypeKey in data && data[draggableTypeKey] === 'list';
 }
 export function isDroppable(data: any): boolean {
-  return draggableTypeKey in data
+  return draggableTypeKey in data;
 }
 
 export function getPosition(index: number, listLength: number) {
   if (index === 0) {
-    return "start"
+    return 'start';
   }
   if (index === listLength - 1) {
-    return "end"
+    return 'end';
   }
 
-  return "middle"
+  return 'middle';
 }
 
 export const getTarget = (
@@ -29,23 +32,23 @@ export const getTarget = (
   destination: Destination,
   listLength: number,
 ): {
-  indexOfTarget: number
-  closestEdgeOfTarget: Edge
+  indexOfTarget: number;
+  closestEdgeOfTarget: Edge;
 } => {
   switch (destination) {
-    case "start":
-      return { indexOfTarget: 0, closestEdgeOfTarget: "top" }
-    case "previous":
-      return { indexOfTarget: originIndex - 1, closestEdgeOfTarget: "top" }
-    case "next":
+    case 'start':
+      return { indexOfTarget: 0, closestEdgeOfTarget: 'top' };
+    case 'previous':
+      return { indexOfTarget: originIndex - 1, closestEdgeOfTarget: 'top' };
+    case 'next':
       return {
         indexOfTarget: originIndex + 1,
-        closestEdgeOfTarget: "bottom",
-      }
-    case "end":
+        closestEdgeOfTarget: 'bottom',
+      };
+    case 'end':
       return {
         indexOfTarget: listLength - 1,
-        closestEdgeOfTarget: "bottom",
-      }
+        closestEdgeOfTarget: 'bottom',
+      };
   }
-}
+};

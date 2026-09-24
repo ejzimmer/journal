@@ -1,10 +1,10 @@
-import { endOfDay, isSameWeek } from "date-fns"
-import { EditableDate } from "../../../shared/controls/EditableDate"
+import { endOfDay, isSameWeek } from 'date-fns';
+import { EditableDate } from '../../../shared/controls/EditableDate';
 
 type DueDateProps = {
-  dueDate?: number
-  onChange: (dueDate: number) => void
-}
+  dueDate?: number;
+  onChange: (dueDate: number) => void;
+};
 
 export function DueDate({ dueDate, onChange }: DueDateProps) {
   return dueDate ? (
@@ -15,15 +15,15 @@ export function DueDate({ dueDate, onChange }: DueDateProps) {
     <button
       type="button"
       className="add-metadata ghost calendar"
-      style={{ fontSize: ".8em" }}
+      style={{ fontSize: '.8em' }}
       onClick={() => onChange(new Date().getTime())}
     >
       📅
     </button>
-  )
+  );
 }
 
 const dueToday = (dueDate: number) =>
-  dueDate < endOfDay(new Date()).getTime() ? "due-today" : ""
+  dueDate < endOfDay(new Date()).getTime() ? 'due-today' : '';
 const dueThisWeek = (dueDate: number) =>
-  isSameWeek(dueDate, new Date(), { weekStartsOn: 1 }) ? "due-this-week" : ""
+  isSameWeek(dueDate, new Date(), { weekStartsOn: 1 }) ? 'due-this-week' : '';

@@ -1,39 +1,39 @@
-import { useRef, useState } from "react"
-import { FormModal } from "../../shared/controls/FormModal"
-import { FormControl } from "../../shared/controls/FormControl"
-import { LabelsControl } from "./LabelsControl"
-import { Label } from "./types"
+import { useRef, useState } from 'react';
+import { FormModal } from '../../shared/controls/FormModal';
+import { FormControl } from '../../shared/controls/FormControl';
+import { LabelsControl } from './LabelsControl';
+import { Label } from './types';
 
 export function NewListModal({
   onCreate,
 }: {
-  onCreate: (listName: string, label?: Label) => void
+  onCreate: (listName: string, label?: Label) => void;
 }) {
-  const [showError, setShowError] = useState(false)
-  const [listName, setListName] = useState("")
-  const [label, setLabel] = useState<Label | undefined>(undefined)
+  const [showError, setShowError] = useState(false);
+  const [listName, setListName] = useState('');
+  const [label, setLabel] = useState<Label | undefined>(undefined);
 
-  const listNameRef = useRef<HTMLInputElement>(null)
+  const listNameRef = useRef<HTMLInputElement>(null);
 
   const onChange = (value: string) => {
-    setListName(value)
+    setListName(value);
     if (value) {
-      setShowError(false)
+      setShowError(false);
     }
-  }
+  };
 
   const handleCreate = () => {
     if (!listName) {
-      setShowError(true)
-      listNameRef.current?.focus()
-      return false
+      setShowError(true);
+      listNameRef.current?.focus();
+      return false;
     }
 
-    onCreate(listName, label)
-    setListName("")
-    setLabel(undefined)
-    return true
-  }
+    onCreate(listName, label);
+    setListName('');
+    setLabel(undefined);
+    return true;
+  };
 
   return (
     <FormModal
@@ -45,7 +45,7 @@ export function NewListModal({
       onSubmit={handleCreate}
       submitButtonText="Create"
       onClose={() => {
-        setShowError(false)
+        setShowError(false);
       }}
     >
       <FormControl
@@ -53,7 +53,7 @@ export function NewListModal({
         ref={listNameRef}
         value={listName}
         onChange={onChange}
-        errors={showError && ["List name is required"]}
+        errors={showError && ['List name is required']}
       />
       <LabelsControl
         value={label ? [label] : []}
@@ -62,5 +62,5 @@ export function NewListModal({
         isMulti={false}
       />
     </FormModal>
-  )
+  );
 }

@@ -1,21 +1,21 @@
-import { CSSProperties } from "react"
-import { EditableText } from "../../../shared/controls/EditableText"
-import { EmojiCheckbox } from "../../../shared/controls/EmojiCheckbox"
+import { CSSProperties } from 'react';
+import { EditableText } from '../../../shared/controls/EditableText';
+import { EmojiCheckbox } from '../../../shared/controls/EmojiCheckbox';
 
 export type GameGoalData = {
-  id?: string
-  name: string
-  goals: Record<string, any>
-}
+  id?: string;
+  name: string;
+  goals: Record<string, any>;
+};
 
 export function GameGoal({
   goal,
   onChange,
 }: {
-  goal: GameGoalData
-  onChange: (goal: GameGoalData) => void
+  goal: GameGoalData;
+  onChange: (goal: GameGoalData) => void;
 }) {
-  const { goals, ...data } = goal
+  const { goals, ...data } = goal;
   const {
     arrowCapacity,
     blueChuJellies,
@@ -37,7 +37,7 @@ export function GameGoal({
     joyPendants,
     magicArmour,
     magicMeterDouble,
-  } = goals
+  } = goals;
 
   const updateGoal = (key: string, value: any) => {
     onChange({
@@ -46,8 +46,8 @@ export function GameGoal({
         ...goals,
         [key]: value,
       },
-    })
-  }
+    });
+  };
 
   return (
     <div className="windwaker">
@@ -63,7 +63,7 @@ export function GameGoal({
           value={hearts.collected}
           total={hearts.total}
           onChange={(value: number) =>
-            updateGoal("hearts", {
+            updateGoal('hearts', {
               ...hearts,
               collected: value,
             })
@@ -75,7 +75,7 @@ export function GameGoal({
           value={bottles.collected}
           total={bottles.total}
           onChange={(value: number) =>
-            updateGoal("bottles", {
+            updateGoal('bottles', {
               ...bottles,
               collected: value,
             })
@@ -86,10 +86,10 @@ export function GameGoal({
           label={magicMeterDouble.label}
           isChecked={magicMeterDouble.completed}
           onChange={(isChecked) => {
-            updateGoal("magicMeterDouble", {
+            updateGoal('magicMeterDouble', {
               ...magicMeterDouble,
               completed: isChecked,
-            })
+            });
           }}
         />
         <BooleanGoal
@@ -97,7 +97,7 @@ export function GameGoal({
           label={bluePotion.label}
           isChecked={bluePotion.unlocked}
           onChange={(isChecked) => {
-            updateGoal("bluePotion", { ...bluePotion, unlocked: isChecked })
+            updateGoal('bluePotion', { ...bluePotion, unlocked: isChecked });
           }}
         />
         <BooleanGoal
@@ -105,7 +105,7 @@ export function GameGoal({
           label={greenPotion.label}
           isChecked={greenPotion.unlocked}
           onChange={(isChecked) => {
-            updateGoal("greenPotion", { ...greenPotion, unlocked: isChecked })
+            updateGoal('greenPotion', { ...greenPotion, unlocked: isChecked });
           }}
         />
         <BooleanGoal
@@ -113,7 +113,10 @@ export function GameGoal({
           label={songOfPassing.label}
           isChecked={songOfPassing.learnt}
           onChange={(isChecked) => {
-            updateGoal("songOfPassing", { ...songOfPassing, learnt: isChecked })
+            updateGoal('songOfPassing', {
+              ...songOfPassing,
+              learnt: isChecked,
+            });
           }}
         />
         <BooleanGoal
@@ -121,7 +124,7 @@ export function GameGoal({
           label={spinAttack.label}
           isChecked={spinAttack.learnt}
           onChange={(isChecked) => {
-            updateGoal("spinAttack", { ...spinAttack, learnt: isChecked })
+            updateGoal('spinAttack', { ...spinAttack, learnt: isChecked });
           }}
         />
         <BooleanGoal
@@ -129,7 +132,7 @@ export function GameGoal({
           label={herosCharm.label}
           isChecked={herosCharm.collected}
           onChange={(isChecked) => {
-            updateGoal("herosCharm", { ...herosCharm, collected: isChecked })
+            updateGoal('herosCharm', { ...herosCharm, collected: isChecked });
           }}
         />
         <BooleanGoal
@@ -137,7 +140,7 @@ export function GameGoal({
           label={magicArmour.label}
           isChecked={magicArmour.collected}
           onChange={(isChecked) => {
-            updateGoal("magicArmour", { ...magicArmour, collected: isChecked })
+            updateGoal('magicArmour', { ...magicArmour, collected: isChecked });
           }}
         />
 
@@ -146,7 +149,7 @@ export function GameGoal({
           label={cureGrandma.label}
           isChecked={cureGrandma.cured}
           onChange={(isChecked) => {
-            updateGoal("cureGrandma", { ...cureGrandma, cured: isChecked })
+            updateGoal('cureGrandma', { ...cureGrandma, cured: isChecked });
           }}
         />
         <CountGoal
@@ -155,7 +158,7 @@ export function GameGoal({
           value={seaChartQuandrants.revealed}
           total={seaChartQuandrants.total}
           onChange={(value: number) =>
-            updateGoal("seaChartQuandrants", {
+            updateGoal('seaChartQuandrants', {
               ...seaChartQuandrants,
               revealed: value,
             })
@@ -167,7 +170,7 @@ export function GameGoal({
           value={charts.chartCollected}
           total={charts.total}
           onChange={(value: number) =>
-            updateGoal("charts", {
+            updateGoal('charts', {
               ...charts,
               chartCollected: value,
             })
@@ -179,7 +182,7 @@ export function GameGoal({
           value={charts.treasureCollected}
           total={charts.total}
           onChange={(value: number) =>
-            updateGoal("charts", {
+            updateGoal('charts', {
               ...charts,
               treasureCollected: value,
             })
@@ -191,7 +194,7 @@ export function GameGoal({
           value={arrowCapacity.current}
           total={arrowCapacity.total}
           onChange={(value: number) =>
-            updateGoal("arrowCapacity", {
+            updateGoal('arrowCapacity', {
               ...arrowCapacity,
               current: value,
             })
@@ -203,7 +206,7 @@ export function GameGoal({
           value={bombCapacity.current}
           total={bombCapacity.total}
           onChange={(value: number) =>
-            updateGoal("bombCapacity", {
+            updateGoal('bombCapacity', {
               ...bombCapacity,
               current: value,
             })
@@ -215,7 +218,7 @@ export function GameGoal({
           value={walletCapacity.current}
           total={walletCapacity.total}
           onChange={(value: number) =>
-            updateGoal("walletCapacity", {
+            updateGoal('walletCapacity', {
               ...walletCapacity,
               current: value,
             })
@@ -227,7 +230,7 @@ export function GameGoal({
           value={joyPendants.given}
           total={joyPendants.total}
           onChange={(value: number) =>
-            updateGoal("joyPendants", {
+            updateGoal('joyPendants', {
               ...joyPendants,
               given: value,
             })
@@ -240,7 +243,7 @@ export function GameGoal({
           value={blueChuJellies.collected}
           total={blueChuJellies.total}
           onChange={(value: number) =>
-            updateGoal("blueChuJellies", {
+            updateGoal('blueChuJellies', {
               ...blueChuJellies,
               collected: value,
             })
@@ -252,7 +255,7 @@ export function GameGoal({
           value={bigOctos.defeated}
           total={bigOctos.total}
           onChange={(value: number) =>
-            updateGoal("bigOctos", {
+            updateGoal('bigOctos', {
               ...bigOctos,
               defeated: value,
             })
@@ -264,7 +267,7 @@ export function GameGoal({
           value={membersCards.collected}
           total={membersCards.total}
           onChange={(value: number) =>
-            updateGoal("membersCards", {
+            updateGoal('membersCards', {
               ...membersCards,
               collected: value,
             })
@@ -276,7 +279,7 @@ export function GameGoal({
           value={zunariShopDecorations.collected}
           total={zunariShopDecorations.total}
           onChange={(value: number) =>
-            updateGoal("zunariShopDecorations", {
+            updateGoal('zunariShopDecorations', {
               ...zunariShopDecorations,
               collected: value,
             })
@@ -284,16 +287,16 @@ export function GameGoal({
         />
       </ul>
     </div>
-  )
+  );
 }
 
 type CountGoalProps = {
-  icon: string
-  label: string
-  value: number
-  total: number
-  onChange: (value: number) => void
-}
+  icon: string;
+  label: string;
+  value: number;
+  total: number;
+  onChange: (value: number) => void;
+};
 
 function CountGoal({ icon, label, value, total, onChange }: CountGoalProps) {
   return (
@@ -303,14 +306,14 @@ function CountGoal({ icon, label, value, total, onChange }: CountGoalProps) {
           className="icon"
           style={{ opacity: 0.2 + (value ? value / total : 0) }}
         >
-          {icon.startsWith(".") ? (
+          {icon.startsWith('.') ? (
             <img
               src={icon}
               alt=""
               style={{
-                verticalAlign: "bottom",
-                maxHeight: "24px",
-                maxWidth: "24px",
+                verticalAlign: 'bottom',
+                maxHeight: '24px',
+                maxWidth: '24px',
               }}
             />
           ) : (
@@ -321,9 +324,9 @@ function CountGoal({ icon, label, value, total, onChange }: CountGoalProps) {
           label={label}
           value={value.toString()}
           onChange={(value) => {
-            const capacity = Number.parseInt(value)
+            const capacity = Number.parseInt(value);
             if (!isNaN(capacity)) {
-              onChange(capacity)
+              onChange(capacity);
             }
           }}
         />
@@ -331,7 +334,7 @@ function CountGoal({ icon, label, value, total, onChange }: CountGoalProps) {
         <div className="tooltip">{label}</div>
       </div>
     </li>
-  )
+  );
 }
 
 function BooleanGoal({
@@ -341,11 +344,11 @@ function BooleanGoal({
   onChange,
   style,
 }: {
-  emoji: string | React.ReactElement
-  isChecked: boolean
-  label: string
-  onChange: (isChecked: boolean) => void
-  style?: CSSProperties
+  emoji: string | React.ReactElement;
+  isChecked: boolean;
+  label: string;
+  onChange: (isChecked: boolean) => void;
+  style?: CSSProperties;
 }) {
   return (
     <li>
@@ -356,12 +359,12 @@ function BooleanGoal({
             isChecked={isChecked}
             label={label}
             onChange={() => {
-              onChange(!isChecked)
+              onChange(!isChecked);
             }}
           />
         </div>
         <div className="tooltip">{label}</div>
       </div>
     </li>
-  )
+  );
 }

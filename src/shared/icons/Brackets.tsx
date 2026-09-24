@@ -1,6 +1,6 @@
-import { IconProps } from "./types"
+import { IconProps } from './types';
 
-export function BracketsIcon({ colour = "currentColor", ...props }: IconProps) {
+export function BracketsIcon({ colour = 'currentColor', ...props }: IconProps) {
   return (
     <svg
       viewBox="0 0 20 25"
@@ -15,5 +15,5 @@ export function BracketsIcon({ colour = "currentColor", ...props }: IconProps) {
       <polyline points="8,2 5,2 5,23 8,23" />
       <polyline points="12,2 15,2 15,23 12,23" />
     </svg>
-  )
+  );
 }

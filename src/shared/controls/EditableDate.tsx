@@ -1,38 +1,37 @@
-import { format, parse } from "date-fns"
-import { useRef, useState } from "react"
-import { useFormToggle } from "./useFormToggle"
+import { format, parse } from 'date-fns';
+import { useRef, useState } from 'react';
+import { useFormToggle } from './useFormToggle';
 
-interface Props
-  extends Omit<
-    React.HTMLAttributes<HTMLDivElement>,
-    "children" | "style" | "onChange"
-  > {
-  onChange: (date: number) => void
-  value: number
+interface Props extends Omit<
+  React.HTMLAttributes<HTMLDivElement>,
+  'children' | 'style' | 'onChange'
+> {
+  onChange: (date: number) => void;
+  value: number;
 }
 
 export function EditableDate({ onChange, value, ...props }: Props) {
   const [editingValue, setEditingValue] = useState(
-    format(new Date(value), "yyyy-MM-dd")
-  )
+    format(new Date(value), 'yyyy-MM-dd'),
+  );
   const {
     isFormOpen: isEditing,
     triggerRef: displayRef,
     openForm: startEditing,
     closeForm: stopEditing,
     openFormOnEnterOrSpace,
-  } = useFormToggle<HTMLDivElement>()
-  const inputRef = useRef<HTMLInputElement>(null)
+  } = useFormToggle<HTMLDivElement>();
+  const inputRef = useRef<HTMLInputElement>(null);
 
   const handleSubmit = () => {
-    const inputValue = inputRef.current?.value ?? ""
-    const date = parse(inputValue, "yyyy-MM-dd", new Date()).getTime()
+    const inputValue = inputRef.current?.value ?? '';
+    const date = parse(inputValue, 'yyyy-MM-dd', new Date()).getTime();
     if (date !== value) {
-      onChange(date)
+      onChange(date);
     }
 
-    stopEditing()
-  }
+    stopEditing();
+  };
 
   return isEditing ? (
     <input
@@ -40,15 +39,15 @@ export function EditableDate({ onChange, value, ...props }: Props) {
       ref={inputRef}
       autoFocus
       onKeyDown={(event) => {
-        if (event.key === "Enter") {
-          event.preventDefault()
-          handleSubmit()
+        if (event.key === 'Enter') {
+          event.preventDefault();
+          handleSubmit();
         }
 
-        if (event.key === "Escape") {
-          event.stopPropagation()
-          setEditingValue(format(new Date(value), "yyyy-MM-dd"))
-          stopEditing()
+        if (event.key === 'Escape') {
+          event.stopPropagation();
+          setEditingValue(format(new Date(value), 'yyyy-MM-dd'));
+          stopEditing();
         }
       }}
       value={editingValue}
@@ -62,11 +61,11 @@ export function EditableDate({ onChange, value, ...props }: Props) {
       ref={displayRef}
       role="button"
       tabIndex={0}
-      aria-label={`Due date ${format(value, "dd MMM")}`}
+      aria-label={`Due date ${format(value, 'dd MMM')}`}
       onClick={startEditing}
-        onKeyDown={openFormOnEnterOrSpace}
+      onKeyDown={openFormOnEnterOrSpace}
     >
-      {format(value, "dd MMM")}
+      {format(value, 'dd MMM')}
     </div>
-  )
+  );
 }

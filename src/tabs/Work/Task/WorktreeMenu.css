@@ -44,7 +44,7 @@ button.stamp-trigger {
   translate: -50% -50%;
 
   &::before {
-    content: "";
+    content: '';
     position: absolute;
     top: 0;
     left: 0;
@@ -61,7 +61,7 @@ button.stamp-trigger {
   }
 
   /* half-circle: items only fan out through the right side */
-  &[data-layout="half"] {
+  &[data-layout='half'] {
     --angle-step: 60deg;
   }
 }

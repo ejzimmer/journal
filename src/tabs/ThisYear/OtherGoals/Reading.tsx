@@ -1,25 +1,25 @@
-import { useState } from "react"
-import { XIcon } from "../../../shared/icons/X"
+import { useState } from 'react';
+import { XIcon } from '../../../shared/icons/X';
 
 export type Book = {
-  id?: string
-  title: string
-  volumes: { totalPages: number; readPages?: number }[]
-}
+  id?: string;
+  title: string;
+  volumes: { totalPages: number; readPages?: number }[];
+};
 
-type BookProps = { book: Book; onChange: (book: Book) => void }
+type BookProps = { book: Book; onChange: (book: Book) => void };
 
 export function Reading({ book, onChange }: BookProps) {
   const isDone = book.volumes.every(
     (book) => book.totalPages === book.readPages,
-  )
+  );
 
   return (
     <>
-      <div className={isDone ? "book-title done" : "book-title"}>
+      <div className={isDone ? 'book-title done' : 'book-title'}>
         {book.title}
       </div>
-      <div className={isDone ? "book-volumes done" : "book-volumes"}>
+      <div className={isDone ? 'book-volumes done' : 'book-volumes'}>
         {book.volumes.map((pages, index) => (
           <PagesRead
             key={`volume-${index}`}
@@ -38,37 +38,37 @@ export function Reading({ book, onChange }: BookProps) {
         ))}
       </div>
     </>
-  )
+  );
 }
 
 type PagesReadProps = {
-  totalPages: number
-  readPages: number
-  onChange: (pages: number) => void
-}
+  totalPages: number;
+  readPages: number;
+  onChange: (pages: number) => void;
+};
 
 function PagesRead({ totalPages, readPages, onChange }: PagesReadProps) {
-  const [isEditing, setEditing] = useState(false)
+  const [isEditing, setEditing] = useState(false);
 
   const handleUpdate = (event: React.FormEvent) => {
-    event.preventDefault()
+    event.preventDefault();
 
     const pages = Number.parseInt(
       ((event.target as HTMLFormElement).elements[0] as HTMLInputElement).value,
-    )
+    );
     if (!isNaN(pages) && pages !== readPages) {
-      onChange(pages)
+      onChange(pages);
     }
 
-    setEditing(false)
-  }
+    setEditing(false);
+  };
 
   return (
     <div className="volume">
       <progress
         max={totalPages}
         value={readPages}
-        className={totalPages === readPages ? "done" : ""}
+        className={totalPages === readPages ? 'done' : ''}
       />
       <div className="hover-text">
         {readPages}/{totalPages}
@@ -78,7 +78,7 @@ function PagesRead({ totalPages, readPages, onChange }: PagesReadProps) {
           <input
             type="number"
             size={4}
-            style={{ width: "60px" }}
+            style={{ width: '60px' }}
             defaultValue={readPages}
           />
         )}
@@ -86,14 +86,14 @@ function PagesRead({ totalPages, readPages, onChange }: PagesReadProps) {
           className="icon ghost"
           onClick={(event) => {
             if (!isEditing) {
-              event.preventDefault()
-              setEditing(true)
+              event.preventDefault();
+              setEditing(true);
             }
           }}
         >
-          {isEditing ? <XIcon width="12px" /> : "✏️"}
+          {isEditing ? <XIcon width="12px" /> : '✏️'}
         </button>
       </form>
     </div>
-  )
+  );
 }

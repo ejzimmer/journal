@@ -179,7 +179,9 @@
     inset-inline: var(--drawer-inset);
     max-width: var(--card-max);
     overflow: hidden;
-    background: var(--seam-shadow) top / 100% 8px no-repeat, white;
+    background:
+      var(--seam-shadow) top / 100% 8px no-repeat,
+      white;
     transition: height 0.2s ease-out;
 
     &.visible {

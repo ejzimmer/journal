@@ -1,24 +1,24 @@
-import { ReactNode, useEffect, useRef } from "react"
-import { Modal, ModalContext } from "./Modal"
+import { ReactNode, useEffect, useRef } from 'react';
+import { Modal, ModalContext } from './Modal';
 
 export function ModalDialog({
   isOpen,
   onCancel,
   children,
 }: {
-  isOpen: boolean
-  onCancel: () => void
-  children: ReactNode
+  isOpen: boolean;
+  onCancel: () => void;
+  children: ReactNode;
 }) {
-  const modalState = useRef<"open" | "closed">("closed")
-  const dialogRef = useRef<HTMLDialogElement>(null)
+  const modalState = useRef<'open' | 'closed'>('closed');
+  const dialogRef = useRef<HTMLDialogElement>(null);
 
   useEffect(() => {
-    if (modalState.current === "closed" && isOpen) {
-      modalState.current = "open"
-      dialogRef.current?.showModal()
+    if (modalState.current === 'closed' && isOpen) {
+      modalState.current = 'open';
+      dialogRef.current?.showModal();
     }
-  }, [isOpen])
+  }, [isOpen]);
 
   return (
     <dialog
@@ -27,8 +27,8 @@ export function ModalDialog({
       // @ts-ignore closedby does exist really
       closedby="any"
       onClose={() => {
-        modalState.current = "closed"
-        onCancel()
+        modalState.current = 'closed';
+        onCancel();
       }}
     >
       <ModalContext.Provider
@@ -40,5 +40,5 @@ export function ModalDialog({
         {children}
       </ModalContext.Provider>
     </dialog>
-  )
+  );
 }

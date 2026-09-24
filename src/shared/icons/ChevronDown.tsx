@@ -1,8 +1,8 @@
-import { IconProps } from "./types"
+import { IconProps } from './types';
 
 export function ChevronDownIcon({
-  width = "100%",
-  colour = "currentColor",
+  width = '100%',
+  colour = 'currentColor',
 }: IconProps) {
   return (
     <svg
@@ -16,5 +16,5 @@ export function ChevronDownIcon({
     >
       <path d="M3,10 L10,16 17,10" />
     </svg>
-  )
+  );
 }

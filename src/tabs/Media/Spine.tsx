@@ -1,6 +1,6 @@
-import { CSSProperties, ReactNode, RefObject } from "react"
+import { CSSProperties, ReactNode, RefObject } from 'react';
 
-import "./Spine.css"
+import './Spine.css';
 
 export function Spine({
   status,
@@ -17,27 +17,27 @@ export function Spine({
   onStampClick,
   children,
 }: {
-  status: "todo" | "active" | "done"
-  hue: number
-  bandHue?: number
-  minHeight: number
-  title: string
-  author?: string
-  glyph: string
-  titleAriaLabel: string
-  stampAriaLabel: string
-  titleRef?: RefObject<HTMLButtonElement | null>
-  onTitleClick: () => void
-  onStampClick: () => void
-  children?: ReactNode
+  status: 'todo' | 'active' | 'done';
+  hue: number;
+  bandHue?: number;
+  minHeight: number;
+  title: string;
+  author?: string;
+  glyph: string;
+  titleAriaLabel: string;
+  stampAriaLabel: string;
+  titleRef?: RefObject<HTMLButtonElement | null>;
+  onTitleClick: () => void;
+  onStampClick: () => void;
+  children?: ReactNode;
 }) {
   return (
     <li
       className={`spine ${status}`}
       style={
         {
-          "--hue": hue,
-          ...(bandHue !== undefined && { "--band-hue": bandHue }),
+          '--hue': hue,
+          ...(bandHue !== undefined && { '--band-hue': bandHue }),
           minHeight,
         } as CSSProperties
       }
@@ -72,5 +72,5 @@ export function Spine({
 
       {children}
     </li>
-  )
+  );
 }

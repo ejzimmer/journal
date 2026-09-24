@@ -18,7 +18,7 @@
   left: anchor(left);
   translate: 0 12px;
 
-  [role="menuitem"] {
+  [role='menuitem'] {
     border: 0;
     border-radius: 0;
     text-align: start;
@@ -35,7 +35,7 @@
     }
   }
 
-  [role="menuitem"]:not(:last-child) {
+  [role='menuitem']:not(:last-child) {
     border-block-end: 2px solid var(--border-colour);
   }
 }

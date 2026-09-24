@@ -1,46 +1,46 @@
-import { useCallback, useEffect, useRef } from "react"
-import { NavLink } from "react-router-dom"
-import { TABS } from "./tabConfig"
+import { useCallback, useEffect, useRef } from 'react';
+import { NavLink } from 'react-router-dom';
+import { TABS } from './tabConfig';
 
 export function TopNav() {
-  const navListRef = useRef<HTMLUListElement>(null)
+  const navListRef = useRef<HTMLUListElement>(null);
 
   const hideHighlight = useCallback(() => {
-    if (!navListRef.current) return
-    navListRef.current.style = `--hover-width: 0px`
-  }, [])
+    if (!navListRef.current) return;
+    navListRef.current.style = `--hover-width: 0px`;
+  }, []);
 
   useEffect(() => {
-    if (!navListRef.current) return
+    if (!navListRef.current) return;
 
-    const tabElements = navListRef.current.children
-    const listElement = navListRef.current
+    const tabElements = navListRef.current.children;
+    const listElement = navListRef.current;
 
     const onMouseMove = (event: MouseEvent) => {
-      const mouseX = event.clientX
+      const mouseX = event.clientX;
       const hoveredTab = Array.from(tabElements).find((tab) => {
-        const { x, width } = tab.getBoundingClientRect()
-        return x < mouseX && x + width >= mouseX
-      })
+        const { x, width } = tab.getBoundingClientRect();
+        return x < mouseX && x + width >= mouseX;
+      });
 
-      moveHighlight(hoveredTab)
-    }
+      moveHighlight(hoveredTab);
+    };
 
-    navListRef.current.addEventListener("mousemove", onMouseMove)
-    navListRef.current.addEventListener("mouseleave", hideHighlight)
+    navListRef.current.addEventListener('mousemove', onMouseMove);
+    navListRef.current.addEventListener('mouseleave', hideHighlight);
 
     return () => {
-      listElement.removeEventListener("mousemove", onMouseMove)
-      listElement.removeEventListener("mouseleave", hideHighlight)
-    }
-  }, [hideHighlight])
+      listElement.removeEventListener('mousemove', onMouseMove);
+      listElement.removeEventListener('mouseleave', hideHighlight);
+    };
+  }, [hideHighlight]);
 
   const moveHighlight = (hoveredTab?: Element | null) => {
-    if (!hoveredTab || !navListRef.current) return
+    if (!hoveredTab || !navListRef.current) return;
 
-    const { x, width } = hoveredTab.getBoundingClientRect()
-    navListRef.current.style = `--hover-left: ${x}px; --hover-width: ${width}px`
-  }
+    const { x, width } = hoveredTab.getBoundingClientRect();
+    navListRef.current.style = `--hover-left: ${x}px; --hover-width: ${width}px`;
+  };
 
   return (
     <nav className="tabs">
@@ -56,7 +56,7 @@ export function TopNav() {
         ))}
       </ul>
     </nav>
-  )
+  );
 }
 
 function NavItem({
@@ -64,9 +64,9 @@ function NavItem({
   onFocus,
   children,
 }: {
-  to: string
-  onFocus: React.FocusEventHandler<HTMLAnchorElement> | undefined
-  children: React.ReactNode
+  to: string;
+  onFocus: React.FocusEventHandler<HTMLAnchorElement> | undefined;
+  children: React.ReactNode;
 }) {
   return (
     <li>
@@ -74,5 +74,5 @@ function NavItem({
         {children}
       </NavLink>
     </li>
-  )
+  );
 }

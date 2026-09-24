@@ -1,22 +1,22 @@
-import { Modal, ModalProps } from "./Modal"
-import { ModalDialog } from "./ModalDialog"
+import { Modal, ModalProps } from './Modal';
+import { ModalDialog } from './ModalDialog';
 
 type ModalContentsProps = {
-  message: string
-  onConfirm: () => void
-  confirmButtonText?: string
-  cancelButtonText?: string
-}
+  message: string;
+  onConfirm: () => void;
+  confirmButtonText?: string;
+  cancelButtonText?: string;
+};
 
 export type ConfirmationModalProps = ModalContentsProps & {
-  trigger: ModalProps["trigger"]
-}
+  trigger: ModalProps['trigger'];
+};
 
 function ModalContents({
   message,
   onConfirm,
-  confirmButtonText = "Confirm",
-  cancelButtonText = "No, cancel",
+  confirmButtonText = 'Confirm',
+  cancelButtonText = 'No, cancel',
 }: ModalContentsProps) {
   return (
     <>
@@ -28,7 +28,7 @@ function ModalContents({
         </Modal.Action>
       </Modal.Footer>
     </>
-  )
+  );
 }
 
 export function ConfirmationModal({
@@ -39,13 +39,13 @@ export function ConfirmationModal({
     <Modal trigger={trigger}>
       <ModalContents {...props} />
     </Modal>
-  )
+  );
 }
 
 export type ConfirmationModalDialogProps = ModalContentsProps & {
-  isOpen: boolean
-  onCancel: () => void
-}
+  isOpen: boolean;
+  onCancel: () => void;
+};
 
 export function ConfirmationModalDialog({
   isOpen,
@@ -56,5 +56,5 @@ export function ConfirmationModalDialog({
     <ModalDialog isOpen={isOpen} onCancel={onCancel}>
       <ModalContents {...props} />
     </ModalDialog>
-  )
+  );
 }

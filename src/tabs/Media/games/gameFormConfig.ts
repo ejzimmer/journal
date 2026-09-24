@@ -1,14 +1,14 @@
-import { GameDetails } from "../types"
-import { useMediaStorage } from "../MediaStorageContext"
-import { MediaFormConfig } from "../MediaForm"
+import { GameDetails } from '../types';
+import { useMediaStorage } from '../MediaStorageContext';
+import { MediaFormConfig } from '../MediaForm';
 
 export function useGameFormConfig(): MediaFormConfig<GameDetails> {
-  const { gameSeries } = useMediaStorage()
+  const { gameSeries } = useMediaStorage();
 
   return {
-    typeLabel: "Game",
+    typeLabel: 'Game',
     seriesList: gameSeries,
-    buildNew: (title) => ({ type: "game", title }),
+    buildNew: (title) => ({ type: 'game', title }),
     buildUpdated: (game, title) => ({ ...game, title }),
-  }
+  };
 }

@@ -1,19 +1,19 @@
-import { XIcon } from "../../shared/icons/X"
-import { LabelColourPicker } from "./Task/LabelColourPicker"
-import { Colour } from "./types"
+import { XIcon } from '../../shared/icons/X';
+import { LabelColourPicker } from './Task/LabelColourPicker';
+import { Colour } from './types';
 
 export type LabelTag = {
-  id: string
-  value: string
-  colour: Colour
-}
+  id: string;
+  value: string;
+  colour: Colour;
+};
 
 type LabelTagsProps = {
-  labels: LabelTag[]
-  onRemoveLabel: (id: string) => void
-  onChangeColour: (id: string, colour: Colour) => void
-  onEditLabel?: (id: string) => void
-}
+  labels: LabelTag[];
+  onRemoveLabel: (id: string) => void;
+  onChangeColour: (id: string, colour: Colour) => void;
+  onEditLabel?: (id: string) => void;
+};
 
 export function LabelTags({
   labels,
@@ -22,7 +22,7 @@ export function LabelTags({
   onEditLabel,
 }: LabelTagsProps) {
   if (labels.length === 0) {
-    return null
+    return null;
   }
 
   return (
@@ -57,5 +57,5 @@ export function LabelTags({
         </li>
       ))}
     </ul>
-  )
+  );
 }

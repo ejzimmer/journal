@@ -1,36 +1,41 @@
-import { useCallback, useMemo, useRef } from "react"
-import { NewListModal } from "./NewListModal"
-import { TaskList } from "./TaskList"
-import { Skeleton } from "../../shared/controls/Skeleton"
-import { draggableTypeKey } from "../../shared/drag-and-drop/types"
-import { WorkTask, WORK_KEY } from "./types"
-import { useDraggableList } from "../../shared/drag-and-drop/useDraggableList"
-import { isDraggable, sortByPosition } from "../../shared/drag-and-drop/utils"
-import { useDropTarget } from "../../shared/drag-and-drop/useDropTarget"
-import { WorkStorageProvider, useWorkStorage } from "./WorkStorageContext"
+import { useCallback, useMemo, useRef } from 'react';
+import { NewListModal } from './NewListModal';
+import { TaskList } from './TaskList';
+import { Skeleton } from '../../shared/controls/Skeleton';
+import { draggableTypeKey } from '../../shared/drag-and-drop/types';
+import { WorkTask, WORK_KEY } from './types';
+import { useDraggableList } from '../../shared/drag-and-drop/useDraggableList';
+import { isDraggable, sortByPosition } from '../../shared/drag-and-drop/utils';
+import { useDropTarget } from '../../shared/drag-and-drop/useDropTarget';
+import { WorkStorageProvider, useWorkStorage } from './WorkStorageContext';
 
-import "./index.css"
-import { MoveToOtherLists } from "./MoveToOtherLists"
-import { getAppendPosition } from "./taskPosition"
-import { ListDestination, getDestinationListIndex } from "./listDestination"
+import './index.css';
+import { MoveToOtherLists } from './MoveToOtherLists';
+import { getAppendPosition } from './taskPosition';
+import { ListDestination, getDestinationListIndex } from './listDestination';
 
 export function Work() {
   return (
     <WorkStorageProvider>
       <WorkContent />
     </WorkStorageProvider>
-  )
+  );
 }
 
 function WorkContent() {
-  const dropTargetRef = useRef<HTMLOListElement>(null)
-  const { lists, isLoading: listsLoading, addList, moveTask } = useWorkStorage()
+  const dropTargetRef = useRef<HTMLOListElement>(null);
+  const {
+    lists,
+    isLoading: listsLoading,
+    addList,
+    moveTask,
+  } = useWorkStorage();
 
   const doneList = useMemo(() => {
     return (
-      lists && Object.values(lists).find((list) => list.description === "Done")
-    )
-  }, [lists])
+      lists && Object.values(lists).find((list) => list.description === 'Done')
+    );
+  }, [lists]);
 
   const orderedLists = useMemo(
     () =>
@@ -38,26 +43,26 @@ function WorkContent() {
         (list) => list.id !== doneList?.id,
       ),
     [lists, doneList],
-  )
+  );
 
   const moveTaskToList = useCallback(
     (task: WorkTask, currentListId: string, destination: ListDestination) => {
       const currentIndex = orderedLists.findIndex(
         (list) => list.id === currentListId,
-      )
+      );
       if (currentIndex === -1) {
-        return
+        return;
       }
 
       const targetIndex = getDestinationListIndex(
         currentIndex,
         orderedLists.length,
         destination,
-      )
+      );
 
-      const targetList = orderedLists[targetIndex]
+      const targetList = orderedLists[targetIndex];
       if (!targetList || targetList.id === currentListId) {
-        return
+        return;
       }
 
       moveTask({
@@ -69,49 +74,49 @@ function WorkContent() {
         },
         sourceListId: `${WORK_KEY}/${currentListId}/items`,
         targetListId: `${WORK_KEY}/${targetList.id}/items`,
-      })
+      });
     },
     [orderedLists, moveTask],
-  )
+  );
 
   useDropTarget({
     dropTargetRef,
     canDrop: ({ source }) => isDraggable(source.data),
     getData: () => ({ id: WORK_KEY }),
-  })
+  });
   useDraggableList<WorkTask>({
     listId: WORK_KEY,
     canDropSourceOnTarget: (source, target) => {
       if (!isDraggable(target)) {
-        return source[draggableTypeKey] === "list"
+        return source[draggableTypeKey] === 'list';
       }
 
       if (source[draggableTypeKey] === target[draggableTypeKey]) {
-        return true
+        return true;
       }
 
       if (
-        source[draggableTypeKey] === "task" &&
-        target[draggableTypeKey] === "list"
+        source[draggableTypeKey] === 'task' &&
+        target[draggableTypeKey] === 'list'
       ) {
-        return true
+        return true;
       }
 
-      return false
+      return false;
     },
     getTargetListId: (source, target) => {
       if (!isDraggable(target)) {
-        return WORK_KEY
+        return WORK_KEY;
       }
 
       if (source[draggableTypeKey] === target[draggableTypeKey]) {
-        return target.parentId
+        return target.parentId;
       }
 
-      return `${WORK_KEY}/${target.id}/items`
+      return `${WORK_KEY}/${target.id}/items`;
     },
     getAxis: (source) => {
-      return source[draggableTypeKey] === "task" ? "vertical" : "horizontal"
+      return source[draggableTypeKey] === 'task' ? 'vertical' : 'horizontal';
     },
     moveItemBetweenLists: ({
       item,
@@ -127,10 +132,10 @@ function WorkContent() {
         targetListId,
         targetListItems,
       }),
-  })
+  });
 
   if (listsLoading) {
-    return <Skeleton numRows={3} />
+    return <Skeleton numRows={3} />;
   }
 
   return (
@@ -164,8 +169,8 @@ function WorkContent() {
           )}
         </ol>
       ) : (
-        <div style={{ marginInlineEnd: "30px" }}>No lists found.</div>
+        <div style={{ marginInlineEnd: '30px' }}>No lists found.</div>
       )}
     </>
-  )
+  );
 }

@@ -1,18 +1,18 @@
-import { DoneTick } from "./DoneTick"
-import "./Checkbox.css"
+import { DoneTick } from './DoneTick';
+import './Checkbox.css';
 
 type CheckboxProps = {
-  isChecked: boolean
-  onChange: (isChecked: boolean) => void
-  useTickForDone?: boolean
-  "aria-label": string
-}
+  isChecked: boolean;
+  onChange: (isChecked: boolean) => void;
+  useTickForDone?: boolean;
+  'aria-label': string;
+};
 
 export function Checkbox(props: CheckboxProps) {
-  const { isChecked, onChange, useTickForDone } = props
+  const { isChecked, onChange, useTickForDone } = props;
 
   return (
-    <label className={`checkbox ${useTickForDone ? "tick-for-done" : ""}`}>
+    <label className={`checkbox ${useTickForDone ? 'tick-for-done' : ''}`}>
       {isChecked && useTickForDone ? (
         <DoneTick />
       ) : (
@@ -30,12 +30,12 @@ export function Checkbox(props: CheckboxProps) {
       )}
       <input
         type="checkbox"
-        aria-label={props["aria-label"]}
+        aria-label={props['aria-label']}
         checked={isChecked}
         onChange={(event) => {
-          onChange(event.target.checked)
+          onChange(event.target.checked);
         }}
       />
     </label>
-  )
+  );
 }

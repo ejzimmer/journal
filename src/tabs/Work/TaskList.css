@@ -19,7 +19,7 @@ ol.work-lists > li {
   flex-direction: column;
   min-width: 300px;
   min-height: 316px;
-  font-family: "Shadows Into Light", sans-serif;
+  font-family: 'Shadows Into Light', sans-serif;
   cursor: text;
   background: linear-gradient(
     to right,
@@ -257,7 +257,6 @@ ol.work-lists > li {
           }
         }
       }
-
     }
 
     button.add-metadata {
@@ -272,11 +271,11 @@ ol.work-lists > li {
       margin-inline-start: 0;
     }
 
-    button.add-metadata[aria-label="Add label"] {
+    button.add-metadata[aria-label='Add label'] {
       margin-inline-start: -12px;
     }
 
-    button.add-metadata[aria-label="Add subtask"] {
+    button.add-metadata[aria-label='Add subtask'] {
       margin-inline-start: -10px;
     }
   }
@@ -333,9 +332,7 @@ form.add-task {
     line-height: 1;
     border: 0;
     border-radius: 0;
-    height: calc(
-      var(--line-gap) + var(--line-width) + var(--descender-room)
-    );
+    height: calc(var(--line-gap) + var(--line-width) + var(--descender-room));
     margin-block-end: calc(-1 * var(--descender-room));
     padding-block: calc(var(--baseline-drop) - var(--descender-room)) 0;
     background: linear-gradient(
@@ -371,7 +368,7 @@ form.add-task {
     background: white;
   }
 
-  [role="option"] {
+  [role='option'] {
     cursor: pointer;
   }
 
@@ -462,7 +459,7 @@ form.add-task {
   width: max-content;
   font-size: 1.2rem;
   padding: 4px;
-  font-family: "Shadows Into Light", sans-serif;
+  font-family: 'Shadows Into Light', sans-serif;
 }
 
 .label-colour-picker {
@@ -505,7 +502,7 @@ form.add-task {
     background-color: var(--colour);
   }
 
-  &[aria-pressed="true"] {
+  &[aria-pressed='true'] {
     outline: 2px solid var(--body-colour);
     outline-offset: -2px;
   }
