@@ -57,7 +57,11 @@ export function SubtaskList({ projectId, isVisible }: SubtasksProps) {
     });
   };
 
-  const { height: drawerHeight, isRaised } = useDrawer({
+  const {
+    height: drawerHeight,
+    isRaised,
+    isSettled,
+  } = useDrawer({
     drawerRef,
     listRef,
     formRef,
@@ -108,7 +112,7 @@ export function SubtaskList({ projectId, isVisible }: SubtasksProps) {
     <div
       className={`subtasks-section ${isVisible ? 'visible' : ''} ${
         isRaised ? 'raised' : ''
-      }`}
+      } ${isSettled ? 'settled' : ''}`}
       style={{ height: drawerHeight }}
       ref={drawerRef}
     >
