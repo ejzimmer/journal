@@ -8,7 +8,7 @@ Don't commit screenshots into the repo to get them into a PR - GitHub's API does
 
 ## No module-level variables for cross-component state
 
-Don't reach for a `let` at module scope to pass ephemeral state between component instances (e.g. "which item should regain focus after the next render"). It's invisible to React's data flow and got flagged in review. Reach for a hook instead - often a plain `useRef` inside the component already does the job: React preserves a component instance (and its refs/state) across a re-render as long as its `key` doesn't change, even if it moves position within a keyed list, so state that only needs to survive "this instance, across its own re-render" doesn't need to live outside the component at all. Only use React Context (with a Provider mounted above the components that need to share it) for state that genuinely must be shared *across* different component instances.
+Don't reach for a `let` at module scope to pass ephemeral state between component instances (e.g. "which item should regain focus after the next render"). It's invisible to React's data flow and got flagged in review. Reach for a hook instead - often a plain `useRef` inside the component already does the job: React preserves a component instance (and its refs/state) across a re-render as long as its `key` doesn't change, even if it moves position within a keyed list, so state that only needs to survive "this instance, across its own re-render" doesn't need to live outside the component at all. Only use React Context (with a Provider mounted above the components that need to share it) for state that genuinely must be shared _across_ different component instances.
 
 ## Don't write code comments unless asked
 
@@ -32,9 +32,9 @@ Before finishing any change, reread new comments as if you have no memory of the
 
 ## Test the current behaviour, not the change
 
-A test describes what the code does today, for someone who never saw the version before it. Write it that way: if a change removes close-on-blur, the test worth having is one that pins down what closing the form *does* require, not one that memorialises what used to happen. A test that only makes sense as a diff against an earlier implementation is the test equivalent of a comment about an abandoned approach.
+A test describes what the code does today, for someone who never saw the version before it. Write it that way: if a change removes close-on-blur, the test worth having is one that pins down what closing the form _does_ require, not one that memorialises what used to happen. A test that only makes sense as a diff against an earlier implementation is the test equivalent of a comment about an abandoned approach.
 
-The tell is an assertion that something *didn't* happen where nothing gave it any reason to happen. `expect(onSubmit).not.toHaveBeenCalled()` after a validation error is a real test - submission was attempted and the code stopped it. The same assertion when nobody clicked submit tests nothing; it would pass against an empty component. Likewise "expect the form not to submit" is a claim about behaviour, while "expect the input to still be on the screen" after an unrelated click is just restating that React didn't unmount something for no reason.
+The tell is an assertion that something _didn't_ happen where nothing gave it any reason to happen. `expect(onSubmit).not.toHaveBeenCalled()` after a validation error is a real test - submission was attempted and the code stopped it. The same assertion when nobody clicked submit tests nothing; it would pass against an empty component. Likewise "expect the form not to submit" is a claim about behaviour, while "expect the input to still be on the screen" after an unrelated click is just restating that React didn't unmount something for no reason.
 
 Before writing a negative assertion, ask what would have to be true for the thing to happen at all. If the answer is "nothing in this test", cut the assertion and test the positive path instead.
 
@@ -42,12 +42,12 @@ Before writing a negative assertion, ask what would have to be true for the thin
 
 `expect(screen.queryByRole("textbox")).not.toBeInTheDocument()` usually tests nothing. If the input gains a label, changes role, or the whole block stops rendering for an unrelated reason, the query returns null and the test still passes - including in exactly the broken state it was meant to catch.
 
-When the point is that an element *disappears*, grab it with `getBy` while it's still there, hold the reference, and assert on that reference afterwards:
+When the point is that an element _disappears_, grab it with `getBy` while it's still there, hold the reference, and assert on that reference afterwards:
 
 ```js
-const input = screen.getByRole("textbox", { name: "Description" })
-await user.keyboard("{Escape}")
-expect(input).not.toBeInTheDocument()
+const input = screen.getByRole('textbox', { name: 'Description' });
+await user.keyboard('{Escape}');
+expect(input).not.toBeInTheDocument();
 ```
 
 That version fails if the element is still mounted, and it also fails at the `getBy` if the starting state was never right. Reach for `queryBy` only when the element genuinely never existed in the test - and then consider whether the assertion is earning its place at all.

@@ -1,23 +1,23 @@
-import { useState } from "react"
-import { FormControl } from "../../../shared/controls/FormControl"
-import { AddTaskForm } from "../AddTaskForm"
-import { WEEKLY_KEY } from "../../../shared/types"
+import { useState } from 'react';
+import { FormControl } from '../../../shared/controls/FormControl';
+import { AddTaskForm } from '../AddTaskForm';
+import { WEEKLY_KEY } from '../../../shared/types';
 
 export function AddThisWeekTaskForm() {
-  const [frequency, setFrequency] = useState<string | undefined>("1")
+  const [frequency, setFrequency] = useState<string | undefined>('1');
 
   const getAdditionalFieldValues = () => {
     if (!frequency || isNaN(Number.parseInt(frequency))) {
-      return false
+      return false;
     }
 
-    setFrequency("1")
+    setFrequency('1');
 
     return {
       frequency: Number.parseInt(frequency),
       completed: [],
-    }
-  }
+    };
+  };
 
   return (
     <AddTaskForm
@@ -32,5 +32,5 @@ export function AddThisWeekTaskForm() {
         onChange={setFrequency}
       />
     </AddTaskForm>
-  )
+  );
 }

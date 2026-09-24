@@ -1,36 +1,36 @@
-import { Database, onValue, ref } from "firebase/database"
-import { useEffect, useSyncExternalStore } from "react"
-import { ContextType } from "../FirebaseContext"
-import { createLocalStore } from "./localStore"
-import { createOutbox, opsTouchPath } from "./outbox"
-import { valuesAreEqual } from "./pathTree"
-import { createSyncEngine } from "./syncEngine"
+import { Database, onValue, ref } from 'firebase/database';
+import { useEffect, useSyncExternalStore } from 'react';
+import { ContextType } from '../FirebaseContext';
+import { createLocalStore } from './localStore';
+import { createOutbox, opsTouchPath } from './outbox';
+import { valuesAreEqual } from './pathTree';
+import { createSyncEngine } from './syncEngine';
 
 export function createLocalFirstContext(
   database: Database,
-  dbName = "journal-local-first",
+  dbName = 'journal-local-first',
 ): { context: ContextType; hydrate: () => Promise<void> } {
-  const localStore = createLocalStore(`${dbName}-local`)
-  const outbox = createOutbox(`${dbName}-outbox`)
-  const syncEngine = createSyncEngine(database, outbox)
-  syncEngine.startSyncing()
+  const localStore = createLocalStore(`${dbName}-local`);
+  const outbox = createOutbox(`${dbName}-outbox`);
+  const syncEngine = createSyncEngine(database, outbox);
+  syncEngine.startSyncing();
 
-  const keysWithRemoteListener = new Set<string>()
+  const keysWithRemoteListener = new Set<string>();
 
   function registerRemoteListener(key: string) {
     if (keysWithRemoteListener.has(key)) {
-      return
+      return;
     }
-    keysWithRemoteListener.add(key)
+    keysWithRemoteListener.add(key);
 
     onValue(ref(database, key), async (snapshot) => {
-      const pendingOps = await outbox.list()
+      const pendingOps = await outbox.list();
       if (opsTouchPath(pendingOps, key)) {
-        return
+        return;
       }
 
-      localStore.writePath(key, snapshot.val())
-    })
+      localStore.writePath(key, snapshot.val());
+    });
   }
 
   function write(updates: Record<string, unknown>) {
@@ -39,49 +39,49 @@ export function createLocalFirstContext(
         value === null ||
         value === undefined ||
         !valuesAreEqual(localStore.readPath(path), value),
-    )
+    );
     if (changes.length === 0) {
-      return
+      return;
     }
 
-    changes.forEach(([path, value]) => localStore.writePath(path, value))
+    changes.forEach(([path, value]) => localStore.writePath(path, value));
     void outbox
       .enqueue({ updates: Object.fromEntries(changes) })
-      .then(() => syncEngine.notifyChange())
+      .then(() => syncEngine.notifyChange());
   }
 
   const context: ContextType = {
     addItem: (parent, item) => {
-      const id = crypto.randomUUID()
-      write({ [`${parent}/${id}`]: { ...item, id } })
-      return id
+      const id = crypto.randomUUID();
+      write({ [`${parent}/${id}`]: { ...item, id } });
+      return id;
     },
     updateItem: (parent, item) => {
-      const path = item.id ? `${parent}/${item.id}` : parent
-      write({ [path]: item })
+      const path = item.id ? `${parent}/${item.id}` : parent;
+      write({ [path]: item });
     },
     deleteItem: (parent, item) => {
       if (!item.id) {
         console.error(
           `deleteItem called with no id, refusing to delete under "${parent}"`,
           item,
-        )
-        return
+        );
+        return;
       }
-      write({ [`${parent}/${item.id}`]: null })
+      write({ [`${parent}/${item.id}`]: null });
     },
     updateList: (listName, list) => {
       const map = list.reduce(
         (items, item) => {
-          items[item.id] = item
-          return items
+          items[item.id] = item;
+          return items;
         },
         {} as Record<string, unknown>,
-      )
-      write({ [listName]: map })
+      );
+      write({ [listName]: map });
     },
     setValue: (path, value) => {
-      write({ [path]: value })
+      write({ [path]: value });
     },
     moveItemBetweenLists: ({
       movedItem,
@@ -92,28 +92,28 @@ export function createLocalFirstContext(
       const updates: Record<string, unknown> = {
         [`${targetListId}/${movedItem.id}`]: movedItem,
         [`${sourceListId}/${movedItem.id}`]: null,
-      }
+      };
       targetListItems.forEach((existingItem) => {
         updates[`${targetListId}/${existingItem.id}/position`] =
           existingItem.position < movedItem.position
             ? existingItem.position
-            : existingItem.position + 1
-      })
-      write(updates)
+            : existingItem.position + 1;
+      });
+      write(updates);
     },
-    useValue: <T,>(key?: string) => {
+    useValue: <T>(key?: string) => {
       useEffect(() => {
-        if (key) registerRemoteListener(key)
-      }, [key])
+        if (key) registerRemoteListener(key);
+      }, [key]);
 
       const value = useSyncExternalStore(
         (onChange) => (key ? localStore.subscribe(key, onChange) : () => {}),
         () => (key ? localStore.readPath<T>(key) : undefined),
-      )
+      );
 
-      return { value, loading: false }
+      return { value, loading: false };
     },
-  }
+  };
 
-  return { context, hydrate: localStore.hydrate }
+  return { context, hydrate: localStore.hydrate };
 }

@@ -1,32 +1,32 @@
-import { isBefore, startOfDay } from "date-fns"
-import { useStorageContext } from "../../shared/FirebaseContext"
-import { useDailyJob } from "../../shared/dailyJobs/DailyJobsContext"
+import { isBefore, startOfDay } from 'date-fns';
+import { useStorageContext } from '../../shared/FirebaseContext';
+import { useDailyJob } from '../../shared/dailyJobs/DailyJobsContext';
 import {
   renumberPositions,
   sortByPosition,
-} from "../../shared/drag-and-drop/utils"
-import { WorkTask, WORK_CLEANUP_KEY, WORK_KEY } from "./types"
+} from '../../shared/drag-and-drop/utils';
+import { WorkTask, WORK_CLEANUP_KEY, WORK_KEY } from './types';
 
 const finishedBeforeToday = (task: WorkTask) =>
-  task.status === "done" &&
-  isBefore(task.lastStatusUpdate, startOfDay(new Date()))
+  task.status === 'done' &&
+  isBefore(task.lastStatusUpdate, startOfDay(new Date()));
 
 export function useDoneTaskCleanup() {
-  const { useValue, addItem, updateList } = useStorageContext()
-  const { value: lists } = useValue<Record<string, WorkTask>>(WORK_KEY)
+  const { useValue, addItem, updateList } = useStorageContext();
+  const { value: lists } = useValue<Record<string, WorkTask>>(WORK_KEY);
 
   useDailyJob({
     lastRunKey: WORK_CLEANUP_KEY,
     isReady: lists !== undefined,
     run: () => {
-      const allLists = Object.values(lists ?? {})
-      const doneList = allLists.find((list) => list.description === "Done")
-      if (!doneList) return
+      const allLists = Object.values(lists ?? {});
+      const doneList = allLists.find((list) => list.description === 'Done');
+      if (!doneList) return;
 
-      const doneListItemsKey = `${WORK_KEY}/${doneList.id}/items`
+      const doneListItemsKey = `${WORK_KEY}/${doneList.id}/items`;
 
       allLists.forEach((list) => {
-        if (list.id === doneList.id || !list.items) return
+        if (list.id === doneList.id || !list.items) return;
 
         const { done, notDone } = Object.values(list.items).reduce(
           (
@@ -34,15 +34,15 @@ export function useDoneTaskCleanup() {
             task,
           ) => {
             if (finishedBeforeToday(task)) {
-              done.push(task)
+              done.push(task);
             } else {
-              notDone.push(task)
+              notDone.push(task);
             }
 
-            return { done, notDone }
+            return { done, notDone };
           },
           { done: [], notDone: [] },
-        )
+        );
 
         done.forEach((task) =>
           addItem<WorkTask>(doneListItemsKey, {
@@ -50,17 +50,17 @@ export function useDoneTaskCleanup() {
             parentId: doneListItemsKey,
             lastStatusUpdate: new Date().getTime(),
           }),
-        )
+        );
 
-        const orderedNotDone = renumberPositions(sortByPosition(notDone))
+        const orderedNotDone = renumberPositions(sortByPosition(notDone));
         const positionsChanged = orderedNotDone.some(
           (task) => list.items?.[task.id]?.position !== task.position,
-        )
+        );
 
         if (done.length > 0 || positionsChanged) {
-          updateList(`${WORK_KEY}/${list.id}/items`, orderedNotDone)
+          updateList(`${WORK_KEY}/${list.id}/items`, orderedNotDone);
         }
-      })
+      });
     },
-  })
+  });
 }

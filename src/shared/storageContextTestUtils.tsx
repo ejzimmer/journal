@@ -1,6 +1,6 @@
-import { ReactElement, ReactNode } from "react"
-import { render, RenderOptions } from "@testing-library/react"
-import { ContextType, FirebaseContext } from "./FirebaseContext"
+import { ReactElement, ReactNode } from 'react';
+import { render, RenderOptions } from '@testing-library/react';
+import { ContextType, FirebaseContext } from './FirebaseContext';
 
 export function createStorageContext(
   overrides: Partial<ContextType> = {},
@@ -14,21 +14,21 @@ export function createStorageContext(
     useValue: () => ({ value: undefined, loading: false }),
     moveItemBetweenLists: jest.fn(),
     ...overrides,
-  }
+  };
 }
 
 export function StorageContextWrapper({
   value,
   children,
 }: {
-  value?: Partial<ContextType>
-  children: ReactNode
+  value?: Partial<ContextType>;
+  children: ReactNode;
 }) {
   return (
     <FirebaseContext.Provider value={createStorageContext(value)}>
       {children}
     </FirebaseContext.Provider>
-  )
+  );
 }
 
 export function renderWithStorage(
@@ -36,12 +36,12 @@ export function renderWithStorage(
   {
     value,
     ...options
-  }: { value?: Partial<ContextType> } & Omit<RenderOptions, "wrapper"> = {},
+  }: { value?: Partial<ContextType> } & Omit<RenderOptions, 'wrapper'> = {},
 ) {
   return render(ui, {
     wrapper: ({ children }) => (
       <StorageContextWrapper value={value}>{children}</StorageContextWrapper>
     ),
     ...options,
-  })
+  });
 }

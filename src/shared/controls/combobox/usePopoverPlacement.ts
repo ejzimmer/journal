@@ -1,55 +1,56 @@
-import { useLayoutEffect, useState } from "react"
+import { useLayoutEffect, useState } from 'react';
 
-const GAP = 4
-const EDGE_BUFFER = 4
+const GAP = 4;
+const EDGE_BUFFER = 4;
 
-export type PopoverPlacement = "below" | "above"
+export type PopoverPlacement = 'below' | 'above';
 
 type PopoverPosition = {
-  placement: PopoverPlacement
-  maxHeight: number
-  top?: number
-  bottom?: number
-  left: number
-  minWidth: number
-}
+  placement: PopoverPlacement;
+  maxHeight: number;
+  top?: number;
+  bottom?: number;
+  left: number;
+  minWidth: number;
+};
 
 const DEFAULT_POSITION: PopoverPosition = {
-  placement: "below",
+  placement: 'below',
   maxHeight: 0,
   left: 0,
   minWidth: 0,
-}
+};
 
 export function usePopoverPlacement(
-  popoverState: "open" | "closed",
+  popoverState: 'open' | 'closed',
   anchorRef: React.RefObject<HTMLElement | null>,
   popoverRef: React.RefObject<HTMLElement | null>,
-  onAnchorHidden: () => void
+  onAnchorHidden: () => void,
 ) {
-  const [position, setPosition] = useState<PopoverPosition>(DEFAULT_POSITION)
+  const [position, setPosition] = useState<PopoverPosition>(DEFAULT_POSITION);
 
   useLayoutEffect(() => {
-    if (popoverState !== "open") return
+    if (popoverState !== 'open') return;
 
     const measure = () => {
-      const anchorEl = anchorRef.current
-      const popoverEl = popoverRef.current
-      if (!anchorEl || !popoverEl) return
+      const anchorEl = anchorRef.current;
+      const popoverEl = popoverRef.current;
+      if (!anchorEl || !popoverEl) return;
 
-      const anchorRect = anchorEl.getBoundingClientRect()
+      const anchorRect = anchorEl.getBoundingClientRect();
 
       // Close the popover when the anchor is scrolled out of view
       if (anchorRect.bottom <= 0 || anchorRect.top >= window.innerHeight) {
-        onAnchorHidden()
-        return
+        onAnchorHidden();
+        return;
       }
 
-      const spaceBelow = window.innerHeight - anchorRect.bottom - GAP - EDGE_BUFFER
-      const spaceAbove = anchorRect.top - GAP - EDGE_BUFFER
-      const contentHeight = popoverEl.scrollHeight
+      const spaceBelow =
+        window.innerHeight - anchorRect.bottom - GAP - EDGE_BUFFER;
+      const spaceAbove = anchorRect.top - GAP - EDGE_BUFFER;
+      const contentHeight = popoverEl.scrollHeight;
 
-      const shared = { left: anchorRect.left, minWidth: anchorRect.width }
+      const shared = { left: anchorRect.left, minWidth: anchorRect.width };
 
       // Sets top/bottom as plain numbers rather than CSS anchor positioning:
       // browsers vary in whether position-area's block-axis placement
@@ -59,28 +60,28 @@ export function usePopoverPlacement(
       if (contentHeight <= spaceBelow || spaceBelow >= spaceAbove) {
         setPosition({
           ...shared,
-          placement: "below",
+          placement: 'below',
           maxHeight: Math.max(spaceBelow, 0),
           top: anchorRect.bottom + GAP,
-        })
+        });
       } else {
         setPosition({
           ...shared,
-          placement: "above",
+          placement: 'above',
           maxHeight: Math.max(spaceAbove, 0),
           bottom: window.innerHeight - anchorRect.top + GAP,
-        })
+        });
       }
-    }
+    };
 
-    measure()
-    window.addEventListener("scroll", measure, true)
-    window.addEventListener("resize", measure)
+    measure();
+    window.addEventListener('scroll', measure, true);
+    window.addEventListener('resize', measure);
     return () => {
-      window.removeEventListener("scroll", measure, true)
-      window.removeEventListener("resize", measure)
-    }
-  }, [popoverState, anchorRef, popoverRef, onAnchorHidden])
+      window.removeEventListener('scroll', measure, true);
+      window.removeEventListener('resize', measure);
+    };
+  }, [popoverState, anchorRef, popoverRef, onAnchorHidden]);
 
-  return position
+  return position;
 }

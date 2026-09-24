@@ -1,15 +1,15 @@
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useRef, useState } from 'react';
 
-import "./Switch.css"
+import './Switch.css';
 
 type SwitchProps<T extends string> = {
-  options: T[]
-  value: T
-  onChange: (value: T) => void
-  name: string
-  Option?: React.FC<{ value: T }>
-  className?: string
-}
+  options: T[];
+  value: T;
+  onChange: (value: T) => void;
+  name: string;
+  Option?: React.FC<{ value: T }>;
+  className?: string;
+};
 
 export function Switch<T extends string>({
   options,
@@ -19,40 +19,40 @@ export function Switch<T extends string>({
   Option,
   className,
 }: SwitchProps<T>) {
-  const radioGroupRef = useRef<HTMLDivElement>(null)
-  const [width, setWidth] = useState<number>()
-  const [left, setLeft] = useState<number>()
+  const radioGroupRef = useRef<HTMLDivElement>(null);
+  const [width, setWidth] = useState<number>();
+  const [left, setLeft] = useState<number>();
 
   useEffect(() => {
     if (!radioGroupRef.current) {
-      return
+      return;
     }
     const checkedOption = radioGroupRef.current.querySelector(
       `input[value="${value}"]`,
-    )
+    );
     if (!checkedOption) {
-      return
+      return;
     }
-    const checkedOptionLabel = checkedOption.closest("label")
+    const checkedOptionLabel = checkedOption.closest('label');
     if (!checkedOptionLabel) {
-      return
+      return;
     }
 
-    setWidth(checkedOptionLabel.clientWidth)
-    const labelLeft = checkedOptionLabel.getBoundingClientRect().left ?? 0
-    const parentLeft = radioGroupRef.current.getBoundingClientRect().left ?? 0
-    setLeft(labelLeft - parentLeft - 1)
-  }, [value])
+    setWidth(checkedOptionLabel.clientWidth);
+    const labelLeft = checkedOptionLabel.getBoundingClientRect().left ?? 0;
+    const parentLeft = radioGroupRef.current.getBoundingClientRect().left ?? 0;
+    setLeft(labelLeft - parentLeft - 1);
+  }, [value]);
 
-  const borderRadiusLeft = value === options[0] ? "inherit" : undefined
+  const borderRadiusLeft = value === options[0] ? 'inherit' : undefined;
   const borderRadiusRight =
-    value === options[options.length - 1] ? "inherit" : undefined
+    value === options[options.length - 1] ? 'inherit' : undefined;
 
   return (
     <div
       ref={radioGroupRef}
       role="radiogroup"
-      className={`switch ${className ?? ""}`.trim()}
+      className={`switch ${className ?? ''}`.trim()}
     >
       {options.map((option) => {
         return (
@@ -66,7 +66,7 @@ export function Switch<T extends string>({
               onChange={() => onChange(option)}
             />
           </label>
-        )
+        );
       })}
       <div
         className="indicator"
@@ -80,5 +80,5 @@ export function Switch<T extends string>({
         }}
       />
     </div>
-  )
+  );
 }

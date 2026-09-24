@@ -1,7 +1,7 @@
-import { Month } from "./types"
+import { Month } from './types';
 
 export function MonthlyBalance({ total, subTotals }: Month) {
-  const yarnTypes = Object.keys(subTotals)
+  const yarnTypes = Object.keys(subTotals);
 
   return (
     <div className="yarn-month">
@@ -16,5 +16,5 @@ export function MonthlyBalance({ total, subTotals }: Month) {
         </div>
       ))}
     </div>
-  )
+  );
 }

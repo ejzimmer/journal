@@ -1,51 +1,51 @@
-import { CSSProperties, useState } from "react"
-import { useStorageContext } from "../../shared/FirebaseContext"
+import { CSSProperties, useState } from 'react';
+import { useStorageContext } from '../../shared/FirebaseContext';
 
-import "./Project.css"
-import { EmojiCheckbox } from "../../shared/controls/EmojiCheckbox"
-import { ChevronDownIcon } from "../../shared/icons/ChevronDown"
-import { SubtaskList } from "./SubtaskList"
+import './Project.css';
+import { EmojiCheckbox } from '../../shared/controls/EmojiCheckbox';
+import { ChevronDownIcon } from '../../shared/icons/ChevronDown';
+import { SubtaskList } from './SubtaskList';
 import {
   ProjectDetails,
   PROJECT_COLOURS,
   PROJECTS_KEY,
   ProjectSubtask,
-} from "../../shared/types"
-import { useLinkedTasks } from "./utils"
-import { ArrowToEndIcon } from "../../shared/icons/ArrowToEnd"
-import { ArrowToStartIcon } from "../../shared/icons/ArrowToStart"
-import { EditableText } from "../../shared/controls/EditableText"
+} from '../../shared/types';
+import { useLinkedTasks } from './utils';
+import { ArrowToEndIcon } from '../../shared/icons/ArrowToEnd';
+import { ArrowToStartIcon } from '../../shared/icons/ArrowToStart';
+import { EditableText } from '../../shared/controls/EditableText';
 
 type ProjectProps = {
-  project: ProjectDetails
-  onMoveToStart?: () => void
-  onMoveToEnd?: () => void
-  onDelete: () => void
-}
+  project: ProjectDetails;
+  onMoveToStart?: () => void;
+  onMoveToEnd?: () => void;
+  onDelete: () => void;
+};
 
-const OPEN_PROJECTS_STORAGE_KEY = "openProjectIds"
+const OPEN_PROJECTS_STORAGE_KEY = 'openProjectIds';
 
 function getOpenProjectIds(): Set<string> {
   try {
-    const stored = localStorage.getItem(OPEN_PROJECTS_STORAGE_KEY)
-    return new Set(stored ? JSON.parse(stored) : [])
+    const stored = localStorage.getItem(OPEN_PROJECTS_STORAGE_KEY);
+    return new Set(stored ? JSON.parse(stored) : []);
   } catch {
-    return new Set()
+    return new Set();
   }
 }
 
 function setProjectOpen(projectId: string, isOpen: boolean) {
-  const openProjectIds = getOpenProjectIds()
+  const openProjectIds = getOpenProjectIds();
   if (isOpen) {
-    openProjectIds.add(projectId)
+    openProjectIds.add(projectId);
   } else {
-    openProjectIds.delete(projectId)
+    openProjectIds.delete(projectId);
   }
   try {
     localStorage.setItem(
       OPEN_PROJECTS_STORAGE_KEY,
       JSON.stringify([...openProjectIds]),
-    )
+    );
   } catch {
     // Ignore storage errors, e.g. private browsing or a full quota
   }
@@ -59,64 +59,64 @@ export function Project({
 }: ProjectProps) {
   const [subtasksVisible, setSubtasksVisible] = useState(() =>
     getOpenProjectIds().has(project.id),
-  )
-  const [hasOpenedSubtasks, setHasOpenedSubtasks] = useState(subtasksVisible)
+  );
+  const [hasOpenedSubtasks, setHasOpenedSubtasks] = useState(subtasksVisible);
 
-  const status = project.status ?? "ready"
+  const status = project.status ?? 'ready';
 
-  const { updateItem } = useStorageContext()
+  const { updateItem } = useStorageContext();
 
-  const { updateLinkedTask } = useLinkedTasks(project.linkedTaskId)
+  const { updateLinkedTask } = useLinkedTasks(project.linkedTaskId);
 
   const projectColour = {
-    "--project-colour":
+    '--project-colour':
       project.category in PROJECT_COLOURS
         ? PROJECT_COLOURS[project.category]
-        : "white",
-  } as CSSProperties
+        : 'white',
+  } as CSSProperties;
 
   const onChangeStatus = () => {
-    if (status === "in_progress") {
-      updateItem(PROJECTS_KEY, { ...project, status: "done" })
-    } else if (status === "done") {
-      updateItem(PROJECTS_KEY, { ...project, status: "ready" })
+    if (status === 'in_progress') {
+      updateItem(PROJECTS_KEY, { ...project, status: 'done' });
+    } else if (status === 'done') {
+      updateItem(PROJECTS_KEY, { ...project, status: 'ready' });
     } else {
       updateItem(PROJECTS_KEY, {
         ...project,
-        status: "in_progress",
-      })
+        status: 'in_progress',
+      });
     }
 
     updateLinkedTask({
-      status: status === "in_progress" ? "finished" : "ready",
+      status: status === 'in_progress' ? 'finished' : 'ready',
       lastCompleted: new Date().getTime(),
-    })
-  }
+    });
+  };
 
-  const subtasks = Object.values(project.subtasks ?? {})
-  const doneSubtasks = subtasks.filter((subtask) => subtask.status === "done")
+  const subtasks = Object.values(project.subtasks ?? {});
+  const doneSubtasks = subtasks.filter((subtask) => subtask.status === 'done');
 
-  if (status === "ready" && doneSubtasks.length > 0) {
+  if (status === 'ready' && doneSubtasks.length > 0) {
     updateItem<ProjectDetails>(PROJECTS_KEY, {
       ...project,
-      status: "in_progress",
-    })
+      status: 'in_progress',
+    });
   }
 
   const expandButton = (
     <button
-      className={`ghost expand ${subtasksVisible ? "expanded" : ""}`}
+      className={`ghost expand ${subtasksVisible ? 'expanded' : ''}`}
       onClick={() => {
-        const nextVisible = !subtasksVisible
-        setSubtasksVisible(nextVisible)
-        setHasOpenedSubtasks(true)
-        setProjectOpen(project.id, nextVisible)
+        const nextVisible = !subtasksVisible;
+        setSubtasksVisible(nextVisible);
+        setHasOpenedSubtasks(true);
+        setProjectOpen(project.id, nextVisible);
       }}
       aria-label="Show subtasks"
     >
       <ChevronDownIcon width="20px" />
     </button>
-  )
+  );
 
   return (
     <div className={`project ${status}`} style={projectColour}>
@@ -124,10 +124,10 @@ export function Project({
         <div className="project-main-row">
           <EmojiCheckbox
             emoji={project.category}
-            isChecked={status === "done"}
+            isChecked={status === 'done'}
             useTickForDone
             onChange={onChangeStatus}
-            label={""}
+            label={''}
           />
           <EditableText
             className="project-name"
@@ -137,18 +137,18 @@ export function Project({
               updateItem<ProjectDetails>(PROJECTS_KEY, {
                 ...project,
                 description,
-              })
+              });
             }}
             onDelete={onDelete}
             style={{
-              fontSize: "1em",
+              fontSize: '1em',
               flexGrow: 1,
             }}
           />
-          {status !== "in_progress" && expandButton}
+          {status !== 'in_progress' && expandButton}
         </div>
 
-        {status === "in_progress" && (
+        {status === 'in_progress' && (
           <div className="project-meta-row">
             <SubtaskProgress subtasks={subtasks} doneSubtasks={doneSubtasks} />
             <div className="project-actions">
@@ -184,18 +184,18 @@ export function Project({
         <SubtaskList projectId={project.id} isVisible={subtasksVisible} />
       )}
     </div>
-  )
+  );
 }
 
 type SubtaskProgressProps = {
-  subtasks: ProjectSubtask[]
-  doneSubtasks: ProjectSubtask[]
-}
+  subtasks: ProjectSubtask[];
+  doneSubtasks: ProjectSubtask[];
+};
 
 function SubtaskProgress({ subtasks, doneSubtasks }: SubtaskProgressProps) {
-  if (subtasks.length === 0) return null
+  if (subtasks.length === 0) return null;
 
-  const donePercentage = (doneSubtasks.length / subtasks.length) * 100
+  const donePercentage = (doneSubtasks.length / subtasks.length) * 100;
 
   return (
     <div className="subtasks-progress">
@@ -209,5 +209,5 @@ function SubtaskProgress({ subtasks, doneSubtasks }: SubtaskProgressProps) {
         {doneSubtasks.length} of {subtasks.length}
       </span>
     </div>
-  )
+  );
 }

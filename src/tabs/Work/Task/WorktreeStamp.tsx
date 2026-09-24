@@ -1,12 +1,12 @@
-import { RubbishBinIcon } from "../../../shared/icons/RubbishBin"
-import { Worktree, WORKTREES } from "../types"
-import { Stamp } from "./Stamp"
-import { WorktreeMenu, WorktreeMenuOption } from "./WorktreeMenu"
+import { RubbishBinIcon } from '../../../shared/icons/RubbishBin';
+import { Worktree, WORKTREES } from '../types';
+import { Stamp } from './Stamp';
+import { WorktreeMenu, WorktreeMenuOption } from './WorktreeMenu';
 
 type WorktreeStampProps = {
-  worktree: Worktree
-  onChange: (worktree?: Worktree) => void
-}
+  worktree: Worktree;
+  onChange: (worktree?: Worktree) => void;
+};
 
 export function WorktreeStamp({ worktree, onChange }: WorktreeStampProps) {
   const options: WorktreeMenuOption[] = [
@@ -19,13 +19,13 @@ export function WorktreeStamp({ worktree, onChange }: WorktreeStampProps) {
       }),
     ),
     {
-      key: "remove",
-      label: "Remove worktree stamp",
-      className: "remove",
+      key: 'remove',
+      label: 'Remove worktree stamp',
+      className: 'remove',
       content: <RubbishBinIcon width="18px" colour="currentColor" />,
       onSelect: () => onChange(undefined),
     },
-  ]
+  ];
 
   return (
     <WorktreeMenu
@@ -39,5 +39,5 @@ export function WorktreeStamp({ worktree, onChange }: WorktreeStampProps) {
       )}
       options={options}
     />
-  )
+  );
 }

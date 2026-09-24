@@ -1,4 +1,4 @@
-import { SearchInputProps } from "./types"
+import { SearchInputProps } from './types';
 
 export function SearchInput({
   id,
@@ -27,5 +27,5 @@ export function SearchInput({
       size={size}
       aria-label={ariaLabel}
     />
-  )
+  );
 }

@@ -1,36 +1,36 @@
-import { useStorageContext } from "../../../shared/FirebaseContext"
-import "./StationRunning.css"
+import { useStorageContext } from '../../../shared/FirebaseContext';
+import './StationRunning.css';
 
-const KEY = "2026/stations"
+const KEY = '2026/stations';
 
 type StationDetails = {
-  id: string
-  name: string
-  distance: number
-  isDone: boolean
-}
+  id: string;
+  name: string;
+  distance: number;
+  isDone: boolean;
+};
 
 export function StationRunning() {
-  const { useValue, updateItem } = useStorageContext()
+  const { useValue, updateItem } = useStorageContext();
 
-  const { value } = useValue<Record<string, StationDetails>>(KEY)
-  const stations = value && Object.values(value)
+  const { value } = useValue<Record<string, StationDetails>>(KEY);
+  const stations = value && Object.values(value);
 
   return (
     <div
       style={{
-        maxWidth: "100%",
-        overflow: "auto",
-        paddingBlockEnd: "4px",
-        marginInline: "auto",
-        paddingInlineEnd: "120px",
+        maxWidth: '100%',
+        overflow: 'auto',
+        paddingBlockEnd: '4px',
+        marginInline: 'auto',
+        paddingInlineEnd: '120px',
       }}
     >
       <ol className="trainline">
         {stations?.map((station) => (
           <li
             key={station.name}
-            className={station.name === "Watsonia" ? "home" : ""}
+            className={station.name === 'Watsonia' ? 'home' : ''}
           >
             <Station
               {...station}
@@ -40,7 +40,7 @@ export function StationRunning() {
         ))}
       </ol>
     </div>
-  )
+  );
 }
 
 function Station({
@@ -48,9 +48,9 @@ function Station({
   ...station
 }: StationDetails & { onChange: (station: StationDetails) => void }) {
   return (
-    <label className={`station ${station.isDone ? "done" : ""}`}>
+    <label className={`station ${station.isDone ? 'done' : ''}`}>
       <div className="name">
-        <b>{station.name}</b>{" "}
+        <b>{station.name}</b>{' '}
         <span className="distance">{station.distance}km</span>
         <input
           type="checkbox"
@@ -59,5 +59,5 @@ function Station({
         />
       </div>
     </label>
-  )
+  );
 }

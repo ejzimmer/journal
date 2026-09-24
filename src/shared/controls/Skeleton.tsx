@@ -1,7 +1,7 @@
-import "./Skeleton.css"
+import './Skeleton.css';
 
 export function Skeleton({ numRows }: { numRows: number }) {
-  const rows = Array.from({ length: numRows })
+  const rows = Array.from({ length: numRows });
 
   return (
     <div className="skeleton">
@@ -14,5 +14,5 @@ export function Skeleton({ numRows }: { numRows: number }) {
         />
       ))}
     </div>
-  )
+  );
 }

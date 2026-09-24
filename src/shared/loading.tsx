@@ -1,33 +1,33 @@
-import { useCallback, useEffect, useRef, useState } from "react"
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 export function Loading() {
-  const [transitions, setTransitions] = useState<boolean[]>([])
+  const [transitions, setTransitions] = useState<boolean[]>([]);
 
-  const noLettersDrawn = transitions.every((t) => t === false)
+  const noLettersDrawn = transitions.every((t) => t === false);
   useEffect(() => {
-    if (!noLettersDrawn) return
+    if (!noLettersDrawn) return;
 
     requestAnimationFrame(() => {
       setTransitions(
         Array.from({ length: 11 }).fill(false).with(0, true) as boolean[],
-      )
-    })
-  }, [noLettersDrawn])
+      );
+    });
+  }, [noLettersDrawn]);
 
   const drawNextPath = useCallback(() => {
-    if (!transitions) return
+    if (!transitions) return;
 
-    const firstUndrawn = transitions.findIndex((t) => t === false)
+    const firstUndrawn = transitions.findIndex((t) => t === false);
     if (firstUndrawn > -1) {
-      setTransitions(transitions.with(firstUndrawn, true))
+      setTransitions(transitions.with(firstUndrawn, true));
     }
-  }, [transitions])
+  }, [transitions]);
 
   const reset = () => {
     setTimeout(() => {
-      setTransitions(Array.from({ length: 11 }).fill(false) as boolean[])
-    }, 2000)
-  }
+      setTransitions(Array.from({ length: 11 }).fill(false) as boolean[]);
+    }, 2000);
+  };
 
   return (
     <svg
@@ -106,40 +106,40 @@ export function Loading() {
         d="M271.1,44.8 C271.0,45.5 269.8,48.5 270.4,49.2 C271.0,49.9 274.0,49.9 274.8,49.2 C275.7,48.5 276.2,45.5 275.5,44.8 C274.9,44.1 271.9,44.8 271.1,44.8"
       />
     </svg>
-  )
+  );
 }
 
 type AnimatedPathProps = {
-  d: string
-  draw: boolean
-  onTransitionEnd?: React.TransitionEventHandler<SVGPathElement>
-}
+  d: string;
+  draw: boolean;
+  onTransitionEnd?: React.TransitionEventHandler<SVGPathElement>;
+};
 
 function AnimatedPath({ d, draw, onTransitionEnd }: AnimatedPathProps) {
-  const ref = useRef<SVGPathElement>(null)
-  const [strokeLength, setStrokeLength] = useState(0)
-  const [strokeOffset, setStrokeOffset] = useState(0)
+  const ref = useRef<SVGPathElement>(null);
+  const [strokeLength, setStrokeLength] = useState(0);
+  const [strokeOffset, setStrokeOffset] = useState(0);
 
   useEffect(() => {
-    if (!ref.current) return
+    if (!ref.current) return;
 
-    const strokeLength = ref.current.getTotalLength()
-    setStrokeLength(strokeLength)
-    setStrokeOffset(strokeLength)
-  }, [])
+    const strokeLength = ref.current.getTotalLength();
+    setStrokeLength(strokeLength);
+    setStrokeOffset(strokeLength);
+  }, []);
 
   if (draw && strokeOffset > 0) {
     requestAnimationFrame(() => {
       if (ref.current) {
-        ref.current.style.transition = `stroke-dashoffset ${strokeLength * 3}ms linear`
-        setStrokeOffset(0)
+        ref.current.style.transition = `stroke-dashoffset ${strokeLength * 3}ms linear`;
+        setStrokeOffset(0);
       }
-    })
+    });
   }
 
   if (strokeOffset === 0 && !draw && ref.current) {
-    ref.current.style.transition = "none"
-    setStrokeOffset(strokeLength)
+    ref.current.style.transition = 'none';
+    setStrokeOffset(strokeLength);
   }
 
   return (
@@ -150,5 +150,5 @@ function AnimatedPath({ d, draw, onTransitionEnd }: AnimatedPathProps) {
       d={d}
       onTransitionEnd={onTransitionEnd}
     />
-  )
+  );
 }

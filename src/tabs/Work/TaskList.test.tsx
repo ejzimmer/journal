@@ -1,70 +1,73 @@
-import { render, screen, within } from "@testing-library/react"
-import userEvent from "@testing-library/user-event"
-import { TaskList } from "./TaskList"
-import { WorkStorageContext, WorkStorageContextType } from "./WorkStorageContext"
-import { createWorkStorageContext } from "./workStorageTestUtils"
-import { WorkTask, StoredLabel } from "./types"
+import { render, screen, within } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { TaskList } from './TaskList';
+import {
+  WorkStorageContext,
+  WorkStorageContextType,
+} from './WorkStorageContext';
+import { createWorkStorageContext } from './workStorageTestUtils';
+import { WorkTask, StoredLabel } from './types';
 
-const a11yLabel: StoredLabel = { id: "id-a11y", value: "a11y", colour: "blue" }
+const a11yLabel: StoredLabel = { id: 'id-a11y', value: 'a11y', colour: 'blue' };
 const urgentLabel: StoredLabel = {
-  id: "id-urgent",
-  value: "urgent",
-  colour: "yellow",
-}
+  id: 'id-urgent',
+  value: 'urgent',
+  colour: 'yellow',
+};
 
 const labelledList: WorkTask = {
-  id: "list-1",
-  description: "a11y backlog",
-  status: "not_started",
-  parentId: "work",
+  id: 'list-1',
+  description: 'a11y backlog',
+  status: 'not_started',
+  parentId: 'work',
   lastStatusUpdate: 0,
   position: 0,
   labelIds: [a11yLabel.id],
-}
+};
 
 const unlabelledList: WorkTask = {
-  id: "list-2",
-  description: "Today",
-  status: "not_started",
-  parentId: "work",
+  id: 'list-2',
+  description: 'Today',
+  status: 'not_started',
+  parentId: 'work',
   lastStatusUpdate: 0,
   position: 1,
   items: {
-    "task-1": {
-      id: "task-1",
-      description: "not done",
-      status: "not_started",
-      parentId: "list-2",
+    'task-1': {
+      id: 'task-1',
+      description: 'not done',
+      status: 'not_started',
+      parentId: 'list-2',
       lastStatusUpdate: 0,
       position: 0,
     },
-    "task-2": {
-      id: "task-2",
-      description: "also not done",
-      status: "not_started",
-      parentId: "list-2",
+    'task-2': {
+      id: 'task-2',
+      description: 'also not done',
+      status: 'not_started',
+      parentId: 'list-2',
       lastStatusUpdate: 0,
       position: 1,
     },
-    "task-3": {
-      id: "task-3",
-      description: "done",
-      status: "done",
-      parentId: "list-2",
+    'task-3': {
+      id: 'task-3',
+      description: 'done',
+      status: 'done',
+      parentId: 'list-2',
       lastStatusUpdate: 0,
       position: 2,
     },
   },
-}
+};
 
 const lists: Record<string, WorkTask> = {
   [labelledList.id]: labelledList,
   [unlabelledList.id]: unlabelledList,
-}
+};
 
-const mockLabels: StoredLabel[] = [a11yLabel, urgentLabel]
+const mockLabels: StoredLabel[] = [a11yLabel, urgentLabel];
 
-const noop = () => <></>
+const noop = () => <></>;
 
 function renderTaskList(
   listId: string,
@@ -79,7 +82,7 @@ function renderTaskList(
         additionalMoveDestinations={noop}
       />
     </WorkStorageContext.Provider>,
-  )
+  );
 }
 
 function createStorageContext(): WorkStorageContextType {
@@ -89,99 +92,101 @@ function createStorageContext(): WorkStorageContextType {
     getTask: (listId, taskId) => lists[listId]?.items?.[taskId],
     labels: mockLabels,
     getLabel: (id) => mockLabels.find((l) => l.id === id),
-  })
+  });
 }
 
-describe("TaskList label", () => {
-  it("opens the label picker when the label text is clicked", async () => {
-    const user = userEvent.setup()
-    renderTaskList(labelledList.id, createStorageContext())
+describe('TaskList label', () => {
+  it('opens the label picker when the label text is clicked', async () => {
+    const user = userEvent.setup();
+    renderTaskList(labelledList.id, createStorageContext());
 
-    const labelText = screen.getByRole("button", { name: "Change a11y label" })
-    expect(labelText).toHaveTextContent("a11y")
+    const labelText = screen.getByRole('button', { name: 'Change a11y label' });
+    expect(labelText).toHaveTextContent('a11y');
 
-    await user.click(labelText)
+    await user.click(labelText);
 
-    expect(screen.getByRole("combobox")).toBeInTheDocument()
-  })
+    expect(screen.getByRole('combobox')).toBeInTheDocument();
+  });
 
   it("doesn't show a label or edit button when the list has none", () => {
-    renderTaskList(unlabelledList.id, createStorageContext())
+    renderTaskList(unlabelledList.id, createStorageContext());
 
-    expect(screen.queryByText("a11y")).not.toBeInTheDocument()
+    expect(screen.queryByText('a11y')).not.toBeInTheDocument();
     expect(
-      screen.queryByRole("button", { name: /Change .* label/ }),
-    ).not.toBeInTheDocument()
-  })
+      screen.queryByRole('button', { name: /Change .* label/ }),
+    ).not.toBeInTheDocument();
+  });
 
-  it("removes the label when its remove button is clicked", async () => {
-    const user = userEvent.setup()
-    const storageContext = createStorageContext()
-    renderTaskList(labelledList.id, storageContext)
+  it('removes the label when its remove button is clicked', async () => {
+    const user = userEvent.setup();
+    const storageContext = createStorageContext();
+    renderTaskList(labelledList.id, storageContext);
 
-    const labelItem = screen.getByText("a11y").closest("li")
-    await user.click(within(labelItem!).getByRole("button", { name: "Remove a11y" }))
+    const labelItem = screen.getByText('a11y').closest('li');
+    await user.click(
+      within(labelItem!).getByRole('button', { name: 'Remove a11y' }),
+    );
 
     expect(storageContext.removeLabel).toHaveBeenCalledWith(
       a11yLabel.id,
       labelledList,
-    )
-  })
+    );
+  });
 
-  it("switches to a different label when edited", async () => {
-    const user = userEvent.setup()
-    const storageContext = createStorageContext()
-    renderTaskList(labelledList.id, storageContext)
+  it('switches to a different label when edited', async () => {
+    const user = userEvent.setup();
+    const storageContext = createStorageContext();
+    renderTaskList(labelledList.id, storageContext);
 
-    await user.click(screen.getByRole("button", { name: "Change a11y label" }))
-    await user.click(screen.getByRole("option", { name: "urgent" }))
+    await user.click(screen.getByRole('button', { name: 'Change a11y label' }));
+    await user.click(screen.getByRole('option', { name: 'urgent' }));
 
     expect(storageContext.changeLabels).toHaveBeenCalledWith(
       [{ value: urgentLabel.value, colour: urgentLabel.colour }],
       labelledList,
-    )
-    expect(storageContext.removeLabel).not.toHaveBeenCalled()
-  })
+    );
+    expect(storageContext.removeLabel).not.toHaveBeenCalled();
+  });
 
-  it("brings the edit button back when the label picker is dismissed", async () => {
-    const user = userEvent.setup()
-    renderTaskList(labelledList.id, createStorageContext())
+  it('brings the edit button back when the label picker is dismissed', async () => {
+    const user = userEvent.setup();
+    renderTaskList(labelledList.id, createStorageContext());
 
-    await user.click(screen.getByRole("button", { name: "Change a11y label" }))
+    await user.click(screen.getByRole('button', { name: 'Change a11y label' }));
     expect(
-      screen.queryByRole("button", { name: "Change a11y label" }),
-    ).not.toBeInTheDocument()
+      screen.queryByRole('button', { name: 'Change a11y label' }),
+    ).not.toBeInTheDocument();
 
-    await user.click(document.body)
-
-    expect(
-      screen.getByRole("button", { name: "Change a11y label" }),
-    ).toBeInTheDocument()
-  })
-
-  it("brings the edit button back when the label picker is cancelled with escape", async () => {
-    const user = userEvent.setup()
-    renderTaskList(labelledList.id, createStorageContext())
-
-    await user.click(screen.getByRole("button", { name: "Change a11y label" }))
-    await user.keyboard("{Escape}")
+    await user.click(document.body);
 
     expect(
-      screen.getByRole("button", { name: "Change a11y label" }),
-    ).toBeInTheDocument()
-  })
-})
+      screen.getByRole('button', { name: 'Change a11y label' }),
+    ).toBeInTheDocument();
+  });
 
-describe("TaskList count", () => {
-  it("shows the number of not-done items in the list", () => {
-    renderTaskList(unlabelledList.id, createStorageContext())
+  it('brings the edit button back when the label picker is cancelled with escape', async () => {
+    const user = userEvent.setup();
+    renderTaskList(labelledList.id, createStorageContext());
 
-    expect(screen.getByLabelText("2 tasks remaining")).toHaveTextContent("(2)")
-  })
+    await user.click(screen.getByRole('button', { name: 'Change a11y label' }));
+    await user.keyboard('{Escape}');
 
-  it("hides the count for a list with no items", () => {
-    renderTaskList(labelledList.id, createStorageContext())
+    expect(
+      screen.getByRole('button', { name: 'Change a11y label' }),
+    ).toBeInTheDocument();
+  });
+});
 
-    expect(screen.queryByLabelText(/tasks remaining/)).not.toBeInTheDocument()
-  })
-})
+describe('TaskList count', () => {
+  it('shows the number of not-done items in the list', () => {
+    renderTaskList(unlabelledList.id, createStorageContext());
+
+    expect(screen.getByLabelText('2 tasks remaining')).toHaveTextContent('(2)');
+  });
+
+  it('hides the count for a list with no items', () => {
+    renderTaskList(labelledList.id, createStorageContext());
+
+    expect(screen.queryByLabelText(/tasks remaining/)).not.toBeInTheDocument();
+  });
+});

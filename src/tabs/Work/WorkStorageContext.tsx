@@ -5,9 +5,9 @@ import {
   useEffect,
   useMemo,
   useRef,
-} from "react"
-import { useStorageContext } from "../../shared/FirebaseContext"
-import { addSourceListLabel } from "./labelUtils"
+} from 'react';
+import { useStorageContext } from '../../shared/FirebaseContext';
+import { addSourceListLabel } from './labelUtils';
 import {
   Colour,
   Label,
@@ -16,55 +16,55 @@ import {
   Subtask,
   WorkTask,
   WORK_KEY,
-} from "./types"
+} from './types';
 
-const STALE_AFTER_MS = 7 * 24 * 60 * 60 * 1000
+const STALE_AFTER_MS = 7 * 24 * 60 * 60 * 1000;
 
 export type WorkStorageContextType = {
-  lists?: Record<string, WorkTask>
-  isLoading: boolean
+  lists?: Record<string, WorkTask>;
+  isLoading: boolean;
 
-  addList: (listName: string, label?: Label) => void
-  updateList: (list: WorkTask) => void
-  deleteList: (list: WorkTask) => void
-  reorderLists: <T extends { id: string }>(lists: T[]) => void
+  addList: (listName: string, label?: Label) => void;
+  updateList: (list: WorkTask) => void;
+  deleteList: (list: WorkTask) => void;
+  reorderLists: <T extends { id: string }>(lists: T[]) => void;
 
   addTask: (
     listId: string,
     task: Partial<WorkTask> & { description: string; labels?: Label[] },
-  ) => void
-  updateTask: (listId: string, task: WorkTask) => void
-  deleteTask: (listId: string, task: WorkTask) => void
+  ) => void;
+  updateTask: (listId: string, task: WorkTask) => void;
+  deleteTask: (listId: string, task: WorkTask) => void;
   moveTask: (args: {
-    task: WorkTask
-    movedItem: WorkTask
-    sourceListId: string
-    targetListId: string
-    targetListItems?: WorkTask[]
-  }) => void
-  reorderTasks: <T extends { id: string }>(listId: string, tasks: T[]) => void
+    task: WorkTask;
+    movedItem: WorkTask;
+    sourceListId: string;
+    targetListId: string;
+    targetListItems?: WorkTask[];
+  }) => void;
+  reorderTasks: <T extends { id: string }>(listId: string, tasks: T[]) => void;
 
-  deleteSubtask: (listId: string, taskId: string, subtask: Subtask) => void
+  deleteSubtask: (listId: string, taskId: string, subtask: Subtask) => void;
   updateSubtasksList: (
     listId: string,
     taskId: string,
     subtasks: Subtask[],
-  ) => void
+  ) => void;
 
-  getList: (listId: string) => WorkTask | undefined
-  getTask: (listId: string, taskId: string) => WorkTask | undefined
+  getList: (listId: string) => WorkTask | undefined;
+  getTask: (listId: string, taskId: string) => WorkTask | undefined;
 
-  labels: StoredLabel[]
-  getLabel: (id: string) => StoredLabel | undefined
-  addLabel: (label: Label, entity: WorkTask) => void
-  changeLabels: (labels: Label[], entity: WorkTask) => void
-  removeLabel: (id: string, entity: WorkTask) => void
-  updateLabel: (id: string, colour: Colour) => void
-}
+  labels: StoredLabel[];
+  getLabel: (id: string) => StoredLabel | undefined;
+  addLabel: (label: Label, entity: WorkTask) => void;
+  changeLabels: (labels: Label[], entity: WorkTask) => void;
+  removeLabel: (id: string, entity: WorkTask) => void;
+  updateLabel: (id: string, colour: Colour) => void;
+};
 
 export const WorkStorageContext = createContext<
   WorkStorageContextType | undefined
->(undefined)
+>(undefined);
 
 export function WorkStorageProvider({ children }: { children: ReactNode }) {
   const {
@@ -74,17 +74,17 @@ export function WorkStorageProvider({ children }: { children: ReactNode }) {
     updateList: updateItemsList,
     moveItemBetweenLists,
     useValue,
-  } = useStorageContext()
+  } = useStorageContext();
 
   const { value: rawLists, loading: isLoading } =
-    useValue<Record<string, WorkTask>>(WORK_KEY)
+    useValue<Record<string, WorkTask>>(WORK_KEY);
 
   // Backfills parentId onto lists/tasks written before addList/addTask
   // started setting it, so addLabel/removeLabel can rely on it always
   // being there.
   const lists = useMemo(() => {
-    if (!rawLists) return rawLists
-    const normalized: Record<string, WorkTask> = {}
+    if (!rawLists) return rawLists;
+    const normalized: Record<string, WorkTask> = {};
     Object.entries(rawLists).forEach(([listId, list]) => {
       const items =
         list.items &&
@@ -93,74 +93,74 @@ export function WorkStorageProvider({ children }: { children: ReactNode }) {
             taskId,
             { ...task, parentId: `${WORK_KEY}/${listId}/items` },
           ]),
-        )
+        );
       normalized[listId] = {
         ...list,
         parentId: WORK_KEY,
         ...(items && { items }),
-      }
-    })
-    return normalized
-  }, [rawLists])
+      };
+    });
+    return normalized;
+  }, [rawLists]);
 
   const { value: storedLabelsById, loading: labelsLoading } =
-    useValue<Record<string, StoredLabel>>(LABELS_KEY)
+    useValue<Record<string, StoredLabel>>(LABELS_KEY);
 
   const labels = useMemo(
     () => Object.values(storedLabelsById ?? {}),
     [storedLabelsById],
-  )
+  );
 
   // One-off sweep when the label store first loads: labels unused for more
   // than a week (lastRemoved set long enough ago) are purged for good.
-  const hasSweptStaleLabels = useRef(false)
+  const hasSweptStaleLabels = useRef(false);
   useEffect(() => {
-    if (labelsLoading || hasSweptStaleLabels.current) return
-    hasSweptStaleLabels.current = true
+    if (labelsLoading || hasSweptStaleLabels.current) return;
+    hasSweptStaleLabels.current = true;
 
-    const staleBefore = Date.now() - STALE_AFTER_MS
+    const staleBefore = Date.now() - STALE_AFTER_MS;
     labels.forEach((label) => {
       if (label.lastRemoved !== undefined && label.lastRemoved < staleBefore) {
-        deleteItem(LABELS_KEY, label)
+        deleteItem(LABELS_KEY, label);
       }
-    })
-  }, [labelsLoading, labels, deleteItem])
+    });
+  }, [labelsLoading, labels, deleteItem]);
 
   const countLabelUsage = (id: string) => {
-    let count = 0
+    let count = 0;
     Object.values(lists ?? {}).forEach((list) => {
-      if (list.labelIds?.includes(id)) count++
+      if (list.labelIds?.includes(id)) count++;
       Object.values(list.items ?? {}).forEach((task) => {
-        if (task.status !== "done" && task.labelIds?.includes(id)) count++
-      })
-    })
-    return count
-  }
+        if (task.status !== 'done' && task.labelIds?.includes(id)) count++;
+      });
+    });
+    return count;
+  };
 
   const markLabelAsUsed = (id: string) => {
-    const storedLabel = storedLabelsById?.[id]
+    const storedLabel = storedLabelsById?.[id];
     if (storedLabel?.lastRemoved !== undefined) {
-      const { lastRemoved: _lastRemoved, ...withoutLastRemoved } = storedLabel
-      updateItem(LABELS_KEY, withoutLastRemoved)
+      const { lastRemoved: _lastRemoved, ...withoutLastRemoved } = storedLabel;
+      updateItem(LABELS_KEY, withoutLastRemoved);
     }
-  }
+  };
 
   const upsertLabel = (label: Label): string => {
-    const existing = labels.find((l) => l.value === label.value)
+    const existing = labels.find((l) => l.value === label.value);
     if (existing) {
-      markLabelAsUsed(existing.id)
-      return existing.id
+      markLabelAsUsed(existing.id);
+      return existing.id;
     }
-    return addItem<StoredLabel>(LABELS_KEY, label) ?? ""
-  }
+    return addItem<StoredLabel>(LABELS_KEY, label) ?? '';
+  };
 
   const markUnusedLabel = (id: string) => {
-    if (countLabelUsage(id) > 1) return
-    const storedLabel = storedLabelsById?.[id]
+    if (countLabelUsage(id) > 1) return;
+    const storedLabel = storedLabelsById?.[id];
     if (storedLabel && storedLabel.lastRemoved === undefined) {
-      updateItem(LABELS_KEY, { ...storedLabel, lastRemoved: Date.now() })
+      updateItem(LABELS_KEY, { ...storedLabel, lastRemoved: Date.now() });
     }
-  }
+  };
 
   const diffLabelIds = (
     oldLabelIds: string[] = [],
@@ -168,102 +168,114 @@ export function WorkStorageProvider({ children }: { children: ReactNode }) {
   ) => ({
     removed: new Set(oldLabelIds.filter((id) => !newLabelIds.includes(id))),
     added: new Set(newLabelIds.filter((id) => !oldLabelIds.includes(id))),
-  })
+  });
 
   const applyLabelUsage = (removed: Set<string>, added: Set<string>) => {
-    removed.forEach((id) => markUnusedLabel(id))
-    added.forEach((id) => markLabelAsUsed(id))
-  }
+    removed.forEach((id) => markUnusedLabel(id));
+    added.forEach((id) => markLabelAsUsed(id));
+  };
 
   const updateList = (list: WorkTask) => {
-    const previousList = lists?.[list.id]
-    updateItem(WORK_KEY, list)
-    if (!previousList) return
+    const previousList = lists?.[list.id];
+    updateItem(WORK_KEY, list);
+    if (!previousList) return;
 
-    const { removed, added } = diffLabelIds(previousList.labelIds, list.labelIds)
-    applyLabelUsage(removed, added)
-  }
+    const { removed, added } = diffLabelIds(
+      previousList.labelIds,
+      list.labelIds,
+    );
+    applyLabelUsage(removed, added);
+  };
 
   const updateTask = (listId: string, task: WorkTask) => {
-    const previousTask = lists?.[listId]?.items?.[task.id]
-    updateItem(`${WORK_KEY}/${listId}/items`, task)
-    if (!previousTask) return
+    const previousTask = lists?.[listId]?.items?.[task.id];
+    updateItem(`${WORK_KEY}/${listId}/items`, task);
+    if (!previousTask) return;
 
-    const { removed, added } = diffLabelIds(previousTask.labelIds, task.labelIds)
-    const newLabelIds = task.labelIds ?? []
+    const { removed, added } = diffLabelIds(
+      previousTask.labelIds,
+      task.labelIds,
+    );
+    const newLabelIds = task.labelIds ?? [];
 
-    if (previousTask.status !== "done" && task.status === "done") {
-      newLabelIds.forEach((id) => removed.add(id))
+    if (previousTask.status !== 'done' && task.status === 'done') {
+      newLabelIds.forEach((id) => removed.add(id));
     }
-    if (previousTask.status === "done" && task.status !== "done") {
-      newLabelIds.forEach((id) => added.add(id))
+    if (previousTask.status === 'done' && task.status !== 'done') {
+      newLabelIds.forEach((id) => added.add(id));
     }
 
-    applyLabelUsage(removed, added)
-  }
+    applyLabelUsage(removed, added);
+  };
 
   const value: WorkStorageContextType = {
     lists,
     isLoading,
 
     addList: (listName, label) => {
-      const labelId = label && upsertLabel(label)
+      const labelId = label && upsertLabel(label);
       addItem(WORK_KEY, {
         description: listName,
         parentId: WORK_KEY,
         ...(labelId && { labelIds: [labelId] }),
-      })
+      });
     },
     updateList,
     deleteList: (list) => {
-      deleteItem(WORK_KEY, list)
-      list.labelIds?.forEach((id) => markUnusedLabel(id))
+      deleteItem(WORK_KEY, list);
+      list.labelIds?.forEach((id) => markUnusedLabel(id));
     },
     reorderLists: (reorderedLists) => {
-      updateItemsList(WORK_KEY, reorderedLists)
+      updateItemsList(WORK_KEY, reorderedLists);
     },
 
     addTask: (listId, { labels: newLabels, ...task }) => {
-      const resolvedIds = newLabels?.map(upsertLabel) ?? []
-      const labelIds = [...(task.labelIds ?? []), ...resolvedIds]
+      const resolvedIds = newLabels?.map(upsertLabel) ?? [];
+      const labelIds = [...(task.labelIds ?? []), ...resolvedIds];
       addItem(`${WORK_KEY}/${listId}/items`, {
         ...task,
         parentId: `${WORK_KEY}/${listId}/items`,
         ...(labelIds.length > 0 && { labelIds }),
-      })
+      });
     },
     updateTask,
     deleteTask: (listId, task) => {
-      deleteItem(`${WORK_KEY}/${listId}/items`, task)
-      task.labelIds?.forEach((id) => markUnusedLabel(id))
+      deleteItem(`${WORK_KEY}/${listId}/items`, task);
+      task.labelIds?.forEach((id) => markUnusedLabel(id));
     },
-    moveTask: ({ task, movedItem, sourceListId, targetListId, targetListItems }) => {
-      const [, sourceListKey] = sourceListId.split("/")
-      const sourceList = sourceListKey ? lists?.[sourceListKey] : undefined
+    moveTask: ({
+      task,
+      movedItem,
+      sourceListId,
+      targetListId,
+      targetListItems,
+    }) => {
+      const [, sourceListKey] = sourceListId.split('/');
+      const sourceList = sourceListKey ? lists?.[sourceListKey] : undefined;
       const labelledItem = sourceList
         ? addSourceListLabel(movedItem, sourceList)
-        : movedItem
+        : movedItem;
 
       moveItemBetweenLists({
         movedItem: { ...labelledItem, parentId: targetListId },
         sourceListId,
         targetListId,
         targetListItems,
-      })
-      task.labelIds?.forEach((id) => markUnusedLabel(id))
+      });
+      task.labelIds?.forEach((id) => markUnusedLabel(id));
     },
     reorderTasks: (listId, tasks) => {
-      updateItemsList(`${WORK_KEY}/${listId}/items`, tasks)
+      updateItemsList(`${WORK_KEY}/${listId}/items`, tasks);
     },
 
     deleteSubtask: (listId, taskId, subtask) => {
-      deleteItem(`${WORK_KEY}/${listId}/items/${taskId}/subtasks`, subtask)
+      deleteItem(`${WORK_KEY}/${listId}/items/${taskId}/subtasks`, subtask);
     },
     updateSubtasksList: (listId, taskId, subtasks) => {
       updateItemsList(
         `${WORK_KEY}/${listId}/items/${taskId}/subtasks`,
         subtasks,
-      )
+      );
     },
 
     getList: (listId) => lists?.[listId],
@@ -273,45 +285,45 @@ export function WorkStorageProvider({ children }: { children: ReactNode }) {
     getLabel: (id) => storedLabelsById?.[id],
 
     addLabel: (label, entity) => {
-      const id = upsertLabel(label)
-      const labelIds = Array.from(new Set([...(entity.labelIds ?? []), id]))
-      updateItem(entity.parentId, { ...entity, labelIds })
+      const id = upsertLabel(label);
+      const labelIds = Array.from(new Set([...(entity.labelIds ?? []), id]));
+      updateItem(entity.parentId, { ...entity, labelIds });
     },
     changeLabels: (labels, entity) => {
       const labelIds = Array.from(
         new Set(labels.map((label) => upsertLabel(label))),
-      )
-      updateItem(entity.parentId, { ...entity, labelIds })
+      );
+      updateItem(entity.parentId, { ...entity, labelIds });
 
-      const { removed, added } = diffLabelIds(entity.labelIds, labelIds)
-      applyLabelUsage(removed, added)
+      const { removed, added } = diffLabelIds(entity.labelIds, labelIds);
+      applyLabelUsage(removed, added);
     },
     removeLabel: (id, entity) => {
       const labelIds = (entity.labelIds ?? []).filter(
         (labelId) => labelId !== id,
-      )
-      updateItem(entity.parentId, { ...entity, labelIds })
-      markUnusedLabel(id)
+      );
+      updateItem(entity.parentId, { ...entity, labelIds });
+      markUnusedLabel(id);
     },
 
     updateLabel: (id, colour) => {
-      const storedLabel = storedLabelsById?.[id]
-      if (!storedLabel) return
-      updateItem(LABELS_KEY, { ...storedLabel, colour })
+      const storedLabel = storedLabelsById?.[id];
+      if (!storedLabel) return;
+      updateItem(LABELS_KEY, { ...storedLabel, colour });
     },
-  }
+  };
 
   return (
     <WorkStorageContext.Provider value={value}>
       {children}
     </WorkStorageContext.Provider>
-  )
+  );
 }
 
 export function useWorkStorage(): WorkStorageContextType {
-  const context = useContext(WorkStorageContext)
+  const context = useContext(WorkStorageContext);
   if (!context) {
-    throw new Error("missing WorkStorageContext provider")
+    throw new Error('missing WorkStorageContext provider');
   }
-  return context
+  return context;
 }

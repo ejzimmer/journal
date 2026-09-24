@@ -1,20 +1,20 @@
-import { useState } from "react"
-import { AddTaskForm } from "../AddTaskForm"
-import { CALENDAR_KEY } from "../../../shared/types"
-import { FormControl } from "../../../shared/controls/FormControl"
+import { useState } from 'react';
+import { AddTaskForm } from '../AddTaskForm';
+import { CALENDAR_KEY } from '../../../shared/types';
+import { FormControl } from '../../../shared/controls/FormControl';
 
 export function AddDueDateTaskForm() {
-  const [dueDate, setDueDate] = useState<string>(new Date().toString())
+  const [dueDate, setDueDate] = useState<string>(new Date().toString());
 
   const getAdditionalFieldValue = () => {
     if (!dueDate) {
-      return false
+      return false;
     }
 
     return {
       dueDate: new Date(dueDate).getTime(),
-    }
-  }
+    };
+  };
 
   return (
     <AddTaskForm
@@ -28,5 +28,5 @@ export function AddDueDateTaskForm() {
         onChange={setDueDate}
       />
     </AddTaskForm>
-  )
+  );
 }

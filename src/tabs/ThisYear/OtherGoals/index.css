@@ -188,7 +188,7 @@ ul.other-goals {
 
     &::before,
     &::after {
-      content: "";
+      content: '';
       display: block;
       width: 100%;
       height: 10px;

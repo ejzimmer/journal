@@ -16,7 +16,7 @@ nav ul {
   position: relative;
 
   &::before {
-    content: "";
+    content: '';
     height: 100%;
     background: var(--link-colour);
     position: absolute;

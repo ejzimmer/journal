@@ -3,45 +3,45 @@ import {
   GoogleAuthProvider,
   onAuthStateChanged,
   signInWithPopup,
-} from "firebase/auth"
-import { useState } from "react"
+} from 'firebase/auth';
+import { useState } from 'react';
 
-import "./App.css"
-import { Loading } from "./shared/loading"
-import { TopNav } from "./TopNav"
-import { AppRoutes } from "./AppRoutes"
-import { DailyJobs } from "./DailyJobs"
-import { DailyJobsProvider } from "./shared/dailyJobs/DailyJobsContext"
+import './App.css';
+import { Loading } from './shared/loading';
+import { TopNav } from './TopNav';
+import { AppRoutes } from './AppRoutes';
+import { DailyJobs } from './DailyJobs';
+import { DailyJobsProvider } from './shared/dailyJobs/DailyJobsContext';
 
 export function App() {
-  const [isLoading, setIsLoading] = useState(true)
-  const [isLoggedIn, setLoggedIn] = useState(false)
-  const auth = getAuth()
+  const [isLoading, setIsLoading] = useState(true);
+  const [isLoggedIn, setLoggedIn] = useState(false);
+  const auth = getAuth();
 
   onAuthStateChanged(auth, () => {
-    setIsLoading(false)
-    setLoggedIn(!!auth.currentUser)
-  })
+    setIsLoading(false);
+    setLoggedIn(!!auth.currentUser);
+  });
 
   const login = () => {
-    const provider = new GoogleAuthProvider()
-    signInWithPopup(auth, provider)
+    const provider = new GoogleAuthProvider();
+    signInWithPopup(auth, provider);
     // signInWithRedirect(auth, provider)
-  }
+  };
 
   if (isLoading) {
     return (
       <div
         style={{
-          width: "fit-content",
-          height: "100vh",
-          alignContent: "center",
-          margin: "auto",
+          width: 'fit-content',
+          height: '100vh',
+          alignContent: 'center',
+          margin: 'auto',
         }}
       >
         <Loading />
       </div>
-    )
+    );
   }
 
   if (!isLoggedIn) {
@@ -49,7 +49,7 @@ export function App() {
       <div className="not-logged-in">
         <button onClick={login}>Log In</button>
       </div>
-    )
+    );
   }
 
   return (
@@ -60,5 +60,5 @@ export function App() {
         <AppRoutes />
       </div>
     </DailyJobsProvider>
-  )
+  );
 }

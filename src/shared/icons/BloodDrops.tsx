@@ -1,8 +1,8 @@
-import { IconProps } from "./types"
+import { IconProps } from './types';
 
 export function BloodDropsIcon({
-  width = "100%",
-  colour = "#d1263f",
+  width = '100%',
+  colour = '#d1263f',
 }: IconProps) {
   return (
     <svg viewBox="0 0 26 20" width={width} fill={colour}>
@@ -13,5 +13,5 @@ export function BloodDropsIcon({
         strokeWidth="1"
       />
     </svg>
-  )
+  );
 }

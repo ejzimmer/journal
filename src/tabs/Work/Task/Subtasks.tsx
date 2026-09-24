@@ -5,70 +5,71 @@ import {
   ReactNode,
   RefObject,
   useRef,
-} from "react"
-import { sortByPosition } from "../../../shared/drag-and-drop/utils"
-import { useWorkStorage } from "../WorkStorageContext"
-import { Subtask } from "../types"
-import { BracketsIcon } from "../../../shared/icons/Brackets"
-import { StandardChecklistButton } from "./StandardChecklistButton"
-import { useFormToggle } from "../../../shared/controls/useFormToggle"
+} from 'react';
+import { sortByPosition } from '../../../shared/drag-and-drop/utils';
+import { useWorkStorage } from '../WorkStorageContext';
+import { Subtask } from '../types';
+import { BracketsIcon } from '../../../shared/icons/Brackets';
+import { StandardChecklistButton } from './StandardChecklistButton';
+import { useFormToggle } from '../../../shared/controls/useFormToggle';
 
 type SubtasksProps = {
-  subtasks?: Record<string, Subtask>
-  listId: string
-  taskId: string
-}
+  subtasks?: Record<string, Subtask>;
+  listId: string;
+  taskId: string;
+};
 
 export function Subtasks({ subtasks, listId, taskId }: SubtasksProps) {
-  const { deleteSubtask, updateSubtasksList } = useWorkStorage()
+  const { deleteSubtask, updateSubtasksList } = useWorkStorage();
   const {
     isFormOpen: isEditing,
     triggerRef,
     openForm: startEditing,
     closeForm,
-  } = useFormToggle()
-  const inputRef = useRef<HTMLInputElement>(null)
+  } = useFormToggle();
+  const inputRef = useRef<HTMLInputElement>(null);
 
-  const sorted = sortByPosition(Object.values(subtasks ?? {}))
-  const hasSubtasks = sorted.length > 0
+  const sorted = sortByPosition(Object.values(subtasks ?? {}));
+  const hasSubtasks = sorted.length > 0;
 
   const save = () => {
-    const text = inputRef.current?.value ?? ""
+    const text = inputRef.current?.value ?? '';
     const descriptions = text
-      .split(",")
+      .split(',')
       .map((description) => description.trim())
-      .filter(Boolean)
+      .filter(Boolean);
 
-    const remaining = [...sorted]
+    const remaining = [...sorted];
     const newSubtasks = descriptions.map((description, index) => {
       const existingIndex = remaining.findIndex(
         (subtask) => subtask.description === description,
-      )
-      const [existing] = existingIndex === -1 ? [] : remaining.splice(existingIndex, 1)
+      );
+      const [existing] =
+        existingIndex === -1 ? [] : remaining.splice(existingIndex, 1);
       return {
         id: existing?.id ?? crypto.randomUUID(),
         description,
         position: index,
-      }
-    })
-    updateSubtasksList(listId, taskId, newSubtasks)
-  }
+      };
+    });
+    updateSubtasksList(listId, taskId, newSubtasks);
+  };
 
   const stopEditing = (shouldSave: boolean) => {
-    if (shouldSave) save()
-    closeForm()
-  }
+    if (shouldSave) save();
+    closeForm();
+  };
 
   const handleSubmit = (event: FormEvent) => {
-    event.preventDefault()
-    stopEditing(true)
-  }
+    event.preventDefault();
+    stopEditing(true);
+  };
 
   const handleKeyDown = (event: KeyboardEvent) => {
-    if (event.key === "Escape") {
-      stopEditing(false)
+    if (event.key === 'Escape') {
+      stopEditing(false);
     }
-  }
+  };
 
   if (isEditing) {
     return (
@@ -79,12 +80,12 @@ export function Subtasks({ subtasks, listId, taskId }: SubtasksProps) {
           autoFocus
           aria-label="Edit subtasks"
           className="inline"
-          defaultValue={sorted.map((subtask) => subtask.description).join(", ")}
+          defaultValue={sorted.map((subtask) => subtask.description).join(', ')}
           onKeyDown={handleKeyDown}
         />
         <span className="bracket">]</span>
       </form>
-    )
+    );
   }
 
   return (
@@ -125,7 +126,7 @@ export function Subtasks({ subtasks, listId, taskId }: SubtasksProps) {
       )}
       <StandardChecklistButton listId={listId} taskId={taskId} />
     </>
-  )
+  );
 }
 
 function EditSubtasksButton({
@@ -133,9 +134,9 @@ function EditSubtasksButton({
   onClick,
   children,
 }: {
-  ref?: RefObject<HTMLButtonElement | null>
-  onClick: () => void
-  children: ReactNode
+  ref?: RefObject<HTMLButtonElement | null>;
+  onClick: () => void;
+  children: ReactNode;
 }) {
   return (
     <button
@@ -147,5 +148,5 @@ function EditSubtasksButton({
     >
       {children}
     </button>
-  )
+  );
 }

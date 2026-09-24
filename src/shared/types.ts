@@ -1,75 +1,75 @@
-import { OrderedListItem } from "./drag-and-drop/types"
+import { OrderedListItem } from './drag-and-drop/types';
 
-export const TODO_KEY = "today"
+export const TODO_KEY = 'today';
 export type TodoTask = OrderedListItem & {
-  description: string
-  category: string
-}
+  description: string;
+  category: string;
+};
 
-export const DAILY_KEY = `${TODO_KEY}/日`
-export const DAILY_RESET_KEY = `${TODO_KEY}/dailyReset`
+export const DAILY_KEY = `${TODO_KEY}/日`;
+export const DAILY_RESET_KEY = `${TODO_KEY}/dailyReset`;
 export type DailyTaskDetails = {
-  type: "毎日" | "一度"
-  status: "ready" | "done" | "finished"
-  lastCompleted: number
-  linkedTask?: string
-}
-export type DailyTask = DailyTaskDetails & TodoTask
+  type: '毎日' | '一度';
+  status: 'ready' | 'done' | 'finished';
+  lastCompleted: number;
+  linkedTask?: string;
+};
+export type DailyTask = DailyTaskDetails & TodoTask;
 
-export const WEEKLY_KEY = `${TODO_KEY}/週`
-export const WEEKLY_RESET_KEY = `${TODO_KEY}/weeklyReset`
+export const WEEKLY_KEY = `${TODO_KEY}/週`;
+export const WEEKLY_RESET_KEY = `${TODO_KEY}/weeklyReset`;
 export type WeeklyTaskDetails = {
-  frequency: number
-  completed?: (number | null)[]
-}
-export type WeeklyTask = WeeklyTaskDetails & TodoTask
+  frequency: number;
+  completed?: (number | null)[];
+};
+export type WeeklyTask = WeeklyTaskDetails & TodoTask;
 
-export const CALENDAR_KEY = `${TODO_KEY}/暦`
-export const CALENDAR_RESET_KEY = `${TODO_KEY}/calendarReset`
+export const CALENDAR_KEY = `${TODO_KEY}/暦`;
+export const CALENDAR_RESET_KEY = `${TODO_KEY}/calendarReset`;
 
-export const STATUSES = ["ready", "paused", "finished"] as const
+export const STATUSES = ['ready', 'paused', 'finished'] as const;
 export type CalendarTaskDetails = {
-  dueDate: number
-  status: (typeof STATUSES)[number]
-  statusUpdateDate: number
-}
-export type CalendarTask = CalendarTaskDetails & TodoTask
+  dueDate: number;
+  status: (typeof STATUSES)[number];
+  statusUpdateDate: number;
+};
+export type CalendarTask = CalendarTaskDetails & TodoTask;
 
-export const THIS_YEAR_PATH = "2026"
+export const THIS_YEAR_PATH = '2026';
 
-export const DAILY_PATH = `${THIS_YEAR_PATH}/daily`
+export const DAILY_PATH = `${THIS_YEAR_PATH}/daily`;
 export type DayData = {
-  id: string
-  consumed?: number
-  expended?: number
-  trackers?: string[]
-}
+  id: string;
+  consumed?: number;
+  expended?: number;
+  trackers?: string[];
+};
 
-export const PROJECTS_KEY = "projects"
+export const PROJECTS_KEY = 'projects';
 export type ProjectSubtask = {
-  id: string
-  description: string
-  status: "ready" | "done"
-  linkedId?: string
-  category: Category
-  position: number
-}
+  id: string;
+  description: string;
+  status: 'ready' | 'done';
+  linkedId?: string;
+  category: Category;
+  position: number;
+};
 export const PROJECT_COLOURS = {
-  "🛒": "hsl(197 36% 70% /.5)",
-  "📓": "hsl(0  0% 49% / .5)",
-  "🖊️": "hsl(209 79% 48% /.5)",
-  "👩‍💻": "hsl(93 90% 45% / .5)",
-  "🧹": "hsl(45 100% 76% / .5)",
-  "🪡": "hsl(203 85% 77% / .5)",
-  "🧶": "hsl(339 78% 67% / .5)",
-  "🚚": "hsl(352 90% 45% / .5)",
-}
-export const categories = Object.keys(PROJECT_COLOURS)
-export type Category = keyof typeof PROJECT_COLOURS
+  '🛒': 'hsl(197 36% 70% /.5)',
+  '📓': 'hsl(0  0% 49% / .5)',
+  '🖊️': 'hsl(209 79% 48% /.5)',
+  '👩‍💻': 'hsl(93 90% 45% / .5)',
+  '🧹': 'hsl(45 100% 76% / .5)',
+  '🪡': 'hsl(203 85% 77% / .5)',
+  '🧶': 'hsl(339 78% 67% / .5)',
+  '🚚': 'hsl(352 90% 45% / .5)',
+};
+export const categories = Object.keys(PROJECT_COLOURS);
+export type Category = keyof typeof PROJECT_COLOURS;
 export type ProjectDetails = OrderedListItem & {
-  description: string
-  category: Category
-  status?: "ready" | "in_progress" | "done"
-  subtasks?: Record<string, ProjectSubtask>
-  linkedTaskId?: string
-}
+  description: string;
+  category: Category;
+  status?: 'ready' | 'in_progress' | 'done';
+  subtasks?: Record<string, ProjectSubtask>;
+  linkedTaskId?: string;
+};

@@ -1,8 +1,8 @@
-import { IconProps } from "./types"
+import { IconProps } from './types';
 
 export function RestartArrowIcon({
-  width = "100%",
-  colour = "currentColor",
+  width = '100%',
+  colour = 'currentColor',
 }: IconProps) {
   return (
     <svg
@@ -21,5 +21,5 @@ export function RestartArrowIcon({
       <path d="M8,5 L11.5,2" />
       <path d="M8,5 L11,8" />
     </svg>
-  )
+  );
 }

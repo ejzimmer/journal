@@ -1,10 +1,10 @@
-import { Worktree, WORKTREES } from "../types"
-import { Stamp } from "./Stamp"
-import { WorktreeMenu, WorktreeMenuOption } from "./WorktreeMenu"
+import { Worktree, WORKTREES } from '../types';
+import { Stamp } from './Stamp';
+import { WorktreeMenu, WorktreeMenuOption } from './WorktreeMenu';
 
 type AddWorktreeProps = {
-  onChange: (worktree: Worktree) => void
-}
+  onChange: (worktree: Worktree) => void;
+};
 
 export function AddWorktree({ onChange }: AddWorktreeProps) {
   const options: WorktreeMenuOption[] = WORKTREES.map(
@@ -14,7 +14,7 @@ export function AddWorktree({ onChange }: AddWorktreeProps) {
       content: <Stamp worktree={worktree} />,
       onSelect: () => onChange(worktree),
     }),
-  )
+  );
 
   return (
     <WorktreeMenu
@@ -29,5 +29,5 @@ export function AddWorktree({ onChange }: AddWorktreeProps) {
       )}
       options={options}
     />
-  )
+  );
 }

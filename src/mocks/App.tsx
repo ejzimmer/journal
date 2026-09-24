@@ -1,8 +1,8 @@
-import "../App.css"
-import { TopNav } from "../TopNav"
-import { AppRoutes } from "../AppRoutes"
-import { DailyJobs } from "../DailyJobs"
-import { DailyJobsProvider } from "../shared/dailyJobs/DailyJobsContext"
+import '../App.css';
+import { TopNav } from '../TopNav';
+import { AppRoutes } from '../AppRoutes';
+import { DailyJobs } from '../DailyJobs';
+import { DailyJobsProvider } from '../shared/dailyJobs/DailyJobsContext';
 
 export function App() {
   return (
@@ -13,5 +13,5 @@ export function App() {
         <AppRoutes />
       </div>
     </DailyJobsProvider>
-  )
+  );
 }
