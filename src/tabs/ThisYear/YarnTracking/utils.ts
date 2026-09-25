@@ -14,7 +14,7 @@ export function getBallSizes(grams: number): number[] {
   return remainder ? [...wholeBallSizes, remainder] : wholeBallSizes;
 }
 
-const getBalanceChangesByMonth = (yarnTypes: YarnType[]) => {
+const getBalanceChanges = (yarnTypes: YarnType[]) => {
   const allChanges = yarnTypes.flatMap(({ id, balances }) =>
     balances.map(({ month, grams }, index) => ({
       yarnType: id,
@@ -24,25 +24,21 @@ const getBalanceChangesByMonth = (yarnTypes: YarnType[]) => {
     })),
   );
 
-  const changesByMonth = Map.groupBy(
-    allChanges.sort((a, b) =>
-      Temporal.PlainYearMonth.compare(a.month, b.month),
-    ),
-    ({ month }) => month.toString(),
-  );
-
-  return [...changesByMonth.values()].map((changesThisMonth) => ({
-    decreases: changesThisMonth.filter(({ difference }) => difference < 0),
-    increases: changesThisMonth.filter(({ difference }) => difference > 0),
-  }));
+  return allChanges
+    .filter(({ difference }) => difference !== 0)
+    .sort(
+      (a, b) =>
+        Temporal.PlainYearMonth.compare(a.month, b.month) ||
+        Math.sign(a.difference) - Math.sign(b.difference),
+    );
 };
 
 type YarnPile = { balls: YarnBall[]; usedBallIndexes: number[] };
 
 export function buildYarnPile(yarnTypes: YarnType[]): YarnBall[] {
-  const { balls } = getBalanceChangesByMonth(yarnTypes).reduce<YarnPile>(
-    (pile, { decreases, increases }) =>
-      increases.reduce(addYarn, decreases.reduce(useYarn, pile)),
+  const { balls } = getBalanceChanges(yarnTypes).reduce<YarnPile>(
+    (pile, change) =>
+      change.difference < 0 ? useYarn(pile, change) : addYarn(pile, change),
     { balls: [], usedBallIndexes: [] },
   );
 
