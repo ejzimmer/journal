@@ -223,8 +223,7 @@ export function BallOfYarnIcon({
       <g
         clipPath={`url(#${wrapClip})`}
         fill="none"
-        stroke="black"
-        strokeOpacity="0.26"
+        stroke={`oklch(from ${colour} calc(l * 0.9) c h)`}
         strokeWidth="0.32"
       >
         {BANDS.map(({ angle, fill, edges, strands }) => (
@@ -234,7 +233,7 @@ export function BallOfYarnIcon({
               <path
                 key={edge}
                 d={edge}
-                strokeOpacity="0.5"
+                stroke={`oklch(from ${colour} calc(l * 0.8) c h)`}
                 strokeWidth="0.45"
               />
             ))}
