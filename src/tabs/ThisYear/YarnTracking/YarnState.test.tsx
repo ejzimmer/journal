@@ -1,4 +1,5 @@
 import { screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { YarnState } from './YarnState';
 import { renderWithYarnStorage } from './yarnStorageTestUtils';
 
@@ -38,17 +39,6 @@ describe('YarnState', () => {
         ).toBeInTheDocument();
       });
 
-      it('is sized by how much of a full ball it holds', () => {
-        renderWithYarnStorage(<YarnState />, {
-          pile: [{ id: 0, yarnType: 'wool', grams: 100 }],
-        });
-
-        expect(
-          screen.getByRole('img', { name: 'wool: 100g', hidden: true }).style
-            .width,
-        ).toBe('calc(var(--ball-size) * 0.5)');
-      });
-
       it('is described by the balance of its whole yarn type', () => {
         renderWithYarnStorage(<YarnState />, {
           pile: [
@@ -64,6 +54,72 @@ describe('YarnState', () => {
         expect(
           screen.getByRole('listitem', { name: 'wool: 100g' }),
         ).toHaveAccessibleDescription('wool: 3,191g');
+      });
+    });
+
+    describe('when the pointer is over a ball', () => {
+      it('shows the details of that ball', async () => {
+        const user = userEvent.setup({
+          advanceTimers: jest.advanceTimersByTime,
+        });
+        renderWithYarnStorage(<YarnState />, {
+          pile: [
+            { id: 0, yarnType: 'wool', grams: 200 },
+            { id: 1, yarnType: 'cotton', grams: 200 },
+          ],
+          getBalance: (yarnType) => (yarnType === 'cotton' ? 950 : 0),
+        });
+
+        await user.pointer({
+          target: screen.getByRole('img', { name: 'Pile of yarn' }),
+          coords: { clientX: 82, clientY: 32 },
+        });
+
+        expect(screen.getByRole('tooltip')).toHaveTextContent('cotton: 950g');
+      });
+
+      describe('and then moves off it within the pile', () => {
+        it('hides the details', async () => {
+          const user = userEvent.setup({
+            advanceTimers: jest.advanceTimersByTime,
+          });
+          renderWithYarnStorage(<YarnState />, {
+            pile: [{ id: 0, yarnType: 'wool', grams: 200 }],
+          });
+          const pile = screen.getByRole('img', { name: 'Pile of yarn' });
+          await user.pointer({
+            target: pile,
+            coords: { clientX: 58, clientY: 32 },
+          });
+          const tooltip = screen.getByRole('tooltip');
+
+          await user.pointer({
+            target: pile,
+            coords: { clientX: 8, clientY: 32 },
+          });
+
+          expect(tooltip).not.toBeInTheDocument();
+        });
+      });
+
+      describe('and then leaves the pile', () => {
+        it('hides the details', async () => {
+          const user = userEvent.setup({
+            advanceTimers: jest.advanceTimersByTime,
+          });
+          renderWithYarnStorage(<YarnState />, {
+            pile: [{ id: 0, yarnType: 'wool', grams: 200 }],
+          });
+          await user.pointer({
+            target: screen.getByRole('img', { name: 'Pile of yarn' }),
+            coords: { clientX: 58, clientY: 32 },
+          });
+          const tooltip = screen.getByRole('tooltip');
+
+          await user.unhover(screen.getByRole('img', { name: 'Pile of yarn' }));
+
+          expect(tooltip).not.toBeInTheDocument();
+        });
       });
     });
 
@@ -83,27 +139,6 @@ describe('YarnState', () => {
         expect(
           screen.getByRole('listitem', { name: 'used cotton: 200g' }),
         ).toHaveAccessibleDescription('cotton: 200g, used Jun 2026');
-      });
-
-      describe('when it was used less than a year ago', () => {
-        it('fades in proportion to how long ago it was used', () => {
-          renderWithYarnStorage(<YarnState />, {
-            pile: [
-              {
-                id: 0,
-                yarnType: 'wool',
-                grams: 200,
-                usedIn: Temporal.PlainYearMonth.from('2026-06'),
-              },
-            ],
-          });
-
-          expect(
-            screen
-              .getByRole('img', { name: 'used wool: 200g', hidden: true })
-              .style.getPropertyValue('--fade'),
-          ).toBe('0.25');
-        });
       });
 
       describe('when it was used a year or more ago', () => {
