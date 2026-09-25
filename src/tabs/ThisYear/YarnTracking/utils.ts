@@ -45,7 +45,7 @@ export function buildYarnPile(yarnTypes: YarnType[]): YarnBall[] {
   return balls;
 }
 
-const getStashIndexes = (balls: YarnBall[], yarnType: string) =>
+const getUnusedBallIndexesOfYarnType = (balls: YarnBall[], yarnType: string) =>
   balls
     .map((ball, index) => ({ ball, index }))
     .filter(({ ball }) => ball.yarnType === yarnType && !ball.usedIn)
@@ -57,11 +57,11 @@ function markOffYarn(
   { yarnType, grams, month }: YarnTypeBalance,
 ): YarnPile {
   const sizes = getBallSizes(grams);
-  const stashIndexes = getStashIndexes(balls, yarnType);
-  const usedUpIndexes = stashIndexes.slice(sizes.length);
+  const unusedBallIndexes = getUnusedBallIndexesOfYarnType(balls, yarnType);
+  const usedUpIndexes = unusedBallIndexes.slice(sizes.length);
 
   const updatedBalls = [...balls];
-  stashIndexes.slice(0, sizes.length).forEach((ballIndex, sizeIndex) => {
+  unusedBallIndexes.slice(0, sizes.length).forEach((ballIndex, sizeIndex) => {
     updatedBalls[ballIndex] = { yarnType, size: sizes[sizeIndex] };
   });
   usedUpIndexes.forEach((ballIndex) => {
@@ -79,10 +79,10 @@ function addYarn(
   { yarnType, grams }: YarnTypeBalance,
 ): YarnPile {
   const sizes = getBallSizes(grams);
-  const stashIndexes = getStashIndexes(balls, yarnType);
+  const unusedBallIndexes = getUnusedBallIndexesOfYarnType(balls, yarnType);
 
   const restockCount = Math.min(
-    sizes.length - stashIndexes.length,
+    sizes.length - unusedBallIndexes.length,
     usedBallIndexes.length,
   );
   const stillUsedIndexes = usedBallIndexes.slice(
@@ -93,12 +93,12 @@ function addYarn(
     .slice(stillUsedIndexes.length)
     .reverse();
   const newBallIndexes = Array.from(
-    { length: sizes.length - stashIndexes.length - restockCount },
+    { length: sizes.length - unusedBallIndexes.length - restockCount },
     (_, index) => balls.length + index,
   );
 
   const updatedBalls = [...balls];
-  [...stashIndexes, ...restockIndexes, ...newBallIndexes].forEach(
+  [...unusedBallIndexes, ...restockIndexes, ...newBallIndexes].forEach(
     (ballIndex, sizeIndex) => {
       updatedBalls[ballIndex] = { yarnType, size: sizes[sizeIndex] };
     },
