@@ -1,19 +1,17 @@
 import { Month } from './types';
+import { YarnBalls } from './YarnBalls';
 
-export function MonthlyBalance({ total, subTotals }: Month) {
+export function MonthlyBalance({ subTotals }: Month) {
   const yarnTypes = Object.keys(subTotals);
 
   return (
     <div className="yarn-month">
       {yarnTypes.map((yarnType) => (
-        <div
+        <YarnBalls
           key={yarnType}
-          style={{ width: `${(subTotals[yarnType] / total) * 100}%` }}
-        >
-          <div className="details">
-            {yarnType}: {subTotals[yarnType].toLocaleString()}g
-          </div>
-        </div>
+          yarnType={yarnType}
+          amount={subTotals[yarnType]}
+        />
       ))}
     </div>
   );

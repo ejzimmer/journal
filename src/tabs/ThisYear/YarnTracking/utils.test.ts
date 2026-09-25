@@ -1,4 +1,4 @@
-import { getHistoryByMonth } from './utils';
+import { getBallSizes, getHistoryByMonth } from './utils';
 
 describe('getHistoryByMonth', () => {
   beforeEach(() => {
@@ -119,6 +119,35 @@ describe('getHistoryByMonth', () => {
           subTotals: { sockYarn: 487, wool: 444 },
         },
       });
+    });
+  });
+});
+
+describe('getBallSizes', () => {
+  describe('when the amount is a whole number of 200g balls', () => {
+    it('returns a full size ball for each 200g', () => {
+      expect(getBallSizes(600)).toEqual([1, 1, 1]);
+    });
+  });
+
+  describe('when there are grams left over', () => {
+    it('adds a ball scaled to the leftover grams', () => {
+      expect(getBallSizes(2700)).toEqual([
+        ...Array.from({ length: 13 }, () => 1),
+        0.5,
+      ]);
+    });
+  });
+
+  describe('when there is less than 200g', () => {
+    it('returns a single scaled ball', () => {
+      expect(getBallSizes(50)).toEqual([0.25]);
+    });
+  });
+
+  describe('when there is no yarn', () => {
+    it('returns no balls', () => {
+      expect(getBallSizes(0)).toEqual([]);
     });
   });
 });
