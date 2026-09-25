@@ -7,8 +7,8 @@ import { renderWithYarnStorage } from './yarnStorageTestUtils';
 const BOWL = {
   x: 100,
   y: 20,
-  halfWidth: 90,
-  baseHalfWidth: 40,
+  radius: 90,
+  baseRadius: 40,
   depth: 60,
   rimDepth: 10,
 };

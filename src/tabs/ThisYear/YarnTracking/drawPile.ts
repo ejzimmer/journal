@@ -18,8 +18,8 @@ const GLASS = {
 export type Bowl = {
   x: number;
   y: number;
-  halfWidth: number;
-  baseHalfWidth: number;
+  radius: number;
+  baseRadius: number;
   depth: number;
   rimDepth: number;
 };
@@ -73,21 +73,13 @@ export const createBallSprites = (pixelRatio: number): BallSprites => ({
 
 function traceBowlBody(
   context: CanvasRenderingContext2D,
-  { x, y, halfWidth, baseHalfWidth, depth }: Bowl,
+  { x, y, radius, baseRadius, depth }: Bowl,
 ) {
-  const sideWidth = halfWidth - baseHalfWidth;
+  const sideWidth = radius - baseRadius;
   context.beginPath();
-  context.ellipse(x + baseHalfWidth, y, sideWidth, depth, 0, 0, Math.PI / 2);
-  context.lineTo(x - baseHalfWidth, y + depth);
-  context.ellipse(
-    x - baseHalfWidth,
-    y,
-    sideWidth,
-    depth,
-    0,
-    Math.PI / 2,
-    Math.PI,
-  );
+  context.ellipse(x + baseRadius, y, sideWidth, depth, 0, 0, Math.PI / 2);
+  context.lineTo(x - baseRadius, y + depth);
+  context.ellipse(x - baseRadius, y, sideWidth, depth, 0, Math.PI / 2, Math.PI);
 }
 
 function drawBowlBack(context: CanvasRenderingContext2D, bowl: Bowl) {
@@ -96,7 +88,7 @@ function drawBowlBack(context: CanvasRenderingContext2D, bowl: Bowl) {
   context.fill();
 
   context.beginPath();
-  context.ellipse(bowl.x, bowl.y, bowl.halfWidth, bowl.rimDepth, 0, Math.PI, 0);
+  context.ellipse(bowl.x, bowl.y, bowl.radius, bowl.rimDepth, 0, Math.PI, 0);
   context.strokeStyle = GLASS.rim;
   context.lineWidth = 1.5;
   context.stroke();
@@ -109,16 +101,16 @@ function drawBowlFront(context: CanvasRenderingContext2D, bowl: Bowl) {
   context.stroke();
 
   context.beginPath();
-  context.ellipse(bowl.x, bowl.y, bowl.halfWidth, bowl.rimDepth, 0, 0, Math.PI);
+  context.ellipse(bowl.x, bowl.y, bowl.radius, bowl.rimDepth, 0, 0, Math.PI);
   context.strokeStyle = GLASS.edge;
   context.lineWidth = 1.5;
   context.stroke();
 
   context.beginPath();
   context.ellipse(
-    bowl.x - bowl.baseHalfWidth,
+    bowl.x - bowl.baseRadius,
     bowl.y,
-    (bowl.halfWidth - bowl.baseHalfWidth) * 0.8,
+    (bowl.radius - bowl.baseRadius) * 0.8,
     bowl.depth * 0.85,
     0,
     Math.PI * 0.6,

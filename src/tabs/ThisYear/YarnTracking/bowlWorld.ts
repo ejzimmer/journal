@@ -16,10 +16,10 @@ const GRAVITY = 10;
 const TIME_STEP = 1 / 60;
 const MAX_SETTLE_STEPS = 1200;
 const BALL_RADIUS_TO_SIZE = 0.4;
-const BOWL_DEPTH_TO_HALF_WIDTH = 1;
-const BOWL_BASE_TO_HALF_WIDTH = 0.25;
+const BOWL_DEPTH_TO_RADIUS = 1;
+const BOWL_BASE_TO_RADIUS = 0.25;
 const BALL_AREA_TO_BOWL_AREA = 0.8;
-const MIN_BOWL_HALF_WIDTH = 1.5;
+const MIN_BOWL_RADIUS = 1.5;
 const BOWL_SEGMENTS = 48;
 const BALL_BODY = { density: 1, friction: 0.4, restitution: 0.1 };
 const BOWL_FRICTION = 0.6;
@@ -28,65 +28,54 @@ const getBallSize = ({ grams }: YarnBall) => grams / GRAMS_PER_BALL;
 
 const getBallRadius = (size: number) => size * BALL_RADIUS_TO_SIZE;
 
-function getBowlHalfWidth(pileBalls: PileBall[]) {
+function calculateBowlRadius(pileBalls: PileBall[]) {
   const ballArea = pileBalls.reduce(
     (total, { ball }) =>
       total + Math.PI * getBallRadius(getBallSize(ball)) ** 2,
     0,
   );
   const bowlArea = ballArea / BALL_AREA_TO_BOWL_AREA;
-  const areaToHalfWidthSquared =
-    BOWL_DEPTH_TO_HALF_WIDTH *
-    (2 * BOWL_BASE_TO_HALF_WIDTH +
-      (Math.PI / 2) * (1 - BOWL_BASE_TO_HALF_WIDTH));
-  const halfWidth = Math.sqrt(bowlArea / areaToHalfWidthSquared);
+  const areaToRadiusSquared =
+    BOWL_DEPTH_TO_RADIUS *
+    (2 * BOWL_BASE_TO_RADIUS + (Math.PI / 2) * (1 - BOWL_BASE_TO_RADIUS));
+  const radius = Math.sqrt(bowlArea / areaToRadiusSquared);
 
-  return Math.max(halfWidth, MIN_BOWL_HALF_WIDTH);
+  return Math.max(radius, MIN_BOWL_RADIUS);
 }
 
-function getBowlSidePoints(
-  halfWidth: number,
-  baseHalfWidth: number,
-  depth: number,
-) {
+function getBowlSidePoints(radius: number, baseRadius: number, depth: number) {
   return Array.from({ length: BOWL_SEGMENTS / 2 + 1 }, (_, index) => {
     const turn = (Math.PI * index) / BOWL_SEGMENTS;
     return {
-      x: baseHalfWidth + (halfWidth - baseHalfWidth) * Math.cos(turn),
+      x: baseRadius + (radius - baseRadius) * Math.cos(turn),
       y: depth * Math.sin(turn),
     };
   });
 }
 
-function getBowlPoints(
-  halfWidth: number,
-  baseHalfWidth: number,
-  depth: number,
-) {
-  const side = getBowlSidePoints(halfWidth, baseHalfWidth, depth);
+function getBowlPoints(radius: number, baseRadius: number, depth: number) {
+  const side = getBowlSidePoints(radius, baseRadius, depth);
   return [...side.map(({ x, y }) => ({ x: -x, y })), ...side.reverse()];
 }
 
 const getSpreadForBall = (id: number) => ((id * 0.618) % 1) - 0.5;
 
 export class BowlWorld {
-  readonly halfWidth: number;
-  readonly baseHalfWidth: number;
+  readonly radius: number;
+  readonly baseRadius: number;
   readonly depth: number;
   private world = new World({ gravity: { x: 0, y: GRAVITY } });
   private ballBodies = new Map<number, BallBody>();
   private pileBalls: PileBall[] = [];
 
   constructor(pileBalls: PileBall[]) {
-    this.halfWidth = getBowlHalfWidth(pileBalls);
-    this.baseHalfWidth = this.halfWidth * BOWL_BASE_TO_HALF_WIDTH;
-    this.depth = this.halfWidth * BOWL_DEPTH_TO_HALF_WIDTH;
+    this.radius = calculateBowlRadius(pileBalls);
+    this.baseRadius = this.radius * BOWL_BASE_TO_RADIUS;
+    this.depth = this.radius * BOWL_DEPTH_TO_RADIUS;
     this.world
       .createBody()
       .createFixture(
-        new Chain(
-          getBowlPoints(this.halfWidth, this.baseHalfWidth, this.depth),
-        ),
+        new Chain(getBowlPoints(this.radius, this.baseRadius, this.depth)),
         { friction: BOWL_FRICTION },
       );
   }
@@ -144,7 +133,7 @@ export class BowlWorld {
   }
 
   private getColumns() {
-    return Math.max(1, Math.floor(2 * this.halfWidth) - 1);
+    return Math.max(1, Math.floor(2 * this.radius) - 1);
   }
 
   private addBall(ball: YarnBall, slot: number, dropHeight: number) {
@@ -152,7 +141,7 @@ export class BowlWorld {
     const row = Math.floor(slot / columns);
     const column = slot % columns;
     const x =
-      -this.halfWidth +
+      -this.radius +
       1 +
       column +
       (row % 2) * 0.5 +

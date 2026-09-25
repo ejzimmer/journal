@@ -5,7 +5,7 @@ import { BALL_SIZE } from './drawPile';
 import { YarnPileCanvas } from './YarnPileCanvas';
 
 const BOWL_MARGIN = 0.3;
-const RIM_DEPTH_TO_HALF_WIDTH = 0.12;
+const RIM_DEPTH_TO_RADIUS = 0.12;
 
 function useElementWidth(ref: RefObject<HTMLElement | null>) {
   const [width, setWidth] = useState(0);
@@ -27,11 +27,11 @@ function useElementWidth(ref: RefObject<HTMLElement | null>) {
 }
 
 function placeBowlScene(world: BowlWorld, balls: PlacedBall[], width: number) {
-  const rimDepth = world.halfWidth * RIM_DEPTH_TO_HALF_WIDTH;
+  const rimDepth = world.radius * RIM_DEPTH_TO_RADIUS;
   const top = Math.min(world.getTopOfPile(), -rimDepth) - BOWL_MARGIN;
   const unitSize = Math.min(
     BALL_SIZE,
-    width / (2 * (world.halfWidth + BOWL_MARGIN)),
+    width / (2 * (world.radius + BOWL_MARGIN)),
   );
   const originX = width / 2;
   const originY = -top * unitSize;
@@ -46,8 +46,8 @@ function placeBowlScene(world: BowlWorld, balls: PlacedBall[], width: number) {
     bowl: {
       x: originX,
       y: originY,
-      halfWidth: world.halfWidth * unitSize,
-      baseHalfWidth: world.baseHalfWidth * unitSize,
+      radius: world.radius * unitSize,
+      baseRadius: world.baseRadius * unitSize,
       depth: world.depth * unitSize,
       rimDepth: rimDepth * unitSize,
     },
