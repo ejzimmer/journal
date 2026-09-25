@@ -1,3 +1,4 @@
+import { compareDates, getPlainDate, StoredDate } from '../../../shared/dates';
 import { WeeklyTask } from '../../../shared/types';
 
 const dateFormatter = Intl.DateTimeFormat('en-AU', {
@@ -6,8 +7,8 @@ const dateFormatter = Intl.DateTimeFormat('en-AU', {
 });
 const suffixes = ['th', 'st', 'nd', 'rd'];
 
-export const dateToWeekday = (date: number) => {
-  const formatted = dateFormatter.format(new Date(date));
+export const dateToWeekday = (date: StoredDate) => {
+  const formatted = dateFormatter.format(getPlainDate(date));
   const secondLastDigit = formatted.at(-2);
   const lastDigit = formatted.at(-1);
   const suffixIndex = lastDigit ? Number.parseInt(lastDigit) : -1;
@@ -22,7 +23,17 @@ export const dateToWeekday = (date: number) => {
 export const getCompletedDates = (completed: WeeklyTask['completed']) => {
   const dates = Array.isArray(completed)
     ? completed
-    : (Object.values(completed ?? {}) as (number | null)[]);
+    : (Object.values(completed ?? {}) as (StoredDate | null)[]);
 
-  return dates.filter((date): date is number => !!date);
+  return dates.filter((date): date is StoredDate => !!date);
+};
+
+export const compareLastCompleted = (a: WeeklyTask, b: WeeklyTask) => {
+  const aLast = getCompletedDates(a.completed).at(-1);
+  const bLast = getCompletedDates(b.completed).at(-1);
+
+  if (!aLast) return bLast ? -1 : 0;
+  if (!bLast) return 1;
+
+  return compareDates(aLast, bLast);
 };

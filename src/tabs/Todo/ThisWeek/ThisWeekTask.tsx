@@ -6,7 +6,7 @@ import { WEEKLY_KEY, WeeklyTask } from '../../../shared/types';
 import { Combobox } from '../../../shared/controls/combobox/Combobox';
 import { CategoriesContext } from '..';
 import { ProgressIndicator } from './ProgressIndicator';
-import { getTimestampFromDate, getToday } from '../../../shared/dates';
+import { getDateDaysAgo, getToday } from '../../../shared/dates';
 import { useFormToggle } from '../../../shared/controls/useFormToggle';
 import { getCompletedDates } from './utils';
 
@@ -69,9 +69,7 @@ export function ThisWeekTask({ task }: { task: WeeklyTask }) {
   const completedDates = getCompletedDates(task.completed);
 
   const addDone = (event: React.MouseEvent) => {
-    const completedDate = event.ctrlKey
-      ? getTimestampFromDate(getToday().subtract({ days: 1 }))
-      : Date.now();
+    const completedDate = event.ctrlKey ? getDateDaysAgo(1) : getToday();
 
     onChange({ ...task, completed: [...completedDates, completedDate] });
   };

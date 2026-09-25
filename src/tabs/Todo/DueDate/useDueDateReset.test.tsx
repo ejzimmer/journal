@@ -1,7 +1,4 @@
-import {
-  getTimestampDaysAgo,
-  getTimestampDaysAhead,
-} from '../../../shared/dateTestUtils';
+import { getDateDaysAgo, getDateDaysAhead } from '../../../shared/dates';
 import {
   createDailyJobsStorage,
   renderDailyJob,
@@ -39,8 +36,8 @@ describe('resetting due date tasks', () => {
     it("is deleted once it's been finished since an earlier day", () => {
       const task = createTask('renew-passport', {
         status: 'finished',
-        dueDate: getTimestampDaysAgo(2),
-        statusUpdateDate: getTimestampDaysAgo(1),
+        dueDate: getDateDaysAgo(2),
+        statusUpdateDate: getDateDaysAgo(1),
       });
       const storage = resetTasks([task]);
 
@@ -51,7 +48,7 @@ describe('resetting due date tasks', () => {
       const storage = resetTasks([
         createTask('renew-passport', {
           status: 'finished',
-          dueDate: getTimestampDaysAgo(2),
+          dueDate: getDateDaysAgo(2),
         }),
       ]);
 
@@ -75,7 +72,7 @@ describe('resetting due date tasks', () => {
       const storage = resetTasks([
         createTask('pay-rates', {
           status: 'paused',
-          dueDate: getTimestampDaysAhead(3),
+          dueDate: getDateDaysAhead(3),
         }),
       ]);
 

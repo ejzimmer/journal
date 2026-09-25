@@ -8,9 +8,10 @@ import {
   useState,
 } from 'react';
 import {
-  getDateFromTimestamp,
+  compareDates,
   getMillisecondsUntilTomorrow,
   getToday,
+  StoredDate,
 } from '../dates';
 import { useStorageContext } from '../FirebaseContext';
 
@@ -27,10 +28,10 @@ type RegisterJob = (job: ScheduledJob) => () => void;
 const DailyJobsContext = createContext<RegisterJob | undefined>(undefined);
 
 function useToday() {
-  const [today, setToday] = useState(() => getToday().toString());
+  const [today, setToday] = useState(getToday);
 
   useEffect(() => {
-    const updateToday = () => setToday(getToday().toString());
+    const updateToday = () => setToday(getToday());
 
     const timeout = setTimeout(updateToday, getMillisecondsUntilTomorrow());
     document.addEventListener('visibilitychange', updateToday);
@@ -72,7 +73,7 @@ export function DailyJobsProvider({ children }: { children: ReactNode }) {
 
 function DailyJobRunner({ job, today }: { job: ScheduledJob; today: string }) {
   const { useValue, setValue } = useStorageContext();
-  const { value: lastRun, loading } = useValue<number>(job.lastRunKey);
+  const { value: lastRun, loading } = useValue<StoredDate>(job.lastRunKey);
   const dayRunInThisSession = useRef<string>(undefined);
 
   useEffect(() => {
@@ -80,13 +81,12 @@ function DailyJobRunner({ job, today }: { job: ScheduledJob; today: string }) {
 
     const alreadyRunThisSession = dayRunInThisSession.current === today;
     const alreadyRunToday =
-      lastRun !== undefined &&
-      Temporal.PlainDate.compare(getDateFromTimestamp(lastRun), today) >= 0;
+      lastRun !== undefined && compareDates(lastRun, today) >= 0;
     if (alreadyRunThisSession || alreadyRunToday) return;
 
     dayRunInThisSession.current = today;
     job.run();
-    setValue(job.lastRunKey, new Date().getTime());
+    setValue(job.lastRunKey, today);
   }, [job, today, lastRun, loading, setValue]);
 
   return null;

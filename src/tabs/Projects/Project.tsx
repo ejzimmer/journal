@@ -15,6 +15,7 @@ import { useLinkedTasks } from './utils';
 import { ArrowToEndIcon } from '../../shared/icons/ArrowToEnd';
 import { ArrowToStartIcon } from '../../shared/icons/ArrowToStart';
 import { EditableText } from '../../shared/controls/EditableText';
+import { getToday } from '../../shared/dates';
 
 type ProjectProps = {
   project: ProjectDetails;
@@ -82,7 +83,7 @@ export function Project({
 
     updateLinkedTask({
       status: status === 'in_progress' ? 'finished' : 'ready',
-      lastCompleted: new Date().getTime(),
+      lastCompleted: getToday(),
     });
   };
 

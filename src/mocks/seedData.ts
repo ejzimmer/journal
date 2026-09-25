@@ -1,3 +1,4 @@
+import { getToday } from '../shared/dates';
 import {
   LABELS_KEY,
   StoredLabel,
@@ -19,7 +20,7 @@ import {
   SeriesDetails,
 } from '../tabs/Media/types';
 
-const now = Date.now();
+const todaysDate = getToday();
 
 function createList(
   id: string,
@@ -31,7 +32,7 @@ function createList(
     description,
     status: 'not_started',
     parentId: WORK_KEY,
-    lastStatusUpdate: now,
+    lastStatusUpdate: todaysDate,
     position,
   };
 }
@@ -48,7 +49,7 @@ function createTask(
     description,
     status: 'not_started',
     parentId: `${WORK_KEY}/${listId}/items`,
-    lastStatusUpdate: now,
+    lastStatusUpdate: todaysDate,
     position,
     ...extra,
   };

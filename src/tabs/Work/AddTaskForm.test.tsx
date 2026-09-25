@@ -90,7 +90,7 @@ describe('AddTaskForm', () => {
 
     expect(onSubmit).toHaveBeenCalledWith({
       description: 'Approve PR',
-      dueDate: new Date(2026, 0, 1).getTime(),
+      dueDate: '2026-01-01',
       labels: [],
     });
   });

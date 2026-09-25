@@ -1,4 +1,4 @@
-import { isBeforeToday } from '../../../shared/dates';
+import { getToday, isBeforeToday } from '../../../shared/dates';
 import { useStorageContext } from '../../../shared/FirebaseContext';
 import { useDailyJob } from '../../../shared/dailyJobs/DailyJobsContext';
 import {
@@ -12,7 +12,11 @@ const finishedBeforeToday = (task: DailyTask) =>
 
 const readyForToday = (task: DailyTask) =>
   task.status === 'done'
-    ? { ...task, status: 'ready' as const, lastCompleted: new Date().getTime() }
+    ? {
+        ...task,
+        status: 'ready' as const,
+        lastCompleted: getToday(),
+      }
     : task;
 
 export function useDailyReset() {

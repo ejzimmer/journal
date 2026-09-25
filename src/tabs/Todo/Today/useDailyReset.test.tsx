@@ -1,4 +1,4 @@
-import { getTimestampDaysAgo } from '../../../shared/dateTestUtils';
+import { getDateDaysAgo } from '../../../shared/dates';
 import {
   createDailyJobsStorage,
   renderDailyJob,
@@ -6,7 +6,7 @@ import {
 import { DAILY_KEY, DailyTask } from '../../../shared/types';
 import { useDailyReset } from './useDailyReset';
 
-const yesterday = () => getTimestampDaysAgo(1);
+const yesterday = () => getDateDaysAgo(1);
 
 const createTask = (
   id: string,

@@ -3,6 +3,7 @@ import { useStorageContext } from '../../../shared/FirebaseContext';
 import './TodayTask.css';
 import { DailyTask, DAILY_KEY, ProjectSubtask } from '../../../shared/types';
 import { EditableDescription } from '../../../shared/controls/EditableDescription';
+import { getToday } from '../../../shared/dates';
 
 export function TodayTask({
   task,
@@ -20,13 +21,13 @@ export function TodayTask({
       onChange({
         ...task,
         status: 'ready',
-        lastCompleted: new Date().getTime(),
+        lastCompleted: getToday(),
       });
     } else {
       onChange({
         ...task,
         status: task.type === '毎日' ? 'done' : 'finished',
-        lastCompleted: new Date().getTime(),
+        lastCompleted: getToday(),
       });
     }
 
