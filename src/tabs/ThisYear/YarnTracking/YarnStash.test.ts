@@ -18,9 +18,9 @@ describe('YarnStash', () => {
         ]);
 
         expect(stash.balls).toEqual([
-          { yarnType: 'wool', grams: 200 },
-          { yarnType: 'wool', grams: 200 },
-          { yarnType: 'wool', grams: 100 },
+          { id: 0, yarnType: 'wool', grams: 200 },
+          { id: 1, yarnType: 'wool', grams: 200 },
+          { id: 2, yarnType: 'wool', grams: 100 },
         ]);
       });
     });
@@ -41,9 +41,9 @@ describe('YarnStash', () => {
           ]);
 
           expect(stash.balls).toEqual([
-            { yarnType: 'wool', grams: 200, usedIn: MARCH },
-            { yarnType: 'wool', grams: 200, usedIn: MARCH },
-            { yarnType: 'wool', grams: 200 },
+            { id: 0, yarnType: 'wool', grams: 200, usedIn: MARCH },
+            { id: 1, yarnType: 'wool', grams: 200, usedIn: MARCH },
+            { id: 2, yarnType: 'wool', grams: 200 },
           ]);
         });
       });
@@ -63,10 +63,10 @@ describe('YarnStash', () => {
           ]);
 
           expect(stash.balls).toEqual([
-            { yarnType: 'wool', grams: 65 },
-            { yarnType: 'wool', grams: 200 },
-            { yarnType: 'wool', grams: 200 },
-            { yarnType: 'wool', grams: 100, usedIn: FEBRUARY },
+            { id: 0, yarnType: 'wool', grams: 65 },
+            { id: 1, yarnType: 'wool', grams: 200 },
+            { id: 2, yarnType: 'wool', grams: 200 },
+            { id: 3, yarnType: 'wool', grams: 100, usedIn: FEBRUARY },
           ]);
         });
       });
@@ -88,10 +88,10 @@ describe('YarnStash', () => {
         ]);
 
         expect(stash.balls).toEqual([
-          { yarnType: 'wool', grams: 200, usedIn: FEBRUARY },
-          { yarnType: 'wool', grams: 135 },
-          { yarnType: 'wool', grams: 200 },
-          { yarnType: 'wool', grams: 200 },
+          { id: 0, yarnType: 'wool', grams: 200, usedIn: FEBRUARY },
+          { id: 4, yarnType: 'wool', grams: 135 },
+          { id: 2, yarnType: 'wool', grams: 200 },
+          { id: 3, yarnType: 'wool', grams: 200 },
         ]);
       });
 
@@ -111,9 +111,9 @@ describe('YarnStash', () => {
         ]);
 
         expect(stash.balls).toEqual([
-          { yarnType: 'wool', grams: 200, usedIn: FEBRUARY },
-          { yarnType: 'wool', grams: 200 },
-          { yarnType: 'wool', grams: 200 },
+          { id: 0, yarnType: 'wool', grams: 200, usedIn: FEBRUARY },
+          { id: 3, yarnType: 'wool', grams: 200 },
+          { id: 2, yarnType: 'wool', grams: 200 },
         ]);
       });
 
@@ -133,8 +133,8 @@ describe('YarnStash', () => {
           ]);
 
           expect(stash.balls).toEqual([
-            { yarnType: 'wool', grams: 200 },
-            { yarnType: 'wool', grams: 200 },
+            { id: 1, yarnType: 'wool', grams: 200 },
+            { id: 2, yarnType: 'wool', grams: 200 },
           ]);
         });
       });
@@ -156,8 +156,8 @@ describe('YarnStash', () => {
         ]);
 
         expect(stash.balls).toEqual([
-          { yarnType: 'cotton', grams: 200 },
-          { yarnType: 'wool', grams: 200 },
+          { id: 2, yarnType: 'cotton', grams: 200 },
+          { id: 1, yarnType: 'wool', grams: 200 },
         ]);
       });
 
@@ -182,7 +182,9 @@ describe('YarnStash', () => {
             },
           ]);
 
-          expect(stash.balls).toEqual([{ yarnType: 'cotton', grams: 200 }]);
+          expect(stash.balls).toEqual([
+            { id: 1, yarnType: 'cotton', grams: 200 },
+          ]);
         });
       });
     });
@@ -203,10 +205,10 @@ describe('YarnStash', () => {
           stash.applyBalances([wool]);
 
           expect(stash.balls).toEqual([
-            { yarnType: 'wool', grams: 65 },
-            { yarnType: 'wool', grams: 200 },
-            { yarnType: 'wool', grams: 200 },
-            { yarnType: 'wool', grams: 100, usedIn: FEBRUARY },
+            { id: 0, yarnType: 'wool', grams: 65 },
+            { id: 1, yarnType: 'wool', grams: 200 },
+            { id: 2, yarnType: 'wool', grams: 200 },
+            { id: 3, yarnType: 'wool', grams: 100, usedIn: FEBRUARY },
           ]);
         });
       });
@@ -223,8 +225,8 @@ describe('YarnStash', () => {
           ]);
 
           expect(stash.balls).toEqual([
-            { yarnType: 'wool', grams: 100 },
-            { yarnType: 'wool', grams: 200 },
+            { id: 0, yarnType: 'wool', grams: 100 },
+            { id: 1, yarnType: 'wool', grams: 200 },
           ]);
         });
       });
@@ -247,11 +249,62 @@ describe('YarnStash', () => {
           ]);
 
           expect(stash.balls).toEqual([
-            { yarnType: 'wool', grams: 200 },
-            { yarnType: 'wool', grams: 200 },
-            { yarnType: 'wool', grams: 200 },
+            { id: 0, yarnType: 'wool', grams: 200 },
+            { id: 1, yarnType: 'wool', grams: 200 },
+            { id: 2, yarnType: 'wool', grams: 200 },
           ]);
         });
+      });
+    });
+  });
+
+  describe('ball ids', () => {
+    describe('when a ball shrinks and is then used up', () => {
+      it('keeps the id it was stocked with', () => {
+        const stash = new YarnStash();
+        const wool = (grams: number): YarnType => ({
+          id: 'wool',
+          balances: [{ month: JANUARY, grams }],
+        });
+
+        stash.applyBalances([wool(200)]);
+        const [ball] = stash.balls;
+        stash.applyBalances([wool(50)]);
+        stash.applyBalances([wool(0)]);
+
+        expect(stash.balls).toEqual([
+          { id: ball.id, yarnType: 'wool', grams: 50, usedIn: JANUARY },
+        ]);
+      });
+    });
+
+    describe('when a used ball is restocked', () => {
+      it('gives the restocked ball a new id', () => {
+        const stash = new YarnStash();
+
+        stash.applyBalances([
+          {
+            id: 'wool',
+            balances: [
+              { month: JANUARY, grams: 200 },
+              { month: FEBRUARY, grams: 0 },
+            ],
+          },
+        ]);
+        const [usedBall] = stash.balls;
+        stash.applyBalances([
+          {
+            id: 'wool',
+            balances: [
+              { month: FEBRUARY, grams: 0 },
+              { month: MARCH, grams: 200 },
+            ],
+          },
+        ]);
+
+        expect(stash.balls).toEqual([
+          { id: usedBall.id + 1, yarnType: 'wool', grams: 200 },
+        ]);
       });
     });
   });

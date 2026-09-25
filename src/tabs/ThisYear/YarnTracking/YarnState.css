@@ -49,3 +49,12 @@
     color: hsl(305 94% 47%);
   }
 }
+
+.yarn-ball-list {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}

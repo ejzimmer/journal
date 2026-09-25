@@ -53,8 +53,8 @@ describe('YarnStorageProvider', () => {
       });
 
       expect(result.current.pile).toEqual([
-        { yarnType: 'cotton', grams: 100 },
-        { yarnType: 'wool', grams: 200 },
+        { id: 2, yarnType: 'cotton', grams: 100 },
+        { id: 1, yarnType: 'wool', grams: 200 },
       ]);
     });
   });

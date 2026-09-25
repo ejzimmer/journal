@@ -3,6 +3,7 @@ import { GRAMS_PER_BALL } from './utils';
 
 export class YarnStash {
   balls: YarnBall[] = [];
+  private nextBallId = 0;
   private usedBalls: YarnBall[] = [];
   private lastAppliedMonths: Partial<
     Record<YarnTypeId, Temporal.PlainYearMonth>
@@ -32,11 +33,9 @@ export class YarnStash {
     }
 
     while (remaining > 0) {
-      const ball = this.usedBalls.pop() ?? this.createBall(yarnType);
-      ball.yarnType = yarnType;
-      ball.grams = Math.min(remaining, GRAMS_PER_BALL);
-      delete ball.usedIn;
-      remaining -= ball.grams;
+      const grams = Math.min(remaining, GRAMS_PER_BALL);
+      this.addBall({ id: this.nextBallId++, yarnType, grams });
+      remaining -= grams;
     }
   }
 
@@ -115,9 +114,12 @@ export class YarnStash {
     );
   }
 
-  private createBall(yarnType: YarnTypeId): YarnBall {
-    const ball = { yarnType, grams: 0 };
-    this.balls.push(ball);
-    return ball;
+  private addBall(ball: YarnBall) {
+    const usedBall = this.usedBalls.pop();
+    if (usedBall) {
+      this.balls[this.balls.indexOf(usedBall)] = ball;
+    } else {
+      this.balls.push(ball);
+    }
   }
 }
