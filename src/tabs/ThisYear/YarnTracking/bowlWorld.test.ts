@@ -86,6 +86,15 @@ describe('BowlWorld', () => {
       expect(world.getBalls()[0].size).toBe(0.5);
     });
 
+    it('shows used balls grey straight away', () => {
+      const world = new BowlWorld([
+        createWoolBall(0, 200),
+        { ...createWoolBall(1, 200), fade: 0.5 },
+      ]);
+
+      expect(world.getBalls().map(({ greyness }) => greyness)).toEqual([0, 1]);
+    });
+
     it('keeps the balls from overlapping', () => {
       const world = new BowlWorld(createWoolBalls(12));
 
@@ -132,6 +141,17 @@ describe('BowlWorld', () => {
   });
 
   describe('when a ball grows', () => {
+    it('grows it gradually', () => {
+      const world = new BowlWorld([createWoolBall(0, 100)]);
+
+      world.syncBalls([createWoolBall(0, 200)]);
+      world.advance(0.1);
+
+      expect(world.getBalls()[0].size).toBeGreaterThan(0.5);
+      expect(world.getBalls()[0].size).toBeLessThan(1);
+      expect(world.isAtRest()).toBe(false);
+    });
+
     it('pushes its neighbours out of the way', () => {
       const world = new BowlWorld([
         createWoolBall(0, 50),
@@ -144,6 +164,69 @@ describe('BowlWorld', () => {
       const balls = world.getBalls();
       expect(balls[0].size).toBe(1);
       expect(balls).not.toBeOverlapping();
+    });
+  });
+
+  describe('when a ball shrinks', () => {
+    const shrinkLowestBall = () => {
+      const world = new BowlWorld(createWoolBalls(8));
+      const lowestBall = world
+        .getBalls()
+        .reduce((lowest, ball) => (ball.y > lowest.y ? ball : lowest));
+      world.syncBalls(
+        createWoolBalls(8).map(({ ball }) =>
+          ball.id === lowestBall.ball.id
+            ? createWoolBall(ball.id, 50)
+            : { ball },
+        ),
+      );
+      return { world, shrunkId: lowestBall.ball.id };
+    };
+
+    it('shrinks it gradually', () => {
+      const { world, shrunkId } = shrinkLowestBall();
+
+      world.advance(0.1);
+
+      const shrunk = world.getBalls()[shrunkId];
+      expect(shrunk.size).toBeGreaterThan(0.25);
+      expect(shrunk.size).toBeLessThan(1);
+    });
+
+    it('lets the rest fill the space it leaves', () => {
+      const { world, shrunkId } = shrinkLowestBall();
+      const others = (balls: PlacedBall[]) =>
+        balls.filter(({ ball }) => ball.id !== shrunkId);
+      const heightBefore = getAverageHeight(others(world.getBalls()));
+
+      world.settle();
+
+      expect(world.getBalls()[shrunkId].size).toBe(0.25);
+      expect(getAverageHeight(others(world.getBalls()))).toBeGreaterThan(
+        heightBefore + 0.05,
+      );
+    });
+  });
+
+  describe('when a ball is used up', () => {
+    it('greys it out gradually', () => {
+      const world = new BowlWorld([createWoolBall(0, 200)]);
+
+      world.syncBalls([{ ...createWoolBall(0, 200), fade: 0 }]);
+      world.advance(0.2);
+
+      expect(world.getBalls()[0].greyness).toBeGreaterThan(0);
+      expect(world.getBalls()[0].greyness).toBeLessThan(1);
+      expect(world.isAtRest()).toBe(false);
+    });
+
+    it('ends up fully grey', () => {
+      const world = new BowlWorld([createWoolBall(0, 200)]);
+
+      world.syncBalls([{ ...createWoolBall(0, 200), fade: 0 }]);
+      world.settle();
+
+      expect(world.getBalls()[0].greyness).toBe(1);
     });
   });
 
