@@ -7,9 +7,15 @@ const createWoolBall = (id: number, grams: number): PileBall => ({
 
 const getRadius = ({ size }: PlacedBall) => size * 0.4;
 
+const getBowlHalfWidthAt = (world: BowlWorld, y: number) =>
+  world.baseHalfWidth +
+  (world.halfWidth - world.baseHalfWidth) *
+    Math.sqrt(1 - (y / world.depth) ** 2);
+
 const isInsideBowl = (world: BowlWorld, ball: PlacedBall) =>
-  (ball.x / world.halfWidth) ** 2 + (ball.y / world.depth) ** 2 <= 1 &&
-  ball.y > 0;
+  ball.y > 0 &&
+  ball.y <= world.depth &&
+  Math.abs(ball.x) <= getBowlHalfWidthAt(world, ball.y);
 
 const getGap = (one: PlacedBall, other: PlacedBall) =>
   Math.hypot(one.x - other.x, one.y - other.y) -

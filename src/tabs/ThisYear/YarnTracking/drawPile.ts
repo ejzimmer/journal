@@ -19,6 +19,7 @@ export type Bowl = {
   x: number;
   y: number;
   halfWidth: number;
+  baseHalfWidth: number;
   depth: number;
   rimDepth: number;
 };
@@ -70,9 +71,23 @@ export const createBallSprites = (pixelRatio: number): BallSprites => ({
   shading: createBallSprite(pixelRatio, drawBallShading),
 });
 
-function traceBowlBody(context: CanvasRenderingContext2D, bowl: Bowl) {
+function traceBowlBody(
+  context: CanvasRenderingContext2D,
+  { x, y, halfWidth, baseHalfWidth, depth }: Bowl,
+) {
+  const sideWidth = halfWidth - baseHalfWidth;
   context.beginPath();
-  context.ellipse(bowl.x, bowl.y, bowl.halfWidth, bowl.depth, 0, 0, Math.PI);
+  context.ellipse(x + baseHalfWidth, y, sideWidth, depth, 0, 0, Math.PI / 2);
+  context.lineTo(x - baseHalfWidth, y + depth);
+  context.ellipse(
+    x - baseHalfWidth,
+    y,
+    sideWidth,
+    depth,
+    0,
+    Math.PI / 2,
+    Math.PI,
+  );
 }
 
 function drawBowlBack(context: CanvasRenderingContext2D, bowl: Bowl) {
@@ -101,13 +116,13 @@ function drawBowlFront(context: CanvasRenderingContext2D, bowl: Bowl) {
 
   context.beginPath();
   context.ellipse(
-    bowl.x,
+    bowl.x - bowl.baseHalfWidth,
     bowl.y,
-    bowl.halfWidth * 0.9,
+    (bowl.halfWidth - bowl.baseHalfWidth) * 0.8,
     bowl.depth * 0.85,
     0,
-    Math.PI * 0.62,
-    Math.PI * 0.8,
+    Math.PI * 0.6,
+    Math.PI * 0.85,
   );
   context.strokeStyle = GLASS.highlight;
   context.lineWidth = 3;

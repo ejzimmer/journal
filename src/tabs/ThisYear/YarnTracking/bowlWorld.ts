@@ -17,7 +17,8 @@ const TIME_STEP = 1 / 60;
 const MAX_SETTLE_STEPS = 1200;
 const BALL_RADIUS_TO_SIZE = 0.4;
 const BOWL_DEPTH_TO_HALF_WIDTH = 1;
-const BALL_AREA_TO_BOWL_AREA = 0.65;
+const BOWL_BASE_TO_HALF_WIDTH = 0.45;
+const BALL_AREA_TO_BOWL_AREA = 0.8;
 const MIN_BOWL_HALF_WIDTH = 1.5;
 const BOWL_SEGMENTS = 48;
 const BALL_BODY = { density: 1, friction: 0.4, restitution: 0.1 };
@@ -34,24 +35,43 @@ function getBowlHalfWidth(pileBalls: PileBall[]) {
     0,
   );
   const bowlArea = ballArea / BALL_AREA_TO_BOWL_AREA;
-  const halfWidth = Math.sqrt(
-    (2 * bowlArea) / (Math.PI * BOWL_DEPTH_TO_HALF_WIDTH),
-  );
+  const areaToHalfWidthSquared =
+    BOWL_DEPTH_TO_HALF_WIDTH *
+    (2 * BOWL_BASE_TO_HALF_WIDTH +
+      (Math.PI / 2) * (1 - BOWL_BASE_TO_HALF_WIDTH));
+  const halfWidth = Math.sqrt(bowlArea / areaToHalfWidthSquared);
 
   return Math.max(halfWidth, MIN_BOWL_HALF_WIDTH);
 }
 
-function getBowlPoints(halfWidth: number, depth: number) {
-  return Array.from({ length: BOWL_SEGMENTS + 1 }, (_, index) => {
+function getBowlSidePoints(
+  halfWidth: number,
+  baseHalfWidth: number,
+  depth: number,
+) {
+  return Array.from({ length: BOWL_SEGMENTS / 2 + 1 }, (_, index) => {
     const turn = (Math.PI * index) / BOWL_SEGMENTS;
-    return { x: -halfWidth * Math.cos(turn), y: depth * Math.sin(turn) };
+    return {
+      x: baseHalfWidth + (halfWidth - baseHalfWidth) * Math.cos(turn),
+      y: depth * Math.sin(turn),
+    };
   });
+}
+
+function getBowlPoints(
+  halfWidth: number,
+  baseHalfWidth: number,
+  depth: number,
+) {
+  const side = getBowlSidePoints(halfWidth, baseHalfWidth, depth);
+  return [...side.map(({ x, y }) => ({ x: -x, y })), ...side.reverse()];
 }
 
 const getSpreadForBall = (id: number) => ((id * 0.618) % 1) - 0.5;
 
 export class BowlWorld {
   readonly halfWidth: number;
+  readonly baseHalfWidth: number;
   readonly depth: number;
   private world = new World({ gravity: { x: 0, y: GRAVITY } });
   private ballBodies = new Map<number, BallBody>();
@@ -59,12 +79,16 @@ export class BowlWorld {
 
   constructor(pileBalls: PileBall[]) {
     this.halfWidth = getBowlHalfWidth(pileBalls);
+    this.baseHalfWidth = this.halfWidth * BOWL_BASE_TO_HALF_WIDTH;
     this.depth = this.halfWidth * BOWL_DEPTH_TO_HALF_WIDTH;
     this.world
       .createBody()
-      .createFixture(new Chain(getBowlPoints(this.halfWidth, this.depth)), {
-        friction: BOWL_FRICTION,
-      });
+      .createFixture(
+        new Chain(
+          getBowlPoints(this.halfWidth, this.baseHalfWidth, this.depth),
+        ),
+        { friction: BOWL_FRICTION },
+      );
   }
 
   syncBalls(pileBalls: PileBall[]) {

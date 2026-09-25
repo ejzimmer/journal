@@ -47,6 +47,7 @@ function placeBowlScene(world: BowlWorld, balls: PlacedBall[], width: number) {
       x: originX,
       y: originY,
       halfWidth: world.halfWidth * unitSize,
+      baseHalfWidth: world.baseHalfWidth * unitSize,
       depth: world.depth * unitSize,
       rimDepth: rimDepth * unitSize,
     },
