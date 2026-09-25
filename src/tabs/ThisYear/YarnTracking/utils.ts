@@ -14,38 +14,27 @@ export function getBallSizes(grams: number): number[] {
   return remainder ? [...wholeBallSizes, remainder] : wholeBallSizes;
 }
 
-const getMonthsWithChanges = (yarnTypes: YarnType[]) =>
+const getBalanceChanges = (yarnTypes: YarnType[]) =>
   yarnTypes
-    .flatMap(({ balances }) => balances.map(({ month }) => month))
-    .filter(
-      (month, index, months) =>
-        months.findIndex((other) => other.equals(month)) === index,
+    .flatMap(({ id, balances }) =>
+      balances.map(({ month, grams }, index) => ({
+        yarnType: id,
+        month,
+        grams,
+        change: grams - (balances[index - 1]?.grams ?? 0),
+      })),
     )
-    .sort(Temporal.PlainYearMonth.compare);
+    .sort(
+      (one, other) =>
+        Temporal.PlainYearMonth.compare(one.month, other.month) ||
+        one.change - other.change,
+    );
 
 export function buildYarnPile(yarnTypes: YarnType[]): YarnBall[] {
   const pile: YarnBall[] = [];
-  const latestGrams: Record<string, number> = {};
 
-  getMonthsWithChanges(yarnTypes).forEach((month) => {
-    yarnTypes
-      .flatMap(({ id, balances }) => {
-        const balance = balances.find((balance) => balance.month.equals(month));
-        return balance
-          ? [
-              {
-                yarnType: id,
-                grams: balance.grams,
-                change: balance.grams - (latestGrams[id] ?? 0),
-              },
-            ]
-          : [];
-      })
-      .sort((one, other) => one.change - other.change)
-      .forEach(({ yarnType, grams }) => {
-        resizeYarnType(pile, yarnType, grams, month);
-        latestGrams[yarnType] = grams;
-      });
+  getBalanceChanges(yarnTypes).forEach(({ yarnType, grams, month }) => {
+    resizeYarnType(pile, yarnType, grams, month);
   });
 
   return pile;
