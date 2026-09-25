@@ -43,33 +43,6 @@ describe('YarnStorageProvider', () => {
         },
       ]);
     });
-
-    describe('when the stored months have two-digit years', () => {
-      const storedYarn = {
-        wool: { id: 'wool', history: { '25-12': 300, '26-02': 700 } },
-      };
-
-      it('reads them as four-digit years', () => {
-        expect(getBalances(storedYarn)).toEqual([
-          {
-            id: 'wool',
-            balances: [
-              ['2025-12', 300],
-              ['2026-02', 700],
-            ],
-          },
-        ]);
-      });
-
-      it('stores them with four-digit years', () => {
-        const setValue = jest.fn();
-        renderYarnStorage(storedYarn, setValue);
-
-        expect(setValue).toHaveBeenCalledWith('2026/yarn', {
-          wool: { id: 'wool', history: { '2025-12': 300, '2026-02': 700 } },
-        });
-      });
-    });
   });
 
   describe('months', () => {

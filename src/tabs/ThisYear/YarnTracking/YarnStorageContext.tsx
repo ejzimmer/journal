@@ -1,11 +1,4 @@
-import {
-  createContext,
-  ReactNode,
-  useContext,
-  useEffect,
-  useMemo,
-  useRef,
-} from 'react';
+import { createContext, ReactNode, useContext, useMemo } from 'react';
 import { useStorageContext } from '../../../shared/FirebaseContext';
 import {
   BalanceChange,
@@ -15,7 +8,6 @@ import {
   StoredYarnType,
   YarnType,
 } from './types';
-import { hasTwoDigitYearMonths, migrateYarnDates } from './migrateYarnDates';
 import { getHistoryByMonth, getThisMonth } from './utils';
 
 export type YarnStorageContextType = {
@@ -46,24 +38,9 @@ export function YarnStorageProvider({ children }: { children: ReactNode }) {
   const { useValue, setValue } = useStorageContext();
   const { value: storedYarn } = useValue<StoredYarn>(KEY);
 
-  const migratedYarn = useMemo(
-    () => storedYarn && migrateYarnDates(storedYarn),
-    [storedYarn],
-  );
-
-  const hasMigrated = useRef(false);
-  useEffect(() => {
-    if (!storedYarn || !migratedYarn || hasMigrated.current) return;
-    hasMigrated.current = true;
-
-    if (hasTwoDigitYearMonths(storedYarn)) {
-      setValue(KEY, migratedYarn);
-    }
-  }, [storedYarn, migratedYarn, setValue]);
-
   const value = useMemo(() => {
     const yarnTypes =
-      migratedYarn && Object.values(migratedYarn).map(convertToYarnType);
+      storedYarn && Object.values(storedYarn).map(convertToYarnType);
 
     const getCurrentBalance = (yarnType: string) =>
       yarnTypes?.find(({ id }) => id === yarnType)?.balances.at(-1)?.grams ?? 0;
@@ -83,7 +60,7 @@ export function YarnStorageProvider({ children }: { children: ReactNode }) {
         );
       },
     };
-  }, [migratedYarn, setValue]);
+  }, [storedYarn, setValue]);
 
   return (
     <YarnStorageContext.Provider value={value}>
