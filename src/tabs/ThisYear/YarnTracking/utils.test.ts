@@ -1,6 +1,4 @@
 import { buildYarnPile, getBallSizes } from './utils';
-import { convertToYarnType } from './YarnStorageContext';
-import { StoredYarn, YarnBall } from './types';
 
 describe('getBallSizes', () => {
   describe('when the amount is a whole number of 200g balls', () => {
@@ -31,20 +29,18 @@ describe('getBallSizes', () => {
   });
 });
 
-const buildPile = (storedYarn: StoredYarn) =>
-  buildYarnPile(Object.values(storedYarn).map(convertToYarnType)).map(
-    ({ usedIn, ...ball }: YarnBall) =>
-      usedIn ? { ...ball, usedIn: usedIn.toString() } : ball,
-  );
-
-const createYarn = (history: Record<string, number>) => ({
-  wool: { id: 'wool', history },
-});
+const JANUARY = Temporal.PlainYearMonth.from('2026-01');
+const FEBRUARY = Temporal.PlainYearMonth.from('2026-02');
+const MARCH = Temporal.PlainYearMonth.from('2026-03');
+const APRIL = Temporal.PlainYearMonth.from('2026-04');
+const MAY = Temporal.PlainYearMonth.from('2026-05');
 
 describe('buildYarnPile', () => {
   describe('when yarn has only been added', () => {
     it('has a ball in the stash for each 200g, with the leftover as a smaller ball', () => {
-      expect(buildPile(createYarn({ '2026-01': 500 }))).toEqual([
+      const wool = { id: 'wool', balances: [{ month: JANUARY, grams: 500 }] };
+
+      expect(buildYarnPile([wool])).toEqual([
         { yarnType: 'wool', size: 1 },
         { yarnType: 'wool', size: 1 },
         { yarnType: 'wool', size: 0.5 },
@@ -55,25 +51,37 @@ describe('buildYarnPile', () => {
   describe('when yarn is used', () => {
     describe('and a whole number of balls is used', () => {
       it('marks those balls as used in that month', () => {
-        expect(
-          buildPile(createYarn({ '2026-01': 600, '2026-03': 200 })),
-        ).toEqual([
+        const wool = {
+          id: 'wool',
+          balances: [
+            { month: JANUARY, grams: 600 },
+            { month: MARCH, grams: 200 },
+          ],
+        };
+
+        expect(buildYarnPile([wool])).toEqual([
           { yarnType: 'wool', size: 1 },
-          { yarnType: 'wool', size: 1, usedIn: '2026-03' },
-          { yarnType: 'wool', size: 1, usedIn: '2026-03' },
+          { yarnType: 'wool', size: 1, usedIn: MARCH },
+          { yarnType: 'wool', size: 1, usedIn: MARCH },
         ]);
       });
     });
 
     describe('and there is a partial ball', () => {
       it('uses up the partial ball before shrinking a whole one', () => {
-        expect(
-          buildPile(createYarn({ '2026-01': 700, '2026-02': 465 })),
-        ).toEqual([
+        const wool = {
+          id: 'wool',
+          balances: [
+            { month: JANUARY, grams: 700 },
+            { month: FEBRUARY, grams: 465 },
+          ],
+        };
+
+        expect(buildYarnPile([wool])).toEqual([
           { yarnType: 'wool', size: 1 },
           { yarnType: 'wool', size: 1 },
           { yarnType: 'wool', size: 0.325 },
-          { yarnType: 'wool', size: 0.5, usedIn: '2026-02' },
+          { yarnType: 'wool', size: 0.5, usedIn: FEBRUARY },
         ]);
       });
     });
@@ -81,42 +89,53 @@ describe('buildYarnPile', () => {
 
   describe('when yarn is added after some has been used', () => {
     it('tops up the partial ball, then restocks a used ball with the rest', () => {
-      expect(
-        buildPile(
-          createYarn({ '2026-01': 800, '2026-02': 300, '2026-03': 535 }),
-        ),
-      ).toEqual([
+      const wool = {
+        id: 'wool',
+        balances: [
+          { month: JANUARY, grams: 800 },
+          { month: FEBRUARY, grams: 300 },
+          { month: MARCH, grams: 535 },
+        ],
+      };
+
+      expect(buildYarnPile([wool])).toEqual([
         { yarnType: 'wool', size: 1 },
         { yarnType: 'wool', size: 1 },
         { yarnType: 'wool', size: 0.675 },
-        { yarnType: 'wool', size: 1, usedIn: '2026-02' },
+        { yarnType: 'wool', size: 1, usedIn: FEBRUARY },
       ]);
     });
 
     it('restocks the ball that was used most recently', () => {
-      expect(
-        buildPile(
-          createYarn({
-            '2026-01': 600,
-            '2026-02': 400,
-            '2026-04': 200,
-            '2026-05': 400,
-          }),
-        ),
-      ).toEqual([
+      const wool = {
+        id: 'wool',
+        balances: [
+          { month: JANUARY, grams: 600 },
+          { month: FEBRUARY, grams: 400 },
+          { month: APRIL, grams: 200 },
+          { month: MAY, grams: 400 },
+        ],
+      };
+
+      expect(buildYarnPile([wool])).toEqual([
         { yarnType: 'wool', size: 1 },
         { yarnType: 'wool', size: 1 },
-        { yarnType: 'wool', size: 1, usedIn: '2026-02' },
+        { yarnType: 'wool', size: 1, usedIn: FEBRUARY },
       ]);
     });
 
     describe('and more is added than there are used balls to restock', () => {
       it('adds new balls to the pile', () => {
-        expect(
-          buildPile(
-            createYarn({ '2026-01': 200, '2026-02': 0, '2026-03': 400 }),
-          ),
-        ).toEqual([
+        const wool = {
+          id: 'wool',
+          balances: [
+            { month: JANUARY, grams: 200 },
+            { month: FEBRUARY, grams: 0 },
+            { month: MARCH, grams: 400 },
+          ],
+        };
+
+        expect(buildYarnPile([wool])).toEqual([
           { yarnType: 'wool', size: 1 },
           { yarnType: 'wool', size: 1 },
         ]);
@@ -126,12 +145,16 @@ describe('buildYarnPile', () => {
 
   describe('when there are several yarn types', () => {
     it('restocks a used ball of one type with another', () => {
-      expect(
-        buildPile({
-          wool: { id: 'wool', history: { '2026-01': 400, '2026-02': 200 } },
-          cotton: { id: 'cotton', history: { '2026-03': 200 } },
-        }),
-      ).toEqual([
+      const wool = {
+        id: 'wool',
+        balances: [
+          { month: JANUARY, grams: 400 },
+          { month: FEBRUARY, grams: 200 },
+        ],
+      };
+      const cotton = { id: 'cotton', balances: [{ month: MARCH, grams: 200 }] };
+
+      expect(buildYarnPile([wool, cotton])).toEqual([
         { yarnType: 'wool', size: 1 },
         { yarnType: 'cotton', size: 1 },
       ]);
@@ -139,12 +162,24 @@ describe('buildYarnPile', () => {
 
     describe('and one is used in the same month another is added', () => {
       it('restocks the ball used that month rather than growing the pile', () => {
-        expect(
-          buildPile({
-            cotton: { id: 'cotton', history: { '2026-01': 0, '2026-02': 200 } },
-            wool: { id: 'wool', history: { '2026-01': 200, '2026-02': 0 } },
-          }),
-        ).toEqual([{ yarnType: 'cotton', size: 1 }]);
+        const cotton = {
+          id: 'cotton',
+          balances: [
+            { month: JANUARY, grams: 0 },
+            { month: FEBRUARY, grams: 200 },
+          ],
+        };
+        const wool = {
+          id: 'wool',
+          balances: [
+            { month: JANUARY, grams: 200 },
+            { month: FEBRUARY, grams: 0 },
+          ],
+        };
+
+        expect(buildYarnPile([cotton, wool])).toEqual([
+          { yarnType: 'cotton', size: 1 },
+        ]);
       });
     });
   });

@@ -4,6 +4,28 @@
 // learn more: https://github.com/testing-library/jest-dom
 import '@testing-library/jest-dom';
 
+declare global {
+  namespace jest {
+    interface Expect {
+      addEqualityTesters(
+        testers: Array<(one: unknown, other: unknown) => boolean | undefined>,
+      ): void;
+    }
+  }
+}
+
+const isPlainYearMonth = (value: unknown) =>
+  value instanceof Temporal.PlainYearMonth;
+
+expect.addEqualityTesters([
+  (one, other) =>
+    isPlainYearMonth(one) && isPlainYearMonth(other)
+      ? (one as Temporal.PlainYearMonth).equals(
+          other as Temporal.PlainYearMonth,
+        )
+      : undefined,
+]);
+
 HTMLDialogElement.prototype.show = function mock(this: HTMLDialogElement) {
   this.open = true;
 };

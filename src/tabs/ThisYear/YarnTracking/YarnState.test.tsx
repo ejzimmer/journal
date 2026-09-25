@@ -1,15 +1,6 @@
 import { screen } from '@testing-library/react';
 import { YarnState } from './YarnState';
 import { renderWithYarnStorage } from './yarnStorageTestUtils';
-import { convertToYarnType } from './YarnStorageContext';
-import { StoredYarn } from './types';
-import { buildYarnPile } from './utils';
-
-const renderYarnState = (storedYarn: StoredYarn, currentBalance = 0) =>
-  renderWithYarnStorage(<YarnState />, {
-    pile: buildYarnPile(Object.values(storedYarn).map(convertToYarnType)),
-    currentBalance,
-  });
 
 describe('YarnState', () => {
   beforeEach(() => {
@@ -23,7 +14,7 @@ describe('YarnState', () => {
 
   describe('the current total', () => {
     it('shows the grams currently in the stash', () => {
-      renderYarnState({}, 1000);
+      renderWithYarnStorage(<YarnState />, { pile: [], currentBalance: 1000 });
 
       expect(screen.getByText('Current: 1,000g')).toBeInTheDocument();
     });
@@ -32,7 +23,12 @@ describe('YarnState', () => {
   describe('the pile of yarn', () => {
     describe('a ball in the stash', () => {
       it('is labelled with its yarn type and weight', () => {
-        renderYarnState({ wool: { id: 'wool', history: { '2026-01': 300 } } });
+        renderWithYarnStorage(<YarnState />, {
+          pile: [
+            { yarnType: 'wool', size: 1 },
+            { yarnType: 'wool', size: 0.5 },
+          ],
+        });
 
         expect(
           screen.getByRole('img', { name: 'wool: 200g' }),
@@ -43,7 +39,9 @@ describe('YarnState', () => {
       });
 
       it('is sized by how much of a full ball it holds', () => {
-        renderYarnState({ wool: { id: 'wool', history: { '2026-01': 100 } } });
+        renderWithYarnStorage(<YarnState />, {
+          pile: [{ yarnType: 'wool', size: 0.5 }],
+        });
 
         expect(
           screen.getByRole('img', { name: 'wool: 100g' }).style.width,
@@ -54,8 +52,14 @@ describe('YarnState', () => {
     describe('a ball that has been used', () => {
       describe('when it was used less than a year ago', () => {
         it('fades in proportion to how long ago it was used', () => {
-          renderYarnState({
-            wool: { id: 'wool', history: { '2026-03': 200, '2026-06': 0 } },
+          renderWithYarnStorage(<YarnState />, {
+            pile: [
+              {
+                yarnType: 'wool',
+                size: 1,
+                usedIn: Temporal.PlainYearMonth.from('2026-06'),
+              },
+            ],
           });
 
           expect(
@@ -68,11 +72,19 @@ describe('YarnState', () => {
 
       describe('when it was used a year or more ago', () => {
         it('leaves only the balls used more recently', () => {
-          renderYarnState({
-            wool: {
-              id: 'wool',
-              history: { '2025-08': 400, '2025-09': 200, '2025-10': 0 },
-            },
+          renderWithYarnStorage(<YarnState />, {
+            pile: [
+              {
+                yarnType: 'wool',
+                size: 1,
+                usedIn: Temporal.PlainYearMonth.from('2025-09'),
+              },
+              {
+                yarnType: 'wool',
+                size: 1,
+                usedIn: Temporal.PlainYearMonth.from('2025-10'),
+              },
+            ],
           });
 
           expect(screen.getAllByRole('img')).toEqual([
