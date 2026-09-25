@@ -25,9 +25,9 @@ const getBalanceChanges = (yarnTypes: YarnType[]) =>
       })),
     )
     .sort(
-      (one, other) =>
-        Temporal.PlainYearMonth.compare(one.month, other.month) ||
-        one.change - other.change,
+      (a, b) =>
+        Temporal.PlainYearMonth.compare(a.month, b.month) ||
+        a.change - b.change,
     );
 
 export function buildYarnPile(yarnTypes: YarnType[]): YarnBall[] {
@@ -49,7 +49,7 @@ function resizeYarnType(
   const sizes = getBallSizes(grams);
   const inStash = pile
     .filter((ball) => ball.yarnType === yarnType && !ball.usedIn)
-    .sort((one, other) => other.size - one.size);
+    .sort((a, b) => b.size - a.size);
 
   inStash.slice(sizes.length).forEach((ball) => {
     ball.usedIn = month;
@@ -67,9 +67,7 @@ function resizeYarnType(
 function restockBall(pile: YarnBall[], yarnType: string): YarnBall {
   const mostRecentlyUsed = pile
     .filter((ball) => ball.usedIn)
-    .sort((one, other) =>
-      Temporal.PlainYearMonth.compare(other.usedIn!, one.usedIn!),
-    )[0];
+    .sort((a, b) => Temporal.PlainYearMonth.compare(b.usedIn!, a.usedIn!))[0];
 
   if (mostRecentlyUsed) {
     mostRecentlyUsed.yarnType = yarnType;

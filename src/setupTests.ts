@@ -8,7 +8,7 @@ declare global {
   namespace jest {
     interface Expect {
       addEqualityTesters(
-        testers: Array<(one: unknown, other: unknown) => boolean | undefined>,
+        testers: Array<(a: unknown, b: unknown) => boolean | undefined>,
       ): void;
     }
   }
@@ -18,11 +18,9 @@ const isPlainYearMonth = (value: unknown) =>
   value instanceof Temporal.PlainYearMonth;
 
 expect.addEqualityTesters([
-  (one, other) =>
-    isPlainYearMonth(one) && isPlainYearMonth(other)
-      ? (one as Temporal.PlainYearMonth).equals(
-          other as Temporal.PlainYearMonth,
-        )
+  (a, b) =>
+    isPlainYearMonth(a) && isPlainYearMonth(b)
+      ? (a as Temporal.PlainYearMonth).equals(b as Temporal.PlainYearMonth)
       : undefined,
 ]);
 
