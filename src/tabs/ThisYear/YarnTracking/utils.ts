@@ -38,7 +38,7 @@ type YarnPile = { balls: YarnBall[]; usedBallIndexes: number[] };
 export function buildYarnPile(yarnTypes: YarnType[]): YarnBall[] {
   const { balls } = getBalanceChanges(yarnTypes).reduce<YarnPile>(
     (pile, change) =>
-      change.difference < 0 ? useYarn(pile, change) : addYarn(pile, change),
+      change.difference < 0 ? markOffYarn(pile, change) : addYarn(pile, change),
     { balls: [], usedBallIndexes: [] },
   );
 
@@ -52,7 +52,7 @@ const getStashIndexes = (balls: YarnBall[], yarnType: string) =>
     .sort((a, b) => b.ball.size - a.ball.size)
     .map(({ index }) => index);
 
-function useYarn(
+function markOffYarn(
   { balls, usedBallIndexes }: YarnPile,
   { yarnType, grams, month }: YarnTypeBalance,
 ): YarnPile {
