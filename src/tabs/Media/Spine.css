@@ -147,6 +147,5 @@
 }
 
 .spine.todo .series-band {
-  background: none;
-  box-shadow: inset 0 0 0 1.5px oklch(58% 0.16 var(--band-hue));
+  background: oklch(80% 0.06 var(--band-hue));
 }
