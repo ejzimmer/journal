@@ -1,14 +1,28 @@
 export const KEY = '2026/yarn';
 
-export type StoredYarn = Record<string, StoredYarnType>;
-export type StoredYarnType = { id: string; history: Record<string, number> };
+export const YARN_TYPE_IDS = [
+  'wool',
+  'cotton',
+  'acrylic',
+  'sock yarn',
+] as const;
+export type YarnTypeId = (typeof YARN_TYPE_IDS)[number];
+
+export const isYarnTypeId = (value: string): value is YarnTypeId =>
+  YARN_TYPE_IDS.some((id) => id === value);
+
+export type StoredYarn = Partial<Record<YarnTypeId, StoredYarnType>>;
+export type StoredYarnType = {
+  id: YarnTypeId;
+  history: Record<string, number>;
+};
 
 export type YarnBalance = { month: Temporal.PlainYearMonth; grams: number };
-export type YarnType = { id: string; balances: YarnBalance[] };
+export type YarnType = { id: YarnTypeId; balances: YarnBalance[] };
 
 export type Operation = '+' | '-';
 export type YarnBall = {
-  yarnType: string;
+  yarnType: YarnTypeId;
   grams: number;
   usedIn?: Temporal.PlainYearMonth;
 };

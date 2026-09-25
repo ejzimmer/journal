@@ -1,6 +1,6 @@
 import { useRef, useState } from 'react';
 import { useYarnStorage } from './YarnStorageContext';
-import { Operation } from './types';
+import { isYarnTypeId, Operation } from './types';
 import { Switch } from '../../../shared/controls/Switch';
 
 import './Form.css';
@@ -20,7 +20,7 @@ export function YarnTrackingForm() {
     const amount =
       amountRef.current?.value && Number.parseFloat(amountRef.current.value);
 
-    if (!yarnType || !operation || !amount) {
+    if (!yarnType || !isYarnTypeId(yarnType) || !operation || !amount) {
       return;
     }
 

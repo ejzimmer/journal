@@ -1,6 +1,13 @@
 import { createContext, ReactNode, useContext, useMemo, useState } from 'react';
 import { useStorageContext } from '../../../shared/FirebaseContext';
-import { KEY, StoredYarn, StoredYarnType, YarnBall, YarnType } from './types';
+import {
+  KEY,
+  StoredYarn,
+  StoredYarnType,
+  YarnBall,
+  YarnType,
+  YarnTypeId,
+} from './types';
 import { getThisMonth } from '../../../shared/dates';
 import { YarnStash } from './YarnStash';
 
@@ -8,8 +15,8 @@ export type YarnStorageContextType = {
   yarnByType?: YarnType[];
   pile?: YarnBall[];
   currentBalance: number;
-  addYarn: (yarnType: string, grams: number) => void;
-  removeYarn: (yarnType: string, grams: number) => void;
+  addYarn: (yarnType: YarnTypeId, grams: number) => void;
+  removeYarn: (yarnType: YarnTypeId, grams: number) => void;
 };
 
 export const YarnStorageContext = createContext<
@@ -42,16 +49,16 @@ export function YarnStorageProvider({ children }: { children: ReactNode }) {
       stash.applyBalances(yarnByType);
     }
 
-    const saveBalance = (yarnType: string, grams: number) =>
+    const saveBalance = (yarnType: YarnTypeId, grams: number) =>
       setValue(`${KEY}/${yarnType}/history/${getThisMonth()}`, grams);
 
     return {
       yarnByType,
       pile: yarnByType && [...stash.balls],
       currentBalance: stash.getTotalBalance(),
-      addYarn: (yarnType: string, grams: number) =>
+      addYarn: (yarnType: YarnTypeId, grams: number) =>
         saveBalance(yarnType, stash.getBalance(yarnType) + grams),
-      removeYarn: (yarnType: string, grams: number) =>
+      removeYarn: (yarnType: YarnTypeId, grams: number) =>
         saveBalance(yarnType, Math.max(0, stash.getBalance(yarnType) - grams)),
     };
   }, [storedYarn, stash, setValue]);

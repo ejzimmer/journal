@@ -1,4 +1,5 @@
 import { YarnStash } from './YarnStash';
+import { YarnType } from './types';
 
 const JANUARY = Temporal.PlainYearMonth.from('2026-01');
 const FEBRUARY = Temporal.PlainYearMonth.from('2026-02');
@@ -190,7 +191,7 @@ describe('YarnStash', () => {
       describe('and they have not changed', () => {
         it('leaves the stash as it was', () => {
           const stash = new YarnStash();
-          const wool = {
+          const wool: YarnType = {
             id: 'wool',
             balances: [
               { month: JANUARY, grams: 700 },

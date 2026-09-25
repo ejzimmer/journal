@@ -1,12 +1,14 @@
-import { YarnBall, YarnType } from './types';
+import { YarnBall, YarnType, YarnTypeId } from './types';
 import { GRAMS_PER_BALL } from './utils';
 
 export class YarnStash {
   balls: YarnBall[] = [];
   private usedBalls: YarnBall[] = [];
-  private lastAppliedMonths: Record<string, Temporal.PlainYearMonth> = {};
+  private lastAppliedMonths: Partial<
+    Record<YarnTypeId, Temporal.PlainYearMonth>
+  > = {};
 
-  getBalance(yarnType: string) {
+  getBalance(yarnType: YarnTypeId) {
     return this.getUnusedBalls(yarnType).reduce(
       (total, ball) => total + ball.grams,
       0,
@@ -17,7 +19,7 @@ export class YarnStash {
     return this.getUnusedBalls().reduce((total, ball) => total + ball.grams, 0);
   }
 
-  private addYarn(yarnType: string, grams: number) {
+  private addYarn(yarnType: YarnTypeId, grams: number) {
     let remaining = grams;
 
     const partialBall = this.getUnusedBalls(yarnType).find(
@@ -30,7 +32,7 @@ export class YarnStash {
     }
 
     while (remaining > 0) {
-      const ball = this.usedBalls.pop() ?? this.createBall();
+      const ball = this.usedBalls.pop() ?? this.createBall(yarnType);
       ball.yarnType = yarnType;
       ball.grams = Math.min(remaining, GRAMS_PER_BALL);
       delete ball.usedIn;
@@ -39,7 +41,7 @@ export class YarnStash {
   }
 
   private removeYarn(
-    yarnType: string,
+    yarnType: YarnTypeId,
     grams: number,
     month: Temporal.PlainYearMonth,
   ) {
@@ -99,13 +101,13 @@ export class YarnStash {
       );
   }
 
-  private getUnusedBalls(yarnType?: string) {
+  private getUnusedBalls(yarnType?: YarnTypeId) {
     return this.balls.filter(
       (ball) => !ball.usedIn && (!yarnType || ball.yarnType === yarnType),
     );
   }
 
-  private findSmallestUnusedBall(yarnType: string) {
+  private findSmallestUnusedBall(yarnType: YarnTypeId) {
     return this.getUnusedBalls(yarnType).reduce<YarnBall | undefined>(
       (smallest, ball) =>
         !smallest || ball.grams < smallest.grams ? ball : smallest,
@@ -113,8 +115,8 @@ export class YarnStash {
     );
   }
 
-  private createBall(): YarnBall {
-    const ball = { yarnType: '', grams: 0 };
+  private createBall(yarnType: YarnTypeId): YarnBall {
+    const ball = { yarnType, grams: 0 };
     this.balls.push(ball);
     return ball;
   }
