@@ -26,7 +26,7 @@ export function YarnState() {
         {monthEntries.map(([id, month], index) => (
           <li key={id}>
             <MonthLabel
-              monthNumber={id.split('-')[1]}
+              month={month.month}
               monthTotal={month.total}
               isLastMonth={index === monthEntries.length - 1}
             />
@@ -39,20 +39,17 @@ export function YarnState() {
 }
 
 function MonthLabel({
-  monthNumber,
+  month,
   monthTotal,
   isLastMonth,
 }: {
-  monthNumber: string;
+  month: Temporal.PlainYearMonth;
   monthTotal: number;
   isLastMonth: boolean;
 }) {
-  const monthName = new Date(`2000-${monthNumber}-01`).toLocaleString(
-    'default',
-    {
-      month: 'long',
-    },
-  );
+  const monthName = month
+    .toPlainDate({ day: 1 })
+    .toLocaleString('default', { month: 'long' });
 
   return (
     <div className="label">

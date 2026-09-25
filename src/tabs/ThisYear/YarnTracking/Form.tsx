@@ -5,7 +5,7 @@ import { Switch } from '../../../shared/controls/Switch';
 
 import './Form.css';
 import { TickIcon } from '../../../shared/icons/Tick';
-import { getMonthId } from './utils';
+import { getLatestBalance, getThisMonth } from './utils';
 
 export function YarnTrackingForm() {
   const { useValue, updateItem } = useStorageContext();
@@ -32,19 +32,16 @@ export function YarnTrackingForm() {
     }
 
     const yarnDetails = value[yarnType];
-    const currentBalance = Object.values(yarnDetails.history).at(-1) ?? 0;
+    const currentBalance = getLatestBalance(yarnDetails);
 
     // eslint-disable-next-line no-eval
     const newBalance = eval(`${currentBalance}${operation}${amount}`);
-
-    const today = new Date();
-    const key = getMonthId(today.getFullYear(), today.getMonth());
 
     updateItem<YarnType>(`${KEY}`, {
       id: yarnType,
       history: {
         ...yarnDetails.history,
-        [key]: newBalance,
+        [getThisMonth().toString()]: newBalance,
       },
     });
   };
