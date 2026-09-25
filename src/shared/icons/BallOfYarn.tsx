@@ -219,13 +219,6 @@ export function BallOfYarnIcon({
           <stop offset="100%" stopColor="black" stopOpacity="0.4" />
         </radialGradient>
       </defs>
-      <path
-        d="M12 16 C15 19 18 17.5 18.6 14.4"
-        fill="none"
-        stroke={colour}
-        strokeWidth="1.2"
-        strokeLinecap="round"
-      />
       <path d={BALL_OUTLINE} fill={colour} />
       <g
         clipPath={`url(#${wrapClip})`}
