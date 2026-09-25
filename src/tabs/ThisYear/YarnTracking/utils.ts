@@ -15,7 +15,7 @@ export function getBallSizes(grams: number): number[] {
 }
 
 const getBalanceChangesByMonth = (yarnTypes: YarnType[]) => {
-  const changes = yarnTypes.flatMap(({ id, balances }) =>
+  const allChanges = yarnTypes.flatMap(({ id, balances }) =>
     balances.map(({ month, grams }, index) => ({
       yarnType: id,
       month,
@@ -25,7 +25,9 @@ const getBalanceChangesByMonth = (yarnTypes: YarnType[]) => {
   );
 
   const changesByMonth = Map.groupBy(
-    changes.sort((a, b) => Temporal.PlainYearMonth.compare(a.month, b.month)),
+    allChanges.sort((a, b) =>
+      Temporal.PlainYearMonth.compare(a.month, b.month),
+    ),
     ({ month }) => month.toString(),
   );
 
