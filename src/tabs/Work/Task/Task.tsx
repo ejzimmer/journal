@@ -14,6 +14,7 @@ import { WorktreeStamp } from './WorktreeStamp';
 import { AddWorktree } from './AddWorktree';
 import { Worktree } from '../types';
 import { Subtasks } from './Subtasks';
+import { getToday } from '../../../shared/dates';
 
 type TaskProps = {
   task: WorkTask;
@@ -34,7 +35,7 @@ export function Task({ task, listId, dragHandle }: TaskProps) {
     }
   };
 
-  const onChangeDueDate = (date?: number) => {
+  const onChangeDueDate = (date?: string) => {
     const { dueDate, ...taskWithoutDueDate } = task;
     if (date) {
       updateTask(listId, { ...task, dueDate: date });
@@ -71,7 +72,7 @@ export function Task({ task, listId, dragHandle }: TaskProps) {
             updateTask(listId, {
               ...task,
               status,
-              lastStatusUpdate: new Date().getTime(),
+              lastStatusUpdate: getToday().toString(),
             });
           }}
           aria-label={`${task.description}`}

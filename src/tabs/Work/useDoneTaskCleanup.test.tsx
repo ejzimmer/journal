@@ -1,4 +1,5 @@
-import { getTimestampDaysAgo } from '../../shared/dateTestUtils';
+import { getDateDaysAgo } from '../../shared/dateTestUtils';
+import { getToday } from '../../shared/dates';
 import {
   createDailyJobsStorage,
   renderDailyJob,
@@ -35,7 +36,7 @@ const createTask = (
   ...overrides,
 });
 
-const createDoneTask = (listId: string, id: string, doneOn: number) =>
+const createDoneTask = (listId: string, id: string, doneOn: string) =>
   createTask(listId, id, {
     status: 'done',
     lastStatusUpdate: doneOn,
@@ -57,7 +58,7 @@ describe('cleaning up done work tasks', () => {
     it('moves to the done list', () => {
       const storage = cleanUpLists([
         createList('today', 'Today', 0, [
-          createDoneTask('today', 'fix-the-thing', getTimestampDaysAgo(1)),
+          createDoneTask('today', 'fix-the-thing', getDateDaysAgo(1)),
         ]),
         createList('done', 'Done', 1),
       ]);
@@ -74,7 +75,7 @@ describe('cleaning up done work tasks', () => {
     it('leaves the list it came from', () => {
       const storage = cleanUpLists([
         createList('today', 'Today', 0, [
-          createDoneTask('today', 'fix-the-thing', getTimestampDaysAgo(1)),
+          createDoneTask('today', 'fix-the-thing', getDateDaysAgo(1)),
         ]),
         createList('done', 'Done', 1),
       ]);
@@ -90,7 +91,7 @@ describe('cleaning up done work tasks', () => {
     it('stays where it is', () => {
       const storage = cleanUpLists([
         createList('today', 'Today', 0, [
-          createDoneTask('today', 'fix-the-thing', Date.now()),
+          createDoneTask('today', 'fix-the-thing', getToday().toString()),
         ]),
         createList('done', 'Done', 1),
       ]);
@@ -144,7 +145,7 @@ describe('cleaning up done work tasks', () => {
     it('cleans up nothing', () => {
       const storage = cleanUpLists([
         createList('today', 'Today', 0, [
-          createDoneTask('today', 'fix-the-thing', getTimestampDaysAgo(1)),
+          createDoneTask('today', 'fix-the-thing', getDateDaysAgo(1)),
         ]),
       ]);
 
@@ -171,7 +172,7 @@ describe('cleaning up done work tasks', () => {
 
       storedValues[WORK_KEY] = indexById([
         createList('today', 'Today', 0, [
-          createDoneTask('today', 'fix-the-thing', getTimestampDaysAgo(1)),
+          createDoneTask('today', 'fix-the-thing', getDateDaysAgo(1)),
         ]),
         createList('done', 'Done', 1),
       ]);

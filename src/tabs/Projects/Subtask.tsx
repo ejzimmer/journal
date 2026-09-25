@@ -7,6 +7,7 @@ import { useLinkedTasks } from './utils';
 import { EditableText } from '../../shared/controls/EditableText';
 import { DraggableListItem } from '../../shared/drag-and-drop/DraggableListItem';
 import { draggableTypeKey } from '../../shared/drag-and-drop/types';
+import { getToday } from '../../shared/dates';
 
 type SubtaskProps = ProjectSubtask & {
   project: ProjectDetails;
@@ -44,7 +45,7 @@ export function Subtask({ path, dragHandle, project, ...task }: SubtaskProps) {
 
     updateLinkedTask({
       status,
-      lastCompleted: new Date().getTime(),
+      lastCompleted: getToday().toString(),
     });
   };
 

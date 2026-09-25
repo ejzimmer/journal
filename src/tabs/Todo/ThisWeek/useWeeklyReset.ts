@@ -1,4 +1,4 @@
-import { getDaysSince } from '../../../shared/dates';
+import { getDaysSince, StoredDate } from '../../../shared/dates';
 import { useStorageContext } from '../../../shared/FirebaseContext';
 import { useDailyJob } from '../../../shared/dailyJobs/DailyJobsContext';
 import {
@@ -14,7 +14,7 @@ export function refreshTasks(
   tasks.forEach((task) => {
     if (!task.completed) return;
 
-    const completed: (number | null)[] = Array.isArray(task.completed)
+    const completed: (StoredDate | null)[] = Array.isArray(task.completed)
       ? task.completed
       : Object.values(task.completed);
 

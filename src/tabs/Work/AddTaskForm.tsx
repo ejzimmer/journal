@@ -8,7 +8,7 @@ import { Colour, Label } from './types';
 
 type NewTask = {
   description: string;
-  dueDate?: number;
+  dueDate?: string;
   labels: Label[];
 };
 
@@ -19,7 +19,7 @@ type AddTaskFormProps = {
 
 export function AddTaskForm({ onSubmit, onClose }: AddTaskFormProps) {
   const descriptionRef = useRef<HTMLInputElement>(null);
-  const [dueDate, setDueDate] = useState<number>();
+  const [dueDate, setDueDate] = useState<string>();
   const [labels, setLabels] = useState<Label[]>([]);
 
   const handleCancel = (event: React.KeyboardEvent) => {

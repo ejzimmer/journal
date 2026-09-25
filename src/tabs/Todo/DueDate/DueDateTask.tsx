@@ -1,7 +1,7 @@
 import { EditableDate } from '../../../shared/controls/EditableDate';
 import { useStorageContext } from '../../../shared/FirebaseContext';
 import { CalendarTask, CALENDAR_KEY, STATUSES } from '../../../shared/types';
-import { getDateFromTimestamp, getToday } from '../../../shared/dates';
+import { getPlainDate, getToday } from '../../../shared/dates';
 import { Switch } from '../../../shared/controls/Switch';
 import { PlayButtonIcon } from '../../../shared/icons/PlayButton';
 import { PauseButtonIcon } from '../../../shared/icons/PauseButton';
@@ -11,7 +11,7 @@ import { EditableDescription } from '../../../shared/controls/EditableDescriptio
 
 const getDateClass = (task: CalendarTask) => {
   const today = getToday();
-  const dueDateDay = getDateFromTimestamp(task.dueDate);
+  const dueDateDay = getPlainDate(task.dueDate);
   const daysUntilDue = dueDateDay.since(today, { largestUnit: 'day' }).days;
 
   if (daysUntilDue < 0) {
@@ -62,7 +62,7 @@ export function DueDateTask({ task }: { task: CalendarTask }) {
         options={[...STATUSES]}
         value={task.status}
         onChange={(status) =>
-          onChange({ ...task, status, statusUpdateDate: new Date().getTime() })
+          onChange({ ...task, status, statusUpdateDate: getToday().toString() })
         }
         name={task.id}
         Option={StatusOption}

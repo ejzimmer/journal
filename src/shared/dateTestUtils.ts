@@ -1,7 +1,11 @@
-import { getTimestampFromDate, getToday } from './dates';
+import { getToday } from './dates';
 
-export const getTimestampDaysAgo = (days: number) =>
-  getTimestampFromDate(getToday().subtract({ days }));
+export const getDateDaysAgo = (days: number) =>
+  getToday().subtract({ days }).toString();
 
-export const getTimestampDaysAhead = (days: number) =>
-  getTimestampFromDate(getToday().add({ days }));
+export const getDateDaysAhead = (days: number) =>
+  getToday().add({ days }).toString();
+
+export const getLegacyTimestampDaysAgo = (days: number) =>
+  getToday().subtract({ days }).toZonedDateTime(Temporal.Now.timeZoneId())
+    .epochMilliseconds;

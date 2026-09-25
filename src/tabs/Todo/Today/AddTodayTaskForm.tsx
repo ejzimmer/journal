@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Switch } from '../../../shared/controls/Switch';
 import { AddTaskForm } from '../AddTaskForm';
 import { DailyTaskDetails, DAILY_KEY } from '../../../shared/types';
+import { getToday } from '../../../shared/dates';
 
 export function AddTodayTaskForm() {
   const [taskType, setTaskType] = useState<DailyTaskDetails['type']>('一度');
@@ -10,7 +11,7 @@ export function AddTodayTaskForm() {
     return {
       type: taskType,
       status: 'ready',
-      lastCompleted: new Date().getTime(),
+      lastCompleted: getToday().toString(),
     };
   };
 

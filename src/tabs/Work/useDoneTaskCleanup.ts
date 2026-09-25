@@ -1,4 +1,4 @@
-import { isBeforeToday } from '../../shared/dates';
+import { getToday, isBeforeToday } from '../../shared/dates';
 import { useStorageContext } from '../../shared/FirebaseContext';
 import { useDailyJob } from '../../shared/dailyJobs/DailyJobsContext';
 import {
@@ -47,7 +47,7 @@ export function useDoneTaskCleanup() {
           addItem<WorkTask>(doneListItemsKey, {
             ...task,
             parentId: doneListItemsKey,
-            lastStatusUpdate: new Date().getTime(),
+            lastStatusUpdate: getToday().toString(),
           }),
         );
 

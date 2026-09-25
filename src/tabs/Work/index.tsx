@@ -13,6 +13,7 @@ import './index.css';
 import { MoveToOtherLists } from './MoveToOtherLists';
 import { getAppendPosition } from './taskPosition';
 import { ListDestination, getDestinationListIndex } from './listDestination';
+import { getToday } from '../../shared/dates';
 
 export function Work() {
   return (
@@ -70,7 +71,7 @@ function WorkContent() {
         movedItem: {
           ...task,
           position: getAppendPosition(targetList),
-          lastStatusUpdate: Date.now(),
+          lastStatusUpdate: getToday().toString(),
         },
         sourceListId: `${WORK_KEY}/${currentListId}/items`,
         targetListId: `${WORK_KEY}/${targetList.id}/items`,
