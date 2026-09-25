@@ -19,7 +19,7 @@ import {
   SeriesDetails,
 } from '../tabs/Media/types';
 
-const todaysDate = getToday().toString();
+const todaysDate = getToday();
 
 function createList(
   id: string,

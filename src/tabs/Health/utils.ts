@@ -1,4 +1,4 @@
-import { formatDate, formatDateId, getToday } from '../../shared/dates';
+import { formatDate, formatDateId, getDaysSince } from '../../shared/dates';
 import { DayData } from '../../shared/types';
 
 export const STARTING_BALANCE = 19687;
@@ -15,10 +15,8 @@ export type Balance = {
 };
 
 export function setupDays(dayData?: Record<string, DayData>): Balance[] {
-  const today = getToday();
   const newYearsDay = Temporal.PlainDate.from('2026-01-01');
-  const numberOfDays =
-    today.since(newYearsDay, { largestUnit: 'day' }).days - 1;
+  const numberOfDays = getDaysSince(newYearsDay.toString()) - 1;
   const days = new Array<Balance>(numberOfDays);
 
   let balance = STARTING_BALANCE;

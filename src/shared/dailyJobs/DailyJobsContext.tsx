@@ -28,10 +28,10 @@ type RegisterJob = (job: ScheduledJob) => () => void;
 const DailyJobsContext = createContext<RegisterJob | undefined>(undefined);
 
 function useToday() {
-  const [today, setToday] = useState(() => getToday().toString());
+  const [today, setToday] = useState(getToday);
 
   useEffect(() => {
-    const updateToday = () => setToday(getToday().toString());
+    const updateToday = () => setToday(getToday());
 
     const timeout = setTimeout(updateToday, getMillisecondsUntilTomorrow());
     document.addEventListener('visibilitychange', updateToday);

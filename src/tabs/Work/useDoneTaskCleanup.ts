@@ -47,7 +47,7 @@ export function useDoneTaskCleanup() {
           addItem<WorkTask>(doneListItemsKey, {
             ...task,
             parentId: doneListItemsKey,
-            lastStatusUpdate: getToday().toString(),
+            lastStatusUpdate: getToday(),
           }),
         );
 

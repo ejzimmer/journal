@@ -1,6 +1,5 @@
 import { act } from '@testing-library/react';
-import { getDateDaysAgo } from '../dateTestUtils';
-import { getToday } from '../dates';
+import { getDateDaysAgo, getToday } from '../dates';
 import { DailyJob, useDailyJob } from './DailyJobsContext';
 import { createDailyJobsStorage, renderDailyJob } from './dailyJobsTestUtils';
 
@@ -32,10 +31,7 @@ describe('daily jobs', () => {
 
         const { storage } = renderJob(run, {});
 
-        expect(storage.setValue).toHaveBeenCalledWith(
-          LAST_RUN_KEY,
-          getToday().toString(),
-        );
+        expect(storage.setValue).toHaveBeenCalledWith(LAST_RUN_KEY, getToday());
       });
     });
 

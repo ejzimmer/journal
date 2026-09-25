@@ -11,7 +11,7 @@ export function AddTodayTaskForm() {
     return {
       type: taskType,
       status: 'ready',
-      lastCompleted: getToday().toString(),
+      lastCompleted: getToday(),
     };
   };
 

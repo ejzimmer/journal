@@ -21,13 +21,13 @@ export function TodayTask({
       onChange({
         ...task,
         status: 'ready',
-        lastCompleted: getToday().toString(),
+        lastCompleted: getToday(),
       });
     } else {
       onChange({
         ...task,
         status: task.type === '毎日' ? 'done' : 'finished',
-        lastCompleted: getToday().toString(),
+        lastCompleted: getToday(),
       });
     }
 

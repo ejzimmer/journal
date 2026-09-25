@@ -3,8 +3,7 @@ import { ThisWeekTask } from './ThisWeekTask';
 import { WeeklyTask } from '../../../shared/types';
 import userEvent from '@testing-library/user-event';
 import { CategoriesContext } from '..';
-import { getToday } from '../../../shared/dates';
-import { getDateDaysAgo } from '../../../shared/dateTestUtils';
+import { getDateDaysAgo, getToday } from '../../../shared/dates';
 import { ContextType } from '../../../shared/FirebaseContext';
 import { renderWithStorage } from '../../../shared/storageContextTestUtils';
 
@@ -51,7 +50,7 @@ describe('ThisWeekTask', () => {
         expect(updateItem).toHaveBeenCalledWith(
           expect.anything(),
           expect.objectContaining({
-            completed: [...task.completed!, getToday().toString()],
+            completed: [...task.completed!, getToday()],
           }),
         );
       });
@@ -96,7 +95,7 @@ describe('ThisWeekTask', () => {
         expect(updateItem).toHaveBeenCalledWith(
           expect.anything(),
           expect.objectContaining({
-            completed: [...task.completed!, getToday().toString()],
+            completed: [...task.completed!, getToday()],
           }),
         );
       });
@@ -117,9 +116,7 @@ describe('ThisWeekTask', () => {
         await user.click(screen.getByRole('button', { name: 'Mark done' }));
 
         const [, updated] = updateItem.mock.calls[0];
-        expect(updated.completed.at(-1)).toBe(
-          getToday().subtract({ days: 1 }).toString(),
-        );
+        expect(updated.completed.at(-1)).toBe(getDateDaysAgo(1));
       });
     });
 

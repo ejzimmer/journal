@@ -1,4 +1,4 @@
-import { getDateDaysAgo } from '../../../shared/dateTestUtils';
+import { getDateDaysAgo } from '../../../shared/dates';
 import {
   createDailyJobsStorage,
   renderDailyJob,

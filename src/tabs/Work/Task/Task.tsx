@@ -72,7 +72,7 @@ export function Task({ task, listId, dragHandle }: TaskProps) {
             updateTask(listId, {
               ...task,
               status,
-              lastStatusUpdate: getToday().toString(),
+              lastStatusUpdate: getToday(),
             });
           }}
           aria-label={`${task.description}`}

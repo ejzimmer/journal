@@ -45,7 +45,7 @@ export function Subtask({ path, dragHandle, project, ...task }: SubtaskProps) {
 
     updateLinkedTask({
       status,
-      lastCompleted: getToday().toString(),
+      lastCompleted: getToday(),
     });
   };
 

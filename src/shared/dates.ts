@@ -2,7 +2,18 @@ const monthFormatter = Intl.DateTimeFormat('en-AU', { month: 'short' });
 
 export type StoredDate = number | string;
 
-export const getToday = () => Temporal.Now.plainDateISO();
+const getTodaysPlainDate = () => Temporal.Now.plainDateISO();
+
+const getStartOfWeek = (date: Temporal.PlainDate) =>
+  date.subtract({ days: date.dayOfWeek - 1 });
+
+export const getToday = () => getTodaysPlainDate().toString();
+
+export const getDateDaysAgo = (days: number) =>
+  getTodaysPlainDate().subtract({ days }).toString();
+
+export const getDateDaysAhead = (days: number) =>
+  getTodaysPlainDate().add({ days }).toString();
 
 export const getPlainDate = (date: StoredDate) =>
   typeof date === 'number'
@@ -15,19 +26,24 @@ export const compareDates = (a: StoredDate, b: StoredDate) =>
   Temporal.PlainDate.compare(getPlainDate(a), getPlainDate(b));
 
 export const isToday = (date: StoredDate) =>
-  getPlainDate(date).equals(getToday());
+  compareDates(date, getToday()) === 0;
 
 export const isBeforeToday = (date: StoredDate) =>
-  Temporal.PlainDate.compare(getPlainDate(date), getToday()) < 0;
+  compareDates(date, getToday()) < 0;
 
 export const isAfterToday = (date: StoredDate) =>
-  Temporal.PlainDate.compare(getPlainDate(date), getToday()) > 0;
+  compareDates(date, getToday()) > 0;
+
+export const isThisWeek = (date: StoredDate) =>
+  getStartOfWeek(getPlainDate(date)).equals(
+    getStartOfWeek(getTodaysPlainDate()),
+  );
 
 export const getDaysSince = (date: StoredDate) =>
-  getToday().since(getPlainDate(date), { largestUnit: 'day' }).days;
+  getTodaysPlainDate().since(getPlainDate(date), { largestUnit: 'day' }).days;
 
-export const getStartOfWeek = (date: Temporal.PlainDate) =>
-  date.subtract({ days: date.dayOfWeek - 1 });
+export const getDaysUntil = (date: StoredDate) =>
+  getPlainDate(date).since(getTodaysPlainDate(), { largestUnit: 'day' }).days;
 
 export const getMillisecondsUntilTomorrow = () => {
   const now = Temporal.Now.zonedDateTimeISO();

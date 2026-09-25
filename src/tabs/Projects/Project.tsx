@@ -90,7 +90,7 @@ export function Project({
 
     updateLinkedTask({
       status: status === 'in_progress' ? 'finished' : 'ready',
-      lastCompleted: getToday().toString(),
+      lastCompleted: getToday(),
     });
   };
 

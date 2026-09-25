@@ -32,7 +32,7 @@ export function MoveToOtherLists({
           movedItem: {
             ...task,
             position: getAppendPosition(destination),
-            lastStatusUpdate: getToday().toString(),
+            lastStatusUpdate: getToday(),
           },
           sourceListId: `${WORK_KEY}/${currentListId}/items`,
           targetListId: `${WORK_KEY}/${destination.id}/items`,

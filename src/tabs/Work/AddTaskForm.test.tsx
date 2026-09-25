@@ -163,7 +163,7 @@ describe('AddTaskForm', () => {
       wrapper: Wrapper,
     });
 
-    const today = formatDayAndMonth(getToday().toString());
+    const today = formatDayAndMonth(getToday());
     await enterDueDate(user, '2026-01-01', '{Escape}');
 
     expect(onClose).not.toHaveBeenCalled();

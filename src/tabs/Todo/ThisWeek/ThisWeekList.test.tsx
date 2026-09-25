@@ -1,7 +1,5 @@
-import {
-  getDateDaysAgo,
-  getLegacyTimestampDaysAgo,
-} from '../../../shared/dateTestUtils';
+import { getDateDaysAgo } from '../../../shared/dates';
+import { getLegacyTimestampDaysAgo } from '../../../shared/dateTestUtils';
 import { WeeklyTask } from '../../../shared/types';
 import { refreshTasks } from './useWeeklyReset';
 

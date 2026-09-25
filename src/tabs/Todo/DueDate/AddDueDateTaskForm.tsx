@@ -5,7 +5,7 @@ import { FormControl } from '../../../shared/controls/FormControl';
 import { getToday } from '../../../shared/dates';
 
 export function AddDueDateTaskForm() {
-  const [dueDate, setDueDate] = useState(getToday().toString());
+  const [dueDate, setDueDate] = useState(getToday());
 
   const getAdditionalFieldValue = () => {
     if (!dueDate) {

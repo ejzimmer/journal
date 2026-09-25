@@ -71,7 +71,7 @@ function WorkContent() {
         movedItem: {
           ...task,
           position: getAppendPosition(targetList),
-          lastStatusUpdate: getToday().toString(),
+          lastStatusUpdate: getToday(),
         },
         sourceListId: `${WORK_KEY}/${currentListId}/items`,
         targetListId: `${WORK_KEY}/${targetList.id}/items`,

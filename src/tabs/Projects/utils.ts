@@ -39,7 +39,7 @@ export function useLinkedTasks(linkedId?: string) {
         description,
         status: 'ready',
         type: '一度',
-        lastCompleted: getToday().toString(),
+        lastCompleted: getToday(),
         linkedTask: linkedTaskId,
       },
     );

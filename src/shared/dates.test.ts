@@ -6,7 +6,10 @@ import {
   getDaysSince,
   getMillisecondsUntilTomorrow,
   getPlainDate,
-  getStartOfWeek,
+  getDateDaysAgo,
+  getDateDaysAhead,
+  getDaysUntil,
+  isThisWeek,
   getToday,
   isAfterToday,
   isBeforeToday,
@@ -33,7 +36,7 @@ describe('dates', () => {
 
   describe('getToday', () => {
     it('is the current date in the local time zone', () => {
-      expect(getToday().toString()).toBe('2026-09-20');
+      expect(getToday()).toBe('2026-09-20');
     });
   });
 
@@ -133,27 +136,53 @@ describe('dates', () => {
     });
   });
 
-  describe('getStartOfWeek', () => {
-    it('is the Monday of that week', () => {
-      expect(
-        getStartOfWeek(Temporal.PlainDate.from('2026-09-16')).toString(),
-      ).toBe('2026-09-14');
+  describe('isThisWeek', () => {
+    it('is true for a date earlier in the same Monday-start week', () => {
+      expect(isThisWeek('2026-09-16')).toBe(true);
     });
 
-    describe('when the date is a Monday', () => {
-      it('is that same day', () => {
-        expect(
-          getStartOfWeek(Temporal.PlainDate.from('2026-09-14')).toString(),
-        ).toBe('2026-09-14');
-      });
+    it('is true for the Monday the week starts on', () => {
+      expect(isThisWeek('2026-09-14')).toBe(true);
     });
 
-    describe('when the date is a Sunday', () => {
-      it('is the Monday six days earlier', () => {
-        expect(
-          getStartOfWeek(Temporal.PlainDate.from('2026-09-20')).toString(),
-        ).toBe('2026-09-14');
+    describe('when today is the Sunday a week ends on', () => {
+      it('is false for the Monday that starts the next week', () => {
+        expect(isThisWeek('2026-09-21')).toBe(false);
       });
+
+      it('is false for the Sunday that ended the previous week', () => {
+        expect(isThisWeek('2026-09-13')).toBe(false);
+      });
+    });
+  });
+
+  describe('getDaysUntil', () => {
+    it('counts forward to a later date', () => {
+      expect(getDaysUntil('2026-09-27')).toBe(7);
+    });
+
+    it('is negative for a date already past', () => {
+      expect(getDaysUntil('2026-09-19')).toBe(-1);
+    });
+
+    it('is zero for today', () => {
+      expect(getDaysUntil('2026-09-20')).toBe(0);
+    });
+  });
+
+  describe('getDateDaysAgo', () => {
+    it('counts back from today', () => {
+      expect(getDateDaysAgo(1)).toBe('2026-09-19');
+    });
+
+    it('crosses a month boundary', () => {
+      expect(getDateDaysAgo(20)).toBe('2026-08-31');
+    });
+  });
+
+  describe('getDateDaysAhead', () => {
+    it('counts forward from today', () => {
+      expect(getDateDaysAhead(11)).toBe('2026-10-01');
     });
   });
 

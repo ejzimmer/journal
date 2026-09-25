@@ -15,7 +15,7 @@ const readyForToday = (task: DailyTask) =>
     ? {
         ...task,
         status: 'ready' as const,
-        lastCompleted: getToday().toString(),
+        lastCompleted: getToday(),
       }
     : task;
 

@@ -1,5 +1,4 @@
-import { getDateDaysAgo } from '../../shared/dateTestUtils';
-import { getToday } from '../../shared/dates';
+import { getDateDaysAgo, getToday } from '../../shared/dates';
 import {
   createDailyJobsStorage,
   renderDailyJob,
@@ -91,7 +90,7 @@ describe('cleaning up done work tasks', () => {
     it('stays where it is', () => {
       const storage = cleanUpLists([
         createList('today', 'Today', 0, [
-          createDoneTask('today', 'fix-the-thing', getToday().toString()),
+          createDoneTask('today', 'fix-the-thing', getToday()),
         ]),
         createList('done', 'Done', 1),
       ]);
