@@ -1,6 +1,5 @@
 import './YarnState.css';
 import { useYarnStorage } from './YarnStorageContext';
-import { getThisMonth } from '../../../shared/dates';
 import { YarnPileBall } from './YarnPileBall';
 
 export function YarnState() {
@@ -10,14 +9,12 @@ export function YarnState() {
     return <>Loading...</>;
   }
 
-  const thisMonth = getThisMonth();
-
   return (
     <div className="yarn-state">
       <div className="label">Current: {currentBalance.toLocaleString()}g</div>
       <div className="yarn-pile">
         {pile.map((ball, index) => (
-          <YarnPileBall key={index} ball={ball} thisMonth={thisMonth} />
+          <YarnPileBall key={index} ball={ball} />
         ))}
       </div>
     </div>

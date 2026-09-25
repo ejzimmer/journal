@@ -2,18 +2,18 @@ import { CSSProperties } from 'react';
 import { YarnBall } from './types';
 import { GRAMS_PER_BALL } from './utils';
 import { BallOfYarnIcon } from '../../../shared/icons/BallOfYarn';
+import { getThisMonth } from '../../../shared/dates';
 
 const MONTHS_UNTIL_GONE = 12;
 
 type YarnPileBallProps = {
   ball: YarnBall;
-  thisMonth: Temporal.PlainYearMonth;
 };
 
-export function YarnPileBall({ ball, thisMonth }: YarnPileBallProps) {
+export function YarnPileBall({ ball }: YarnPileBallProps) {
   const { yarnType, grams, usedIn } = ball;
   const monthsSinceUsed =
-    usedIn && thisMonth.since(usedIn, { largestUnit: 'months' }).months;
+    usedIn && getThisMonth().since(usedIn, { largestUnit: 'months' }).months;
 
   if (monthsSinceUsed !== undefined && monthsSinceUsed >= MONTHS_UNTIL_GONE) {
     return null;
