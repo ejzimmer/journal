@@ -1,6 +1,6 @@
 import { PlacedBall, BALL_SIZE } from './layOutPile';
 import { YARN_COLOURS } from './utils';
-import { YarnTypeId } from './types';
+import { YARN_TYPE_IDS, YarnTypeId } from './types';
 import { drawBallOfYarn } from '../../../shared/icons/drawBallOfYarn';
 
 const ICON_SIZE = 20;
@@ -32,24 +32,27 @@ function applyBallEffects(
   }
 }
 
+export type BallSprites = Record<YarnTypeId, HTMLCanvasElement>;
+
+export const createBallSprites = (scale: number) =>
+  Object.fromEntries(
+    YARN_TYPE_IDS.map((yarnType) => [
+      yarnType,
+      createBallSprite(YARN_COLOURS[yarnType], scale),
+    ]),
+  ) as BallSprites;
+
 export function drawPile(
   context: CanvasRenderingContext2D,
   balls: PlacedBall[],
+  sprites: BallSprites,
   scale: number,
 ) {
-  const sprites = new Map<YarnTypeId, HTMLCanvasElement>();
-  const getSprite = (yarnType: YarnTypeId) => {
-    const sprite =
-      sprites.get(yarnType) ?? createBallSprite(YARN_COLOURS[yarnType], scale);
-    sprites.set(yarnType, sprite);
-    return sprite;
-  };
-
   balls.forEach(({ ball, fade, x, y, size }) => {
     context.save();
     applyBallEffects(context, scale, fade);
     context.drawImage(
-      getSprite(ball.yarnType),
+      sprites[ball.yarnType],
       x - size / 2,
       y - size / 2,
       size,

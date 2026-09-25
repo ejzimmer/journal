@@ -8,7 +8,7 @@ import {
 } from 'react';
 import { PileBall } from './pileBalls';
 import { layOutPile, PlacedBall } from './layOutPile';
-import { drawPile } from './drawPile';
+import { createBallSprites, drawPile } from './drawPile';
 import { getBallDetails } from './yarnBallText';
 import { useYarnStorage } from './YarnStorageContext';
 
@@ -43,19 +43,20 @@ export function YarnPile({ balls }: { balls: PileBall[] }) {
   const width = useElementWidth(containerRef);
   const layout = useMemo(() => layOutPile(balls, width), [balls, width]);
   const [hoveredBall, setHoveredBall] = useState<PlacedBall>();
+  const scale = window.devicePixelRatio;
+  const sprites = useMemo(() => createBallSprites(scale), [scale]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
     const context = canvas?.getContext('2d');
     if (!canvas || !context) return;
 
-    const scale = window.devicePixelRatio;
     canvas.width = (width + 2 * EFFECTS_BLEED) * scale;
     canvas.height = (layout.height + 2 * EFFECTS_BLEED) * scale;
     context.scale(scale, scale);
     context.translate(EFFECTS_BLEED, EFFECTS_BLEED);
-    drawPile(context, layout.balls, scale);
-  }, [layout, width]);
+    drawPile(context, layout.balls, sprites, scale);
+  }, [layout, width, sprites, scale]);
 
   const findHoveredBall = (event: PointerEvent<HTMLCanvasElement>) => {
     const { left, top } = event.currentTarget.getBoundingClientRect();
