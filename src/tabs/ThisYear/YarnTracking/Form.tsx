@@ -7,7 +7,7 @@ import './Form.css';
 import { TickIcon } from '../../../shared/icons/Tick';
 
 export function YarnTrackingForm() {
-  const { yarnTypes = [], addYarn, removeYarn } = useYarnStorage();
+  const { yarnByTypes = [], addYarn, removeYarn } = useYarnStorage();
 
   const yarnTypeRef = useRef<HTMLSelectElement>(null);
   const amountRef = useRef<HTMLInputElement>(null);
@@ -34,7 +34,7 @@ export function YarnTrackingForm() {
   return (
     <form onSubmit={updateYarn} className="yarn-tracking-form">
       <select ref={yarnTypeRef}>
-        {yarnTypes.map(({ id }) => (
+        {yarnByTypes.map(({ id }) => (
           <option key={id} value={id}>
             {id}
           </option>

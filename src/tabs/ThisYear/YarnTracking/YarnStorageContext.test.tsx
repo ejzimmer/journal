@@ -19,7 +19,7 @@ const renderYarnStorage = (storedYarn: StoredYarn, setValue = jest.fn()) =>
   });
 
 const getBalances = (storedYarn: StoredYarn) =>
-  renderYarnStorage(storedYarn).result.current.yarnTypes?.map(
+  renderYarnStorage(storedYarn).result.current.yarnByTypes?.map(
     ({ id, balances }) => ({
       id,
       balances: balances.map(({ month, grams }) => [month.toString(), grams]),
@@ -27,7 +27,7 @@ const getBalances = (storedYarn: StoredYarn) =>
   );
 
 describe('YarnStorageProvider', () => {
-  describe('yarnTypes', () => {
+  describe('yarnByTypes', () => {
     it('gives each yarn type its balances as year-months, oldest first', () => {
       expect(
         getBalances({

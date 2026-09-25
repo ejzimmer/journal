@@ -60,8 +60,8 @@ export class YarnStash {
     }
   }
 
-  applyBalances(yarnTypes: YarnType[]) {
-    this.getUnappliedChanges(yarnTypes).forEach(
+  applyBalances(yarnByTypes: YarnType[]) {
+    this.getUnappliedChanges(yarnByTypes).forEach(
       ({ yarnType, month, difference }) => {
         if (difference > 0) {
           this.addYarn(yarnType, difference);
@@ -73,8 +73,8 @@ export class YarnStash {
     );
   }
 
-  private getUnappliedChanges(yarnTypes: YarnType[]) {
-    const allChanges = yarnTypes.flatMap(({ id, balances }) => {
+  private getUnappliedChanges(yarnByTypes: YarnType[]) {
+    const allChanges = yarnByTypes.flatMap(({ id, balances }) => {
       const lastAppliedMonth = this.lastAppliedMonths[id];
       const unappliedBalances = balances.filter(
         ({ month }) =>
