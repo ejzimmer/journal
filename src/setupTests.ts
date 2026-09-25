@@ -14,13 +14,10 @@ declare global {
   }
 }
 
-const isPlainYearMonth = (value: unknown) =>
-  value instanceof Temporal.PlainYearMonth;
-
 expect.addEqualityTesters([
   (a, b) =>
-    isPlainYearMonth(a) && isPlainYearMonth(b)
-      ? (a as Temporal.PlainYearMonth).equals(b as Temporal.PlainYearMonth)
+    a instanceof Temporal.PlainYearMonth && b instanceof Temporal.PlainYearMonth
+      ? a.equals(b)
       : undefined,
 ]);
 

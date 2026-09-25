@@ -101,8 +101,8 @@ describe('buildYarnPile', () => {
       expect(buildYarnPile([wool])).toEqual([
         { yarnType: 'wool', size: 1 },
         { yarnType: 'wool', size: 1 },
-        { yarnType: 'wool', size: 0.675 },
         { yarnType: 'wool', size: 1, usedIn: FEBRUARY },
+        { yarnType: 'wool', size: 0.675 },
       ]);
     });
 

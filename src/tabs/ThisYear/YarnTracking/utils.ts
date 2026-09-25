@@ -14,52 +14,105 @@ export function getBallSizes(grams: number): number[] {
   return remainder ? [...wholeBallSizes, remainder] : wholeBallSizes;
 }
 
-const getBalanceChanges = (yarnTypes: YarnType[]) =>
-  yarnTypes
-    .flatMap(({ id, balances }) =>
-      balances.map(({ month, grams }, index) => ({
-        yarnType: id,
-        month,
-        grams,
-        difference: grams - (balances[index - 1]?.grams ?? 0),
-      })),
+const getBalanceChangesByMonth = (yarnTypes: YarnType[]) => {
+  const changes = yarnTypes.flatMap(({ id, balances }) =>
+    balances.map(({ month, grams }, index) => ({
+      yarnType: id,
+      month,
+      grams,
+      difference: grams - (balances[index - 1]?.grams ?? 0),
+    })),
+  );
+
+  const months = changes
+    .map(({ month }) => month)
+    .filter(
+      (month, index, all) => all.findIndex((m) => m.equals(month)) === index,
     )
-    .sort(
-      (a, b) =>
-        Temporal.PlainYearMonth.compare(a.month, b.month) ||
-        a.difference - b.difference,
+    .sort(Temporal.PlainYearMonth.compare);
+
+  return months.map((month) => {
+    const changesThisMonth = changes.filter((change) =>
+      change.month.equals(month),
     );
 
-export const buildYarnPile = (yarnTypes: YarnType[]): YarnBall[] =>
-  getBalanceChanges(yarnTypes).reduce(applyBalanceToPile, []);
+    return {
+      decreases: changesThisMonth.filter(({ difference }) => difference < 0),
+      increases: changesThisMonth.filter(({ difference }) => difference > 0),
+    };
+  });
+};
 
-function applyBalanceToPile(
-  pile: YarnBall[],
+type YarnPile = { balls: YarnBall[]; usedBallIndexes: number[] };
+
+export function buildYarnPile(yarnTypes: YarnType[]): YarnBall[] {
+  const { balls } = getBalanceChangesByMonth(yarnTypes).reduce<YarnPile>(
+    (pile, { decreases, increases }) =>
+      increases.reduce(addYarn, decreases.reduce(useYarn, pile)),
+    { balls: [], usedBallIndexes: [] },
+  );
+
+  return balls;
+}
+
+const getStashIndexes = (balls: YarnBall[], yarnType: string) =>
+  balls
+    .map((ball, index) => ({ ball, index }))
+    .filter(({ ball }) => ball.yarnType === yarnType && !ball.usedIn)
+    .sort((a, b) => b.ball.size - a.ball.size)
+    .map(({ index }) => index);
+
+function useYarn(
+  { balls, usedBallIndexes }: YarnPile,
   { yarnType, grams, month }: YarnTypeBalance,
-): YarnBall[] {
+): YarnPile {
   const sizes = getBallSizes(grams);
+  const stashIndexes = getStashIndexes(balls, yarnType);
+  const usedUpIndexes = stashIndexes.slice(sizes.length);
 
-  const inStash = pile
-    .filter((ball) => ball.yarnType === yarnType && !ball.usedIn)
-    .sort((a, b) => b.size - a.size);
-  const kept = inStash.slice(0, sizes.length);
-  const usedUp = inStash.slice(sizes.length);
+  const updatedBalls = [...balls];
+  stashIndexes.slice(0, sizes.length).forEach((ballIndex, sizeIndex) => {
+    updatedBalls[ballIndex] = { yarnType, size: sizes[sizeIndex] };
+  });
+  usedUpIndexes.forEach((ballIndex) => {
+    updatedBalls[ballIndex] = { ...balls[ballIndex], usedIn: month };
+  });
 
-  const restocked = pile
-    .filter((ball) => ball.usedIn)
-    .sort((a, b) => Temporal.PlainYearMonth.compare(b.usedIn!, a.usedIn!))
-    .slice(0, sizes.length - kept.length);
+  return {
+    balls: updatedBalls,
+    usedBallIndexes: [...usedBallIndexes, ...usedUpIndexes],
+  };
+}
 
-  const updatedBalls = new Map<YarnBall, YarnBall>([
-    ...usedUp.map((ball) => [ball, { ...ball, usedIn: month }] as const),
-    ...[...kept, ...restocked].map(
-      (ball, index) => [ball, { yarnType, size: sizes[index] }] as const,
-    ),
-  ]);
+function addYarn(
+  { balls, usedBallIndexes }: YarnPile,
+  { yarnType, grams }: YarnTypeBalance,
+): YarnPile {
+  const sizes = getBallSizes(grams);
+  const stashIndexes = getStashIndexes(balls, yarnType);
 
-  const newBalls = sizes
-    .slice(kept.length + restocked.length)
-    .map((size) => ({ yarnType, size }));
+  const restockCount = Math.min(
+    sizes.length - stashIndexes.length,
+    usedBallIndexes.length,
+  );
+  const stillUsedIndexes = usedBallIndexes.slice(
+    0,
+    usedBallIndexes.length - restockCount,
+  );
+  const restockIndexes = usedBallIndexes
+    .slice(stillUsedIndexes.length)
+    .reverse();
+  const newBallIndexes = Array.from(
+    { length: sizes.length - stashIndexes.length - restockCount },
+    (_, index) => balls.length + index,
+  );
 
-  return [...pile.map((ball) => updatedBalls.get(ball) ?? ball), ...newBalls];
+  const updatedBalls = [...balls];
+  [...stashIndexes, ...restockIndexes, ...newBallIndexes].forEach(
+    (ballIndex, sizeIndex) => {
+      updatedBalls[ballIndex] = { yarnType, size: sizes[sizeIndex] };
+    },
+  );
+
+  return { balls: updatedBalls, usedBallIndexes: stillUsedIndexes };
 }
