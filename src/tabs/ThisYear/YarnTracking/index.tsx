@@ -7,13 +7,11 @@ export function YarnTracking() {
     <YarnStorageProvider>
       <div
         style={{
-          maxWidth: '1200px',
-          width: '800px',
+          padding: '60px',
           display: 'flex',
           flexWrap: 'wrap',
           alignItems: 'center',
           gap: '24px',
-          marginInline: 'auto',
         }}
       >
         <YarnState />
