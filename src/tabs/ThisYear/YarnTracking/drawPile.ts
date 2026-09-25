@@ -1,7 +1,10 @@
 import { PlacedBall } from './bowlWorld';
 import { YARN_COLOURS } from './utils';
 import { YARN_TYPE_IDS, YarnTypeId } from './types';
-import { drawBallOfYarn } from '../../../shared/icons/drawBallOfYarn';
+import {
+  drawBallShading,
+  drawYarnWindings,
+} from '../../../shared/icons/drawBallOfYarn';
 
 export const BALL_SIZE = 48;
 const ICON_SIZE = 20;
@@ -20,13 +23,16 @@ export type Bowl = {
   rimDepth: number;
 };
 
-function createBallSprite(colour: string, pixelRatio: number) {
+function createBallSprite(
+  pixelRatio: number,
+  draw: (context: CanvasRenderingContext2D) => void,
+) {
   const sprite = document.createElement('canvas');
   sprite.width = sprite.height = Math.ceil(BALL_SIZE * pixelRatio);
   const context = sprite.getContext('2d');
   if (context) {
     context.scale(sprite.width / ICON_SIZE, sprite.height / ICON_SIZE);
-    drawBallOfYarn(context, colour);
+    draw(context);
   }
   return sprite;
 }
@@ -47,15 +53,22 @@ function applyBallEffects(
   }
 }
 
-export type BallSprites = Record<YarnTypeId, HTMLCanvasElement>;
+export type BallSprites = {
+  windings: Record<YarnTypeId, HTMLCanvasElement>;
+  shading: HTMLCanvasElement;
+};
 
-export const createBallSprites = (pixelRatio: number) =>
-  Object.fromEntries(
+export const createBallSprites = (pixelRatio: number): BallSprites => ({
+  windings: Object.fromEntries(
     YARN_TYPE_IDS.map((yarnType) => [
       yarnType,
-      createBallSprite(YARN_COLOURS[yarnType], pixelRatio),
+      createBallSprite(pixelRatio, (context) =>
+        drawYarnWindings(context, YARN_COLOURS[yarnType]),
+      ),
     ]),
-  ) as BallSprites;
+  ) as Record<YarnTypeId, HTMLCanvasElement>,
+  shading: createBallSprite(pixelRatio, drawBallShading),
+});
 
 function traceBowlBody(context: CanvasRenderingContext2D, bowl: Bowl) {
   context.beginPath();
@@ -112,7 +125,16 @@ function drawBall(
   applyBallEffects(context, pixelRatio, fade);
   context.translate(x, y);
   context.rotate(angle);
-  context.drawImage(sprites[ball.yarnType], -size / 2, -size / 2, size, size);
+  context.drawImage(
+    sprites.windings[ball.yarnType],
+    -size / 2,
+    -size / 2,
+    size,
+    size,
+  );
+  context.rotate(-angle);
+  context.shadowColor = 'transparent';
+  context.drawImage(sprites.shading, -size / 2, -size / 2, size, size);
   context.restore();
 }
 
