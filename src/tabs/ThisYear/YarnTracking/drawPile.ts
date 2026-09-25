@@ -15,6 +15,8 @@ const GLASS = {
   highlight: 'rgb(255 255 255 / 0.45)',
 };
 
+const TABLE_EDGE = 'rgb(120 145 170 / 0.45)';
+
 export type Bowl = {
   x: number;
   y: number;
@@ -22,6 +24,7 @@ export type Bowl = {
   baseRadius: number;
   depth: number;
   rimDepth: number;
+  tableHalfWidth: number;
 };
 
 function createBallSprite(
@@ -79,6 +82,19 @@ function traceBowlBody(
   context.ellipse(x + baseRadius, y, sideWidth, depth, 0, 0, Math.PI / 2);
   context.lineTo(x - baseRadius, y + depth);
   context.ellipse(x - baseRadius, y, sideWidth, depth, 0, Math.PI / 2, Math.PI);
+}
+
+function drawTable(
+  context: CanvasRenderingContext2D,
+  { x, y, depth, tableHalfWidth }: Bowl,
+) {
+  context.beginPath();
+  context.moveTo(x - tableHalfWidth, y + depth);
+  context.lineTo(x + tableHalfWidth, y + depth);
+  context.strokeStyle = TABLE_EDGE;
+  context.lineWidth = 2;
+  context.lineCap = 'round';
+  context.stroke();
 }
 
 function drawBowlBack(context: CanvasRenderingContext2D, bowl: Bowl) {
@@ -152,6 +168,7 @@ export function drawPile(
   sprites: BallSprites,
   pixelRatio: number,
 ) {
+  drawTable(context, bowl);
   drawBowlBack(context, bowl);
   balls.forEach((ball) => drawBall(context, ball, sprites, pixelRatio));
   drawBowlFront(context, bowl);
