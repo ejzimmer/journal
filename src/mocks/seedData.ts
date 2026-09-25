@@ -1,3 +1,4 @@
+import { getToday } from '../shared/dates';
 import {
   LABELS_KEY,
   StoredLabel,
@@ -10,6 +11,7 @@ import {
   ProjectSubtask,
   PROJECTS_KEY,
 } from '../shared/types';
+import { Yarn } from '../tabs/ThisYear/YarnTracking/types';
 import {
   BookDetails,
   GameDetails,
@@ -18,7 +20,7 @@ import {
   SeriesDetails,
 } from '../tabs/Media/types';
 
-const now = Date.now();
+const todaysDate = getToday();
 
 function createList(
   id: string,
@@ -30,7 +32,7 @@ function createList(
     description,
     status: 'not_started',
     parentId: WORK_KEY,
-    lastStatusUpdate: now,
+    lastStatusUpdate: todaysDate,
     position,
   };
 }
@@ -47,7 +49,7 @@ function createTask(
     description,
     status: 'not_started',
     parentId: `${WORK_KEY}/${listId}/items`,
-    lastStatusUpdate: now,
+    lastStatusUpdate: todaysDate,
     position,
     ...extra,
   };
@@ -265,6 +267,25 @@ const projects = indexById<ProjectDetails>([
   }),
 ]);
 
+const yarn: Yarn = {
+  wool: {
+    id: 'wool',
+    history: { '26-01': 4732, '26-03': 4380, '26-06': 3910, '26-09': 3520 },
+  },
+  cotton: {
+    id: 'cotton',
+    history: { '26-01': 420, '26-04': 365, '26-07': 300 },
+  },
+  acrylic: {
+    id: 'acrylic',
+    history: { '26-01': 246, '26-06': 180, '26-09': 95 },
+  },
+  'sock yarn': {
+    id: 'sock yarn',
+    history: { '26-01': 2641, '26-02': 2480, '26-05': 2150, '26-08': 1890 },
+  },
+};
+
 export const seedData = {
   [WORK_KEY]: {
     [backlog.id]: { ...backlog, items: { [backlogTask.id]: backlogTask } },
@@ -284,4 +305,5 @@ export const seedData = {
     games,
   },
   [PROJECTS_KEY]: projects,
+  '2026': { yarn },
 };

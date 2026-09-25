@@ -5,7 +5,10 @@
   --card-border-width: 2px;
   --radius: 7px;
   --drawer-inset: calc(var(--radius) - var(--card-border-width));
-  --card-min: 320px;
+  --card-max: min(840px, 80vw);
+  --subtask-chrome: 120px;
+  --longest-subtask-chars: 0;
+  --has-subtasks: clamp(0, var(--longest-subtask-chars), 1);
   position: relative;
   flex-shrink: 0;
   list-style-type: none;
@@ -13,7 +16,13 @@
   font-size: 18px;
   align-self: start;
   height: 100%;
-  min-width: var(--card-min);
+  min-width: min(
+    calc(
+      var(--longest-subtask-chars) * 1ch + var(--has-subtasks) *
+        var(--subtask-chrome)
+    ),
+    var(--card-max)
+  );
 
   &:not(.in_progress) {
     button.expand {

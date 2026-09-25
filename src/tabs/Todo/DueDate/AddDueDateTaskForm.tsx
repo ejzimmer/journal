@@ -2,18 +2,17 @@ import { useState } from 'react';
 import { AddTaskForm } from '../AddTaskForm';
 import { CALENDAR_KEY } from '../../../shared/types';
 import { FormControl } from '../../../shared/controls/FormControl';
+import { getToday } from '../../../shared/dates';
 
 export function AddDueDateTaskForm() {
-  const [dueDate, setDueDate] = useState<string>(new Date().toString());
+  const [dueDate, setDueDate] = useState(getToday());
 
   const getAdditionalFieldValue = () => {
     if (!dueDate) {
       return false;
     }
 
-    return {
-      dueDate: new Date(dueDate).getTime(),
-    };
+    return { dueDate };
   };
 
   return (

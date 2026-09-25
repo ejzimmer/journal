@@ -3,6 +3,7 @@ import { useWorkStorage } from './WorkStorageContext';
 import { ArrowRightIcon } from '../../shared/icons/ArrowRight';
 import { WorkTask, WORK_KEY } from './types';
 import { getAppendPosition } from './taskPosition';
+import { getToday } from '../../shared/dates';
 
 type MoveToOtherListsProps = {
   allLists: WorkTask[];
@@ -31,7 +32,7 @@ export function MoveToOtherLists({
           movedItem: {
             ...task,
             position: getAppendPosition(destination),
-            lastStatusUpdate: Date.now(),
+            lastStatusUpdate: getToday(),
           },
           sourceListId: `${WORK_KEY}/${currentListId}/items`,
           targetListId: `${WORK_KEY}/${destination.id}/items`,

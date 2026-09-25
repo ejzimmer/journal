@@ -8,6 +8,7 @@ import {
 } from '../../shared/types';
 import { OrderedListItem } from '../../shared/drag-and-drop/types';
 import { renumberPositions } from '../../shared/drag-and-drop/utils';
+import { getToday } from '../../shared/dates';
 
 export const getSubtasksKey = (projectId: string, subtaskId?: string) => {
   const key = PROJECTS_KEY + `/${projectId}/subtasks`;
@@ -38,7 +39,7 @@ export function useLinkedTasks(linkedId?: string) {
         description,
         status: 'ready',
         type: '一度',
-        lastCompleted: new Date().getTime(),
+        lastCompleted: getToday(),
         linkedTask: linkedTaskId,
       },
     );

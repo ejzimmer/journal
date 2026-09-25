@@ -1,5 +1,5 @@
 import { act } from '@testing-library/react';
-import { getTimestampDaysAgo } from '../dateTestUtils';
+import { getDateDaysAgo, getToday } from '../dates';
 import { DailyJob, useDailyJob } from './DailyJobsContext';
 import { createDailyJobsStorage, renderDailyJob } from './dailyJobsTestUtils';
 
@@ -31,10 +31,7 @@ describe('daily jobs', () => {
 
         const { storage } = renderJob(run, {});
 
-        expect(storage.setValue).toHaveBeenCalledWith(
-          LAST_RUN_KEY,
-          expect.any(Number),
-        );
+        expect(storage.setValue).toHaveBeenCalledWith(LAST_RUN_KEY, getToday());
       });
     });
 
@@ -42,7 +39,7 @@ describe('daily jobs', () => {
       it('runs the job', () => {
         const run = jest.fn();
 
-        renderJob(run, { [LAST_RUN_KEY]: getTimestampDaysAgo(1) });
+        renderJob(run, { [LAST_RUN_KEY]: getDateDaysAgo(1) });
 
         expect(run).toHaveBeenCalledTimes(1);
       });

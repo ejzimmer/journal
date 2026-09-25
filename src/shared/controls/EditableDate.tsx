@@ -1,23 +1,18 @@
 import { useRef, useState } from 'react';
-import {
-  formatDayAndMonth,
-  getDateFromTimestamp,
-  getTimestampFromDate,
-} from '../dates';
+import { formatDayAndMonth, getPlainDate, StoredDate } from '../dates';
 import { useFormToggle } from './useFormToggle';
 
 interface Props extends Omit<
   React.HTMLAttributes<HTMLDivElement>,
   'children' | 'style' | 'onChange'
 > {
-  onChange: (date: number) => void;
-  value: number;
+  onChange: (date: string) => void;
+  value: StoredDate;
 }
 
 export function EditableDate({ onChange, value, ...props }: Props) {
-  const [editingValue, setEditingValue] = useState(
-    getDateFromTimestamp(value).toString(),
-  );
+  const currentDate = getPlainDate(value).toString();
+  const [editingValue, setEditingValue] = useState(currentDate);
   const {
     isFormOpen: isEditing,
     triggerRef: displayRef,
@@ -29,17 +24,14 @@ export function EditableDate({ onChange, value, ...props }: Props) {
 
   const handleSubmit = () => {
     const inputValue = inputRef.current?.value;
-    if (inputValue) {
-      const date = getTimestampFromDate(Temporal.PlainDate.from(inputValue));
-      if (date !== value) {
-        onChange(date);
-      }
+    if (inputValue && inputValue !== currentDate) {
+      onChange(inputValue);
     }
 
     stopEditing();
   };
 
-  const displayedDate = formatDayAndMonth(getDateFromTimestamp(value));
+  const displayedDate = formatDayAndMonth(value);
 
   return isEditing ? (
     <input
@@ -54,7 +46,7 @@ export function EditableDate({ onChange, value, ...props }: Props) {
 
         if (event.key === 'Escape') {
           event.stopPropagation();
-          setEditingValue(getDateFromTimestamp(value).toString());
+          setEditingValue(currentDate);
           stopEditing();
         }
       }}

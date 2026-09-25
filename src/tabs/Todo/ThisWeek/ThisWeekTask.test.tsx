@@ -3,8 +3,7 @@ import { ThisWeekTask } from './ThisWeekTask';
 import { WeeklyTask } from '../../../shared/types';
 import userEvent from '@testing-library/user-event';
 import { CategoriesContext } from '..';
-import { getDateFromTimestamp, getToday } from '../../../shared/dates';
-import { getTimestampDaysAgo } from '../../../shared/dateTestUtils';
+import { getDateDaysAgo, getToday } from '../../../shared/dates';
 import { ContextType } from '../../../shared/FirebaseContext';
 import { renderWithStorage } from '../../../shared/storageContextTestUtils';
 
@@ -15,7 +14,7 @@ const task: WeeklyTask = {
   position: 4,
   description: 'Strength training',
   category: '💪',
-  completed: [getTimestampDaysAgo(4), getTimestampDaysAgo(2)],
+  completed: [getDateDaysAgo(4), getDateDaysAgo(2)],
 };
 
 const useValue: ContextType['useValue'] = () => ({
@@ -51,7 +50,7 @@ describe('ThisWeekTask', () => {
         expect(updateItem).toHaveBeenCalledWith(
           expect.anything(),
           expect.objectContaining({
-            completed: [...task.completed!, expect.any(Number)],
+            completed: [...task.completed!, getToday()],
           }),
         );
       });
@@ -96,7 +95,7 @@ describe('ThisWeekTask', () => {
         expect(updateItem).toHaveBeenCalledWith(
           expect.anything(),
           expect.objectContaining({
-            completed: [...task.completed!, expect.any(Number)],
+            completed: [...task.completed!, getToday()],
           }),
         );
       });
@@ -117,9 +116,7 @@ describe('ThisWeekTask', () => {
         await user.click(screen.getByRole('button', { name: 'Mark done' }));
 
         const [, updated] = updateItem.mock.calls[0];
-        expect(getDateFromTimestamp(updated.completed.at(-1)).toString()).toBe(
-          getToday().subtract({ days: 1 }).toString(),
-        );
+        expect(updated.completed.at(-1)).toBe(getDateDaysAgo(1));
       });
     });
 
@@ -240,11 +237,11 @@ describe('ThisWeekTask', () => {
     describe('when the item has been completed more times than necessary', () => {
       it('also shows the overflow', () => {
         const tooMuchComplete = [
-          getTimestampDaysAgo(7),
-          getTimestampDaysAgo(6),
-          getTimestampDaysAgo(5),
+          getDateDaysAgo(7),
+          getDateDaysAgo(6),
+          getDateDaysAgo(5),
           ...task.completed!,
-          getTimestampDaysAgo(1),
+          getDateDaysAgo(1),
         ];
         renderWithStorage(
           <CategoriesContext.Provider value={['🧘', '💪']}>

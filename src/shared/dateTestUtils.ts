@@ -1,7 +1,5 @@
-import { getTimestampFromDate, getToday } from './dates';
+import { getPlainDate, getDateDaysAgo } from './dates';
 
-export const getTimestampDaysAgo = (days: number) =>
-  getTimestampFromDate(getToday().subtract({ days }));
-
-export const getTimestampDaysAhead = (days: number) =>
-  getTimestampFromDate(getToday().add({ days }));
+export const getLegacyTimestampDaysAgo = (days: number) =>
+  getPlainDate(getDateDaysAgo(days)).toZonedDateTime(Temporal.Now.timeZoneId())
+    .epochMilliseconds;
