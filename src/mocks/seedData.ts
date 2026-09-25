@@ -11,7 +11,7 @@ import {
   ProjectSubtask,
   PROJECTS_KEY,
 } from '../shared/types';
-import { Yarn } from '../tabs/ThisYear/YarnTracking/types';
+import { StoredYarn } from '../tabs/ThisYear/YarnTracking/types';
 import {
   BookDetails,
   GameDetails,
@@ -267,7 +267,7 @@ const projects = indexById<ProjectDetails>([
   }),
 ]);
 
-const yarn: Yarn = {
+const yarn: StoredYarn = {
   wool: {
     id: 'wool',
     history: {

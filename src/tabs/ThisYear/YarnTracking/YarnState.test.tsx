@@ -1,8 +1,10 @@
 import { screen, within } from '@testing-library/react';
 import { YarnState } from './YarnState';
-import { renderWithStorage } from '../../../shared/storageContextTestUtils';
+import { renderWithYarnStorage } from './yarnStorageTestUtils';
+import { convertToYarnType } from './YarnStorageContext';
+import { StoredYarn } from './types';
 
-const yarnState = {
+const storedYarn: StoredYarn = {
   wool: {
     id: 'wool',
     history: {
@@ -17,11 +19,10 @@ const yarnState = {
     },
   },
 };
+const yarnTypes = Object.values(storedYarn).map(convertToYarnType);
 
 const renderYarnState = () =>
-  renderWithStorage(<YarnState />, {
-    value: { useValue: jest.fn().mockReturnValue({ value: yarnState }) },
-  });
+  renderWithYarnStorage(<YarnState />, { yarnTypes });
 
 const getMonths = () => {
   const [january, february, current] = screen.getAllByRole('listitem');
@@ -98,35 +99,6 @@ describe('YarnState', () => {
         );
 
         expect(remainderBall).toBe('calc(var(--ball-size) * 0.5)');
-      });
-    });
-  });
-
-  describe('when the stored months have two-digit years', () => {
-    const storedYarn = {
-      wool: { id: 'wool', history: { '26-01': 300, '26-02': 700 } },
-    };
-
-    const renderStoredYarn = (setValue = jest.fn()) =>
-      renderWithStorage(<YarnState />, {
-        value: {
-          useValue: jest.fn().mockReturnValue({ value: storedYarn }),
-          setValue,
-        },
-      });
-
-    it('shows the history from those months', () => {
-      renderStoredYarn();
-
-      expect(screen.getByText(/February: 700g/)).toBeInTheDocument();
-    });
-
-    it('stores the months with four-digit years', () => {
-      const setValue = jest.fn();
-      renderStoredYarn(setValue);
-
-      expect(setValue).toHaveBeenCalledWith('2026/yarn', {
-        wool: { id: 'wool', history: { '2026-01': 300, '2026-02': 700 } },
       });
     });
   });

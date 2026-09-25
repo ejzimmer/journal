@@ -1,24 +1,16 @@
-import { Yarn, History, Month, TotalsByType, YarnType } from './types';
+import { History, Month, TotalsByType, YarnType } from './types';
 
 export const getThisMonth = () =>
   Temporal.Now.plainDateISO().toPlainYearMonth();
 
-const getMonthsWithHistory = (history: YarnType['history']) =>
-  Object.keys(history)
-    .map((month) => Temporal.PlainYearMonth.from(month))
-    .sort(Temporal.PlainYearMonth.compare);
-
-export const getLatestBalance = ({ history }: YarnType) => {
-  const latestMonth = getMonthsWithHistory(history).at(-1);
-
-  return latestMonth ? history[latestMonth.toString()] : 0;
-};
-
-const getFirstMonth = (yarnState: Yarn, thisMonth: Temporal.PlainYearMonth) =>
-  Object.values(yarnState)
-    .flatMap(({ history }) => getMonthsWithHistory(history))
+const getFirstMonth = (
+  yarnTypes: YarnType[],
+  thisMonth: Temporal.PlainYearMonth,
+) =>
+  yarnTypes
+    .flatMap(({ balances }) => balances.slice(0, 1))
     .reduce(
-      (earliest, month) =>
+      (earliest, { month }) =>
         Temporal.PlainYearMonth.compare(month, earliest) < 0 ? month : earliest,
       thisMonth.with({ month: 1 }),
     );
@@ -35,19 +27,20 @@ const getMonthsBetween = (
     (_, index) => first.add({ months: index }),
   );
 
-export function getHistoryByMonth(yarnState: Yarn): History {
-  const yarnTypes = Object.values(yarnState);
+export function getHistoryByMonth(yarnTypes: YarnType[]): History {
   const thisMonth = getThisMonth();
 
   const months = getMonthsBetween(
-    getFirstMonth(yarnState, thisMonth),
+    getFirstMonth(yarnTypes, thisMonth),
     thisMonth,
   ).reduce<Month[]>((previousMonths, month) => {
     const previousSubTotals = previousMonths.at(-1)?.subTotals ?? {};
     const subTotals = Object.fromEntries(
-      yarnTypes.map(({ id, history }) => [
+      yarnTypes.map(({ id, balances }) => [
         id,
-        history[month.toString()] ?? previousSubTotals[id] ?? 0,
+        balances.find((balance) => balance.month.equals(month))?.grams ??
+          previousSubTotals[id] ??
+          0,
       ]),
     );
 

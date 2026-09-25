@@ -1,8 +1,8 @@
-import { Yarn, YarnType } from './types';
+import { StoredYarn, StoredYarnType } from './types';
 
 const TWO_DIGIT_YEAR_MONTH = /^(\d{2})-(\d{2})$/;
 
-export const hasTwoDigitYearMonths = (yarn: Yarn) =>
+export const hasTwoDigitYearMonths = (yarn: StoredYarn) =>
   Object.values(yarn).some(({ history }) =>
     Object.keys(history).some((month) => TWO_DIGIT_YEAR_MONTH.test(month)),
   );
@@ -18,7 +18,7 @@ const convertMonthId = (monthId: string) => {
     : monthId;
 };
 
-const migrateYarnType = ({ id, history }: YarnType): YarnType => ({
+const migrateYarnType = ({ id, history }: StoredYarnType): StoredYarnType => ({
   id,
   history: Object.fromEntries(
     Object.entries(history).map(([month, balance]) => [
@@ -28,7 +28,7 @@ const migrateYarnType = ({ id, history }: YarnType): YarnType => ({
   ),
 });
 
-export const migrateYarnDates = (yarn: Yarn): Yarn =>
+export const migrateYarnDates = (yarn: StoredYarn): StoredYarn =>
   Object.fromEntries(
     Object.entries(yarn).map(([key, yarnType]) => [
       key,

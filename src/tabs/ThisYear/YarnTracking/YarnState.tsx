@@ -1,18 +1,18 @@
 import { CSSProperties } from 'react';
 
 import './YarnState.css';
-import { useYarn } from './useYarn';
+import { useYarnStorage } from './YarnStorageContext';
 import { GRAMS_PER_BALL, getHistoryByMonth } from './utils';
 import { MonthlyBalance } from './MonthlyBalance';
 
 export function YarnState() {
-  const value = useYarn();
+  const { yarnTypes } = useYarnStorage();
 
-  if (!value) {
+  if (!yarnTypes) {
     return <>Loading...</>;
   }
 
-  const monthEntries = Object.entries(getHistoryByMonth(value));
+  const monthEntries = Object.entries(getHistoryByMonth(yarnTypes));
   const maxTotal = Math.max(...monthEntries.map(([, month]) => month.total));
 
   return (

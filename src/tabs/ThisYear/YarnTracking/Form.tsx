@@ -1,17 +1,12 @@
 import { useRef, useState } from 'react';
-import { useStorageContext } from '../../../shared/FirebaseContext';
-import { KEY, YarnType } from './types';
-import { useYarn } from './useYarn';
+import { useYarnStorage } from './YarnStorageContext';
 import { Switch } from '../../../shared/controls/Switch';
 
 import './Form.css';
 import { TickIcon } from '../../../shared/icons/Tick';
-import { getLatestBalance, getThisMonth } from './utils';
 
 export function YarnTrackingForm() {
-  const { updateItem } = useStorageContext();
-  const value = useYarn();
-  const yarnTypes = Object.keys(value ?? {});
+  const { yarnTypes = [], recordBalance } = useYarnStorage();
 
   const yarnTypeRef = useRef<HTMLSelectElement>(null);
   const amountRef = useRef<HTMLInputElement>(null);
@@ -19,10 +14,6 @@ export function YarnTrackingForm() {
 
   const updateYarn = (event: React.FormEvent) => {
     event.preventDefault();
-
-    if (!value) {
-      return;
-    }
 
     const yarnType = yarnTypeRef.current?.value;
     const amount =
@@ -32,27 +23,21 @@ export function YarnTrackingForm() {
       return;
     }
 
-    const yarnDetails = value[yarnType];
-    const currentBalance = getLatestBalance(yarnDetails);
+    const currentBalance =
+      yarnTypes.find(({ id }) => id === yarnType)?.balances.at(-1)?.grams ?? 0;
 
     // eslint-disable-next-line no-eval
     const newBalance = eval(`${currentBalance}${operation}${amount}`);
 
-    updateItem<YarnType>(`${KEY}`, {
-      id: yarnType,
-      history: {
-        ...yarnDetails.history,
-        [getThisMonth().toString()]: newBalance,
-      },
-    });
+    recordBalance(yarnType, newBalance);
   };
 
   return (
     <form onSubmit={updateYarn} className="yarn-tracking-form">
       <select ref={yarnTypeRef}>
-        {yarnTypes.map((type) => (
-          <option key={type} value={type}>
-            {type}
+        {yarnTypes.map(({ id }) => (
+          <option key={id} value={id}>
+            {id}
           </option>
         ))}
       </select>

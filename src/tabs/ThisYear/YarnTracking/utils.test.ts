@@ -1,12 +1,12 @@
-import { getBallSizes, getHistoryByMonth, getLatestBalance } from './utils';
-import { Yarn } from './types';
+import { getBallSizes, getHistoryByMonth } from './utils';
+import { StoredYarn } from './types';
+import { convertToYarnType } from './YarnStorageContext';
 
-const getMonthsByMonthId = (yarnState: Yarn) =>
+const getMonthsByMonthId = (yarnState: StoredYarn) =>
   Object.fromEntries(
-    Object.entries(getHistoryByMonth(yarnState)).map(([id, month]) => [
-      id,
-      { ...month, month: month.month.toString() },
-    ]),
+    Object.entries(
+      getHistoryByMonth(Object.values(yarnState).map(convertToYarnType)),
+    ).map(([id, month]) => [id, { ...month, month: month.month.toString() }]),
   );
 
 describe('getHistoryByMonth', () => {
@@ -138,31 +138,12 @@ describe('getHistoryByMonth', () => {
         wool: { id: 'wool', history: { '2026-01': 300, '2025-11': 500 } },
       };
 
-      expect(Object.keys(getHistoryByMonth(yarnState))).toEqual([
+      expect(Object.keys(getMonthsByMonthId(yarnState))).toEqual([
         '2025-11',
         '2025-12',
         '2026-01',
         '2026-02',
       ]);
-    });
-  });
-});
-
-describe('getLatestBalance', () => {
-  describe('when the history is stored out of order', () => {
-    it('returns the balance from the most recent month', () => {
-      expect(
-        getLatestBalance({
-          id: 'wool',
-          history: { '2026-09': 3091, '2025-12': 2000, '2026-01': 2682 },
-        }),
-      ).toBe(3091);
-    });
-  });
-
-  describe('when there is no history', () => {
-    it('returns zero', () => {
-      expect(getLatestBalance({ id: 'wool', history: {} })).toBe(0);
     });
   });
 });
