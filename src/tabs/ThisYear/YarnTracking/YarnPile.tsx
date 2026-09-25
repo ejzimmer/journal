@@ -26,9 +26,45 @@ function useElementWidth(ref: RefObject<HTMLElement | null>) {
   return width;
 }
 
-function placeBowlScene(world: BowlWorld, balls: PlacedBall[], width: number) {
+const prefersReducedMotion = () =>
+  window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false;
+
+function useFallingBalls(world: BowlWorld, balls: PileBall[]) {
+  const [placedBalls, setPlacedBalls] = useState(() => world.getBalls());
+
+  useEffect(() => {
+    world.syncBalls(balls);
+
+    if (prefersReducedMotion()) {
+      world.settle();
+      setPlacedBalls(world.getBalls());
+      return;
+    }
+
+    let frame = 0;
+    let lastTime = performance.now();
+    const showNextFrame = (time: number) => {
+      world.advance((time - lastTime) / 1000);
+      lastTime = time;
+      setPlacedBalls(world.getBalls());
+      if (!world.isAtRest()) frame = requestAnimationFrame(showNextFrame);
+    };
+    frame = requestAnimationFrame(showNextFrame);
+
+    return () => cancelAnimationFrame(frame);
+  }, [world, balls]);
+
+  return placedBalls;
+}
+
+function placeBowlScene(
+  world: BowlWorld,
+  balls: PlacedBall[],
+  pileTop: number,
+  width: number,
+) {
   const rimDepth = world.radius * RIM_DEPTH_TO_RADIUS;
-  const top = Math.min(world.getTopOfPile(), -rimDepth) - BOWL_MARGIN;
+  const top = Math.min(pileTop, -rimDepth) - BOWL_MARGIN;
   const unitSize = Math.min(
     BALL_SIZE,
     width / (2 * (world.radius + BOWL_MARGIN)),
@@ -59,13 +95,11 @@ export function YarnPile({ balls }: { balls: PileBall[] }) {
   const containerRef = useRef<HTMLDivElement>(null);
   const width = useElementWidth(containerRef);
   const [world] = useState(() => new BowlWorld(balls));
-  const settledBalls = useMemo(() => {
-    world.syncBalls(balls);
-    return world.getBalls();
-  }, [world, balls]);
+  const [pileTop] = useState(() => world.getTopOfPile());
+  const placedBalls = useFallingBalls(world, balls);
   const scene = useMemo(
-    () => placeBowlScene(world, settledBalls, width),
-    [world, settledBalls, width],
+    () => placeBowlScene(world, placedBalls, pileTop, width),
+    [world, placedBalls, pileTop, width],
   );
 
   return (

@@ -15,6 +15,8 @@ type BallBody = { body: Body; size: number };
 const GRAVITY = 10;
 const TIME_STEP = 1 / 60;
 const MAX_SETTLE_STEPS = 1200;
+const MAX_FRAME_TIME = 0.1;
+const DROP_CLEARANCE = 1.5;
 const BALL_RADIUS_TO_SIZE = 0.4;
 const BOWL_DEPTH_TO_RADIUS = 1;
 const BOWL_BASE_TO_RADIUS = 0.25;
@@ -22,6 +24,7 @@ const BALL_AREA_TO_BOWL_AREA = 0.8;
 const MIN_BOWL_RADIUS = 1.5;
 const BOWL_SEGMENTS = 48;
 const BALL_BODY = { density: 1, friction: 0.4, restitution: 0.1 };
+const BALL_DAMPING = { linearDamping: 0.5, angularDamping: 2 };
 const BOWL_FRICTION = 0.6;
 
 const getBallSize = ({ grams }: YarnBall) => grams / GRAMS_PER_BALL;
@@ -67,6 +70,7 @@ export class BowlWorld {
   private world = new World({ gravity: { x: 0, y: GRAVITY } });
   private ballBodies = new Map<number, BallBody>();
   private pileBalls: PileBall[] = [];
+  private unsimulatedTime = 0;
 
   constructor(pileBalls: PileBall[]) {
     this.radius = calculateBowlRadius(pileBalls);
@@ -78,6 +82,8 @@ export class BowlWorld {
         new Chain(getBowlPoints(this.radius, this.baseRadius, this.depth)),
         { friction: BOWL_FRICTION },
       );
+    this.syncBalls(pileBalls);
+    this.settle();
   }
 
   syncBalls(pileBalls: PileBall[]) {
@@ -103,7 +109,24 @@ export class BowlWorld {
     pileBalls.forEach(({ ball }) => this.resizeBall(ball));
 
     this.pileBalls = pileBalls;
-    this.settle();
+  }
+
+  advance(seconds: number) {
+    this.unsimulatedTime += Math.min(seconds, MAX_FRAME_TIME);
+    while (this.unsimulatedTime >= TIME_STEP) {
+      this.world.step(TIME_STEP);
+      this.unsimulatedTime -= TIME_STEP;
+    }
+  }
+
+  settle() {
+    for (let step = 0; step < MAX_SETTLE_STEPS && !this.isAtRest(); step++) {
+      this.world.step(TIME_STEP);
+    }
+  }
+
+  isAtRest() {
+    return [...this.ballBodies.values()].every(({ body }) => !body.isAwake());
   }
 
   getBalls(): PlacedBall[] {
@@ -146,9 +169,12 @@ export class BowlWorld {
       column +
       (row % 2) * 0.5 +
       getSpreadForBall(ball.id) * 0.2;
-    const y = dropHeight - 0.5 - row;
+    const y = dropHeight - DROP_CLEARANCE - row;
 
-    const body = this.world.createDynamicBody({ position: { x, y } });
+    const body = this.world.createDynamicBody({
+      position: { x, y },
+      ...BALL_DAMPING,
+    });
     this.ballBodies.set(ball.id, { body, size: 0 });
   }
 
@@ -162,15 +188,5 @@ export class BowlWorld {
     ballBody.body.createFixture(new Circle(getBallRadius(size)), BALL_BODY);
     ballBody.body.setAwake(true);
     ballBody.size = size;
-  }
-
-  private settle() {
-    for (let step = 0; step < MAX_SETTLE_STEPS && this.isMoving(); step++) {
-      this.world.step(TIME_STEP);
-    }
-  }
-
-  private isMoving() {
-    return [...this.ballBodies.values()].some(({ body }) => body.isAwake());
   }
 }
