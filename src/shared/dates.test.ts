@@ -11,6 +11,7 @@ import {
   getDaysUntil,
   isThisWeek,
   getToday,
+  getThisMonth,
   isAfterToday,
   isBeforeToday,
   isToday,
@@ -37,6 +38,12 @@ describe('dates', () => {
   describe('getToday', () => {
     it('is the current date in the local time zone', () => {
       expect(getToday()).toBe('2026-09-20');
+    });
+  });
+
+  describe('getThisMonth', () => {
+    it('is the current month in the local time zone', () => {
+      expect(getThisMonth().toString()).toBe('2026-09');
     });
   });
 

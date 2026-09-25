@@ -9,6 +9,8 @@ const getStartOfWeek = (date: Temporal.PlainDate) =>
 
 export const getToday = () => getTodaysPlainDate().toString();
 
+export const getThisMonth = () => getTodaysPlainDate().toPlainYearMonth();
+
 export const getDateDaysAgo = (days: number) =>
   getTodaysPlainDate().subtract({ days }).toString();
 

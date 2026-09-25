@@ -1,7 +1,7 @@
 import { createContext, ReactNode, useContext, useMemo, useState } from 'react';
 import { useStorageContext } from '../../../shared/FirebaseContext';
 import { KEY, StoredYarn, StoredYarnType, YarnBall, YarnType } from './types';
-import { getThisMonth } from './utils';
+import { getThisMonth } from '../../../shared/dates';
 import { YarnStash } from './YarnStash';
 
 export type YarnStorageContextType = {

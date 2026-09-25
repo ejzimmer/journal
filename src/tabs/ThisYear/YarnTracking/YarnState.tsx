@@ -1,6 +1,6 @@
 import './YarnState.css';
 import { useYarnStorage } from './YarnStorageContext';
-import { getThisMonth } from './utils';
+import { getThisMonth } from '../../../shared/dates';
 import { YarnPileBall } from './YarnPileBall';
 
 export function YarnState() {
