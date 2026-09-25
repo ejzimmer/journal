@@ -2,8 +2,8 @@ import { useId } from 'react';
 import { IconProps } from './types';
 import {
   BALL_OUTLINE,
-  BAND_EDGE,
-  BANDS,
+  WINDING_EDGE,
+  WINDINGS,
   darkenColour,
   SHADING,
   STRAND,
@@ -46,15 +46,15 @@ export function BallOfYarnIcon({
         stroke={darkenColour(colour, STRAND.lightness)}
         strokeWidth={STRAND.width}
       >
-        {BANDS.map(({ angle, fill, edges, strands }) => (
+        {WINDINGS.map(({ angle, fill, edges, strands }) => (
           <g key={angle} transform={`rotate(${angle} 10 10)`}>
             {fill && <path d={fill} fill={colour} stroke="none" />}
             {edges.map((edge) => (
               <path
                 key={edge}
                 d={edge}
-                stroke={darkenColour(colour, BAND_EDGE.lightness)}
-                strokeWidth={BAND_EDGE.width}
+                stroke={darkenColour(colour, WINDING_EDGE.lightness)}
+                strokeWidth={WINDING_EDGE.width}
               />
             ))}
             {strands.map((strand) => (

@@ -2,8 +2,8 @@ import {
   BALL_CENTRE,
   BALL_OUTLINE,
   BALL_RADIUS,
-  BAND_EDGE,
-  BANDS,
+  WINDING_EDGE,
+  WINDINGS,
   darkenColour,
   SHADING,
   STRAND,
@@ -19,16 +19,16 @@ export function drawBallOfYarn(
   context.fillStyle = colour;
   context.fill(outline);
   context.clip(outline);
-  BANDS.forEach((band) => drawBand(context, band, colour));
+  WINDINGS.forEach((winding) => drawWinding(context, winding, colour));
   context.restore();
 
   context.fillStyle = createShading(context);
   context.fill(outline);
 }
 
-function drawBand(
+function drawWinding(
   context: CanvasRenderingContext2D,
-  { angle, fill, edges, strands }: (typeof BANDS)[number],
+  { angle, fill, edges, strands }: (typeof WINDINGS)[number],
   colour: string,
 ) {
   context.save();
@@ -41,7 +41,7 @@ function drawBand(
     context.fill(new Path2D(fill));
   }
   strokePaths(context, strands, STRAND, colour);
-  strokePaths(context, edges, BAND_EDGE, colour);
+  strokePaths(context, edges, WINDING_EDGE, colour);
 
   context.restore();
 }

@@ -8,21 +8,21 @@ const TURN = Math.PI * 2;
 const round = (value: number) => Number(value.toFixed(2));
 const toRadians = (degrees: number) => (degrees * Math.PI) / 180;
 
-type BandSpec = {
+type WindingSpec = {
   angle: number;
   from: number;
   to: number;
   isBase?: boolean;
 };
 
-const BAND_SPECS: BandSpec[] = [
+const WINDING_SPECS: WindingSpec[] = [
   { angle: -76, from: 1, to: 19, isBase: true },
   { angle: 16, from: 2, to: 11 },
   { angle: -34, from: 6.4, to: 15.4 },
   { angle: 58, from: 10, to: 17.5 },
 ];
 
-function getGroovePositions({ from, to }: BandSpec) {
+function getGroovePositions({ from, to }: WindingSpec) {
   const positions = [from];
   for (
     let position = from + STRAND_SPACING;
@@ -72,7 +72,7 @@ const arcAcross = (arc: StrandArc, to: number, sweep: number) =>
 const drawStrand = (arc: StrandArc) =>
   `M${arc.left} ${arc.y}${arcAcross(arc, arc.right, 1)}`;
 
-function drawBandFill({ from, to }: BandSpec) {
+function drawWindingFill({ from, to }: WindingSpec) {
   const top = getStrandArc(from);
   const bottom = getStrandArc(to);
 
@@ -86,7 +86,7 @@ function drawBandFill({ from, to }: BandSpec) {
   return `M-4 ${top?.y ?? from}${acrossTheTop}L24 ${bottom?.y ?? to}${backAlongTheBottom}Z`;
 }
 
-function buildBand(spec: BandSpec) {
+function buildWinding(spec: WindingSpec) {
   const positions = getGroovePositions(spec);
   const strands: string[] = [];
   const edges: string[] = [];
@@ -95,27 +95,27 @@ function buildBand(spec: BandSpec) {
     const arc = getStrandArc(position);
     if (!arc) return;
 
-    const isBandEdge =
+    const isWindingEdge =
       !spec.isBase && (index === 0 || index === positions.length - 1);
-    (isBandEdge ? edges : strands).push(drawStrand(arc));
+    (isWindingEdge ? edges : strands).push(drawStrand(arc));
   });
 
   return {
     angle: spec.angle,
-    fill: spec.isBase ? null : drawBandFill(spec),
+    fill: spec.isBase ? null : drawWindingFill(spec),
     edges,
     strands,
   };
 }
 
-export const BANDS = BAND_SPECS.map(buildBand);
+export const WINDINGS = WINDING_SPECS.map(buildWinding);
 
 const getAxialOffsetAtRim = (heading: number, angle: number) =>
   BALL_RADIUS * Math.cos(WIND_TILT) * Math.sin(heading - toRadians(angle));
 
 function getRimStrandId(heading: number) {
-  for (let index = BAND_SPECS.length - 1; index >= 0; index--) {
-    const spec = BAND_SPECS[index];
+  for (let index = WINDING_SPECS.length - 1; index >= 0; index--) {
+    const spec = WINDING_SPECS[index];
     const offset = getAxialOffsetAtRim(heading, spec.angle) + BALL_CENTRE;
     if (offset < spec.from || offset > spec.to) continue;
 
@@ -130,7 +130,7 @@ function getRimStrandId(heading: number) {
 }
 
 function getRimBoundaries() {
-  const headings = BAND_SPECS.flatMap((spec) =>
+  const headings = WINDING_SPECS.flatMap((spec) =>
     getGroovePositions(spec).flatMap((position) => {
       const reach =
         (position - BALL_CENTRE) / (BALL_RADIUS * Math.cos(WIND_TILT));
@@ -208,7 +208,7 @@ export const SHADING = {
 };
 
 export const STRAND = { width: 0.32, lightness: 0.9 };
-export const BAND_EDGE = { width: 0.45, lightness: 0.8 };
+export const WINDING_EDGE = { width: 0.45, lightness: 0.8 };
 
 export const darkenColour = (colour: string, lightness: number) =>
   `oklch(from ${colour} calc(l * ${lightness}) c h)`;
