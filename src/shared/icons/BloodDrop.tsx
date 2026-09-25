@@ -1,11 +1,8 @@
 import { IconProps } from './types';
 
-export function BloodDropIcon({
-  width = '100%',
-  colour = '#d1263f',
-}: IconProps) {
+export function BloodDropIcon({ colour = '#d1263f', ...props }: IconProps) {
   return (
-    <svg viewBox="0 0 20 20" width={width} fill={colour}>
+    <svg viewBox="0 0 20 20" width="100%" fill={colour} {...props}>
       <path d="M10 1.7C10 1.7 4.5 9.4 4.5 12.8A5.5 5.5 0 0 0 10 18.3A5.5 5.5 0 0 0 15.5 12.8C15.5 9.4 10 1.7 10 1.7Z" />
     </svg>
   );

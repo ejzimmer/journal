@@ -10,15 +10,15 @@ import {
 } from './ballOfYarnShape';
 
 export function BallOfYarnIcon({
-  width = '100%',
   colour = 'currentColor',
+  ...props
 }: IconProps) {
   const id = useId();
   const wrapClip = `${id}-wrap`;
   const shading = `${id}-shading`;
 
   return (
-    <svg viewBox="0 0 20 20" width={width}>
+    <svg viewBox="0 0 20 20" width="100%" {...props}>
       <defs>
         <clipPath id={wrapClip}>
           <path d={BALL_OUTLINE} />
