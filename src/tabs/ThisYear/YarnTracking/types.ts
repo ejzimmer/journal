@@ -18,3 +18,9 @@ export type YarnBall = {
   size: number;
   usedIn?: Temporal.PlainYearMonth;
 };
+
+export type YarnTypeBalance = {
+  yarnType: string;
+  month: Temporal.PlainYearMonth;
+  grams: number;
+};
