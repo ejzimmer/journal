@@ -9,7 +9,7 @@ import {
   STRAND,
 } from './ballOfYarnShape';
 
-export function drawBallOfYarn(
+export function drawYarnWindings(
   context: CanvasRenderingContext2D,
   colour: string,
 ) {
@@ -21,9 +21,11 @@ export function drawBallOfYarn(
   context.clip(outline);
   WINDINGS.forEach((winding) => drawWinding(context, winding, colour));
   context.restore();
+}
 
+export function drawBallShading(context: CanvasRenderingContext2D) {
   context.fillStyle = createShading(context);
-  context.fill(outline);
+  context.fill(new Path2D(BALL_OUTLINE));
 }
 
 function drawWinding(

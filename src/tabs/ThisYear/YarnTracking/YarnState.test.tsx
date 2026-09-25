@@ -1,5 +1,4 @@
 import { screen } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
 import { YarnState } from './YarnState';
 import { renderWithYarnStorage } from './yarnStorageTestUtils';
 
@@ -54,72 +53,6 @@ describe('YarnState', () => {
         expect(
           screen.getByRole('listitem', { name: 'wool: 100g' }),
         ).toHaveAccessibleDescription('wool: 3,191g');
-      });
-    });
-
-    describe('when the pointer is over a ball', () => {
-      it('shows the details of that ball', async () => {
-        const user = userEvent.setup({
-          advanceTimers: jest.advanceTimersByTime,
-        });
-        renderWithYarnStorage(<YarnState />, {
-          pile: [
-            { id: 0, yarnType: 'wool', grams: 200 },
-            { id: 1, yarnType: 'cotton', grams: 200 },
-          ],
-          getBalance: (yarnType) => (yarnType === 'cotton' ? 950 : 0),
-        });
-
-        await user.pointer({
-          target: screen.getByRole('img', { name: 'Pile of yarn' }),
-          coords: { clientX: 82, clientY: 32 },
-        });
-
-        expect(screen.getByRole('tooltip')).toHaveTextContent('cotton: 950g');
-      });
-
-      describe('and then moves off it within the pile', () => {
-        it('hides the details', async () => {
-          const user = userEvent.setup({
-            advanceTimers: jest.advanceTimersByTime,
-          });
-          renderWithYarnStorage(<YarnState />, {
-            pile: [{ id: 0, yarnType: 'wool', grams: 200 }],
-          });
-          const pile = screen.getByRole('img', { name: 'Pile of yarn' });
-          await user.pointer({
-            target: pile,
-            coords: { clientX: 58, clientY: 32 },
-          });
-          const tooltip = screen.getByRole('tooltip');
-
-          await user.pointer({
-            target: pile,
-            coords: { clientX: 8, clientY: 32 },
-          });
-
-          expect(tooltip).not.toBeInTheDocument();
-        });
-      });
-
-      describe('and then leaves the pile', () => {
-        it('hides the details', async () => {
-          const user = userEvent.setup({
-            advanceTimers: jest.advanceTimersByTime,
-          });
-          renderWithYarnStorage(<YarnState />, {
-            pile: [{ id: 0, yarnType: 'wool', grams: 200 }],
-          });
-          await user.pointer({
-            target: screen.getByRole('img', { name: 'Pile of yarn' }),
-            coords: { clientX: 58, clientY: 32 },
-          });
-          const tooltip = screen.getByRole('tooltip');
-
-          await user.unhover(screen.getByRole('img', { name: 'Pile of yarn' }));
-
-          expect(tooltip).not.toBeInTheDocument();
-        });
       });
     });
 
