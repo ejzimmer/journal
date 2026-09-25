@@ -101,4 +101,33 @@ describe('YarnState', () => {
       });
     });
   });
+
+  describe('when the stored months have two-digit years', () => {
+    const storedYarn = {
+      wool: { id: 'wool', history: { '26-01': 300, '26-02': 700 } },
+    };
+
+    const renderStoredYarn = (setValue = jest.fn()) =>
+      renderWithStorage(<YarnState />, {
+        value: {
+          useValue: jest.fn().mockReturnValue({ value: storedYarn }),
+          setValue,
+        },
+      });
+
+    it('shows the history from those months', () => {
+      renderStoredYarn();
+
+      expect(screen.getByText(/February: 700g/)).toBeInTheDocument();
+    });
+
+    it('stores the months with four-digit years', () => {
+      const setValue = jest.fn();
+      renderStoredYarn(setValue);
+
+      expect(setValue).toHaveBeenCalledWith('2026/yarn', {
+        wool: { id: 'wool', history: { '2026-01': 300, '2026-02': 700 } },
+      });
+    });
+  });
 });

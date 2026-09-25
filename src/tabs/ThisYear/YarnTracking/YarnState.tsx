@@ -1,15 +1,12 @@
 import { CSSProperties } from 'react';
-import { KEY, Yarn } from './types';
 
 import './YarnState.css';
-import { useStorageContext } from '../../../shared/FirebaseContext';
+import { useYarn } from './useYarn';
 import { GRAMS_PER_BALL, getHistoryByMonth } from './utils';
 import { MonthlyBalance } from './MonthlyBalance';
 
 export function YarnState() {
-  const { useValue } = useStorageContext();
-
-  const { value } = useValue<Yarn>(KEY);
+  const value = useYarn();
 
   if (!value) {
     return <>Loading...</>;

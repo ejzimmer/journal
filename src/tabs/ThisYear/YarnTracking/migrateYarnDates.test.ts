@@ -1,4 +1,4 @@
-import { migrateYarnDates } from './migrateYarnDates';
+import { hasTwoDigitYearMonths, migrateYarnDates } from './migrateYarnDates';
 
 describe('migrateYarnDates', () => {
   describe('when the months are stored as two-digit years', () => {
@@ -24,6 +24,28 @@ describe('migrateYarnDates', () => {
       const yarn = { wool: { id: 'wool', history: { '2026-09': 3091 } } };
 
       expect(migrateYarnDates(yarn)).toEqual(yarn);
+    });
+  });
+});
+
+describe('hasTwoDigitYearMonths', () => {
+  describe('when any month has a two-digit year', () => {
+    it('returns true', () => {
+      expect(
+        hasTwoDigitYearMonths({
+          wool: { id: 'wool', history: { '2026-01': 300, '26-02': 700 } },
+        }),
+      ).toBe(true);
+    });
+  });
+
+  describe('when every month has a four-digit year', () => {
+    it('returns false', () => {
+      expect(
+        hasTwoDigitYearMonths({
+          wool: { id: 'wool', history: { '2026-01': 300 } },
+        }),
+      ).toBe(false);
     });
   });
 });

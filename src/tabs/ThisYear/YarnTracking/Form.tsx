@@ -1,6 +1,7 @@
 import { useRef, useState } from 'react';
 import { useStorageContext } from '../../../shared/FirebaseContext';
-import { KEY, Yarn, YarnType } from './types';
+import { KEY, YarnType } from './types';
+import { useYarn } from './useYarn';
 import { Switch } from '../../../shared/controls/Switch';
 
 import './Form.css';
@@ -8,8 +9,8 @@ import { TickIcon } from '../../../shared/icons/Tick';
 import { getLatestBalance, getThisMonth } from './utils';
 
 export function YarnTrackingForm() {
-  const { useValue, updateItem } = useStorageContext();
-  const { value } = useValue<Yarn>(KEY);
+  const { updateItem } = useStorageContext();
+  const value = useYarn();
   const yarnTypes = Object.keys(value ?? {});
 
   const yarnTypeRef = useRef<HTMLSelectElement>(null);
