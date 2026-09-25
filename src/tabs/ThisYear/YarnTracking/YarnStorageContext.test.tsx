@@ -72,6 +72,28 @@ describe('YarnStorageProvider', () => {
     });
   });
 
+  describe('getCurrentBalance', () => {
+    const renderWoolStorage = () =>
+      renderYarnStorage({
+        wool: { id: 'wool', history: { '2026-09': 3091, '2026-08': 4221 } },
+        cotton: { id: 'cotton', history: {} },
+      });
+
+    it('returns the balance from the most recent month', () => {
+      expect(renderWoolStorage().result.current.getCurrentBalance('wool')).toBe(
+        3091,
+      );
+    });
+
+    describe('when the yarn type has no history', () => {
+      it('returns zero', () => {
+        expect(
+          renderWoolStorage().result.current.getCurrentBalance('cotton'),
+        ).toBe(0);
+      });
+    });
+  });
+
   describe('recordBalance', () => {
     beforeEach(() => {
       jest.useFakeTimers();

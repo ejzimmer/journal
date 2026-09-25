@@ -6,7 +6,7 @@ import './Form.css';
 import { TickIcon } from '../../../shared/icons/Tick';
 
 export function YarnTrackingForm() {
-  const { yarnTypes = [], recordBalance } = useYarnStorage();
+  const { yarnTypes = [], getCurrentBalance, recordBalance } = useYarnStorage();
 
   const yarnTypeRef = useRef<HTMLSelectElement>(null);
   const amountRef = useRef<HTMLInputElement>(null);
@@ -23,8 +23,7 @@ export function YarnTrackingForm() {
       return;
     }
 
-    const currentBalance =
-      yarnTypes.find(({ id }) => id === yarnType)?.balances.at(-1)?.grams ?? 0;
+    const currentBalance = getCurrentBalance(yarnType);
 
     // eslint-disable-next-line no-eval
     const newBalance = eval(`${currentBalance}${operation}${amount}`);

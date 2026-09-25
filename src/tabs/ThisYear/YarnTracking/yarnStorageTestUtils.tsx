@@ -11,6 +11,7 @@ export function renderWithYarnStorage(
 ) {
   const storageContext: YarnStorageContextType = {
     yarnTypes: undefined,
+    getCurrentBalance: jest.fn(),
     recordBalance: jest.fn(),
     ...overrides,
   };

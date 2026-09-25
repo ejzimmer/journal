@@ -13,6 +13,7 @@ import { getThisMonth } from './utils';
 
 export type YarnStorageContextType = {
   yarnTypes?: YarnType[];
+  getCurrentBalance: (yarnTypeId: string) => number;
   recordBalance: (yarnTypeId: string, grams: number) => void;
 };
 
@@ -52,15 +53,19 @@ export function YarnStorageProvider({ children }: { children: ReactNode }) {
     }
   }, [storedYarn, migratedYarn, setValue]);
 
-  const value = useMemo(
-    () => ({
-      yarnTypes:
-        migratedYarn && Object.values(migratedYarn).map(convertToYarnType),
+  const value = useMemo(() => {
+    const yarnTypes =
+      migratedYarn && Object.values(migratedYarn).map(convertToYarnType);
+
+    return {
+      yarnTypes,
+      getCurrentBalance: (yarnTypeId: string) =>
+        yarnTypes?.find(({ id }) => id === yarnTypeId)?.balances.at(-1)
+          ?.grams ?? 0,
       recordBalance: (yarnTypeId: string, grams: number) =>
         setValue(`${KEY}/${yarnTypeId}/history/${getThisMonth()}`, grams),
-    }),
-    [migratedYarn, setValue],
-  );
+    };
+  }, [migratedYarn, setValue]);
 
   return (
     <YarnStorageContext.Provider value={value}>
