@@ -22,6 +22,7 @@ export type YarnType = { id: YarnTypeId; balances: YarnBalance[] };
 
 export type Operation = '+' | '-';
 export type YarnBall = {
+  id: number;
   yarnType: YarnTypeId;
   grams: number;
   usedIn?: Temporal.PlainYearMonth;

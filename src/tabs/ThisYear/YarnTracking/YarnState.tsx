@@ -13,8 +13,8 @@ export function YarnState() {
     <div className="yarn-state">
       <div className="label">Current: {currentBalance.toLocaleString()}g</div>
       <div className="yarn-pile">
-        {pile.map((ball, index) => (
-          <YarnPileBall key={index} ball={ball} />
+        {pile.map((ball) => (
+          <YarnPileBall key={ball.id} ball={ball} />
         ))}
       </div>
     </div>

@@ -25,8 +25,8 @@ describe('YarnState', () => {
       it('is labelled with its yarn type and weight', () => {
         renderWithYarnStorage(<YarnState />, {
           pile: [
-            { yarnType: 'wool', grams: 200 },
-            { yarnType: 'wool', grams: 100 },
+            { id: 0, yarnType: 'wool', grams: 200 },
+            { id: 1, yarnType: 'wool', grams: 100 },
           ],
         });
 
@@ -40,7 +40,7 @@ describe('YarnState', () => {
 
       it('is sized by how much of a full ball it holds', () => {
         renderWithYarnStorage(<YarnState />, {
-          pile: [{ yarnType: 'wool', grams: 100 }],
+          pile: [{ id: 0, yarnType: 'wool', grams: 100 }],
         });
 
         expect(
@@ -51,8 +51,8 @@ describe('YarnState', () => {
       it('is described by the balance of its whole yarn type', () => {
         renderWithYarnStorage(<YarnState />, {
           pile: [
-            { yarnType: 'wool', grams: 200 },
-            { yarnType: 'wool', grams: 100 },
+            { id: 0, yarnType: 'wool', grams: 200 },
+            { id: 1, yarnType: 'wool', grams: 100 },
           ],
           getBalance: (yarnType) => (yarnType === 'wool' ? 3191 : 0),
         });
@@ -71,6 +71,7 @@ describe('YarnState', () => {
         renderWithYarnStorage(<YarnState />, {
           pile: [
             {
+              id: 0,
               yarnType: 'cotton',
               grams: 200,
               usedIn: Temporal.PlainYearMonth.from('2026-06'),
@@ -88,6 +89,7 @@ describe('YarnState', () => {
           renderWithYarnStorage(<YarnState />, {
             pile: [
               {
+                id: 0,
                 yarnType: 'wool',
                 grams: 200,
                 usedIn: Temporal.PlainYearMonth.from('2026-06'),
@@ -108,11 +110,13 @@ describe('YarnState', () => {
           renderWithYarnStorage(<YarnState />, {
             pile: [
               {
+                id: 0,
                 yarnType: 'wool',
                 grams: 200,
                 usedIn: Temporal.PlainYearMonth.from('2025-09'),
               },
               {
+                id: 1,
                 yarnType: 'wool',
                 grams: 200,
                 usedIn: Temporal.PlainYearMonth.from('2025-10'),
