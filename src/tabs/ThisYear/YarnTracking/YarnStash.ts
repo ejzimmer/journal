@@ -34,7 +34,7 @@ export class YarnStash {
 
     while (remaining > 0) {
       const grams = Math.min(remaining, GRAMS_PER_BALL);
-      this.stockBall({ id: this.nextBallId++, yarnType, grams });
+      this.addBall({ id: this.nextBallId++, yarnType, grams });
       remaining -= grams;
     }
   }
@@ -114,7 +114,7 @@ export class YarnStash {
     );
   }
 
-  private stockBall(ball: YarnBall) {
+  private addBall(ball: YarnBall) {
     const usedBall = this.usedBalls.pop();
     if (usedBall) {
       this.balls[this.balls.indexOf(usedBall)] = ball;
