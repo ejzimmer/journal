@@ -4,6 +4,7 @@ import { Calories } from "./calories/Calories"
 
 const exercises = [
   {
+    id: "1",
     name: "Box pistol squat",
     updates: [
       {
@@ -19,22 +20,24 @@ const exercises = [
     ],
   },
   {
+    id: "2",
     name: "Bulgarian split squat",
     updates: [
       {
         date: new Date("2026-08-12"),
         update: "3 x 10 x 8kg",
-        recommendation: "stay" as const,
+        recommendation: "no change" as const,
       },
     ],
   },
   {
+    id: "3",
     name: "B-stance RDL",
     updates: [
       {
         date: new Date("2026-08-12"),
         update: "3 x 10 x 16kg",
-        recommendation: "up" as const,
+        recommendation: "increase" as const,
       },
       { date: new Date("2026-08-15"), update: "3 x 10 x 20kg" },
       { date: new Date("2026-08-17"), update: "3 x 10 x 20kg" },

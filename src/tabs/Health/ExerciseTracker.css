@@ -1,20 +1,37 @@
 table.exercise-tracker {
   border-collapse: collapse;
-  table-layout: fixed;
-  width: 100%;
+  width: fit-content;
 
   th,
   td {
     border: 1px solid black;
     padding: 8px;
+  }
+
+  th {
+    width: 200px;
+  }
+
+  td {
+    vertical-align: top;
+    max-width: 300px;
+    position: relative;
 
     .date {
       font-weight: bold;
+      margin-block-end: 0.5em;
     }
 
-    &:last-child {
-      border: none;
-      padding-inline: 0;
+    .recommendation {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+
+      svg {
+        position: absolute;
+        right: 0;
+        filter: drop-shadow(1px 1px 2px hsl(0 0% 0% / 0.4));
+      }
     }
   }
 }
