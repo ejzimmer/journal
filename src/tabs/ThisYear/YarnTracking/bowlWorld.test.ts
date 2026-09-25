@@ -60,63 +60,86 @@ expect.extend({
   },
 });
 
-describe('BowlWorld', () => {
-  describe('when balls are added', () => {
-    it('settles them inside the bowl', () => {
-      const pile = [createWoolBall(0, 200), createWoolBall(1, 100)];
-      const world = new BowlWorld(pile);
+const createWoolBalls = (count: number) =>
+  Array.from({ length: count }, (_, id) => createWoolBall(id, 200));
 
-      world.syncBalls(pile);
+const getAverageHeight = (balls: PlacedBall[]) =>
+  balls.reduce((total, { y }) => total + y, 0) / balls.length;
+
+describe('BowlWorld', () => {
+  describe('when it is created', () => {
+    it('settles its balls inside the bowl', () => {
+      const world = new BowlWorld([
+        createWoolBall(0, 200),
+        createWoolBall(1, 100),
+      ]);
 
       const balls = world.getBalls();
       expect(balls.map(({ ball }) => ball.id)).toEqual([0, 1]);
       balls.forEach((ball) => expect(ball).toBeInTheBowl(world));
+      expect(world.isAtRest()).toBe(true);
     });
 
     it('sizes each ball by how much of a full ball it holds', () => {
-      const pile = [createWoolBall(0, 100)];
-      const world = new BowlWorld(pile);
-
-      world.syncBalls(pile);
+      const world = new BowlWorld([createWoolBall(0, 100)]);
 
       expect(world.getBalls()[0].size).toBe(0.5);
     });
 
     it('keeps the balls from overlapping', () => {
-      const pile = Array.from({ length: 12 }, (_, id) =>
-        createWoolBall(id, 200),
-      );
-      const world = new BowlWorld(pile);
-
-      world.syncBalls(pile);
+      const world = new BowlWorld(createWoolBalls(12));
 
       expect(world.getBalls()).not.toBeOverlapping();
     });
+  });
 
-    describe('to a bowl that already has balls in it', () => {
-      it('settles the new ones in with the rest', () => {
-        const world = new BowlWorld([
-          createWoolBall(0, 200),
-          createWoolBall(1, 200),
-        ]);
-        world.syncBalls([createWoolBall(0, 200)]);
+  describe('when balls are added', () => {
+    const addBall = () => {
+      const world = new BowlWorld(createWoolBalls(6));
+      const topOfPile = world.getTopOfPile();
+      world.syncBalls([...createWoolBalls(6), createWoolBall(6, 50)]);
+      return { world, topOfPile };
+    };
 
-        world.syncBalls([createWoolBall(0, 200), createWoolBall(1, 200)]);
+    it('drops the new ones in from above the pile', () => {
+      const { world, topOfPile } = addBall();
+
+      expect(world.getBalls()[6].y).toBeLessThan(topOfPile);
+      expect(world.isAtRest()).toBe(false);
+    });
+
+    it('moves them down as time passes', () => {
+      const { world } = addBall();
+      const startHeight = world.getBalls()[6].y;
+
+      world.advance(0.1);
+
+      expect(world.getBalls()[6].y).toBeGreaterThan(startHeight);
+    });
+
+    describe('once they have settled', () => {
+      it('lands them in the bowl with the rest', () => {
+        const { world } = addBall();
+
+        world.settle();
 
         const balls = world.getBalls();
-        expect(balls[1]).toBeInTheBowl(world);
+        expect(balls[6]).toBeInTheBowl(world);
         expect(balls).not.toBeOverlapping();
+        expect(world.isAtRest()).toBe(true);
       });
     });
   });
 
   describe('when a ball grows', () => {
     it('pushes its neighbours out of the way', () => {
-      const pile = [createWoolBall(0, 50), createWoolBall(1, 200)];
-      const world = new BowlWorld(pile);
-      world.syncBalls(pile);
+      const world = new BowlWorld([
+        createWoolBall(0, 50),
+        createWoolBall(1, 200),
+      ]);
 
       world.syncBalls([createWoolBall(0, 200), createWoolBall(1, 200)]);
+      world.settle();
 
       const balls = world.getBalls();
       expect(balls[0].size).toBe(1);
@@ -125,27 +148,43 @@ describe('BowlWorld', () => {
   });
 
   describe('when a ball leaves the pile', () => {
+    const removeLowestBall = () => {
+      const world = new BowlWorld(createWoolBalls(8));
+      const lowestBall = world
+        .getBalls()
+        .reduce((lowest, ball) => (ball.y > lowest.y ? ball : lowest));
+      const remainingBalls = createWoolBalls(8).filter(
+        ({ ball }) => ball.id !== lowestBall.ball.id,
+      );
+      world.syncBalls(remainingBalls);
+      return { world, removedId: lowestBall.ball.id };
+    };
+
     it('takes it out of the bowl', () => {
-      const world = new BowlWorld([
-        createWoolBall(0, 200),
-        createWoolBall(1, 200),
-      ]);
-      world.syncBalls([createWoolBall(0, 200), createWoolBall(1, 200)]);
+      const { world, removedId } = removeLowestBall();
 
-      world.syncBalls([createWoolBall(1, 200)]);
+      expect(world.getBalls().map(({ ball }) => ball.id)).not.toContain(
+        removedId,
+      );
+      expect(world.getBalls()).toHaveLength(7);
+    });
 
-      expect(world.getBalls().map(({ ball }) => ball.id)).toEqual([1]);
+    it('lets the rest fall into the gap', () => {
+      const { world } = removeLowestBall();
+      const heightBefore = getAverageHeight(world.getBalls());
+
+      world.settle();
+
+      expect(getAverageHeight(world.getBalls())).toBeGreaterThan(
+        heightBefore + 0.05,
+      );
     });
   });
 
   describe('the size of the bowl', () => {
     it('grows with how much yarn it starts with', () => {
-      const small = new BowlWorld(
-        Array.from({ length: 10 }, (_, id) => createWoolBall(id, 200)),
-      );
-      const large = new BowlWorld(
-        Array.from({ length: 40 }, (_, id) => createWoolBall(id, 200)),
-      );
+      const small = new BowlWorld(createWoolBalls(10));
+      const large = new BowlWorld(createWoolBalls(40));
 
       expect(large.radius).toBeGreaterThan(small.radius);
     });
