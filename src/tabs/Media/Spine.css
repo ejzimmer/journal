@@ -145,3 +145,7 @@
 .spine .series-band-tail {
   inset-block-end: 9px;
 }
+
+.spine.todo .series-band {
+  background: oklch(80% 0.06 var(--band-hue));
+}
