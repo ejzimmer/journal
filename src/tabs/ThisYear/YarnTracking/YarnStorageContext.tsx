@@ -15,6 +15,7 @@ export type YarnStorageContextType = {
   yarnByType?: YarnType[];
   pile?: YarnBall[];
   currentBalance: number;
+  getBalance: (yarnType: YarnTypeId) => number;
   addYarn: (yarnType: YarnTypeId, grams: number) => void;
   removeYarn: (yarnType: YarnTypeId, grams: number) => void;
 };
@@ -56,6 +57,7 @@ export function YarnStorageProvider({ children }: { children: ReactNode }) {
       yarnByType,
       pile: yarnByType && [...stash.balls],
       currentBalance: stash.getTotalBalance(),
+      getBalance: (yarnType: YarnTypeId) => stash.getBalance(yarnType),
       addYarn: (yarnType: YarnTypeId, grams: number) =>
         saveBalance(yarnType, stash.getBalance(yarnType) + grams),
       removeYarn: (yarnType: YarnTypeId, grams: number) =>

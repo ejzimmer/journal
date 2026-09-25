@@ -1,8 +1,9 @@
-import { CSSProperties } from 'react';
+import { CSSProperties, useId } from 'react';
 import { YarnBall } from './types';
 import { GRAMS_PER_BALL } from './utils';
+import { useYarnStorage } from './YarnStorageContext';
 import { BallOfYarnIcon } from '../../../shared/icons/BallOfYarn';
-import { getThisMonth } from '../../../shared/dates';
+import { formatMonthAndYear, getThisMonth } from '../../../shared/dates';
 
 const MONTHS_UNTIL_GONE = 12;
 
@@ -11,6 +12,8 @@ type YarnPileBallProps = {
 };
 
 export function YarnPileBall({ ball }: YarnPileBallProps) {
+  const { getBalance } = useYarnStorage();
+  const tooltipId = useId();
   const { yarnType, grams, usedIn } = ball;
   const monthsSinceUsed =
     usedIn && getThisMonth().since(usedIn, { largestUnit: 'months' }).months;
@@ -20,25 +23,34 @@ export function YarnPileBall({ ball }: YarnPileBallProps) {
   }
 
   const label = `${yarnType}: ${grams}g`;
+  const details = usedIn
+    ? `${yarnType}: ${grams}g, used ${formatMonthAndYear(usedIn)}`
+    : `${yarnType}: ${getBalance(yarnType).toLocaleString()}g`;
 
   return (
-    <div
-      className="ball"
-      data-yarn-type={yarnType}
-      data-used={usedIn ? true : undefined}
-      role="img"
-      aria-label={usedIn ? `used ${label}` : label}
-      style={
-        {
-          width: `calc(var(--ball-size) * ${grams / GRAMS_PER_BALL})`,
-          '--fade':
-            monthsSinceUsed === undefined
-              ? undefined
-              : monthsSinceUsed / MONTHS_UNTIL_GONE,
-        } as CSSProperties
-      }
-    >
-      <BallOfYarnIcon />
+    <div className="tooltip-container">
+      <div
+        className="ball tooltip-anchor"
+        data-yarn-type={yarnType}
+        data-used={usedIn ? true : undefined}
+        role="img"
+        aria-label={usedIn ? `used ${label}` : label}
+        aria-describedby={tooltipId}
+        style={
+          {
+            width: `calc(var(--ball-size) * ${grams / GRAMS_PER_BALL})`,
+            '--fade':
+              monthsSinceUsed === undefined
+                ? undefined
+                : monthsSinceUsed / MONTHS_UNTIL_GONE,
+          } as CSSProperties
+        }
+      >
+        <BallOfYarnIcon />
+      </div>
+      <div id={tooltipId} className="tooltip">
+        {details}
+      </div>
     </div>
   );
 }

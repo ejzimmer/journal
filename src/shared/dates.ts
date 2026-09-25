@@ -66,6 +66,9 @@ export const formatDate = (date: Temporal.PlainDate) => ({
   year: date.year.toString().substring(2),
 });
 
+export const formatMonthAndYear = (yearMonth: Temporal.PlainYearMonth) =>
+  `${formatMonth(yearMonth.toPlainDate({ day: 1 }))} ${yearMonth.year}`;
+
 export const formatDayAndMonth = (date: StoredDate) => {
   const plainDate = getPlainDate(date);
 
