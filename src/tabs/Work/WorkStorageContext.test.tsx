@@ -646,38 +646,6 @@ describe('WorkStorageContext labels', () => {
     expect(firebaseContext.updateItem.mock.calls.length).toBe(callsBeforehand);
   });
 
-  it('deletes labels whose lastRemoved is more than a week old once the store loads', () => {
-    const dayMs = 24 * 60 * 60 * 1000;
-    const staleLabel: StoredLabel = {
-      id: 'label-stale',
-      value: 'stale',
-      colour: 'purple',
-      lastRemoved: Date.now() - 8 * dayMs,
-    };
-    const recentlyRemovedLabel: StoredLabel = {
-      id: 'label-recent',
-      value: 'recent',
-      colour: 'orange',
-      lastRemoved: Date.now() - dayMs,
-    };
-    const firebaseContext = createFirebaseContext(
-      { [list.id]: list },
-      {
-        [a11yLabel.id]: a11yLabel,
-        [staleLabel.id]: staleLabel,
-        [recentlyRemovedLabel.id]: recentlyRemovedLabel,
-      },
-    );
-
-    getWorkStorage(firebaseContext);
-
-    expect(firebaseContext.deleteItem).toHaveBeenCalledWith(
-      LABELS_KEY,
-      staleLabel,
-    );
-    expect(firebaseContext.deleteItem).toHaveBeenCalledTimes(1);
-  });
-
   describe('addList', () => {
     it("creates a label and attaches it when given one that doesn't exist yet", () => {
       const firebaseContext = createFirebaseContext({}, storedLabels);

@@ -1,11 +1,4 @@
-import {
-  createContext,
-  ReactNode,
-  useContext,
-  useEffect,
-  useMemo,
-  useRef,
-} from 'react';
+import { createContext, ReactNode, useContext, useMemo } from 'react';
 import { useStorageContext } from '../../shared/FirebaseContext';
 import { addSourceListLabel } from './labelUtils';
 import {
@@ -17,8 +10,6 @@ import {
   WorkTask,
   WORK_KEY,
 } from './types';
-
-const STALE_AFTER_MS = 7 * 24 * 60 * 60 * 1000;
 
 export type WorkStorageContextType = {
   lists?: Record<string, WorkTask>;
@@ -103,28 +94,13 @@ export function WorkStorageProvider({ children }: { children: ReactNode }) {
     return normalized;
   }, [rawLists]);
 
-  const { value: storedLabelsById, loading: labelsLoading } =
+  const { value: storedLabelsById } =
     useValue<Record<string, StoredLabel>>(LABELS_KEY);
 
   const labels = useMemo(
     () => Object.values(storedLabelsById ?? {}),
     [storedLabelsById],
   );
-
-  // One-off sweep when the label store first loads: labels unused for more
-  // than a week (lastRemoved set long enough ago) are purged for good.
-  const hasSweptStaleLabels = useRef(false);
-  useEffect(() => {
-    if (labelsLoading || hasSweptStaleLabels.current) return;
-    hasSweptStaleLabels.current = true;
-
-    const staleBefore = Date.now() - STALE_AFTER_MS;
-    labels.forEach((label) => {
-      if (label.lastRemoved !== undefined && label.lastRemoved < staleBefore) {
-        deleteItem(LABELS_KEY, label);
-      }
-    });
-  }, [labelsLoading, labels, deleteItem]);
 
   const countLabelUsage = (id: string) => {
     let count = 0;

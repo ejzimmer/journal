@@ -49,6 +49,7 @@ export type WorkTask = {
 
 export const WORK_KEY = 'work';
 export const WORK_CLEANUP_KEY = 'work-daily-cleanup';
+export const LABELS_CLEANUP_KEY = 'work-labels-cleanup';
 
 const idFor = (description: string) =>
   `standard-${description.toLowerCase().replace(/\s+/g, '-')}`;
