@@ -84,7 +84,7 @@ const sumSubTotals = (subTotals: TotalsByType) =>
 export const getMonthId = (year: number, month: number) =>
   `${year}`.substring(2) + '-' + `${month + 1}`.padStart(2, '0');
 
-export const GRAMS_PER_BALL = 100;
+export const GRAMS_PER_BALL = 200;
 
 export function getBallSizes(grams: number): number[] {
   const wholeBalls = Math.floor(grams / GRAMS_PER_BALL);

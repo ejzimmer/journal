@@ -6,14 +6,14 @@ const yarnState = {
   wool: {
     id: 'wool',
     history: {
-      '26-01': 250,
-      '26-02': 750,
+      '26-01': 300,
+      '26-02': 700,
     },
   },
   cotton: {
     id: 'cotton',
     history: {
-      '26-01': 250,
+      '26-01': 300,
     },
   },
 };
@@ -47,7 +47,7 @@ describe('YarnState', () => {
     it('shows the total for each month, carrying the current month forward', () => {
       renderYarnState();
 
-      expect(screen.getByText(/January: 500g/)).toBeInTheDocument();
+      expect(screen.getByText(/January: 600g/)).toBeInTheDocument();
       expect(screen.getByText(/February: 1,000g/)).toBeInTheDocument();
       expect(screen.getByText(/Current: 1,000g/)).toBeInTheDocument();
     });
@@ -58,24 +58,24 @@ describe('YarnState', () => {
       renderYarnState();
 
       expect(
-        within(getMonths().february).getByRole('img', { name: 'wool: 750g' }),
+        within(getMonths().february).getByRole('img', { name: 'wool: 700g' }),
       ).toBeInTheDocument();
     });
 
-    it('draws a ball for each 100g of a yarn type', () => {
+    it('draws a ball for each 200g of a yarn type', () => {
       renderYarnState();
 
-      expect(getBallWidths(getMonths().february, 'wool: 750g')).toHaveLength(8);
+      expect(getBallWidths(getMonths().february, 'wool: 700g')).toHaveLength(4);
     });
 
     it('draws every full ball at the size a full ball gets', () => {
       renderYarnState();
 
-      const wool = getBallWidths(getMonths().february, 'wool: 750g');
-      const cotton = getBallWidths(getMonths().january, 'cotton: 250g');
+      const wool = getBallWidths(getMonths().february, 'wool: 700g');
+      const cotton = getBallWidths(getMonths().january, 'cotton: 300g');
 
-      expect([...wool.slice(0, 7), ...cotton.slice(0, 2)]).toEqual(
-        Array(9).fill('calc(var(--ball-size) * 1)'),
+      expect([...wool.slice(0, 3), ...cotton.slice(0, 1)]).toEqual(
+        Array(4).fill('calc(var(--ball-size) * 1)'),
       );
     });
 
@@ -84,7 +84,7 @@ describe('YarnState', () => {
 
       expect(screen.getByRole('list')).toHaveAttribute(
         'style',
-        '--balls-across: 10;',
+        '--balls-across: 5;',
       );
     });
 
@@ -92,9 +92,9 @@ describe('YarnState', () => {
       it('draws the leftover grams as a proportionally smaller ball', () => {
         renderYarnState();
 
-        const [, , remainderBall] = getBallWidths(
+        const [, remainderBall] = getBallWidths(
           getMonths().january,
-          'cotton: 250g',
+          'cotton: 300g',
         );
 
         expect(remainderBall).toBe('calc(var(--ball-size) * 0.5)');

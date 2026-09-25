@@ -279,8 +279,8 @@ const yarn: Yarn = {
     id: 'acrylic',
     history: { '26-01': 246, '26-06': 180, '26-09': 95 },
   },
-  sock: {
-    id: 'sock',
+  'sock yarn': {
+    id: 'sock yarn',
     history: { '26-01': 2641, '26-02': 2480, '26-05': 2150, '26-08': 1890 },
   },
 };
