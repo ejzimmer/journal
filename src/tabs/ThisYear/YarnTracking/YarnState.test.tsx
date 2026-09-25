@@ -1,26 +1,29 @@
 import { screen, within } from '@testing-library/react';
 import { YarnState } from './YarnState';
-import { renderWithStorage } from '../../../shared/storageContextTestUtils';
+import { renderWithYarnStorage } from './yarnStorageTestUtils';
+import { convertToYarnType } from './YarnStorageContext';
+import { StoredYarn } from './types';
+import { getHistoryByMonth } from './utils';
 
-const yarnState = {
+const storedYarn: StoredYarn = {
   wool: {
     id: 'wool',
     history: {
-      '26-01': 300,
-      '26-02': 700,
+      '2026-01': 300,
+      '2026-02': 700,
     },
   },
   cotton: {
     id: 'cotton',
     history: {
-      '26-01': 300,
+      '2026-01': 300,
     },
   },
 };
-
 const renderYarnState = () =>
-  renderWithStorage(<YarnState />, {
-    value: { useValue: jest.fn().mockReturnValue({ value: yarnState }) },
+  renderWithYarnStorage(<YarnState />, {
+    months: getHistoryByMonth(Object.values(storedYarn).map(convertToYarnType)),
+    maxTotal: 1000,
   });
 
 const getMonths = () => {

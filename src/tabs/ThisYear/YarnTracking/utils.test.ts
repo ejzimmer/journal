@@ -1,4 +1,16 @@
 import { getBallSizes, getHistoryByMonth } from './utils';
+import { StoredYarn } from './types';
+import { convertToYarnType } from './YarnStorageContext';
+
+const getMonthsByMonthId = (yarnState: StoredYarn) =>
+  Object.fromEntries(
+    getHistoryByMonth(Object.values(yarnState).map(convertToYarnType)).map(
+      (month) => [
+        month.month.toString(),
+        { ...month, month: month.month.toString() },
+      ],
+    ),
+  );
 
 describe('getHistoryByMonth', () => {
   beforeEach(() => {
@@ -16,34 +28,34 @@ describe('getHistoryByMonth', () => {
       sockYarn: {
         id: 'sockYarn',
         history: {
-          '26-01': 123,
-          '26-02': 544,
-          '26-03': 487,
+          '2026-01': 123,
+          '2026-02': 544,
+          '2026-03': 487,
         },
       },
       wool: {
         id: 'wool',
         history: {
-          '26-01': 222,
-          '26-02': 566,
-          '26-03': 444,
+          '2026-01': 222,
+          '2026-02': 566,
+          '2026-03': 444,
         },
       },
     };
 
-    expect(getHistoryByMonth(yarnState)).toEqual({
-      '26-01': {
-        month: '26-01',
+    expect(getMonthsByMonthId(yarnState)).toEqual({
+      '2026-01': {
+        month: '2026-01',
         total: 345,
         subTotals: { sockYarn: 123, wool: 222 },
       },
-      '26-02': {
-        month: '26-02',
+      '2026-02': {
+        month: '2026-02',
         total: 1110,
         subTotals: { sockYarn: 544, wool: 566 },
       },
-      '26-03': {
-        month: '26-03',
+      '2026-03': {
+        month: '2026-03',
         total: 931,
         subTotals: { sockYarn: 487, wool: 444 },
       },
@@ -57,68 +69,100 @@ describe('getHistoryByMonth', () => {
         sockYarn: {
           id: 'sockYarn',
           history: {
-            '26-01': 123,
-            '26-02': 544,
-            '26-08': 487,
+            '2026-01': 123,
+            '2026-02': 544,
+            '2026-08': 487,
           },
         },
         wool: {
           id: 'wool',
           history: {
-            '26-01': 222,
-            '26-02': 566,
-            '26-07': 444,
+            '2026-01': 222,
+            '2026-02': 566,
+            '2026-07': 444,
           },
         },
       };
 
-      expect(getHistoryByMonth(yarnState)).toEqual({
-        '26-01': {
-          month: '26-01',
+      expect(getMonthsByMonthId(yarnState)).toEqual({
+        '2026-01': {
+          month: '2026-01',
           total: 345,
           subTotals: { sockYarn: 123, wool: 222 },
         },
-        '26-02': {
-          month: '26-02',
+        '2026-02': {
+          month: '2026-02',
           total: 1110,
           subTotals: { sockYarn: 544, wool: 566 },
         },
-        '26-03': {
-          month: '26-03',
+        '2026-03': {
+          month: '2026-03',
           total: 1110,
           subTotals: { sockYarn: 544, wool: 566 },
         },
-        '26-04': {
-          month: '26-04',
+        '2026-04': {
+          month: '2026-04',
           total: 1110,
           subTotals: { sockYarn: 544, wool: 566 },
         },
-        '26-05': {
-          month: '26-05',
+        '2026-05': {
+          month: '2026-05',
           total: 1110,
           subTotals: { sockYarn: 544, wool: 566 },
         },
-        '26-06': {
-          month: '26-06',
+        '2026-06': {
+          month: '2026-06',
           total: 1110,
           subTotals: { sockYarn: 544, wool: 566 },
         },
-        '26-07': {
-          month: '26-07',
+        '2026-07': {
+          month: '2026-07',
           total: 988,
           subTotals: { sockYarn: 544, wool: 444 },
         },
-        '26-08': {
-          month: '26-08',
+        '2026-08': {
+          month: '2026-08',
           total: 931,
           subTotals: { sockYarn: 487, wool: 444 },
         },
-        '26-09': {
-          month: '26-09',
+        '2026-09': {
+          month: '2026-09',
           total: 931,
           subTotals: { sockYarn: 487, wool: 444 },
         },
       });
+    });
+  });
+
+  describe('when a yarn type has no history', () => {
+    it('counts it as having none of that yarn', () => {
+      jest.setSystemTime(new Date('2026-02-04'));
+      const yarnState = {
+        wool: { id: 'wool', history: { '2026-01': 300 } },
+        cotton: { id: 'cotton', history: {} },
+      };
+
+      expect(getMonthsByMonthId(yarnState)['2026-02']).toEqual({
+        month: '2026-02',
+        total: 300,
+        subTotals: { wool: 300, cotton: 0 },
+      });
+    });
+  });
+
+  describe('when the history starts before this year', () => {
+    it('returns every month from the first one recorded, in order', () => {
+      jest.setSystemTime(new Date('2026-02-04'));
+      const yarnState = {
+        wool: { id: 'wool', history: { '2026-01': 300, '2025-11': 500 } },
+      };
+
+      expect(Object.keys(getMonthsByMonthId(yarnState))).toEqual([
+        '2025-11',
+        '2025-12',
+        '2026-01',
+        '2026-02',
+      ]);
     });
   });
 });

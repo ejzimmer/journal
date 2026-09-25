@@ -1,27 +1,20 @@
 import { useRef, useState } from 'react';
-import { useStorageContext } from '../../../shared/FirebaseContext';
-import { KEY, Yarn, YarnType } from './types';
+import { useYarnStorage } from './YarnStorageContext';
+import { Operation } from './types';
 import { Switch } from '../../../shared/controls/Switch';
 
 import './Form.css';
 import { TickIcon } from '../../../shared/icons/Tick';
-import { getMonthId } from './utils';
 
 export function YarnTrackingForm() {
-  const { useValue, updateItem } = useStorageContext();
-  const { value } = useValue<Yarn>(KEY);
-  const yarnTypes = Object.keys(value ?? {});
+  const { yarnTypes = [], updateBalance } = useYarnStorage();
 
   const yarnTypeRef = useRef<HTMLSelectElement>(null);
   const amountRef = useRef<HTMLInputElement>(null);
-  const [operation, setOperation] = useState<'+' | '-'>('-');
+  const [operation, setOperation] = useState<Operation>('-');
 
   const updateYarn = (event: React.FormEvent) => {
     event.preventDefault();
-
-    if (!value) {
-      return;
-    }
 
     const yarnType = yarnTypeRef.current?.value;
     const amount =
@@ -31,30 +24,15 @@ export function YarnTrackingForm() {
       return;
     }
 
-    const yarnDetails = value[yarnType];
-    const currentBalance = Object.values(yarnDetails.history).at(-1) ?? 0;
-
-    // eslint-disable-next-line no-eval
-    const newBalance = eval(`${currentBalance}${operation}${amount}`);
-
-    const today = new Date();
-    const key = getMonthId(today.getFullYear(), today.getMonth());
-
-    updateItem<YarnType>(`${KEY}`, {
-      id: yarnType,
-      history: {
-        ...yarnDetails.history,
-        [key]: newBalance,
-      },
-    });
+    updateBalance({ yarnType, amount, operation });
   };
 
   return (
     <form onSubmit={updateYarn} className="yarn-tracking-form">
       <select ref={yarnTypeRef}>
-        {yarnTypes.map((type) => (
-          <option key={type} value={type}>
-            {type}
+        {yarnTypes.map(({ id }) => (
+          <option key={id} value={id}>
+            {id}
           </option>
         ))}
       </select>

@@ -1,34 +1,28 @@
 import { CSSProperties } from 'react';
-import { KEY, Yarn } from './types';
 
 import './YarnState.css';
-import { useStorageContext } from '../../../shared/FirebaseContext';
-import { GRAMS_PER_BALL, getHistoryByMonth } from './utils';
+import { useYarnStorage } from './YarnStorageContext';
+import { GRAMS_PER_BALL } from './utils';
 import { MonthlyBalance } from './MonthlyBalance';
 
 export function YarnState() {
-  const { useValue } = useStorageContext();
+  const { months, maxTotal } = useYarnStorage();
 
-  const { value } = useValue<Yarn>(KEY);
-
-  if (!value) {
+  if (!months) {
     return <>Loading...</>;
   }
-
-  const monthEntries = Object.entries(getHistoryByMonth(value));
-  const maxTotal = Math.max(...monthEntries.map(([, month]) => month.total));
 
   return (
     <div className="yarn-state">
       <ol
         style={{ '--balls-across': maxTotal / GRAMS_PER_BALL } as CSSProperties}
       >
-        {monthEntries.map(([id, month], index) => (
-          <li key={id}>
+        {months.map((month, index) => (
+          <li key={month.month.toString()}>
             <MonthLabel
-              monthNumber={id.split('-')[1]}
+              month={month.month}
               monthTotal={month.total}
-              isLastMonth={index === monthEntries.length - 1}
+              isLastMonth={index === months.length - 1}
             />
             <MonthlyBalance {...month} />
           </li>
@@ -39,20 +33,17 @@ export function YarnState() {
 }
 
 function MonthLabel({
-  monthNumber,
+  month,
   monthTotal,
   isLastMonth,
 }: {
-  monthNumber: string;
+  month: Temporal.PlainYearMonth;
   monthTotal: number;
   isLastMonth: boolean;
 }) {
-  const monthName = new Date(`2000-${monthNumber}-01`).toLocaleString(
-    'default',
-    {
-      month: 'long',
-    },
-  );
+  const monthName = month
+    .toPlainDate({ day: 1 })
+    .toLocaleString('default', { month: 'long' });
 
   return (
     <div className="label">
