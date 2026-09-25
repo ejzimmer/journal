@@ -21,13 +21,13 @@ const getBalanceChanges = (yarnTypes: YarnType[]) =>
         yarnType: id,
         month,
         grams,
-        change: grams - (balances[index - 1]?.grams ?? 0),
+        difference: grams - (balances[index - 1]?.grams ?? 0),
       })),
     )
     .sort(
       (a, b) =>
         Temporal.PlainYearMonth.compare(a.month, b.month) ||
-        a.change - b.change,
+        a.difference - b.difference,
     );
 
 export const buildYarnPile = (yarnTypes: YarnType[]): YarnBall[] =>
