@@ -17,6 +17,7 @@ label.checkbox {
   &.tick-for-done {
     display: inline-flex;
     width: var(--checkbox-size);
+    flex-shrink: 0;
     aspect-ratio: 1;
 
     .control {
