@@ -21,6 +21,7 @@ import { getHistoryByMonth, getThisMonth } from './utils';
 export type YarnStorageContextType = {
   yarnTypes?: YarnType[];
   months?: Month[];
+  maxTotal: number;
   updateBalance: (change: BalanceChange) => void;
 };
 
@@ -67,9 +68,12 @@ export function YarnStorageProvider({ children }: { children: ReactNode }) {
     const getCurrentBalance = (yarnType: string) =>
       yarnTypes?.find(({ id }) => id === yarnType)?.balances.at(-1)?.grams ?? 0;
 
+    const months = yarnTypes && getHistoryByMonth(yarnTypes);
+
     return {
       yarnTypes,
-      months: yarnTypes && getHistoryByMonth(yarnTypes),
+      months,
+      maxTotal: Math.max(0, ...(months ?? []).map(({ total }) => total)),
       updateBalance: ({ yarnType, amount, operation }: BalanceChange) => {
         const currentBalance = getCurrentBalance(yarnType);
 

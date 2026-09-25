@@ -101,6 +101,28 @@ describe('YarnStorageProvider', () => {
     });
   });
 
+  describe('maxTotal', () => {
+    beforeEach(() => {
+      jest.useFakeTimers();
+      jest.setSystemTime(new Date('2026-03-11'));
+    });
+
+    afterEach(() => {
+      jest.useRealTimers();
+    });
+
+    it('gives the biggest monthly total', () => {
+      const { result } = renderYarnStorage({
+        wool: {
+          id: 'wool',
+          history: { '2026-01': 300, '2026-02': 900, '2026-03': 400 },
+        },
+      });
+
+      expect(result.current.maxTotal).toBe(900);
+    });
+  });
+
   describe('updateBalance', () => {
     beforeEach(() => {
       jest.useFakeTimers();

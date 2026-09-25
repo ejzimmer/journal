@@ -6,13 +6,11 @@ import { GRAMS_PER_BALL } from './utils';
 import { MonthlyBalance } from './MonthlyBalance';
 
 export function YarnState() {
-  const { months } = useYarnStorage();
+  const { months, maxTotal } = useYarnStorage();
 
   if (!months) {
     return <>Loading...</>;
   }
-
-  const maxTotal = Math.max(...months.map(({ total }) => total));
 
   return (
     <div className="yarn-state">

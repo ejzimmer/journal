@@ -23,6 +23,7 @@ const storedYarn: StoredYarn = {
 const renderYarnState = () =>
   renderWithYarnStorage(<YarnState />, {
     months: getHistoryByMonth(Object.values(storedYarn).map(convertToYarnType)),
+    maxTotal: 1000,
   });
 
 const getMonths = () => {
