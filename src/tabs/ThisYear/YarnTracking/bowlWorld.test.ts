@@ -22,6 +22,45 @@ const getGap = (one: PlacedBall, other: PlacedBall) =>
   getRadius(one) -
   getRadius(other);
 
+const findOverlappingPair = (balls: PlacedBall[]) =>
+  balls
+    .flatMap((ball, index) =>
+      balls.slice(index + 1).map((other) => [ball, other]),
+    )
+    .find(([ball, other]) => getGap(ball, other) < -0.02);
+
+const describeBall = ({ ball, x, y }: PlacedBall) =>
+  `ball ${ball.id} at (${x.toFixed(2)}, ${y.toFixed(2)})`;
+
+declare global {
+  namespace jest {
+    interface Matchers<R> {
+      toBeInTheBowl(world: BowlWorld): R;
+      toBeOverlapping(): R;
+    }
+  }
+}
+
+expect.extend({
+  toBeInTheBowl(ball: PlacedBall, world: BowlWorld) {
+    return {
+      pass: isInsideBowl(world, ball),
+      message: () =>
+        `expected ${describeBall(ball)} ${this.isNot ? 'not ' : ''}to be in the bowl`,
+    };
+  },
+  toBeOverlapping(balls: PlacedBall[]) {
+    const pair = findOverlappingPair(balls);
+    return {
+      pass: pair !== undefined,
+      message: () =>
+        pair
+          ? `expected ${pair.map(describeBall).join(' and ')} not to overlap`
+          : 'expected some of the balls to overlap',
+    };
+  },
+});
+
 describe('BowlWorld', () => {
   describe('when balls are added', () => {
     it('settles them inside the bowl', () => {
@@ -32,7 +71,7 @@ describe('BowlWorld', () => {
 
       const balls = world.getBalls();
       expect(balls.map(({ ball }) => ball.id)).toEqual([0, 1]);
-      balls.forEach((ball) => expect(isInsideBowl(world, ball)).toBe(true));
+      balls.forEach((ball) => expect(ball).toBeInTheBowl(world));
     });
 
     it('sizes each ball by how much of a full ball it holds', () => {
@@ -52,14 +91,7 @@ describe('BowlWorld', () => {
 
       world.syncBalls(pile);
 
-      const balls = world.getBalls();
-      balls.forEach((ball, index) =>
-        balls
-          .slice(index + 1)
-          .forEach((other) =>
-            expect(getGap(ball, other)).toBeGreaterThan(-0.02),
-          ),
-      );
+      expect(world.getBalls()).not.toBeOverlapping();
     });
 
     describe('to a bowl that already has balls in it', () => {
@@ -72,9 +104,9 @@ describe('BowlWorld', () => {
 
         world.syncBalls([createWoolBall(0, 200), createWoolBall(1, 200)]);
 
-        const [first, second] = world.getBalls();
-        expect(isInsideBowl(world, second)).toBe(true);
-        expect(getGap(first, second)).toBeGreaterThan(-0.02);
+        const balls = world.getBalls();
+        expect(balls[1]).toBeInTheBowl(world);
+        expect(balls).not.toBeOverlapping();
       });
     });
   });
@@ -87,9 +119,9 @@ describe('BowlWorld', () => {
 
       world.syncBalls([createWoolBall(0, 200), createWoolBall(1, 200)]);
 
-      const [grown, neighbour] = world.getBalls();
-      expect(grown.size).toBe(1);
-      expect(getGap(grown, neighbour)).toBeGreaterThan(-0.02);
+      const balls = world.getBalls();
+      expect(balls[0].size).toBe(1);
+      expect(balls).not.toBeOverlapping();
     });
   });
 
