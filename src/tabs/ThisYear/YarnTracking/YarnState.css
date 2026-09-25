@@ -8,45 +8,20 @@
 }
 
 .yarn-pile {
-  --ball-size: 48px;
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  align-items: flex-end;
+  display: flow-root;
+  position: relative;
 
-  .tooltip-container {
-    display: flex;
-    flex: none;
+  canvas {
+    display: block;
   }
 
-  .tooltip-container:hover .tooltip {
+  .tooltip-anchor {
+    position: absolute;
+    pointer-events: none;
+  }
+
+  .tooltip {
     opacity: 1;
-  }
-
-  .ball {
-    flex: none;
-    display: flex;
-    color: hsl(0 0% 55%);
-    filter: drop-shadow(1px 2px 2px hsl(0 0 0 / 0.25));
-  }
-
-  .ball[data-used] {
-    opacity: calc(0.55 * (1 - var(--fade)));
-    filter: grayscale(calc(0.3 + 0.7 * var(--fade)))
-      blur(calc(1.5px + 4px * var(--fade)));
-  }
-
-  .ball[data-yarn-type='wool'] {
-    color: hsl(256 80% 60%);
-  }
-  .ball[data-yarn-type='cotton'] {
-    color: hsl(194 97% 48%);
-  }
-  .ball[data-yarn-type='acrylic'] {
-    color: hsl(150 90% 49%);
-  }
-  .ball[data-yarn-type='sock yarn'] {
-    color: hsl(305 94% 47%);
   }
 }
 

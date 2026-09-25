@@ -87,6 +87,10 @@ document.addEventListener('click', (event) => {
   }
 });
 
+HTMLCanvasElement.prototype.getContext = function mock() {
+  return null;
+} as typeof HTMLCanvasElement.prototype.getContext;
+
 // jsdom doesn't implement scrollIntoView.
 Element.prototype.scrollIntoView = function mock() {};
 

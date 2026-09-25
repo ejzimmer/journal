@@ -1,37 +1,23 @@
 import './YarnState.css';
+import { useMemo } from 'react';
 import { useYarnStorage } from './YarnStorageContext';
-import { YarnPileBall } from './YarnPileBall';
+import { YarnPile } from './YarnPile';
 import { YarnBallList } from './YarnBallList';
-import { YarnBall } from './types';
-import { getThisMonth } from '../../../shared/dates';
-
-const MONTHS_UNTIL_GONE = 12;
-
-const getFade = ({ usedIn }: YarnBall) =>
-  usedIn &&
-  getThisMonth().since(usedIn, { largestUnit: 'months' }).months /
-    MONTHS_UNTIL_GONE;
+import { getPileBalls } from './pileBalls';
 
 export function YarnState() {
   const { pile, currentBalance } = useYarnStorage();
+  const pileBalls = useMemo(() => pile && getPileBalls(pile), [pile]);
 
-  if (!pile) {
+  if (!pileBalls) {
     return <>Loading...</>;
   }
-
-  const balls = pile
-    .map((ball) => ({ ball, fade: getFade(ball) }))
-    .filter(({ fade }) => fade === undefined || fade < 1);
 
   return (
     <div className="yarn-state">
       <div className="label">Current: {currentBalance.toLocaleString()}g</div>
-      <div className="yarn-pile" aria-hidden="true">
-        {balls.map(({ ball, fade }) => (
-          <YarnPileBall key={ball.id} ball={ball} fade={fade} />
-        ))}
-      </div>
-      <YarnBallList balls={balls.map(({ ball }) => ball)} />
+      <YarnPile balls={pileBalls} />
+      <YarnBallList balls={pileBalls.map(({ ball }) => ball)} />
     </div>
   );
 }
