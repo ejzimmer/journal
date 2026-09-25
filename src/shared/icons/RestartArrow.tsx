@@ -1,18 +1,19 @@
 import { IconProps } from './types';
 
 export function RestartArrowIcon({
-  width = '100%',
   colour = 'currentColor',
+  ...props
 }: IconProps) {
   return (
     <svg
       viewBox="0 0 20 20"
       stroke={colour}
       strokeWidth="2"
-      width={width}
+      width="100%"
       fill="none"
       strokeLinecap="round"
       transform="rotate(-10, 0, 0)"
+      {...props}
     >
       <path
         d="M 4 10

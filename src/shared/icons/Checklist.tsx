@@ -1,18 +1,18 @@
 import { IconProps } from './types';
 
 export function ChecklistIcon({
-  width = '100%',
   colour = 'currentColor',
-  strokeWidth = '2',
+  ...props
 }: IconProps) {
   return (
     <svg
       viewBox="0 0 20 20"
       stroke={colour}
-      strokeWidth={strokeWidth}
+      strokeWidth="2"
       strokeLinecap="round"
-      width={width}
+      width="100%"
       fill={colour}
+      {...props}
     >
       <circle cx="3" cy="4.5" r="1.5" stroke="none" />
       <line x1="8" y1="4.5" x2="18" y2="4.5" />

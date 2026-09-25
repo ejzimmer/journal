@@ -1,8 +1,8 @@
 import { IconProps } from './types';
 
-export function ColourWheelIcon({ width = '100%' }: IconProps) {
+export function ColourWheelIcon(props: IconProps) {
   return (
-    <svg viewBox="0 0 20 20" width={width}>
+    <svg viewBox="0 0 20 20" width="100%" {...props}>
       <path d="M10,10 L10,2 A8,8 0 0,1 16.93,6 Z" fill="#e74c3c" />
       <path d="M10,10 L16.93,6 A8,8 0 0,1 16.93,14 Z" fill="#f1c40f" />
       <path d="M10,10 L16.93,14 A8,8 0 0,1 10,18 Z" fill="#2ecc71" />
