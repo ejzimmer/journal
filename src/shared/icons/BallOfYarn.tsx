@@ -1,6 +1,13 @@
 import { useId } from 'react';
 import { IconProps } from './types';
-import { BALL_OUTLINE, BANDS, SHADING } from './ballOfYarnShape';
+import {
+  BALL_OUTLINE,
+  BAND_EDGE,
+  BANDS,
+  darkenColour,
+  SHADING,
+  STRAND,
+} from './ballOfYarnShape';
 
 export function BallOfYarnIcon({
   width = '100%',
@@ -36,8 +43,8 @@ export function BallOfYarnIcon({
       <g
         clipPath={`url(#${wrapClip})`}
         fill="none"
-        stroke={`oklch(from ${colour} calc(l * 0.9) c h)`}
-        strokeWidth="0.32"
+        stroke={darkenColour(colour, STRAND.lightness)}
+        strokeWidth={STRAND.width}
       >
         {BANDS.map(({ angle, fill, edges, strands }) => (
           <g key={angle} transform={`rotate(${angle} 10 10)`}>
@@ -46,8 +53,8 @@ export function BallOfYarnIcon({
               <path
                 key={edge}
                 d={edge}
-                stroke={`oklch(from ${colour} calc(l * 0.8) c h)`}
-                strokeWidth="0.45"
+                stroke={darkenColour(colour, BAND_EDGE.lightness)}
+                strokeWidth={BAND_EDGE.width}
               />
             ))}
             {strands.map((strand) => (

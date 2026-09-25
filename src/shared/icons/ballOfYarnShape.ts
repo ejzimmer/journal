@@ -206,3 +206,9 @@ export const SHADING = {
     { offset: 1, rgb: '0 0 0', opacity: 0.4 },
   ],
 };
+
+export const STRAND = { width: 0.32, lightness: 0.9 };
+export const BAND_EDGE = { width: 0.45, lightness: 0.8 };
+
+export const darkenColour = (colour: string, lightness: number) =>
+  `oklch(from ${colour} calc(l * ${lightness}) c h)`;

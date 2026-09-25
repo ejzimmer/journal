@@ -2,12 +2,12 @@ import {
   BALL_CENTRE,
   BALL_OUTLINE,
   BALL_RADIUS,
+  BAND_EDGE,
   BANDS,
+  darkenColour,
   SHADING,
+  STRAND,
 } from './ballOfYarnShape';
-
-const STRAND = { width: 0.32, opacity: 0.26 };
-const BAND_EDGE = { width: 0.45, opacity: 0.5 };
 
 export function drawBallOfYarn(
   context: CanvasRenderingContext2D,
@@ -40,8 +40,8 @@ function drawBand(
     context.fillStyle = colour;
     context.fill(new Path2D(fill));
   }
-  strokePaths(context, strands, STRAND);
-  strokePaths(context, edges, BAND_EDGE);
+  strokePaths(context, strands, STRAND, colour);
+  strokePaths(context, edges, BAND_EDGE, colour);
 
   context.restore();
 }
@@ -49,10 +49,11 @@ function drawBand(
 function strokePaths(
   context: CanvasRenderingContext2D,
   paths: string[],
-  { width, opacity }: { width: number; opacity: number },
+  { width, lightness }: { width: number; lightness: number },
+  colour: string,
 ) {
   context.lineWidth = width;
-  context.strokeStyle = `rgb(0 0 0 / ${opacity})`;
+  context.strokeStyle = darkenColour(colour, lightness);
   paths.forEach((path) => context.stroke(new Path2D(path)));
 }
 
