@@ -5,7 +5,7 @@ import { getThisMonth } from './utils';
 import { YarnStash } from './YarnStash';
 
 export type YarnStorageContextType = {
-  yarnByTypes?: YarnType[];
+  yarnByType?: YarnType[];
   pile?: YarnBall[];
   currentBalance: number;
   addYarn: (yarnType: string, grams: number) => void;
@@ -35,19 +35,19 @@ export function YarnStorageProvider({ children }: { children: ReactNode }) {
   const [stash] = useState(() => new YarnStash());
 
   const value = useMemo(() => {
-    const yarnByTypes =
+    const yarnByType =
       storedYarn && Object.values(storedYarn).map(convertToYarnType);
 
-    if (yarnByTypes) {
-      stash.applyBalances(yarnByTypes);
+    if (yarnByType) {
+      stash.applyBalances(yarnByType);
     }
 
     const saveBalance = (yarnType: string, grams: number) =>
       setValue(`${KEY}/${yarnType}/history/${getThisMonth()}`, grams);
 
     return {
-      yarnByTypes,
-      pile: yarnByTypes && [...stash.balls],
+      yarnByType,
+      pile: yarnByType && [...stash.balls],
       currentBalance: stash.getTotalBalance(),
       addYarn: (yarnType: string, grams: number) =>
         saveBalance(yarnType, stash.getBalance(yarnType) + grams),
