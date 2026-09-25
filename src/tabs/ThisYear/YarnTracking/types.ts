@@ -13,7 +13,6 @@ export type BalanceChange = {
   operation: Operation;
 };
 
-export type History = Record<string, Month>;
 export type Month = {
   month: Temporal.PlainYearMonth;
   total: number;

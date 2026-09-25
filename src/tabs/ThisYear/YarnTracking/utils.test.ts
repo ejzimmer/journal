@@ -4,9 +4,12 @@ import { convertToYarnType } from './YarnStorageContext';
 
 const getMonthsByMonthId = (yarnState: StoredYarn) =>
   Object.fromEntries(
-    Object.entries(
-      getHistoryByMonth(Object.values(yarnState).map(convertToYarnType)),
-    ).map(([id, month]) => [id, { ...month, month: month.month.toString() }]),
+    getHistoryByMonth(Object.values(yarnState).map(convertToYarnType)).map(
+      (month) => [
+        month.month.toString(),
+        { ...month, month: month.month.toString() },
+      ],
+    ),
   );
 
 describe('getHistoryByMonth', () => {

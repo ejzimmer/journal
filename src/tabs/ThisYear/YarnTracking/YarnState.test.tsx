@@ -3,6 +3,7 @@ import { YarnState } from './YarnState';
 import { renderWithYarnStorage } from './yarnStorageTestUtils';
 import { convertToYarnType } from './YarnStorageContext';
 import { StoredYarn } from './types';
+import { getHistoryByMonth } from './utils';
 
 const storedYarn: StoredYarn = {
   wool: {
@@ -19,10 +20,10 @@ const storedYarn: StoredYarn = {
     },
   },
 };
-const yarnTypes = Object.values(storedYarn).map(convertToYarnType);
-
 const renderYarnState = () =>
-  renderWithYarnStorage(<YarnState />, { yarnTypes });
+  renderWithYarnStorage(<YarnState />, {
+    months: getHistoryByMonth(Object.values(storedYarn).map(convertToYarnType)),
+  });
 
 const getMonths = () => {
   const [january, february, current] = screen.getAllByRole('listitem');

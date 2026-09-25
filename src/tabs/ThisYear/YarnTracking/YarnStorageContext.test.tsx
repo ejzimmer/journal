@@ -72,6 +72,35 @@ describe('YarnStorageProvider', () => {
     });
   });
 
+  describe('months', () => {
+    beforeEach(() => {
+      jest.useFakeTimers();
+      jest.setSystemTime(new Date('2026-03-11'));
+    });
+
+    afterEach(() => {
+      jest.useRealTimers();
+    });
+
+    it('gives the totals for every month up to this one', () => {
+      const { result } = renderYarnStorage({
+        wool: { id: 'wool', history: { '2026-01': 300, '2026-02': 700 } },
+        cotton: { id: 'cotton', history: { '2026-01': 300 } },
+      });
+
+      expect(
+        result.current.months?.map(({ month, total }) => [
+          month.toString(),
+          total,
+        ]),
+      ).toEqual([
+        ['2026-01', 600],
+        ['2026-02', 1000],
+        ['2026-03', 1000],
+      ]);
+    });
+  });
+
   describe('updateBalance', () => {
     beforeEach(() => {
       jest.useFakeTimers();

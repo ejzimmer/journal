@@ -1,4 +1,4 @@
-import { History, Month, TotalsByType, YarnType } from './types';
+import { Month, TotalsByType, YarnType } from './types';
 
 export const getThisMonth = () =>
   Temporal.Now.plainDateISO().toPlainYearMonth();
@@ -27,10 +27,10 @@ const getMonthsBetween = (
     (_, index) => first.add({ months: index }),
   );
 
-export function getHistoryByMonth(yarnTypes: YarnType[]): History {
+export function getHistoryByMonth(yarnTypes: YarnType[]): Month[] {
   const thisMonth = getThisMonth();
 
-  const months = getMonthsBetween(
+  return getMonthsBetween(
     getFirstMonth(yarnTypes, thisMonth),
     thisMonth,
   ).reduce<Month[]>((previousMonths, month) => {
@@ -49,10 +49,6 @@ export function getHistoryByMonth(yarnTypes: YarnType[]): History {
       { month, total: sumSubTotals(subTotals), subTotals },
     ];
   }, []);
-
-  return Object.fromEntries(
-    months.map((month) => [month.month.toString(), month]),
-  );
 }
 
 export const GRAMS_PER_BALL = 200;

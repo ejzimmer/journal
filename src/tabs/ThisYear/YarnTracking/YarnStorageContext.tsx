@@ -10,15 +10,17 @@ import { useStorageContext } from '../../../shared/FirebaseContext';
 import {
   BalanceChange,
   KEY,
+  Month,
   StoredYarn,
   StoredYarnType,
   YarnType,
 } from './types';
 import { hasTwoDigitYearMonths, migrateYarnDates } from './migrateYarnDates';
-import { getThisMonth } from './utils';
+import { getHistoryByMonth, getThisMonth } from './utils';
 
 export type YarnStorageContextType = {
   yarnTypes?: YarnType[];
+  months?: Month[];
   updateBalance: (change: BalanceChange) => void;
 };
 
@@ -67,6 +69,7 @@ export function YarnStorageProvider({ children }: { children: ReactNode }) {
 
     return {
       yarnTypes,
+      months: yarnTypes && getHistoryByMonth(yarnTypes),
       updateBalance: ({ yarnType, amount, operation }: BalanceChange) => {
         const currentBalance = getCurrentBalance(yarnType);
 

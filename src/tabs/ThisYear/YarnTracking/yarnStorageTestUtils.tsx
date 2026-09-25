@@ -11,6 +11,7 @@ export function renderWithYarnStorage(
 ) {
   const storageContext: YarnStorageContextType = {
     yarnTypes: undefined,
+    months: undefined,
     updateBalance: jest.fn(),
     ...overrides,
   };

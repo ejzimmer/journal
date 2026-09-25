@@ -2,30 +2,29 @@ import { CSSProperties } from 'react';
 
 import './YarnState.css';
 import { useYarnStorage } from './YarnStorageContext';
-import { GRAMS_PER_BALL, getHistoryByMonth } from './utils';
+import { GRAMS_PER_BALL } from './utils';
 import { MonthlyBalance } from './MonthlyBalance';
 
 export function YarnState() {
-  const { yarnTypes } = useYarnStorage();
+  const { months } = useYarnStorage();
 
-  if (!yarnTypes) {
+  if (!months) {
     return <>Loading...</>;
   }
 
-  const monthEntries = Object.entries(getHistoryByMonth(yarnTypes));
-  const maxTotal = Math.max(...monthEntries.map(([, month]) => month.total));
+  const maxTotal = Math.max(...months.map(({ total }) => total));
 
   return (
     <div className="yarn-state">
       <ol
         style={{ '--balls-across': maxTotal / GRAMS_PER_BALL } as CSSProperties}
       >
-        {monthEntries.map(([id, month], index) => (
-          <li key={id}>
+        {months.map((month, index) => (
+          <li key={month.month.toString()}>
             <MonthLabel
               month={month.month}
               monthTotal={month.total}
-              isLastMonth={index === monthEntries.length - 1}
+              isLastMonth={index === months.length - 1}
             />
             <MonthlyBalance {...month} />
           </li>
