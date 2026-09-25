@@ -1,37 +1,36 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { JSX, useMemo } from 'react';
 import { PlusIcon } from '../../shared/icons/Plus';
-import { formatDate } from '../../shared/dates';
+import { ChevronUpIcon } from '../../shared/icons/ChevronUp';
+import { ChevronDownIcon } from '../../shared/icons/ChevronDown';
+import { EqualIcon } from '../../shared/icons/Equal';
+import { IconProps } from '../../shared/icons/types';
+import { compareDates, formatDate, getPlainDate } from '../../shared/dates';
+import { useStorageContext } from '../../shared/FirebaseContext';
+import { useFormToggle } from '../../shared/controls/useFormToggle';
+import {
+  Exercise,
+  EXERCISES_PATH,
+  ExerciseUpdate,
+  Recommendation,
+} from '../../shared/types';
+import { ExerciseForm } from './ExerciseForm';
 import './ExerciseTracker.css';
 
-type Update = {
-  date: Temporal.PlainDate;
-  update: string;
-  recommendation?: 'up' | 'stay' | 'down';
-};
+export function ExerciseTracker() {
+  const { useValue } = useStorageContext();
+  const { value } = useValue<Record<string, Exercise>>(EXERCISES_PATH);
 
-type Exercise = {
-  name: string;
-  updates: Update[];
-};
-
-type ExerciseTrackerProps = {
-  exercises: Exercise[];
-};
-
-export function ExerciseTracker({ exercises }: ExerciseTrackerProps) {
-  const numberOfColumns = exercises.reduce(
-    (highest, exercise) => Math.max(highest, exercise.updates.length),
-    0,
-  );
+  const exercises = useMemo(() => Object.values(value ?? {}), [value]);
+  const numberOfUpdateColumns = Math.max(0, ...exercises.map(countUpdates)) + 1;
 
   return (
     <table className="exercise-tracker">
       <tbody>
         {exercises.map((exercise) => (
           <ExerciseRow
-            key={exercise.name}
+            key={exercise.id}
             exercise={exercise}
-            maxColumns={numberOfColumns}
+            numberOfUpdateColumns={numberOfUpdateColumns}
           />
         ))}
       </tbody>
@@ -39,63 +38,107 @@ export function ExerciseTracker({ exercises }: ExerciseTrackerProps) {
   );
 }
 
+const countUpdates = (exercise: Exercise) =>
+  Object.keys(exercise.updates ?? {}).length;
+
+const sortUpdatesByDate = (updates: Record<string, ExerciseUpdate> = {}) =>
+  Object.values(updates).sort((a, b) => compareDates(a.date, b.date));
+
 type ExerciseRowProps = {
   exercise: Exercise;
-  maxColumns: number;
+  numberOfUpdateColumns: number;
 };
 
-function ExerciseRow({ exercise, maxColumns }: ExerciseRowProps) {
-  const [showForm, setShowForm] = useState(false);
-  const dateInputRef = useRef<HTMLInputElement>(null);
+function ExerciseRow({ exercise, numberOfUpdateColumns }: ExerciseRowProps) {
+  const { addItem } = useStorageContext();
+  const { isFormOpen, triggerRef, openForm, closeForm } = useFormToggle();
 
-  const emptyCells = useMemo(
-    () =>
-      Array.from({
-        length: maxColumns - exercise.updates.length,
-      }),
-    [maxColumns, exercise],
+  const updates = useMemo(
+    () => sortUpdatesByDate(exercise.updates),
+    [exercise.updates],
   );
+  const trailingEmptyCells = Array.from({
+    length: numberOfUpdateColumns - updates.length - 1,
+  });
 
-  useEffect(() => {
-    dateInputRef.current?.focus();
-  }, [showForm]);
+  const addUpdate = (update: Omit<ExerciseUpdate, 'id'>) => {
+    addItem<ExerciseUpdate>(`${EXERCISES_PATH}/${exercise.id}/updates`, update);
+    closeForm();
+  };
 
   return (
     <tr>
       <th role="rowheader">{exercise.name}</th>
-      {exercise.updates.map(({ date, update }) => {
-        const { day, month, year } = formatDate(date);
-        return (
-          <td key={date.toString()}>
-            <div className="date">
-              {day} {month} {year}
-            </div>
-            {update}
-          </td>
-        );
-      })}
-      {emptyCells.length > 0 && (
-        <td>
-          {showForm && (
-            <form aria-label={`Record ${exercise.name}`}>
-              <input ref={dateInputRef} type="date" aria-label="Date" />
-              <textarea aria-label="Update" />
-            </form>
-          )}
-        </td>
-      )}
-      {emptyCells.length > 1 &&
-        emptyCells.slice(1).map((_, index) => <td key={`${index}`} />)}
-      <td>
-        <button
-          className="secondary-clear"
-          style={{ color: 'var(--action-colour)' }}
-          aria-label={`Record ${exercise.name}`}
-          onClick={() => setShowForm(true)}
-        >
-          <PlusIcon width="24px" />
-        </button>
+      {updates.map((update) => (
+        <UpdateCell key={update.id} update={update} />
+      ))}
+      <td className={isFormOpen ? '' : 'add-update'}>
+        {isFormOpen ? (
+          <ExerciseForm
+            exerciseName={exercise.name}
+            onSubmit={addUpdate}
+            onCancel={closeForm}
+          />
+        ) : (
+          <button
+            ref={triggerRef}
+            className="ghost"
+            aria-label={`Record ${exercise.name}`}
+            onClick={openForm}
+          >
+            <PlusIcon width="24px" strokeWidth="3" />
+          </button>
+        )}
       </td>
+      {trailingEmptyCells.map((_, index) => (
+        <td key={index} />
+      ))}
     </tr>
   );
 }
+
+function UpdateCell({ update }: { update: ExerciseUpdate }) {
+  const { day, month, year } = formatDate(getPlainDate(update.date));
+
+  return (
+    <td>
+      <div className="date">
+        {day} {month} {year}
+      </div>
+      {update.details}
+      {update.recommendation && (
+        <RecommendationIcon recommendation={update.recommendation} />
+      )}
+    </td>
+  );
+}
+
+function RecommendationIcon({
+  recommendation,
+}: {
+  recommendation: Recommendation;
+}) {
+  const Icon = recommendationIcons[recommendation];
+
+  return (
+    <div className="recommendation">
+      <Icon width="24px" colour="white" strokeWidth="6" />
+      <Icon
+        role="img"
+        aria-label={recommendation}
+        width="24px"
+        colour="var(--action-colour)"
+        strokeWidth="4"
+      />
+    </div>
+  );
+}
+
+const recommendationIcons: Record<
+  Recommendation,
+  (props: IconProps) => JSX.Element
+> = {
+  increase: ChevronUpIcon,
+  decrease: ChevronDownIcon,
+  'no change': EqualIcon,
+};
