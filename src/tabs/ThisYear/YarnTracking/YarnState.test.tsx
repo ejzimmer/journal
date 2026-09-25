@@ -31,7 +31,7 @@ const getMonths = () => {
 const getBallWidths = (month: HTMLElement, yarnType: string) =>
   within(within(month).getByRole('img', { name: yarnType }))
     .getAllByTestId('yarn-ball')
-    .map((ball) => Number.parseFloat(ball.style.width));
+    .map((ball) => ball.style.width);
 
 describe('YarnState', () => {
   beforeEach(() => {
@@ -51,16 +51,6 @@ describe('YarnState', () => {
       expect(screen.getByText(/February: 1,000g/)).toBeInTheDocument();
       expect(screen.getByText(/Current: 1,000g/)).toBeInTheDocument();
     });
-
-    it('sets the row widths as percentages of the highest amount', () => {
-      renderYarnState();
-
-      const { january, february, current } = getMonths();
-
-      expect(january).toHaveAttribute('style', 'width: 50%;');
-      expect(february).toHaveAttribute('style', 'width: 100%;');
-      expect(current).toHaveAttribute('style', 'width: 100%;');
-    });
   });
 
   describe('the balls of yarn', () => {
@@ -78,16 +68,36 @@ describe('YarnState', () => {
       expect(getBallWidths(getMonths().february, 'wool: 750g')).toHaveLength(8);
     });
 
+    it('draws every full ball at the size a full ball gets', () => {
+      renderYarnState();
+
+      const wool = getBallWidths(getMonths().february, 'wool: 750g');
+      const cotton = getBallWidths(getMonths().january, 'cotton: 250g');
+
+      expect([...wool.slice(0, 7), ...cotton.slice(0, 2)]).toEqual(
+        Array(9).fill('calc(var(--ball-size) * 1)'),
+      );
+    });
+
+    it('sizes a full ball so the biggest month fills the width available', () => {
+      renderYarnState();
+
+      expect(screen.getByRole('list')).toHaveAttribute(
+        'style',
+        '--balls-across: 10;',
+      );
+    });
+
     describe("when the grams don't fill a whole number of balls", () => {
       it('draws the leftover grams as a proportionally smaller ball', () => {
         renderYarnState();
 
-        const [fullBall, , remainderBall] = getBallWidths(
+        const [, , remainderBall] = getBallWidths(
           getMonths().january,
           'cotton: 250g',
         );
 
-        expect(remainderBall).toBeCloseTo(fullBall / 2);
+        expect(remainderBall).toBe('calc(var(--ball-size) * 0.5)');
       });
     });
   });
