@@ -1,13 +1,13 @@
 import { useRef, useState } from 'react';
 import { useYarnStorage } from './YarnStorageContext';
-import { Operation } from './types';
+import { isYarnTypeId, Operation } from './types';
 import { Switch } from '../../../shared/controls/Switch';
 
 import './Form.css';
 import { TickIcon } from '../../../shared/icons/Tick';
 
 export function YarnTrackingForm() {
-  const { yarnTypes = [], updateBalance } = useYarnStorage();
+  const { yarnByType = [], addYarn, removeYarn } = useYarnStorage();
 
   const yarnTypeRef = useRef<HTMLSelectElement>(null);
   const amountRef = useRef<HTMLInputElement>(null);
@@ -20,17 +20,21 @@ export function YarnTrackingForm() {
     const amount =
       amountRef.current?.value && Number.parseFloat(amountRef.current.value);
 
-    if (!yarnType || !operation || !amount) {
+    if (!yarnType || !isYarnTypeId(yarnType) || !operation || !amount) {
       return;
     }
 
-    updateBalance({ yarnType, amount, operation });
+    if (operation === '+') {
+      addYarn(yarnType, amount);
+    } else {
+      removeYarn(yarnType, amount);
+    }
   };
 
   return (
     <form onSubmit={updateYarn} className="yarn-tracking-form">
       <select ref={yarnTypeRef}>
-        {yarnTypes.map(({ id }) => (
+        {yarnByType.map(({ id }) => (
           <option key={id} value={id}>
             {id}
           </option>

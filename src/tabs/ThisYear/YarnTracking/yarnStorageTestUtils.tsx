@@ -10,10 +10,11 @@ export function renderWithYarnStorage(
   overrides: Partial<YarnStorageContextType> = {},
 ) {
   const storageContext: YarnStorageContextType = {
-    yarnTypes: undefined,
-    months: undefined,
-    maxTotal: 0,
-    updateBalance: jest.fn(),
+    yarnByType: undefined,
+    pile: undefined,
+    currentBalance: 0,
+    addYarn: jest.fn(),
+    removeYarn: jest.fn(),
     ...overrides,
   };
   const result = render(

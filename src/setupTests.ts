@@ -4,6 +4,23 @@
 // learn more: https://github.com/testing-library/jest-dom
 import '@testing-library/jest-dom';
 
+declare global {
+  namespace jest {
+    interface Expect {
+      addEqualityTesters(
+        testers: Array<(a: unknown, b: unknown) => boolean | undefined>,
+      ): void;
+    }
+  }
+}
+
+expect.addEqualityTesters([
+  (a, b) =>
+    a instanceof Temporal.PlainYearMonth && b instanceof Temporal.PlainYearMonth
+      ? a.equals(b)
+      : undefined,
+]);
+
 HTMLDialogElement.prototype.show = function mock(this: HTMLDialogElement) {
   this.open = true;
 };

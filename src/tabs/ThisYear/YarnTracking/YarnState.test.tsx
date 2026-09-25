@@ -1,106 +1,96 @@
-import { screen, within } from '@testing-library/react';
+import { screen } from '@testing-library/react';
 import { YarnState } from './YarnState';
 import { renderWithYarnStorage } from './yarnStorageTestUtils';
-import { convertToYarnType } from './YarnStorageContext';
-import { StoredYarn } from './types';
-import { getHistoryByMonth } from './utils';
-
-const storedYarn: StoredYarn = {
-  wool: {
-    id: 'wool',
-    history: {
-      '2026-01': 300,
-      '2026-02': 700,
-    },
-  },
-  cotton: {
-    id: 'cotton',
-    history: {
-      '2026-01': 300,
-    },
-  },
-};
-const renderYarnState = () =>
-  renderWithYarnStorage(<YarnState />, {
-    months: getHistoryByMonth(Object.values(storedYarn).map(convertToYarnType)),
-    maxTotal: 1000,
-  });
-
-const getMonths = () => {
-  const [january, february, current] = screen.getAllByRole('listitem');
-  return { january, february, current };
-};
-
-const getBallWidths = (month: HTMLElement, yarnType: string) =>
-  within(within(month).getByRole('img', { name: yarnType }))
-    .getAllByTestId('yarn-ball')
-    .map((ball) => ball.style.width);
 
 describe('YarnState', () => {
   beforeEach(() => {
     jest.useFakeTimers();
-    jest.setSystemTime(new Date('2026-03-11'));
+    jest.setSystemTime(new Date('2026-09-11'));
   });
 
   afterEach(() => {
     jest.useRealTimers();
   });
 
-  describe('the monthly totals', () => {
-    it('shows the total for each month, carrying the current month forward', () => {
-      renderYarnState();
+  describe('the current total', () => {
+    it('shows the grams currently in the stash', () => {
+      renderWithYarnStorage(<YarnState />, { pile: [], currentBalance: 1000 });
 
-      expect(screen.getByText(/January: 600g/)).toBeInTheDocument();
-      expect(screen.getByText(/February: 1,000g/)).toBeInTheDocument();
-      expect(screen.getByText(/Current: 1,000g/)).toBeInTheDocument();
+      expect(screen.getByText('Current: 1,000g')).toBeInTheDocument();
     });
   });
 
-  describe('the balls of yarn', () => {
-    it('labels each yarn type with what the month holds of it', () => {
-      renderYarnState();
+  describe('the pile of yarn', () => {
+    describe('a ball in the stash', () => {
+      it('is labelled with its yarn type and weight', () => {
+        renderWithYarnStorage(<YarnState />, {
+          pile: [
+            { yarnType: 'wool', grams: 200 },
+            { yarnType: 'wool', grams: 100 },
+          ],
+        });
 
-      expect(
-        within(getMonths().february).getByRole('img', { name: 'wool: 700g' }),
-      ).toBeInTheDocument();
+        expect(
+          screen.getByRole('img', { name: 'wool: 200g' }),
+        ).toBeInTheDocument();
+        expect(
+          screen.getByRole('img', { name: 'wool: 100g' }),
+        ).toBeInTheDocument();
+      });
+
+      it('is sized by how much of a full ball it holds', () => {
+        renderWithYarnStorage(<YarnState />, {
+          pile: [{ yarnType: 'wool', grams: 100 }],
+        });
+
+        expect(
+          screen.getByRole('img', { name: 'wool: 100g' }).style.width,
+        ).toBe('calc(var(--ball-size) * 0.5)');
+      });
     });
 
-    it('draws a ball for each 200g of a yarn type', () => {
-      renderYarnState();
+    describe('a ball that has been used', () => {
+      describe('when it was used less than a year ago', () => {
+        it('fades in proportion to how long ago it was used', () => {
+          renderWithYarnStorage(<YarnState />, {
+            pile: [
+              {
+                yarnType: 'wool',
+                grams: 200,
+                usedIn: Temporal.PlainYearMonth.from('2026-06'),
+              },
+            ],
+          });
 
-      expect(getBallWidths(getMonths().february, 'wool: 700g')).toHaveLength(4);
-    });
+          expect(
+            screen
+              .getByRole('img', { name: 'used wool: 200g' })
+              .style.getPropertyValue('--fade'),
+          ).toBe('0.25');
+        });
+      });
 
-    it('draws every full ball at the size a full ball gets', () => {
-      renderYarnState();
+      describe('when it was used a year or more ago', () => {
+        it('leaves only the balls used more recently', () => {
+          renderWithYarnStorage(<YarnState />, {
+            pile: [
+              {
+                yarnType: 'wool',
+                grams: 200,
+                usedIn: Temporal.PlainYearMonth.from('2025-09'),
+              },
+              {
+                yarnType: 'wool',
+                grams: 200,
+                usedIn: Temporal.PlainYearMonth.from('2025-10'),
+              },
+            ],
+          });
 
-      const wool = getBallWidths(getMonths().february, 'wool: 700g');
-      const cotton = getBallWidths(getMonths().january, 'cotton: 300g');
-
-      expect([...wool.slice(0, 3), ...cotton.slice(0, 1)]).toEqual(
-        Array(4).fill('calc(var(--ball-size) * 1)'),
-      );
-    });
-
-    it('sizes a full ball so the biggest month fills the width available', () => {
-      renderYarnState();
-
-      expect(screen.getByRole('list')).toHaveAttribute(
-        'style',
-        '--balls-across: 5;',
-      );
-    });
-
-    describe("when the grams don't fill a whole number of balls", () => {
-      it('draws the leftover grams as a proportionally smaller ball', () => {
-        renderYarnState();
-
-        const [, remainderBall] = getBallWidths(
-          getMonths().january,
-          'cotton: 300g',
-        );
-
-        expect(remainderBall).toBe('calc(var(--ball-size) * 0.5)');
+          expect(screen.getAllByRole('img')).toEqual([
+            screen.getByRole('img', { name: 'used wool: 200g' }),
+          ]);
+        });
       });
     });
   });

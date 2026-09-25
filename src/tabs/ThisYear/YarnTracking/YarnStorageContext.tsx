@@ -1,20 +1,22 @@
-import { createContext, ReactNode, useContext, useMemo } from 'react';
+import { createContext, ReactNode, useContext, useMemo, useState } from 'react';
 import { useStorageContext } from '../../../shared/FirebaseContext';
 import {
-  BalanceChange,
   KEY,
-  Month,
   StoredYarn,
   StoredYarnType,
+  YarnBall,
   YarnType,
+  YarnTypeId,
 } from './types';
-import { getHistoryByMonth, getThisMonth } from './utils';
+import { getThisMonth } from '../../../shared/dates';
+import { YarnStash } from './YarnStash';
 
 export type YarnStorageContextType = {
-  yarnTypes?: YarnType[];
-  months?: Month[];
-  maxTotal: number;
-  updateBalance: (change: BalanceChange) => void;
+  yarnByType?: YarnType[];
+  pile?: YarnBall[];
+  currentBalance: number;
+  addYarn: (yarnType: YarnTypeId, grams: number) => void;
+  removeYarn: (yarnType: YarnTypeId, grams: number) => void;
 };
 
 export const YarnStorageContext = createContext<
@@ -37,30 +39,29 @@ export const convertToYarnType = ({
 export function YarnStorageProvider({ children }: { children: ReactNode }) {
   const { useValue, setValue } = useStorageContext();
   const { value: storedYarn } = useValue<StoredYarn>(KEY);
+  const [stash] = useState(() => new YarnStash());
 
   const value = useMemo(() => {
-    const yarnTypes =
+    const yarnByType =
       storedYarn && Object.values(storedYarn).map(convertToYarnType);
 
-    const getCurrentBalance = (yarnType: string) =>
-      yarnTypes?.find(({ id }) => id === yarnType)?.balances.at(-1)?.grams ?? 0;
+    if (yarnByType) {
+      stash.applyBalances(yarnByType);
+    }
 
-    const months = yarnTypes && getHistoryByMonth(yarnTypes);
+    const saveBalance = (yarnType: YarnTypeId, grams: number) =>
+      setValue(`${KEY}/${yarnType}/history/${getThisMonth()}`, grams);
 
     return {
-      yarnTypes,
-      months,
-      maxTotal: Math.max(0, ...(months ?? []).map(({ total }) => total)),
-      updateBalance: ({ yarnType, amount, operation }: BalanceChange) => {
-        const currentBalance = getCurrentBalance(yarnType);
-
-        setValue(
-          `${KEY}/${yarnType}/history/${getThisMonth()}`,
-          operation === '+' ? currentBalance + amount : currentBalance - amount,
-        );
-      },
+      yarnByType,
+      pile: yarnByType && [...stash.balls],
+      currentBalance: stash.getTotalBalance(),
+      addYarn: (yarnType: YarnTypeId, grams: number) =>
+        saveBalance(yarnType, stash.getBalance(yarnType) + grams),
+      removeYarn: (yarnType: YarnTypeId, grams: number) =>
+        saveBalance(yarnType, Math.max(0, stash.getBalance(yarnType) - grams)),
     };
-  }, [storedYarn, setValue]);
+  }, [storedYarn, stash, setValue]);
 
   return (
     <YarnStorageContext.Provider value={value}>

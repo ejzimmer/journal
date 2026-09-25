@@ -1,53 +1,22 @@
-import { CSSProperties } from 'react';
-
 import './YarnState.css';
 import { useYarnStorage } from './YarnStorageContext';
-import { GRAMS_PER_BALL } from './utils';
-import { MonthlyBalance } from './MonthlyBalance';
+import { YarnPileBall } from './YarnPileBall';
 
 export function YarnState() {
-  const { months, maxTotal } = useYarnStorage();
+  const { pile, currentBalance } = useYarnStorage();
 
-  if (!months) {
+  if (!pile) {
     return <>Loading...</>;
   }
 
   return (
     <div className="yarn-state">
-      <ol
-        style={{ '--balls-across': maxTotal / GRAMS_PER_BALL } as CSSProperties}
-      >
-        {months.map((month, index) => (
-          <li key={month.month.toString()}>
-            <MonthLabel
-              month={month.month}
-              monthTotal={month.total}
-              isLastMonth={index === months.length - 1}
-            />
-            <MonthlyBalance {...month} />
-          </li>
+      <div className="label">Current: {currentBalance.toLocaleString()}g</div>
+      <div className="yarn-pile">
+        {pile.map((ball, index) => (
+          <YarnPileBall key={index} ball={ball} />
         ))}
-      </ol>
-    </div>
-  );
-}
-
-function MonthLabel({
-  month,
-  monthTotal,
-  isLastMonth,
-}: {
-  month: Temporal.PlainYearMonth;
-  monthTotal: number;
-  isLastMonth: boolean;
-}) {
-  const monthName = month
-    .toPlainDate({ day: 1 })
-    .toLocaleString('default', { month: 'long' });
-
-  return (
-    <div className="label">
-      {isLastMonth ? 'Current' : monthName}: {monthTotal.toLocaleString()}g
+      </div>
     </div>
   );
 }
