@@ -3,6 +3,7 @@ import {
   formatDate,
   formatDateId,
   formatDayAndMonth,
+  formatMonthAndYear,
   getDaysSince,
   getMillisecondsUntilTomorrow,
   getPlainDate,
@@ -216,6 +217,14 @@ describe('dates', () => {
         month: 'Jan',
         year: '26',
       });
+    });
+  });
+
+  describe('formatMonthAndYear', () => {
+    it('gives the short month and the full year', () => {
+      expect(formatMonthAndYear(Temporal.PlainYearMonth.from('2026-06'))).toBe(
+        'Jun 2026',
+      );
     });
   });
 

@@ -13,6 +13,7 @@ export function renderWithYarnStorage(
     yarnByType: undefined,
     pile: undefined,
     currentBalance: 0,
+    getBalance: () => 0,
     addYarn: jest.fn(),
     removeYarn: jest.fn(),
     ...overrides,

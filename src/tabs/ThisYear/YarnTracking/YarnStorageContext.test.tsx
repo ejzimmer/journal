@@ -70,6 +70,17 @@ describe('YarnStorageProvider', () => {
     });
   });
 
+  describe('getBalance', () => {
+    it('gives the latest balance of that yarn type', () => {
+      const { result } = renderYarnStorage({
+        wool: { id: 'wool', history: { '2026-01': 300, '2026-02': 700 } },
+        cotton: { id: 'cotton', history: { '2026-01': 300 } },
+      });
+
+      expect(result.current.getBalance('wool')).toBe(700);
+    });
+  });
+
   describe('saving changes', () => {
     beforeEach(() => {
       jest.useFakeTimers();
