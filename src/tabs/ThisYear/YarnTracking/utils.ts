@@ -1,56 +1,7 @@
-import { Month, TotalsByType, YarnType } from './types';
+import { YarnBall, YarnType } from './types';
 
 export const getThisMonth = () =>
   Temporal.Now.plainDateISO().toPlainYearMonth();
-
-const getFirstMonth = (
-  yarnTypes: YarnType[],
-  thisMonth: Temporal.PlainYearMonth,
-) =>
-  yarnTypes
-    .map(({ balances }) => balances.at(0)?.month)
-    .filter((month) => month !== undefined)
-    .reduce(
-      (earliest, month) =>
-        Temporal.PlainYearMonth.compare(month, earliest) < 0 ? month : earliest,
-      thisMonth.with({ month: 1 }),
-    );
-
-const sumSubTotals = (subTotals: TotalsByType) =>
-  Object.values(subTotals).reduce((current, total) => total + current, 0);
-
-const getMonthsBetween = (
-  first: Temporal.PlainYearMonth,
-  last: Temporal.PlainYearMonth,
-) =>
-  Array.from(
-    { length: last.since(first, { largestUnit: 'months' }).months + 1 },
-    (_, index) => first.add({ months: index }),
-  );
-
-export function getHistoryByMonth(yarnTypes: YarnType[]): Month[] {
-  const thisMonth = getThisMonth();
-
-  return getMonthsBetween(
-    getFirstMonth(yarnTypes, thisMonth),
-    thisMonth,
-  ).reduce<Month[]>((previousMonths, month) => {
-    const previousSubTotals = previousMonths.at(-1)?.subTotals ?? {};
-    const subTotals = Object.fromEntries(
-      yarnTypes.map(({ id, balances }) => [
-        id,
-        balances.find((balance) => balance.month.equals(month))?.grams ??
-          previousSubTotals[id] ??
-          0,
-      ]),
-    );
-
-    return [
-      ...previousMonths,
-      { month, total: sumSubTotals(subTotals), subTotals },
-    ];
-  }, []);
-}
 
 export const GRAMS_PER_BALL = 200;
 
@@ -61,4 +12,83 @@ export function getBallSizes(grams: number): number[] {
   const wholeBallSizes = Array.from({ length: wholeBalls }, () => 1);
 
   return remainder ? [...wholeBallSizes, remainder] : wholeBallSizes;
+}
+
+const getMonthsWithChanges = (yarnTypes: YarnType[]) =>
+  yarnTypes
+    .flatMap(({ balances }) => balances.map(({ month }) => month))
+    .filter(
+      (month, index, months) =>
+        months.findIndex((other) => other.equals(month)) === index,
+    )
+    .sort(Temporal.PlainYearMonth.compare);
+
+export function buildYarnPile(yarnTypes: YarnType[]): YarnBall[] {
+  const pile: YarnBall[] = [];
+  const latestGrams: Record<string, number> = {};
+
+  getMonthsWithChanges(yarnTypes).forEach((month) => {
+    yarnTypes
+      .flatMap(({ id, balances }) => {
+        const balance = balances.find((balance) => balance.month.equals(month));
+        return balance
+          ? [
+              {
+                yarnType: id,
+                grams: balance.grams,
+                change: balance.grams - (latestGrams[id] ?? 0),
+              },
+            ]
+          : [];
+      })
+      .sort((one, other) => one.change - other.change)
+      .forEach(({ yarnType, grams }) => {
+        resizeYarnType(pile, yarnType, grams, month);
+        latestGrams[yarnType] = grams;
+      });
+  });
+
+  return pile;
+}
+
+function resizeYarnType(
+  pile: YarnBall[],
+  yarnType: string,
+  grams: number,
+  month: Temporal.PlainYearMonth,
+) {
+  const sizes = getBallSizes(grams);
+  const inStash = pile
+    .filter((ball) => ball.yarnType === yarnType && !ball.usedIn)
+    .sort((one, other) => other.size - one.size);
+
+  inStash.slice(sizes.length).forEach((ball) => {
+    ball.usedIn = month;
+  });
+
+  const added = Array.from({ length: sizes.length - inStash.length }, () =>
+    restockBall(pile, yarnType),
+  );
+
+  [...inStash, ...added].slice(0, sizes.length).forEach((ball, index) => {
+    ball.size = sizes[index];
+  });
+}
+
+function restockBall(pile: YarnBall[], yarnType: string): YarnBall {
+  const mostRecentlyUsed = pile
+    .filter((ball) => ball.usedIn)
+    .sort((one, other) =>
+      Temporal.PlainYearMonth.compare(other.usedIn!, one.usedIn!),
+    )[0];
+
+  if (mostRecentlyUsed) {
+    mostRecentlyUsed.yarnType = yarnType;
+    delete mostRecentlyUsed.usedIn;
+    return mostRecentlyUsed;
+  }
+
+  const ball = { yarnType, size: 1 };
+  pile.push(ball);
+  return ball;
 }

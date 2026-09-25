@@ -1,67 +1,42 @@
 .yarn-state {
-  container-type: inline-size;
   width: 100%;
+  text-align: center;
 
-  ol {
-    --ball-size: calc(100cqi / var(--balls-across));
-    list-style-type: none;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 8px;
-    text-align: center;
-    padding: 0;
+  .label {
+    margin-block-end: 8px;
   }
 }
 
-.yarn-month {
+.yarn-pile {
+  --ball-size: 48px;
   display: flex;
-  align-items: center;
-  position: relative;
-  cursor: pointer;
-
-  .yarn-type {
-    display: flex;
-    align-items: center;
-    color: hsl(0 0% 55%);
-  }
-
-  .yarn-type[data-yarn-type='wool'] {
-    color: hsl(256 80% 60%);
-  }
-  .yarn-type[data-yarn-type='cotton'] {
-    color: hsl(194 97% 48%);
-  }
-  .yarn-type[data-yarn-type='acrylic'] {
-    color: hsl(150 90% 49%);
-  }
-  .yarn-type[data-yarn-type='sock yarn'] {
-    color: hsl(305 94% 47%);
-  }
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: flex-end;
 
   .ball {
     flex: none;
     display: flex;
+    color: hsl(0 0% 55%);
     filter: drop-shadow(1px 2px 2px hsl(0 0 0 / 0.25));
   }
 
-  .details {
-    display: none;
-    position: absolute;
-    background: hsl(0 100% 100% / 0.92);
-    color: var(--body-colour);
-    padding: 12px;
-    z-index: 1;
-    left: 0;
-    top: 5px;
-    box-shadow:
-      2px 2px 12px hsl(0 0 0 / 0.5),
-      0px 0px 24px hsl(0 0 0 / 0.1);
-    border-radius: 4px;
-    white-space: nowrap;
+  .ball[data-used] {
+    opacity: calc(0.55 * (1 - var(--fade)));
+    filter: grayscale(calc(0.3 + 0.7 * var(--fade)))
+      blur(calc(1.5px + 4px * var(--fade)));
   }
 
-  .yarn-type:hover .details {
-    display: block;
+  .ball[data-yarn-type='wool'] {
+    color: hsl(256 80% 60%);
+  }
+  .ball[data-yarn-type='cotton'] {
+    color: hsl(194 97% 48%);
+  }
+  .ball[data-yarn-type='acrylic'] {
+    color: hsl(150 90% 49%);
+  }
+  .ball[data-yarn-type='sock yarn'] {
+    color: hsl(305 94% 47%);
   }
 }

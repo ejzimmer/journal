@@ -45,54 +45,28 @@ describe('YarnStorageProvider', () => {
     });
   });
 
-  describe('months', () => {
-    beforeEach(() => {
-      jest.useFakeTimers();
-      jest.setSystemTime(new Date('2026-03-11'));
-    });
+  describe('pile', () => {
+    it('builds the pile of balls from every yarn type', () => {
+      const { result } = renderYarnStorage({
+        wool: { id: 'wool', history: { '2026-01': 400, '2026-02': 200 } },
+        cotton: { id: 'cotton', history: { '2026-03': 100 } },
+      });
 
-    afterEach(() => {
-      jest.useRealTimers();
+      expect(result.current.pile).toEqual([
+        { yarnType: 'wool', size: 1 },
+        { yarnType: 'cotton', size: 0.5 },
+      ]);
     });
+  });
 
-    it('gives the totals for every month up to this one', () => {
+  describe('currentBalance', () => {
+    it('adds up the latest balance of every yarn type', () => {
       const { result } = renderYarnStorage({
         wool: { id: 'wool', history: { '2026-01': 300, '2026-02': 700 } },
         cotton: { id: 'cotton', history: { '2026-01': 300 } },
       });
 
-      expect(
-        result.current.months?.map(({ month, total }) => [
-          month.toString(),
-          total,
-        ]),
-      ).toEqual([
-        ['2026-01', 600],
-        ['2026-02', 1000],
-        ['2026-03', 1000],
-      ]);
-    });
-  });
-
-  describe('maxTotal', () => {
-    beforeEach(() => {
-      jest.useFakeTimers();
-      jest.setSystemTime(new Date('2026-03-11'));
-    });
-
-    afterEach(() => {
-      jest.useRealTimers();
-    });
-
-    it('gives the biggest monthly total', () => {
-      const { result } = renderYarnStorage({
-        wool: {
-          id: 'wool',
-          history: { '2026-01': 300, '2026-02': 900, '2026-03': 400 },
-        },
-      });
-
-      expect(result.current.maxTotal).toBe(900);
+      expect(result.current.currentBalance).toBe(1000);
     });
   });
 

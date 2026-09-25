@@ -13,9 +13,8 @@ export type BalanceChange = {
   operation: Operation;
 };
 
-export type Month = {
-  month: Temporal.PlainYearMonth;
-  total: number;
-  subTotals: TotalsByType;
+export type YarnBall = {
+  yarnType: string;
+  size: number;
+  usedIn?: Temporal.PlainYearMonth;
 };
-export type TotalsByType = Record<string, number>;

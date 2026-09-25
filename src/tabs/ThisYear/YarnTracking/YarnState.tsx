@@ -1,53 +1,71 @@
 import { CSSProperties } from 'react';
+import { YarnBall } from './types';
 
 import './YarnState.css';
 import { useYarnStorage } from './YarnStorageContext';
-import { GRAMS_PER_BALL } from './utils';
-import { MonthlyBalance } from './MonthlyBalance';
+import { GRAMS_PER_BALL, getThisMonth } from './utils';
+import { BallOfYarnIcon } from '../../../shared/icons/BallOfYarn';
+
+const MONTHS_UNTIL_GONE = 12;
 
 export function YarnState() {
-  const { months, maxTotal } = useYarnStorage();
+  const { pile, currentBalance } = useYarnStorage();
 
-  if (!months) {
+  if (!pile) {
     return <>Loading...</>;
   }
 
+  const thisMonth = getThisMonth();
+
   return (
     <div className="yarn-state">
-      <ol
-        style={{ '--balls-across': maxTotal / GRAMS_PER_BALL } as CSSProperties}
-      >
-        {months.map((month, index) => (
-          <li key={month.month.toString()}>
-            <MonthLabel
-              month={month.month}
-              monthTotal={month.total}
-              isLastMonth={index === months.length - 1}
-            />
-            <MonthlyBalance {...month} />
-          </li>
+      <div className="label">Current: {currentBalance.toLocaleString()}g</div>
+      <div className="yarn-pile">
+        {pile.map((ball, index) => (
+          <Ball key={index} ball={ball} thisMonth={thisMonth} />
         ))}
-      </ol>
+      </div>
     </div>
   );
 }
 
-function MonthLabel({
-  month,
-  monthTotal,
-  isLastMonth,
+function Ball({
+  ball,
+  thisMonth,
 }: {
-  month: Temporal.PlainYearMonth;
-  monthTotal: number;
-  isLastMonth: boolean;
+  ball: YarnBall;
+  thisMonth: Temporal.PlainYearMonth;
 }) {
-  const monthName = month
-    .toPlainDate({ day: 1 })
-    .toLocaleString('default', { month: 'long' });
+  const { yarnType, size, usedIn } = ball;
+  const monthsSinceUsed =
+    usedIn && thisMonth.since(usedIn, { largestUnit: 'months' }).months;
+
+  if (monthsSinceUsed !== undefined && monthsSinceUsed >= MONTHS_UNTIL_GONE) {
+    return null;
+  }
+
+  const grams = `${Math.round(size * GRAMS_PER_BALL)}g`;
 
   return (
-    <div className="label">
-      {isLastMonth ? 'Current' : monthName}: {monthTotal.toLocaleString()}g
+    <div
+      className="ball"
+      data-yarn-type={yarnType}
+      data-used={usedIn ? true : undefined}
+      role="img"
+      aria-label={
+        usedIn ? `used ${yarnType}: ${grams}` : `${yarnType}: ${grams}`
+      }
+      style={
+        {
+          width: `calc(var(--ball-size) * ${size})`,
+          '--fade':
+            monthsSinceUsed === undefined
+              ? undefined
+              : monthsSinceUsed / MONTHS_UNTIL_GONE,
+        } as CSSProperties
+      }
+    >
+      <BallOfYarnIcon />
     </div>
   );
 }
