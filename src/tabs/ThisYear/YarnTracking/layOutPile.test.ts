@@ -1,14 +1,14 @@
 import { layOutPile } from './layOutPile';
 import { PileBall } from './pileBalls';
 
-const wool = (id: number, grams: number): PileBall => ({
+const createWoolBall = (id: number, grams: number): PileBall => ({
   ball: { id, yarnType: 'wool', grams },
 });
 
 describe('layOutPile', () => {
   describe('a ball', () => {
     it('is sized by how much of a full ball it holds', () => {
-      const { balls } = layOutPile([wool(0, 100)], 400);
+      const { balls } = layOutPile([createWoolBall(0, 100)], 400);
 
       expect(balls[0].size).toBe(24);
     });
@@ -16,13 +16,19 @@ describe('layOutPile', () => {
 
   describe('when the balls fit in one row', () => {
     it('centres the row across the width', () => {
-      const { balls } = layOutPile([wool(0, 200), wool(1, 200)], 400);
+      const { balls } = layOutPile(
+        [createWoolBall(0, 200), createWoolBall(1, 200)],
+        400,
+      );
 
       expect(balls.map(({ x }) => x)).toEqual([176, 224]);
     });
 
     it('sits every ball on the bottom of the row', () => {
-      const { balls, height } = layOutPile([wool(0, 200), wool(1, 100)], 400);
+      const { balls, height } = layOutPile(
+        [createWoolBall(0, 200), createWoolBall(1, 100)],
+        400,
+      );
 
       expect(balls.map(({ y, size }) => y + size / 2)).toEqual([48, 48]);
       expect(height).toBe(48);
@@ -32,7 +38,11 @@ describe('layOutPile', () => {
   describe('when the balls are wider than the width', () => {
     it('wraps the rest onto a row below the tallest ball above', () => {
       const { balls, height } = layOutPile(
-        [wool(0, 100), wool(1, 200), wool(2, 200)],
+        [
+          createWoolBall(0, 100),
+          createWoolBall(1, 200),
+          createWoolBall(2, 200),
+        ],
         80,
       );
 
