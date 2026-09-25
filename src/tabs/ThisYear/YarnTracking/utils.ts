@@ -24,23 +24,15 @@ const getBalanceChangesByMonth = (yarnTypes: YarnType[]) => {
     })),
   );
 
-  const months = changes
-    .map(({ month }) => month)
-    .filter(
-      (month, index, all) => all.findIndex((m) => m.equals(month)) === index,
-    )
-    .sort(Temporal.PlainYearMonth.compare);
+  const changesByMonth = Map.groupBy(
+    changes.sort((a, b) => Temporal.PlainYearMonth.compare(a.month, b.month)),
+    ({ month }) => month.toString(),
+  );
 
-  return months.map((month) => {
-    const changesThisMonth = changes.filter((change) =>
-      change.month.equals(month),
-    );
-
-    return {
-      decreases: changesThisMonth.filter(({ difference }) => difference < 0),
-      increases: changesThisMonth.filter(({ difference }) => difference > 0),
-    };
-  });
+  return [...changesByMonth.values()].map((changesThisMonth) => ({
+    decreases: changesThisMonth.filter(({ difference }) => difference < 0),
+    increases: changesThisMonth.filter(({ difference }) => difference > 0),
+  }));
 };
 
 type YarnPile = { balls: YarnBall[]; usedBallIndexes: number[] };
