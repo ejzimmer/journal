@@ -7,14 +7,19 @@ import {
   useRef,
 } from 'react';
 import { useStorageContext } from '../../../shared/FirebaseContext';
-import { KEY, StoredYarn, StoredYarnType, YarnType } from './types';
+import {
+  BalanceChange,
+  KEY,
+  StoredYarn,
+  StoredYarnType,
+  YarnType,
+} from './types';
 import { hasTwoDigitYearMonths, migrateYarnDates } from './migrateYarnDates';
 import { getThisMonth } from './utils';
 
 export type YarnStorageContextType = {
   yarnTypes?: YarnType[];
-  getCurrentBalance: (yarnTypeId: string) => number;
-  recordBalance: (yarnTypeId: string, grams: number) => void;
+  updateBalance: (change: BalanceChange) => void;
 };
 
 export const YarnStorageContext = createContext<
@@ -57,13 +62,19 @@ export function YarnStorageProvider({ children }: { children: ReactNode }) {
     const yarnTypes =
       migratedYarn && Object.values(migratedYarn).map(convertToYarnType);
 
+    const getCurrentBalance = (yarnType: string) =>
+      yarnTypes?.find(({ id }) => id === yarnType)?.balances.at(-1)?.grams ?? 0;
+
     return {
       yarnTypes,
-      getCurrentBalance: (yarnTypeId: string) =>
-        yarnTypes?.find(({ id }) => id === yarnTypeId)?.balances.at(-1)
-          ?.grams ?? 0,
-      recordBalance: (yarnTypeId: string, grams: number) =>
-        setValue(`${KEY}/${yarnTypeId}/history/${getThisMonth()}`, grams),
+      updateBalance: ({ yarnType, amount, operation }: BalanceChange) => {
+        const currentBalance = getCurrentBalance(yarnType);
+
+        setValue(
+          `${KEY}/${yarnType}/history/${getThisMonth()}`,
+          operation === '+' ? currentBalance + amount : currentBalance - amount,
+        );
+      },
     };
   }, [migratedYarn, setValue]);
 

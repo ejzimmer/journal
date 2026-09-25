@@ -1,16 +1,17 @@
 import { useRef, useState } from 'react';
 import { useYarnStorage } from './YarnStorageContext';
+import { Operation } from './types';
 import { Switch } from '../../../shared/controls/Switch';
 
 import './Form.css';
 import { TickIcon } from '../../../shared/icons/Tick';
 
 export function YarnTrackingForm() {
-  const { yarnTypes = [], getCurrentBalance, recordBalance } = useYarnStorage();
+  const { yarnTypes = [], updateBalance } = useYarnStorage();
 
   const yarnTypeRef = useRef<HTMLSelectElement>(null);
   const amountRef = useRef<HTMLInputElement>(null);
-  const [operation, setOperation] = useState<'+' | '-'>('-');
+  const [operation, setOperation] = useState<Operation>('-');
 
   const updateYarn = (event: React.FormEvent) => {
     event.preventDefault();
@@ -23,12 +24,7 @@ export function YarnTrackingForm() {
       return;
     }
 
-    const currentBalance = getCurrentBalance(yarnType);
-
-    // eslint-disable-next-line no-eval
-    const newBalance = eval(`${currentBalance}${operation}${amount}`);
-
-    recordBalance(yarnType, newBalance);
+    updateBalance({ yarnType, amount, operation });
   };
 
   return (

@@ -72,29 +72,7 @@ describe('YarnStorageProvider', () => {
     });
   });
 
-  describe('getCurrentBalance', () => {
-    const renderWoolStorage = () =>
-      renderYarnStorage({
-        wool: { id: 'wool', history: { '2026-09': 3091, '2026-08': 4221 } },
-        cotton: { id: 'cotton', history: {} },
-      });
-
-    it('returns the balance from the most recent month', () => {
-      expect(renderWoolStorage().result.current.getCurrentBalance('wool')).toBe(
-        3091,
-      );
-    });
-
-    describe('when the yarn type has no history', () => {
-      it('returns zero', () => {
-        expect(
-          renderWoolStorage().result.current.getCurrentBalance('cotton'),
-        ).toBe(0);
-      });
-    });
-  });
-
-  describe('recordBalance', () => {
+  describe('updateBalance', () => {
     beforeEach(() => {
       jest.useFakeTimers();
       jest.setSystemTime(new Date('2026-09-25'));
@@ -104,19 +82,67 @@ describe('YarnStorageProvider', () => {
       jest.useRealTimers();
     });
 
-    it("stores the balance against this month in the yarn type's history", () => {
-      const setValue = jest.fn();
-      const { result } = renderYarnStorage(
-        { wool: { id: 'wool', history: { '2026-08': 4221 } } },
+    const renderWoolStorage = (setValue: jest.Mock) =>
+      renderYarnStorage(
+        {
+          wool: { id: 'wool', history: { '2026-09': 3091, '2026-08': 4221 } },
+          cotton: { id: 'cotton', history: {} },
+        },
         setValue,
       );
 
-      result.current.recordBalance('wool', 3091);
+    describe('when yarn is added', () => {
+      it('stores the latest balance plus the amount against this month', () => {
+        const setValue = jest.fn();
+        const { result } = renderWoolStorage(setValue);
 
-      expect(setValue).toHaveBeenCalledWith(
-        '2026/yarn/wool/history/2026-09',
-        3091,
-      );
+        result.current.updateBalance({
+          yarnType: 'wool',
+          amount: 100,
+          operation: '+',
+        });
+
+        expect(setValue).toHaveBeenCalledWith(
+          '2026/yarn/wool/history/2026-09',
+          3191,
+        );
+      });
+    });
+
+    describe('when yarn is used', () => {
+      it('stores the latest balance minus the amount against this month', () => {
+        const setValue = jest.fn();
+        const { result } = renderWoolStorage(setValue);
+
+        result.current.updateBalance({
+          yarnType: 'wool',
+          amount: 91,
+          operation: '-',
+        });
+
+        expect(setValue).toHaveBeenCalledWith(
+          '2026/yarn/wool/history/2026-09',
+          3000,
+        );
+      });
+    });
+
+    describe('when the yarn type has no history', () => {
+      it('starts the balance from zero', () => {
+        const setValue = jest.fn();
+        const { result } = renderWoolStorage(setValue);
+
+        result.current.updateBalance({
+          yarnType: 'cotton',
+          amount: 50,
+          operation: '+',
+        });
+
+        expect(setValue).toHaveBeenCalledWith(
+          '2026/yarn/cotton/history/2026-09',
+          50,
+        );
+      });
     });
   });
 });

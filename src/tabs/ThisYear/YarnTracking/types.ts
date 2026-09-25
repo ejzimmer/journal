@@ -6,6 +6,13 @@ export type StoredYarnType = { id: string; history: Record<string, number> };
 export type YarnBalance = { month: Temporal.PlainYearMonth; grams: number };
 export type YarnType = { id: string; balances: YarnBalance[] };
 
+export type Operation = '+' | '-';
+export type BalanceChange = {
+  yarnType: string;
+  amount: number;
+  operation: Operation;
+};
+
 export type History = Record<string, Month>;
 export type Month = {
   month: Temporal.PlainYearMonth;
