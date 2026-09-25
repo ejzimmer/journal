@@ -25,8 +25,8 @@ describe('YarnState', () => {
       it('is labelled with its yarn type and weight', () => {
         renderWithYarnStorage(<YarnState />, {
           pile: [
-            { yarnType: 'wool', size: 1 },
-            { yarnType: 'wool', size: 0.5 },
+            { yarnType: 'wool', grams: 200 },
+            { yarnType: 'wool', grams: 100 },
           ],
         });
 
@@ -40,7 +40,7 @@ describe('YarnState', () => {
 
       it('is sized by how much of a full ball it holds', () => {
         renderWithYarnStorage(<YarnState />, {
-          pile: [{ yarnType: 'wool', size: 0.5 }],
+          pile: [{ yarnType: 'wool', grams: 100 }],
         });
 
         expect(
@@ -56,7 +56,7 @@ describe('YarnState', () => {
             pile: [
               {
                 yarnType: 'wool',
-                size: 1,
+                grams: 200,
                 usedIn: Temporal.PlainYearMonth.from('2026-06'),
               },
             ],
@@ -76,12 +76,12 @@ describe('YarnState', () => {
             pile: [
               {
                 yarnType: 'wool',
-                size: 1,
+                grams: 200,
                 usedIn: Temporal.PlainYearMonth.from('2025-09'),
               },
               {
                 yarnType: 'wool',
-                size: 1,
+                grams: 200,
                 usedIn: Temporal.PlainYearMonth.from('2025-10'),
               },
             ],

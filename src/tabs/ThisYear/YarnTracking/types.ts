@@ -7,20 +7,8 @@ export type YarnBalance = { month: Temporal.PlainYearMonth; grams: number };
 export type YarnType = { id: string; balances: YarnBalance[] };
 
 export type Operation = '+' | '-';
-export type BalanceChange = {
-  yarnType: string;
-  amount: number;
-  operation: Operation;
-};
-
 export type YarnBall = {
   yarnType: string;
-  size: number;
-  usedIn?: Temporal.PlainYearMonth;
-};
-
-export type YarnTypeBalance = {
-  yarnType: string;
-  month: Temporal.PlainYearMonth;
   grams: number;
+  usedIn?: Temporal.PlainYearMonth;
 };

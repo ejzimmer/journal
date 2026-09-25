@@ -11,7 +11,7 @@ type YarnPileBallProps = {
 };
 
 export function YarnPileBall({ ball, thisMonth }: YarnPileBallProps) {
-  const { yarnType, size, usedIn } = ball;
+  const { yarnType, grams, usedIn } = ball;
   const monthsSinceUsed =
     usedIn && thisMonth.since(usedIn, { largestUnit: 'months' }).months;
 
@@ -19,7 +19,7 @@ export function YarnPileBall({ ball, thisMonth }: YarnPileBallProps) {
     return null;
   }
 
-  const grams = `${Math.round(size * GRAMS_PER_BALL)}g`;
+  const label = `${yarnType}: ${grams}g`;
 
   return (
     <div
@@ -27,12 +27,10 @@ export function YarnPileBall({ ball, thisMonth }: YarnPileBallProps) {
       data-yarn-type={yarnType}
       data-used={usedIn ? true : undefined}
       role="img"
-      aria-label={
-        usedIn ? `used ${yarnType}: ${grams}` : `${yarnType}: ${grams}`
-      }
+      aria-label={usedIn ? `used ${label}` : label}
       style={
         {
-          width: `calc(var(--ball-size) * ${size})`,
+          width: `calc(var(--ball-size) * ${grams / GRAMS_PER_BALL})`,
           '--fade':
             monthsSinceUsed === undefined
               ? undefined

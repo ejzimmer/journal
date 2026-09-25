@@ -7,7 +7,7 @@ import './Form.css';
 import { TickIcon } from '../../../shared/icons/Tick';
 
 export function YarnTrackingForm() {
-  const { yarnTypes = [], updateBalance } = useYarnStorage();
+  const { yarnTypes = [], addYarn, removeYarn } = useYarnStorage();
 
   const yarnTypeRef = useRef<HTMLSelectElement>(null);
   const amountRef = useRef<HTMLInputElement>(null);
@@ -24,7 +24,11 @@ export function YarnTrackingForm() {
       return;
     }
 
-    updateBalance({ yarnType, amount, operation });
+    if (operation === '+') {
+      addYarn(yarnType, amount);
+    } else {
+      removeYarn(yarnType, amount);
+    }
   };
 
   return (
