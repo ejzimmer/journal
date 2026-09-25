@@ -134,6 +134,22 @@ describe('getHistoryByMonth', () => {
     });
   });
 
+  describe('when a yarn type has no history', () => {
+    it('counts it as having none of that yarn', () => {
+      jest.setSystemTime(new Date('2026-02-04'));
+      const yarnState = {
+        wool: { id: 'wool', history: { '2026-01': 300 } },
+        cotton: { id: 'cotton', history: {} },
+      };
+
+      expect(getMonthsByMonthId(yarnState)['2026-02']).toEqual({
+        month: '2026-02',
+        total: 300,
+        subTotals: { wool: 300, cotton: 0 },
+      });
+    });
+  });
+
   describe('when the history starts before this year', () => {
     it('returns every month from the first one recorded, in order', () => {
       jest.setSystemTime(new Date('2026-02-04'));

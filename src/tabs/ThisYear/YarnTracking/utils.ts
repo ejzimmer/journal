@@ -8,9 +8,10 @@ const getFirstMonth = (
   thisMonth: Temporal.PlainYearMonth,
 ) =>
   yarnTypes
-    .flatMap(({ balances }) => balances.slice(0, 1))
+    .map(({ balances }) => balances.at(0)?.month)
+    .filter((month) => month !== undefined)
     .reduce(
-      (earliest, { month }) =>
+      (earliest, month) =>
         Temporal.PlainYearMonth.compare(month, earliest) < 0 ? month : earliest,
       thisMonth.with({ month: 1 }),
     );
