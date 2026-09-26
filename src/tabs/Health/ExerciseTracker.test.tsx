@@ -2,11 +2,10 @@ import { screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { ExerciseTracker } from './ExerciseTracker';
 import { Exercise } from '../../shared/types';
-import { HealthStorageContextType } from './HealthStorageContext';
 import { renderWithHealthStorage } from './healthStorageTestUtils';
 
-const exercises: Record<string, Exercise> = {
-  pistol: {
+const exercises: Exercise[] = [
+  {
     id: 'pistol',
     name: 'Box pistol squat',
     updates: {
@@ -17,7 +16,7 @@ const exercises: Record<string, Exercise> = {
       },
     },
   },
-  split: {
+  {
     id: 'split',
     name: 'Bulgarian split squat',
     updates: {
@@ -29,7 +28,7 @@ const exercises: Record<string, Exercise> = {
       },
     },
   },
-  rdl: {
+  {
     id: 'rdl',
     name: 'B-stance RDL',
     updates: {
@@ -38,23 +37,11 @@ const exercises: Record<string, Exercise> = {
       b: { id: 'b', date: '2026-08-16', details: '3 x 10 x 20kg' },
     },
   },
-  plank: {
+  {
     id: 'plank',
     name: 'Plank',
   },
-};
-
-function renderExerciseTracker(
-  overrides: Partial<HealthStorageContextType> = {},
-) {
-  return renderWithHealthStorage(<ExerciseTracker />, {
-    exercises: Object.values(exercises),
-    ...overrides,
-  });
-}
-
-const getRow = (name: string) =>
-  screen.getByRole('row', { name: new RegExp(name) });
+];
 
 describe('ExerciseTracker', () => {
   beforeEach(() => {
@@ -68,18 +55,22 @@ describe('ExerciseTracker', () => {
 
   describe('the table', () => {
     it('shows each update with its date and details', () => {
-      renderExerciseTracker();
+      renderWithHealthStorage(<ExerciseTracker />, { exercises });
 
-      const update = within(getRow('Box pistol squat')).getByRole('cell', {
+      const update = within(
+        screen.getByRole('row', { name: /Box pistol squat/ }),
+      ).getByRole('cell', {
         name: /12 Aug 26/,
       });
       expect(update).toHaveTextContent(/3 mats \+ 2 low yoga blocks/);
     });
 
     it("shows each exercise's updates in date order", () => {
-      renderExerciseTracker();
+      renderWithHealthStorage(<ExerciseTracker />, { exercises });
 
-      const cells = within(getRow('B-stance RDL')).getAllByRole('cell');
+      const cells = within(
+        screen.getByRole('row', { name: /B-stance RDL/ }),
+      ).getAllByRole('cell');
       expect(cells.slice(0, 3).map((cell) => cell.textContent)).toEqual([
         '12 Aug 263 x 10 x 16kg',
         '16 Aug 263 x 10 x 20kg',
@@ -88,9 +79,11 @@ describe('ExerciseTracker', () => {
     });
 
     it('shows the recommendation on an update that has one', () => {
-      renderExerciseTracker();
+      renderWithHealthStorage(<ExerciseTracker />, { exercises });
 
-      const update = within(getRow('Bulgarian split squat')).getByRole('cell', {
+      const update = within(
+        screen.getByRole('row', { name: /Bulgarian split squat/ }),
+      ).getByRole('cell', {
         name: /12 Aug 26/,
       });
       expect(
@@ -99,37 +92,37 @@ describe('ExerciseTracker', () => {
     });
 
     it('has one more update column than the exercise with the most updates', () => {
-      renderExerciseTracker();
+      renderWithHealthStorage(<ExerciseTracker />, { exercises });
 
-      for (const name of [
-        'Box pistol squat',
-        'Bulgarian split squat',
-        'B-stance RDL',
-        'Plank',
-      ]) {
-        expect(within(getRow(name)).getAllByRole('cell')).toHaveLength(4);
+      for (const { name } of exercises) {
+        const row = screen.getByRole('row', { name: new RegExp(name) });
+        expect(within(row).getAllByRole('cell')).toHaveLength(4);
       }
     });
 
     describe('the record button', () => {
       it('sits in the first empty cell of the row', () => {
-        renderExerciseTracker();
+        renderWithHealthStorage(<ExerciseTracker />, { exercises });
 
-        const pistolCells = within(getRow('Box pistol squat')).getAllByRole(
-          'cell',
-        );
+        const pistolCells = within(
+          screen.getByRole('row', { name: /Box pistol squat/ }),
+        ).getAllByRole('cell');
         expect(
           within(pistolCells[1]).getByRole('button', {
             name: 'Record Box pistol squat',
           }),
         ).toBeInTheDocument();
 
-        const plankCells = within(getRow('Plank')).getAllByRole('cell');
+        const plankCells = within(
+          screen.getByRole('row', { name: /Plank/ }),
+        ).getAllByRole('cell');
         expect(
           within(plankCells[0]).getByRole('button', { name: 'Record Plank' }),
         ).toBeInTheDocument();
 
-        const rdlCells = within(getRow('B-stance RDL')).getAllByRole('cell');
+        const rdlCells = within(
+          screen.getByRole('row', { name: /B-stance RDL/ }),
+        ).getAllByRole('cell');
         expect(
           within(rdlCells[3]).getByRole('button', {
             name: 'Record B-stance RDL',
@@ -149,8 +142,10 @@ describe('ExerciseTracker', () => {
 
     describe('when the record button is pressed', () => {
       it('replaces the button with the form, in the same cell', async () => {
-        renderExerciseTracker();
-        const cell = within(getRow('Box pistol squat')).getAllByRole('cell')[1];
+        renderWithHealthStorage(<ExerciseTracker />, { exercises });
+        const cell = within(
+          screen.getByRole('row', { name: /Box pistol squat/ }),
+        ).getAllByRole('cell')[1];
 
         const { button } = await openForm('Box pistol squat');
 
@@ -161,7 +156,7 @@ describe('ExerciseTracker', () => {
       });
 
       it("defaults the date to today's", async () => {
-        renderExerciseTracker();
+        renderWithHealthStorage(<ExerciseTracker />, { exercises });
 
         await openForm('Box pistol squat');
 
@@ -169,7 +164,7 @@ describe('ExerciseTracker', () => {
       });
 
       it('focuses the details', async () => {
-        renderExerciseTracker();
+        renderWithHealthStorage(<ExerciseTracker />, { exercises });
 
         await openForm('Box pistol squat');
 
@@ -177,7 +172,7 @@ describe('ExerciseTracker', () => {
       });
 
       it('defaults the recommendation to no change', async () => {
-        renderExerciseTracker();
+        renderWithHealthStorage(<ExerciseTracker />, { exercises });
 
         await openForm('Box pistol squat');
 
@@ -188,7 +183,10 @@ describe('ExerciseTracker', () => {
     describe('when the form is submitted', () => {
       it('adds the update to the exercise', async () => {
         const recordExercise = jest.fn();
-        renderExerciseTracker({ recordExercise });
+        renderWithHealthStorage(<ExerciseTracker />, {
+          exercises,
+          recordExercise,
+        });
         const { user } = await openForm('Bulgarian split squat');
 
         const date = screen.getByLabelText('Date');
@@ -209,7 +207,7 @@ describe('ExerciseTracker', () => {
       });
 
       it('closes the form and returns focus to the record button', async () => {
-        renderExerciseTracker();
+        renderWithHealthStorage(<ExerciseTracker />, { exercises });
         const { user } = await openForm('Bulgarian split squat');
         const form = screen.getByRole('form', {
           name: 'Record Bulgarian split squat',
@@ -230,7 +228,10 @@ describe('ExerciseTracker', () => {
       describe('with no change recommended', () => {
         it('adds the update without a recommendation', async () => {
           const recordExercise = jest.fn();
-          renderExerciseTracker({ recordExercise });
+          renderWithHealthStorage(<ExerciseTracker />, {
+            exercises,
+            recordExercise,
+          });
           const { user } = await openForm('Bulgarian split squat');
 
           await user.type(
@@ -249,7 +250,10 @@ describe('ExerciseTracker', () => {
       describe('without any details', () => {
         it("doesn't add an update", async () => {
           const recordExercise = jest.fn();
-          renderExerciseTracker({ recordExercise });
+          renderWithHealthStorage(<ExerciseTracker />, {
+            exercises,
+            recordExercise,
+          });
           const { user } = await openForm('Bulgarian split squat');
 
           await user.click(screen.getByRole('button', { name: 'Save' }));
@@ -272,7 +276,7 @@ describe('ExerciseTracker', () => {
             user.keyboard('{Escape}'),
         ],
       ])('closes the form %s', async (_, cancel) => {
-        renderExerciseTracker();
+        renderWithHealthStorage(<ExerciseTracker />, { exercises });
         const { user } = await openForm('Plank');
         const form = screen.getByRole('form', { name: 'Record Plank' });
 
@@ -296,7 +300,7 @@ describe('ExerciseTracker', () => {
 
     describe('when the add exercise button is pressed', () => {
       it('replaces the button with a focused name field', async () => {
-        renderExerciseTracker();
+        renderWithHealthStorage(<ExerciseTracker />, { exercises });
 
         const { button } = await openAddExerciseForm();
 
@@ -310,7 +314,10 @@ describe('ExerciseTracker', () => {
     describe('when a name is entered', () => {
       it('adds the exercise', async () => {
         const addExercise = jest.fn();
-        renderExerciseTracker({ addExercise });
+        renderWithHealthStorage(<ExerciseTracker />, {
+          exercises,
+          addExercise,
+        });
         const { user } = await openAddExerciseForm();
 
         await user.keyboard('Goblet squat{Enter}');
@@ -319,7 +326,7 @@ describe('ExerciseTracker', () => {
       });
 
       it('closes the form and returns focus to the add exercise button', async () => {
-        renderExerciseTracker();
+        renderWithHealthStorage(<ExerciseTracker />, { exercises });
         const { user } = await openAddExerciseForm();
         const input = screen.getByRole('textbox', { name: 'Exercise name' });
 
@@ -335,7 +342,10 @@ describe('ExerciseTracker', () => {
     describe('when the name is empty', () => {
       it("doesn't add an exercise", async () => {
         const addExercise = jest.fn();
-        renderExerciseTracker({ addExercise });
+        renderWithHealthStorage(<ExerciseTracker />, {
+          exercises,
+          addExercise,
+        });
         const { user } = await openAddExerciseForm();
 
         await user.keyboard('   {Enter}');
@@ -346,7 +356,7 @@ describe('ExerciseTracker', () => {
 
     describe('when escape is pressed', () => {
       it('closes the form', async () => {
-        renderExerciseTracker();
+        renderWithHealthStorage(<ExerciseTracker />, { exercises });
         const { user } = await openAddExerciseForm();
         const input = screen.getByRole('textbox', { name: 'Exercise name' });
 
