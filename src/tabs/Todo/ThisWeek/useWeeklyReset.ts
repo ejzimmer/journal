@@ -1,4 +1,4 @@
-import { getDaysSince, StoredDate } from '../../../shared/dates';
+import { getDaysSince } from '../../../shared/dates';
 import { useStorageContext } from '../../../shared/FirebaseContext';
 import { useDailyJob } from '../../../shared/dailyJobs/DailyJobsContext';
 import {
@@ -14,12 +14,8 @@ export function refreshTasks(
   tasks.forEach((task) => {
     if (!task.completed) return;
 
-    const completed: (StoredDate | null)[] = Array.isArray(task.completed)
-      ? task.completed
-      : Object.values(task.completed);
-
-    const updatedCompleted = completed.filter(
-      (date) => date && getDaysSince(date) < 7,
+    const updatedCompleted = task.completed.filter(
+      (date) => getDaysSince(date) < 7,
     );
     if (updatedCompleted.length !== task.completed.length) {
       updateTask({ ...task, completed: updatedCompleted });

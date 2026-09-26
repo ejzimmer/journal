@@ -97,16 +97,4 @@ describe('updating done tasks', () => {
       });
     });
   });
-
-  describe('when the completed array is actually a record', () => {
-    it('deals with that too', () => {
-      const completed = {
-        '1': getDateDaysAgo(8),
-        '2': getDateDaysAgo(4),
-        '3': getDateDaysAgo(2),
-      } as unknown as number[]; // Firebase turns sparse arrays into objects
-      const updateTask = jest.fn();
-      refreshTasks([{ ...mockTask, completed }], updateTask);
-    });
-  });
 });

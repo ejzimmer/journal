@@ -6,7 +6,7 @@ import {
   StoredDate,
 } from '../../../shared/dates';
 import { WeeklyTask } from '../../../shared/types';
-import { dateToWeekday, getCompletedDates } from './utils';
+import { dateToWeekday } from './utils';
 
 type ProgressIndicatorProps = Pick<
   WeeklyTask,
@@ -23,7 +23,7 @@ export function ProgressIndicator({
   onAdd,
   onRemove,
 }: ProgressIndicatorProps) {
-  const completedDates = getCompletedDates(completed);
+  const completedDates = completed ?? [];
   const numberDone = completedDates.length;
   const remainder = Math.max(numberDone - frequency, 0);
   const filledSegments = Math.min(numberDone, frequency);
