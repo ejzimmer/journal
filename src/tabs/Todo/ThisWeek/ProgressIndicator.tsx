@@ -1,10 +1,5 @@
 import { CSSProperties, MouseEvent } from 'react';
-import {
-  compareDates,
-  getDaysSince,
-  isToday,
-  StoredDate,
-} from '../../../shared/dates';
+import { getDaysSince, isToday } from '../../../shared/dates';
 import { WeeklyTask } from '../../../shared/types';
 import { dateToWeekday } from './utils';
 
@@ -28,9 +23,11 @@ export function ProgressIndicator({
   const remainder = Math.max(numberDone - frequency, 0);
   const filledSegments = Math.min(numberDone, frequency);
 
-  const mostRecentlyDone = completedDates.reduce<StoredDate | undefined>(
+  const mostRecentlyDone = completedDates.reduce<string | undefined>(
     (latest, date) =>
-      latest === undefined || compareDates(date, latest) > 0 ? date : latest,
+      latest === undefined || Temporal.PlainDate.compare(date, latest) > 0
+        ? date
+        : latest,
     undefined,
   );
   const doneToday = !!mostRecentlyDone && isToday(mostRecentlyDone);

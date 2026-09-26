@@ -1,4 +1,8 @@
-import { getDateDaysAgo, getDateDaysAhead } from '../../../shared/dates';
+import {
+  getDateDaysAgo,
+  getDateDaysAhead,
+  getToday,
+} from '../../../shared/dates';
 import {
   createDailyJobsStorage,
   renderDailyJob,
@@ -16,8 +20,8 @@ const createTask = (
   parentId: CALENDAR_KEY,
   position: 0,
   status: 'ready',
-  dueDate: new Date().getTime(),
-  statusUpdateDate: new Date().getTime(),
+  dueDate: getToday(),
+  statusUpdateDate: getToday(),
   ...overrides,
 });
 

@@ -13,7 +13,7 @@ const task: WorkTask = {
   description: 'Fix contrast',
   status: 'not_started',
   parentId: 'work/list-1/items',
-  lastStatusUpdate: 0,
+  lastStatusUpdate: '2026-01-01',
   position: 0,
 };
 
@@ -22,7 +22,7 @@ const list: WorkTask = {
   description: 'Backlog',
   status: 'not_started',
   parentId: 'work',
-  lastStatusUpdate: 0,
+  lastStatusUpdate: '2026-01-01',
   position: 0,
   items: { [task.id]: task },
 };
@@ -266,7 +266,7 @@ describe('WorkStorageContext labels', () => {
     description: 'Fix contrast',
     status: 'not_started',
     parentId: `work/${listId}/items`,
-    lastStatusUpdate: 0,
+    lastStatusUpdate: '2026-01-01',
     position: 0,
     ...overrides,
   });
@@ -279,7 +279,7 @@ describe('WorkStorageContext labels', () => {
     description: 'List',
     status: 'not_started',
     parentId: 'work',
-    lastStatusUpdate: 0,
+    lastStatusUpdate: '2026-01-01',
     position: 0,
     ...overrides,
   });

@@ -1,7 +1,5 @@
 const monthFormatter = Intl.DateTimeFormat('en-AU', { month: 'short' });
 
-export type StoredDate = number | string;
-
 const getTodaysPlainDate = () => Temporal.Now.plainDateISO();
 
 const getStartOfWeek = (date: Temporal.PlainDate) =>
@@ -17,35 +15,27 @@ export const getDateDaysAgo = (days: number) =>
 export const getDateDaysAhead = (days: number) =>
   getTodaysPlainDate().add({ days }).toString();
 
-export const getPlainDate = (date: StoredDate) =>
-  typeof date === 'number'
-    ? Temporal.Instant.fromEpochMilliseconds(date)
-        .toZonedDateTimeISO(Temporal.Now.timeZoneId())
-        .toPlainDate()
-    : Temporal.PlainDate.from(date);
+export const isToday = (date: string) =>
+  Temporal.PlainDate.compare(date, getToday()) === 0;
 
-export const compareDates = (a: StoredDate, b: StoredDate) =>
-  Temporal.PlainDate.compare(getPlainDate(a), getPlainDate(b));
+export const isBeforeToday = (date: string) =>
+  Temporal.PlainDate.compare(date, getToday()) < 0;
 
-export const isToday = (date: StoredDate) =>
-  compareDates(date, getToday()) === 0;
+export const isAfterToday = (date: string) =>
+  Temporal.PlainDate.compare(date, getToday()) > 0;
 
-export const isBeforeToday = (date: StoredDate) =>
-  compareDates(date, getToday()) < 0;
-
-export const isAfterToday = (date: StoredDate) =>
-  compareDates(date, getToday()) > 0;
-
-export const isThisWeek = (date: StoredDate) =>
-  getStartOfWeek(getPlainDate(date)).equals(
+export const isThisWeek = (date: string) =>
+  getStartOfWeek(Temporal.PlainDate.from(date)).equals(
     getStartOfWeek(getTodaysPlainDate()),
   );
 
-export const getDaysSince = (date: StoredDate) =>
-  getTodaysPlainDate().since(getPlainDate(date), { largestUnit: 'day' }).days;
+export const getDaysSince = (date: string) =>
+  getTodaysPlainDate().since(date, { largestUnit: 'day' }).days;
 
-export const getDaysUntil = (date: StoredDate) =>
-  getPlainDate(date).since(getTodaysPlainDate(), { largestUnit: 'day' }).days;
+export const getDaysUntil = (date: string) =>
+  Temporal.PlainDate.from(date).since(getTodaysPlainDate(), {
+    largestUnit: 'day',
+  }).days;
 
 export const getMillisecondsUntilTomorrow = () => {
   const now = Temporal.Now.zonedDateTimeISO();
@@ -69,8 +59,8 @@ export const formatDate = (date: Temporal.PlainDate) => ({
 export const formatMonthAndYear = (yearMonth: Temporal.PlainYearMonth) =>
   `${formatMonth(yearMonth.toPlainDate({ day: 1 }))} ${yearMonth.year}`;
 
-export const formatDayAndMonth = (date: StoredDate) => {
-  const plainDate = getPlainDate(date);
+export const formatDayAndMonth = (date: string) => {
+  const plainDate = Temporal.PlainDate.from(date);
 
   return `${plainDate.day.toString().padStart(2, '0')} ${formatMonth(plainDate)}`;
 };

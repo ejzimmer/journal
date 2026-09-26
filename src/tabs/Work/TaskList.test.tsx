@@ -20,7 +20,7 @@ const labelledList: WorkTask = {
   description: 'a11y backlog',
   status: 'not_started',
   parentId: 'work',
-  lastStatusUpdate: 0,
+  lastStatusUpdate: '2026-01-01',
   position: 0,
   labelIds: [a11yLabel.id],
 };
@@ -30,7 +30,7 @@ const unlabelledList: WorkTask = {
   description: 'Today',
   status: 'not_started',
   parentId: 'work',
-  lastStatusUpdate: 0,
+  lastStatusUpdate: '2026-01-01',
   position: 1,
   items: {
     'task-1': {
@@ -38,7 +38,7 @@ const unlabelledList: WorkTask = {
       description: 'not done',
       status: 'not_started',
       parentId: 'list-2',
-      lastStatusUpdate: 0,
+      lastStatusUpdate: '2026-01-01',
       position: 0,
     },
     'task-2': {
@@ -46,7 +46,7 @@ const unlabelledList: WorkTask = {
       description: 'also not done',
       status: 'not_started',
       parentId: 'list-2',
-      lastStatusUpdate: 0,
+      lastStatusUpdate: '2026-01-01',
       position: 1,
     },
     'task-3': {
@@ -54,7 +54,7 @@ const unlabelledList: WorkTask = {
       description: 'done',
       status: 'done',
       parentId: 'list-2',
-      lastStatusUpdate: 0,
+      lastStatusUpdate: '2026-01-01',
       position: 2,
     },
   },

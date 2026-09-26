@@ -1,12 +1,10 @@
 import {
-  compareDates,
   formatDate,
   formatDateId,
   formatDayAndMonth,
   formatMonthAndYear,
   getDaysSince,
   getMillisecondsUntilTomorrow,
-  getPlainDate,
   getDateDaysAgo,
   getDateDaysAhead,
   getDaysUntil,
@@ -48,38 +46,6 @@ describe('dates', () => {
     });
   });
 
-  describe('getPlainDate', () => {
-    describe('when the date is an ISO string', () => {
-      it('is that date', () => {
-        expect(getPlainDate('2026-03-07').toString()).toBe('2026-03-07');
-      });
-    });
-
-    describe('when the date is a timestamp left over from before the migration', () => {
-      it('is the day that timestamp falls on locally', () => {
-        expect(getPlainDate(atLocalTime(2026, 8, 19, 23, 30)).toString()).toBe(
-          '2026-09-19',
-        );
-      });
-    });
-  });
-
-  describe('compareDates', () => {
-    it('orders an earlier date before a later one', () => {
-      expect(compareDates('2026-09-19', '2026-09-20')).toBe(-1);
-      expect(compareDates('2026-09-20', '2026-09-19')).toBe(1);
-      expect(compareDates('2026-09-20', '2026-09-20')).toBe(0);
-    });
-
-    describe('when one side is a timestamp and the other an ISO string', () => {
-      it('compares them by calendar day', () => {
-        expect(
-          compareDates(atLocalTime(2026, 8, 20, 23, 30), '2026-09-20'),
-        ).toBe(0);
-      });
-    });
-  });
-
   describe('isToday', () => {
     it('is true just before midnight tonight', () => {
       expect(isToday('2026-09-20')).toBe(true);
@@ -87,12 +53,6 @@ describe('dates', () => {
 
     it('is false for yesterday', () => {
       expect(isToday('2026-09-19')).toBe(false);
-    });
-
-    describe('when the date is a timestamp left over from before the migration', () => {
-      it('still reads as today', () => {
-        expect(isToday(atLocalTime(2026, 8, 20, 23, 59))).toBe(true);
-      });
     });
   });
 
@@ -104,16 +64,6 @@ describe('dates', () => {
     it('is false for today', () => {
       expect(isBeforeToday('2026-09-20')).toBe(false);
     });
-
-    describe('when the date is a timestamp left over from before the migration', () => {
-      it('is true for any time yesterday', () => {
-        expect(isBeforeToday(atLocalTime(2026, 8, 19, 23, 59))).toBe(true);
-      });
-
-      it('is false for earlier today', () => {
-        expect(isBeforeToday(atLocalTime(2026, 8, 20, 0, 1))).toBe(false);
-      });
-    });
   });
 
   describe('isAfterToday', () => {
@@ -121,22 +71,18 @@ describe('dates', () => {
       expect(isAfterToday('2026-09-21')).toBe(true);
     });
 
-    it('is false for later today', () => {
-      expect(isAfterToday(atLocalTime(2026, 8, 20, 23, 59))).toBe(false);
+    it('is false for today', () => {
+      expect(isAfterToday('2026-09-20')).toBe(false);
     });
   });
 
   describe('getDaysSince', () => {
-    describe('when only a few hours have passed but the date changed', () => {
-      it('counts the change of date, not the hours', () => {
-        expect(getDaysSince(atLocalTime(2026, 8, 19, 23, 30))).toBe(1);
-      });
+    it('counts one day for yesterday', () => {
+      expect(getDaysSince('2026-09-19')).toBe(1);
     });
 
-    describe('when most of a day has passed within the same date', () => {
-      it('counts no days', () => {
-        expect(getDaysSince(atLocalTime(2026, 8, 20, 0, 1))).toBe(0);
-      });
+    it('counts no days for today', () => {
+      expect(getDaysSince('2026-09-20')).toBe(0);
     });
 
     it('counts whole dates for longer gaps', () => {
@@ -236,12 +182,6 @@ describe('dates', () => {
     describe("when the locale's short month is longer than three letters", () => {
       it('trims it to three', () => {
         expect(formatDayAndMonth('2026-09-20')).toBe('20 Sep');
-      });
-    });
-
-    describe('when the date is a timestamp left over from before the migration', () => {
-      it('formats the day it falls on', () => {
-        expect(formatDayAndMonth(atLocalTime(2026, 0, 5, 9, 0))).toBe('05 Jan');
       });
     });
   });

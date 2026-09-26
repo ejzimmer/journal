@@ -147,7 +147,7 @@ describe('ThisWeekTask', () => {
         renderWithStorage(
           <CategoriesContext.Provider value={['🧘', '💪']}>
             <ThisWeekTask
-              task={{ ...task, completed: [...task.completed!, Date.now()] }}
+              task={{ ...task, completed: [...task.completed!, getToday()] }}
             />
           </CategoriesContext.Provider>,
           { value: { useValue } },

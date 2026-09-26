@@ -1,13 +1,8 @@
-import {
-  getToday,
-  isAfterToday,
-  isThisWeek,
-  StoredDate,
-} from '../../../shared/dates';
+import { getToday, isAfterToday, isThisWeek } from '../../../shared/dates';
 import { EditableDate } from '../../../shared/controls/EditableDate';
 
 type DueDateProps = {
-  dueDate?: StoredDate;
+  dueDate?: string;
   onChange: (dueDate: string) => void;
 };
 
@@ -28,7 +23,7 @@ export function DueDate({ dueDate, onChange }: DueDateProps) {
   );
 }
 
-const dueToday = (dueDate: StoredDate) =>
+const dueToday = (dueDate: string) =>
   isAfterToday(dueDate) ? '' : 'due-today';
-const dueThisWeek = (dueDate: StoredDate) =>
+const dueThisWeek = (dueDate: string) =>
   isThisWeek(dueDate) ? 'due-this-week' : '';

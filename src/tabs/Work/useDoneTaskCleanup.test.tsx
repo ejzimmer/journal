@@ -16,7 +16,7 @@ const createList = (
   description,
   status: 'not_started',
   parentId: WORK_KEY,
-  lastStatusUpdate: new Date().getTime(),
+  lastStatusUpdate: getToday(),
   position,
   items: indexById(items),
 });
@@ -30,7 +30,7 @@ const createTask = (
   description: id,
   status: 'not_started',
   parentId: `${WORK_KEY}/${listId}/items`,
-  lastStatusUpdate: new Date().getTime(),
+  lastStatusUpdate: getToday(),
   position: 0,
   ...overrides,
 });

@@ -1,5 +1,3 @@
-import { StoredDate } from '../../shared/dates';
-
 export const COLOURS = [
   'blue',
   'yellow',
@@ -41,8 +39,8 @@ export type WorkTask = {
   status: StatusKey;
   parentId: string;
   items?: Record<string, WorkTask>;
-  lastStatusUpdate: StoredDate;
-  dueDate?: StoredDate;
+  lastStatusUpdate: string;
+  dueDate?: string;
   position: number;
   labelIds?: string[];
   worktree?: Worktree;
