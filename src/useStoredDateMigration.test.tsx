@@ -281,6 +281,51 @@ describe('migrating stored dates', () => {
     });
   });
 
+  describe('the lastUpdated left over from before lastStatusUpdate', () => {
+    it('is dropped from a daily task', () => {
+      const task = {
+        ...createDailyTask(getLegacyTimestampDaysAgo(2)),
+        lastUpdated: getLegacyTimestampDaysAgo(9),
+      } as DailyTask;
+      const storage = migrate({ [DAILY_KEY]: indexById([task]) });
+
+      const [, migrated] = (storage.updateItem as jest.Mock).mock.calls[0];
+      expect(migrated).not.toHaveProperty('lastUpdated');
+      expect(migrated.lastCompleted).toBe(getDateDaysAgo(2));
+    });
+
+    it('is dropped from a work task nested in a list', () => {
+      const task = {
+        ...createWorkTask('fix-the-thing', {
+          parentId: `${WORK_KEY}/today/items`,
+          lastStatusUpdate: getLegacyTimestampDaysAgo(2),
+        }),
+        lastUpdated: getLegacyTimestampDaysAgo(9),
+      } as WorkTask;
+      const list = createWorkTask('today', { items: indexById([task]) });
+      const storage = migrate({ [WORK_KEY]: indexById([list]) });
+
+      const [, migrated] = (storage.updateItem as jest.Mock).mock.calls[0];
+      expect(migrated.items['fix-the-thing']).not.toHaveProperty('lastUpdated');
+      expect(migrated.items['fix-the-thing'].lastStatusUpdate).toBe(
+        getDateDaysAgo(2),
+      );
+    });
+
+    describe('when it is the only thing left to change', () => {
+      it('still rewrites the task', () => {
+        const task = {
+          ...createDailyTask(getDateDaysAgo(2)),
+          lastUpdated: getLegacyTimestampDaysAgo(9),
+        } as DailyTask;
+        const storage = migrate({ [DAILY_KEY]: indexById([task]) });
+
+        const [, migrated] = (storage.updateItem as jest.Mock).mock.calls[0];
+        expect(migrated).not.toHaveProperty('lastUpdated');
+      });
+    });
+  });
+
   describe('when everything is already a date string', () => {
     it('writes nothing', () => {
       const storage = migrate({

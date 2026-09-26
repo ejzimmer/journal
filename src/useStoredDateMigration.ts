@@ -24,20 +24,34 @@ const RESET_KEYS = [
   WORK_CLEANUP_KEY,
 ];
 
+type WithLastUpdated<T> = T & { lastUpdated?: number };
+
 const isEpoch = (date?: StoredDate | null): date is number =>
   typeof date === 'number';
+
+const hasLastUpdated = (task: object) => 'lastUpdated' in task;
+
+const withoutLastUpdated = <T extends object>(task: T): T => {
+  const { lastUpdated: _lastUpdated, ...rest } = task as WithLastUpdated<T>;
+  return rest as T;
+};
 
 const toDateString = (date: StoredDate) =>
   isEpoch(date) ? getPlainDate(date).toString() : date;
 
 const migrateDailyTask = (task: DailyTask) =>
-  isEpoch(task.lastCompleted)
-    ? { ...task, lastCompleted: toDateString(task.lastCompleted) }
+  isEpoch(task.lastCompleted) || hasLastUpdated(task)
+    ? withoutLastUpdated({
+        ...task,
+        lastCompleted: toDateString(task.lastCompleted),
+      })
     : undefined;
 
 const migrateCalendarTask = (task: CalendarTask) =>
-  isEpoch(task.dueDate) || isEpoch(task.statusUpdateDate)
-    ? {
+  isEpoch(task.dueDate) ||
+  isEpoch(task.statusUpdateDate) ||
+  hasLastUpdated(task)
+    ? withoutLastUpdated({
         ...task,
         ...(task.dueDate !== undefined && {
           dueDate: toDateString(task.dueDate),
@@ -45,28 +59,34 @@ const migrateCalendarTask = (task: CalendarTask) =>
         ...(task.statusUpdateDate !== undefined && {
           statusUpdateDate: toDateString(task.statusUpdateDate),
         }),
-      }
+      })
     : undefined;
 
 const migrateWeeklyTask = (task: WeeklyTask) => {
-  if (!task.completed) return undefined;
+  if (!task.completed) {
+    return hasLastUpdated(task) ? withoutLastUpdated(task) : undefined;
+  }
 
   if (Array.isArray(task.completed)) {
-    if (!task.completed.some(isEpoch)) return undefined;
+    if (!task.completed.some(isEpoch) && !hasLastUpdated(task)) {
+      return undefined;
+    }
 
-    return {
+    return withoutLastUpdated({
       ...task,
       completed: task.completed.map((date) => date && toDateString(date)),
-    };
+    });
   }
 
   const completedById = task.completed as unknown as Record<
     string,
     StoredDate | null
   >;
-  if (!Object.values(completedById).some(isEpoch)) return undefined;
+  if (!Object.values(completedById).some(isEpoch) && !hasLastUpdated(task)) {
+    return undefined;
+  }
 
-  return {
+  return withoutLastUpdated({
     ...task,
     completed: Object.fromEntries(
       Object.entries(completedById).map(([id, date]) => [
@@ -74,32 +94,34 @@ const migrateWeeklyTask = (task: WeeklyTask) => {
         date && toDateString(date),
       ]),
     ) as unknown as WeeklyTask['completed'],
-  };
+  });
 };
 
-const hasEpochAnywhere = (task: WorkTask): boolean =>
+const needsMigrating = (task: WorkTask): boolean =>
   isEpoch(task.lastStatusUpdate) ||
   isEpoch(task.dueDate) ||
-  Object.values(task.items ?? {}).some(hasEpochAnywhere);
+  hasLastUpdated(task) ||
+  Object.values(task.items ?? {}).some(needsMigrating);
 
-const withDatesAsStrings = (task: WorkTask): WorkTask => ({
-  ...task,
-  ...(task.lastStatusUpdate !== undefined && {
-    lastStatusUpdate: toDateString(task.lastStatusUpdate),
-  }),
-  ...(task.dueDate !== undefined && { dueDate: toDateString(task.dueDate) }),
-  ...(task.items && {
-    items: Object.fromEntries(
-      Object.entries(task.items).map(([id, item]) => [
-        id,
-        withDatesAsStrings(item),
-      ]),
-    ),
-  }),
-});
+const withDatesAsStrings = (task: WorkTask): WorkTask =>
+  withoutLastUpdated({
+    ...task,
+    ...(task.lastStatusUpdate !== undefined && {
+      lastStatusUpdate: toDateString(task.lastStatusUpdate),
+    }),
+    ...(task.dueDate !== undefined && { dueDate: toDateString(task.dueDate) }),
+    ...(task.items && {
+      items: Object.fromEntries(
+        Object.entries(task.items).map(([id, item]) => [
+          id,
+          withDatesAsStrings(item),
+        ]),
+      ),
+    }),
+  });
 
 const migrateWorkList = (list: WorkTask) =>
-  hasEpochAnywhere(list) ? withDatesAsStrings(list) : undefined;
+  needsMigrating(list) ? withDatesAsStrings(list) : undefined;
 
 export function useStoredDateMigration() {
   const { useValue, updateItem, setValue } = useStorageContext();
