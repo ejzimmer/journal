@@ -1,8 +1,7 @@
-import { JSX, useMemo } from 'react';
+import { FormEvent, JSX, useMemo, useState } from 'react';
 import { PlusIcon } from '../../shared/icons/Plus';
 import { ChevronUpIcon } from '../../shared/icons/ChevronUp';
 import { ChevronDownIcon } from '../../shared/icons/ChevronDown';
-import { EqualIcon } from '../../shared/icons/Equal';
 import { IconProps } from '../../shared/icons/types';
 import { compareDates, formatDate, getPlainDate } from '../../shared/dates';
 import { useStorageContext } from '../../shared/FirebaseContext';
@@ -17,7 +16,7 @@ import { ExerciseForm } from './ExerciseForm';
 import './ExerciseTracker.css';
 
 export function ExerciseTracker() {
-  const { useValue } = useStorageContext();
+  const { useValue, addItem } = useStorageContext();
   const { value } = useValue<Record<string, Exercise>>(EXERCISES_PATH);
 
   const exercises = useMemo(() => Object.values(value ?? {}), [value]);
@@ -33,6 +32,9 @@ export function ExerciseTracker() {
             numberOfUpdateColumns={numberOfUpdateColumns}
           />
         ))}
+        <AddExerciseRow
+          onAdd={(name) => addItem<Exercise>(EXERCISES_PATH, { name })}
+        />
       </tbody>
     </table>
   );
@@ -140,5 +142,50 @@ const recommendationIcons: Record<
 > = {
   increase: ChevronUpIcon,
   decrease: ChevronDownIcon,
-  'no change': EqualIcon,
 };
+
+function AddExerciseRow({ onAdd }: { onAdd: (name: string) => void }) {
+  const { isFormOpen, triggerRef, openForm, closeForm } = useFormToggle();
+  const [name, setName] = useState('');
+
+  const handleSubmit = (event: FormEvent) => {
+    event.preventDefault();
+    if (!name.trim()) {
+      return;
+    }
+
+    onAdd(name.trim());
+    setName('');
+    closeForm();
+  };
+
+  return (
+    <tr>
+      <th className="add-exercise">
+        {isFormOpen ? (
+          <form
+            aria-label="Add exercise"
+            onSubmit={handleSubmit}
+            onKeyDown={(event) => event.key === 'Escape' && closeForm()}
+          >
+            <input
+              aria-label="Exercise name"
+              value={name}
+              onChange={(event) => setName(event.target.value)}
+              autoFocus
+            />
+          </form>
+        ) : (
+          <button
+            ref={triggerRef}
+            className="ghost"
+            aria-label="Add exercise"
+            onClick={openForm}
+          >
+            <PlusIcon width="24px" strokeWidth="3" />
+          </button>
+        )}
+      </th>
+    </tr>
+  );
+}

@@ -11,6 +11,20 @@ table.exercise-tracker {
   th {
     width: 200px;
     text-align: start;
+
+    &.add-exercise {
+      text-align: center;
+
+      button {
+        color: var(--action-colour);
+        opacity: 1;
+      }
+
+      input {
+        width: 100%;
+        box-sizing: border-box;
+      }
+    }
   }
 
   td {

@@ -47,8 +47,7 @@ export type DayData = {
 };
 
 export const EXERCISES_PATH = `${THIS_YEAR_PATH}/exercises`;
-export const RECOMMENDATIONS = ['increase', 'no change', 'decrease'] as const;
-export type Recommendation = (typeof RECOMMENDATIONS)[number];
+export type Recommendation = 'increase' | 'decrease';
 export type ExerciseUpdate = {
   id: string;
   date: StoredDate;

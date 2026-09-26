@@ -1,10 +1,12 @@
 import { FormEvent, useEffect, useId, useRef, useState } from 'react';
 import { getToday } from '../../shared/dates';
-import {
-  ExerciseUpdate,
-  Recommendation,
-  RECOMMENDATIONS,
-} from '../../shared/types';
+import { ExerciseUpdate, Recommendation } from '../../shared/types';
+
+const RECOMMENDATION_OPTIONS: { label: string; value?: Recommendation }[] = [
+  { label: 'increase', value: 'increase' },
+  { label: 'no change' },
+  { label: 'decrease', value: 'decrease' },
+];
 
 type ExerciseFormProps = {
   exerciseName: string;
@@ -20,8 +22,7 @@ export function ExerciseForm({
   const dateInputRef = useRef<HTMLInputElement>(null);
   const [date, setDate] = useState(getToday());
   const [details, setDetails] = useState('');
-  const [recommendation, setRecommendation] =
-    useState<Recommendation>('no change');
+  const [recommendation, setRecommendation] = useState<Recommendation>();
   const recommendationName = useId();
 
   useEffect(() => {
@@ -34,7 +35,11 @@ export function ExerciseForm({
       return;
     }
 
-    onSubmit({ date, details: details.trim(), recommendation });
+    onSubmit({
+      date,
+      details: details.trim(),
+      ...(recommendation && { recommendation }),
+    });
   };
 
   return (
@@ -64,16 +69,15 @@ export function ExerciseForm({
       </label>
       <fieldset>
         <legend>Recommendation</legend>
-        {RECOMMENDATIONS.map((option) => (
-          <label key={option}>
+        {RECOMMENDATION_OPTIONS.map(({ label, value }) => (
+          <label key={label}>
             <input
               type="radio"
               name={recommendationName}
-              value={option}
-              checked={recommendation === option}
-              onChange={() => setRecommendation(option)}
+              checked={recommendation === value}
+              onChange={() => setRecommendation(value)}
             />
-            {option}
+            {label}
           </label>
         ))}
       </fieldset>

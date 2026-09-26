@@ -318,7 +318,6 @@ const exercises: Record<string, Exercise> = {
         id: 'a',
         date: '2026-08-12',
         details: '3 x 10 x 8kg',
-        recommendation: 'no change',
       },
     },
   },

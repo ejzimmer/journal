@@ -225,6 +225,25 @@ describe('ExerciseTracker', () => {
         ).toHaveFocus();
       });
 
+      describe('with no change recommended', () => {
+        it('adds the update without a recommendation', async () => {
+          const addItem = jest.fn();
+          renderTracker({ addItem });
+          const { user } = await openForm('Bulgarian split squat');
+
+          await user.type(
+            screen.getByRole('textbox', { name: 'Details' }),
+            '3 x 10 x 10kg',
+          );
+          await user.click(screen.getByRole('button', { name: 'Save' }));
+
+          expect(addItem).toHaveBeenCalledWith(
+            `${EXERCISES_PATH}/split/updates`,
+            { date: '2026-09-02', details: '3 x 10 x 10kg' },
+          );
+        });
+      });
+
       describe('without any details', () => {
         it("doesn't add an update", async () => {
           const addItem = jest.fn();
@@ -260,6 +279,82 @@ describe('ExerciseTracker', () => {
         expect(form).not.toBeInTheDocument();
         expect(
           screen.getByRole('button', { name: 'Record Plank' }),
+        ).toHaveFocus();
+      });
+    });
+  });
+
+  describe('adding an exercise', () => {
+    async function openAddExerciseForm() {
+      const user = userEvent.setup();
+      const button = screen.getByRole('button', { name: 'Add exercise' });
+      await user.click(button);
+      return { user, button };
+    }
+
+    describe('when the add exercise button is pressed', () => {
+      it('replaces the button with a focused name field', async () => {
+        renderTracker();
+
+        const { button } = await openAddExerciseForm();
+
+        expect(button).not.toBeInTheDocument();
+        expect(
+          screen.getByRole('textbox', { name: 'Exercise name' }),
+        ).toHaveFocus();
+      });
+    });
+
+    describe('when a name is entered', () => {
+      it('adds the exercise', async () => {
+        const addItem = jest.fn();
+        renderTracker({ addItem });
+        const { user } = await openAddExerciseForm();
+
+        await user.keyboard('Goblet squat{Enter}');
+
+        expect(addItem).toHaveBeenCalledWith(EXERCISES_PATH, {
+          name: 'Goblet squat',
+        });
+      });
+
+      it('closes the form and returns focus to the add exercise button', async () => {
+        renderTracker();
+        const { user } = await openAddExerciseForm();
+        const input = screen.getByRole('textbox', { name: 'Exercise name' });
+
+        await user.keyboard('Goblet squat{Enter}');
+
+        expect(input).not.toBeInTheDocument();
+        expect(
+          screen.getByRole('button', { name: 'Add exercise' }),
+        ).toHaveFocus();
+      });
+    });
+
+    describe('when the name is empty', () => {
+      it("doesn't add an exercise", async () => {
+        const addItem = jest.fn();
+        renderTracker({ addItem });
+        const { user } = await openAddExerciseForm();
+
+        await user.keyboard('   {Enter}');
+
+        expect(addItem).not.toHaveBeenCalled();
+      });
+    });
+
+    describe('when escape is pressed', () => {
+      it('closes the form', async () => {
+        renderTracker();
+        const { user } = await openAddExerciseForm();
+        const input = screen.getByRole('textbox', { name: 'Exercise name' });
+
+        await user.keyboard('{Escape}');
+
+        expect(input).not.toBeInTheDocument();
+        expect(
+          screen.getByRole('button', { name: 'Add exercise' }),
         ).toHaveFocus();
       });
     });
