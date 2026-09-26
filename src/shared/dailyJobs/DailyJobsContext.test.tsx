@@ -49,7 +49,7 @@ describe('daily jobs', () => {
       it("doesn't run the job", () => {
         const run = jest.fn();
 
-        renderJob(run, { [LAST_RUN_KEY]: new Date().getTime() });
+        renderJob(run, { [LAST_RUN_KEY]: getToday() });
 
         expect(run).not.toHaveBeenCalled();
       });

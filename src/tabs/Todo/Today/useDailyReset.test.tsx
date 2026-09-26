@@ -1,4 +1,4 @@
-import { getDateDaysAgo } from '../../../shared/dates';
+import { getDateDaysAgo, getToday } from '../../../shared/dates';
 import {
   createDailyJobsStorage,
   renderDailyJob,
@@ -80,7 +80,7 @@ describe('resetting daily tasks', () => {
         createTask('book-flights', {
           type: '一度',
           status: 'finished',
-          lastCompleted: new Date().getTime(),
+          lastCompleted: getToday(),
         }),
       ]);
 

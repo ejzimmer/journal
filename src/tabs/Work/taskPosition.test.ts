@@ -6,7 +6,7 @@ const list: WorkTask = {
   description: 'Today',
   status: 'not_started',
   parentId: 'work',
-  lastStatusUpdate: 0,
+  lastStatusUpdate: '2026-01-01',
   position: 0,
 };
 
@@ -24,7 +24,7 @@ describe('getAppendPosition', () => {
           description: 'Fix contrast',
           status: 'not_started',
           parentId: 'list-1',
-          lastStatusUpdate: 0,
+          lastStatusUpdate: '2026-01-01',
           position: 3,
         },
       },

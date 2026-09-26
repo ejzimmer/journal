@@ -6,7 +6,7 @@ const baseTask: WorkTask = {
   description: 'Do the thing',
   status: 'not_started',
   parentId: 'list-1',
-  lastStatusUpdate: 0,
+  lastStatusUpdate: '2026-01-01',
   position: 0,
 };
 
@@ -15,7 +15,7 @@ const labelledList: WorkTask = {
   description: 'a11y',
   status: 'not_started',
   parentId: 'work',
-  lastStatusUpdate: 0,
+  lastStatusUpdate: '2026-01-01',
   position: 0,
   labelIds: ['label-a11y'],
 };

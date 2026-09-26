@@ -1,5 +1,4 @@
 import { OrderedListItem } from './drag-and-drop/types';
-import { StoredDate } from './dates';
 
 export const TODO_KEY = 'today';
 export type TodoTask = OrderedListItem & {
@@ -12,7 +11,7 @@ export const DAILY_RESET_KEY = `${TODO_KEY}/dailyReset`;
 export type DailyTaskDetails = {
   type: '毎日' | '一度';
   status: 'ready' | 'done' | 'finished';
-  lastCompleted: StoredDate;
+  lastCompleted: string;
   linkedTask?: string;
 };
 export type DailyTask = DailyTaskDetails & TodoTask;
@@ -21,7 +20,7 @@ export const WEEKLY_KEY = `${TODO_KEY}/週`;
 export const WEEKLY_RESET_KEY = `${TODO_KEY}/weeklyReset`;
 export type WeeklyTaskDetails = {
   frequency: number;
-  completed?: StoredDate[];
+  completed?: string[];
 };
 export type WeeklyTask = WeeklyTaskDetails & TodoTask;
 
@@ -30,9 +29,9 @@ export const CALENDAR_RESET_KEY = `${TODO_KEY}/calendarReset`;
 
 export const STATUSES = ['ready', 'paused', 'finished'] as const;
 export type CalendarTaskDetails = {
-  dueDate: StoredDate;
+  dueDate: string;
   status: (typeof STATUSES)[number];
-  statusUpdateDate: StoredDate;
+  statusUpdateDate: string;
 };
 export type CalendarTask = CalendarTaskDetails & TodoTask;
 
@@ -52,7 +51,7 @@ export const EXERCISES_PATH = `${HEALTH_PATH}/exercises`;
 export type Recommendation = 'increase' | 'decrease';
 export type ExerciseUpdate = {
   id: string;
-  date: StoredDate;
+  date: string;
   details: string;
   recommendation?: Recommendation;
 };

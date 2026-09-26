@@ -4,6 +4,7 @@ import { DueDateTask } from './DueDateTask';
 import { CategoriesContext } from '..';
 import { CalendarTask } from '../../../shared/types';
 import { renderWithStorage } from '../../../shared/storageContextTestUtils';
+import { getToday } from '../../../shared/dates';
 
 const task: CalendarTask = {
   id: '1',
@@ -11,9 +12,9 @@ const task: CalendarTask = {
   position: 0,
   description: 'Pay rent',
   category: '🛒',
-  dueDate: new Date('2026-08-10').getTime(),
+  dueDate: '2026-08-10',
   status: 'ready',
-  statusUpdateDate: Date.now(),
+  statusUpdateDate: getToday(),
 };
 
 describe('DueDateTask', () => {

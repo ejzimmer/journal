@@ -4,7 +4,6 @@ import { DueDateTask } from './DueDateTask';
 import './DueDateTask.css';
 import { useStorageContext } from '../../../shared/FirebaseContext';
 import { CalendarTask, CALENDAR_KEY } from '../../../shared/types';
-import { compareDates } from '../../../shared/dates';
 
 export function DueDateList() {
   const { useValue } = useStorageContext();
@@ -16,7 +15,7 @@ export function DueDateList() {
       {tasks.length ? (
         <ol>
           {tasks
-            .sort((a, b) => compareDates(a.dueDate, b.dueDate))
+            .sort((a, b) => Temporal.PlainDate.compare(a.dueDate, b.dueDate))
             .map((task) => (
               <li key={task.id} className={`status-${task.status}`}>
                 <DueDateTask task={task} />

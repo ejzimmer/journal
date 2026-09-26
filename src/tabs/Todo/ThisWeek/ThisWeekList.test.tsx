@@ -1,11 +1,6 @@
 import { getDateDaysAgo } from '../../../shared/dates';
-import { getLegacyTimestampDaysAgo } from '../../../shared/dateTestUtils';
 import { WeeklyTask } from '../../../shared/types';
 import { refreshTasks } from './useWeeklyReset';
-
-const lateInTheDay = Temporal.Duration.from({ hours: 23 }).total(
-  'milliseconds',
-);
 
 const mockTask: WeeklyTask = {
   id: '2',
@@ -77,23 +72,6 @@ describe('updating done tasks', () => {
       expect(updateTask).toHaveBeenCalledWith({
         ...mockTask,
         completed: [completed[2], completed[3]],
-      });
-    });
-
-    describe('and it was stored as a timestamp from before the migration', () => {
-      it('drops it whatever time of day it holds', () => {
-        const completed = [
-          getLegacyTimestampDaysAgo(7) + lateInTheDay,
-          getDateDaysAgo(4),
-          getDateDaysAgo(2),
-        ];
-        const updateTask = jest.fn();
-        refreshTasks([{ ...mockTask, completed }], updateTask);
-
-        expect(updateTask).toHaveBeenCalledWith({
-          ...mockTask,
-          completed: [completed[1], completed[2]],
-        });
       });
     });
   });

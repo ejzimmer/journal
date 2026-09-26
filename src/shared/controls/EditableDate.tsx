@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react';
-import { formatDayAndMonth, getPlainDate, StoredDate } from '../dates';
+import { formatDayAndMonth } from '../dates';
 import { useFormToggle } from './useFormToggle';
 
 interface Props extends Omit<
@@ -7,12 +7,11 @@ interface Props extends Omit<
   'children' | 'style' | 'onChange'
 > {
   onChange: (date: string) => void;
-  value: StoredDate;
+  value: string;
 }
 
 export function EditableDate({ onChange, value, ...props }: Props) {
-  const currentDate = getPlainDate(value).toString();
-  const [editingValue, setEditingValue] = useState(currentDate);
+  const [editingValue, setEditingValue] = useState(value);
   const {
     isFormOpen: isEditing,
     triggerRef: displayRef,
@@ -24,7 +23,7 @@ export function EditableDate({ onChange, value, ...props }: Props) {
 
   const handleSubmit = () => {
     const inputValue = inputRef.current?.value;
-    if (inputValue && inputValue !== currentDate) {
+    if (inputValue && inputValue !== value) {
       onChange(inputValue);
     }
 
@@ -46,7 +45,7 @@ export function EditableDate({ onChange, value, ...props }: Props) {
 
         if (event.key === 'Escape') {
           event.stopPropagation();
-          setEditingValue(currentDate);
+          setEditingValue(value);
           stopEditing();
         }
       }}

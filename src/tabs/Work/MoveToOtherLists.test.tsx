@@ -10,7 +10,7 @@ const task: WorkTask = {
   description: 'Fix contrast',
   status: 'not_started',
   parentId: 'list-1',
-  lastStatusUpdate: 0,
+  lastStatusUpdate: '2026-01-01',
   position: 0,
 };
 
@@ -19,7 +19,7 @@ const sourceList: WorkTask = {
   description: 'a11y backlog',
   status: 'not_started',
   parentId: 'work',
-  lastStatusUpdate: 0,
+  lastStatusUpdate: '2026-01-01',
   position: 0,
 };
 
@@ -28,7 +28,7 @@ const destinationList: WorkTask = {
   description: 'Today',
   status: 'not_started',
   parentId: 'work',
-  lastStatusUpdate: 0,
+  lastStatusUpdate: '2026-01-01',
   position: 1,
 };
 

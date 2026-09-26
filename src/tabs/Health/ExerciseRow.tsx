@@ -1,6 +1,5 @@
 import { useMemo } from 'react';
 import { PlusIcon } from '../../shared/icons/Plus';
-import { compareDates } from '../../shared/dates';
 import { useFormToggle } from '../../shared/controls/useFormToggle';
 import { Exercise, ExerciseUpdate } from '../../shared/types';
 import { useHealthStorage } from './HealthStorageContext';
@@ -22,7 +21,7 @@ export function ExerciseRow({
   const updates = useMemo(
     () =>
       Object.values(exercise.updates ?? {}).sort((a, b) =>
-        compareDates(a.date, b.date),
+        Temporal.PlainDate.compare(a.date, b.date),
       ),
     [exercise.updates],
   );
