@@ -4,6 +4,14 @@
   gap: 6px;
   font-size: 20px;
   padding: 6px 12px;
+
+  &:hover,
+  &:focus-visible {
+    background:
+      linear-gradient(white, white) padding-box,
+      var(--yarn-gradient) border-box;
+    border-color: transparent;
+  }
 }
 
 .yarn-tracking-form {
@@ -54,20 +62,84 @@
     }
   }
 
-  .switch {
+  [role='radiogroup'].switch {
+    --yarn-colour-dark: oklch(from var(--yarn-colour) calc(l * 0.6) c h);
     isolation: isolate;
     width: 100%;
-    border-radius: 15px;
-    font-size: 24px;
-    border-width: 2px;
-    border-color: var(--border-colour);
-    overflow: hidden;
     height: 100%;
+    border: none;
+    border-radius: 999px;
+    font-size: 24px;
+    box-shadow:
+      inset 2px 2px 5px hsl(0 0% 0% / 0.35),
+      inset -1px -1px 2px hsl(0 0% 100% / 0.6);
 
-    & > label {
+    &:focus-within {
+      outline: none;
+    }
+
+    label {
       width: 50%;
       text-align: center;
       padding: 4px;
+
+      &:not(:last-of-type) {
+        border-inline-end: none;
+      }
+
+      &:has(input:not(:checked)) {
+        box-shadow: none;
+      }
+
+      &:has(input:checked) {
+        color: var(--yarn-colour-dark);
+        text-shadow: 1px 1px var(--yarn-colour);
+      }
     }
+
+    .indicator {
+      display: none;
+    }
+
+    &::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 25%;
+      height: 80%;
+      aspect-ratio: 1;
+      border-radius: 50%;
+      background: color-mix(in srgb, var(--yarn-colour) 25%, transparent);
+      box-shadow:
+        0 0 4px 1px color-mix(in srgb, var(--yarn-colour) 80%, transparent),
+        0 0 14px 6px color-mix(in srgb, var(--yarn-colour) 60%, transparent),
+        inset 0 0 6px color-mix(in srgb, var(--yarn-colour) 40%, transparent);
+      transform: translate(-50%, -50%);
+      transition:
+        left 0.2s ease-out,
+        background 0.2s,
+        box-shadow 0.2s;
+      pointer-events: none;
+      z-index: -1;
+    }
+
+    &:has(input[value='+']:checked)::before {
+      left: 75%;
+    }
+  }
+}
+
+dialog.modal:has(.yarn-tracking-form) .footer button {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 36px;
+  padding: 0;
+  background: transparent;
+  border: 1px solid var(--border-colour);
+  color: var(--body-colour-light);
+
+  &:not([type='button']) {
+    color: var(--success-colour);
   }
 }

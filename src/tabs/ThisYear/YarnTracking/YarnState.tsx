@@ -6,7 +6,7 @@ import { YarnBallList } from './YarnBallList';
 import { getLatestMonthOfYear, getPileBalls } from './pileBalls';
 
 export function YarnState() {
-  const { year, pile, currentBalance } = useYarnStorage();
+  const { year, pile } = useYarnStorage();
   const pileBalls = useMemo(
     () => pile && getPileBalls(pile, getLatestMonthOfYear(year)),
     [pile, year],
@@ -18,7 +18,6 @@ export function YarnState() {
 
   return (
     <div className="yarn-state">
-      <div className="label">Current: {currentBalance.toLocaleString()}g</div>
       <YarnPile balls={pileBalls} />
       <YarnBallList balls={pileBalls.map(({ ball }) => ball)} />
     </div>

@@ -77,12 +77,12 @@ describe('YarnTrackingForm', () => {
     });
   });
 
-  describe('when the cancel button is clicked', () => {
+  describe('when the close button is clicked', () => {
     it('closes the form', async () => {
       const { user } = await openForm();
       const yarnType = screen.getByRole('combobox', { name: 'Yarn type' });
 
-      await user.click(screen.getByRole('button', { name: 'Cancel' }));
+      await user.click(screen.getByRole('button', { name: 'Close' }));
 
       expect(yarnType).not.toBeVisible();
     });

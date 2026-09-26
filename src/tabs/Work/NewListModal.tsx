@@ -43,7 +43,7 @@ export function NewListModal({
         </button>
       )}
       onSubmit={handleCreate}
-      submitButtonText="Create"
+      submitButtonContent="Create"
       onClose={() => {
         setShowError(false);
       }}

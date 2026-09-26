@@ -6,7 +6,8 @@ export type FormModalProps = {
   onSubmit: (
     event: React.FormEvent<HTMLFormElement>,
   ) => boolean | Promise<boolean>;
-  submitButtonText?: string;
+  submitButtonContent?: React.ReactNode;
+  cancelButtonContent?: React.ReactNode;
   onClose?: () => void;
   trigger: ModalProps['trigger'];
   formRef?: RefObject<HTMLFormElement | null>;
@@ -21,7 +22,8 @@ export function FormModal({ trigger, onClose, ...props }: FormModalProps) {
 }
 
 function FormBody({
-  submitButtonText,
+  submitButtonContent,
+  cancelButtonContent = 'Cancel',
   onSubmit,
   children,
   formRef,
@@ -46,8 +48,8 @@ function FormBody({
         </div>
       </Modal.Body>
       <Modal.Footer>
-        <Modal.Cancel>Cancel</Modal.Cancel>
-        <Modal.Action className="primary">{submitButtonText}</Modal.Action>
+        <Modal.Cancel>{cancelButtonContent}</Modal.Cancel>
+        <Modal.Action className="primary">{submitButtonContent}</Modal.Action>
       </Modal.Footer>
     </form>
   );
