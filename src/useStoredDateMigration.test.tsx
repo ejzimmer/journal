@@ -21,6 +21,13 @@ import { useStoredDateMigration } from './useStoredDateMigration';
 const indexById = <T extends { id: string }>(items: T[]) =>
   Object.fromEntries(items.map((item) => [item.id, item]));
 
+const hasUndefinedValue = (value: unknown): boolean =>
+  typeof value === 'object' && value !== null
+    ? Object.values(value).some(
+        (child) => child === undefined || hasUndefinedValue(child),
+      )
+    : false;
+
 const migrate = (storedValues: Record<string, unknown>) => {
   const storage = createDailyJobsStorage(storedValues);
   renderDailyJob(useStoredDateMigration, storage);
@@ -197,6 +204,37 @@ describe('migrating stored dates', () => {
             dueDate: getDateDaysAgo(-1),
           },
         ]),
+      });
+    });
+
+    describe('when a list or task has never had a status update', () => {
+      it('leaves the field off rather than writing undefined', () => {
+        const withoutStatusUpdate = {
+          id: 'never-updated',
+          description: 'never-updated',
+          parentId: `${WORK_KEY}/today/items`,
+          position: 0,
+        } as unknown as WorkTask;
+        const list = {
+          id: 'today',
+          description: 'Today',
+          parentId: WORK_KEY,
+          position: 0,
+          items: indexById([
+            withoutStatusUpdate,
+            createWorkTask('dated', {
+              lastStatusUpdate: getLegacyTimestampDaysAgo(2),
+            }),
+          ]),
+        } as unknown as WorkTask;
+        const storage = migrate({ [WORK_KEY]: indexById([list]) });
+
+        const [, migrated] = (storage.updateItem as jest.Mock).mock.calls[0];
+        expect(hasUndefinedValue(migrated)).toBe(false);
+        expect(migrated.items['never-updated']).not.toHaveProperty(
+          'lastStatusUpdate',
+        );
+        expect(migrated.items.dated.lastStatusUpdate).toBe(getDateDaysAgo(2));
       });
     });
 

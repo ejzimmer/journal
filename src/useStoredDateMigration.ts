@@ -39,8 +39,12 @@ const migrateCalendarTask = (task: CalendarTask) =>
   isEpoch(task.dueDate) || isEpoch(task.statusUpdateDate)
     ? {
         ...task,
-        dueDate: toDateString(task.dueDate),
-        statusUpdateDate: toDateString(task.statusUpdateDate),
+        ...(task.dueDate !== undefined && {
+          dueDate: toDateString(task.dueDate),
+        }),
+        ...(task.statusUpdateDate !== undefined && {
+          statusUpdateDate: toDateString(task.statusUpdateDate),
+        }),
       }
     : undefined;
 
@@ -80,7 +84,9 @@ const hasEpochAnywhere = (task: WorkTask): boolean =>
 
 const withDatesAsStrings = (task: WorkTask): WorkTask => ({
   ...task,
-  lastStatusUpdate: toDateString(task.lastStatusUpdate),
+  ...(task.lastStatusUpdate !== undefined && {
+    lastStatusUpdate: toDateString(task.lastStatusUpdate),
+  }),
   ...(task.dueDate !== undefined && { dueDate: toDateString(task.dueDate) }),
   ...(task.items && {
     items: Object.fromEntries(
