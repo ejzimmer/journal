@@ -3,6 +3,7 @@ import userEvent from '@testing-library/user-event';
 import { ExerciseRow } from './ExerciseRow';
 import { Exercise } from '../../shared/types';
 import { renderWithHealthStorage } from './healthStorageTestUtils';
+import { HealthStorageContextType } from './HealthStorageContext';
 
 const rdl: Exercise = {
   id: 'rdl',
@@ -19,6 +20,17 @@ const rdl: Exercise = {
   },
 };
 
+function renderExerciseRow(overrides: Partial<HealthStorageContextType> = {}) {
+  return renderWithHealthStorage(
+    <table>
+      <tbody>
+        <ExerciseRow exercise={rdl} numberOfUpdateColumns={5} />
+      </tbody>
+    </table>,
+    overrides,
+  );
+}
+
 async function openForm() {
   const user = userEvent.setup();
   const button = screen.getByRole('button', { name: 'Record B-stance RDL' });
@@ -29,13 +41,7 @@ async function openForm() {
 describe('ExerciseRow', () => {
   describe('the updates', () => {
     it('shows them in date order', () => {
-      renderWithHealthStorage(
-        <table>
-          <tbody>
-            <ExerciseRow exercise={rdl} numberOfUpdateColumns={5} />
-          </tbody>
-        </table>,
-      );
+      renderExerciseRow();
 
       const cells = screen.getAllByRole('cell');
       expect(cells.slice(0, 3).map((cell) => cell.textContent)).toEqual([
@@ -46,13 +52,7 @@ describe('ExerciseRow', () => {
     });
 
     it('shows the recommendation on an update that has one', () => {
-      renderWithHealthStorage(
-        <table>
-          <tbody>
-            <ExerciseRow exercise={rdl} numberOfUpdateColumns={5} />
-          </tbody>
-        </table>,
-      );
+      renderExerciseRow();
 
       const update = screen.getByRole('cell', { name: /12 Aug 26/ });
       expect(
@@ -63,25 +63,13 @@ describe('ExerciseRow', () => {
 
   describe('the empty cells', () => {
     it('fill the row out to the number of update columns', () => {
-      renderWithHealthStorage(
-        <table>
-          <tbody>
-            <ExerciseRow exercise={rdl} numberOfUpdateColumns={5} />
-          </tbody>
-        </table>,
-      );
+      renderExerciseRow();
 
       expect(screen.getAllByRole('cell')).toHaveLength(5);
     });
 
     it('have the record button in the first one', () => {
-      renderWithHealthStorage(
-        <table>
-          <tbody>
-            <ExerciseRow exercise={rdl} numberOfUpdateColumns={5} />
-          </tbody>
-        </table>,
-      );
+      renderExerciseRow();
 
       expect(
         within(screen.getAllByRole('cell')[3]).getByRole('button', {
@@ -93,13 +81,7 @@ describe('ExerciseRow', () => {
 
   describe('when the record button is pressed', () => {
     it('replaces the button with the form, in the same cell', async () => {
-      renderWithHealthStorage(
-        <table>
-          <tbody>
-            <ExerciseRow exercise={rdl} numberOfUpdateColumns={5} />
-          </tbody>
-        </table>,
-      );
+      renderExerciseRow();
       const cell = screen.getAllByRole('cell')[3];
 
       const { button } = await openForm();
@@ -114,14 +96,7 @@ describe('ExerciseRow', () => {
   describe('when the form is saved', () => {
     it('records the update against the exercise', async () => {
       const recordExercise = jest.fn();
-      renderWithHealthStorage(
-        <table>
-          <tbody>
-            <ExerciseRow exercise={rdl} numberOfUpdateColumns={5} />
-          </tbody>
-        </table>,
-        { recordExercise },
-      );
+      renderExerciseRow({ recordExercise });
       const { user } = await openForm();
 
       await user.type(
@@ -137,13 +112,7 @@ describe('ExerciseRow', () => {
     });
 
     it('closes the form and returns focus to the record button', async () => {
-      renderWithHealthStorage(
-        <table>
-          <tbody>
-            <ExerciseRow exercise={rdl} numberOfUpdateColumns={5} />
-          </tbody>
-        </table>,
-      );
+      renderExerciseRow();
       const { user } = await openForm();
       const form = screen.getByRole('form', { name: 'Record B-stance RDL' });
 
@@ -162,13 +131,7 @@ describe('ExerciseRow', () => {
 
   describe('when the form is cancelled', () => {
     it('closes the form and returns focus to the record button', async () => {
-      renderWithHealthStorage(
-        <table>
-          <tbody>
-            <ExerciseRow exercise={rdl} numberOfUpdateColumns={5} />
-          </tbody>
-        </table>,
-      );
+      renderExerciseRow();
       const { user } = await openForm();
       const form = screen.getByRole('form', { name: 'Record B-stance RDL' });
 
