@@ -3,13 +3,9 @@ import userEvent from '@testing-library/user-event';
 import { Calories } from './Calories';
 import { FirebaseContext } from '../../../shared/FirebaseContext';
 import { createMockFirebaseContext } from '../../../shared/mockFirebase';
-import { DAILY_PATH, DayData } from '../../../shared/types';
+import { DAILY_PATH } from '../../../shared/types';
 import { HealthStorageProvider } from '../HealthStorageContext';
 import { renderWithHealthStorage } from '../healthStorageTestUtils';
-
-function renderCalories(days?: Record<string, DayData>) {
-  return renderWithHealthStorage(<Calories />, { days });
-}
 
 describe('Calories', () => {
   beforeEach(() => {
@@ -24,7 +20,7 @@ describe('Calories', () => {
 
   describe('add calories form', () => {
     it('shows the form when no calories have been recorded for yesterday', () => {
-      renderCalories();
+      renderWithHealthStorage(<Calories />);
 
       expect(screen.getByRole('textbox', { name: 'In' })).toBeInTheDocument();
       expect(screen.getByRole('textbox', { name: 'Out' })).toBeInTheDocument();
@@ -39,8 +35,10 @@ describe('Calories', () => {
     });
 
     it("doesn't show the form when yesterday's calories are already recorded", () => {
-      renderCalories({
-        '2026-01-06': { id: '2026-01-06', consumed: 1800, expended: 2200 },
+      renderWithHealthStorage(<Calories />, {
+        days: {
+          '2026-01-06': { id: '2026-01-06', consumed: 1800, expended: 2200 },
+        },
       });
 
       expect(
@@ -49,8 +47,10 @@ describe('Calories', () => {
     });
 
     it("shows the form when yesterday has an entry but calories haven't been recorded yet", () => {
-      renderCalories({
-        '2026-01-06': { id: '2026-01-06', trackers: ['🔴'] },
+      renderWithHealthStorage(<Calories />, {
+        days: {
+          '2026-01-06': { id: '2026-01-06', trackers: ['🔴'] },
+        },
       });
 
       expect(screen.getByRole('textbox', { name: 'In' })).toBeInTheDocument();
@@ -137,7 +137,7 @@ describe('Calories', () => {
         '2026-01-06': { id: '2026-01-06', consumed: 1800, expended: 2200 },
       };
 
-      renderCalories(dailyData);
+      renderWithHealthStorage(<Calories />, { days: dailyData });
 
       await user.click(screen.getByRole('radio', { name: '日' }));
       await user.click(screen.getByRole('button', { name: 'update 2 Jan' }));
@@ -171,7 +171,7 @@ describe('Calories', () => {
         },
       };
 
-      renderCalories(dailyData);
+      renderWithHealthStorage(<Calories />, { days: dailyData });
 
       await user.click(screen.getByRole('radio', { name: '日' }));
 
@@ -191,7 +191,7 @@ describe('Calories', () => {
         },
       };
 
-      renderCalories(dailyData);
+      renderWithHealthStorage(<Calories />, { days: dailyData });
 
       await user.click(screen.getByRole('radio', { name: '日' }));
       await user.click(screen.getByRole('button', { name: 'update 3 Jan' }));
