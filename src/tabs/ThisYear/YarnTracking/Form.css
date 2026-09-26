@@ -35,7 +35,6 @@
     }
 
     button,
-    selectedcontent,
     option {
       display: flex;
       align-items: center;
@@ -49,17 +48,18 @@
 
   select,
   input {
-    background: transparent;
+    background: white;
     padding: 8px;
     border-radius: 8px;
-    border-color: var(--border-colour);
-    border-style: solid;
-    border-width: 1px;
+    border: 2px solid var(--border-colour);
     font-size: 16px;
 
     &:focus {
       outline: none;
-      border-color: var(--body-colour);
+      background:
+        linear-gradient(white, white) padding-box,
+        var(--yarn-gradient) border-box;
+      border-color: transparent;
     }
   }
 
@@ -68,19 +68,21 @@
     isolation: isolate;
     width: fit-content;
     height: 100%;
-    border: none;
+    border: 2px solid var(--border-colour);
     border-radius: 999px;
     font-size: 24px;
-    box-shadow:
-      inset 2px 2px 5px hsl(0 0% 0% / 0.35),
-      inset -1px -1px 2px hsl(0 0% 100% / 0.6);
+    background: white;
 
     &:focus-within {
       outline: none;
+      background:
+        linear-gradient(white, white) padding-box,
+        var(--yarn-gradient) border-box;
+      border-color: transparent;
     }
 
     label {
-      width: 40px;
+      width: 30px;
       text-align: center;
       padding: 4px;
 
@@ -106,7 +108,7 @@
       position: absolute;
       top: 50%;
       left: 25%;
-      height: 80%;
+      height: 75%;
       aspect-ratio: 1;
       border-radius: 50%;
       background: var(--yarn-colour);
@@ -131,11 +133,27 @@ dialog.modal:has(.yarn-tracking-form) .footer button {
   width: 44px;
   height: 36px;
   padding: 0;
-  background: transparent;
-  border: 1px solid var(--border-colour);
+  background: white;
+  border: 2px solid var(--border-colour);
   color: var(--body-colour-light);
+
+  &:hover,
+  &:focus-visible {
+    outline: none;
+    background:
+      linear-gradient(white, white) padding-box,
+      var(--cancel-gradient) border-box;
+    border-color: transparent;
+  }
 
   &:not([type='button']) {
     color: var(--success-colour);
+
+    &:hover,
+    &:focus-visible {
+      background:
+        linear-gradient(white, white) padding-box,
+        var(--submit-gradient) border-box;
+    }
   }
 }
