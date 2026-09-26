@@ -129,7 +129,7 @@
     color: var(--error-colour);
     --gradient-colours: var(--wool-colour), var(--sock-yarn-colour);
 
-    &:not([type='button']) {
+    &.yarn-tracking-submit {
       color: var(--success-colour);
       --gradient-colours: var(--acrylic-colour), var(--cotton-colour);
     }

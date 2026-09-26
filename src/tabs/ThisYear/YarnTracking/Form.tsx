@@ -53,6 +53,7 @@ export function YarnTrackingForm() {
           </button>
         )}
         onSubmit={updateYarn}
+        submitButtonClassName="yarn-tracking-submit"
         submitButtonContent={
           <TickIcon width="18px" role="img" aria-label="Submit" />
         }
