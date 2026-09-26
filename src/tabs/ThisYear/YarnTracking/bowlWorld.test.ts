@@ -86,13 +86,17 @@ describe('BowlWorld', () => {
       expect(world.getBalls()[0].size).toBe(0.5);
     });
 
-    it('shows used balls grey straight away', () => {
-      const world = new BowlWorld([
-        createWoolBall(0, 200),
-        { ...createWoolBall(1, 200), fade: 0.5 },
-      ]);
+    describe('with balls that were already used', () => {
+      it('starts them out grey', () => {
+        const world = new BowlWorld([
+          createWoolBall(0, 200),
+          { ...createWoolBall(1, 200), fade: 0.5 },
+        ]);
 
-      expect(world.getBalls().map(({ greyness }) => greyness)).toEqual([0, 1]);
+        expect(world.getBalls().map(({ greyness }) => greyness)).toEqual([
+          0, 1,
+        ]);
+      });
     });
 
     it('keeps the balls from overlapping', () => {
