@@ -275,24 +275,41 @@ describe('BowlWorld', () => {
       return { world, removedId: lowestBall.ball.id };
     };
 
-    it('takes it out of the bowl', () => {
+    it('shrinks it gradually', () => {
       const { world, removedId } = removeLowestBall();
 
-      expect(world.getBalls().map(({ ball }) => ball.id)).not.toContain(
-        removedId,
-      );
-      expect(world.getBalls()).toHaveLength(7);
+      world.advance(0.1);
+
+      const removed = world.getBalls()[removedId];
+      expect(removed.size).toBeGreaterThan(0);
+      expect(removed.size).toBeLessThan(1);
     });
 
-    it('lets the rest fall into the gap', () => {
-      const { world } = removeLowestBall();
-      const heightBefore = getAverageHeight(world.getBalls());
+    describe('once it has shrunk away', () => {
+      it('takes it out of the bowl', () => {
+        const { world, removedId } = removeLowestBall();
+        const removed = world.getBalls()[removedId];
 
-      world.settle();
+        world.settle();
 
-      expect(getAverageHeight(world.getBalls())).toBeGreaterThan(
-        heightBefore + 0.05,
-      );
+        expect(world.getBalls()).not.toContainEqual(
+          expect.objectContaining({ ball: removed.ball }),
+        );
+        expect(world.getBalls()).toHaveLength(7);
+      });
+
+      it('lets the rest fall into the gap', () => {
+        const { world, removedId } = removeLowestBall();
+        const others = (balls: PlacedBall[]) =>
+          balls.filter(({ ball }) => ball.id !== removedId);
+        const heightBefore = getAverageHeight(others(world.getBalls()));
+
+        world.settle();
+
+        expect(getAverageHeight(others(world.getBalls()))).toBeGreaterThan(
+          heightBefore + 0.05,
+        );
+      });
     });
   });
 

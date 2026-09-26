@@ -7,6 +7,7 @@ import {
 } from '../tabs/Work/types';
 import {
   Category,
+  Exercise,
   ProjectDetails,
   ProjectSubtask,
   PROJECTS_KEY,
@@ -296,6 +297,51 @@ const yarn: StoredYarn = {
   },
 };
 
+const exercises: Record<string, Exercise> = {
+  'exercise-pistol': {
+    id: 'exercise-pistol',
+    name: 'Box pistol squat',
+    updates: {
+      a: {
+        id: 'a',
+        date: '2026-08-12',
+        details:
+          '2 x 5 x 3 mats + 1 low yoga block + 1 high yoga block, 1 x 5 3 mats + 2 low yoga blocks (eccentric only)',
+      },
+    },
+  },
+  'exercise-split': {
+    id: 'exercise-split',
+    name: 'Bulgarian split squat',
+    updates: {
+      a: {
+        id: 'a',
+        date: '2026-08-12',
+        details: '3 x 10 x 8kg',
+      },
+    },
+  },
+  'exercise-rdl': {
+    id: 'exercise-rdl',
+    name: 'B-stance RDL',
+    updates: {
+      a: {
+        id: 'a',
+        date: '2026-08-12',
+        details: '3 x 10 x 16kg',
+        recommendation: 'increase',
+      },
+      b: { id: 'b', date: '2026-08-15', details: '3 x 10 x 20kg' },
+      c: {
+        id: 'c',
+        date: '2026-08-17',
+        details: '3 x 10 x 20kg',
+        recommendation: 'decrease',
+      },
+    },
+  },
+};
+
 export const seedData = {
   [WORK_KEY]: {
     [backlog.id]: { ...backlog, items: { [backlogTask.id]: backlogTask } },
@@ -315,5 +361,5 @@ export const seedData = {
     games,
   },
   [PROJECTS_KEY]: projects,
-  '2026': { yarn },
+  '2026': { yarn, exercises },
 };
