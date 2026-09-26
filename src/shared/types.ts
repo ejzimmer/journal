@@ -46,6 +46,20 @@ export type DayData = {
   trackers?: string[];
 };
 
+export const EXERCISES_PATH = `${THIS_YEAR_PATH}/exercises`;
+export type Recommendation = 'increase' | 'decrease';
+export type ExerciseUpdate = {
+  id: string;
+  date: StoredDate;
+  details: string;
+  recommendation?: Recommendation;
+};
+export type Exercise = {
+  id: string;
+  name: string;
+  updates?: Record<string, ExerciseUpdate>;
+};
+
 export const PROJECTS_KEY = 'projects';
 export type ProjectSubtask = {
   id: string;

@@ -1,6 +1,5 @@
 import { useMemo, useState } from 'react';
-import { useStorageContext } from '../../../shared/FirebaseContext';
-import { DayData, DAILY_PATH } from '../../../shared/types';
+import { useHealthStorage } from '../HealthStorageContext';
 import { setupDays } from '../utils';
 import { Switch } from '../../../shared/controls/Switch';
 import { Days } from './Days';
@@ -15,23 +14,22 @@ export function Calories() {
   const [dismissed, setDismissed] = useState(false);
   const [selectedDayId, setSelectedDayId] = useState<string | null>(null);
 
-  const { useValue, updateItem } = useStorageContext();
-  const { value, loading } = useValue<Record<string, DayData>>(DAILY_PATH);
+  const { days: storedDays, isLoading, updateDay } = useHealthStorage();
 
-  const days = useMemo(() => setupDays(value), [value]);
+  const days = useMemo(() => setupDays(storedDays), [storedDays]);
   const yesterday = days[days.length - 1];
   const yesterdayId = yesterday && yesterday.id;
   const caloriesRecordedYesterday = typeof yesterday?.diff === 'number';
 
   const activeDayId =
     selectedDayId ??
-    (!loading && yesterdayId && !caloriesRecordedYesterday && !dismissed
+    (!isLoading && yesterdayId && !caloriesRecordedYesterday && !dismissed
       ? yesterdayId
       : null);
   const activeDay = activeDayId
     ? days.find((day) => day.id === activeDayId)
     : undefined;
-  const activeDayData = activeDayId ? value?.[activeDayId] : undefined;
+  const activeDayData = activeDayId ? storedDays?.[activeDayId] : undefined;
 
   const closeForm = () => {
     if (selectedDayId) {
@@ -73,7 +71,7 @@ export function Calories() {
             trackers={activeDayData?.trackers}
             onClose={closeForm}
             onSubmit={({ consumed, expended, trackers }) => {
-              updateItem<DayData>(DAILY_PATH, {
+              updateDay({
                 ...(activeDayData ?? { id: activeDayId }),
                 id: activeDayId,
                 consumed,
