@@ -63,7 +63,7 @@
   }
 
   [role='radiogroup'].switch {
-    --yarn-colour-dark: oklch(from var(--yarn-colour) calc(l * 0.6) c h);
+    --yarn-colour-dark: color-mix(in oklch, var(--yarn-colour) 60%, black);
     isolation: isolate;
     width: 100%;
     height: 100%;
