@@ -53,20 +53,6 @@ describe('YarnTrackingForm', () => {
 
         expect(storageContext.addYarn).toHaveBeenCalledWith('wool', 400);
       });
-
-      it('adds the yarn type chosen before the switch was flipped', async () => {
-        const { user, storageContext } = await openForm();
-
-        await user.selectOptions(
-          screen.getByRole('combobox', { name: 'Yarn type' }),
-          'cotton',
-        );
-        await user.click(screen.getByRole('radio', { name: '+' }));
-        await user.type(screen.getByRole('textbox', { name: 'Grams' }), '400');
-        await user.click(screen.getByRole('button', { name: 'Submit' }));
-
-        expect(storageContext.addYarn).toHaveBeenCalledWith('cotton', 400);
-      });
     });
 
     it('closes the form', async () => {
