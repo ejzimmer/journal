@@ -144,6 +144,34 @@ describe('BowlWorld', () => {
     });
   });
 
+  describe('when more balls are added than the bowl holds', () => {
+    const overfillBowl = () => {
+      const world = new BowlWorld(createWoolBalls(20));
+      world.syncBalls(createWoolBalls(40));
+      world.settle();
+      return world;
+    };
+
+    it('spills the extra onto the table beside the bowl', () => {
+      const world = overfillBowl();
+
+      const spilled = world
+        .getBalls()
+        .filter(({ x }) => Math.abs(x) > world.radius);
+      expect(spilled.length).toBeGreaterThan(0);
+      spilled.forEach((ball) => {
+        expect(Math.abs(ball.x)).toBeLessThan(world.tableHalfWidth);
+        expect(ball.y).toBeLessThan(world.depth);
+      });
+    });
+
+    it('lets every ball come to rest', () => {
+      const world = overfillBowl();
+
+      expect(world.isAtRest()).toBe(true);
+    });
+  });
+
   describe('when a ball grows', () => {
     it('grows it gradually', () => {
       const world = new BowlWorld([createWoolBall(0, 100)]);

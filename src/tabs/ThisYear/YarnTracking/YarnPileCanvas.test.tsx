@@ -11,6 +11,7 @@ const BOWL = {
   baseRadius: 40,
   depth: 60,
   rimDepth: 10,
+  tableHalfWidth: 100,
 };
 
 const placeBall = (
