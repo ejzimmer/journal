@@ -44,7 +44,7 @@ const exercises: Record<string, Exercise> = {
   },
 };
 
-function renderTracker(value: Partial<ContextType> = {}) {
+function renderExerciseTracker(value: Partial<ContextType> = {}) {
   const useValue = jest.fn((key?: string) => ({
     loading: false,
     value: key === EXERCISES_PATH ? exercises : undefined,
@@ -69,7 +69,7 @@ describe('ExerciseTracker', () => {
 
   describe('the table', () => {
     it('shows each update with its date and details', () => {
-      renderTracker();
+      renderExerciseTracker();
 
       const update = within(getRow('Box pistol squat')).getByRole('cell', {
         name: /12 Aug 26/,
@@ -78,7 +78,7 @@ describe('ExerciseTracker', () => {
     });
 
     it("shows each exercise's updates in date order", () => {
-      renderTracker();
+      renderExerciseTracker();
 
       const cells = within(getRow('B-stance RDL')).getAllByRole('cell');
       expect(cells.slice(0, 3).map((cell) => cell.textContent)).toEqual([
@@ -89,7 +89,7 @@ describe('ExerciseTracker', () => {
     });
 
     it('shows the recommendation on an update that has one', () => {
-      renderTracker();
+      renderExerciseTracker();
 
       const update = within(getRow('Bulgarian split squat')).getByRole('cell', {
         name: /12 Aug 26/,
@@ -100,7 +100,7 @@ describe('ExerciseTracker', () => {
     });
 
     it('has one more update column than the exercise with the most updates', () => {
-      renderTracker();
+      renderExerciseTracker();
 
       for (const name of [
         'Box pistol squat',
@@ -114,7 +114,7 @@ describe('ExerciseTracker', () => {
 
     describe('the record button', () => {
       it('sits in the first empty cell of the row', () => {
-        renderTracker();
+        renderExerciseTracker();
 
         const pistolCells = within(getRow('Box pistol squat')).getAllByRole(
           'cell',
@@ -150,7 +150,7 @@ describe('ExerciseTracker', () => {
 
     describe('when the record button is pressed', () => {
       it('replaces the button with the form, in the same cell', async () => {
-        renderTracker();
+        renderExerciseTracker();
         const cell = within(getRow('Box pistol squat')).getAllByRole('cell')[1];
 
         const { button } = await openForm('Box pistol squat');
@@ -162,7 +162,7 @@ describe('ExerciseTracker', () => {
       });
 
       it("defaults the date to today's", async () => {
-        renderTracker();
+        renderExerciseTracker();
 
         await openForm('Box pistol squat');
 
@@ -170,7 +170,7 @@ describe('ExerciseTracker', () => {
       });
 
       it('focuses the details', async () => {
-        renderTracker();
+        renderExerciseTracker();
 
         await openForm('Box pistol squat');
 
@@ -178,7 +178,7 @@ describe('ExerciseTracker', () => {
       });
 
       it('defaults the recommendation to no change', async () => {
-        renderTracker();
+        renderExerciseTracker();
 
         await openForm('Box pistol squat');
 
@@ -189,7 +189,7 @@ describe('ExerciseTracker', () => {
     describe('when the form is submitted', () => {
       it('adds the update to the exercise', async () => {
         const addItem = jest.fn();
-        renderTracker({ addItem });
+        renderExerciseTracker({ addItem });
         const { user } = await openForm('Bulgarian split squat');
 
         const date = screen.getByLabelText('Date');
@@ -213,7 +213,7 @@ describe('ExerciseTracker', () => {
       });
 
       it('closes the form and returns focus to the record button', async () => {
-        renderTracker();
+        renderExerciseTracker();
         const { user } = await openForm('Bulgarian split squat');
         const form = screen.getByRole('form', {
           name: 'Record Bulgarian split squat',
@@ -234,7 +234,7 @@ describe('ExerciseTracker', () => {
       describe('with no change recommended', () => {
         it('adds the update without a recommendation', async () => {
           const addItem = jest.fn();
-          renderTracker({ addItem });
+          renderExerciseTracker({ addItem });
           const { user } = await openForm('Bulgarian split squat');
 
           await user.type(
@@ -253,7 +253,7 @@ describe('ExerciseTracker', () => {
       describe('without any details', () => {
         it("doesn't add an update", async () => {
           const addItem = jest.fn();
-          renderTracker({ addItem });
+          renderExerciseTracker({ addItem });
           const { user } = await openForm('Bulgarian split squat');
 
           await user.click(screen.getByRole('button', { name: 'Save' }));
@@ -276,7 +276,7 @@ describe('ExerciseTracker', () => {
             user.keyboard('{Escape}'),
         ],
       ])('closes the form %s', async (_, cancel) => {
-        renderTracker();
+        renderExerciseTracker();
         const { user } = await openForm('Plank');
         const form = screen.getByRole('form', { name: 'Record Plank' });
 
@@ -300,7 +300,7 @@ describe('ExerciseTracker', () => {
 
     describe('when the add exercise button is pressed', () => {
       it('replaces the button with a focused name field', async () => {
-        renderTracker();
+        renderExerciseTracker();
 
         const { button } = await openAddExerciseForm();
 
@@ -314,7 +314,7 @@ describe('ExerciseTracker', () => {
     describe('when a name is entered', () => {
       it('adds the exercise', async () => {
         const addItem = jest.fn();
-        renderTracker({ addItem });
+        renderExerciseTracker({ addItem });
         const { user } = await openAddExerciseForm();
 
         await user.keyboard('Goblet squat{Enter}');
@@ -325,7 +325,7 @@ describe('ExerciseTracker', () => {
       });
 
       it('closes the form and returns focus to the add exercise button', async () => {
-        renderTracker();
+        renderExerciseTracker();
         const { user } = await openAddExerciseForm();
         const input = screen.getByRole('textbox', { name: 'Exercise name' });
 
@@ -341,7 +341,7 @@ describe('ExerciseTracker', () => {
     describe('when the name is empty', () => {
       it("doesn't add an exercise", async () => {
         const addItem = jest.fn();
-        renderTracker({ addItem });
+        renderExerciseTracker({ addItem });
         const { user } = await openAddExerciseForm();
 
         await user.keyboard('   {Enter}');
@@ -352,7 +352,7 @@ describe('ExerciseTracker', () => {
 
     describe('when escape is pressed', () => {
       it('closes the form', async () => {
-        renderTracker();
+        renderExerciseTracker();
         const { user } = await openAddExerciseForm();
         const input = screen.getByRole('textbox', { name: 'Exercise name' });
 
