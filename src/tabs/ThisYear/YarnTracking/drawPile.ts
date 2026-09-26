@@ -41,17 +41,16 @@ function createBallSprite(
 function applyBallEffects(
   context: CanvasRenderingContext2D,
   pixelRatio: number,
-  fade?: number,
+  { fade = 0, greyness }: PlacedBall,
 ) {
-  if (fade === undefined) {
-    context.shadowOffsetX = pixelRatio;
-    context.shadowOffsetY = 2 * pixelRatio;
-    context.shadowBlur = 2 * pixelRatio;
-    context.shadowColor = 'rgb(0 0 0 / 0.25)';
-  } else {
-    context.globalAlpha = 0.55 * (1 - fade);
-    context.filter = `grayscale(${0.3 + 0.7 * fade}) blur(${(1.5 + 4 * fade) * pixelRatio}px)`;
-  }
+  context.shadowOffsetX = pixelRatio;
+  context.shadowOffsetY = 2 * pixelRatio;
+  context.shadowBlur = 2 * pixelRatio;
+  context.shadowColor = `rgb(0 0 0 / ${0.25 * (1 - greyness)})`;
+
+  if (greyness === 0) return;
+  context.globalAlpha = 1 - greyness * (1 - 0.55 * (1 - fade));
+  context.filter = `grayscale(${greyness * (0.3 + 0.7 * fade)}) blur(${greyness * (1.5 + 4 * fade) * pixelRatio}px)`;
 }
 
 export type BallSprites = {
@@ -124,12 +123,13 @@ function drawBowlFront(context: CanvasRenderingContext2D, bowl: Bowl) {
 
 function drawBall(
   context: CanvasRenderingContext2D,
-  { ball, fade, x, y, size, angle }: PlacedBall,
+  placedBall: PlacedBall,
   sprites: BallSprites,
   pixelRatio: number,
 ) {
+  const { ball, x, y, size, angle } = placedBall;
   context.save();
-  applyBallEffects(context, pixelRatio, fade);
+  applyBallEffects(context, pixelRatio, placedBall);
   context.translate(x, y);
   context.rotate(angle);
   context.drawImage(
