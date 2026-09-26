@@ -11,14 +11,12 @@ import { XIcon } from '../../../shared/icons/X';
 
 import './Form.css';
 
-const createGradient = (yarnTypes: YarnTypeId[]) =>
-  `linear-gradient(135deg in oklch, ${yarnTypes.map((id) => YARN_COLOURS[id]).join(', ')})`;
-
-const GRADIENTS = {
-  '--yarn-gradient': createGradient(['wool', 'sock yarn', 'acrylic', 'cotton']),
-  '--submit-gradient': createGradient(['acrylic', 'cotton']),
-  '--cancel-gradient': createGradient(['wool', 'sock yarn']),
-} as React.CSSProperties;
+const YARN_COLOUR_PROPERTIES = Object.fromEntries(
+  YARN_TYPE_IDS.map((id) => [
+    `--${id.replace(' ', '-')}-colour`,
+    YARN_COLOURS[id],
+  ]),
+) as React.CSSProperties;
 
 export function YarnTrackingForm() {
   const { addYarn, removeYarn } = useYarnStorage();
@@ -42,7 +40,7 @@ export function YarnTrackingForm() {
   };
 
   return (
-    <div className="yarn-tracking-form" style={GRADIENTS}>
+    <div className="yarn-tracking-form" style={YARN_COLOUR_PROPERTIES}>
       <FormModal
         trigger={(props) => (
           <button

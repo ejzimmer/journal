@@ -1,4 +1,8 @@
 .yarn-tracking-form {
+  --gradient-colours:
+    var(--wool-colour), var(--sock-yarn-colour), var(--acrylic-colour),
+    var(--cotton-colour);
+
   .yarn-tracking-trigger {
     display: flex;
     align-items: center;
@@ -123,26 +127,34 @@
     height: 36px;
     padding: 0;
     color: var(--error-colour);
-    --yarn-gradient: var(--cancel-gradient);
+    --gradient-colours: var(--wool-colour), var(--sock-yarn-colour);
 
     &:not([type='button']) {
       color: var(--success-colour);
-      --yarn-gradient: var(--submit-gradient);
+      --gradient-colours: var(--acrylic-colour), var(--cotton-colour);
     }
   }
 
-  :is(.yarn-tracking-trigger, .footer button, select, input, .switch) {
+  .yarn-tracking-trigger,
+  .footer button,
+  select,
+  input,
+  .switch {
     background: white;
     border: 2px solid var(--border-colour);
   }
 
-  :is(.yarn-tracking-trigger, .footer button):is(:hover, :focus-visible),
-  :is(select, input):focus,
+  .yarn-tracking-trigger:hover,
+  .yarn-tracking-trigger:focus-visible,
+  .footer button:hover,
+  .footer button:focus-visible,
+  select:focus,
+  input:focus,
   .switch:focus-within {
     outline: none;
     background:
       linear-gradient(white, white) padding-box,
-      var(--yarn-gradient) border-box;
+      linear-gradient(135deg in oklch, var(--gradient-colours)) border-box;
     border-color: transparent;
   }
 }
