@@ -42,7 +42,7 @@ export function YarnTrackingForm() {
   };
 
   return (
-    <div className="yarn-tracking" style={GRADIENTS}>
+    <div className="yarn-tracking-form" style={GRADIENTS}>
       <FormModal
         trigger={(props) => (
           <button
@@ -63,7 +63,7 @@ export function YarnTrackingForm() {
         }
       >
         <div
-          className="yarn-tracking-form"
+          className="yarn-tracking-fields"
           style={
             {
               '--yarn-colour': YARN_COLOURS[yarnType],

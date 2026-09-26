@@ -1,136 +1,136 @@
-.yarn-tracking-trigger {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 20px;
-  padding: 6px 12px;
-}
-
 .yarn-tracking-form {
-  display: grid;
-  grid-template-columns: min-content 1fr;
-  gap: 8px 12px;
-
-  select {
-    grid-column: 1/-1;
-    appearance: base-select;
+  .yarn-tracking-trigger {
     display: flex;
     align-items: center;
+    gap: 6px;
+    font-size: 20px;
+    padding: 6px 12px;
+  }
 
-    &::picker-icon {
-      color: var(--border-colour);
-    }
+  .yarn-tracking-fields {
+    display: grid;
+    grid-template-columns: min-content 1fr;
+    gap: 8px 12px;
 
-    &::picker(select) {
+    select {
+      grid-column: 1/-1;
       appearance: base-select;
-      border-radius: 8px;
-      border-color: var(--border-colour);
-    }
-
-    button {
-      all: unset;
-      flex: 1;
-    }
-
-    button,
-    option {
       display: flex;
       align-items: center;
-      gap: 8px;
-    }
 
-    option {
-      padding: 6px 8px;
-    }
-  }
-
-  select,
-  input {
-    padding: 8px;
-    border-radius: 8px;
-    font-size: 16px;
-  }
-
-  [role='radiogroup'].switch {
-    --yarn-colour-dark: color-mix(in oklch, var(--yarn-colour) 60%, black);
-    isolation: isolate;
-    --indicator-size: 28px;
-    --indicator-gap: 3px;
-    --option-size: calc(var(--indicator-size) + 2 * var(--indicator-gap));
-    width: fit-content;
-    align-self: center;
-    border-radius: 999px;
-    font-size: 24px;
-
-    &:focus-within {
-      outline: none;
-    }
-
-    label {
-      display: grid;
-      place-items: center;
-      width: var(--option-size);
-      height: var(--option-size);
-      padding: 0;
-      line-height: 1;
-
-      &:not(:last-of-type) {
-        border-inline-end: none;
+      &::picker-icon {
+        color: var(--border-colour);
       }
 
-      &:has(input:not(:checked)) {
-        box-shadow: none;
+      &::picker(select) {
+        appearance: base-select;
+        border-radius: 8px;
+        border-color: var(--border-colour);
       }
 
-      &:has(input:checked) {
-        color: var(--yarn-colour-dark);
+      button {
+        all: unset;
+        flex: 1;
+      }
+
+      button,
+      option {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      option {
+        padding: 6px 8px;
       }
     }
 
-    .indicator {
-      display: none;
+    select,
+    input {
+      padding: 8px;
+      border-radius: 8px;
+      font-size: 16px;
     }
 
-    &::before {
-      content: '';
-      position: absolute;
-      top: 50%;
-      left: 25%;
-      width: var(--indicator-size);
-      height: var(--indicator-size);
-      border-radius: 50%;
-      background: var(--yarn-colour);
-      box-shadow: 0 1px 2px hsl(0 0% 0% / 0.3);
-      transform: translate(-50%, -50%);
-      transition:
-        left 0.2s ease-out,
-        background 0.2s;
-      pointer-events: none;
-      z-index: -1;
-    }
+    [role='radiogroup'].switch {
+      --yarn-colour-dark: color-mix(in oklch, var(--yarn-colour) 60%, black);
+      isolation: isolate;
+      --indicator-size: 28px;
+      --indicator-gap: 3px;
+      --option-size: calc(var(--indicator-size) + 2 * var(--indicator-gap));
+      width: fit-content;
+      align-self: center;
+      border-radius: 999px;
+      font-size: 24px;
 
-    &:has(input[value='+']:checked)::before {
-      left: 75%;
+      &:focus-within {
+        outline: none;
+      }
+
+      label {
+        display: grid;
+        place-items: center;
+        width: var(--option-size);
+        height: var(--option-size);
+        padding: 0;
+        line-height: 1;
+
+        &:not(:last-of-type) {
+          border-inline-end: none;
+        }
+
+        &:has(input:not(:checked)) {
+          box-shadow: none;
+        }
+
+        &:has(input:checked) {
+          color: var(--yarn-colour-dark);
+        }
+      }
+
+      .indicator {
+        display: none;
+      }
+
+      &::before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 25%;
+        width: var(--indicator-size);
+        height: var(--indicator-size);
+        border-radius: 50%;
+        background: var(--yarn-colour);
+        box-shadow: 0 1px 2px hsl(0 0% 0% / 0.3);
+        transform: translate(-50%, -50%);
+        transition:
+          left 0.2s ease-out,
+          background 0.2s;
+        pointer-events: none;
+        z-index: -1;
+      }
+
+      &:has(input[value='+']:checked)::before {
+        left: 75%;
+      }
     }
   }
-}
 
-.yarn-tracking .footer button {
-  display: grid;
-  place-items: center;
-  width: 44px;
-  height: 36px;
-  padding: 0;
-  color: var(--error-colour);
-  --yarn-gradient: var(--cancel-gradient);
+  .footer button {
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 36px;
+    padding: 0;
+    color: var(--error-colour);
+    --yarn-gradient: var(--cancel-gradient);
 
-  &:not([type='button']) {
-    color: var(--success-colour);
-    --yarn-gradient: var(--submit-gradient);
+    &:not([type='button']) {
+      color: var(--success-colour);
+      --yarn-gradient: var(--submit-gradient);
+    }
   }
-}
 
-.yarn-tracking {
   :is(.yarn-tracking-trigger, .footer button, select, input, .switch) {
     background: white;
     border: 2px solid var(--border-colour);
