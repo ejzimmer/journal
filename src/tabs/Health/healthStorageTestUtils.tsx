@@ -11,10 +11,12 @@ export function createHealthStorageContext(
   return {
     days: undefined,
     exercises: [],
+    classes: [],
     isLoading: false,
     updateDay: jest.fn(),
     addExercise: jest.fn(),
     recordExercise: jest.fn(),
+    updateClass: jest.fn(),
     ...overrides,
   };
 }

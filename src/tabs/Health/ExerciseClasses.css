@@ -1,0 +1,47 @@
+ul.exercise-classes {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+
+  li {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 0 4px;
+    width: fit-content;
+    margin-block: 4px;
+
+    &.done {
+      opacity: 0.5;
+
+      .description {
+        font-style: italic;
+        text-decoration: line-through;
+      }
+    }
+  }
+
+  .description {
+    grid-column: 1;
+    grid-row: 1/10;
+    align-self: center;
+  }
+
+  .completions {
+    grid-column: 2;
+    display: flex;
+
+    .tooltip-container:hover .tooltip {
+      opacity: 1;
+    }
+
+    label.emoji-checkbox {
+      opacity: 0.4;
+      filter: grayscale(100%);
+
+      &.done {
+        opacity: 1;
+        filter: none;
+      }
+    }
+  }
+}

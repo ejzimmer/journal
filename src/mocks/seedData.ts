@@ -8,6 +8,7 @@ import {
 import {
   Category,
   Exercise,
+  ExerciseClass,
   HEALTH_PATH,
   ProjectDetails,
   ProjectSubtask,
@@ -343,6 +344,23 @@ const exercises: Record<string, Exercise> = {
   },
 };
 
+const classes: Record<string, ExerciseClass> = {
+  'class-wheel': {
+    id: 'class-wheel',
+    description: 'Wheel class',
+    times: [{ id: 'all', total: 30, completed: 6 }],
+  },
+  'class-pistol': {
+    id: 'class-pistol',
+    description: 'Progress to Pistol Squat',
+    times: Array.from({ length: 8 }, (_, week) => ({
+      id: `week-${week + 1}`,
+      total: 6,
+      completed: week < 2 ? 6 : week === 2 ? 3 : 0,
+    })),
+  },
+};
+
 export const seedData = {
   [WORK_KEY]: {
     [backlog.id]: { ...backlog, items: { [backlogTask.id]: backlogTask } },
@@ -362,6 +380,6 @@ export const seedData = {
     games,
   },
   [PROJECTS_KEY]: projects,
-  [HEALTH_PATH]: { exercises },
+  [HEALTH_PATH]: { exercises, classes },
   '2026': { yarn },
 };
