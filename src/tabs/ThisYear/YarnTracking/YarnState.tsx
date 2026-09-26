@@ -3,11 +3,14 @@ import { useMemo } from 'react';
 import { useYarnStorage } from './YarnStorageContext';
 import { YarnPile } from './YarnPile';
 import { YarnBallList } from './YarnBallList';
-import { getPileBalls } from './pileBalls';
+import { getLatestMonthOfYear, getPileBalls } from './pileBalls';
 
 export function YarnState() {
-  const { pile, currentBalance } = useYarnStorage();
-  const pileBalls = useMemo(() => pile && getPileBalls(pile), [pile]);
+  const { year, pile, currentBalance } = useYarnStorage();
+  const pileBalls = useMemo(
+    () => pile && getPileBalls(pile, getLatestMonthOfYear(year)),
+    [pile, year],
+  );
 
   if (!pileBalls) {
     return <>Loading...</>;

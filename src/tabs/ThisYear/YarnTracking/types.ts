@@ -1,4 +1,4 @@
-export const KEY = '2026/yarn';
+export const getYarnPath = (year: number) => `${year}/yarn`;
 
 export const YARN_TYPE_IDS = [
   'wool',

@@ -2,9 +2,9 @@ import { YarnTrackingForm } from './Form';
 import { YarnState } from './YarnState';
 import { YarnStorageProvider } from './YarnStorageContext';
 
-export function YarnTracking() {
+export function YarnTracking({ year }: { year: number }) {
   return (
-    <YarnStorageProvider>
+    <YarnStorageProvider year={year}>
       <div
         style={{
           padding: '60px',

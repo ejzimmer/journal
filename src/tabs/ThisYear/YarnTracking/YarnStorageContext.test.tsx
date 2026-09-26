@@ -4,16 +4,20 @@ import { StorageContextWrapper } from '../../../shared/storageContextTestUtils';
 import { useYarnStorage, YarnStorageProvider } from './YarnStorageContext';
 import { StoredYarn } from './types';
 
-const renderYarnStorage = (storedYarn: StoredYarn, setValue = jest.fn()) =>
+const renderYarnStorage = (
+  storedYarn: StoredYarn,
+  setValue = jest.fn(),
+  useValue = jest.fn().mockReturnValue({ value: storedYarn }),
+) =>
   renderHook(() => useYarnStorage(), {
     wrapper: ({ children }: { children: ReactNode }) => (
       <StorageContextWrapper
         value={{
-          useValue: jest.fn().mockReturnValue({ value: storedYarn }),
+          useValue,
           setValue,
         }}
       >
-        <YarnStorageProvider>{children}</YarnStorageProvider>
+        <YarnStorageProvider year={2026}>{children}</YarnStorageProvider>
       </StorageContextWrapper>
     ),
   });
@@ -31,13 +35,13 @@ describe('YarnStorageProvider', () => {
     it('gives each yarn type its balances as year-months, oldest first', () => {
       expect(
         getBalances({
-          wool: { id: 'wool', history: { '2026-02': 700, '2025-12': 300 } },
+          wool: { id: 'wool', history: { '2026-02': 700, '2026-01': 300 } },
         }),
       ).toEqual([
         {
           id: 'wool',
           balances: [
-            ['2025-12', 300],
+            ['2026-01', 300],
             ['2026-02', 700],
           ],
         },
@@ -54,6 +58,32 @@ describe('YarnStorageProvider', () => {
 
       expect(result.current.pile).toEqual([
         { id: 2, yarnType: 'cotton', grams: 100 },
+        { id: 1, yarnType: 'wool', grams: 200 },
+      ]);
+    });
+  });
+
+  describe('the year', () => {
+    it('reads the yarn stored under that year', () => {
+      const useValue = jest.fn().mockReturnValue({ value: {} });
+
+      renderYarnStorage({}, jest.fn(), useValue);
+
+      expect(useValue).toHaveBeenCalledWith('2026/yarn');
+    });
+  });
+
+  describe('when the history runs past the year', () => {
+    it('only uses the balances from that year', () => {
+      const { result } = renderYarnStorage({
+        wool: {
+          id: 'wool',
+          history: { '2025-12': 1000, '2026-01': 400, '2027-01': 200 },
+        },
+      });
+
+      expect(result.current.pile).toEqual([
+        { id: 0, yarnType: 'wool', grams: 200 },
         { id: 1, yarnType: 'wool', grams: 200 },
       ]);
     });

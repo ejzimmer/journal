@@ -11,6 +11,7 @@ export function renderWithYarnStorage(
 ) {
   const storageContext: YarnStorageContextType = {
     yarnByType: undefined,
+    year: 2026,
     pile: undefined,
     currentBalance: 0,
     getBalance: () => 0,
