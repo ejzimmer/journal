@@ -8,6 +8,7 @@ import {
 import {
   Category,
   Exercise,
+  HEALTH_PATH,
   ProjectDetails,
   ProjectSubtask,
   PROJECTS_KEY,
@@ -361,5 +362,6 @@ export const seedData = {
     games,
   },
   [PROJECTS_KEY]: projects,
-  '2026': { yarn, exercises },
+  [HEALTH_PATH]: { exercises },
+  '2026': { yarn },
 };

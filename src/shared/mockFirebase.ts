@@ -135,6 +135,10 @@ export function createMockFirebaseContext(
       write(path, value);
       notify(path);
     },
+    setValues(updates: Record<string, unknown>) {
+      Object.entries(updates).forEach(([path, value]) => write(path, value));
+      Object.keys(updates).forEach((path) => notify(path));
+    },
     moveItemBetweenLists<T extends { id: string; position: number }>({
       movedItem,
       sourceListId,

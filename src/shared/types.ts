@@ -38,7 +38,9 @@ export type CalendarTask = CalendarTaskDetails & TodoTask;
 
 export const THIS_YEAR_PATH = '2026';
 
-export const DAILY_PATH = `${THIS_YEAR_PATH}/daily`;
+export const HEALTH_PATH = 'health';
+
+export const DAILY_PATH = `${HEALTH_PATH}/daily`;
 export type DayData = {
   id: string;
   consumed?: number;
@@ -46,7 +48,7 @@ export type DayData = {
   trackers?: string[];
 };
 
-export const EXERCISES_PATH = `${THIS_YEAR_PATH}/exercises`;
+export const EXERCISES_PATH = `${HEALTH_PATH}/exercises`;
 export type Recommendation = 'increase' | 'decrease';
 export type ExerciseUpdate = {
   id: string;
