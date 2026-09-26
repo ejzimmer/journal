@@ -3,7 +3,7 @@ import { ThisWeekTask } from './ThisWeekTask';
 import { WEEKLY_KEY, WeeklyTask } from '../../../shared/types';
 import { useRef } from 'react';
 import { useStorageContext } from '../../../shared/FirebaseContext';
-import { compareLastCompleted, getCompletedDates } from './utils';
+import { compareLastCompleted } from './utils';
 
 export function ThisWeekList() {
   const listRef = useRef<HTMLOListElement>(null);
@@ -15,8 +15,8 @@ export function ThisWeekList() {
   if (value && taskOrder.current.length !== Object.values(value).length) {
     taskOrder.current = Object.values(value)
       .toSorted((a, b) => {
-        const aUrgency = a.frequency - getCompletedDates(a.completed).length;
-        const bUrgency = b.frequency - getCompletedDates(b.completed).length;
+        const aUrgency = a.frequency - (a.completed?.length ?? 0);
+        const bUrgency = b.frequency - (b.completed?.length ?? 0);
 
         if (aUrgency === bUrgency) {
           return compareLastCompleted(a, b);

@@ -8,7 +8,6 @@ import { CategoriesContext } from '..';
 import { ProgressIndicator } from './ProgressIndicator';
 import { getDateDaysAgo, getToday } from '../../../shared/dates';
 import { useFormToggle } from '../../../shared/controls/useFormToggle';
-import { getCompletedDates } from './utils';
 
 export function ThisWeekTask({ task }: { task: WeeklyTask }) {
   const {
@@ -66,7 +65,7 @@ export function ThisWeekTask({ task }: { task: WeeklyTask }) {
     [categories],
   );
 
-  const completedDates = getCompletedDates(task.completed);
+  const completedDates = task.completed ?? [];
 
   const addDone = (event: React.MouseEvent) => {
     const completedDate = event.ctrlKey ? getDateDaysAgo(1) : getToday();
