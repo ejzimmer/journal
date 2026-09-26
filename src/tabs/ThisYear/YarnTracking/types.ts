@@ -1,3 +1,5 @@
+export const FIRST_YARN_YEAR = 2026;
+
 export const getYarnPath = (year: number) => `${year}/yarn`;
 
 export const YARN_TYPE_IDS = [

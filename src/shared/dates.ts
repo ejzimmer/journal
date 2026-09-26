@@ -9,6 +9,8 @@ export const getToday = () => getTodaysPlainDate().toString();
 
 export const getThisMonth = () => getTodaysPlainDate().toPlainYearMonth();
 
+export const getThisYear = () => getTodaysPlainDate().year;
+
 export const getDateDaysAgo = (days: number) =>
   getTodaysPlainDate().subtract({ days }).toString();
 
