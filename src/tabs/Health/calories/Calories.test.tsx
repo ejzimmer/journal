@@ -3,15 +3,12 @@ import userEvent from '@testing-library/user-event';
 import { Calories } from './Calories';
 import { FirebaseContext } from '../../../shared/FirebaseContext';
 import { createMockFirebaseContext } from '../../../shared/mockFirebase';
-import { renderWithStorage } from '../../../shared/storageContextTestUtils';
 import { DAILY_PATH, DayData } from '../../../shared/types';
+import { HealthStorageProvider } from '../HealthStorageContext';
+import { renderWithHealthStorage } from '../healthStorageTestUtils';
 
-function renderCalories(dailyData?: Record<string, DayData>) {
-  return renderWithStorage(<Calories />, {
-    value: {
-      useValue: jest.fn().mockReturnValue({ loading: false, value: dailyData }),
-    },
-  });
+function renderCalories(days?: Record<string, DayData>) {
+  return renderWithHealthStorage(<Calories />, { days });
 }
 
 describe('Calories', () => {
@@ -34,13 +31,7 @@ describe('Calories', () => {
     });
 
     it("doesn't show the form while daily data is still loading", () => {
-      renderWithStorage(<Calories />, {
-        value: {
-          useValue: jest
-            .fn()
-            .mockReturnValue({ loading: true, value: undefined }),
-        },
-      });
+      renderWithHealthStorage(<Calories />, { isLoading: true });
 
       expect(
         screen.queryByRole('textbox', { name: 'In' }),
@@ -67,15 +58,15 @@ describe('Calories', () => {
 
     it('dismisses the form without saving anything', async () => {
       const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
-      const updateItem = jest.fn();
-      renderWithStorage(<Calories />, { value: { updateItem } });
+      const updateDay = jest.fn();
+      renderWithHealthStorage(<Calories />, { updateDay });
 
       await user.click(screen.getByRole('button', { name: 'dismiss' }));
 
       expect(
         screen.queryByRole('textbox', { name: 'In' }),
       ).not.toBeInTheDocument();
-      expect(updateItem).not.toHaveBeenCalled();
+      expect(updateDay).not.toHaveBeenCalled();
     });
 
     it('saves consumed and expended for yesterday, and hides the form once saved', async () => {
@@ -84,7 +75,9 @@ describe('Calories', () => {
 
       render(
         <FirebaseContext.Provider value={storageContext}>
-          <Calories />
+          <HealthStorageProvider>
+            <Calories />
+          </HealthStorageProvider>
         </FirebaseContext.Provider>,
       );
 
@@ -103,20 +96,13 @@ describe('Calories', () => {
   describe('editing an existing day', () => {
     it("opens the form pre-populated with that day's values when its dot is clicked, and updates it on submit", async () => {
       const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
-      const updateItem = jest.fn();
+      const updateDay = jest.fn();
       const dailyData = {
         '2026-01-03': { id: '2026-01-03', consumed: 1500, expended: 2000 },
         '2026-01-06': { id: '2026-01-06', consumed: 1800, expended: 2200 },
       };
 
-      renderWithStorage(<Calories />, {
-        value: {
-          updateItem,
-          useValue: jest
-            .fn()
-            .mockReturnValue({ loading: false, value: dailyData }),
-        },
-      });
+      renderWithHealthStorage(<Calories />, { days: dailyData, updateDay });
 
       await user.click(screen.getByRole('radio', { name: '日' }));
       await user.click(screen.getByRole('button', { name: 'update 3 Jan' }));
@@ -135,8 +121,7 @@ describe('Calories', () => {
         '2100{Enter}',
       );
 
-      expect(updateItem).toHaveBeenCalledWith(
-        DAILY_PATH,
+      expect(updateDay).toHaveBeenCalledWith(
         expect.objectContaining({
           id: '2026-01-03',
           consumed: 1600,
@@ -152,13 +137,7 @@ describe('Calories', () => {
         '2026-01-06': { id: '2026-01-06', consumed: 1800, expended: 2200 },
       };
 
-      renderWithStorage(<Calories />, {
-        value: {
-          useValue: jest
-            .fn()
-            .mockReturnValue({ loading: false, value: dailyData }),
-        },
-      });
+      renderCalories(dailyData);
 
       await user.click(screen.getByRole('radio', { name: '日' }));
       await user.click(screen.getByRole('button', { name: 'update 2 Jan' }));
@@ -192,13 +171,7 @@ describe('Calories', () => {
         },
       };
 
-      renderWithStorage(<Calories />, {
-        value: {
-          useValue: jest
-            .fn()
-            .mockReturnValue({ loading: false, value: dailyData }),
-        },
-      });
+      renderCalories(dailyData);
 
       await user.click(screen.getByRole('radio', { name: '日' }));
 
@@ -218,13 +191,7 @@ describe('Calories', () => {
         },
       };
 
-      renderWithStorage(<Calories />, {
-        value: {
-          useValue: jest
-            .fn()
-            .mockReturnValue({ loading: false, value: dailyData }),
-        },
-      });
+      renderCalories(dailyData);
 
       await user.click(screen.getByRole('radio', { name: '日' }));
       await user.click(screen.getByRole('button', { name: 'update 3 Jan' }));
@@ -242,7 +209,7 @@ describe('Calories', () => {
 
     it('saves the trackers selected in the calorie form', async () => {
       const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
-      const updateItem = jest.fn();
+      const updateDay = jest.fn();
       const dailyData = {
         '2026-01-03': {
           id: '2026-01-03',
@@ -252,14 +219,7 @@ describe('Calories', () => {
         },
       };
 
-      renderWithStorage(<Calories />, {
-        value: {
-          updateItem,
-          useValue: jest
-            .fn()
-            .mockReturnValue({ loading: false, value: dailyData }),
-        },
-      });
+      renderWithHealthStorage(<Calories />, { days: dailyData, updateDay });
 
       await user.click(screen.getByRole('radio', { name: '日' }));
       await user.click(screen.getByRole('button', { name: 'update 3 Jan' }));
@@ -269,8 +229,7 @@ describe('Calories', () => {
       await user.click(screen.getByRole('textbox', { name: 'In' }));
       await user.keyboard('{Enter}');
 
-      expect(updateItem).toHaveBeenCalledWith(
-        DAILY_PATH,
+      expect(updateDay).toHaveBeenCalledWith(
         expect.objectContaining({
           id: '2026-01-03',
           trackers: ['🥚'],

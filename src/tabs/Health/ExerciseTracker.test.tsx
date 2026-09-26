@@ -1,9 +1,9 @@
 import { screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { ExerciseTracker } from './ExerciseTracker';
-import { renderWithStorage } from '../../shared/storageContextTestUtils';
-import { Exercise, EXERCISES_PATH } from '../../shared/types';
-import { ContextType } from '../../shared/FirebaseContext';
+import { Exercise } from '../../shared/types';
+import { HealthStorageContextType } from './HealthStorageContext';
+import { renderWithHealthStorage } from './healthStorageTestUtils';
 
 const exercises: Record<string, Exercise> = {
   pistol: {
@@ -44,13 +44,12 @@ const exercises: Record<string, Exercise> = {
   },
 };
 
-function renderExerciseTracker(value: Partial<ContextType> = {}) {
-  const useValue = jest.fn((key?: string) => ({
-    loading: false,
-    value: key === EXERCISES_PATH ? exercises : undefined,
-  }));
-  return renderWithStorage(<ExerciseTracker />, {
-    value: { useValue: useValue as ContextType['useValue'], ...value },
+function renderExerciseTracker(
+  overrides: Partial<HealthStorageContextType> = {},
+) {
+  return renderWithHealthStorage(<ExerciseTracker />, {
+    exercises: Object.values(exercises),
+    ...overrides,
   });
 }
 
@@ -188,8 +187,8 @@ describe('ExerciseTracker', () => {
 
     describe('when the form is submitted', () => {
       it('adds the update to the exercise', async () => {
-        const addItem = jest.fn();
-        renderExerciseTracker({ addItem });
+        const recordExercise = jest.fn();
+        renderExerciseTracker({ recordExercise });
         const { user } = await openForm('Bulgarian split squat');
 
         const date = screen.getByLabelText('Date');
@@ -202,14 +201,11 @@ describe('ExerciseTracker', () => {
         await user.click(screen.getByRole('radio', { name: 'decrease' }));
         await user.click(screen.getByRole('button', { name: 'Save' }));
 
-        expect(addItem).toHaveBeenCalledWith(
-          `${EXERCISES_PATH}/split/updates`,
-          {
-            date: '2026-09-20',
-            details: '3 x 10 x 10kg',
-            recommendation: 'decrease',
-          },
-        );
+        expect(recordExercise).toHaveBeenCalledWith('split', {
+          date: '2026-09-20',
+          details: '3 x 10 x 10kg',
+          recommendation: 'decrease',
+        });
       });
 
       it('closes the form and returns focus to the record button', async () => {
@@ -233,8 +229,8 @@ describe('ExerciseTracker', () => {
 
       describe('with no change recommended', () => {
         it('adds the update without a recommendation', async () => {
-          const addItem = jest.fn();
-          renderExerciseTracker({ addItem });
+          const recordExercise = jest.fn();
+          renderExerciseTracker({ recordExercise });
           const { user } = await openForm('Bulgarian split squat');
 
           await user.type(
@@ -243,22 +239,22 @@ describe('ExerciseTracker', () => {
           );
           await user.click(screen.getByRole('button', { name: 'Save' }));
 
-          expect(addItem).toHaveBeenCalledWith(
-            `${EXERCISES_PATH}/split/updates`,
-            { date: '2026-09-02', details: '3 x 10 x 10kg' },
-          );
+          expect(recordExercise).toHaveBeenCalledWith('split', {
+            date: '2026-09-02',
+            details: '3 x 10 x 10kg',
+          });
         });
       });
 
       describe('without any details', () => {
         it("doesn't add an update", async () => {
-          const addItem = jest.fn();
-          renderExerciseTracker({ addItem });
+          const recordExercise = jest.fn();
+          renderExerciseTracker({ recordExercise });
           const { user } = await openForm('Bulgarian split squat');
 
           await user.click(screen.getByRole('button', { name: 'Save' }));
 
-          expect(addItem).not.toHaveBeenCalled();
+          expect(recordExercise).not.toHaveBeenCalled();
         });
       });
     });
@@ -313,15 +309,13 @@ describe('ExerciseTracker', () => {
 
     describe('when a name is entered', () => {
       it('adds the exercise', async () => {
-        const addItem = jest.fn();
-        renderExerciseTracker({ addItem });
+        const addExercise = jest.fn();
+        renderExerciseTracker({ addExercise });
         const { user } = await openAddExerciseForm();
 
         await user.keyboard('Goblet squat{Enter}');
 
-        expect(addItem).toHaveBeenCalledWith(EXERCISES_PATH, {
-          name: 'Goblet squat',
-        });
+        expect(addExercise).toHaveBeenCalledWith('Goblet squat');
       });
 
       it('closes the form and returns focus to the add exercise button', async () => {
@@ -340,13 +334,13 @@ describe('ExerciseTracker', () => {
 
     describe('when the name is empty', () => {
       it("doesn't add an exercise", async () => {
-        const addItem = jest.fn();
-        renderExerciseTracker({ addItem });
+        const addExercise = jest.fn();
+        renderExerciseTracker({ addExercise });
         const { user } = await openAddExerciseForm();
 
         await user.keyboard('   {Enter}');
 
-        expect(addItem).not.toHaveBeenCalled();
+        expect(addExercise).not.toHaveBeenCalled();
       });
     });
 

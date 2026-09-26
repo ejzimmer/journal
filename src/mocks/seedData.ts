@@ -361,6 +361,5 @@ export const seedData = {
     games,
   },
   [PROJECTS_KEY]: projects,
-  '2026': { yarn },
-  health: { exercises },
+  '2026': { yarn, exercises },
 };

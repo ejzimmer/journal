@@ -43,6 +43,8 @@ const BOWL_SEGMENTS = 48;
 const BALL_BODY = { density: 1, friction: 0.4, restitution: 0.1 };
 const BALL_DAMPING = { linearDamping: 0.5, angularDamping: 2 };
 const BOWL_FRICTION = 0.6;
+const TABLE_OVERHANG = 2.5;
+const TABLE_WALL_HEIGHT = 50;
 
 const getBallSize = ({ grams }: YarnBall) => grams / GRAMS_PER_BALL;
 
@@ -80,12 +82,20 @@ function getBowlPoints(radius: number, baseRadius: number, depth: number) {
   return [...side.map(({ x, y }) => ({ x: -x, y })), ...side.reverse()];
 }
 
+const getTablePoints = (halfWidth: number, height: number) => [
+  { x: -halfWidth, y: height - TABLE_WALL_HEIGHT },
+  { x: -halfWidth, y: height },
+  { x: halfWidth, y: height },
+  { x: halfWidth, y: height - TABLE_WALL_HEIGHT },
+];
+
 const getSpreadForBall = (id: number) => ((id * 0.618) % 1) - 0.5;
 
 export class BowlWorld {
   readonly radius: number;
   readonly baseRadius: number;
   readonly depth: number;
+  readonly tableHalfWidth: number;
   private world = new World({ gravity: { x: 0, y: GRAVITY } });
   private ballBodies = new Map<number, BallBody>();
   private pileBalls: PileBall[] = [];
@@ -99,6 +109,13 @@ export class BowlWorld {
       .createBody()
       .createFixture(
         new Chain(getBowlPoints(this.radius, this.baseRadius, this.depth)),
+        { friction: BOWL_FRICTION },
+      );
+    this.tableHalfWidth = this.radius + TABLE_OVERHANG;
+    this.world
+      .createBody()
+      .createFixture(
+        new Chain(getTablePoints(this.tableHalfWidth, this.depth)),
         { friction: BOWL_FRICTION },
       );
     this.syncBalls(pileBalls);

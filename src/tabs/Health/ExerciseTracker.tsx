@@ -1,15 +1,12 @@
-import { useMemo } from 'react';
-import { useStorageContext } from '../../shared/FirebaseContext';
-import { Exercise, EXERCISES_PATH } from '../../shared/types';
+import { Exercise } from '../../shared/types';
+import { useHealthStorage } from './HealthStorageContext';
 import { ExerciseRow } from './ExerciseRow';
 import { AddExerciseRow } from './AddExerciseRow';
 import './ExerciseTracker.css';
 
 export function ExerciseTracker() {
-  const { useValue, addItem } = useStorageContext();
-  const { value } = useValue<Record<string, Exercise>>(EXERCISES_PATH);
+  const { exercises, addExercise } = useHealthStorage();
 
-  const exercises = useMemo(() => Object.values(value ?? {}), [value]);
   const numberOfUpdateColumns = Math.max(0, ...exercises.map(countUpdates)) + 1;
 
   return (
@@ -22,9 +19,7 @@ export function ExerciseTracker() {
             numberOfUpdateColumns={numberOfUpdateColumns}
           />
         ))}
-        <AddExerciseRow
-          onAdd={(name) => addItem<Exercise>(EXERCISES_PATH, { name })}
-        />
+        <AddExerciseRow onAdd={addExercise} />
       </tbody>
     </table>
   );

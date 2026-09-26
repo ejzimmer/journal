@@ -1,9 +1,9 @@
 import { useMemo } from 'react';
 import { PlusIcon } from '../../shared/icons/Plus';
 import { compareDates } from '../../shared/dates';
-import { useStorageContext } from '../../shared/FirebaseContext';
 import { useFormToggle } from '../../shared/controls/useFormToggle';
-import { Exercise, EXERCISES_PATH, ExerciseUpdate } from '../../shared/types';
+import { Exercise, ExerciseUpdate } from '../../shared/types';
+import { useHealthStorage } from './HealthStorageContext';
 import { ExerciseForm } from './ExerciseForm';
 import { UpdateCell } from './UpdateCell';
 
@@ -16,7 +16,7 @@ export function ExerciseRow({
   exercise,
   numberOfUpdateColumns,
 }: ExerciseRowProps) {
-  const { addItem } = useStorageContext();
+  const { recordExercise } = useHealthStorage();
   const { isFormOpen, triggerRef, openForm, closeForm } = useFormToggle();
 
   const updates = useMemo(
@@ -28,7 +28,7 @@ export function ExerciseRow({
   });
 
   const addUpdate = (update: Omit<ExerciseUpdate, 'id'>) => {
-    addItem<ExerciseUpdate>(`${EXERCISES_PATH}/${exercise.id}/updates`, update);
+    recordExercise(exercise.id, update);
     closeForm();
   };
 

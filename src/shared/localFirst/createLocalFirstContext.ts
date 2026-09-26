@@ -83,7 +83,6 @@ export function createLocalFirstContext(
     setValue: (path, value) => {
       write({ [path]: value });
     },
-    setValues: write,
     moveItemBetweenLists: ({
       movedItem,
       sourceListId,
