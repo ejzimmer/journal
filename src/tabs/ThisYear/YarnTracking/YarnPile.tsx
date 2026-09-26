@@ -37,9 +37,12 @@ function useElementWidth(ref: RefObject<HTMLElement | null>) {
 const isReducedMotionPreferred = () =>
   window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false;
 
-function createPouringBowlWorld(balls: PileBall[], ballsToPour: PileBall[]) {
+function createReplayingBowlWorld(
+  balls: PileBall[],
+  replayBalls: PileBall[][],
+) {
   const world = new BowlWorld(balls);
-  world.pourBalls(ballsToPour);
+  world.replayPiles(replayBalls);
   return world;
 }
 
@@ -119,16 +122,16 @@ function placeBowlScene(
 
 type YarnPileProps = {
   balls: PileBall[];
-  lastMonthBalls: PileBall[];
+  replayBalls: PileBall[][];
 };
 
-export function YarnPile({ balls, lastMonthBalls }: YarnPileProps) {
+export function YarnPile({ balls, replayBalls }: YarnPileProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const width = useElementWidth(containerRef);
   const [world] = useState(() =>
     isReducedMotionPreferred()
       ? createSettledBowlWorld(balls)
-      : createPouringBowlWorld(balls, lastMonthBalls),
+      : createReplayingBowlWorld(balls, replayBalls),
   );
   const frame = useAnimatedBalls(world, balls);
   const scene = useMemo(

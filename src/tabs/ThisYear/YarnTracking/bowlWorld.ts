@@ -22,6 +22,7 @@ export type PlacedBall = PileBall & {
 
 type BallBody = {
   pileBall: PileBall;
+  rising: boolean;
   body: Body;
   size: Tween;
   greyness: Tween;
@@ -47,7 +48,7 @@ const BOWL_FRICTION = 0.6;
 const TABLE_OVERHANG = 2.5;
 const TABLE_WALL_HEIGHT = 50;
 const POUR_INTERVAL = 0.12;
-const PAUSE_AFTER_POUR = 1;
+const PAUSE_BETWEEN_CHANGES = 1;
 const POUR_X_TO_RADIUS = -0.3;
 const POUR_HEIGHT = 1.5;
 const POUR_VELOCITY = { x: 1, y: 8 };
@@ -55,7 +56,14 @@ const POUR_SPIN = 6;
 
 const getBallSize = ({ grams }: YarnBall) => grams / GRAMS_PER_BALL;
 
-const getGreyness = ({ fade }: PileBall) => (fade === undefined ? 0 : 1);
+const isUsed = ({ fade }: PileBall) => fade !== undefined;
+
+const getGreyness = (pileBall: PileBall) => (isUsed(pileBall) ? 1 : 0);
+
+const sortUnusedBallsFirst = (pileBalls: PileBall[]) =>
+  [...pileBalls].sort(
+    (one, other) => Number(isUsed(one)) - Number(isUsed(other)),
+  );
 
 const getBallRadius = (size: number) => size * BALL_RADIUS_TO_SIZE;
 
@@ -106,10 +114,10 @@ export class BowlWorld {
   private world = new World({ gravity: { x: 0, y: GRAVITY } });
   private ballBodies = new Map<number, BallBody>();
   private unsimulatedTime = 0;
-  private pouring = false;
+  private replaying = false;
   private pourQueue: PileBall[] = [];
-  private secondsUntilNextPour = 0;
-  private ballsAfterPour?: PileBall[];
+  private pileQueue: PileBall[][] = [];
+  private secondsUntilNextReplayStep = 0;
 
   constructor(pileBalls: PileBall[]) {
     this.radius = calculateBowlRadius(pileBalls);
@@ -130,21 +138,27 @@ export class BowlWorld {
       );
   }
 
-  pourBalls(pileBalls: PileBall[]) {
-    this.pourQueue = [...pileBalls].sort(
-      (one, other) =>
-        getSpreadForBall(one.ball.id) - getSpreadForBall(other.ball.id),
+  replayPiles([firstPile = [], ...laterPiles]: PileBall[][]) {
+    this.pourQueue = sortUnusedBallsFirst(
+      [...firstPile].sort(
+        (one, other) =>
+          getSpreadForBall(one.ball.id) - getSpreadForBall(other.ball.id),
+      ),
     );
-    this.secondsUntilNextPour = 0;
-    this.pouring = true;
+    this.pileQueue = laterPiles;
+    this.secondsUntilNextReplayStep = 0;
+    this.replaying = true;
   }
 
   syncBalls(pileBalls: PileBall[]) {
-    if (this.pouring) {
-      this.ballsAfterPour = pileBalls;
-      return;
+    if (this.replaying) {
+      this.pileQueue.push(pileBalls);
+    } else {
+      this.applyPile(pileBalls);
     }
+  }
 
+  private applyPile(pileBalls: PileBall[]) {
     const ids = new Set(pileBalls.map(({ ball }) => ball.id));
     this.ballBodies.forEach((ballBody, id) => {
       if (!ids.has(id)) ballBody.size = retargetTween(ballBody.size, 0);
@@ -153,17 +167,16 @@ export class BowlWorld {
     const newBalls = pileBalls.filter(
       ({ ball }) => !this.ballBodies.has(ball.id),
     );
-    const dropHeight = this.getTopOfPile();
-    const firstSlot = Math.floor(
-      (getSpreadForBall(newBalls[0]?.ball.id ?? 0) + 0.5) * this.getColumns(),
-    );
-    newBalls.forEach((pileBall, index) =>
-      this.addBall(
-        pileBall,
-        this.getDropPosition(pileBall.ball.id, firstSlot + index, dropHeight),
-      ),
-    );
+    const isUnusedBallAdded = newBalls.some((pileBall) => !isUsed(pileBall));
+    pileBalls.forEach((pileBall) => {
+      const ballBody = this.ballBodies.get(pileBall.ball.id);
+      if (!ballBody || !isUsed(pileBall)) return;
+      if (isUnusedBallAdded || !isUsed(ballBody.pileBall)) {
+        this.liftBall(ballBody);
+      }
+    });
 
+    this.dropBalls(sortUnusedBallsFirst(newBalls));
     pileBalls.forEach((pileBall) => this.retargetBall(pileBall));
   }
 
@@ -189,7 +202,7 @@ export class BowlWorld {
 
   isAtRest() {
     return (
-      !this.pouring &&
+      !this.replaying &&
       [...this.ballBodies.values()].every(
         ({ body, size, greyness }) =>
           !body.isAwake() && !isTweenRunning(size) && !isTweenRunning(greyness),
@@ -231,18 +244,49 @@ export class BowlWorld {
     return { x, y };
   }
 
-  private pourNextBall() {
-    if (!this.pouring) return;
+  private dropBalls(pileBalls: PileBall[]) {
+    const dropHeight = this.getTopOfPile();
+    const firstSlot = Math.floor(
+      (getSpreadForBall(pileBalls[0]?.ball.id ?? 0) + 0.5) * this.getColumns(),
+    );
+    pileBalls.forEach((pileBall, index) =>
+      this.addBall(
+        pileBall,
+        this.getDropPosition(pileBall.ball.id, firstSlot + index, dropHeight),
+      ),
+    );
+  }
 
-    this.secondsUntilNextPour -= TIME_STEP;
-    if (this.secondsUntilNextPour > 0) return;
+  private liftBall(ballBody: BallBody) {
+    ballBody.rising = true;
+    ballBody.size = retargetTween(ballBody.size, 0);
+  }
+
+  private stepReplay() {
+    if (!this.replaying) return;
+
+    this.secondsUntilNextReplayStep -= TIME_STEP;
+    if (this.secondsUntilNextReplayStep > 0) return;
 
     const pileBall = this.pourQueue.shift();
-    if (!pileBall) {
-      this.finishPour();
+    if (pileBall) {
+      this.pourBall(pileBall);
+      this.secondsUntilNextReplayStep =
+        this.pourQueue.length > 0 ? POUR_INTERVAL : PAUSE_BETWEEN_CHANGES;
       return;
     }
 
+    const pile = this.pileQueue.shift();
+    if (!pile) {
+      this.replaying = false;
+      return;
+    }
+
+    this.applyPile(pile);
+    this.secondsUntilNextReplayStep = PAUSE_BETWEEN_CHANGES;
+  }
+
+  private pourBall(pileBall: PileBall) {
     const spread = getSpreadForBall(pileBall.ball.id);
     this.addBall(
       pileBall,
@@ -250,15 +294,6 @@ export class BowlWorld {
       POUR_VELOCITY,
       spread * POUR_SPIN,
     );
-    this.secondsUntilNextPour =
-      this.pourQueue.length > 0 ? POUR_INTERVAL : PAUSE_AFTER_POUR;
-  }
-
-  private finishPour() {
-    this.pouring = false;
-    const ballsAfterPour = this.ballsAfterPour;
-    this.ballsAfterPour = undefined;
-    if (ballsAfterPour) this.syncBalls(ballsAfterPour);
   }
 
   private addBall(
@@ -276,6 +311,7 @@ export class BowlWorld {
     });
     const ballBody = {
       pileBall,
+      rising: false,
       body,
       size: createTween(getBallSize(ball), RESIZE_DURATION),
       greyness: createTween(getGreyness(pileBall), GREYING_DURATION),
@@ -290,12 +326,14 @@ export class BowlWorld {
     if (!ballBody) return;
 
     ballBody.pileBall = pileBall;
-    ballBody.size = retargetTween(ballBody.size, getBallSize(pileBall.ball));
+    if (!ballBody.rising) {
+      ballBody.size = retargetTween(ballBody.size, getBallSize(pileBall.ball));
+    }
     ballBody.greyness = retargetTween(ballBody.greyness, getGreyness(pileBall));
   }
 
   private stepWorld() {
-    this.pourNextBall();
+    this.stepReplay();
     this.ballBodies.forEach((ballBody) => {
       ballBody.size = advanceTween(ballBody.size, TIME_STEP);
       ballBody.greyness = advanceTween(ballBody.greyness, TIME_STEP);
@@ -306,12 +344,15 @@ export class BowlWorld {
   }
 
   private removeVanishedBalls() {
-    this.ballBodies.forEach(({ body, fixtureSize }, id) => {
-      if (fixtureSize === 0) {
-        this.world.destroyBody(body);
-        this.ballBodies.delete(id);
-      }
+    const risenBalls: PileBall[] = [];
+    this.ballBodies.forEach(({ body, fixtureSize, rising, pileBall }, id) => {
+      if (fixtureSize > 0) return;
+
+      this.world.destroyBody(body);
+      this.ballBodies.delete(id);
+      if (rising) risenBalls.push(pileBall);
     });
+    this.dropBalls(risenBalls);
   }
 
   private applyBallSize(ballBody: BallBody) {

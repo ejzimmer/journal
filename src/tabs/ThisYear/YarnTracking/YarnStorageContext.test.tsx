@@ -4,16 +4,20 @@ import { StorageContextWrapper } from '../../../shared/storageContextTestUtils';
 import { useYarnStorage, YarnStorageProvider } from './YarnStorageContext';
 import { StoredYarn } from './types';
 
-const renderYarnStorage = (storedYarn: StoredYarn, setValue = jest.fn()) =>
+const renderYarnStorage = (
+  storedYarn: StoredYarn,
+  setValue = jest.fn(),
+  useValue = jest.fn().mockReturnValue({ value: storedYarn }),
+) =>
   renderHook(() => useYarnStorage(), {
     wrapper: ({ children }: { children: ReactNode }) => (
       <StorageContextWrapper
         value={{
-          useValue: jest.fn().mockReturnValue({ value: storedYarn }),
+          useValue,
           setValue,
         }}
       >
-        <YarnStorageProvider>{children}</YarnStorageProvider>
+        <YarnStorageProvider year={2026}>{children}</YarnStorageProvider>
       </StorageContextWrapper>
     ),
   });
@@ -31,13 +35,13 @@ describe('YarnStorageProvider', () => {
     it('gives each yarn type its balances as year-months, oldest first', () => {
       expect(
         getBalances({
-          wool: { id: 'wool', history: { '2026-02': 700, '2025-12': 300 } },
+          wool: { id: 'wool', history: { '2026-02': 700, '2026-01': 300 } },
         }),
       ).toEqual([
         {
           id: 'wool',
           balances: [
-            ['2025-12', 300],
+            ['2026-01', 300],
             ['2026-02', 700],
           ],
         },
@@ -59,36 +63,80 @@ describe('YarnStorageProvider', () => {
     });
   });
 
-  describe('lastMonthPile', () => {
-    beforeEach(() => {
-      jest.useFakeTimers();
-      jest.setSystemTime(new Date('2026-03-15'));
-    });
-
-    afterEach(() => {
-      jest.useRealTimers();
-    });
-
-    it('builds the pile as it stood before this month', () => {
-      const { result } = renderYarnStorage({
+  describe('pileHistory', () => {
+    const renderHistory = () =>
+      renderYarnStorage({
         wool: { id: 'wool', history: { '2026-01': 400, '2026-03': 200 } },
-        cotton: { id: 'cotton', history: { '2026-03': 100 } },
-      });
+        cotton: { id: 'cotton', history: { '2026-02': 100 } },
+      }).result.current;
 
-      expect(result.current.lastMonthPile).toEqual([
-        { id: 0, yarnType: 'wool', grams: 200 },
-        { id: 1, yarnType: 'wool', grams: 200 },
+    it('has the pile as it stood in each month with a balance', () => {
+      const { pileHistory } = renderHistory();
+
+      expect(
+        pileHistory?.map(({ month, pile }) => [month.toString(), pile]),
+      ).toEqual([
+        [
+          '2026-01',
+          [
+            { id: 0, yarnType: 'wool', grams: 200 },
+            { id: 1, yarnType: 'wool', grams: 200 },
+          ],
+        ],
+        [
+          '2026-02',
+          [
+            { id: 0, yarnType: 'wool', grams: 200 },
+            { id: 1, yarnType: 'wool', grams: 200 },
+            { id: 2, yarnType: 'cotton', grams: 100 },
+          ],
+        ],
+        [
+          '2026-03',
+          [
+            {
+              id: 0,
+              yarnType: 'wool',
+              grams: 200,
+              usedIn: Temporal.PlainYearMonth.from('2026-03'),
+            },
+            { id: 1, yarnType: 'wool', grams: 200 },
+            { id: 2, yarnType: 'cotton', grams: 100 },
+          ],
+        ],
       ]);
     });
 
-    it('gives its balls the same ids they have in the pile', () => {
+    it('ends with the current pile', () => {
+      const { pileHistory, pile } = renderHistory();
+
+      expect(pileHistory?.at(-1)?.pile).toEqual(pile);
+    });
+  });
+
+  describe('the year', () => {
+    it('reads the yarn stored under that year', () => {
+      const useValue = jest.fn().mockReturnValue({ value: {} });
+
+      renderYarnStorage({}, jest.fn(), useValue);
+
+      expect(useValue).toHaveBeenCalledWith('2026/yarn');
+    });
+  });
+
+  describe('when the history runs past the year', () => {
+    it('only uses the balances from that year', () => {
       const { result } = renderYarnStorage({
-        wool: { id: 'wool', history: { '2026-01': 400, '2026-03': 600 } },
+        wool: {
+          id: 'wool',
+          history: { '2025-12': 1000, '2026-01': 400, '2027-01': 200 },
+        },
       });
 
-      expect(result.current.pile?.slice(0, 2)).toEqual(
-        result.current.lastMonthPile,
-      );
+      expect(result.current.pile).toEqual([
+        { id: 0, yarnType: 'wool', grams: 200 },
+        { id: 1, yarnType: 'wool', grams: 200 },
+      ]);
     });
   });
 

@@ -3,27 +3,28 @@ import { useMemo } from 'react';
 import { useYarnStorage } from './YarnStorageContext';
 import { YarnPile } from './YarnPile';
 import { YarnBallList } from './YarnBallList';
-import { getPileBalls } from './pileBalls';
-import { getThisMonth } from '../../../shared/dates';
+import { getLatestMonthOfYear, getPileBalls } from './pileBalls';
 
 export function YarnState() {
-  const { pile, lastMonthPile, currentBalance } = useYarnStorage();
-  const pileBalls = useMemo(() => pile && getPileBalls(pile), [pile]);
-  const lastMonthBalls = useMemo(
+  const { year, pile, pileHistory, currentBalance } = useYarnStorage();
+  const pileBalls = useMemo(
+    () => pile && getPileBalls(pile, getLatestMonthOfYear(year)),
+    [pile, year],
+  );
+  const replayBalls = useMemo(
     () =>
-      lastMonthPile &&
-      getPileBalls(lastMonthPile, getThisMonth().subtract({ months: 1 })),
-    [lastMonthPile],
+      pileHistory?.map(({ month, pile }) => getPileBalls(pile, month)) ?? [],
+    [pileHistory],
   );
 
-  if (!pileBalls || !lastMonthBalls) {
+  if (!pileBalls) {
     return <>Loading...</>;
   }
 
   return (
     <div className="yarn-state">
       <div className="label">Current: {currentBalance.toLocaleString()}g</div>
-      <YarnPile balls={pileBalls} lastMonthBalls={lastMonthBalls} />
+      <YarnPile balls={pileBalls} replayBalls={replayBalls} />
       <YarnBallList balls={pileBalls.map(({ ball }) => ball)} />
     </div>
   );

@@ -73,31 +73,6 @@ describe('YarnState', () => {
           screen.getByRole('listitem', { name: 'used cotton: 200g' }),
         ).toHaveAccessibleDescription('cotton: 200g, used Jun 2026');
       });
-
-      describe('when it was used a year or more ago', () => {
-        it('leaves only the balls used more recently', () => {
-          renderWithYarnStorage(<YarnState />, {
-            pile: [
-              {
-                id: 0,
-                yarnType: 'wool',
-                grams: 200,
-                usedIn: Temporal.PlainYearMonth.from('2025-09'),
-              },
-              {
-                id: 1,
-                yarnType: 'wool',
-                grams: 200,
-                usedIn: Temporal.PlainYearMonth.from('2025-10'),
-              },
-            ],
-          });
-
-          expect(screen.getAllByRole('listitem')).toEqual([
-            screen.getByRole('listitem', { name: 'used wool: 200g' }),
-          ]);
-        });
-      });
     });
   });
 });
