@@ -63,57 +63,6 @@ describe('YarnStorageProvider', () => {
     });
   });
 
-  describe('pileHistory', () => {
-    const renderHistory = () =>
-      renderYarnStorage({
-        wool: { id: 'wool', history: { '2026-01': 400, '2026-03': 200 } },
-        cotton: { id: 'cotton', history: { '2026-02': 100 } },
-      }).result.current;
-
-    it('has the pile as it stood in each month with a balance', () => {
-      const { pileHistory } = renderHistory();
-
-      expect(
-        pileHistory?.map(({ month, pile }) => [month.toString(), pile]),
-      ).toEqual([
-        [
-          '2026-01',
-          [
-            { id: 0, yarnType: 'wool', grams: 200 },
-            { id: 1, yarnType: 'wool', grams: 200 },
-          ],
-        ],
-        [
-          '2026-02',
-          [
-            { id: 0, yarnType: 'wool', grams: 200 },
-            { id: 1, yarnType: 'wool', grams: 200 },
-            { id: 2, yarnType: 'cotton', grams: 100 },
-          ],
-        ],
-        [
-          '2026-03',
-          [
-            {
-              id: 0,
-              yarnType: 'wool',
-              grams: 200,
-              usedIn: Temporal.PlainYearMonth.from('2026-03'),
-            },
-            { id: 1, yarnType: 'wool', grams: 200 },
-            { id: 2, yarnType: 'cotton', grams: 100 },
-          ],
-        ],
-      ]);
-    });
-
-    it('ends with the current pile', () => {
-      const { pileHistory, pile } = renderHistory();
-
-      expect(pileHistory?.at(-1)?.pile).toEqual(pile);
-    });
-  });
-
   describe('the year', () => {
     it('reads the yarn stored under that year', () => {
       const useValue = jest.fn().mockReturnValue({ value: {} });

@@ -22,7 +22,6 @@ export type PlacedBall = PileBall & {
 
 type BallBody = {
   pileBall: PileBall;
-  rising: boolean;
   body: Body;
   size: Tween;
   greyness: Tween;
@@ -47,7 +46,10 @@ const BALL_DAMPING = { linearDamping: 0.5, angularDamping: 2 };
 const BOWL_FRICTION = 0.6;
 const TABLE_OVERHANG = 2.5;
 const TABLE_WALL_HEIGHT = 50;
-const POUR_INTERVAL = 0.12;
+const POUR_INTERVAL = 0.4;
+const HANDFUL_SIZES = [5, 6];
+const HANDFUL_COLUMNS = 3;
+const HANDFUL_SPACING = 0.85;
 const PAUSE_BETWEEN_CHANGES = 1;
 const POUR_X_TO_RADIUS = -0.3;
 const POUR_HEIGHT = 1.5;
@@ -114,10 +116,11 @@ export class BowlWorld {
   private world = new World({ gravity: { x: 0, y: GRAVITY } });
   private ballBodies = new Map<number, BallBody>();
   private unsimulatedTime = 0;
-  private replaying = false;
+  private pouring = false;
   private pourQueue: PileBall[] = [];
   private pileQueue: PileBall[][] = [];
-  private secondsUntilNextReplayStep = 0;
+  private secondsUntilNextPourStep = 0;
+  private handfulsPoured = 0;
 
   constructor(pileBalls: PileBall[]) {
     this.radius = calculateBowlRadius(pileBalls);
@@ -138,20 +141,20 @@ export class BowlWorld {
       );
   }
 
-  replayPiles([firstPile = [], ...laterPiles]: PileBall[][]) {
+  pourBalls(pileBalls: PileBall[]) {
     this.pourQueue = sortUnusedBallsFirst(
-      [...firstPile].sort(
+      [...pileBalls].sort(
         (one, other) =>
           getSpreadForBall(one.ball.id) - getSpreadForBall(other.ball.id),
       ),
     );
-    this.pileQueue = laterPiles;
-    this.secondsUntilNextReplayStep = 0;
-    this.replaying = true;
+    this.secondsUntilNextPourStep = 0;
+    this.handfulsPoured = 0;
+    this.pouring = true;
   }
 
   syncBalls(pileBalls: PileBall[]) {
-    if (this.replaying) {
+    if (this.pouring) {
       this.pileQueue.push(pileBalls);
     } else {
       this.applyPile(pileBalls);
@@ -167,15 +170,6 @@ export class BowlWorld {
     const newBalls = pileBalls.filter(
       ({ ball }) => !this.ballBodies.has(ball.id),
     );
-    const isUnusedBallAdded = newBalls.some((pileBall) => !isUsed(pileBall));
-    pileBalls.forEach((pileBall) => {
-      const ballBody = this.ballBodies.get(pileBall.ball.id);
-      if (!ballBody || !isUsed(pileBall)) return;
-      if (isUnusedBallAdded || !isUsed(ballBody.pileBall)) {
-        this.liftBall(ballBody);
-      }
-    });
-
     this.dropBalls(sortUnusedBallsFirst(newBalls));
     pileBalls.forEach((pileBall) => this.retargetBall(pileBall));
   }
@@ -202,7 +196,7 @@ export class BowlWorld {
 
   isAtRest() {
     return (
-      !this.replaying &&
+      !this.pouring &&
       [...this.ballBodies.values()].every(
         ({ body, size, greyness }) =>
           !body.isAwake() && !isTweenRunning(size) && !isTweenRunning(greyness),
@@ -257,43 +251,49 @@ export class BowlWorld {
     );
   }
 
-  private liftBall(ballBody: BallBody) {
-    ballBody.rising = true;
-    ballBody.size = retargetTween(ballBody.size, 0);
-  }
+  private stepPour() {
+    if (!this.pouring) return;
 
-  private stepReplay() {
-    if (!this.replaying) return;
+    this.secondsUntilNextPourStep -= TIME_STEP;
+    if (this.secondsUntilNextPourStep > 0) return;
 
-    this.secondsUntilNextReplayStep -= TIME_STEP;
-    if (this.secondsUntilNextReplayStep > 0) return;
-
-    const pileBall = this.pourQueue.shift();
-    if (pileBall) {
-      this.pourBall(pileBall);
-      this.secondsUntilNextReplayStep =
+    if (this.pourQueue.length > 0) {
+      this.pourHandful();
+      this.secondsUntilNextPourStep =
         this.pourQueue.length > 0 ? POUR_INTERVAL : PAUSE_BETWEEN_CHANGES;
       return;
     }
 
     const pile = this.pileQueue.shift();
     if (!pile) {
-      this.replaying = false;
+      this.pouring = false;
       return;
     }
 
     this.applyPile(pile);
-    this.secondsUntilNextReplayStep = PAUSE_BETWEEN_CHANGES;
+    this.secondsUntilNextPourStep = PAUSE_BETWEEN_CHANGES;
   }
 
-  private pourBall(pileBall: PileBall) {
-    const spread = getSpreadForBall(pileBall.ball.id);
-    this.addBall(
-      pileBall,
-      { x: this.radius * POUR_X_TO_RADIUS + spread * 0.3, y: -POUR_HEIGHT },
-      POUR_VELOCITY,
-      spread * POUR_SPIN,
-    );
+  private pourHandful() {
+    const size = HANDFUL_SIZES[this.handfulsPoured % HANDFUL_SIZES.length];
+    this.pourQueue.splice(0, size).forEach((pileBall, index) => {
+      const spread = getSpreadForBall(pileBall.ball.id);
+      const column = (index % HANDFUL_COLUMNS) - (HANDFUL_COLUMNS - 1) / 2;
+      const row = Math.floor(index / HANDFUL_COLUMNS);
+      this.addBall(
+        pileBall,
+        {
+          x:
+            this.radius * POUR_X_TO_RADIUS +
+            (column + (row % 2) * 0.5) * HANDFUL_SPACING +
+            spread * 0.1,
+          y: -POUR_HEIGHT - row * HANDFUL_SPACING,
+        },
+        POUR_VELOCITY,
+        spread * POUR_SPIN,
+      );
+    });
+    this.handfulsPoured++;
   }
 
   private addBall(
@@ -311,7 +311,6 @@ export class BowlWorld {
     });
     const ballBody = {
       pileBall,
-      rising: false,
       body,
       size: createTween(getBallSize(ball), RESIZE_DURATION),
       greyness: createTween(getGreyness(pileBall), GREYING_DURATION),
@@ -326,14 +325,12 @@ export class BowlWorld {
     if (!ballBody) return;
 
     ballBody.pileBall = pileBall;
-    if (!ballBody.rising) {
-      ballBody.size = retargetTween(ballBody.size, getBallSize(pileBall.ball));
-    }
+    ballBody.size = retargetTween(ballBody.size, getBallSize(pileBall.ball));
     ballBody.greyness = retargetTween(ballBody.greyness, getGreyness(pileBall));
   }
 
   private stepWorld() {
-    this.stepReplay();
+    this.stepPour();
     this.ballBodies.forEach((ballBody) => {
       ballBody.size = advanceTween(ballBody.size, TIME_STEP);
       ballBody.greyness = advanceTween(ballBody.greyness, TIME_STEP);
@@ -344,15 +341,12 @@ export class BowlWorld {
   }
 
   private removeVanishedBalls() {
-    const risenBalls: PileBall[] = [];
-    this.ballBodies.forEach(({ body, fixtureSize, rising, pileBall }, id) => {
+    this.ballBodies.forEach(({ body, fixtureSize }, id) => {
       if (fixtureSize > 0) return;
 
       this.world.destroyBody(body);
       this.ballBodies.delete(id);
-      if (rising) risenBalls.push(pileBall);
     });
-    this.dropBalls(risenBalls);
   }
 
   private applyBallSize(ballBody: BallBody) {

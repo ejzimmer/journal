@@ -11,16 +11,10 @@ import {
 import { getThisMonth } from '../../../shared/dates';
 import { YarnStash } from './YarnStash';
 
-export type PileSnapshot = {
-  month: Temporal.PlainYearMonth;
-  pile: YarnBall[];
-};
-
 export type YarnStorageContextType = {
   yarnByType?: YarnType[];
   year: number;
   pile?: YarnBall[];
-  pileHistory?: PileSnapshot[];
   currentBalance: number;
   getBalance: (yarnType: YarnTypeId) => number;
   addYarn: (yarnType: YarnTypeId, grams: number) => void;
@@ -44,32 +38,6 @@ export const convertToYarnType = (
     .filter(({ month }) => month.year === year)
     .sort((a, b) => Temporal.PlainYearMonth.compare(a.month, b.month)),
 });
-
-function buildPileHistory(yarnByType: YarnType[]) {
-  const months = [
-    ...new Set(
-      yarnByType.flatMap(({ balances }) =>
-        balances.map(({ month }) => month.toString()),
-      ),
-    ),
-  ]
-    .sort()
-    .map((month) => Temporal.PlainYearMonth.from(month));
-
-  const stash = new YarnStash();
-  return months.map((month) => {
-    stash.applyBalances(
-      yarnByType.map(({ id, balances }) => ({
-        id,
-        balances: balances.filter(
-          (balance) =>
-            Temporal.PlainYearMonth.compare(balance.month, month) <= 0,
-        ),
-      })),
-    );
-    return { month, pile: stash.balls.map((ball) => ({ ...ball })) };
-  });
-}
 
 type YarnStorageProviderProps = {
   year: number;
@@ -103,7 +71,6 @@ export function YarnStorageProvider({
       year,
       yarnByType,
       pile: yarnByType && [...stash.balls],
-      pileHistory: yarnByType && buildPileHistory(yarnByType),
       currentBalance: stash.getTotalBalance(),
       getBalance: (yarnType: YarnTypeId) => stash.getBalance(yarnType),
       addYarn: (yarnType: YarnTypeId, grams: number) =>

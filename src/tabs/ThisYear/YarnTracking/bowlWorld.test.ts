@@ -273,40 +273,6 @@ describe('BowlWorld', () => {
 
       expect(world.getBalls()[0].greyness).toBe(1);
     });
-
-    it('lifts it to the top of the pile', () => {
-      const world = createSettledBowlWorld(createWoolBalls(8));
-      const lowestBall = world
-        .getBalls()
-        .reduce((lowest, ball) => (ball.y > lowest.y ? ball : lowest));
-
-      world.syncBalls(
-        createWoolBalls(8).map((pileBall) =>
-          pileBall.ball.id === lowestBall.ball.id
-            ? useBall(pileBall)
-            : pileBall,
-        ),
-      );
-      world.settle();
-
-      const { used, unused } = splitByUse(world.getBalls());
-      expect(used[0].ball.id).toBe(lowestBall.ball.id);
-      expect(used[0].y).toBeLessThan(getAverageHeight(unused));
-    });
-  });
-
-  describe('when yarn is added while some has been used', () => {
-    it('lifts the used balls above the new ones', () => {
-      const usedBalls = createWoolBalls(3).map(useBall);
-      const world = createSettledBowlWorld(usedBalls);
-      const newBalls = [createWoolBall(3, 200), createWoolBall(4, 200)];
-
-      world.syncBalls([...usedBalls, ...newBalls]);
-      world.settle();
-
-      const { used, unused } = splitByUse(world.getBalls());
-      expect(getAverageHeight(used)).toBeLessThan(getAverageHeight(unused));
-    });
   });
 
   describe('when a ball leaves the pile', () => {
@@ -360,85 +326,87 @@ describe('BowlWorld', () => {
     });
   });
 
-  describe('when a year is replayed', () => {
-    const replayWoolBalls = (piles: PileBall[][]) => {
+  describe('when balls are poured in', () => {
+    const pourWoolBalls = (pileBalls: PileBall[]) => {
       const world = new BowlWorld(createWoolBalls(16));
-      world.replayPiles(piles);
+      world.pourBalls(pileBalls);
       return world;
     };
 
-    describe('the first pile', () => {
-      it('pours in one ball at a time', () => {
-        const world = replayWoolBalls([createWoolBalls(8)]);
+    it('adds them a handful at a time', () => {
+      const world = pourWoolBalls(createWoolBalls(16));
 
-        world.advance(0.05);
-        expect(world.getBalls()).toHaveLength(1);
+      world.advance(0.05);
+      expect(world.getBalls()).toHaveLength(5);
 
-        world.advance(0.1);
-        world.advance(0.1);
-        expect(world.getBalls()).toHaveLength(2);
-      });
+      advanceFor(world, 0.4);
+      expect(world.getBalls()).toHaveLength(11);
+    });
 
-      it('is not at rest while it is pouring', () => {
-        const world = replayWoolBalls([createWoolBalls(8)]);
+    it('is not at rest while it is pouring', () => {
+      const world = pourWoolBalls(createWoolBalls(8));
 
-        expect(world.isAtRest()).toBe(false);
-      });
+      expect(world.isAtRest()).toBe(false);
+    });
 
-      it('settles inside the bowl', () => {
-        const world = replayWoolBalls([createWoolBalls(8)]);
+    it('settles them inside the bowl', () => {
+      const world = pourWoolBalls(createWoolBalls(8));
 
-        world.settle();
+      world.settle();
 
-        const balls = world.getBalls();
-        expect(balls).toHaveLength(8);
-        balls.forEach((ball) => expect(ball).toBeInTheBowl(world));
-        expect(balls).not.toBeOverlapping();
-      });
+      const balls = world.getBalls();
+      expect(balls).toHaveLength(8);
+      balls.forEach((ball) => expect(ball).toBeInTheBowl(world));
+      expect(balls).not.toBeOverlapping();
+    });
 
-      it('pours the used balls in after the unused ones', () => {
-        const world = replayWoolBalls([
-          [...createWoolBalls(3).map(useBall), createWoolBall(3, 200)],
+    describe('when some of them have been used', () => {
+      it('pours the used ones in last', () => {
+        const world = pourWoolBalls([
+          ...createWoolBalls(3).map(useBall),
+          createWoolBall(3, 200),
         ]);
 
         world.advance(0.05);
 
         expect(world.getBalls()[0].ball.id).toBe(3);
       });
-    });
 
-    describe('the later piles', () => {
-      const replayThreeMonths = () =>
-        replayWoolBalls([
-          createWoolBalls(4),
-          createWoolBalls(5),
-          createWoolBalls(6),
+      it('leaves them on top of the pile', () => {
+        const world = pourWoolBalls([
+          ...createWoolBalls(3).map(useBall),
+          ...createWoolBalls(8).slice(3),
         ]);
 
-      it('play out one after another once the pour is done', () => {
-        const world = replayThreeMonths();
+        world.settle();
 
-        advanceFor(world, 1.2);
-        expect(world.getBalls()).toHaveLength(4);
-
-        advanceFor(world, 0.5);
-        expect(world.getBalls()).toHaveLength(5);
-
-        advanceFor(world, 1);
-        expect(world.getBalls()).toHaveLength(6);
+        const { used, unused } = splitByUse(world.getBalls());
+        expect(getAverageHeight(used)).toBeLessThan(getAverageHeight(unused));
       });
     });
 
-    describe('when the pile changes during the replay', () => {
-      it('plays the change after the rest of the year', () => {
-        const world = replayWoolBalls([createWoolBalls(4), createWoolBalls(5)]);
+    describe('when the pile changes during the pour', () => {
+      const pourThenAddBall = () => {
+        const world = pourWoolBalls(createWoolBalls(4));
+        world.advance(0.05);
+        world.syncBalls(createWoolBalls(5));
+        return world;
+      };
 
-        world.syncBalls(createWoolBalls(6));
-        advanceFor(world, 1.7);
-        expect(world.getBalls()).toHaveLength(5);
+      it('finishes pouring the balls it started with first', () => {
+        const world = pourThenAddBall();
+
+        advanceFor(world, 0.8);
+
+        expect(world.getBalls()).toHaveLength(4);
+      });
+
+      it('then plays the change', () => {
+        const world = pourThenAddBall();
 
         world.settle();
-        expect(world.getBalls()).toHaveLength(6);
+
+        expect(world.getBalls()).toHaveLength(5);
       });
     });
   });
