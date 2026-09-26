@@ -14,6 +14,7 @@ import { YarnStash } from './YarnStash';
 export type YarnStorageContextType = {
   yarnByType?: YarnType[];
   pile?: YarnBall[];
+  lastMonthPile?: YarnBall[];
   currentBalance: number;
   getBalance: (yarnType: YarnTypeId) => number;
   addYarn: (yarnType: YarnTypeId, grams: number) => void;
@@ -37,6 +38,20 @@ export const convertToYarnType = ({
     .sort((a, b) => Temporal.PlainYearMonth.compare(a.month, b.month)),
 });
 
+function buildLastMonthPile(yarnByType: YarnType[]) {
+  const thisMonth = getThisMonth();
+  const stash = new YarnStash();
+  stash.applyBalances(
+    yarnByType.map(({ id, balances }) => ({
+      id,
+      balances: balances.filter(
+        ({ month }) => Temporal.PlainYearMonth.compare(month, thisMonth) < 0,
+      ),
+    })),
+  );
+  return stash.balls;
+}
+
 export function YarnStorageProvider({ children }: { children: ReactNode }) {
   const { useValue, setValue } = useStorageContext();
   const { value: storedYarn } = useValue<StoredYarn>(KEY);
@@ -56,6 +71,7 @@ export function YarnStorageProvider({ children }: { children: ReactNode }) {
     return {
       yarnByType,
       pile: yarnByType && [...stash.balls],
+      lastMonthPile: yarnByType && buildLastMonthPile(yarnByType),
       currentBalance: stash.getTotalBalance(),
       getBalance: (yarnType: YarnTypeId) => stash.getBalance(yarnType),
       addYarn: (yarnType: YarnTypeId, grams: number) =>

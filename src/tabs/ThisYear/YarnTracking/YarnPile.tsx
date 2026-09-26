@@ -1,6 +1,6 @@
 import { RefObject, useEffect, useMemo, useRef, useState } from 'react';
 import { PileBall } from './pileBalls';
-import { BowlWorld, PlacedBall } from './bowlWorld';
+import { BowlWorld, PlacedBall, createSettledBowlWorld } from './bowlWorld';
 import { BALL_SIZE } from './drawPile';
 import { YarnPileCanvas } from './YarnPileCanvas';
 import {
@@ -32,6 +32,15 @@ function useElementWidth(ref: RefObject<HTMLElement | null>) {
   }, [ref]);
 
   return width;
+}
+
+const isReducedMotionPreferred = () =>
+  window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false;
+
+function createPouringBowlWorld(balls: PileBall[], ballsToPour: PileBall[]) {
+  const world = new BowlWorld(balls);
+  world.pourBalls(ballsToPour);
+  return world;
 }
 
 function useAnimatedBalls(world: BowlWorld, balls: PileBall[]) {
@@ -108,10 +117,19 @@ function placeBowlScene(
   };
 }
 
-export function YarnPile({ balls }: { balls: PileBall[] }) {
+type YarnPileProps = {
+  balls: PileBall[];
+  lastMonthBalls: PileBall[];
+};
+
+export function YarnPile({ balls, lastMonthBalls }: YarnPileProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const width = useElementWidth(containerRef);
-  const [world] = useState(() => new BowlWorld(balls));
+  const [world] = useState(() =>
+    isReducedMotionPreferred()
+      ? createSettledBowlWorld(balls)
+      : createPouringBowlWorld(balls, lastMonthBalls),
+  );
   const frame = useAnimatedBalls(world, balls);
   const scene = useMemo(
     () => placeBowlScene(world, frame.balls, frame.pileTop, width),

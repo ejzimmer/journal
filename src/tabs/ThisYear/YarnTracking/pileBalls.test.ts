@@ -19,6 +19,21 @@ describe('getPileBalls', () => {
   });
 
   describe('a ball that has been used', () => {
+    describe('when seen from an earlier month', () => {
+      it('fades by how long before that month it was used', () => {
+        const ball = {
+          id: 0,
+          yarnType: 'wool' as const,
+          grams: 200,
+          usedIn: Temporal.PlainYearMonth.from('2026-06'),
+        };
+
+        expect(
+          getPileBalls([ball], Temporal.PlainYearMonth.from('2026-08')),
+        ).toEqual([{ ball, fade: 2 / 12 }]);
+      });
+    });
+
     describe('less than a year ago', () => {
       it('fades in proportion to how long ago it was used', () => {
         const ball = {

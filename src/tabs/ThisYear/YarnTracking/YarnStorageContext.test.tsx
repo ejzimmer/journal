@@ -59,6 +59,39 @@ describe('YarnStorageProvider', () => {
     });
   });
 
+  describe('lastMonthPile', () => {
+    beforeEach(() => {
+      jest.useFakeTimers();
+      jest.setSystemTime(new Date('2026-03-15'));
+    });
+
+    afterEach(() => {
+      jest.useRealTimers();
+    });
+
+    it('builds the pile as it stood before this month', () => {
+      const { result } = renderYarnStorage({
+        wool: { id: 'wool', history: { '2026-01': 400, '2026-03': 200 } },
+        cotton: { id: 'cotton', history: { '2026-03': 100 } },
+      });
+
+      expect(result.current.lastMonthPile).toEqual([
+        { id: 0, yarnType: 'wool', grams: 200 },
+        { id: 1, yarnType: 'wool', grams: 200 },
+      ]);
+    });
+
+    it('gives its balls the same ids they have in the pile', () => {
+      const { result } = renderYarnStorage({
+        wool: { id: 'wool', history: { '2026-01': 400, '2026-03': 600 } },
+      });
+
+      expect(result.current.pile?.slice(0, 2)).toEqual(
+        result.current.lastMonthPile,
+      );
+    });
+  });
+
   describe('currentBalance', () => {
     it('adds up the latest balance of every yarn type', () => {
       const { result } = renderYarnStorage({
