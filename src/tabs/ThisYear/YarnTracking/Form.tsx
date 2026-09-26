@@ -42,7 +42,7 @@ export function YarnTrackingForm() {
   };
 
   return (
-    <div style={GRADIENTS}>
+    <div className="yarn-tracking" style={GRADIENTS}>
       <FormModal
         trigger={(props) => (
           <button
