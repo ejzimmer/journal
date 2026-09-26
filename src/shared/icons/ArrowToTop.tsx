@@ -1,8 +1,8 @@
 import { IconProps } from './types';
 
 export function ArrowToTopIcon({
-  width = '100%',
   colour = 'currentColor',
+  ...props
 }: IconProps) {
   return (
     <svg
@@ -11,8 +11,9 @@ export function ArrowToTopIcon({
       strokeWidth="4"
       strokeLinecap="round"
       strokeLinejoin="round"
-      width={width}
+      width="100%"
       fill="none"
+      {...props}
     >
       <path d="M4,11 L10,6 16,11" />
       <path d="M10,18 L10,2" />

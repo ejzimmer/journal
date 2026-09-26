@@ -2,21 +2,38 @@ import { Body, Chain, Circle, World } from 'planck';
 import { PileBall } from './pileBalls';
 import { YarnBall } from './types';
 import { GRAMS_PER_BALL } from './utils';
+import {
+  Tween,
+  advanceTween,
+  createTween,
+  finishTween,
+  getTweenValue,
+  isTweenRunning,
+  retargetTween,
+} from './tween';
 
 export type PlacedBall = PileBall & {
   x: number;
   y: number;
   size: number;
   angle: number;
+  greyness: number;
 };
 
-type BallBody = { body: Body; size: number };
+type BallBody = {
+  body: Body;
+  size: Tween;
+  greyness: Tween;
+  fixtureSize: number;
+};
 
 const GRAVITY = 10;
 const TIME_STEP = 1 / 60;
 const MAX_SETTLE_STEPS = 1200;
 const MAX_FRAME_TIME = 0.1;
 const DROP_CLEARANCE = 1.5;
+const RESIZE_DURATION = 0.5;
+const GREYING_DURATION = 0.8;
 const BALL_RADIUS_TO_SIZE = 0.4;
 const BOWL_DEPTH_TO_RADIUS = 1;
 const BOWL_BASE_TO_RADIUS = 0.25;
@@ -28,6 +45,8 @@ const BALL_DAMPING = { linearDamping: 0.5, angularDamping: 2 };
 const BOWL_FRICTION = 0.6;
 
 const getBallSize = ({ grams }: YarnBall) => grams / GRAMS_PER_BALL;
+
+const getGreyness = ({ fade }: PileBall) => (fade === undefined ? 0 : 1);
 
 const getBallRadius = (size: number) => size * BALL_RADIUS_TO_SIZE;
 
@@ -102,11 +121,11 @@ export class BowlWorld {
     const firstSlot = Math.floor(
       (getSpreadForBall(newBalls[0]?.ball.id ?? 0) + 0.5) * this.getColumns(),
     );
-    newBalls.forEach(({ ball }, index) =>
-      this.addBall(ball, firstSlot + index, dropHeight),
+    newBalls.forEach((pileBall, index) =>
+      this.addBall(pileBall, firstSlot + index, dropHeight),
     );
 
-    pileBalls.forEach(({ ball }) => this.resizeBall(ball));
+    pileBalls.forEach((pileBall) => this.retargetBall(pileBall));
 
     this.pileBalls = pileBalls;
   }
@@ -114,19 +133,27 @@ export class BowlWorld {
   advance(seconds: number) {
     this.unsimulatedTime += Math.min(seconds, MAX_FRAME_TIME);
     while (this.unsimulatedTime >= TIME_STEP) {
-      this.world.step(TIME_STEP);
+      this.stepWorld();
       this.unsimulatedTime -= TIME_STEP;
     }
   }
 
   settle() {
+    this.ballBodies.forEach((ballBody) => {
+      ballBody.size = finishTween(ballBody.size);
+      ballBody.greyness = finishTween(ballBody.greyness);
+      this.applyBallSize(ballBody);
+    });
     for (let step = 0; step < MAX_SETTLE_STEPS && !this.isAtRest(); step++) {
-      this.world.step(TIME_STEP);
+      this.stepWorld();
     }
   }
 
   isAtRest() {
-    return [...this.ballBodies.values()].every(({ body }) => !body.isAwake());
+    return [...this.ballBodies.values()].every(
+      ({ body, size, greyness }) =>
+        !body.isAwake() && !isTweenRunning(size) && !isTweenRunning(greyness),
+    );
   }
 
   getBalls(): PlacedBall[] {
@@ -140,8 +167,9 @@ export class BowlWorld {
           ...pileBall,
           x,
           y,
-          size: ballBody.size,
+          size: ballBody.fixtureSize,
           angle: ballBody.body.getAngle(),
+          greyness: getTweenValue(ballBody.greyness),
         },
       ];
     });
@@ -149,8 +177,8 @@ export class BowlWorld {
 
   getTopOfPile() {
     return [...this.ballBodies.values()].reduce(
-      (top, { body, size }) =>
-        Math.min(top, body.getPosition().y - getBallRadius(size)),
+      (top, { body, fixtureSize }) =>
+        Math.min(top, body.getPosition().y - getBallRadius(fixtureSize)),
       0,
     );
   }
@@ -159,7 +187,8 @@ export class BowlWorld {
     return Math.max(1, Math.floor(2 * this.radius) - 1);
   }
 
-  private addBall(ball: YarnBall, slot: number, dropHeight: number) {
+  private addBall(pileBall: PileBall, slot: number, dropHeight: number) {
+    const { ball } = pileBall;
     const columns = this.getColumns();
     const row = Math.floor(slot / columns);
     const column = slot % columns;
@@ -175,18 +204,41 @@ export class BowlWorld {
       position: { x, y },
       ...BALL_DAMPING,
     });
-    this.ballBodies.set(ball.id, { body, size: 0 });
+    const ballBody = {
+      body,
+      size: createTween(getBallSize(ball), RESIZE_DURATION),
+      greyness: createTween(getGreyness(pileBall), GREYING_DURATION),
+      fixtureSize: 0,
+    };
+    this.ballBodies.set(ball.id, ballBody);
+    this.applyBallSize(ballBody);
   }
 
-  private resizeBall(ball: YarnBall) {
-    const ballBody = this.ballBodies.get(ball.id);
-    const size = getBallSize(ball);
-    if (!ballBody || ballBody.size === size) return;
+  private retargetBall(pileBall: PileBall) {
+    const ballBody = this.ballBodies.get(pileBall.ball.id);
+    if (!ballBody) return;
+
+    ballBody.size = retargetTween(ballBody.size, getBallSize(pileBall.ball));
+    ballBody.greyness = retargetTween(ballBody.greyness, getGreyness(pileBall));
+  }
+
+  private stepWorld() {
+    this.ballBodies.forEach((ballBody) => {
+      ballBody.size = advanceTween(ballBody.size, TIME_STEP);
+      ballBody.greyness = advanceTween(ballBody.greyness, TIME_STEP);
+      this.applyBallSize(ballBody);
+    });
+    this.world.step(TIME_STEP);
+  }
+
+  private applyBallSize(ballBody: BallBody) {
+    const size = getTweenValue(ballBody.size);
+    if (size === ballBody.fixtureSize) return;
 
     const fixture = ballBody.body.getFixtureList();
     if (fixture) ballBody.body.destroyFixture(fixture);
     ballBody.body.createFixture(new Circle(getBallRadius(size)), BALL_BODY);
     ballBody.body.setAwake(true);
-    ballBody.size = size;
+    ballBody.fixtureSize = size;
   }
 }

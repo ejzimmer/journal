@@ -1,11 +1,8 @@
 import { IconProps } from './types';
 
-export function TagIcon({
-  width = '100%',
-  colour = 'hsl(200 80% 50%)',
-}: IconProps) {
+export function TagIcon({ colour = 'hsl(200 80% 50%)', ...props }: IconProps) {
   return (
-    <svg viewBox="0 0 24 18" width={width} fill={colour}>
+    <svg viewBox="0 0 24 18" width="100%" fill={colour} {...props}>
       <path
         fillRule="evenodd"
         clipRule="evenodd"

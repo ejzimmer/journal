@@ -24,6 +24,7 @@ const placeBall = (
   y,
   size: 40,
   angle: 0,
+  greyness: 0,
 });
 
 const BLEED = 8;

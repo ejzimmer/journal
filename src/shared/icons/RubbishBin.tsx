@@ -2,9 +2,9 @@ import { IconProps } from './types';
 import './RubbishBin.css';
 
 export function RubbishBinIcon({
-  width = '100%',
   colour = 'currentColor',
   shouldAnimate,
+  ...props
 }: IconProps & { shouldAnimate?: boolean }) {
   return (
     <svg
@@ -13,9 +13,10 @@ export function RubbishBinIcon({
       strokeWidth="2"
       strokeLinecap="round"
       strokeLinejoin="round"
-      width={width}
+      width="100%"
       fill="none"
       className={`rubbish-bin ${shouldAnimate ? 'animate' : ''}`}
+      {...props}
     >
       <path d="M2,6 L4,22 16,22, 18,6z" />
       <line x1="8" y1="9" x2="8" y2="18" />

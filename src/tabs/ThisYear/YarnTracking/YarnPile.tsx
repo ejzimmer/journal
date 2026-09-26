@@ -26,20 +26,11 @@ function useElementWidth(ref: RefObject<HTMLElement | null>) {
   return width;
 }
 
-const prefersReducedMotion = () =>
-  window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false;
-
-function useFallingBalls(world: BowlWorld, balls: PileBall[]) {
+function useAnimatedBalls(world: BowlWorld, balls: PileBall[]) {
   const [placedBalls, setPlacedBalls] = useState(() => world.getBalls());
 
   useEffect(() => {
     world.syncBalls(balls);
-
-    if (prefersReducedMotion()) {
-      world.settle();
-      setPlacedBalls(world.getBalls());
-      return;
-    }
 
     let frame = 0;
     let lastTime = performance.now();
@@ -96,7 +87,7 @@ export function YarnPile({ balls }: { balls: PileBall[] }) {
   const width = useElementWidth(containerRef);
   const [world] = useState(() => new BowlWorld(balls));
   const [pileTop] = useState(() => world.getTopOfPile());
-  const placedBalls = useFallingBalls(world, balls);
+  const placedBalls = useAnimatedBalls(world, balls);
   const scene = useMemo(
     () => placeBowlScene(world, placedBalls, pileTop, width),
     [world, placedBalls, pileTop, width],
