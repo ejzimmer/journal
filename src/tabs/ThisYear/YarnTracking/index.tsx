@@ -15,7 +15,7 @@ export function YarnTracking() {
         }}
       >
         <YarnState />
-        <div style={{ maxWidth: '400px', marginInline: 'auto' }}>
+        <div style={{ marginInline: 'auto' }}>
           <YarnTrackingForm />
         </div>
       </div>

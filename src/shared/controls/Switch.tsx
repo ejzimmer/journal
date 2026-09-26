@@ -24,24 +24,31 @@ export function Switch<T extends string>({
   const [left, setLeft] = useState<number>();
 
   useEffect(() => {
-    if (!radioGroupRef.current) {
-      return;
-    }
-    const checkedOption = radioGroupRef.current.querySelector(
-      `input[value="${value}"]`,
-    );
-    if (!checkedOption) {
-      return;
-    }
-    const checkedOptionLabel = checkedOption.closest('label');
-    if (!checkedOptionLabel) {
+    const radioGroup = radioGroupRef.current;
+    if (!radioGroup) {
       return;
     }
 
-    setWidth(checkedOptionLabel.clientWidth);
-    const labelLeft = checkedOptionLabel.getBoundingClientRect().left ?? 0;
-    const parentLeft = radioGroupRef.current.getBoundingClientRect().left ?? 0;
-    setLeft(labelLeft - parentLeft - 1);
+    const positionIndicator = () => {
+      const checkedOptionLabel = radioGroup
+        .querySelector(`input[value="${value}"]`)
+        ?.closest('label');
+      if (!checkedOptionLabel) {
+        return;
+      }
+
+      setWidth(checkedOptionLabel.clientWidth);
+      const labelLeft = checkedOptionLabel.getBoundingClientRect().left;
+      const parentLeft = radioGroup.getBoundingClientRect().left;
+      setLeft(labelLeft - parentLeft - 1);
+    };
+
+    positionIndicator();
+
+    if (typeof ResizeObserver === 'undefined') return;
+    const observer = new ResizeObserver(positionIndicator);
+    observer.observe(radioGroup);
+    return () => observer.disconnect();
   }, [value]);
 
   const borderRadiusLeft = value === options[0] ? 'inherit' : undefined;

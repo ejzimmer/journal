@@ -1,12 +1,42 @@
+.yarn-tracking-trigger {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 20px;
+  padding: 6px 12px;
+}
+
 .yarn-tracking-form {
   display: grid;
-  grid-template-columns: 6em 1fr min-content;
+  grid-template-columns: 6em 1fr;
   gap: 8px 12px;
-  height: min-content;
-  align-self: end;
 
   select {
     grid-column: 1/-1;
+    appearance: base-select;
+
+    &::picker(select) {
+      appearance: base-select;
+      border-radius: 8px;
+      border-color: var(--border-colour);
+    }
+
+    button {
+      all: unset;
+      flex: 1;
+    }
+
+    button,
+    selectedcontent,
+    option {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    option {
+      padding: 6px 8px;
+    }
   }
 
   select,
@@ -25,6 +55,7 @@
   }
 
   .switch {
+    isolation: isolate;
     width: 100%;
     border-radius: 15px;
     font-size: 24px;
