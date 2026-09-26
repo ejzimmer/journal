@@ -23,6 +23,7 @@ export interface ContextType {
   deleteItem: ParentCrudFunction;
   updateList: <T extends Item>(listName: string, list: T[]) => void;
   setValue: <T>(path: string, value: T) => void;
+  setValues: (updates: Record<string, unknown>) => void;
   useValue: <T>(key?: string) => { value?: T; loading: boolean };
   moveItemBetweenLists: <T extends { id: string; position: number }>(args: {
     movedItem: T;
@@ -92,6 +93,11 @@ export function createFirebaseContext(database: Database): ContextType {
     },
     setValue: (path, value) => {
       set(ref(database, path), value);
+    },
+    setValues: (updates) => {
+      update(ref(database), updates).catch((error) => {
+        console.error('setValues failed', updates, error);
+      });
     },
     moveItemBetweenLists: ({
       movedItem,
