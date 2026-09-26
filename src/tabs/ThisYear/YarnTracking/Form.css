@@ -16,7 +16,7 @@
 
 .yarn-tracking-form {
   display: grid;
-  grid-template-columns: 6em 1fr;
+  grid-template-columns: min-content 1fr;
   gap: 8px 12px;
 
   select {
@@ -65,7 +65,7 @@
   [role='radiogroup'].switch {
     --yarn-colour-dark: color-mix(in oklch, var(--yarn-colour) 60%, black);
     isolation: isolate;
-    width: 100%;
+    width: fit-content;
     height: 100%;
     border: none;
     border-radius: 999px;
@@ -79,7 +79,7 @@
     }
 
     label {
-      width: 50%;
+      width: 40px;
       text-align: center;
       padding: 4px;
 
@@ -93,7 +93,6 @@
 
       &:has(input:checked) {
         color: var(--yarn-colour-dark);
-        text-shadow: 1px 1px var(--yarn-colour);
       }
     }
 
@@ -109,16 +108,12 @@
       height: 80%;
       aspect-ratio: 1;
       border-radius: 50%;
-      background: color-mix(in srgb, var(--yarn-colour) 25%, transparent);
-      box-shadow:
-        0 0 4px 1px color-mix(in srgb, var(--yarn-colour) 80%, transparent),
-        0 0 14px 6px color-mix(in srgb, var(--yarn-colour) 60%, transparent),
-        inset 0 0 6px color-mix(in srgb, var(--yarn-colour) 40%, transparent);
+      background: var(--yarn-colour);
+      box-shadow: 0 1px 2px hsl(0 0% 0% / 0.3);
       transform: translate(-50%, -50%);
       transition:
         left 0.2s ease-out,
-        background 0.2s,
-        box-shadow 0.2s;
+        background 0.2s;
       pointer-events: none;
       z-index: -1;
     }

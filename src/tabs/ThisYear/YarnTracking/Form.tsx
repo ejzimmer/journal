@@ -11,6 +11,8 @@ import { XIcon } from '../../../shared/icons/X';
 
 import './Form.css';
 
+const GRADIENT_ORDER: YarnTypeId[] = ['wool', 'sock yarn', 'acrylic', 'cotton'];
+
 export function YarnTrackingForm() {
   const { addYarn, removeYarn } = useYarnStorage();
   const [operation, setOperation] = useState<Operation>('-');
@@ -41,7 +43,7 @@ export function YarnTrackingForm() {
           aria-label="Update yarn"
           style={
             {
-              '--yarn-gradient': `linear-gradient(135deg, ${Object.values(YARN_COLOURS).join(', ')})`,
+              '--yarn-gradient': `linear-gradient(135deg in oklch, ${GRADIENT_ORDER.map((id) => YARN_COLOURS[id]).join(', ')})`,
             } as React.CSSProperties
           }
         >
