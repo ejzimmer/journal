@@ -1,4 +1,4 @@
-import { FormEvent, useEffect, useId, useRef, useState } from 'react';
+import { FormEvent, useId, useState } from 'react';
 import { getToday } from '../../shared/dates';
 import { ExerciseUpdate, Recommendation } from '../../shared/types';
 
@@ -19,15 +19,10 @@ export function ExerciseForm({
   onSubmit,
   onCancel,
 }: ExerciseFormProps) {
-  const dateInputRef = useRef<HTMLInputElement>(null);
   const [date, setDate] = useState(getToday());
   const [details, setDetails] = useState('');
   const [recommendation, setRecommendation] = useState<Recommendation>();
   const recommendationName = useId();
-
-  useEffect(() => {
-    dateInputRef.current?.focus();
-  }, []);
 
   const handleSubmit = (event: FormEvent) => {
     event.preventDefault();
@@ -52,7 +47,6 @@ export function ExerciseForm({
       <label>
         Date
         <input
-          ref={dateInputRef}
           type="date"
           value={date}
           onChange={(event) => setDate(event.target.value)}
@@ -62,6 +56,7 @@ export function ExerciseForm({
       <label>
         Details
         <textarea
+          autoFocus
           value={details}
           onChange={(event) => setDetails(event.target.value)}
           required

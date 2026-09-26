@@ -161,14 +161,20 @@ describe('ExerciseTracker', () => {
         ).toBeInTheDocument();
       });
 
-      it("focuses the date, which defaults to today's", async () => {
+      it("defaults the date to today's", async () => {
         renderTracker();
 
         await openForm('Box pistol squat');
 
-        const date = screen.getByLabelText('Date');
-        expect(date).toHaveFocus();
-        expect(date).toHaveValue('2026-09-02');
+        expect(screen.getByLabelText('Date')).toHaveValue('2026-09-02');
+      });
+
+      it('focuses the details', async () => {
+        renderTracker();
+
+        await openForm('Box pistol squat');
+
+        expect(screen.getByRole('textbox', { name: 'Details' })).toHaveFocus();
       });
 
       it('defaults the recommendation to no change', async () => {
