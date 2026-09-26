@@ -9,6 +9,10 @@ import {
 
 type StoredItems = Record<string, unknown>;
 
+type StoredClass = {
+  times?: { completed?: number | number[] }[];
+};
+
 export const LEGACY_DAILY_PATH = `${THIS_YEAR_PATH}/daily`;
 export const LEGACY_EXERCISES_PATH = `${THIS_YEAR_PATH}/exercises`;
 export const LEGACY_GOALS_PATH = `${THIS_YEAR_PATH}/other_goals`;
@@ -57,6 +61,27 @@ export function createItemMoveUpdates(
   );
 }
 
+export function createCompletedListUpdates(
+  classes: Record<string, StoredClass> = {},
+): Record<string, unknown> {
+  return Object.fromEntries(
+    Object.entries(classes).flatMap(([id, { times = [] }]) =>
+      times.flatMap(({ completed }, index) =>
+        typeof completed === 'number'
+          ? [
+              [
+                `${CLASSES_PATH}/${id}/times/${index}/completed`,
+                completed > 0
+                  ? Array.from({ length: completed }, (_, session) => session)
+                  : null,
+              ],
+            ]
+          : [],
+      ),
+    ),
+  );
+}
+
 export function useHealthDataMigration() {
   const { useValue, setValues } = useStorageContext();
   const { value: legacyDaily } = useValue<StoredItems>(LEGACY_DAILY_PATH);
@@ -66,7 +91,8 @@ export function useHealthDataMigration() {
   );
   const { value: exercises } = useValue<StoredItems>(EXERCISES_PATH);
   const { value: legacyGoals } = useValue<StoredItems>(LEGACY_GOALS_PATH);
-  const { value: classes } = useValue<StoredItems>(CLASSES_PATH);
+  const { value: classes } =
+    useValue<Record<string, StoredClass>>(CLASSES_PATH);
 
   useEffect(() => {
     const updates = {
@@ -84,6 +110,7 @@ export function useHealthDataMigration() {
         legacyGoals,
         classes,
       ),
+      ...createCompletedListUpdates(classes),
     };
 
     if (Object.keys(updates).length > 0) {

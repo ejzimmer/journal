@@ -5,6 +5,7 @@ import {
   LEGACY_DAILY_PATH,
   LEGACY_EXERCISES_PATH,
   LEGACY_GOALS_PATH,
+  createCompletedListUpdates,
   createItemMoveUpdates,
   useHealthDataMigration,
 } from './useHealthDataMigration';
@@ -143,6 +144,43 @@ describe('createItemMoveUpdates', () => {
             reading: otherGoals.reading,
           },
         ),
+      ).toEqual({});
+    });
+  });
+});
+
+describe('createCompletedListUpdates', () => {
+  describe('when a class has counts of completed classes', () => {
+    it('replaces each count with a list of that many classes from the start', () => {
+      expect(
+        createCompletedListUpdates({
+          pistol: {
+            times: [{ completed: 3 }, { completed: 1 }],
+          },
+        }),
+      ).toEqual({
+        'health/classes/pistol/times/0/completed': [0, 1, 2],
+        'health/classes/pistol/times/1/completed': [0],
+      });
+    });
+
+    describe('and a count is zero', () => {
+      it('removes it', () => {
+        expect(
+          createCompletedListUpdates({
+            pistol: { times: [{ completed: 0 }] },
+          }),
+        ).toEqual({ 'health/classes/pistol/times/0/completed': null });
+      });
+    });
+  });
+
+  describe('when a class already has lists of completed classes', () => {
+    it('has nothing to write', () => {
+      expect(
+        createCompletedListUpdates({
+          pistol: { times: [{ completed: [0, 2] }, {}] },
+        }),
       ).toEqual({});
     });
   });

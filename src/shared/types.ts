@@ -65,7 +65,7 @@ export const CLASSES_PATH = `${HEALTH_PATH}/classes`;
 export type ClassTimes = {
   id: string;
   total: number;
-  completed?: number;
+  completed?: number[];
 };
 export type ExerciseClass = {
   id: string;
