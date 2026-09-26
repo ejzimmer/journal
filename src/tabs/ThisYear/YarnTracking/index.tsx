@@ -1,4 +1,5 @@
 import { YarnTrackingForm } from './Form';
+import { YarnBalance } from './YarnBalance';
 import { YarnState } from './YarnState';
 import { YarnStorageProvider } from './YarnStorageContext';
 
@@ -15,7 +16,15 @@ export function YarnTracking({ year }: { year: number }) {
         }}
       >
         <YarnState />
-        <div style={{ marginInline: 'auto' }}>
+        <div
+          style={{
+            marginInline: 'auto',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '16px',
+          }}
+        >
+          <YarnBalance />
           <YarnTrackingForm />
         </div>
       </div>

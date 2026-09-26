@@ -12,14 +12,6 @@ describe('YarnState', () => {
     jest.useRealTimers();
   });
 
-  describe('the current total', () => {
-    it('shows the grams currently in the stash', () => {
-      renderWithYarnStorage(<YarnState />, { pile: [], currentBalance: 1000 });
-
-      expect(screen.getByText('Current: 1,000g')).toBeInTheDocument();
-    });
-  });
-
   describe('the pile of yarn', () => {
     describe('a ball in the stash', () => {
       it('is labelled with its yarn type and weight', () => {
