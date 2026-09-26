@@ -1,11 +1,17 @@
 import { useEffect } from 'react';
 import { useStorageContext } from '../../shared/FirebaseContext';
-import { DAILY_PATH, EXERCISES_PATH, THIS_YEAR_PATH } from '../../shared/types';
+import {
+  CLASSES_PATH,
+  DAILY_PATH,
+  EXERCISES_PATH,
+  THIS_YEAR_PATH,
+} from '../../shared/types';
 
 type StoredItems = Record<string, unknown>;
 
 export const LEGACY_DAILY_PATH = `${THIS_YEAR_PATH}/daily`;
 export const LEGACY_EXERCISES_PATH = `${THIS_YEAR_PATH}/exercises`;
+export const LEGACY_GOALS_PATH = `${THIS_YEAR_PATH}/other_goals`;
 
 export function createMoveUpdates(
   from: string,
@@ -25,6 +31,32 @@ export function createMoveUpdates(
   return { ...Object.fromEntries(copies), [from]: null };
 }
 
+export const CLASS_GOAL_IDS = [
+  '-OkXpAY-XJ8N-39gGLnQ',
+  '-OkXpdwy9XXMKVfz1i42',
+  '-OtNb9w1gzdaLDCOJon5',
+  '-OtNbno047wv7FplASXj',
+];
+
+export function createItemMoveUpdates(
+  from: string,
+  to: string,
+  ids: string[],
+  legacyItems: StoredItems = {},
+  currentItems: StoredItems = {},
+): Record<string, unknown> {
+  return Object.fromEntries(
+    ids
+      .filter((id) => id in legacyItems)
+      .flatMap((id) => {
+        const removal = [`${from}/${id}`, null];
+        return id in currentItems
+          ? [removal]
+          : [[`${to}/${id}`, legacyItems[id]], removal];
+      }),
+  );
+}
+
 export function useHealthDataMigration() {
   const { useValue, setValues } = useStorageContext();
   const { value: legacyDaily } = useValue<StoredItems>(LEGACY_DAILY_PATH);
@@ -33,6 +65,8 @@ export function useHealthDataMigration() {
     LEGACY_EXERCISES_PATH,
   );
   const { value: exercises } = useValue<StoredItems>(EXERCISES_PATH);
+  const { value: legacyGoals } = useValue<StoredItems>(LEGACY_GOALS_PATH);
+  const { value: classes } = useValue<StoredItems>(CLASSES_PATH);
 
   useEffect(() => {
     const updates = {
@@ -43,10 +77,25 @@ export function useHealthDataMigration() {
         legacyExercises,
         exercises,
       ),
+      ...createItemMoveUpdates(
+        LEGACY_GOALS_PATH,
+        CLASSES_PATH,
+        CLASS_GOAL_IDS,
+        legacyGoals,
+        classes,
+      ),
     };
 
     if (Object.keys(updates).length > 0) {
       setValues(updates);
     }
-  }, [legacyDaily, daily, legacyExercises, exercises, setValues]);
+  }, [
+    legacyDaily,
+    daily,
+    legacyExercises,
+    exercises,
+    legacyGoals,
+    classes,
+    setValues,
+  ]);
 }

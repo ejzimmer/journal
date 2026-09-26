@@ -1,9 +1,11 @@
 import { createContext, ReactNode, useContext, useMemo } from 'react';
 import { useStorageContext } from '../../shared/FirebaseContext';
 import {
+  CLASSES_PATH,
   DAILY_PATH,
   DayData,
   Exercise,
+  ExerciseClass,
   EXERCISES_PATH,
   ExerciseUpdate,
 } from '../../shared/types';
@@ -12,6 +14,7 @@ import { useHealthDataMigration } from './useHealthDataMigration';
 export type HealthStorageContextType = {
   days?: Record<string, DayData>;
   exercises: Exercise[];
+  classes: ExerciseClass[];
   isLoading: boolean;
 
   updateDay: (day: DayData) => void;
@@ -20,6 +23,7 @@ export type HealthStorageContextType = {
     exerciseId: string,
     update: Omit<ExerciseUpdate, 'id'>,
   ) => void;
+  updateClass: (exerciseClass: ExerciseClass) => void;
 };
 
 export const HealthStorageContext = createContext<
@@ -34,16 +38,23 @@ export function HealthStorageProvider({ children }: { children: ReactNode }) {
     useValue<Record<string, DayData>>(DAILY_PATH);
   const { value: storedExercises, loading: exercisesLoading } =
     useValue<Record<string, Exercise>>(EXERCISES_PATH);
+  const { value: storedClasses, loading: classesLoading } =
+    useValue<Record<string, ExerciseClass>>(CLASSES_PATH);
 
   const exercises = useMemo(
     () => Object.values(storedExercises ?? {}),
     [storedExercises],
   );
+  const classes = useMemo(
+    () => Object.values(storedClasses ?? {}),
+    [storedClasses],
+  );
 
   const value: HealthStorageContextType = {
     days,
     exercises,
-    isLoading: daysLoading || exercisesLoading,
+    classes,
+    isLoading: daysLoading || exercisesLoading || classesLoading,
 
     updateDay: (day) => updateItem<DayData>(DAILY_PATH, day),
     addExercise: (name) => {
@@ -55,6 +66,8 @@ export function HealthStorageProvider({ children }: { children: ReactNode }) {
         update,
       );
     },
+    updateClass: (exerciseClass) =>
+      updateItem<ExerciseClass>(CLASSES_PATH, exerciseClass),
   };
 
   return (

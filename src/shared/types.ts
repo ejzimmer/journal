@@ -61,6 +61,18 @@ export type Exercise = {
   updates?: Record<string, ExerciseUpdate>;
 };
 
+export const CLASSES_PATH = `${HEALTH_PATH}/classes`;
+export type ClassTimes = {
+  id: string;
+  total: number;
+  completed?: number;
+};
+export type ExerciseClass = {
+  id: string;
+  description: string;
+  times: ClassTimes[];
+};
+
 export const PROJECTS_KEY = 'projects';
 export type ProjectSubtask = {
   id: string;
