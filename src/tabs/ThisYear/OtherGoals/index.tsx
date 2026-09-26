@@ -5,9 +5,16 @@ import { Book, Reading } from './Reading';
 import './index.css';
 import { BasicGoal, BasicGoalData } from './BasicGoal';
 import { Bikes, BikesGoal } from './Bikes';
+import { EmojiCheckbox } from '../../../shared/controls/EmojiCheckbox';
 import { GameGoal, GameGoalData } from './GameGoals';
 
-type Goal = Book | BasicGoalData | BikesGoal | GameGoalData;
+type DiscreteTimesGoal = {
+  id?: string;
+  description: string;
+  times: { id: string; total: number; completed?: number }[];
+};
+
+type Goal = Book | BasicGoalData | BikesGoal | DiscreteTimesGoal | GameGoalData;
 
 const path = '2026/other_goals';
 const hasId = (book: Goal): book is Required<Goal> =>
@@ -44,6 +51,8 @@ export function OtherGoals() {
   );
 }
 
+const isDiscreteTimesGoal = (goal: Goal): goal is DiscreteTimesGoal =>
+  'times' in goal;
 const isBikes = (goal: Goal): goal is BikesGoal =>
   'bikes' in goal && Array.isArray(goal.bikes);
 const isGame = (goal: Goal): goal is GameGoalData =>
@@ -52,6 +61,43 @@ const isGame = (goal: Goal): goal is GameGoalData =>
 const getComponent = (goal: Goal, onUpdate: (goal: Goal) => void) => {
   if ('title' in goal) {
     return <Reading book={goal} onChange={onUpdate} />;
+  } else if (isDiscreteTimesGoal(goal)) {
+    return (
+      <div className={`discrete-times-goal ${isDone(goal) ? 'done' : ''}`}>
+        <div className="description">{goal.description}</div>
+        {goal.times.map((times, timesesIndex) => (
+          <div className="completions" key={times.id}>
+            {Array.from({ length: times.total }).map((_, index) => {
+              const isChecked = index < (times.completed ?? 0);
+
+              return (
+                <div className="tooltip-container" key={index}>
+                  <div className="tooltip-anchor">
+                    <EmojiCheckbox
+                      label={times.id + index}
+                      emoji="✅"
+                      isChecked={isChecked}
+                      onChange={() => {
+                        const completed =
+                          (times.completed ?? 0) + (isChecked ? -1 : 1);
+                        onUpdate({
+                          ...goal,
+                          times: goal.times.with(timesesIndex, {
+                            ...times,
+                            completed,
+                          }),
+                        });
+                      }}
+                    />
+                  </div>
+                  {isChecked && <div className="tooltip">{index + 1}</div>}
+                </div>
+              );
+            })}
+          </div>
+        ))}
+      </div>
+    );
   } else if (isBikes(goal)) {
     return <Bikes goal={goal} onChange={onUpdate} />;
   } else if (isGame(goal)) {
@@ -64,6 +110,13 @@ const getComponent = (goal: Goal, onUpdate: (goal: Goal) => void) => {
 function isDone(task: any) {
   if ('status' in task) {
     return task.status === 'done';
+  }
+
+  if ('times' in task && Array.isArray(task.times)) {
+    return task.times.every(
+      (time: { completed: number; total: number }) =>
+        time.completed === time.total,
+    );
   }
 
   if ('volumes' in task && Array.isArray(task.volumes)) {
