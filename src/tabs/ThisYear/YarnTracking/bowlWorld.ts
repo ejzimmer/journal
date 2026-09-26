@@ -21,6 +21,7 @@ export type PlacedBall = PileBall & {
 };
 
 type BallBody = {
+  pileBall: PileBall;
   body: Body;
   size: Tween;
   greyness: Tween;
@@ -98,7 +99,6 @@ export class BowlWorld {
   readonly tableHalfWidth: number;
   private world = new World({ gravity: { x: 0, y: GRAVITY } });
   private ballBodies = new Map<number, BallBody>();
-  private pileBalls: PileBall[] = [];
   private unsimulatedTime = 0;
 
   constructor(pileBalls: PileBall[]) {
@@ -124,11 +124,8 @@ export class BowlWorld {
 
   syncBalls(pileBalls: PileBall[]) {
     const ids = new Set(pileBalls.map(({ ball }) => ball.id));
-    this.ballBodies.forEach(({ body }, id) => {
-      if (!ids.has(id)) {
-        this.world.destroyBody(body);
-        this.ballBodies.delete(id);
-      }
+    this.ballBodies.forEach((ballBody, id) => {
+      if (!ids.has(id)) ballBody.size = retargetTween(ballBody.size, 0);
     });
 
     const newBalls = pileBalls.filter(
@@ -143,8 +140,6 @@ export class BowlWorld {
     );
 
     pileBalls.forEach((pileBall) => this.retargetBall(pileBall));
-
-    this.pileBalls = pileBalls;
   }
 
   advance(seconds: number) {
@@ -161,6 +156,7 @@ export class BowlWorld {
       ballBody.greyness = finishTween(ballBody.greyness);
       this.applyBallSize(ballBody);
     });
+    this.removeVanishedBalls();
     for (let step = 0; step < MAX_SETTLE_STEPS && !this.isAtRest(); step++) {
       this.stepWorld();
     }
@@ -174,22 +170,15 @@ export class BowlWorld {
   }
 
   getBalls(): PlacedBall[] {
-    return this.pileBalls.flatMap((pileBall) => {
-      const ballBody = this.ballBodies.get(pileBall.ball.id);
-      if (!ballBody) return [];
-
-      const { x, y } = ballBody.body.getPosition();
-      return [
-        {
-          ...pileBall,
-          x,
-          y,
-          size: ballBody.fixtureSize,
-          angle: ballBody.body.getAngle(),
-          greyness: getTweenValue(ballBody.greyness),
-        },
-      ];
-    });
+    return [...this.ballBodies.values()].map(
+      ({ pileBall, body, fixtureSize, greyness }) => ({
+        ...pileBall,
+        ...body.getPosition(),
+        size: fixtureSize,
+        angle: body.getAngle(),
+        greyness: getTweenValue(greyness),
+      }),
+    );
   }
 
   getTopOfPile() {
@@ -222,6 +211,7 @@ export class BowlWorld {
       ...BALL_DAMPING,
     });
     const ballBody = {
+      pileBall,
       body,
       size: createTween(getBallSize(ball), RESIZE_DURATION),
       greyness: createTween(getGreyness(pileBall), GREYING_DURATION),
@@ -235,6 +225,7 @@ export class BowlWorld {
     const ballBody = this.ballBodies.get(pileBall.ball.id);
     if (!ballBody) return;
 
+    ballBody.pileBall = pileBall;
     ballBody.size = retargetTween(ballBody.size, getBallSize(pileBall.ball));
     ballBody.greyness = retargetTween(ballBody.greyness, getGreyness(pileBall));
   }
@@ -245,7 +236,17 @@ export class BowlWorld {
       ballBody.greyness = advanceTween(ballBody.greyness, TIME_STEP);
       this.applyBallSize(ballBody);
     });
+    this.removeVanishedBalls();
     this.world.step(TIME_STEP);
+  }
+
+  private removeVanishedBalls() {
+    this.ballBodies.forEach(({ body, fixtureSize }, id) => {
+      if (fixtureSize === 0) {
+        this.world.destroyBody(body);
+        this.ballBodies.delete(id);
+      }
+    });
   }
 
   private applyBallSize(ballBody: BallBody) {
@@ -254,7 +255,9 @@ export class BowlWorld {
 
     const fixture = ballBody.body.getFixtureList();
     if (fixture) ballBody.body.destroyFixture(fixture);
-    ballBody.body.createFixture(new Circle(getBallRadius(size)), BALL_BODY);
+    if (size > 0) {
+      ballBody.body.createFixture(new Circle(getBallRadius(size)), BALL_BODY);
+    }
     ballBody.body.setAwake(true);
     ballBody.fixtureSize = size;
   }
