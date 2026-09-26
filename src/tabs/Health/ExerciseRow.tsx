@@ -20,7 +20,10 @@ export function ExerciseRow({
   const { isFormOpen, triggerRef, openForm, closeForm } = useFormToggle();
 
   const updates = useMemo(
-    () => sortUpdatesByDate(exercise.updates),
+    () =>
+      Object.values(exercise.updates ?? {}).sort((a, b) =>
+        compareDates(a.date, b.date),
+      ),
     [exercise.updates],
   );
   const trailingEmptyCells = Array.from({
@@ -62,6 +65,3 @@ export function ExerciseRow({
     </tr>
   );
 }
-
-const sortUpdatesByDate = (updates: Record<string, ExerciseUpdate> = {}) =>
-  Object.values(updates).sort((a, b) => compareDates(a.date, b.date));

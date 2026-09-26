@@ -1,4 +1,3 @@
-import { Exercise } from '../../shared/types';
 import { useHealthStorage } from './HealthStorageContext';
 import { ExerciseRow } from './ExerciseRow';
 import { AddExerciseRow } from './AddExerciseRow';
@@ -7,7 +6,11 @@ import './ExerciseTracker.css';
 export function ExerciseTracker() {
   const { exercises, addExercise } = useHealthStorage();
 
-  const numberOfUpdateColumns = Math.max(0, ...exercises.map(countUpdates)) + 1;
+  const numberOfUpdateColumns =
+    Math.max(
+      0,
+      ...exercises.map(({ updates }) => Object.keys(updates ?? {}).length),
+    ) + 1;
 
   return (
     <table className="exercise-tracker">
@@ -24,6 +27,3 @@ export function ExerciseTracker() {
     </table>
   );
 }
-
-const countUpdates = (exercise: Exercise) =>
-  Object.keys(exercise.updates ?? {}).length;
