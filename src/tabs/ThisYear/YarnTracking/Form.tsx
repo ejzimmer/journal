@@ -11,7 +11,12 @@ import { XIcon } from '../../../shared/icons/X';
 
 import './Form.css';
 
-const GRADIENT_ORDER: YarnTypeId[] = ['wool', 'sock yarn', 'acrylic', 'cotton'];
+const YARN_COLOUR_PROPERTIES = Object.fromEntries(
+  YARN_TYPE_IDS.map((id) => [
+    `--${id.replace(' ', '-')}-colour`,
+    YARN_COLOURS[id],
+  ]),
+) as React.CSSProperties;
 
 export function YarnTrackingForm() {
   const { addYarn, removeYarn } = useYarnStorage();
@@ -35,68 +40,71 @@ export function YarnTrackingForm() {
   };
 
   return (
-    <FormModal
-      trigger={(props) => (
-        <button
-          {...props}
-          className="outline yarn-tracking-trigger"
-          aria-label="Update yarn"
+    <div className="yarn-tracking-form" style={YARN_COLOUR_PROPERTIES}>
+      <FormModal
+        trigger={(props) => (
+          <button
+            {...props}
+            className="outline yarn-tracking-trigger"
+            aria-label="Update yarn"
+          >
+            <PlusMinusIcon width="20px" />
+            <span aria-hidden="true">🧶</span>
+          </button>
+        )}
+        onSubmit={updateYarn}
+        submitButtonClassName="yarn-tracking-submit"
+        submitButtonContent={
+          <TickIcon width="18px" role="img" aria-label="Submit" />
+        }
+        cancelButtonContent={
+          <XIcon width="14px" role="img" aria-label="Close" />
+        }
+      >
+        <div
+          className="yarn-tracking-fields"
           style={
             {
-              '--yarn-gradient': `linear-gradient(135deg in oklch, ${GRADIENT_ORDER.map((id) => YARN_COLOURS[id]).join(', ')})`,
+              '--yarn-colour': YARN_COLOURS[yarnType],
             } as React.CSSProperties
           }
         >
-          <PlusMinusIcon width="20px" />
-          <span aria-hidden="true">🧶</span>
-        </button>
-      )}
-      onSubmit={updateYarn}
-      submitButtonContent={
-        <TickIcon width="18px" role="img" aria-label="Submit" />
-      }
-      cancelButtonContent={<XIcon width="14px" role="img" aria-label="Close" />}
-    >
-      <div
-        className="yarn-tracking-form"
-        style={
-          { '--yarn-colour': YARN_COLOURS[yarnType] } as React.CSSProperties
-        }
-      >
-        <select
-          name="yarnType"
-          aria-label="Yarn type"
-          value={yarnType}
-          onChange={(event) => {
-            if (isYarnTypeId(event.target.value)) {
-              setYarnType(event.target.value);
-            }
-          }}
-        >
-          <button type="button">
-            <selectedcontent />
-          </button>
-          {YARN_TYPE_IDS.map((id) => (
-            <option key={id} value={id}>
-              <BallOfYarnIcon width="20px" colour={YARN_COLOURS[id]} />
-              {id}
-            </option>
-          ))}
-        </select>
-        <Switch
-          options={['-', '+']}
-          value={operation}
-          onChange={setOperation}
-          name="yarn-tracking"
-        />
-        <input
-          name="amount"
-          aria-label="Grams"
-          inputMode="numeric"
-          pattern="[0-9, ]+"
-          size={5}
-        />
-      </div>
-    </FormModal>
+          <select
+            name="yarnType"
+            aria-label="Yarn type"
+            value={yarnType}
+            onChange={(event) => {
+              if (isYarnTypeId(event.target.value)) {
+                setYarnType(event.target.value);
+              }
+            }}
+          >
+            <button type="button">
+              <BallOfYarnIcon width="20px" colour={YARN_COLOURS[yarnType]} />
+              {yarnType}
+            </button>
+            {YARN_TYPE_IDS.map((id) => (
+              <option key={id} value={id}>
+                <BallOfYarnIcon width="20px" colour={YARN_COLOURS[id]} />
+                {id}
+              </option>
+            ))}
+          </select>
+          <Switch
+            options={['-', '+']}
+            value={operation}
+            onChange={setOperation}
+            name="yarn-tracking"
+          />
+          <input
+            name="amount"
+            aria-label="Grams"
+            inputMode="numeric"
+            pattern="[0-9, ]+"
+            size={5}
+          />
+        </div>
+      </FormModal>
+    </div>
   );
 }
