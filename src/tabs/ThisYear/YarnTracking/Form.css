@@ -22,6 +22,12 @@
   select {
     grid-column: 1/-1;
     appearance: base-select;
+    display: flex;
+    align-items: center;
+
+    &::picker-icon {
+      color: var(--border-colour);
+    }
 
     &::picker(select) {
       appearance: base-select;
@@ -66,8 +72,11 @@
   [role='radiogroup'].switch {
     --yarn-colour-dark: color-mix(in oklch, var(--yarn-colour) 60%, black);
     isolation: isolate;
+    --indicator-size: 28px;
+    --indicator-gap: 3px;
+    --option-size: calc(var(--indicator-size) + 2 * var(--indicator-gap));
     width: fit-content;
-    height: 100%;
+    align-self: center;
     border: 2px solid var(--border-colour);
     border-radius: 999px;
     font-size: 24px;
@@ -82,9 +91,12 @@
     }
 
     label {
-      width: 30px;
-      text-align: center;
-      padding: 4px;
+      display: grid;
+      place-items: center;
+      width: var(--option-size);
+      height: var(--option-size);
+      padding: 0;
+      line-height: 1;
 
       &:not(:last-of-type) {
         border-inline-end: none;
@@ -108,8 +120,8 @@
       position: absolute;
       top: 50%;
       left: 25%;
-      height: 75%;
-      aspect-ratio: 1;
+      width: var(--indicator-size);
+      height: var(--indicator-size);
       border-radius: 50%;
       background: var(--yarn-colour);
       box-shadow: 0 1px 2px hsl(0 0% 0% / 0.3);
@@ -135,7 +147,7 @@ dialog.modal:has(.yarn-tracking-form) .footer button {
   padding: 0;
   background: white;
   border: 2px solid var(--border-colour);
-  color: var(--body-colour-light);
+  color: var(--error-colour);
 
   &:hover,
   &:focus-visible {
