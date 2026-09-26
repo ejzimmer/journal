@@ -31,7 +31,12 @@ export function createMoveUpdates(
   return { ...Object.fromEntries(copies), [from]: null };
 }
 
-export const CLASS_GOAL_IDS: string[] = [];
+export const CLASS_GOAL_IDS = [
+  '-OkXpAY-XJ8N-39gGLnQ',
+  '-OkXpdwy9XXMKVfz1i42',
+  '-OtNb9w1gzdaLDCOJon5',
+  '-OtNbno047wv7FplASXj',
+];
 
 export function createItemMoveUpdates(
   from: string,
