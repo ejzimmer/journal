@@ -1,91 +1,57 @@
-import { render, screen, within } from '@testing-library/react';
-import { ExerciseTracker } from './ExerciseTracker';
+import { screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { ExerciseTracker } from './ExerciseTracker';
+import { Exercise } from '../../shared/types';
+import { renderWithHealthStorage } from './healthStorageTestUtils';
 
-const exercises = [
+const exercises: Exercise[] = [
   {
-    name: 'Box pistol squat',
-    updates: [
-      {
-        date: Temporal.PlainDate.from('2026-08-12'),
-        update:
-          '2 x 5 x 3 mats + 1 low yoga block + 1 high yoga block, 1 x 5 3 mats + 2 low yoga blocks (eccentric only)',
-      },
-    ],
-  },
-  {
+    id: 'split',
     name: 'Bulgarian split squat',
-    updates: [
-      { date: Temporal.PlainDate.from('2026-08-12'), update: '3 x 10 x 8kg' },
-    ],
+    updates: {
+      a: { id: 'a', date: '2026-08-12', details: '3 x 10 x 8kg' },
+    },
   },
   {
+    id: 'rdl',
     name: 'B-stance RDL',
-    updates: [
-      { date: Temporal.PlainDate.from('2026-08-12'), update: '3 x 10 x 16kg' },
-      { date: Temporal.PlainDate.from('2026-08-16'), update: '3 x 10 x 20kg' },
-      { date: Temporal.PlainDate.from('2026-08-20'), update: '3 x 10 x 20kg' },
-    ],
+    updates: {
+      a: { id: 'a', date: '2026-08-12', details: '3 x 10 x 16kg' },
+      b: { id: 'b', date: '2026-08-16', details: '3 x 10 x 20kg' },
+      c: { id: 'c', date: '2026-08-20', details: '3 x 10 x 22kg' },
+    },
   },
+  { id: 'plank', name: 'Plank' },
 ];
 
 describe('ExerciseTracker', () => {
-  it('shows previously tracked exercises', () => {
-    render(<ExerciseTracker exercises={exercises} />);
+  it('shows a row for each exercise', () => {
+    renderWithHealthStorage(<ExerciseTracker />, { exercises });
 
-    const pistolSquatRow = screen.getByRole('row', {
-      name: /Box pistol squat/,
-    });
-    const pistolSquatUpdate = within(pistolSquatRow).getByRole('cell', {
-      name: /12 Aug 26/,
-    });
-    expect(pistolSquatUpdate).toHaveTextContent(/3 mats \+ 2 low yoga blocks/);
-
-    const splitSquatRow = screen.getByRole('row', {
-      name: /Bulgarian split squat/,
-    });
-    const splitSquatUpdate = within(splitSquatRow).getByRole('cell', {
-      name: /12 Aug 26/,
-    });
-    expect(splitSquatUpdate).toHaveTextContent(/3 x 10 x 8kg/);
+    expect(
+      screen.getAllByRole('rowheader').map((header) => header.textContent),
+    ).toEqual(['Bulgarian split squat', 'B-stance RDL', 'Plank']);
   });
 
-  describe('when the user clicks the add update button', () => {
-    describe("and there's an empty cell in the row", () => {
-      it('shows the form in the first empty cell', async () => {
-        const user = userEvent.setup();
-        render(<ExerciseTracker exercises={exercises} />);
+  it('gives every row one more update column than the exercise with the most updates', () => {
+    renderWithHealthStorage(<ExerciseTracker />, { exercises });
 
-        const boxSquatRow = screen.getByRole('row', {
-          name: /Box pistol squat/,
-        });
-        const firstEmptyCell = within(boxSquatRow).getAllByRole('cell').at(1);
-        if (!firstEmptyCell) {
-          throw new Error('Missing last cell');
-        }
-        expect(firstEmptyCell.innerHTML).toBe('');
+    for (const { name } of exercises) {
+      const row = screen.getByRole('row', { name: new RegExp(name) });
+      expect(within(row).getAllByRole('cell')).toHaveLength(4);
+    }
+  });
 
-        await user.click(
-          screen.getByRole('button', { name: 'Record Box pistol squat' }),
-        );
+  describe('when an exercise is added', () => {
+    it('adds it to the health storage', async () => {
+      const user = userEvent.setup();
+      const addExercise = jest.fn();
+      renderWithHealthStorage(<ExerciseTracker />, { exercises, addExercise });
 
-        const form = within(firstEmptyCell).getByRole('form', {
-          name: 'Record Box pistol squat',
-        });
-        expect(form).toBeInTheDocument();
-        const dateInput = screen.getByLabelText('Date');
-        expect(dateInput).toHaveFocus();
-        expect(
-          screen.getByRole('textbox', { name: 'Update' }),
-        ).toBeInTheDocument();
-      });
+      await user.click(screen.getByRole('button', { name: 'Add exercise' }));
+      await user.keyboard('Goblet squat{Enter}');
+
+      expect(addExercise).toHaveBeenCalledWith('Goblet squat');
     });
   });
 });
-// it adds a new exercise
-// tracks exercise progress
-// displays exercise progress
-// edits exercise name, progress date, progress
-// on click highlights row
-// should increase/decrease
-// highlight all with same date
