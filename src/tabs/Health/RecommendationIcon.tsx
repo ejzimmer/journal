@@ -21,6 +21,9 @@ export function RecommendationIcon({
 
   return (
     <div className="recommendation">
+      {/* The icon is drawn twice, a thicker white copy under the coloured one,
+          to give it an outline. That's simpler than getting the same effect
+          from box-shadows or filters. */}
       <Icon width="24px" colour="white" strokeWidth="6" />
       <Icon
         role="img"
