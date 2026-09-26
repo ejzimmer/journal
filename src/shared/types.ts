@@ -21,7 +21,7 @@ export const WEEKLY_KEY = `${TODO_KEY}/週`;
 export const WEEKLY_RESET_KEY = `${TODO_KEY}/weeklyReset`;
 export type WeeklyTaskDetails = {
   frequency: number;
-  completed?: (StoredDate | null)[];
+  completed?: StoredDate[];
 };
 export type WeeklyTask = WeeklyTaskDetails & TodoTask;
 

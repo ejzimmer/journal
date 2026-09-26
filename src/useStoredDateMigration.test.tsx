@@ -140,44 +140,23 @@ describe('migrating stored dates', () => {
   });
 
   describe("a weekly task's completed dates", () => {
-    describe('when stored as an array', () => {
-      it('rewrites each entry and keeps it an array', () => {
-        const storage = migrate({
-          [WEEKLY_KEY]: indexById([
-            createWeeklyTask([
-              getLegacyTimestampDaysAgo(4),
-              getLegacyTimestampDaysAgo(2),
-            ]),
+    it('rewrites every entry that is still an epoch', () => {
+      const storage = migrate({
+        [WEEKLY_KEY]: indexById([
+          createWeeklyTask([
+            getLegacyTimestampDaysAgo(4),
+            getDateDaysAgo(3),
+            getLegacyTimestampDaysAgo(2),
           ]),
-        });
-
-        expect(storage.updateItem).toHaveBeenCalledWith(
-          WEEKLY_KEY,
-          expect.objectContaining({
-            completed: [getDateDaysAgo(4), getDateDaysAgo(2)],
-          }),
-        );
+        ]),
       });
-    });
 
-    describe('when Firebase has stored it as an object', () => {
-      it('rewrites each entry and keeps it an object', () => {
-        const storage = migrate({
-          [WEEKLY_KEY]: indexById([
-            createWeeklyTask({
-              '1': getLegacyTimestampDaysAgo(4),
-              '3': getLegacyTimestampDaysAgo(2),
-            } as unknown as WeeklyTask['completed']),
-          ]),
-        });
-
-        expect(storage.updateItem).toHaveBeenCalledWith(
-          WEEKLY_KEY,
-          expect.objectContaining({
-            completed: { '1': getDateDaysAgo(4), '3': getDateDaysAgo(2) },
-          }),
-        );
-      });
+      expect(storage.updateItem).toHaveBeenCalledWith(
+        WEEKLY_KEY,
+        expect.objectContaining({
+          completed: [getDateDaysAgo(4), getDateDaysAgo(3), getDateDaysAgo(2)],
+        }),
+      );
     });
   });
 

@@ -67,33 +67,13 @@ const migrateWeeklyTask = (task: WeeklyTask) => {
     return hasLastUpdated(task) ? withoutLastUpdated(task) : undefined;
   }
 
-  if (Array.isArray(task.completed)) {
-    if (!task.completed.some(isEpoch) && !hasLastUpdated(task)) {
-      return undefined;
-    }
-
-    return withoutLastUpdated({
-      ...task,
-      completed: task.completed.map((date) => date && toDateString(date)),
-    });
-  }
-
-  const completedById = task.completed as unknown as Record<
-    string,
-    StoredDate | null
-  >;
-  if (!Object.values(completedById).some(isEpoch) && !hasLastUpdated(task)) {
+  if (!task.completed.some(isEpoch) && !hasLastUpdated(task)) {
     return undefined;
   }
 
   return withoutLastUpdated({
     ...task,
-    completed: Object.fromEntries(
-      Object.entries(completedById).map(([id, date]) => [
-        id,
-        date && toDateString(date),
-      ]),
-    ) as unknown as WeeklyTask['completed'],
+    completed: task.completed.map(toDateString),
   });
 };
 

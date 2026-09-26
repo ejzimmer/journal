@@ -20,13 +20,8 @@ export const dateToWeekday = (date: StoredDate) => {
   return `${formatted}${suffixes[suffixIndex] ?? 'th'}`;
 };
 
-export const getCompletedDates = (completed: WeeklyTask['completed']) => {
-  const dates = Array.isArray(completed)
-    ? completed
-    : (Object.values(completed ?? {}) as (StoredDate | null)[]);
-
-  return dates.filter((date): date is StoredDate => !!date);
-};
+export const getCompletedDates = (completed: WeeklyTask['completed']) =>
+  completed ?? [];
 
 export const compareLastCompleted = (a: WeeklyTask, b: WeeklyTask) => {
   const aLast = getCompletedDates(a.completed).at(-1);
