@@ -5,67 +5,126 @@ import { renderWithHealthStorage } from './healthStorageTestUtils';
 import { ExerciseClasses } from './ExerciseClasses';
 
 describe('ExerciseClasses', () => {
-  describe('a class in progress', () => {
-    it('ticks as many classes as are completed in each block', () => {
+  describe('a class that is a set number of classes', () => {
+    it('names each checkbox by its class number and ticks the completed ones', () => {
+      const wheel: ExerciseClass = {
+        id: 'wheel',
+        description: 'Wheel',
+        times: [{ id: 'all', total: 5, completed: [0, 3] }],
+      };
+      renderWithHealthStorage(<ExerciseClasses />, { classes: [wheel] });
+
+      expect(
+        screen.getByRole('checkbox', { name: 'Wheel: Class 4' }),
+      ).toBeChecked();
+      expect(
+        screen.getByRole('checkbox', { name: 'Wheel: Class 2' }),
+      ).not.toBeChecked();
+    });
+
+    describe('when a class out of order is ticked', () => {
+      it('adds just that class to the completed ones', async () => {
+        const user = userEvent.setup();
+        const wheel: ExerciseClass = {
+          id: 'wheel',
+          description: 'Wheel',
+          times: [{ id: 'all', total: 5, completed: [0, 3] }],
+        };
+        const { storageContext } = renderWithHealthStorage(
+          <ExerciseClasses />,
+          { classes: [wheel] },
+        );
+
+        await user.click(
+          screen.getByRole('checkbox', { name: 'Wheel: Class 3' }),
+        );
+
+        expect(storageContext.updateClass).toHaveBeenCalledWith({
+          ...wheel,
+          times: [{ id: 'all', total: 5, completed: [0, 2, 3] }],
+        });
+      });
+    });
+
+    describe('when a completed class is unticked', () => {
+      it('removes just that class from the completed ones', async () => {
+        const user = userEvent.setup();
+        const wheel: ExerciseClass = {
+          id: 'wheel',
+          description: 'Wheel',
+          times: [{ id: 'all', total: 5, completed: [0, 3] }],
+        };
+        const { storageContext } = renderWithHealthStorage(
+          <ExerciseClasses />,
+          { classes: [wheel] },
+        );
+
+        await user.click(
+          screen.getByRole('checkbox', { name: 'Wheel: Class 1' }),
+        );
+
+        expect(storageContext.updateClass).toHaveBeenCalledWith({
+          ...wheel,
+          times: [{ id: 'all', total: 5, completed: [3] }],
+        });
+      });
+    });
+  });
+
+  describe('a class split into weeks', () => {
+    it('names each checkbox by its week and class and ticks the completed ones', () => {
       const pistolSquat: ExerciseClass = {
         id: 'pistol',
         description: 'Pistol squat',
         times: [
-          { id: 'week1-', total: 3, completed: [0, 1, 2] },
-          { id: 'week2-', total: 3, completed: [0] },
+          { id: 'week-1', total: 3, completed: [1] },
+          { id: 'week-2', total: 3 },
         ],
       };
       renderWithHealthStorage(<ExerciseClasses />, {
         classes: [pistolSquat],
       });
 
-      expect(screen.getByRole('checkbox', { name: 'week1-2' })).toBeChecked();
-      expect(screen.getByRole('checkbox', { name: 'week2-0' })).toBeChecked();
       expect(
-        screen.getByRole('checkbox', { name: 'week2-1' }),
+        screen.getByRole('checkbox', {
+          name: 'Pistol squat: Week 1, class 2',
+        }),
+      ).toBeChecked();
+      expect(
+        screen.getByRole('checkbox', {
+          name: 'Pistol squat: Week 2, class 2',
+        }),
       ).not.toBeChecked();
     });
 
-    describe('when an unticked class is ticked', () => {
-      it('adds the next class to the completed ones in its block', async () => {
+    describe('when a class is ticked', () => {
+      it('adds it to the completed classes of its week', async () => {
         const user = userEvent.setup();
         const pistolSquat: ExerciseClass = {
           id: 'pistol',
           description: 'Pistol squat',
-          times: [{ id: 'week1-', total: 3, completed: [0] }],
+          times: [
+            { id: 'week-1', total: 3, completed: [0, 1, 2] },
+            { id: 'week-2', total: 3 },
+          ],
         };
         const { storageContext } = renderWithHealthStorage(
           <ExerciseClasses />,
           { classes: [pistolSquat] },
         );
 
-        await user.click(screen.getByRole('checkbox', { name: 'week1-2' }));
-
-        expect(storageContext.updateClass).toHaveBeenCalledWith({
-          ...pistolSquat,
-          times: [{ id: 'week1-', total: 3, completed: [0, 1] }],
-        });
-      });
-    });
-
-    describe('when a ticked class is unticked', () => {
-      it('removes the last completed class in its block', async () => {
-        const user = userEvent.setup();
-        const pistolSquat: ExerciseClass = {
-          id: 'pistol',
-          description: 'Pistol squat',
-          times: [{ id: 'week1-', total: 3, completed: [0, 1] }],
-        };
-        const { storageContext } = renderWithHealthStorage(
-          <ExerciseClasses />,
-          { classes: [pistolSquat] },
+        await user.click(
+          screen.getByRole('checkbox', {
+            name: 'Pistol squat: Week 2, class 3',
+          }),
         );
 
-        await user.click(screen.getByRole('checkbox', { name: 'week1-0' }));
-
         expect(storageContext.updateClass).toHaveBeenCalledWith({
           ...pistolSquat,
-          times: [{ id: 'week1-', total: 3, completed: [0] }],
+          times: [
+            { id: 'week-1', total: 3, completed: [0, 1, 2] },
+            { id: 'week-2', total: 3, completed: [2] },
+          ],
         });
       });
     });
@@ -76,12 +135,12 @@ describe('ExerciseClasses', () => {
       const finished: ExerciseClass = {
         id: 'finished',
         description: 'Finished',
-        times: [{ id: 'finished-', total: 1, completed: [0] }],
+        times: [{ id: 'all', total: 1, completed: [0] }],
       };
       const unfinished: ExerciseClass = {
         id: 'unfinished',
         description: 'Unfinished',
-        times: [{ id: 'unfinished-', total: 2 }],
+        times: [{ id: 'all', total: 2, completed: [0] }],
       };
       renderWithHealthStorage(<ExerciseClasses />, {
         classes: [finished, unfinished],
@@ -89,7 +148,11 @@ describe('ExerciseClasses', () => {
 
       expect(
         screen.getAllByRole('checkbox').map((box) => box.ariaLabel),
-      ).toEqual(['unfinished-0', 'unfinished-1', 'finished-0']);
+      ).toEqual([
+        'Unfinished: Class 1',
+        'Unfinished: Class 2',
+        'Finished: Class 1',
+      ]);
     });
   });
 });
