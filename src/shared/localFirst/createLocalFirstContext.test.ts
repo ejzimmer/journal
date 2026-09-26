@@ -135,6 +135,24 @@ describe('createLocalFirstContext', () => {
     expect(result.current.value).toBe(12345);
   });
 
+  it('setValues writes every path locally and syncs them as one atomic update', async () => {
+    const context = await setUpContext();
+    context.setValue('old', { a: 1 });
+
+    context.setValues({ 'new/a': 1, old: null });
+
+    const { result: moved } = renderHook(() =>
+      context.useValue<Record<string, unknown>>('new'),
+    );
+    const { result: removed } = renderHook(() => context.useValue('old'));
+    expect(moved.current.value).toEqual({ a: 1 });
+    expect(removed.current.value).toBeUndefined();
+
+    await waitFor(() => {
+      expect(mockUpdate).toHaveBeenCalledWith({ 'new/a': 1, old: null });
+    });
+  });
+
   it('applies a remote snapshot when nothing local is pending for that key', async () => {
     const context = await setUpContext();
     const { result } = renderHook(() =>

@@ -7,6 +7,7 @@ import {
   EXERCISES_PATH,
   ExerciseUpdate,
 } from '../../shared/types';
+import { useHealthDataMigration } from './useHealthDataMigration';
 
 export type HealthStorageContextType = {
   days?: Record<string, DayData>;
@@ -27,6 +28,7 @@ export const HealthStorageContext = createContext<
 
 export function HealthStorageProvider({ children }: { children: ReactNode }) {
   const { addItem, updateItem, useValue } = useStorageContext();
+  useHealthDataMigration();
 
   const { value: days, loading: daysLoading } =
     useValue<Record<string, DayData>>(DAILY_PATH);
