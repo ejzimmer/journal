@@ -1,0 +1,67 @@
+import { useMemo } from 'react';
+import { PlusIcon } from '../../shared/icons/Plus';
+import { compareDates } from '../../shared/dates';
+import { useStorageContext } from '../../shared/FirebaseContext';
+import { useFormToggle } from '../../shared/controls/useFormToggle';
+import { Exercise, EXERCISES_PATH, ExerciseUpdate } from '../../shared/types';
+import { ExerciseForm } from './ExerciseForm';
+import { UpdateCell } from './UpdateCell';
+
+type ExerciseRowProps = {
+  exercise: Exercise;
+  numberOfUpdateColumns: number;
+};
+
+export function ExerciseRow({
+  exercise,
+  numberOfUpdateColumns,
+}: ExerciseRowProps) {
+  const { addItem } = useStorageContext();
+  const { isFormOpen, triggerRef, openForm, closeForm } = useFormToggle();
+
+  const updates = useMemo(
+    () => sortUpdatesByDate(exercise.updates),
+    [exercise.updates],
+  );
+  const trailingEmptyCells = Array.from({
+    length: numberOfUpdateColumns - updates.length - 1,
+  });
+
+  const addUpdate = (update: Omit<ExerciseUpdate, 'id'>) => {
+    addItem<ExerciseUpdate>(`${EXERCISES_PATH}/${exercise.id}/updates`, update);
+    closeForm();
+  };
+
+  return (
+    <tr>
+      <th role="rowheader">{exercise.name}</th>
+      {updates.map((update) => (
+        <UpdateCell key={update.id} update={update} />
+      ))}
+      <td className={isFormOpen ? '' : 'add-update'}>
+        {isFormOpen ? (
+          <ExerciseForm
+            exerciseName={exercise.name}
+            onSubmit={addUpdate}
+            onCancel={closeForm}
+          />
+        ) : (
+          <button
+            ref={triggerRef}
+            className="ghost"
+            aria-label={`Record ${exercise.name}`}
+            onClick={openForm}
+          >
+            <PlusIcon width="24px" strokeWidth="3" />
+          </button>
+        )}
+      </td>
+      {trailingEmptyCells.map((_, index) => (
+        <td key={index} />
+      ))}
+    </tr>
+  );
+}
+
+const sortUpdatesByDate = (updates: Record<string, ExerciseUpdate> = {}) =>
+  Object.values(updates).sort((a, b) => compareDates(a.date, b.date));
