@@ -69,7 +69,7 @@ function AdventureFields() {
         {modes.map((mode) => (
           <label
             key={mode.id}
-            className="mode-tab"
+            className="mode-option"
             style={{ '--mode-colour': mode.colour } as React.CSSProperties}
           >
             <input
@@ -82,7 +82,7 @@ function AdventureFields() {
             {mode.name}
           </label>
         ))}
-        <label className="mode-tab new-mode-tab" aria-label="New mode">
+        <label className="mode-option new-mode-option" aria-label="New mode">
           <input
             type="radio"
             name="mode"

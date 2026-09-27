@@ -25,7 +25,7 @@ dialog.modal:has(.add-adventure-form) {
     gap: 10px;
   }
 
-  .mode-tab {
+  .mode-option {
     display: inline-flex;
     align-items: center;
     gap: 5px;
@@ -55,7 +55,7 @@ dialog.modal:has(.add-adventure-form) {
     }
   }
 
-  .new-mode-tab {
+  .new-mode-option {
     padding: 8px 10px;
     border: 1px dashed var(--border-colour);
     color: var(--body-colour-mid);
