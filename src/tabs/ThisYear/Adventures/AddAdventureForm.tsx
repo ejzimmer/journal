@@ -100,7 +100,7 @@ function AdventureFields() {
             value={modeName}
             onChange={setModeName}
           />
-          <div className="new-mode-look">
+          <div className="emoji-and-colour">
             <EmojiPicker value={modeEmoji} onChange={setModeEmoji} />
             <div className="swatches" role="radiogroup" aria-label="Colour">
               {LINE_COLOURS.map(({ name, colour }) => (
