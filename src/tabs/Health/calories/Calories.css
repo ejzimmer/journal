@@ -22,11 +22,7 @@
     }
 
     label {
-      display: grid;
-      place-items: center;
-      width: 40px;
-      height: 32px;
-      padding: 0;
+      padding: 7px 11px;
       border-radius: 999px;
       color: var(--switch-icon);
 
@@ -51,6 +47,7 @@
       }
 
       svg {
+        display: block;
         width: 18px;
         height: 18px;
       }
