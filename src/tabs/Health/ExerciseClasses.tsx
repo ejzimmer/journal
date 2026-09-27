@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
-import { EmojiCheckbox } from '../../shared/controls/EmojiCheckbox';
-import { ClassBlock, ExerciseClass } from '../../shared/types';
+import { ExerciseClass } from '../../shared/types';
 import { useHealthStorage } from './HealthStorageContext';
+import { Sessions } from './Sessions';
 import './ExerciseClasses.css';
 
 export function ExerciseClasses() {
@@ -33,7 +33,9 @@ export function ExerciseClasses() {
   );
 }
 
-function SetClass({ exerciseClass }: { exerciseClass: ExerciseClass }) {
+type ClassProps = { exerciseClass: ExerciseClass };
+
+function SetClass({ exerciseClass }: ClassProps) {
   return (
     <Sessions
       exerciseClass={exerciseClass}
@@ -43,7 +45,7 @@ function SetClass({ exerciseClass }: { exerciseClass: ExerciseClass }) {
   );
 }
 
-function WeeklyClass({ exerciseClass }: { exerciseClass: ExerciseClass }) {
+function WeeklyClass({ exerciseClass }: ClassProps) {
   return exerciseClass.blocks.map((week, weekIndex) => (
     <Sessions
       key={week.id}
@@ -52,58 +54,6 @@ function WeeklyClass({ exerciseClass }: { exerciseClass: ExerciseClass }) {
       getSessionName={(index) => `Week ${weekIndex + 1}, class ${index + 1}`}
     />
   ));
-}
-
-type SessionsProps = {
-  exerciseClass: ExerciseClass;
-  blockIndex: number;
-  getSessionName: (index: number) => string;
-};
-
-function Sessions({
-  exerciseClass,
-  blockIndex,
-  getSessionName,
-}: SessionsProps) {
-  const { updateClass } = useHealthStorage();
-  const block = exerciseClass.blocks[blockIndex];
-  const completed = block.completed ?? [];
-
-  return (
-    <div className="completions">
-      {Array.from({ length: block.total }, (_, index) => (
-        <div className="tooltip-container" key={index}>
-          <div className="tooltip-anchor">
-            <EmojiCheckbox
-              label={`${exerciseClass.description}: ${getSessionName(index)}`}
-              emoji="✅"
-              isChecked={completed.includes(index)}
-              onChange={() =>
-                updateClass({
-                  ...exerciseClass,
-                  blocks: exerciseClass.blocks.with(
-                    blockIndex,
-                    toggleSession(block, index),
-                  ),
-                })
-              }
-            />
-          </div>
-          <div className="tooltip">{getSessionName(index)}</div>
-        </div>
-      ))}
-    </div>
-  );
-}
-
-function toggleSession(block: ClassBlock, index: number): ClassBlock {
-  const completed = block.completed ?? [];
-  return {
-    ...block,
-    completed: completed.includes(index)
-      ? completed.filter((session) => session !== index)
-      : [...completed, index].toSorted((a, b) => a - b),
-  };
 }
 
 function isClassDone({ blocks }: ExerciseClass) {
