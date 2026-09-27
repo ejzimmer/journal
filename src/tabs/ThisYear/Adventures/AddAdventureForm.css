@@ -7,7 +7,6 @@ dialog.modal:has(.add-adventure-form) {
 }
 
 .add-adventure-form {
-  display: grid;
   gap: 24px;
 
   .text-input {
