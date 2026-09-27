@@ -5,6 +5,7 @@
 .hovertext {
   position: absolute;
   opacity: 0;
+  pointer-events: none;
   transition: opacity 0.2s;
   position-anchor: --label-text;
   position-area: top;
