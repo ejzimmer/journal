@@ -348,12 +348,12 @@ const classes: Record<string, ExerciseClass> = {
   'class-wheel': {
     id: 'class-wheel',
     description: 'Wheel class',
-    times: [{ id: 'all', total: 30, completed: [0, 1, 2, 3, 4, 5] }],
+    blocks: [{ id: 'all', total: 30, completed: [0, 1, 2, 3, 4, 5] }],
   },
   'class-pistol': {
     id: 'class-pistol',
     description: 'Progress to Pistol Squat',
-    times: [
+    blocks: [
       { id: 'week-1', total: 6, completed: [0, 1, 2, 3, 4, 5] },
       { id: 'week-2', total: 6, completed: [0, 1, 2] },
     ],

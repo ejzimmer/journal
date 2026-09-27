@@ -11,7 +11,7 @@ describe('ExerciseClasses', () => {
       const wheel: ExerciseClass = {
         id: 'wheel',
         description: 'Wheel',
-        times: [{ id: 'all', total: 5, completed: [0, 3] }],
+        blocks: [{ id: 'all', total: 5, completed: [0, 3] }],
       };
       const { storageContext } = renderWithHealthStorage(<ExerciseClasses />, {
         classes: [wheel],
@@ -29,7 +29,7 @@ describe('ExerciseClasses', () => {
 
       expect(storageContext.updateClass).toHaveBeenCalledWith({
         ...wheel,
-        times: [{ id: 'all', total: 5, completed: [0, 2, 3] }],
+        blocks: [{ id: 'all', total: 5, completed: [0, 2, 3] }],
       });
     });
 
@@ -39,7 +39,7 @@ describe('ExerciseClasses', () => {
         const wheel: ExerciseClass = {
           id: 'wheel',
           description: 'Wheel',
-          times: [{ id: 'all', total: 5, completed: [0, 3] }],
+          blocks: [{ id: 'all', total: 5, completed: [0, 3] }],
         };
         const { storageContext } = renderWithHealthStorage(
           <ExerciseClasses />,
@@ -52,7 +52,7 @@ describe('ExerciseClasses', () => {
 
         expect(storageContext.updateClass).toHaveBeenCalledWith({
           ...wheel,
-          times: [{ id: 'all', total: 5, completed: [3] }],
+          blocks: [{ id: 'all', total: 5, completed: [3] }],
         });
       });
     });
@@ -63,7 +63,7 @@ describe('ExerciseClasses', () => {
       const pistolSquat: ExerciseClass = {
         id: 'pistol',
         description: 'Pistol squat',
-        times: [
+        blocks: [
           { id: 'week-1', total: 3, completed: [1] },
           { id: 'week-2', total: 3 },
         ],
@@ -90,7 +90,7 @@ describe('ExerciseClasses', () => {
         const pistolSquat: ExerciseClass = {
           id: 'pistol',
           description: 'Pistol squat',
-          times: [
+          blocks: [
             { id: 'week-1', total: 3, completed: [0, 1, 2] },
             { id: 'week-2', total: 3 },
           ],
@@ -108,7 +108,7 @@ describe('ExerciseClasses', () => {
 
         expect(storageContext.updateClass).toHaveBeenCalledWith({
           ...pistolSquat,
-          times: [
+          blocks: [
             { id: 'week-1', total: 3, completed: [0, 1, 2] },
             { id: 'week-2', total: 3, completed: [2] },
           ],
@@ -122,12 +122,12 @@ describe('ExerciseClasses', () => {
       const finished: ExerciseClass = {
         id: 'finished',
         description: 'Finished',
-        times: [{ id: 'all', total: 1, completed: [0] }],
+        blocks: [{ id: 'all', total: 1, completed: [0] }],
       };
       const unfinished: ExerciseClass = {
         id: 'unfinished',
         description: 'Unfinished',
-        times: [{ id: 'all', total: 2, completed: [0] }],
+        blocks: [{ id: 'all', total: 2, completed: [0] }],
       };
       renderWithHealthStorage(<ExerciseClasses />, {
         classes: [finished, unfinished],

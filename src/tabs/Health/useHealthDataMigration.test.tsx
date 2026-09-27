@@ -5,7 +5,7 @@ import {
   LEGACY_DAILY_PATH,
   LEGACY_EXERCISES_PATH,
   LEGACY_GOALS_PATH,
-  createCompletedListUpdates,
+  createClassBlockUpdates,
   createItemMoveUpdates,
   useHealthDataMigration,
 } from './useHealthDataMigration';
@@ -149,39 +149,65 @@ describe('createItemMoveUpdates', () => {
   });
 });
 
-describe('createCompletedListUpdates', () => {
-  describe('when a class has counts of completed classes', () => {
-    it('replaces each count with a list of that many classes from the start', () => {
+describe('createClassBlockUpdates', () => {
+  describe('when a class stores its blocks under times', () => {
+    it('moves them to blocks, turning each count of completed classes into a list of that many classes from the start', () => {
       expect(
-        createCompletedListUpdates({
+        createClassBlockUpdates({
           pistol: {
-            times: [{ completed: 3 }, { completed: 1 }],
+            times: [
+              { id: 'week-1', total: 6, completed: 3 },
+              { id: 'week-2', total: 6, completed: 1 },
+            ],
           },
         }),
       ).toEqual({
-        'health/classes/pistol/times/0/completed': [0, 1, 2],
-        'health/classes/pistol/times/1/completed': [0],
+        'health/classes/pistol/blocks': [
+          { id: 'week-1', total: 6, completed: [0, 1, 2] },
+          { id: 'week-2', total: 6, completed: [0] },
+        ],
+        'health/classes/pistol/times': null,
       });
     });
 
     describe('and a count is zero', () => {
-      it('removes it', () => {
+      it('leaves completed off the block', () => {
         expect(
-          createCompletedListUpdates({
-            pistol: { times: [{ completed: 0 }] },
+          createClassBlockUpdates({
+            pistol: { times: [{ id: 'week-1', total: 6, completed: 0 }] },
           }),
-        ).toEqual({ 'health/classes/pistol/times/0/completed': null });
+        ).toEqual({
+          'health/classes/pistol/blocks': [{ id: 'week-1', total: 6 }],
+          'health/classes/pistol/times': null,
+        });
+      });
+    });
+
+    describe('and the completed classes are already a list', () => {
+      it('moves the list as it is', () => {
+        expect(
+          createClassBlockUpdates({
+            pistol: {
+              times: [
+                { id: 'week-1', total: 6, completed: [0, 2] },
+                { id: 'week-2', total: 6 },
+              ],
+            },
+          }),
+        ).toEqual({
+          'health/classes/pistol/blocks': [
+            { id: 'week-1', total: 6, completed: [0, 2] },
+            { id: 'week-2', total: 6 },
+          ],
+          'health/classes/pistol/times': null,
+        });
       });
     });
   });
 
-  describe('when a class already has lists of completed classes', () => {
+  describe('when a class stores its blocks under blocks', () => {
     it('has nothing to write', () => {
-      expect(
-        createCompletedListUpdates({
-          pistol: { times: [{ completed: [0, 2] }, {}] },
-        }),
-      ).toEqual({});
+      expect(createClassBlockUpdates({ pistol: {} })).toEqual({});
     });
   });
 });

@@ -22,7 +22,7 @@ export function ExerciseClasses() {
           className={isClassDone(exerciseClass) ? 'done' : ''}
         >
           <div className="description">{exerciseClass.description}</div>
-          {exerciseClass.times.length === 1 ? (
+          {exerciseClass.blocks.length === 1 ? (
             <SetClass exerciseClass={exerciseClass} />
           ) : (
             <WeeklyClass exerciseClass={exerciseClass} />
@@ -37,18 +37,18 @@ function SetClass({ exerciseClass }: { exerciseClass: ExerciseClass }) {
   return (
     <Sessions
       exerciseClass={exerciseClass}
-      weekIndex={0}
+      blockIndex={0}
       getSessionName={(index) => `Class ${index + 1}`}
     />
   );
 }
 
 function WeeklyClass({ exerciseClass }: { exerciseClass: ExerciseClass }) {
-  return exerciseClass.times.map((week, weekIndex) => (
+  return exerciseClass.blocks.map((week, weekIndex) => (
     <Sessions
       key={week.id}
       exerciseClass={exerciseClass}
-      weekIndex={weekIndex}
+      blockIndex={weekIndex}
       getSessionName={(index) => `Week ${weekIndex + 1}, class ${index + 1}`}
     />
   ));
@@ -56,18 +56,22 @@ function WeeklyClass({ exerciseClass }: { exerciseClass: ExerciseClass }) {
 
 type SessionsProps = {
   exerciseClass: ExerciseClass;
-  weekIndex: number;
+  blockIndex: number;
   getSessionName: (index: number) => string;
 };
 
-function Sessions({ exerciseClass, weekIndex, getSessionName }: SessionsProps) {
+function Sessions({
+  exerciseClass,
+  blockIndex,
+  getSessionName,
+}: SessionsProps) {
   const { updateClass } = useHealthStorage();
-  const week = exerciseClass.times[weekIndex];
-  const completed = week.completed ?? [];
+  const block = exerciseClass.blocks[blockIndex];
+  const completed = block.completed ?? [];
 
   return (
     <div className="completions">
-      {Array.from({ length: week.total }, (_, index) => (
+      {Array.from({ length: block.total }, (_, index) => (
         <div className="tooltip-container" key={index}>
           <div className="tooltip-anchor">
             <EmojiCheckbox
@@ -77,9 +81,9 @@ function Sessions({ exerciseClass, weekIndex, getSessionName }: SessionsProps) {
               onChange={() =>
                 updateClass({
                   ...exerciseClass,
-                  times: exerciseClass.times.with(
-                    weekIndex,
-                    toggleSession(week, index),
+                  blocks: exerciseClass.blocks.with(
+                    blockIndex,
+                    toggleSession(block, index),
                   ),
                 })
               }
@@ -92,18 +96,18 @@ function Sessions({ exerciseClass, weekIndex, getSessionName }: SessionsProps) {
   );
 }
 
-function toggleSession(week: ClassBlock, index: number): ClassBlock {
-  const completed = week.completed ?? [];
+function toggleSession(block: ClassBlock, index: number): ClassBlock {
+  const completed = block.completed ?? [];
   return {
-    ...week,
+    ...block,
     completed: completed.includes(index)
       ? completed.filter((session) => session !== index)
       : [...completed, index].toSorted((a, b) => a - b),
   };
 }
 
-function isClassDone({ times }: ExerciseClass) {
-  return times.every(
+function isClassDone({ blocks }: ExerciseClass) {
+  return blocks.every(
     ({ total, completed }) => (completed?.length ?? 0) === total,
   );
 }
