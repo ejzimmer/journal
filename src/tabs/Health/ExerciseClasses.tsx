@@ -1,11 +1,11 @@
 import { useMemo } from 'react';
-import { EmojiCheckbox } from '../../shared/controls/EmojiCheckbox';
 import { ExerciseClass } from '../../shared/types';
 import { useHealthStorage } from './HealthStorageContext';
+import { Sessions } from './Sessions';
 import './ExerciseClasses.css';
 
 export function ExerciseClasses() {
-  const { classes, updateClass } = useHealthStorage();
+  const { classes } = useHealthStorage();
   const sortedClasses = useMemo(
     () =>
       classes.toSorted(
@@ -22,42 +22,38 @@ export function ExerciseClasses() {
           className={isClassDone(exerciseClass) ? 'done' : ''}
         >
           <div className="description">{exerciseClass.description}</div>
-          {exerciseClass.blocks.map((block, blockIndex) => (
-            <div className="completions" key={block.id}>
-              {Array.from({ length: block.total }, (_, index) => {
-                const completed = block.completed ?? [];
-                const isChecked = index < completed.length;
-
-                return (
-                  <div className="tooltip-container" key={index}>
-                    <div className="tooltip-anchor">
-                      <EmojiCheckbox
-                        label={block.id + index}
-                        emoji="✅"
-                        isChecked={isChecked}
-                        onChange={() =>
-                          updateClass({
-                            ...exerciseClass,
-                            blocks: exerciseClass.blocks.with(blockIndex, {
-                              ...block,
-                              completed: isChecked
-                                ? completed.slice(0, -1)
-                                : [...completed, completed.length],
-                            }),
-                          })
-                        }
-                      />
-                    </div>
-                    {isChecked && <div className="tooltip">{index + 1}</div>}
-                  </div>
-                );
-              })}
-            </div>
-          ))}
+          {exerciseClass.blocks.length === 1 ? (
+            <SetClass exerciseClass={exerciseClass} />
+          ) : (
+            <WeeklyClass exerciseClass={exerciseClass} />
+          )}
         </li>
       ))}
     </ul>
   );
+}
+
+type ClassProps = { exerciseClass: ExerciseClass };
+
+function SetClass({ exerciseClass }: ClassProps) {
+  return (
+    <Sessions
+      exerciseClass={exerciseClass}
+      blockIndex={0}
+      getSessionName={(index) => `Class ${index + 1}`}
+    />
+  );
+}
+
+function WeeklyClass({ exerciseClass }: ClassProps) {
+  return exerciseClass.blocks.map((week, weekIndex) => (
+    <Sessions
+      key={week.id}
+      exerciseClass={exerciseClass}
+      blockIndex={weekIndex}
+      getSessionName={(index) => `Week ${weekIndex + 1}, class ${index + 1}`}
+    />
+  ));
 }
 
 function isClassDone({ blocks }: ExerciseClass) {
