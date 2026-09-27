@@ -1,7 +1,7 @@
 import { renderHook } from '@testing-library/react';
 import { ContextType } from '../../shared/FirebaseContext';
 import { StorageContextWrapper } from '../../shared/storageContextTestUtils';
-import { CLASSES_PATH, DAILY_PATH, EXERCISES_PATH } from '../../shared/types';
+import { DAILY_PATH, EXERCISES_PATH } from '../../shared/types';
 import {
   HealthStorageProvider,
   useHealthStorage,
@@ -94,32 +94,6 @@ describe('HealthStorageContext', () => {
         `${EXERCISES_PATH}/squat/updates`,
         update,
       );
-    });
-  });
-
-  describe('exercise classes', () => {
-    describe('when a class still stores its blocks under times', () => {
-      it('lists only the classes stored under blocks', () => {
-        const wheel = {
-          id: 'wheel',
-          description: 'Wheel',
-          blocks: [{ id: 'all', total: 30 }],
-        };
-        const health = createHealthStorage({
-          useValue: storeValues({
-            [CLASSES_PATH]: {
-              wheel,
-              pistol: {
-                id: 'pistol',
-                description: 'Pistol squat',
-                times: [{ id: 'week-1', total: 6, completed: 2 }],
-              },
-            },
-          }),
-        });
-
-        expect(health.classes).toEqual([wheel]);
-      });
     });
   });
 

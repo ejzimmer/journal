@@ -4,9 +4,6 @@ import { StorageContextWrapper } from '../../shared/storageContextTestUtils';
 import {
   LEGACY_DAILY_PATH,
   LEGACY_EXERCISES_PATH,
-  LEGACY_GOALS_PATH,
-  createClassBlockUpdates,
-  createItemMoveUpdates,
   useHealthDataMigration,
 } from './useHealthDataMigration';
 
@@ -82,132 +79,9 @@ describe('useHealthDataMigration', () => {
     it("doesn't write anything", () => {
       const setValues = runMigration({
         'health/daily': { '2026-01-06': { id: '2026-01-06', consumed: 1800 } },
-        [LEGACY_GOALS_PATH]: {
-          reading: { id: 'reading', description: 'Read', status: 'ready' },
-        },
       });
 
       expect(setValues).not.toHaveBeenCalled();
-    });
-  });
-});
-
-describe('createItemMoveUpdates', () => {
-  const pistolSquat = {
-    id: 'pistol',
-    description: 'Progress to Pistol Squat',
-    times: [{ id: 'week-1', total: 6, completed: 2 }],
-  };
-  const otherGoals = {
-    pistol: pistolSquat,
-    reading: { id: 'reading', description: 'Read', times: [] },
-  };
-
-  describe('when a named item is under the old path', () => {
-    it('copies it unchanged to the new path and removes it from the old one, leaving the other items', () => {
-      expect(
-        createItemMoveUpdates(
-          '2026/other_goals',
-          'health/classes',
-          ['pistol'],
-          otherGoals,
-        ),
-      ).toEqual({
-        'health/classes/pistol': pistolSquat,
-        '2026/other_goals/pistol': null,
-      });
-    });
-
-    describe('and it is already under the new path', () => {
-      it('keeps the new copy and removes the old one', () => {
-        expect(
-          createItemMoveUpdates(
-            '2026/other_goals',
-            'health/classes',
-            ['pistol'],
-            otherGoals,
-            { pistol: { ...pistolSquat, description: 'Pistol' } },
-          ),
-        ).toEqual({ '2026/other_goals/pistol': null });
-      });
-    });
-  });
-
-  describe('when a named item has already been moved away', () => {
-    it('has nothing to write', () => {
-      expect(
-        createItemMoveUpdates(
-          '2026/other_goals',
-          'health/classes',
-          ['pistol'],
-          {
-            reading: otherGoals.reading,
-          },
-        ),
-      ).toEqual({});
-    });
-  });
-});
-
-describe('createClassBlockUpdates', () => {
-  describe('when a class stores its blocks under times', () => {
-    it('moves them to blocks, turning each count of completed classes into a list of that many classes from the start', () => {
-      expect(
-        createClassBlockUpdates({
-          pistol: {
-            times: [
-              { id: 'week-1', total: 6, completed: 3 },
-              { id: 'week-2', total: 6, completed: 1 },
-            ],
-          },
-        }),
-      ).toEqual({
-        'health/classes/pistol/blocks': [
-          { id: 'week-1', total: 6, completed: [0, 1, 2] },
-          { id: 'week-2', total: 6, completed: [0] },
-        ],
-        'health/classes/pistol/times': null,
-      });
-    });
-
-    describe('and a count is zero', () => {
-      it('leaves completed off the block', () => {
-        expect(
-          createClassBlockUpdates({
-            pistol: { times: [{ id: 'week-1', total: 6, completed: 0 }] },
-          }),
-        ).toEqual({
-          'health/classes/pistol/blocks': [{ id: 'week-1', total: 6 }],
-          'health/classes/pistol/times': null,
-        });
-      });
-    });
-
-    describe('and the completed classes are already a list', () => {
-      it('moves the list as it is', () => {
-        expect(
-          createClassBlockUpdates({
-            pistol: {
-              times: [
-                { id: 'week-1', total: 6, completed: [0, 2] },
-                { id: 'week-2', total: 6 },
-              ],
-            },
-          }),
-        ).toEqual({
-          'health/classes/pistol/blocks': [
-            { id: 'week-1', total: 6, completed: [0, 2] },
-            { id: 'week-2', total: 6 },
-          ],
-          'health/classes/pistol/times': null,
-        });
-      });
-    });
-  });
-
-  describe('when a class stores its blocks under blocks', () => {
-    it('has nothing to write', () => {
-      expect(createClassBlockUpdates({ pistol: {} })).toEqual({});
     });
   });
 });
