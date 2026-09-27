@@ -74,14 +74,32 @@ describe('AdventureStorageContext', () => {
       });
     });
 
-    it('saves changes to an adventure', () => {
-      const updateItem = jest.fn();
-      const storage = createAdventureStorage({ updateItem });
-      const changed = { ...parkrun, description: 'Westerfolds parkrun' };
+    describe('updating an adventure', () => {
+      it('saves the changes', () => {
+        const updateItem = jest.fn();
+        const storage = createAdventureStorage({ updateItem });
+        const changed = { ...parkrun, description: 'Westerfolds parkrun' };
 
-      storage.updateAdventure(changed);
+        storage.updateAdventure(changed);
 
-      expect(updateItem).toHaveBeenCalledWith(ADVENTURES_PATH, changed);
+        expect(updateItem).toHaveBeenCalledWith(ADVENTURES_PATH, changed);
+      });
+
+      describe('when the planned date has been cleared', () => {
+        it('saves the adventure without a planned date', () => {
+          const updateItem = jest.fn();
+          const storage = createAdventureStorage({ updateItem });
+
+          storage.updateAdventure({ ...parkrun, plannedDate: undefined });
+
+          expect(updateItem.mock.calls[0][1]).toStrictEqual({
+            id: 'parkrun',
+            description: 'Plenty Gorge parkrun',
+            modeId: 'running',
+            isDone: false,
+          });
+        });
+      });
     });
 
     it('deletes an adventure', () => {
@@ -91,60 +109,6 @@ describe('AdventureStorageContext', () => {
       storage.deleteAdventure(parkrun);
 
       expect(deleteItem).toHaveBeenCalledWith(ADVENTURES_PATH, parkrun);
-    });
-
-    describe('planned date', () => {
-      it('sets the planned date', () => {
-        const setValue = jest.fn();
-        const storage = createAdventureStorage({ setValue });
-
-        storage.setPlannedDate(parkrun, '2026-10-10');
-
-        expect(setValue).toHaveBeenCalledWith(
-          `${ADVENTURES_PATH}/parkrun/plannedDate`,
-          '2026-10-10',
-        );
-      });
-
-      describe('when no date is given', () => {
-        it('clears the planned date', () => {
-          const setValue = jest.fn();
-          const storage = createAdventureStorage({ setValue });
-
-          storage.setPlannedDate(parkrun);
-
-          expect(setValue).toHaveBeenCalledWith(
-            `${ADVENTURES_PATH}/parkrun/plannedDate`,
-            null,
-          );
-        });
-      });
-    });
-
-    describe('status', () => {
-      it('marks an adventure done', () => {
-        const setValue = jest.fn();
-        const storage = createAdventureStorage({ setValue });
-
-        storage.markDone(parkrun);
-
-        expect(setValue).toHaveBeenCalledWith(
-          `${ADVENTURES_PATH}/parkrun/isDone`,
-          true,
-        );
-      });
-
-      it('marks an adventure not done', () => {
-        const setValue = jest.fn();
-        const storage = createAdventureStorage({ setValue });
-
-        storage.markNotDone({ ...parkrun, isDone: true });
-
-        expect(setValue).toHaveBeenCalledWith(
-          `${ADVENTURES_PATH}/parkrun/isDone`,
-          false,
-        );
-      });
     });
   });
 

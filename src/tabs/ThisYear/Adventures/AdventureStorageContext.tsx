@@ -14,9 +14,6 @@ export type AdventureStorageContextType = {
 
   addAdventure: (adventure: Pick<Adventure, 'description' | 'modeId'>) => void;
   updateAdventure: (adventure: Adventure) => void;
-  setPlannedDate: (adventure: Adventure, date?: string) => void;
-  markDone: (adventure: Adventure) => void;
-  markNotDone: (adventure: Adventure) => void;
   deleteAdventure: (adventure: Adventure) => void;
 
   addMode: (mode: Omit<AdventureMode, 'id'>) => string | null;
@@ -26,16 +23,15 @@ export const AdventureStorageContext = createContext<
   AdventureStorageContextType | undefined
 >(undefined);
 
-const getAdventurePath = (adventure: Adventure) =>
-  `${ADVENTURES_PATH}/${adventure.id}`;
+const removeClearedPlannedDate = ({ plannedDate, ...adventure }: Adventure) =>
+  plannedDate ? { ...adventure, plannedDate } : adventure;
 
 export function AdventureStorageProvider({
   children,
 }: {
   children: ReactNode;
 }) {
-  const { addItem, updateItem, deleteItem, setValue, useValue } =
-    useStorageContext();
+  const { addItem, updateItem, deleteItem, useValue } = useStorageContext();
 
   const { value: storedAdventures, loading: adventuresLoading } =
     useValue<Record<string, Adventure>>(ADVENTURES_PATH);
@@ -61,13 +57,10 @@ export function AdventureStorageProvider({
       });
     },
     updateAdventure: (adventure) =>
-      updateItem<Adventure>(ADVENTURES_PATH, adventure),
-    setPlannedDate: (adventure, date) =>
-      setValue(`${getAdventurePath(adventure)}/plannedDate`, date ?? null),
-    markDone: (adventure) =>
-      setValue(`${getAdventurePath(adventure)}/isDone`, true),
-    markNotDone: (adventure) =>
-      setValue(`${getAdventurePath(adventure)}/isDone`, false),
+      updateItem<Adventure>(
+        ADVENTURES_PATH,
+        removeClearedPlannedDate(adventure),
+      ),
     deleteAdventure: (adventure) =>
       deleteItem<Adventure>(ADVENTURES_PATH, adventure),
 
