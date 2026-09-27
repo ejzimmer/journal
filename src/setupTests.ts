@@ -28,7 +28,11 @@ HTMLDialogElement.prototype.showModal = function mock(this: HTMLDialogElement) {
   this.open = true;
 };
 HTMLDialogElement.prototype.close = function mock(this: HTMLDialogElement) {
+  if (!this.open) {
+    return;
+  }
   this.open = false;
+  this.dispatchEvent(new Event('close'));
 };
 
 HTMLElement.prototype.hidePopover = function mock(this: HTMLElement) {

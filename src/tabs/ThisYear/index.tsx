@@ -1,3 +1,4 @@
+import { Adventures } from './Adventures';
 import { OtherGoals } from './OtherGoals';
 import { StationRunning } from './StationRunning/StationRunning';
 import { YarnTracking } from './YarnTracking';
@@ -8,6 +9,7 @@ export function ThisYear() {
       <YarnTracking />
       <StationRunning />
       <OtherGoals />
+      <Adventures />
     </div>
   );
 }

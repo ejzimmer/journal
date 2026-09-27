@@ -1,0 +1,127 @@
+dialog.modal:has(.add-adventure-form) {
+  width: 520px;
+  padding: 20px 28px 24px;
+  background: hsl(43 60% 96%);
+  border: 0;
+  border-radius: 6px;
+}
+
+.add-adventure-form {
+  display: grid;
+  gap: 24px;
+  font-size: 16px;
+
+  .text-input {
+    font-size: 16px;
+    padding: 10px 12px;
+    border: 1px solid var(--border-colour);
+    border-radius: 4px;
+    background: white;
+  }
+
+  .modes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .mode-tab {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 5px 12px;
+    font-size: 14px;
+    line-height: 1.4;
+    background: white;
+    border: 1px solid var(--border-colour);
+    border-top: 4px solid var(--mode-colour);
+    border-radius: 3px;
+    cursor: pointer;
+
+    input {
+      position: absolute;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    &:has(:checked) {
+      border-color: var(--mode-colour);
+      background: color-mix(in srgb, var(--mode-colour) 16%, white);
+    }
+
+    &:has(:focus-visible) {
+      outline: 2px solid black;
+      outline-offset: 2px;
+    }
+  }
+
+  .new-mode-tab {
+    padding: 8px 10px;
+    border: 1px dashed var(--border-colour);
+    color: var(--body-colour-mid);
+
+    &:has(:checked) {
+      border-color: var(--body-colour);
+      color: var(--body-colour);
+      background: white;
+    }
+  }
+
+  .new-mode {
+    display: grid;
+    gap: 16px;
+    animation: open-new-mode 0.28s cubic-bezier(0.2, 0.8, 0.3, 1);
+  }
+
+  .new-mode-look {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .swatches {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .swatch {
+    appearance: none;
+    width: 28px;
+    height: 28px;
+    margin: 0;
+    background: var(--swatch-colour);
+    border: 2px solid white;
+    border-radius: 3px;
+    box-shadow: 0 0 0 1px var(--border-colour);
+    cursor: pointer;
+
+    &:checked {
+      box-shadow: 0 0 0 3px var(--body-colour);
+    }
+  }
+
+  .footer {
+    display: flex;
+    justify-content: end;
+  }
+
+  .submit {
+    color: var(--success-colour);
+    opacity: 1;
+  }
+}
+
+@keyframes open-new-mode {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .add-adventure-form .new-mode {
+    animation: none;
+  }
+}

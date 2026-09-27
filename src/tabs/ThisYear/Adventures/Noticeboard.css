@@ -1,0 +1,71 @@
+.noticeboard {
+  position: relative;
+  min-height: 160px;
+  padding: 30px 20px 64px;
+  background-color: #b88a5a;
+  background-image:
+    radial-gradient(
+      circle at 20% 30%,
+      hsl(0 0% 100% / 0.1) 0 1px,
+      transparent 1.5px
+    ),
+    radial-gradient(
+      circle at 70% 60%,
+      hsl(0 0% 0% / 0.16) 0 1px,
+      transparent 1.6px
+    ),
+    radial-gradient(
+      circle at 40% 80%,
+      hsl(0 0% 0% / 0.1) 0 1.2px,
+      transparent 2px
+    ),
+    radial-gradient(
+      circle at 85% 15%,
+      hsl(0 0% 100% / 0.08) 0 1px,
+      transparent 1.8px
+    );
+  background-size:
+    7px 7px,
+    11px 9px,
+    13px 17px,
+    9px 13px;
+  border: 14px solid #5b3a21;
+  border-radius: 6px;
+  box-shadow:
+    inset 0 0 0 2px #3f2815,
+    inset 0 6px 18px hsl(0 0% 0% / 0.35),
+    0 8px 18px hsl(30 50% 20% / 0.25);
+
+  .add-adventure {
+    position: absolute;
+    right: 8px;
+    bottom: 2px;
+  }
+
+  .pushpin-button {
+    width: 64px;
+    height: 64px;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    background: none;
+
+    &:hover,
+    &:focus-visible {
+      background: none;
+    }
+
+    svg {
+      display: block;
+    }
+
+    .pushpin-shadow {
+      transition: transform 0.18s ease;
+    }
+
+    &:hover .pushpin-shadow,
+    &:focus-visible .pushpin-shadow {
+      transform: translate(2px, 2px);
+    }
+  }
+}
