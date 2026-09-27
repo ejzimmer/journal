@@ -353,11 +353,10 @@ const classes: Record<string, ExerciseClass> = {
   'class-pistol': {
     id: 'class-pistol',
     description: 'Progress to Pistol Squat',
-    times: Array.from({ length: 8 }, (_, week) => ({
-      id: `week-${week + 1}`,
-      total: 6,
-      completed: week < 2 ? [0, 1, 2, 3, 4, 5] : week === 2 ? [0, 1, 2] : [],
-    })),
+    times: [
+      { id: 'week-1', total: 6, completed: [0, 1, 2, 3, 4, 5] },
+      { id: 'week-2', total: 6, completed: [0, 1, 2] },
+    ],
   },
 };
 
