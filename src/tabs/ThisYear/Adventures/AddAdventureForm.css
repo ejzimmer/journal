@@ -61,7 +61,7 @@ dialog.modal:has(.add-adventure-form) {
   .new-mode {
     display: flex;
     flex-direction: column;
-    gap: inherit;
+    gap: 16px;
     animation: open-new-mode 0.28s cubic-bezier(0.2, 0.8, 0.3, 1);
   }
 
