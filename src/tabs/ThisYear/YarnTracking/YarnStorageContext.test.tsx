@@ -3,7 +3,7 @@ import { renderHook } from '@testing-library/react';
 import { StorageContextWrapper } from '../../../shared/storageContextTestUtils';
 import {
   useYarnStorage,
-  useYarnYears,
+  useYarnStorageContext,
   YarnStorageProvider,
 } from './YarnStorageContext';
 import { StoredYarn, StoredYarnByYear } from './types';
@@ -59,7 +59,9 @@ describe('YarnStorageProvider', () => {
 
   describe('years', () => {
     const renderYears = (storedYarnByYear?: StoredYarnByYear) =>
-      renderWithYarnProvider(useYarnYears, { yarn: storedYarnByYear });
+      renderWithYarnProvider(() => useYarnStorageContext().years, {
+        yarn: storedYarnByYear,
+      });
 
     describe('when there is no yarn yet', () => {
       it('has just this year', () => {

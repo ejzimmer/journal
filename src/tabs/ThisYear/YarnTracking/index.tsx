@@ -3,12 +3,15 @@ import { getThisYear } from '../../../shared/dates';
 import { YarnTrackingForm } from './Form';
 import { YarnBalance } from './YarnBalance';
 import { YarnState } from './YarnState';
-import { YarnStorageProvider, useYarnYears } from './YarnStorageContext';
+import {
+  YarnStorageProvider,
+  useYarnStorageContext,
+} from './YarnStorageContext';
 import { YearTabs } from './YearTabs';
 
 function YarnYears() {
   const thisYear = getThisYear();
-  const years = useYarnYears();
+  const { years } = useYarnStorageContext();
   const [selectedYear, setSelectedYear] = useState(thisYear);
 
   return (

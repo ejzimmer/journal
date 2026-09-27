@@ -129,16 +129,12 @@ export function YarnStorageProvider({ children }: { children: ReactNode }) {
   );
 }
 
-function useYarnStorageContext(): YarnStorageContextType {
+export function useYarnStorageContext(): YarnStorageContextType {
   const context = useContext(YarnStorageContext);
   if (!context) {
     throw new Error('missing YarnStorageContext provider');
   }
   return context;
-}
-
-export function useYarnYears(): number[] {
-  return useYarnStorageContext().years;
 }
 
 export function useYarnStorage(year: number): YarnYearStorage {
