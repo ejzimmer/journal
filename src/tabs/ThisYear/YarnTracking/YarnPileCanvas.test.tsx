@@ -32,7 +32,13 @@ const BLEED = 8;
 
 function renderPile(balls: PlacedBall[]) {
   renderWithYarnStorage(
-    <YarnPileCanvas balls={balls} bowl={BOWL} width={200} height={100} />,
+    <YarnPileCanvas
+      balls={balls}
+      bowl={BOWL}
+      width={200}
+      height={100}
+      year={2026}
+    />,
     { getBalance: (yarnType) => (yarnType === 'cotton' ? 950 : 3191) },
   );
 }

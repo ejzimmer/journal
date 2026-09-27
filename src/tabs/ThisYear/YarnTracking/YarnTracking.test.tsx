@@ -28,7 +28,7 @@ describe('YarnTracking', () => {
 
   describe('when only this year has yarn', () => {
     it('shows this year without any tabs', () => {
-      renderYarnTracking({ '2028': { yarn: createYarn('2028-01', 400) } });
+      renderYarnTracking({ yarn: { '2028': createYarn('2028-01', 400) } });
 
       expect(screen.getByText('400g')).toBeInTheDocument();
       expect(screen.queryByRole('tablist')).not.toBeInTheDocument();
@@ -37,9 +37,11 @@ describe('YarnTracking', () => {
 
   describe('when earlier years have yarn', () => {
     const seed = {
-      '2026': { yarn: createYarn('2026-05', 1000) },
-      '2027': { yarn: createYarn('2027-05', 600) },
-      '2028': { yarn: createYarn('2028-01', 200) },
+      yarn: {
+        '2026': createYarn('2026-05', 1000),
+        '2027': createYarn('2027-05', 600),
+        '2028': createYarn('2028-01', 200),
+      },
     };
 
     it('lists the years newest first, starting with this year', () => {
@@ -91,7 +93,7 @@ describe('YarnTracking', () => {
 
   describe('when this year has no yarn yet but last year does', () => {
     it('still shows a tab for this year', () => {
-      renderYarnTracking({ '2027': { yarn: createYarn('2027-05', 600) } });
+      renderYarnTracking({ yarn: { '2027': createYarn('2027-05', 600) } });
 
       expect(screen.getAllByRole('tab').map((tab) => tab.textContent)).toEqual([
         '2028',

@@ -15,7 +15,7 @@ describe('YarnState', () => {
   describe('the pile of yarn', () => {
     describe('a ball in the stash', () => {
       it('is labelled with its yarn type and weight', () => {
-        renderWithYarnStorage(<YarnState />, {
+        renderWithYarnStorage(<YarnState year={2026} />, {
           pile: [
             { id: 0, yarnType: 'wool', grams: 200 },
             { id: 1, yarnType: 'wool', grams: 100 },
@@ -31,7 +31,7 @@ describe('YarnState', () => {
       });
 
       it('is described by the balance of its whole yarn type', () => {
-        renderWithYarnStorage(<YarnState />, {
+        renderWithYarnStorage(<YarnState year={2026} />, {
           pile: [
             { id: 0, yarnType: 'wool', grams: 200 },
             { id: 1, yarnType: 'wool', grams: 100 },
@@ -50,7 +50,7 @@ describe('YarnState', () => {
 
     describe('a ball that has been used', () => {
       it('is described by its size and the month it was used', () => {
-        renderWithYarnStorage(<YarnState />, {
+        renderWithYarnStorage(<YarnState year={2026} />, {
           pile: [
             {
               id: 0,

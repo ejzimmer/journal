@@ -117,7 +117,7 @@ function placeBowlScene(
   };
 }
 
-export function YarnPile({ balls }: { balls: PileBall[] }) {
+export function YarnPile({ balls, year }: { balls: PileBall[]; year: number }) {
   const containerRef = useRef<HTMLDivElement>(null);
   const width = useElementWidth(containerRef);
   const [world] = useState(() =>
@@ -138,6 +138,7 @@ export function YarnPile({ balls }: { balls: PileBall[] }) {
         bowl={scene.bowl}
         width={width}
         height={scene.height}
+        year={year}
       />
     </div>
   );

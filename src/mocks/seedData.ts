@@ -381,5 +381,5 @@ export const seedData = {
   },
   [PROJECTS_KEY]: projects,
   [HEALTH_PATH]: { exercises, classes },
-  '2026': { yarn },
+  yarn: { '2026': yarn },
 };

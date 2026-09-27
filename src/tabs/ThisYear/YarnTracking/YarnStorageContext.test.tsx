@@ -1,26 +1,43 @@
 import { ReactNode } from 'react';
 import { renderHook } from '@testing-library/react';
 import { StorageContextWrapper } from '../../../shared/storageContextTestUtils';
-import { useYarnStorage, YarnStorageProvider } from './YarnStorageContext';
-import { StoredYarn } from './types';
+import {
+  useYarnStorage,
+  useYarnYears,
+  YarnStorageProvider,
+} from './YarnStorageContext';
+import { StoredYarn, StoredYarnByYear } from './types';
 
-const renderYarnStorage = (
-  storedYarn: StoredYarn,
-  setValue = jest.fn(),
-  useValue = jest.fn().mockReturnValue({ value: storedYarn }),
+const createUseValue = (values: Record<string, unknown>) => (key: string) => ({
+  value: values[key],
+  loading: false,
+});
+
+const renderWithYarnProvider = <T,>(
+  hook: () => T,
+  values: Record<string, unknown>,
+  { setValue = jest.fn(), setValues = jest.fn() } = {},
 ) =>
-  renderHook(() => useYarnStorage(), {
+  renderHook(hook, {
     wrapper: ({ children }: { children: ReactNode }) => (
       <StorageContextWrapper
         value={{
-          useValue,
+          useValue: createUseValue(values) as never,
           setValue,
+          setValues,
         }}
       >
-        <YarnStorageProvider year={2026}>{children}</YarnStorageProvider>
+        <YarnStorageProvider>{children}</YarnStorageProvider>
       </StorageContextWrapper>
     ),
   });
+
+const renderYarnStorage = (storedYarn: StoredYarn, setValue = jest.fn()) =>
+  renderWithYarnProvider(
+    () => useYarnStorage(2026),
+    { yarn: { '2026': storedYarn } },
+    { setValue },
+  );
 
 const getBalances = (storedYarn: StoredYarn) =>
   renderYarnStorage(storedYarn).result.current.yarnByType?.map(
@@ -31,6 +48,71 @@ const getBalances = (storedYarn: StoredYarn) =>
   );
 
 describe('YarnStorageProvider', () => {
+  beforeEach(() => {
+    jest.useFakeTimers();
+    jest.setSystemTime(new Date('2026-09-25'));
+  });
+
+  afterEach(() => {
+    jest.useRealTimers();
+  });
+
+  describe('years', () => {
+    const renderYears = (storedYarnByYear?: StoredYarnByYear) =>
+      renderWithYarnProvider(useYarnYears, { yarn: storedYarnByYear });
+
+    describe('when there is no yarn yet', () => {
+      it('has just this year', () => {
+        expect(renderYears().result.current).toEqual([2026]);
+      });
+    });
+
+    describe('when earlier years have yarn', () => {
+      it('lists this year and each year with yarn, newest first', () => {
+        const wool = { wool: { id: 'wool' as const, history: {} } };
+
+        expect(
+          renderYears({ '2024': wool, '2025': wool }).result.current,
+        ).toEqual([2026, 2025, 2024]);
+      });
+    });
+  });
+
+  describe('when the yarn is still stored under 2026/yarn', () => {
+    const legacyYarn = {
+      wool: { id: 'wool', history: { '2026-01': 300 } },
+    };
+
+    it('moves it to yarn/2026', () => {
+      const setValues = jest.fn();
+
+      renderWithYarnProvider(
+        () => useYarnStorage(2026),
+        { '2026/yarn': legacyYarn },
+        { setValues },
+      );
+
+      expect(setValues).toHaveBeenCalledWith({
+        'yarn/2026': legacyYarn,
+        '2026/yarn': null,
+      });
+    });
+
+    describe('and yarn/2026 already has yarn', () => {
+      it('leaves both where they are', () => {
+        const setValues = jest.fn();
+
+        renderWithYarnProvider(
+          () => useYarnStorage(2026),
+          { '2026/yarn': legacyYarn, yarn: { '2026': legacyYarn } },
+          { setValues },
+        );
+
+        expect(setValues).not.toHaveBeenCalled();
+      });
+    });
+  });
+
   describe('yarnByType', () => {
     it('gives each yarn type its balances as year-months, oldest first', () => {
       expect(
@@ -60,16 +142,6 @@ describe('YarnStorageProvider', () => {
         { id: 2, yarnType: 'cotton', grams: 100 },
         { id: 1, yarnType: 'wool', grams: 200 },
       ]);
-    });
-  });
-
-  describe('the year', () => {
-    it('reads the yarn stored under that year', () => {
-      const useValue = jest.fn().mockReturnValue({ value: {} });
-
-      renderYarnStorage({}, jest.fn(), useValue);
-
-      expect(useValue).toHaveBeenCalledWith('2026/yarn');
     });
   });
 
@@ -112,15 +184,6 @@ describe('YarnStorageProvider', () => {
   });
 
   describe('saving changes', () => {
-    beforeEach(() => {
-      jest.useFakeTimers();
-      jest.setSystemTime(new Date('2026-09-25'));
-    });
-
-    afterEach(() => {
-      jest.useRealTimers();
-    });
-
     const renderWoolStorage = (setValue: jest.Mock) =>
       renderYarnStorage(
         {
@@ -138,7 +201,7 @@ describe('YarnStorageProvider', () => {
         result.current.addYarn('wool', 100);
 
         expect(setValue).toHaveBeenCalledWith(
-          '2026/yarn/wool/history/2026-09',
+          'yarn/2026/wool/history/2026-09',
           3191,
         );
       });
@@ -151,7 +214,7 @@ describe('YarnStorageProvider', () => {
           result.current.addYarn('cotton', 50);
 
           expect(setValue).toHaveBeenCalledWith(
-            '2026/yarn/cotton/history/2026-09',
+            'yarn/2026/cotton/history/2026-09',
             50,
           );
         });
@@ -166,7 +229,7 @@ describe('YarnStorageProvider', () => {
         result.current.removeYarn('wool', 91);
 
         expect(setValue).toHaveBeenCalledWith(
-          '2026/yarn/wool/history/2026-09',
+          'yarn/2026/wool/history/2026-09',
           3000,
         );
       });
@@ -179,7 +242,7 @@ describe('YarnStorageProvider', () => {
           result.current.removeYarn('wool', 5000);
 
           expect(setValue).toHaveBeenCalledWith(
-            '2026/yarn/wool/history/2026-09',
+            'yarn/2026/wool/history/2026-09',
             0,
           );
         });

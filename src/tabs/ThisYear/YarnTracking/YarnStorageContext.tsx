@@ -2,16 +2,19 @@ import { createContext, ReactNode, useContext, useMemo, useState } from 'react';
 import { useStorageContext } from '../../../shared/FirebaseContext';
 import {
   StoredYarn,
+  StoredYarnByYear,
   StoredYarnType,
+  YARN_PATH,
   YarnBall,
   YarnType,
   YarnTypeId,
   getYarnPath,
 } from './types';
-import { getThisMonth } from '../../../shared/dates';
+import { getThisMonth, getThisYear } from '../../../shared/dates';
 import { YarnStash } from './YarnStash';
+import { useYarnPathMigration } from './useYarnPathMigration';
 
-export type YarnStorageContextType = {
+export type YarnYearStorage = {
   yarnByType?: YarnType[];
   year: number;
   pile?: YarnBall[];
@@ -19,6 +22,11 @@ export type YarnStorageContextType = {
   getBalance: (yarnType: YarnTypeId) => number;
   addYarn: (yarnType: YarnTypeId, grams: number) => void;
   removeYarn: (yarnType: YarnTypeId, grams: number) => void;
+};
+
+export type YarnStorageContextType = {
+  years: number[];
+  getYarnYear: (year: number) => YarnYearStorage;
 };
 
 export const YarnStorageContext = createContext<
@@ -39,46 +47,80 @@ export const convertToYarnType = (
     .sort((a, b) => Temporal.PlainYearMonth.compare(a.month, b.month)),
 });
 
-type YarnStorageProviderProps = {
-  year: number;
-  children: ReactNode;
-};
+const listYearsNewestFirst = (
+  thisYear: number,
+  storedYarnByYear?: StoredYarnByYear,
+) =>
+  [
+    ...new Set([thisYear, ...Object.keys(storedYarnByYear ?? {}).map(Number)]),
+  ].sort((a, b) => b - a);
 
-export function YarnStorageProvider({
-  year,
-  children,
-}: YarnStorageProviderProps) {
+export function YarnStorageProvider({ children }: { children: ReactNode }) {
   const { useValue, setValue } = useStorageContext();
-  const path = getYarnPath(year);
-  const { value: storedYarn } = useValue<StoredYarn>(path);
-  const [stash] = useState(() => new YarnStash());
+  const { value: storedYarnByYear } = useValue<StoredYarnByYear>(YARN_PATH);
+  const [stashes] = useState(() => new Map<number, YarnStash>());
+  const thisYear = getThisYear();
+
+  useYarnPathMigration(storedYarnByYear);
 
   const value = useMemo(() => {
-    const yarnByType =
-      storedYarn &&
-      Object.values(storedYarn).map((storedYarnType) =>
-        convertToYarnType(storedYarnType, year),
-      );
+    const getStash = (year: number) => {
+      const stash = stashes.get(year) ?? new YarnStash();
+      stashes.set(year, stash);
+      return stash;
+    };
 
-    if (yarnByType) {
-      stash.applyBalances(yarnByType);
-    }
+    const createYarnYear = (
+      year: number,
+      storedYarn?: StoredYarn,
+    ): YarnYearStorage => {
+      const stash = getStash(year);
+      const yarnByType =
+        storedYarn &&
+        Object.values(storedYarn).map((storedYarnType) =>
+          convertToYarnType(storedYarnType, year),
+        );
 
-    const saveBalance = (yarnType: YarnTypeId, grams: number) =>
-      setValue(`${path}/${yarnType}/history/${getThisMonth()}`, grams);
+      if (yarnByType) {
+        stash.applyBalances(yarnByType);
+      }
+
+      const saveBalance = (yarnType: YarnTypeId, grams: number) =>
+        setValue(
+          `${getYarnPath(year)}/${yarnType}/history/${getThisMonth()}`,
+          grams,
+        );
+
+      return {
+        year,
+        yarnByType,
+        pile: yarnByType && [...stash.balls],
+        currentBalance: stash.getTotalBalance(),
+        getBalance: (yarnType: YarnTypeId) => stash.getBalance(yarnType),
+        addYarn: (yarnType: YarnTypeId, grams: number) =>
+          saveBalance(yarnType, stash.getBalance(yarnType) + grams),
+        removeYarn: (yarnType: YarnTypeId, grams: number) =>
+          saveBalance(
+            yarnType,
+            Math.max(0, stash.getBalance(yarnType) - grams),
+          ),
+      };
+    };
+
+    const years = listYearsNewestFirst(thisYear, storedYarnByYear);
+    const yarnYears = new Map(
+      years.map((year) => [
+        year,
+        createYarnYear(year, storedYarnByYear?.[year]),
+      ]),
+    );
 
     return {
-      year,
-      yarnByType,
-      pile: yarnByType && [...stash.balls],
-      currentBalance: stash.getTotalBalance(),
-      getBalance: (yarnType: YarnTypeId) => stash.getBalance(yarnType),
-      addYarn: (yarnType: YarnTypeId, grams: number) =>
-        saveBalance(yarnType, stash.getBalance(yarnType) + grams),
-      removeYarn: (yarnType: YarnTypeId, grams: number) =>
-        saveBalance(yarnType, Math.max(0, stash.getBalance(yarnType) - grams)),
+      years,
+      getYarnYear: (year: number) =>
+        yarnYears.get(year) ?? createYarnYear(year),
     };
-  }, [year, path, storedYarn, stash, setValue]);
+  }, [thisYear, storedYarnByYear, stashes, setValue]);
 
   return (
     <YarnStorageContext.Provider value={value}>
@@ -87,10 +129,18 @@ export function YarnStorageProvider({
   );
 }
 
-export function useYarnStorage(): YarnStorageContextType {
+function useYarnStorageContext(): YarnStorageContextType {
   const context = useContext(YarnStorageContext);
   if (!context) {
     throw new Error('missing YarnStorageContext provider');
   }
   return context;
+}
+
+export function useYarnYears(): number[] {
+  return useYarnStorageContext().years;
+}
+
+export function useYarnStorage(year: number): YarnYearStorage {
+  return useYarnStorageContext().getYarnYear(year);
 }

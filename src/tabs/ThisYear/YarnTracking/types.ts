@@ -1,6 +1,6 @@
-export const FIRST_YARN_YEAR = 2026;
+export const YARN_PATH = 'yarn';
 
-export const getYarnPath = (year: number) => `${year}/yarn`;
+export const getYarnPath = (year: number) => `${YARN_PATH}/${year}`;
 
 export const YARN_TYPE_IDS = [
   'wool',
@@ -14,6 +14,7 @@ export const isYarnTypeId = (value: string): value is YarnTypeId =>
   YARN_TYPE_IDS.some((id) => id === value);
 
 export type StoredYarn = Partial<Record<YarnTypeId, StoredYarnType>>;
+export type StoredYarnByYear = Record<string, StoredYarn>;
 export type StoredYarnType = {
   id: YarnTypeId;
   history: Record<string, number>;
