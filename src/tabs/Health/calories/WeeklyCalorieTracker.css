@@ -1,4 +1,9 @@
 .weekly-calories {
+  --week: #9adb6c;
+  --week-lowest: #3fae2a;
+  --week-highest: #ff9d42;
+  --baseline: #dfe6c4;
+
   display: grid;
   grid-template-columns: repeat(53, minmax(12px, 1fr));
   align-items: end;
@@ -7,7 +12,7 @@
   width: 100%;
   max-width: 100%;
   overflow-x: auto;
-  border-block-end: 2px solid var(--border-colour);
+  border-block-end: 2px solid var(--baseline);
   box-sizing: content-box;
 
   .week-container {
@@ -16,12 +21,9 @@
   }
 
   .week {
-    background: linear-gradient(90deg, hsl(283 96% 44%), hsl(283 96% 34%));
+    background: var(--week);
     border-top-left-radius: 4px;
     border-top-right-radius: 4px;
-    box-shadow:
-      inset 3px 0 hsl(0 100% 100% /0.3),
-      1px 1px 8px hsl(0 0% 0% /0.3);
     transform-origin: bottom;
 
     &:hover + .hovertext {
@@ -30,19 +32,11 @@
   }
 
   .week-highest {
-    background: linear-gradient(
-      90deg,
-      hsl(3.1 96.4% 43.9%),
-      hsl(3.1 96.5% 33.9%)
-    );
+    background: var(--week-highest);
   }
 
   .week-lowest {
-    background: linear-gradient(
-      90deg,
-      hsl(203.1 96.4% 43.9%),
-      hsl(203.1 96.5% 33.9%)
-    );
+    background: var(--week-lowest);
   }
 }
 

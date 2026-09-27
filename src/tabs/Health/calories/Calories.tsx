@@ -50,7 +50,7 @@ export function Calories() {
   };
 
   return (
-    <div>
+    <div className="calories">
       <div className="tracker-switch">
         <Switch
           options={['week', 'day']}
