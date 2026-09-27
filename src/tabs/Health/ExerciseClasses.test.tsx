@@ -6,43 +6,30 @@ import { ExerciseClasses } from './ExerciseClasses';
 
 describe('ExerciseClasses', () => {
   describe('a class that is a set number of classes', () => {
-    it('names each checkbox by its class number and ticks the completed ones', () => {
+    it('names each checkbox by its class number, ticks the completed ones, and lets any class be ticked', async () => {
+      const user = userEvent.setup();
       const wheel: ExerciseClass = {
         id: 'wheel',
         description: 'Wheel',
         times: [{ id: 'all', total: 5, completed: [0, 3] }],
       };
-      renderWithHealthStorage(<ExerciseClasses />, { classes: [wheel] });
+      const { storageContext } = renderWithHealthStorage(<ExerciseClasses />, {
+        classes: [wheel],
+      });
 
       expect(
         screen.getByRole('checkbox', { name: 'Wheel: Class 4' }),
       ).toBeChecked();
-      expect(
-        screen.getByRole('checkbox', { name: 'Wheel: Class 2' }),
-      ).not.toBeChecked();
-    });
+      const classThree = screen.getByRole('checkbox', {
+        name: 'Wheel: Class 3',
+      });
+      expect(classThree).not.toBeChecked();
 
-    describe('when a class out of order is ticked', () => {
-      it('adds just that class to the completed ones', async () => {
-        const user = userEvent.setup();
-        const wheel: ExerciseClass = {
-          id: 'wheel',
-          description: 'Wheel',
-          times: [{ id: 'all', total: 5, completed: [0, 3] }],
-        };
-        const { storageContext } = renderWithHealthStorage(
-          <ExerciseClasses />,
-          { classes: [wheel] },
-        );
+      await user.click(classThree);
 
-        await user.click(
-          screen.getByRole('checkbox', { name: 'Wheel: Class 3' }),
-        );
-
-        expect(storageContext.updateClass).toHaveBeenCalledWith({
-          ...wheel,
-          times: [{ id: 'all', total: 5, completed: [0, 2, 3] }],
-        });
+      expect(storageContext.updateClass).toHaveBeenCalledWith({
+        ...wheel,
+        times: [{ id: 'all', total: 5, completed: [0, 2, 3] }],
       });
     });
 
