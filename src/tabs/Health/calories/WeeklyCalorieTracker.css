@@ -1,8 +1,8 @@
 .weekly-calories {
-  --week: #9adb6c;
-  --week-lowest: #3fae2a;
-  --week-highest: #ff9d42;
-  --axis: #dfe6c4;
+  --week: hsl(95 61% 64%);
+  --week-lowest: hsl(110 61% 42%);
+  --week-highest: hsl(29 100% 63%);
+  --axis: hsl(72 40% 84%);
 
   display: grid;
   grid-template-columns: repeat(53, minmax(12px, 1fr));

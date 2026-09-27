@@ -1,9 +1,9 @@
 .calories {
-  --switch-background: #eef3dc;
-  --switch-knob: #ffc233;
-  --switch-knob-shadow: rgb(255 170 0 / 0.45);
-  --switch-icon: #7d8a5a;
-  --switch-icon-selected: #4a3a00;
+  --switch-background: hsl(73 49% 91%);
+  --switch-knob: hsl(42 100% 60%);
+  --switch-knob-shadow: hsl(40 100% 50% / 0.45);
+  --switch-icon: hsl(76 21% 45%);
+  --switch-icon-selected: hsl(47 100% 15%);
 }
 
 .tracker-switch {
