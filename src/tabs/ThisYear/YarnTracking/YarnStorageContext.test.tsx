@@ -1,5 +1,5 @@
 import { ReactNode } from 'react';
-import { renderHook } from '@testing-library/react';
+import { act, renderHook } from '@testing-library/react';
 import { StorageContextWrapper } from '../../../shared/storageContextTestUtils';
 import {
   useYarnStorage,
@@ -34,7 +34,7 @@ const renderWithYarnProvider = <T,>(
 
 const renderYarnStorage = (storedYarn: StoredYarn, setValue = jest.fn()) =>
   renderWithYarnProvider(
-    () => useYarnStorage(2026),
+    () => useYarnStorage(),
     { yarn: { '2026': storedYarn } },
     { setValue },
   );
@@ -80,6 +80,41 @@ describe('YarnStorageProvider', () => {
     });
   });
 
+  describe('the selected year', () => {
+    const storedYarnByYear = {
+      '2025': { wool: { id: 'wool', history: { '2025-03': 400 } } },
+      '2026': { wool: { id: 'wool', history: { '2026-03': 100 } } },
+    };
+
+    const renderSelectedYear = () =>
+      renderWithYarnProvider(
+        () => ({
+          context: useYarnStorageContext(),
+          storage: useYarnStorage(),
+        }),
+        { yarn: storedYarnByYear },
+      );
+
+    it('starts as this year', () => {
+      const { result } = renderSelectedYear();
+
+      expect(result.current.storage.currentBalance).toBe(100);
+    });
+
+    describe('when another year is selected', () => {
+      it('gives the yarn from that year', () => {
+        const { result } = renderSelectedYear();
+
+        act(() => result.current.context.selectYear(2025));
+
+        expect(result.current.storage).toMatchObject({
+          year: 2025,
+          currentBalance: 400,
+        });
+      });
+    });
+  });
+
   describe('when the yarn is still stored under 2026/yarn', () => {
     const legacyYarn = {
       wool: { id: 'wool', history: { '2026-01': 300 } },
@@ -89,7 +124,7 @@ describe('YarnStorageProvider', () => {
       const setValues = jest.fn();
 
       renderWithYarnProvider(
-        () => useYarnStorage(2026),
+        () => useYarnStorage(),
         { '2026/yarn': legacyYarn },
         { setValues },
       );
@@ -105,7 +140,7 @@ describe('YarnStorageProvider', () => {
         const setValues = jest.fn();
 
         renderWithYarnProvider(
-          () => useYarnStorage(2026),
+          () => useYarnStorage(),
           { '2026/yarn': legacyYarn, yarn: { '2026': legacyYarn } },
           { setValues },
         );

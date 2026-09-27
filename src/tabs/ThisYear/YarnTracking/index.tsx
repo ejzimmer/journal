@@ -1,5 +1,3 @@
-import { useState } from 'react';
-import { getThisYear } from '../../../shared/dates';
 import { YarnTrackingForm } from './Form';
 import { YarnBalance } from './YarnBalance';
 import { YarnState } from './YarnState';
@@ -10,15 +8,13 @@ import {
 import { YearTabs } from './YearTabs';
 
 function YarnYears() {
-  const thisYear = getThisYear();
-  const { years } = useYarnStorageContext();
-  const [selectedYear, setSelectedYear] = useState(thisYear);
+  const { years, thisYear, selectedYear, selectYear } = useYarnStorageContext();
 
   return (
     <YearTabs
       years={years}
       selectedYear={selectedYear}
-      onSelectYear={setSelectedYear}
+      onSelectYear={selectYear}
     >
       <div
         key={selectedYear}
@@ -30,7 +26,7 @@ function YarnYears() {
           gap: '24px',
         }}
       >
-        <YarnState year={selectedYear} />
+        <YarnState />
         <div
           style={{
             marginInline: 'auto',
@@ -39,7 +35,7 @@ function YarnYears() {
             gap: '16px',
           }}
         >
-          <YarnBalance year={selectedYear} />
+          <YarnBalance />
           {selectedYear === thisYear && <YarnTrackingForm />}
         </div>
       </div>

@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { useYarnStorage } from './YarnStorageContext';
-import { getThisYear } from '../../../shared/dates';
 import { isYarnTypeId, Operation, YARN_TYPE_IDS, YarnTypeId } from './types';
 import { YARN_COLOURS } from './utils';
 import { Switch } from '../../../shared/controls/Switch';
@@ -20,7 +19,7 @@ const YARN_COLOUR_PROPERTIES = Object.fromEntries(
 ) as React.CSSProperties;
 
 export function YarnTrackingForm() {
-  const { addYarn, removeYarn } = useYarnStorage(getThisYear());
+  const { addYarn, removeYarn } = useYarnStorage();
   const [operation, setOperation] = useState<Operation>('-');
   const [yarnType, setYarnType] = useState<YarnTypeId>(YARN_TYPE_IDS[0]);
 

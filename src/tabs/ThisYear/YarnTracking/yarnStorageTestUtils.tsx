@@ -22,6 +22,9 @@ export function renderWithYarnStorage(
   };
   const contextValue: YarnStorageContextType = {
     years: [storageContext.year],
+    thisYear: storageContext.year,
+    selectedYear: storageContext.year,
+    selectYear: jest.fn(),
     getYarnYear: () => storageContext,
   };
   const result = render(

@@ -3,24 +3,18 @@ import { YarnBall } from './types';
 import { useYarnStorage } from './YarnStorageContext';
 import { getBallDetails, getBallLabel } from './yarnBallText';
 
-export function YarnBallList({
-  balls,
-  year,
-}: {
-  balls: YarnBall[];
-  year: number;
-}) {
+export function YarnBallList({ balls }: { balls: YarnBall[] }) {
   return (
     <ul className="yarn-ball-list">
       {balls.map((ball) => (
-        <YarnBallListItem key={ball.id} ball={ball} year={year} />
+        <YarnBallListItem key={ball.id} ball={ball} />
       ))}
     </ul>
   );
 }
 
-function YarnBallListItem({ ball, year }: { ball: YarnBall; year: number }) {
-  const { getBalance } = useYarnStorage(year);
+function YarnBallListItem({ ball }: { ball: YarnBall }) {
+  const { getBalance } = useYarnStorage();
   const detailsId = useId();
 
   return (

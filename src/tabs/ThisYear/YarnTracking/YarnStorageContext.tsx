@@ -26,6 +26,9 @@ export type YarnYearStorage = {
 
 export type YarnStorageContextType = {
   years: number[];
+  thisYear: number;
+  selectedYear: number;
+  selectYear: (year: number) => void;
   getYarnYear: (year: number) => YarnYearStorage;
 };
 
@@ -60,10 +63,11 @@ export function YarnStorageProvider({ children }: { children: ReactNode }) {
   const { value: storedYarnByYear } = useValue<StoredYarnByYear>(YARN_PATH);
   const [stashes] = useState(() => new Map<number, YarnStash>());
   const thisYear = getThisYear();
+  const [selectedYear, selectYear] = useState(thisYear);
 
   useYarnPathMigration(storedYarnByYear);
 
-  const value = useMemo(() => {
+  const yarnYears = useMemo(() => {
     const getStash = (year: number) => {
       const stash = stashes.get(year) ?? new YarnStash();
       stashes.set(year, stash);
@@ -122,6 +126,11 @@ export function YarnStorageProvider({ children }: { children: ReactNode }) {
     };
   }, [thisYear, storedYarnByYear, stashes, setValue]);
 
+  const value = useMemo(
+    () => ({ ...yarnYears, thisYear, selectedYear, selectYear }),
+    [yarnYears, thisYear, selectedYear],
+  );
+
   return (
     <YarnStorageContext.Provider value={value}>
       {children}
@@ -137,6 +146,7 @@ export function useYarnStorageContext(): YarnStorageContextType {
   return context;
 }
 
-export function useYarnStorage(year: number): YarnYearStorage {
-  return useYarnStorageContext().getYarnYear(year);
+export function useYarnStorage(): YarnYearStorage {
+  const { getYarnYear, selectedYear } = useYarnStorageContext();
+  return getYarnYear(selectedYear);
 }

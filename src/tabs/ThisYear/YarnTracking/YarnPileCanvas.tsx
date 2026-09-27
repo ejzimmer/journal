@@ -14,7 +14,6 @@ type YarnPileCanvasProps = {
   bowl: Bowl;
   width: number;
   height: number;
-  year: number;
 };
 
 export function YarnPileCanvas({
@@ -22,9 +21,8 @@ export function YarnPileCanvas({
   bowl,
   width,
   height,
-  year,
 }: YarnPileCanvasProps) {
-  const { getBalance } = useYarnStorage(year);
+  const { getBalance } = useYarnStorage();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [hoveredBall, setHoveredBall] = useState<PlacedBall>();
   const pixelRatio = window.devicePixelRatio;

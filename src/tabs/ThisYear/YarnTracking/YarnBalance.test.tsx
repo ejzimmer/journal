@@ -5,9 +5,7 @@ import { renderWithYarnStorage } from './yarnStorageTestUtils';
 describe('YarnBalance', () => {
   describe('with yarn in the stash', () => {
     it('shows the grams currently in the stash', () => {
-      renderWithYarnStorage(<YarnBalance year={2026} />, {
-        currentBalance: 1000,
-      });
+      renderWithYarnStorage(<YarnBalance />, { currentBalance: 1000 });
 
       expect(screen.getByText('1,000g')).toBeInTheDocument();
     });
