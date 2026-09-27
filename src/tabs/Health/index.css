@@ -10,8 +10,8 @@
   position-area: top;
   margin-block-end: 8px;
   z-index: 1;
-  background: var(--body-colour);
-  color: white;
+  background: color-mix(in srgb, var(--switch-background) 85%, transparent);
+  color: var(--switch-icon-selected);
   padding: 6px 8px;
   font-size: 0.8em;
   border-radius: 4px;
