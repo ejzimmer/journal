@@ -39,14 +39,14 @@ export function HealthStorageProvider({ children }: { children: ReactNode }) {
   const { value: storedExercises, loading: exercisesLoading } =
     useValue<Record<string, Exercise>>(EXERCISES_PATH);
   const { value: storedClasses, loading: classesLoading } =
-    useValue<Record<string, ExerciseClass>>(CLASSES_PATH);
+    useValue<Record<string, Partial<ExerciseClass>>>(CLASSES_PATH);
 
   const exercises = useMemo(
     () => Object.values(storedExercises ?? {}),
     [storedExercises],
   );
   const classes = useMemo(
-    () => Object.values(storedClasses ?? {}),
+    () => Object.values(storedClasses ?? {}).filter(hasBlocks),
     [storedClasses],
   );
 
@@ -75,6 +75,12 @@ export function HealthStorageProvider({ children }: { children: ReactNode }) {
       {children}
     </HealthStorageContext.Provider>
   );
+}
+
+function hasBlocks(
+  exerciseClass: Partial<ExerciseClass>,
+): exerciseClass is ExerciseClass {
+  return Array.isArray(exerciseClass.blocks);
 }
 
 export function useHealthStorage(): HealthStorageContextType {

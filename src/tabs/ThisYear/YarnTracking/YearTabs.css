@@ -1,0 +1,33 @@
+.year-tabs [role='tablist'] {
+  display: flex;
+  gap: 4px;
+  padding-inline: 60px;
+  border-bottom: 1px solid var(--border-colour);
+
+  [role='tab'] {
+    all: unset;
+    padding: 8px 16px;
+    font-size: 18px;
+    color: var(--body-colour-mid);
+    border-bottom: 3px solid transparent;
+    margin-bottom: -1px;
+    cursor: pointer;
+
+    &:hover {
+      color: var(--body-colour);
+      border-bottom-color: var(--border-colour-hover);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--action-colour);
+      outline-offset: -2px;
+      border-radius: 4px 4px 0 0;
+    }
+
+    &[aria-selected='true'] {
+      color: var(--body-colour);
+      font-weight: bold;
+      border-bottom-color: var(--action-colour);
+    }
+  }
+}
