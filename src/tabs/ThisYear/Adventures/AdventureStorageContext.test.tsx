@@ -1,9 +1,6 @@
 import { renderHook } from '@testing-library/react';
 import { ContextType } from '../../../shared/FirebaseContext';
-import {
-  StorageContextWrapper,
-  storeValues,
-} from '../../../shared/storageContextTestUtils';
+import { StorageContextWrapper } from '../../../shared/storageContextTestUtils';
 import {
   AdventureStorageProvider,
   useAdventureStorage,
@@ -44,7 +41,10 @@ describe('AdventureStorageContext', () => {
   describe('adventures', () => {
     it('lists the stored adventures', () => {
       const storage = createAdventureStorage({
-        useValue: storeValues({ [ADVENTURES_PATH]: { parkrun } }),
+        useValue: <T,>(key?: string) => ({
+          value: (key === ADVENTURES_PATH ? { parkrun } : undefined) as T,
+          loading: false,
+        }),
       });
 
       expect(storage.adventures).toEqual([parkrun]);
@@ -115,7 +115,10 @@ describe('AdventureStorageContext', () => {
   describe('modes', () => {
     it('lists the stored modes', () => {
       const storage = createAdventureStorage({
-        useValue: storeValues({ [ADVENTURE_MODES_PATH]: { running } }),
+        useValue: <T,>(key?: string) => ({
+          value: (key === ADVENTURE_MODES_PATH ? { running } : undefined) as T,
+          loading: false,
+        }),
       });
 
       expect(storage.modes).toEqual([running]);
@@ -138,7 +141,7 @@ describe('AdventureStorageContext', () => {
   describe('while the stored data is loading', () => {
     it('says it is loading', () => {
       const storage = createAdventureStorage({
-        useValue: storeValues({}, true),
+        useValue: () => ({ value: undefined, loading: true }),
       });
 
       expect(storage.isLoading).toBe(true);
