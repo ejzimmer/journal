@@ -9,15 +9,6 @@ dialog.modal:has(.add-adventure-form) {
 .add-adventure-form {
   gap: 24px;
 
-  .text-input {
-    font: inherit;
-    padding-block: 10px;
-    padding-inline: 12px;
-    border: 1px solid var(--border-colour);
-    border-radius: 4px;
-    background: white;
-  }
-
   .modes {
     display: flex;
     flex-wrap: wrap;

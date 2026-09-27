@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { FormControl } from '../../../shared/controls/FormControl';
 import { Modal, useModal } from '../../../shared/controls/Modal';
 import { PlusIcon } from '../../../shared/icons/Plus';
 import { TickIcon } from '../../../shared/icons/Tick';
@@ -58,12 +59,11 @@ function AdventureFields() {
 
   return (
     <form className="add-adventure-form" onSubmit={saveAdventure}>
-      <input
-        className="text-input"
-        aria-label="Adventure"
-        autoComplete="off"
+      <FormControl
+        label="Adventure"
+        hideLabel
         value={description}
-        onChange={(event) => setDescription(event.target.value)}
+        onChange={setDescription}
       />
       <div className="modes" role="radiogroup" aria-label="Mode">
         {modes.map((mode) => (
@@ -94,12 +94,11 @@ function AdventureFields() {
       </div>
       {modeId === NEW_MODE && (
         <div className="new-mode">
-          <input
-            className="text-input"
-            aria-label="Mode name"
-            autoComplete="off"
+          <FormControl
+            label="Mode name"
+            hideLabel
             value={modeName}
-            onChange={(event) => setModeName(event.target.value)}
+            onChange={setModeName}
           />
           <div className="new-mode-look">
             <EmojiPicker value={modeEmoji} onChange={setModeEmoji} />
