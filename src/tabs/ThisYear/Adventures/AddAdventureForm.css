@@ -16,7 +16,7 @@ dialog.modal:has(.add-adventure-form) {
   }
 
   .mode-option {
-    display: inline-flex;
+    display: flex;
     align-items: center;
     gap: 5px;
     padding-block: 5px;
