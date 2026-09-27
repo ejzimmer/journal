@@ -1,12 +1,23 @@
 import { YarnTrackingForm } from './Form';
 import { YarnBalance } from './YarnBalance';
 import { YarnState } from './YarnState';
-import { YarnStorageProvider } from './YarnStorageContext';
+import {
+  YarnStorageProvider,
+  useYarnStorageContext,
+} from './YarnStorageContext';
+import { YearTabs } from './YearTabs';
 
-export function YarnTracking({ year }: { year: number }) {
+function YarnYears() {
+  const { years, thisYear, selectedYear, selectYear } = useYarnStorageContext();
+
   return (
-    <YarnStorageProvider year={year}>
+    <YearTabs
+      years={years}
+      selectedYear={selectedYear}
+      onSelectYear={selectYear}
+    >
       <div
+        key={selectedYear}
         style={{
           padding: '60px',
           display: 'flex',
@@ -25,9 +36,17 @@ export function YarnTracking({ year }: { year: number }) {
           }}
         >
           <YarnBalance />
-          <YarnTrackingForm />
+          {selectedYear === thisYear && <YarnTrackingForm />}
         </div>
       </div>
+    </YearTabs>
+  );
+}
+
+export function YarnTracking() {
+  return (
+    <YarnStorageProvider>
+      <YarnYears />
     </YarnStorageProvider>
   );
 }
