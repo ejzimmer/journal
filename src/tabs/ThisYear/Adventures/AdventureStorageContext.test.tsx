@@ -41,10 +41,7 @@ describe('AdventureStorageContext', () => {
   describe('adventures', () => {
     it('lists the stored adventures', () => {
       const storage = createAdventureStorage({
-        useValue: <T,>(key?: string) => ({
-          value: (key === ADVENTURES_PATH ? { parkrun } : undefined) as T,
-          loading: false,
-        }),
+        useValue: <T,>() => ({ value: { parkrun } as T, loading: false }),
       });
 
       expect(storage.adventures).toEqual([parkrun]);
@@ -115,10 +112,7 @@ describe('AdventureStorageContext', () => {
   describe('modes', () => {
     it('lists the stored modes', () => {
       const storage = createAdventureStorage({
-        useValue: <T,>(key?: string) => ({
-          value: (key === ADVENTURE_MODES_PATH ? { running } : undefined) as T,
-          loading: false,
-        }),
+        useValue: <T,>() => ({ value: { running } as T, loading: false }),
       });
 
       expect(storage.modes).toEqual([running]);
