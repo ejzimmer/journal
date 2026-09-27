@@ -39,6 +39,16 @@ describe('AdventureStorageContext', () => {
   });
 
   describe('adventures', () => {
+    it('reads them from the adventures path', () => {
+      const useValue = jest
+        .fn()
+        .mockReturnValue({ value: undefined, loading: false });
+
+      createAdventureStorage({ useValue });
+
+      expect(useValue).toHaveBeenCalledWith(ADVENTURES_PATH);
+    });
+
     it('lists the stored adventures', () => {
       const storage = createAdventureStorage({
         useValue: <T,>() => ({ value: { parkrun } as T, loading: false }),
@@ -110,6 +120,16 @@ describe('AdventureStorageContext', () => {
   });
 
   describe('modes', () => {
+    it('reads them from the modes path', () => {
+      const useValue = jest
+        .fn()
+        .mockReturnValue({ value: undefined, loading: false });
+
+      createAdventureStorage({ useValue });
+
+      expect(useValue).toHaveBeenCalledWith(ADVENTURE_MODES_PATH);
+    });
+
     it('lists the stored modes', () => {
       const storage = createAdventureStorage({
         useValue: <T,>() => ({ value: { running } as T, loading: false }),
