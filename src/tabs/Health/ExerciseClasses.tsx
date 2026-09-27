@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { EmojiCheckbox } from '../../shared/controls/EmojiCheckbox';
-import { ClassTimes, ExerciseClass } from '../../shared/types';
+import { ClassBlock, ExerciseClass } from '../../shared/types';
 import { useHealthStorage } from './HealthStorageContext';
 import './ExerciseClasses.css';
 
@@ -92,7 +92,7 @@ function Sessions({ exerciseClass, weekIndex, getSessionName }: SessionsProps) {
   );
 }
 
-function toggleSession(week: ClassTimes, index: number): ClassTimes {
+function toggleSession(week: ClassBlock, index: number): ClassBlock {
   const completed = week.completed ?? [];
   return {
     ...week,
