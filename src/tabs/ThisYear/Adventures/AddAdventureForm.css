@@ -110,9 +110,3 @@ dialog.modal:has(.add-adventure-form) {
     transform: translateY(-8px);
   }
 }
-
-@media (prefers-reduced-motion: reduce) {
-  .add-adventure-form .new-mode {
-    animation: none;
-  }
-}
