@@ -1,7 +1,8 @@
 .noticeboard {
   position: relative;
   min-height: 160px;
-  padding: 30px 20px 64px;
+  padding-block: 30px 64px;
+  padding-inline: 20px;
   background-color: #b88a5a;
   background-image:
     radial-gradient(

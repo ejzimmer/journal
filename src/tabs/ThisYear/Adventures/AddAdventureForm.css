@@ -1,6 +1,7 @@
 dialog.modal:has(.add-adventure-form) {
   width: 520px;
-  padding: 20px 28px 24px;
+  padding-block: 20px 24px;
+  padding-inline: 28px;
   background: hsl(43 60% 96%);
   border: 0;
   border-radius: 6px;
@@ -11,7 +12,8 @@ dialog.modal:has(.add-adventure-form) {
 
   .text-input {
     font: inherit;
-    padding: 10px 12px;
+    padding-block: 10px;
+    padding-inline: 12px;
     border: 1px solid var(--border-colour);
     border-radius: 4px;
     background: white;
@@ -27,7 +29,8 @@ dialog.modal:has(.add-adventure-form) {
     display: inline-flex;
     align-items: center;
     gap: 5px;
-    padding: 5px 12px;
+    padding-block: 5px;
+    padding-inline: 12px;
     line-height: 1.4;
     background: white;
     border: 1px solid var(--border-colour);
@@ -53,7 +56,8 @@ dialog.modal:has(.add-adventure-form) {
   }
 
   .new-mode-option {
-    padding: 8px 10px;
+    padding-block: 8px;
+    padding-inline: 10px;
     border: 1px dashed var(--border-colour);
     color: var(--body-colour-mid);
 
