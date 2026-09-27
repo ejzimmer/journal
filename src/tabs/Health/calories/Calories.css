@@ -1,22 +1,33 @@
 .tracker-switch {
+  --switch-background: #eef3dc;
+  --switch-knob: #ffc233;
+  --switch-knob-shadow: rgb(255 170 0 / 0.45);
+  --switch-icon: #7d8a5a;
+  --switch-icon-selected: #4a3a00;
+
   [role='radiogroup'].switch {
+    isolation: isolate;
+    border: 1px solid transparent;
     border-radius: 999px;
-    font-family: 'Yuji Syuku', serif;
-    font-size: 1.15em;
-    box-shadow:
-      inset 2px 2px 5px hsl(0 0% 0% / 0.35),
-      inset -1px -1px 2px hsl(0 0% 100% / 0.6);
+    padding: 2px;
+    background: var(--switch-background);
 
     &:focus-within {
       outline: none;
-      box-shadow:
-        0 0 4px 1px hsl(211 81% 55% / 0.6),
-        0 0 14px 6px hsl(211 81% 55% / 0.45),
-        inset 0 0 6px hsl(211 81% 55% / 0.3);
+    }
+
+    &:has(input:focus-visible) {
+      outline: 2px solid var(--switch-knob);
+      outline-offset: 2px;
     }
 
     label {
-      padding-block: 4px;
+      width: 40px;
+      height: 32px;
+      padding: 0;
+      align-content: center;
+      border-radius: 999px;
+      color: var(--switch-icon);
 
       &:not(:last-of-type) {
         border-inline-end: none;
@@ -27,37 +38,31 @@
       }
 
       &:has(input:checked) {
-        color: var(--action-colour-dark);
-        text-shadow: 1px 1px hsl(211 81% 55% / 0.6);
+        color: var(--switch-icon-selected);
+      }
+
+      &:hover {
+        color: var(--switch-icon-selected);
+      }
+
+      &:has(input:checked):hover {
+        color: white;
+      }
+
+      svg {
+        display: block;
+        justify-self: center;
+        width: 18px;
+        height: 18px;
       }
     }
 
     .indicator {
-      background: none;
-      box-shadow: none;
-    }
-
-    &::before {
-      content: '';
-      position: absolute;
-      top: 50%;
-      left: 25%;
-      width: 36px;
-      aspect-ratio: 1;
-      border-radius: 50%;
-      background: hsl(211 81% 60% / 0.15);
-      box-shadow:
-        0 0 4px 1px hsl(211 81% 55% / 0.6),
-        0 0 14px 6px hsl(211 81% 55% / 0.45),
-        inset 0 0 6px hsl(211 81% 55% / 0.3);
-      transform: translate(-50%, -50%);
-      transition: left 0.2s ease-out;
-      pointer-events: none;
-      z-index: -1;
-    }
-
-    &:has(input[value='日']:checked)::before {
-      left: 75%;
+      top: 2px;
+      height: calc(100% - 4px);
+      border-radius: 999px;
+      background: var(--switch-knob);
+      box-shadow: 0 2px 6px var(--switch-knob-shadow);
     }
   }
 }

@@ -104,7 +104,7 @@ describe('Calories', () => {
 
       renderWithHealthStorage(<Calories />, { days: dailyData, updateDay });
 
-      await user.click(screen.getByRole('radio', { name: '日' }));
+      await user.click(screen.getByRole('radio', { name: 'by day' }));
       await user.click(screen.getByRole('button', { name: 'update 3 Jan' }));
 
       expect(
@@ -139,7 +139,7 @@ describe('Calories', () => {
 
       renderWithHealthStorage(<Calories />, { days: dailyData });
 
-      await user.click(screen.getByRole('radio', { name: '日' }));
+      await user.click(screen.getByRole('radio', { name: 'by day' }));
       await user.click(screen.getByRole('button', { name: 'update 2 Jan' }));
 
       expect(
@@ -173,7 +173,7 @@ describe('Calories', () => {
 
       renderWithHealthStorage(<Calories />, { days: dailyData });
 
-      await user.click(screen.getByRole('radio', { name: '日' }));
+      await user.click(screen.getByRole('radio', { name: 'by day' }));
 
       expect(
         screen.getByRole('img', { name: 'heavy flow' }),
@@ -193,7 +193,7 @@ describe('Calories', () => {
 
       renderWithHealthStorage(<Calories />, { days: dailyData });
 
-      await user.click(screen.getByRole('radio', { name: '日' }));
+      await user.click(screen.getByRole('radio', { name: 'by day' }));
       await user.click(screen.getByRole('button', { name: 'update 3 Jan' }));
 
       expect(
@@ -221,7 +221,7 @@ describe('Calories', () => {
 
       renderWithHealthStorage(<Calories />, { days: dailyData, updateDay });
 
-      await user.click(screen.getByRole('radio', { name: '日' }));
+      await user.click(screen.getByRole('radio', { name: 'by day' }));
       await user.click(screen.getByRole('button', { name: 'update 3 Jan' }));
 
       await user.click(screen.getByRole('checkbox', { name: 'heavy flow' }));

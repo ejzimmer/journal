@@ -5,12 +5,22 @@ import { Switch } from '../../../shared/controls/Switch';
 import { Days } from './Days';
 import { WeeklyCalorieTracker } from './WeeklyCalorieTracker';
 import { CalorieForm } from './CalorieForm';
+import { BarChartIcon } from '../../../shared/icons/BarChart';
+import { DotGridIcon } from '../../../shared/icons/DotGrid';
 import './Calories.css';
 
-type View = '週' | '日';
+type View = 'week' | 'day';
+
+function ViewIcon({ value }: { value: View }) {
+  return value === 'week' ? (
+    <BarChartIcon role="img" aria-label="by week" />
+  ) : (
+    <DotGridIcon role="img" aria-label="by day" />
+  );
+}
 
 export function Calories() {
-  const [view, setView] = useState<View>('週');
+  const [view, setView] = useState<View>('week');
   const [dismissed, setDismissed] = useState(false);
   const [selectedDayId, setSelectedDayId] = useState<string | null>(null);
 
@@ -43,22 +53,23 @@ export function Calories() {
     <div>
       <div className="tracker-switch">
         <Switch
-          options={['週', '日']}
+          options={['week', 'day']}
           value={view}
           onChange={setView}
           name="tracker-view"
+          Option={ViewIcon}
         />
       </div>
       <div className="tracker-stage">
         <div
-          className={`tracker-pane ${view === '日' ? 'active' : ''}`}
-          aria-hidden={view !== '日'}
+          className={`tracker-pane ${view === 'day' ? 'active' : ''}`}
+          aria-hidden={view !== 'day'}
         >
           <Days days={days} onSelectDay={setSelectedDayId} />
         </div>
         <div
-          className={`tracker-pane ${view === '週' ? 'active' : ''}`}
-          aria-hidden={view !== '週'}
+          className={`tracker-pane ${view === 'week' ? 'active' : ''}`}
+          aria-hidden={view !== 'week'}
         >
           <WeeklyCalorieTracker days={days} />
         </div>
