@@ -1,6 +1,9 @@
 import { renderHook } from '@testing-library/react';
 import { ContextType } from '../../../shared/FirebaseContext';
-import { StorageContextWrapper } from '../../../shared/storageContextTestUtils';
+import {
+  StorageContextWrapper,
+  storeValues,
+} from '../../../shared/storageContextTestUtils';
 import {
   AdventureStorageProvider,
   useAdventureStorage,
@@ -15,13 +18,6 @@ const createAdventureStorage = (storage: Partial<ContextType> = {}) =>
       </StorageContextWrapper>
     ),
   }).result.current;
-
-const storeValues =
-  (values: Record<string, unknown>, loading = false): ContextType['useValue'] =>
-  <T,>(key?: string) => ({
-    value: key ? (values[key] as T) : undefined,
-    loading,
-  });
 
 const parkrun: Adventure = {
   id: 'parkrun',

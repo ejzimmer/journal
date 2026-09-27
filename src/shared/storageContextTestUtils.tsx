@@ -18,6 +18,13 @@ export function createStorageContext(
   };
 }
 
+export const storeValues =
+  (values: Record<string, unknown>, loading = false): ContextType['useValue'] =>
+  <T,>(key?: string) => ({
+    value: key ? (values[key] as T) : undefined,
+    loading,
+  });
+
 export function StorageContextWrapper({
   value,
   children,
