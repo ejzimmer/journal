@@ -28,7 +28,7 @@ dialog.modal:has(.add-adventure-form) {
     border-radius: 3px;
     cursor: pointer;
 
-    input {
+    input[type='radio'] {
       width: 0;
       height: 0;
       overflow: hidden;
@@ -75,21 +75,21 @@ dialog.modal:has(.add-adventure-form) {
     display: flex;
     flex-wrap: wrap;
     gap: 8px;
-  }
 
-  .swatch {
-    appearance: none;
-    width: 28px;
-    height: 28px;
-    margin: 0;
-    background: var(--swatch-colour);
-    border: 2px solid white;
-    border-radius: 3px;
-    box-shadow: 0 0 0 1px var(--border-colour);
-    cursor: pointer;
+    input[type='radio'] {
+      appearance: none;
+      width: 28px;
+      height: 28px;
+      margin: 0;
+      background: var(--swatch-colour);
+      border: 2px solid white;
+      border-radius: 3px;
+      box-shadow: 0 0 0 1px var(--border-colour);
+      cursor: pointer;
 
-    &:checked {
-      box-shadow: 0 0 0 3px var(--body-colour);
+      &:checked {
+        box-shadow: 0 0 0 3px var(--body-colour);
+      }
     }
   }
 

@@ -107,7 +107,6 @@ function AdventureFields() {
                 key={colour}
                 type="radio"
                 name="colour"
-                className="swatch"
                 aria-label={name}
                 style={{ '--swatch-colour': colour } as React.CSSProperties}
                 checked={modeColour === colour}
