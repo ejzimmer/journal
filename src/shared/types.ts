@@ -62,7 +62,7 @@ export type Exercise = {
 };
 
 export const CLASSES_PATH = `${HEALTH_PATH}/classes`;
-export type ClassTimes = {
+export type ClassBlock = {
   id: string;
   total: number;
   completed?: number[];
@@ -70,7 +70,7 @@ export type ClassTimes = {
 export type ExerciseClass = {
   id: string;
   description: string;
-  times: ClassTimes[];
+  times: ClassBlock[];
 };
 
 export const PROJECTS_KEY = 'projects';
