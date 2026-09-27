@@ -22,25 +22,27 @@ export function ExerciseClasses() {
           className={isClassDone(exerciseClass) ? 'done' : ''}
         >
           <div className="description">{exerciseClass.description}</div>
-          {exerciseClass.times.map((times, timesIndex) => (
-            <div className="completions" key={times.id}>
-              {Array.from({ length: times.total }, (_, index) => {
-                const isChecked = index < (times.completed ?? 0);
+          {exerciseClass.blocks.map((block, blockIndex) => (
+            <div className="completions" key={block.id}>
+              {Array.from({ length: block.total }, (_, index) => {
+                const completed = block.completed ?? [];
+                const isChecked = index < completed.length;
 
                 return (
                   <div className="tooltip-container" key={index}>
                     <div className="tooltip-anchor">
                       <EmojiCheckbox
-                        label={times.id + index}
+                        label={block.id + index}
                         emoji="✅"
                         isChecked={isChecked}
                         onChange={() =>
                           updateClass({
                             ...exerciseClass,
-                            times: exerciseClass.times.with(timesIndex, {
-                              ...times,
-                              completed:
-                                (times.completed ?? 0) + (isChecked ? -1 : 1),
+                            blocks: exerciseClass.blocks.with(blockIndex, {
+                              ...block,
+                              completed: isChecked
+                                ? completed.slice(0, -1)
+                                : [...completed, completed.length],
                             }),
                           })
                         }
@@ -58,6 +60,8 @@ export function ExerciseClasses() {
   );
 }
 
-function isClassDone({ times }: ExerciseClass) {
-  return times.every(({ total, completed }) => (completed ?? 0) === total);
+function isClassDone({ blocks }: ExerciseClass) {
+  return blocks.every(
+    ({ total, completed }) => (completed?.length ?? 0) === total,
+  );
 }
