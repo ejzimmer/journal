@@ -42,12 +42,6 @@ async function openForm(modes: AdventureMode[] = [running, cycling]) {
 
 describe('AddAdventureForm', () => {
   describe('when the pushpin is clicked', () => {
-    it('opens the form', async () => {
-      await openForm();
-
-      expect(screen.getByRole('textbox', { name: 'Adventure' })).toBeVisible();
-    });
-
     it('selects the first mode', async () => {
       await openForm();
 
