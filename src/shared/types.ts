@@ -70,7 +70,7 @@ export type ClassBlock = {
 export type ExerciseClass = {
   id: string;
   description: string;
-  times: ClassBlock[];
+  blocks: ClassBlock[];
 };
 
 export const PROJECTS_KEY = 'projects';

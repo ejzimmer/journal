@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { useStorageContext } from '../../shared/FirebaseContext';
 import {
+  ClassBlock,
   CLASSES_PATH,
   DAILY_PATH,
   EXERCISES_PATH,
@@ -9,9 +10,10 @@ import {
 
 type StoredItems = Record<string, unknown>;
 
-type StoredClass = {
-  times?: { completed?: number | number[] }[];
+type StoredBlock = Omit<ClassBlock, 'completed'> & {
+  completed?: number | number[];
 };
+type StoredClass = { times?: StoredBlock[] };
 
 export const LEGACY_DAILY_PATH = `${THIS_YEAR_PATH}/daily`;
 export const LEGACY_EXERCISES_PATH = `${THIS_YEAR_PATH}/exercises`;
@@ -61,25 +63,27 @@ export function createItemMoveUpdates(
   );
 }
 
-export function createCompletedListUpdates(
+export function createClassBlockUpdates(
   classes: Record<string, StoredClass> = {},
 ): Record<string, unknown> {
   return Object.fromEntries(
-    Object.entries(classes).flatMap(([id, { times = [] }]) =>
-      times.flatMap(({ completed }, index) =>
-        typeof completed === 'number'
-          ? [
-              [
-                `${CLASSES_PATH}/${id}/times/${index}/completed`,
-                completed > 0
-                  ? Array.from({ length: completed }, (_, session) => session)
-                  : null,
-              ],
-            ]
-          : [],
-      ),
+    Object.entries(classes).flatMap(([id, { times }]) =>
+      times
+        ? [
+            [`${CLASSES_PATH}/${id}/blocks`, times.map(convertCompletedCount)],
+            [`${CLASSES_PATH}/${id}/times`, null],
+          ]
+        : [],
     ),
   );
+}
+
+function convertCompletedCount({ completed, ...block }: StoredBlock) {
+  const completedList =
+    typeof completed === 'number'
+      ? Array.from({ length: completed }, (_, session) => session)
+      : completed;
+  return completedList?.length ? { ...block, completed: completedList } : block;
 }
 
 export function useHealthDataMigration() {
@@ -110,7 +114,7 @@ export function useHealthDataMigration() {
         legacyGoals,
         classes,
       ),
-      ...createCompletedListUpdates(classes),
+      ...createClassBlockUpdates(classes),
     };
 
     if (Object.keys(updates).length > 0) {

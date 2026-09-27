@@ -10,7 +10,7 @@ describe('ExerciseClasses', () => {
       const pistolSquat: ExerciseClass = {
         id: 'pistol',
         description: 'Pistol squat',
-        times: [
+        blocks: [
           { id: 'week1-', total: 3, completed: [0, 1, 2] },
           { id: 'week2-', total: 3, completed: [0] },
         ],
@@ -32,7 +32,7 @@ describe('ExerciseClasses', () => {
         const pistolSquat: ExerciseClass = {
           id: 'pistol',
           description: 'Pistol squat',
-          times: [{ id: 'week1-', total: 3, completed: [0] }],
+          blocks: [{ id: 'week1-', total: 3, completed: [0] }],
         };
         const { storageContext } = renderWithHealthStorage(
           <ExerciseClasses />,
@@ -43,7 +43,7 @@ describe('ExerciseClasses', () => {
 
         expect(storageContext.updateClass).toHaveBeenCalledWith({
           ...pistolSquat,
-          times: [{ id: 'week1-', total: 3, completed: [0, 1] }],
+          blocks: [{ id: 'week1-', total: 3, completed: [0, 1] }],
         });
       });
     });
@@ -54,7 +54,7 @@ describe('ExerciseClasses', () => {
         const pistolSquat: ExerciseClass = {
           id: 'pistol',
           description: 'Pistol squat',
-          times: [{ id: 'week1-', total: 3, completed: [0, 1] }],
+          blocks: [{ id: 'week1-', total: 3, completed: [0, 1] }],
         };
         const { storageContext } = renderWithHealthStorage(
           <ExerciseClasses />,
@@ -65,7 +65,7 @@ describe('ExerciseClasses', () => {
 
         expect(storageContext.updateClass).toHaveBeenCalledWith({
           ...pistolSquat,
-          times: [{ id: 'week1-', total: 3, completed: [0] }],
+          blocks: [{ id: 'week1-', total: 3, completed: [0] }],
         });
       });
     });
@@ -76,12 +76,12 @@ describe('ExerciseClasses', () => {
       const finished: ExerciseClass = {
         id: 'finished',
         description: 'Finished',
-        times: [{ id: 'finished-', total: 1, completed: [0] }],
+        blocks: [{ id: 'finished-', total: 1, completed: [0] }],
       };
       const unfinished: ExerciseClass = {
         id: 'unfinished',
         description: 'Unfinished',
-        times: [{ id: 'unfinished-', total: 2 }],
+        blocks: [{ id: 'unfinished-', total: 2 }],
       };
       renderWithHealthStorage(<ExerciseClasses />, {
         classes: [finished, unfinished],
