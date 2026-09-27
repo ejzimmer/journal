@@ -2,7 +2,7 @@
   --week: #9adb6c;
   --week-lowest: #3fae2a;
   --week-highest: #ff9d42;
-  --baseline: #dfe6c4;
+  --axis: #dfe6c4;
 
   display: grid;
   grid-template-columns: repeat(53, minmax(12px, 1fr));
@@ -12,7 +12,7 @@
   width: 100%;
   max-width: 100%;
   overflow-x: auto;
-  border-block-end: 2px solid var(--baseline);
+  border-block-end: 2px solid var(--axis);
   box-sizing: content-box;
 
   .week-container {
