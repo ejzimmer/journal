@@ -59,17 +59,15 @@ dialog.modal:has(.add-adventure-form) {
   }
 
   .new-mode {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-    animation: open-new-mode 0.28s cubic-bezier(0.2, 0.8, 0.3, 1);
-  }
-
-  .emoji-and-colour {
-    display: flex;
-    flex-wrap: wrap;
+    display: grid;
+    grid-template-columns: auto 1fr;
     align-items: center;
     gap: 16px;
+    animation: open-new-mode 0.28s cubic-bezier(0.2, 0.8, 0.3, 1);
+
+    .form-control {
+      grid-column: 1 / -1;
+    }
   }
 
   .swatches {

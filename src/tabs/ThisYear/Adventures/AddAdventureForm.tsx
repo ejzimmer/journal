@@ -100,22 +100,20 @@ function AdventureFields() {
             value={modeName}
             onChange={setModeName}
           />
-          <div className="emoji-and-colour">
-            <EmojiPicker value={modeEmoji} onChange={setModeEmoji} />
-            <div className="swatches" role="radiogroup" aria-label="Colour">
-              {LINE_COLOURS.map(({ name, colour }) => (
-                <input
-                  key={colour}
-                  type="radio"
-                  name="colour"
-                  className="swatch"
-                  aria-label={name}
-                  style={{ '--swatch-colour': colour } as React.CSSProperties}
-                  checked={modeColour === colour}
-                  onChange={() => setSelectedColour(colour)}
-                />
-              ))}
-            </div>
+          <EmojiPicker value={modeEmoji} onChange={setModeEmoji} />
+          <div className="swatches" role="radiogroup" aria-label="Colour">
+            {LINE_COLOURS.map(({ name, colour }) => (
+              <input
+                key={colour}
+                type="radio"
+                name="colour"
+                className="swatch"
+                aria-label={name}
+                style={{ '--swatch-colour': colour } as React.CSSProperties}
+                checked={modeColour === colour}
+                onChange={() => setSelectedColour(colour)}
+              />
+            ))}
           </div>
         </div>
       )}
