@@ -447,5 +447,5 @@ export const seedData = {
   [PROJECTS_KEY]: projects,
   [HEALTH_PATH]: { exercises, classes },
   yarn: { '2026': yarn },
-  '2026': { language_media: languageMedia },
+  language_media: { '2026': languageMedia },
 };
