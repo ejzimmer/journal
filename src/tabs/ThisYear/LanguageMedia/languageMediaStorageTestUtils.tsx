@@ -14,8 +14,9 @@ export function renderWithLanguageMediaStorage(
     year: 2026,
     media: [],
     addMedia: jest.fn(),
-    updateMedia: jest.fn(),
-    deleteMedia: jest.fn(),
+    addItem: jest.fn(),
+    updateItem: jest.fn(),
+    deleteItem: jest.fn(),
     ...overrides,
   };
   const contextValue: LanguageMediaStorageContextType = {
