@@ -15,6 +15,7 @@ import {
   PROJECTS_KEY,
 } from '../shared/types';
 import { StoredYarn } from '../tabs/ThisYear/YarnTracking/types';
+import { LanguageMedia } from '../tabs/ThisYear/LanguageMedia/types';
 import {
   BookDetails,
   GameDetails,
@@ -360,6 +361,88 @@ const classes: Record<string, ExerciseClass> = {
   },
 };
 
+const languageMedia: Record<string, LanguageMedia> = {
+  lupin: {
+    id: 'lupin',
+    type: 'tv',
+    name: 'Lupin',
+    language: 'french',
+    seasons: {
+      s1: {
+        id: 's1',
+        number: 1,
+        episodes: {
+          e1: {
+            id: 'e1',
+            number: 1,
+            name: 'Chapitre 1',
+            lengthInSeconds: 2826,
+            lookups: 12,
+            aiQuestions: 2,
+            understood: 70,
+          },
+          e2: {
+            id: 'e2',
+            number: 2,
+            lookups: 4,
+            aiQuestions: 0,
+            status: 'in-progress',
+          },
+        },
+      },
+      s2: { id: 's2', number: 2 },
+    },
+    upTo: { season: 1, episode: 2, timestampInSeconds: 754 },
+  },
+  hugo: {
+    id: 'hugo',
+    type: 'youtube',
+    name: 'HugoDécrypte',
+    language: 'french',
+    videos: {
+      v1: {
+        id: 'v1',
+        url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+        lengthInSeconds: 3725,
+        upToInSeconds: 1200,
+        lookups: 7,
+        aiQuestions: 1,
+      },
+    },
+  },
+  yotsuba: {
+    id: 'yotsuba',
+    type: 'manga',
+    name: 'よつばと！',
+    language: 'japanese',
+    volumes: {
+      vol1: {
+        id: 'vol1',
+        number: 1,
+        pages: 220,
+        chapters: {
+          c1: {
+            id: 'c1',
+            number: 1,
+            lastPage: 38,
+            lookups: 20,
+            aiQuestions: 3,
+            understood: 60,
+          },
+          c2: {
+            id: 'c2',
+            number: 2,
+            lookups: 0,
+            aiQuestions: 0,
+            status: 'not-started',
+          },
+        },
+      },
+    },
+    upTo: { volume: 1, chapter: 2, page: 41 },
+  },
+};
+
 export const seedData = {
   [WORK_KEY]: {
     [backlog.id]: { ...backlog, items: { [backlogTask.id]: backlogTask } },
@@ -381,4 +464,5 @@ export const seedData = {
   [PROJECTS_KEY]: projects,
   [HEALTH_PATH]: { exercises, classes },
   yarn: { '2026': yarn },
+  language_media: { '2026': languageMedia },
 };
