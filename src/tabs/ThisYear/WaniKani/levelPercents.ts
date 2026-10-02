@@ -5,6 +5,10 @@ export function isUnlocked(srsStage: number) {
   return srsStage >= 1;
 }
 
+export function isBurned(srsStage: number) {
+  return srsStage >= 9;
+}
+
 export function calculatePercentsByLevel(
   subjects: Subject[],
   assignments: Assignment[],
@@ -33,4 +37,22 @@ export function calculatePercentsByLevel(
     ) as Record<SubjectType, number>;
     return { level, percents };
   });
+}
+
+export function findFullyBurnedTypesByLevel(
+  subjects: Subject[],
+  assignments: Assignment[],
+  maxLevel: number,
+): Record<SubjectType, boolean>[] {
+  return calculatePercentsByLevel(
+    subjects,
+    assignments,
+    maxLevel,
+    isBurned,
+  ).map(
+    ({ percents }) =>
+      Object.fromEntries(
+        SUBJECT_TYPES.map((type) => [type, percents[type] === 100]),
+      ) as Record<SubjectType, boolean>,
+  );
 }

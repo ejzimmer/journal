@@ -8,9 +8,10 @@ type GemProps = {
   cy: number;
   r: number;
   percent: number;
+  hasSparkle: boolean;
 };
 
-export function Gem({ type, cx, cy, r, percent }: GemProps) {
+export function Gem({ type, cx, cy, r, percent, hasSparkle }: GemProps) {
   const shape = calculateGemShape(cx, cy, r, percent);
   const colour = GEM_COLOURS[type].base;
 
@@ -52,11 +53,9 @@ export function Gem({ type, cx, cy, r, percent }: GemProps) {
         fill="none"
       />
       {shape.isFull && (
-        <>
-          <polygon points={shape.highlight} fill="white" fillOpacity={0.45} />
-          <path d={shape.sparkle} fill="white" />
-        </>
+        <polygon points={shape.highlight} fill="white" fillOpacity={0.45} />
       )}
+      {hasSparkle && <path d={shape.sparkle} fill="white" />}
     </g>
   );
 }

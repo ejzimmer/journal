@@ -52,9 +52,5 @@ describe('calculateGemShape', () => {
     it('fills the whole gem', () => {
       expect(shape.fill).toBe(shape.outline);
     });
-
-    it('adds a sparkle', () => {
-      expect(shape.sparkle).not.toBe('');
-    });
   });
 });

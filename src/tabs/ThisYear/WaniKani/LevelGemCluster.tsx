@@ -13,11 +13,17 @@ const layout = calculateClusterLayout(SETTING_RADIUS);
 type LevelGemClusterProps = {
   level: number;
   percents: Record<SubjectType, number>;
+  burned: Record<SubjectType, boolean>;
 };
 
-export function LevelGemCluster({ level, percents }: LevelGemClusterProps) {
+export function LevelGemCluster({
+  level,
+  percents,
+  burned,
+}: LevelGemClusterProps) {
   const description = SUBJECT_TYPES.map(
-    (type) => `${SUBJECT_TYPE_LABELS[type]} ${percents[type]}% unlocked`,
+    (type) =>
+      `${SUBJECT_TYPE_LABELS[type]} ${percents[type]}% unlocked${burned[type] ? ' and burned' : ''}`,
   ).join(', ');
 
   return (
@@ -46,6 +52,7 @@ export function LevelGemCluster({ level, percents }: LevelGemClusterProps) {
           cy={layout.centres[type][1]}
           r={layout.gemRadius}
           percent={percents[type]}
+          hasSparkle={burned[type]}
         />
       ))}
       <text

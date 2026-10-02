@@ -71,7 +71,7 @@ export function calculateGemShape(
         .map((vertex, index) => `M${formatPoints([vertex, inner[index]])}`)
         .join('') + `M${formatPoints(inner).split(' ').join('L')}Z`,
     highlight: formatPoints([outer[5], outer[0], inner[0], inner[5]]),
-    sparkle: isFull ? drawSparkle(cx + r * 0.42, cy - r * 0.5, r * 0.34) : '',
+    sparkle: drawSparkle(cx + r * 0.42, cy - r * 0.5, r * 0.34),
   };
 }
 

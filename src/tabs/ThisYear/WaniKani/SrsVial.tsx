@@ -72,7 +72,7 @@ export function SrsVial({ type, index, total, counts }: SrsVialProps) {
         points={formatPoints(getHexVertices(WIDTH / 2, 13, 12))}
         fill="url(#wanikani-gold)"
       />
-      <Gem type={type} cx={WIDTH / 2} cy={13} r={10} percent={100} />
+      <Gem type={type} cx={WIDTH / 2} cy={13} r={10} percent={100} hasSparkle />
       <rect
         x="10"
         y="28"
