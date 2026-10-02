@@ -1,6 +1,8 @@
-import { DurationField } from './DurationField';
 import { AddItemForm } from './AddItemForm';
-import { NewItem, NO_COMPREHENSION, readDuration } from './newItems';
+import { DurationField } from './DurationField';
+import { TextField } from './TextField';
+import { readDuration } from './fields';
+import { NewItem, NO_COMPREHENSION } from './newItems';
 import { Video } from './types';
 
 export function AddVideoForm({
@@ -19,10 +21,7 @@ export function AddVideoForm({
         })
       }
     >
-      <label>
-        URL
-        <input name="url" type="url" required />
-      </label>
+      <TextField label="URL" name="url" type="url" isRequired />
       <DurationField label="Length" name="length" durationFormat="hh:mm:ss" />
     </AddItemForm>
   );

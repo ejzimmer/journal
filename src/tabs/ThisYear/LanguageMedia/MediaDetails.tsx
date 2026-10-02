@@ -1,4 +1,6 @@
 import { DeleteButton } from './DeleteButton';
+import { EditMediaForm } from './EditMediaForm';
+import { useLanguageMediaStorage } from './LanguageMediaStorageContext';
 import { PrintSeriesDetails } from './PrintSeriesDetails';
 import { TvSeriesDetails } from './TvSeriesDetails';
 import { YoutubeChannelDetails } from './YoutubeChannelDetails';
@@ -12,10 +14,16 @@ export function MediaDetails({
   media: LanguageMedia;
   path: ItemPath;
 }) {
+  const { updateItem } = useLanguageMediaStorage();
+
   return (
     <>
       {media.name}, {LANGUAGE_NAMES[media.language]}{' '}
       {MEDIA_TYPE_NAMES[media.type]}
+      <EditMediaForm
+        media={media}
+        onChange={(changes) => updateItem(path, changes)}
+      />
       <DeleteButton name={media.name} path={path} />
       {media.type === 'tv' && <TvSeriesDetails series={media} path={path} />}
       {media.type === 'youtube' && (

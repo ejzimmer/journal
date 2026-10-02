@@ -25,6 +25,7 @@ export function PrintSeriesDetails({
           <li key={volume.id}>
             <VolumeDetails
               volume={volume}
+              isNameRequired={series.type === 'book'}
               path={[...path, 'volumes', volume.id]}
             />
           </li>

@@ -35,6 +35,25 @@ describe('DurationField', () => {
     });
   });
 
+  describe('with a value', () => {
+    it('shows it split into two-digit segments', () => {
+      render(
+        <DurationField
+          label="Length"
+          name="length"
+          defaultValue={3725}
+          durationFormat="hh:mm:ss"
+        />,
+      );
+
+      expect(
+        screen
+          .getAllByRole('textbox')
+          .map((input) => input.getAttribute('value')),
+      ).toEqual(['01', '02', '05']);
+    });
+  });
+
   describe('when a single digit is entered', () => {
     it('pads it to two digits on leaving the input', async () => {
       const user = userEvent.setup();

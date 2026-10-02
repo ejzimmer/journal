@@ -1,5 +1,6 @@
 import { AddEpisodeForm } from './AddEpisodeForm';
 import { DeleteButton } from './DeleteButton';
+import { EditSeasonForm } from './EditSeasonForm';
 import { EpisodeDetails } from './EpisodeDetails';
 import { useLanguageMediaStorage } from './LanguageMediaStorageContext';
 import { listByNumber } from './lists';
@@ -12,12 +13,17 @@ export function SeasonDetails({
   season: Season;
   path: ItemPath;
 }) {
-  const { addItem } = useLanguageMediaStorage();
+  const { addItem, updateItem } = useLanguageMediaStorage();
   const name = `Season ${season.number}`;
 
   return (
     <>
       {name}
+      <EditSeasonForm
+        name={name}
+        season={season}
+        onChange={(changes) => updateItem(path, changes)}
+      />
       <DeleteButton name={name} path={path} />
       <ul>
         {listByNumber(season.episodes).map((episode) => (

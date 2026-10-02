@@ -1,5 +1,8 @@
 import { AddItemForm } from './AddItemForm';
-import { findNextNumber, NewItem, readNumber, readText } from './newItems';
+import { NumberField } from './NumberField';
+import { TextField } from './TextField';
+import { readNumber, readText } from './fields';
+import { findNextNumber, NewItem } from './newItems';
 import { Volume } from './types';
 
 export function AddVolumeForm({
@@ -22,14 +25,8 @@ export function AddVolumeForm({
         })
       }
     >
-      <label>
-        Name
-        <input name="name" required={isNameRequired} />
-      </label>
-      <label>
-        Pages
-        <input name="pages" type="number" min="1" />
-      </label>
+      <TextField label="Name" name="name" isRequired={isNameRequired} />
+      <NumberField label="Pages" name="pages" />
     </AddItemForm>
   );
 }

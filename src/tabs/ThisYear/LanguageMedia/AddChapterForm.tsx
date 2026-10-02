@@ -1,11 +1,8 @@
 import { AddItemForm } from './AddItemForm';
-import {
-  findNextNumber,
-  NewItem,
-  NO_COMPREHENSION,
-  readNumber,
-  readText,
-} from './newItems';
+import { NumberField } from './NumberField';
+import { TextField } from './TextField';
+import { readNumber, readText } from './fields';
+import { findNextNumber, NewItem, NO_COMPREHENSION } from './newItems';
 import { Chapter } from './types';
 
 export function AddChapterForm({
@@ -27,14 +24,8 @@ export function AddChapterForm({
         })
       }
     >
-      <label>
-        Name
-        <input name="name" />
-      </label>
-      <label>
-        Last page
-        <input name="lastPage" type="number" min="1" />
-      </label>
+      <TextField label="Name" name="name" />
+      <NumberField label="Last page" name="lastPage" />
     </AddItemForm>
   );
 }

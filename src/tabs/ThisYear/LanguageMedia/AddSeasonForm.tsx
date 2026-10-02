@@ -1,10 +1,7 @@
 import { AddItemForm } from './AddItemForm';
-import {
-  findNextNumber,
-  NewItem,
-  NO_COMPREHENSION,
-  readNumber,
-} from './newItems';
+import { NumberField } from './NumberField';
+import { readNumber } from './fields';
+import { findNextNumber, NewItem, NO_COMPREHENSION } from './newItems';
 import { Episode, Season } from './types';
 
 export function AddSeasonForm({
@@ -30,10 +27,7 @@ export function AddSeasonForm({
         )
       }
     >
-      <label>
-        Episodes
-        <input name="episodes" type="number" min="0" />
-      </label>
+      <NumberField label="Episodes" name="episodes" min={0} />
     </AddItemForm>
   );
 }

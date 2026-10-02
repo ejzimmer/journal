@@ -1,12 +1,8 @@
-import { DurationField } from './DurationField';
 import { AddItemForm } from './AddItemForm';
-import {
-  findNextNumber,
-  NewItem,
-  NO_COMPREHENSION,
-  readDuration,
-  readText,
-} from './newItems';
+import { DurationField } from './DurationField';
+import { TextField } from './TextField';
+import { readDuration, readText } from './fields';
+import { findNextNumber, NewItem, NO_COMPREHENSION } from './newItems';
 import { Episode } from './types';
 
 export function AddEpisodeForm({
@@ -28,10 +24,7 @@ export function AddEpisodeForm({
         })
       }
     >
-      <label>
-        Name
-        <input name="name" />
-      </label>
+      <TextField label="Name" name="name" />
       <DurationField label="Length" name="length" durationFormat="mm:ss" />
     </AddItemForm>
   );
