@@ -3,7 +3,7 @@ import { FormControl } from '../../../shared/controls/FormControl';
 import { Modal, useModal } from '../../../shared/controls/Modal';
 import { TickIcon } from '../../../shared/icons/Tick';
 import { useAdventureStorage } from './AdventureStorageContext';
-import { ModeField, useModeField } from './ModeField';
+import { ModeField } from './ModeField';
 import { PushpinButton } from './PushpinButton';
 
 import './AddAdventureForm.css';
@@ -19,19 +19,15 @@ export function AddAdventureForm() {
 }
 
 function AdventureFields() {
-  const { addAdventure } = useAdventureStorage();
+  const { modes, addAdventure } = useAdventureStorage();
   const { closeModal } = useModal();
   const [description, setDescription] = useState('');
-  const { modeFieldProps, saveMode } = useModeField();
+  const [selectedModeId, setSelectedModeId] = useState<string>();
+  const modeId = selectedModeId ?? modes[0]?.id;
 
   const saveAdventure = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    if (!description.trim()) {
-      return;
-    }
-
-    const modeId = saveMode();
-    if (!modeId) {
+    if (!description.trim() || !modeId) {
       return;
     }
 
@@ -47,7 +43,7 @@ function AdventureFields() {
         value={description}
         onChange={setDescription}
       />
-      <ModeField {...modeFieldProps} />
+      <ModeField modeId={modeId} onSelectMode={setSelectedModeId} />
       <div className="footer">
         <button type="submit" className="ghost submit" aria-label="Add">
           <TickIcon width="20px" />

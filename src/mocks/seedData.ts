@@ -16,6 +16,7 @@ import {
 } from '../shared/types';
 import { StoredYarn } from '../tabs/ThisYear/YarnTracking/types';
 import { LanguageMedia } from '../tabs/ThisYear/LanguageMedia/types';
+import { Adventure, AdventureMode } from '../tabs/ThisYear/Adventures/types';
 import {
   BookDetails,
   GameDetails,
@@ -443,6 +444,27 @@ const languageMedia: Record<string, LanguageMedia> = {
   },
 };
 
+const adventureModes: Record<string, AdventureMode> = {
+  running: { id: 'running', name: 'Running', emoji: '🏃', colour: '#d11c2e' },
+  cycling: { id: 'cycling', name: 'Cycling', emoji: '🚲', colour: '#2a9940' },
+};
+
+const adventures: Record<string, Adventure> = {
+  parkrun: {
+    id: 'parkrun',
+    description: 'Plenty Gorge parkrun',
+    modeId: 'running',
+    isDone: false,
+    plannedDate: '2026-10-17',
+  },
+  hurstbridge: {
+    id: 'hurstbridge',
+    description: 'Ride to Hurstbridge',
+    modeId: 'cycling',
+    isDone: true,
+  },
+};
+
 export const seedData = {
   [WORK_KEY]: {
     [backlog.id]: { ...backlog, items: { [backlogTask.id]: backlogTask } },
@@ -465,4 +487,6 @@ export const seedData = {
   [HEALTH_PATH]: { exercises, classes },
   yarn: { '2026': yarn },
   language_media: { '2026': languageMedia },
+  '2026': { adventures },
+  adventure_modes: adventureModes,
 };
