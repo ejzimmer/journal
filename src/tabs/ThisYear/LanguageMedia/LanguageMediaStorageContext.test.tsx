@@ -1,20 +1,41 @@
-import { renderHook } from '@testing-library/react';
+import { act, renderHook } from '@testing-library/react';
+import { getThisYear } from '../../../shared/dates';
 import { ContextType } from '../../../shared/FirebaseContext';
 import { StorageContextWrapper } from '../../../shared/storageContextTestUtils';
 import {
   LanguageMediaStorageProvider,
   useLanguageMediaStorage,
+  useLanguageMediaStorageContext,
 } from './LanguageMediaStorageContext';
-import { LANGUAGE_MEDIA_PATH, NewMedia, TvSeries } from './types';
+import {
+  getLanguageMediaPath,
+  LANGUAGE_MEDIA_PATH,
+  LanguageMedia,
+  NewMedia,
+  TvSeries,
+} from './types';
 
-const createLanguageMediaStorage = (storage: Partial<ContextType> = {}) =>
-  renderHook(useLanguageMediaStorage, {
+const renderWithProvider = <T,>(
+  hook: () => T,
+  storage: Partial<ContextType> = {},
+) =>
+  renderHook(hook, {
     wrapper: ({ children }) => (
       <StorageContextWrapper value={storage}>
         <LanguageMediaStorageProvider>{children}</LanguageMediaStorageProvider>
       </StorageContextWrapper>
     ),
-  }).result.current;
+  });
+
+const createLanguageMediaStorage = (storage: Partial<ContextType> = {}) =>
+  renderWithProvider(useLanguageMediaStorage, storage).result.current;
+
+const storeMedia = (
+  mediaByYear: Record<number, Record<string, LanguageMedia>>,
+) => jest.fn().mockReturnValue({ value: mediaByYear, loading: false });
+
+const thisYear = getThisYear();
+const thisYearsPath = getLanguageMediaPath(thisYear);
 
 const lupin: TvSeries = {
   id: 'lupin',
@@ -42,10 +63,8 @@ describe('LanguageMediaStorageContext', () => {
   });
 
   describe('listing media', () => {
-    it('lists the media stored at the language media path', () => {
-      const useValue = jest
-        .fn()
-        .mockReturnValue({ value: { lupin }, loading: false });
+    it("lists this year's media from the language media path", () => {
+      const useValue = storeMedia({ [thisYear]: { lupin } });
 
       const storage = createLanguageMediaStorage({ useValue });
 
@@ -60,14 +79,40 @@ describe('LanguageMediaStorageContext', () => {
         expect(storage.media).toEqual([]);
       });
     });
+  });
+
+  describe('years', () => {
+    it('lists this year and every stored year, newest first', () => {
+      const { result } = renderWithProvider(useLanguageMediaStorageContext, {
+        useValue: storeMedia({ [thisYear - 2]: { lupin } }),
+      });
+
+      expect(result.current.years).toEqual([thisYear, thisYear - 2]);
+    });
+
+    describe('when an earlier year is selected', () => {
+      it("lists that year's media", () => {
+        const { result } = renderWithProvider(
+          () => ({
+            context: useLanguageMediaStorageContext(),
+            storage: useLanguageMediaStorage(),
+          }),
+          { useValue: storeMedia({ [thisYear - 1]: { lupin } }) },
+        );
+
+        act(() => result.current.context.selectYear(thisYear - 1));
+
+        expect(result.current.storage.media).toEqual([lupin]);
+      });
+    });
 
     describe('while the stored media is loading', () => {
       it('says it is loading', () => {
-        const storage = createLanguageMediaStorage({
+        const { result } = renderWithProvider(useLanguageMediaStorageContext, {
           useValue: () => ({ value: undefined, loading: true }),
         });
 
-        expect(storage.isLoading).toBe(true);
+        expect(result.current.isLoading).toBe(true);
       });
     });
   });
@@ -79,14 +124,14 @@ describe('LanguageMediaStorageContext', () => {
       return addItem.mock.calls[0];
     };
 
-    it('saves it to the language media path', () => {
+    it("saves it to this year's path", () => {
       const [path] = addMedia({
         type: 'youtube',
         name: 'HugoDécrypte',
         language: 'french',
       });
 
-      expect(path).toBe(LANGUAGE_MEDIA_PATH);
+      expect(path).toBe(thisYearsPath);
     });
 
     describe('a tv series', () => {
@@ -183,7 +228,7 @@ describe('LanguageMediaStorageContext', () => {
 
       storage.updateMedia(changed);
 
-      expect(updateItem).toHaveBeenCalledWith(LANGUAGE_MEDIA_PATH, changed);
+      expect(updateItem).toHaveBeenCalledWith(thisYearsPath, changed);
     });
 
     describe('when a nested value has been cleared', () => {
@@ -221,6 +266,6 @@ describe('LanguageMediaStorageContext', () => {
 
     storage.deleteMedia(lupin);
 
-    expect(deleteItem).toHaveBeenCalledWith(LANGUAGE_MEDIA_PATH, lupin);
+    expect(deleteItem).toHaveBeenCalledWith(thisYearsPath, lupin);
   });
 });
