@@ -13,7 +13,7 @@ export function CurrentLevel({ data }: { data: WaniKaniData }) {
   const daysToFinish = predictDaysToFinish(
     data.levelProgressions,
     data.level,
-    Date.now(),
+    Temporal.Now.instant(),
   );
 
   return (

@@ -128,9 +128,9 @@ describe('removeOutliers', () => {
 });
 
 describe('predictDaysToFinish', () => {
-  const DAY = 24 * 60 * 60 * 1000;
-  const start = new Date('2026-01-01T00:00:00Z').getTime();
-  const at = (days: number) => new Date(start + days * DAY).toISOString();
+  const start = Temporal.Instant.from('2026-01-01T00:00:00Z');
+  const after = (days: number) => start.add({ hours: days * 24 });
+  const at = (days: number) => after(days).toString();
 
   function progression(
     level: number,
@@ -153,14 +153,12 @@ describe('predictDaysToFinish', () => {
     ];
 
     it('adds what is left of the current level to the remaining levels', () => {
-      expect(predictDaysToFinish(progressions, 58, start + 24 * DAY)).toBe(26);
+      expect(predictDaysToFinish(progressions, 58, after(24))).toBe(26);
     });
 
     describe('when the current level has run over the average', () => {
       it('counts only the remaining levels', () => {
-        expect(predictDaysToFinish(progressions, 58, start + 40 * DAY)).toBe(
-          20,
-        );
+        expect(predictDaysToFinish(progressions, 58, after(40))).toBe(20);
       });
     });
   });
@@ -176,7 +174,7 @@ describe('predictDaysToFinish', () => {
         progression(59, 140),
       ];
 
-      expect(predictDaysToFinish(progressions, 59, start + 140 * DAY)).toBe(20);
+      expect(predictDaysToFinish(progressions, 59, after(140))).toBe(20);
     });
   });
 
@@ -188,22 +186,22 @@ describe('predictDaysToFinish', () => {
         progression(59, 70),
       ];
 
-      expect(predictDaysToFinish(progressions, 59, start + 70 * DAY)).toBe(20);
+      expect(predictDaysToFinish(progressions, 59, after(70))).toBe(20);
     });
   });
 
   describe('once level 60 is passed', () => {
     it('has nothing left', () => {
-      expect(
-        predictDaysToFinish([progression(60, 0, 10)], 60, start + 20 * DAY),
-      ).toBe(0);
+      expect(predictDaysToFinish([progression(60, 0, 10)], 60, after(20))).toBe(
+        0,
+      );
     });
   });
 
   describe('before any level is passed', () => {
     it('makes no prediction', () => {
       expect(
-        predictDaysToFinish([progression(1, 0)], 1, start + DAY),
+        predictDaysToFinish([progression(1, 0)], 1, after(1)),
       ).toBeUndefined();
     });
   });

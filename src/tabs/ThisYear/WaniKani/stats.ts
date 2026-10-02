@@ -108,7 +108,6 @@ export function calculateLevelProgress(
 }
 
 const MAX_LEVEL = 60;
-const DAY_IN_MS = 24 * 60 * 60 * 1000;
 
 function findLatestProgressionsByLevel(levelProgressions: LevelProgression[]) {
   const progressionsByLevel = new Map<number, LevelProgression>();
@@ -121,8 +120,8 @@ function findLatestProgressionsByLevel(levelProgressions: LevelProgression[]) {
   return progressionsByLevel;
 }
 
-function measureDays(from: string, to: string | number) {
-  return (new Date(to).getTime() - new Date(from).getTime()) / DAY_IN_MS;
+function measureDays(from: string, to: string | Temporal.Instant) {
+  return Temporal.Instant.from(from).until(to).total('hours') / 24;
 }
 
 function percentile(sortedValues: number[], fraction: number) {
@@ -148,7 +147,7 @@ export function removeOutliers(values: number[]) {
 export function predictDaysToFinish(
   levelProgressions: LevelProgression[],
   currentLevel: number,
-  now: number,
+  now: Temporal.Instant,
 ): number | undefined {
   const progressionsByLevel = findLatestProgressionsByLevel(levelProgressions);
   const current = progressionsByLevel.get(currentLevel);
