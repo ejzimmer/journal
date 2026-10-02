@@ -76,7 +76,7 @@ export function calculateGemShape(
 }
 
 export function calculateClusterLayout(r: number) {
-  const padding = r * 0.35;
+  const padding = 1;
   const width = 2 * SQRT3 * r + 2 * padding;
   const height = 3.5 * r + 2 * padding;
   const centres: Record<SubjectType, Point> = {
@@ -92,6 +92,7 @@ export function calculateClusterLayout(r: number) {
       .map((n) => n.toFixed(2))
       .join(' '),
     centres,
+    label: { x: (SQRT3 * r) / 2 - 1.5, y: r },
     settingRadius: r,
     gemRadius: r * GEM_TO_SETTING_RATIO,
   };

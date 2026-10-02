@@ -42,14 +42,18 @@
   .level-gems {
     display: flex;
     flex-wrap: wrap;
-    gap: 12px;
+    row-gap: 3px;
+    column-gap: 4px;
+    padding-inline-start: 8px;
   }
 
   .level-gem-cluster {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    color: var(--body-colour-mid);
+    overflow: visible;
+
+    text {
+      fill: var(--body-colour-mid);
+      font-weight: bold;
+    }
   }
 
   .gem-defs {
