@@ -573,6 +573,7 @@ describe('MediaList', () => {
     describe('of a chapter', () => {
       it('saves the new totals to the chapter', async () => {
         const { user, storageContext } = renderList([yotsuba]);
+        await user.click(screen.getByLabelText('Edit totals for Chapter 1'));
         const form = screen.getByRole('form', {
           name: 'Edit totals for Chapter 1',
         });
