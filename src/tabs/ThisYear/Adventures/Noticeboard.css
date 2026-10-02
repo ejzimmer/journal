@@ -1,8 +1,8 @@
 .noticeboard {
-  position: relative;
+  display: flex;
+  flex-direction: column;
   min-height: 160px;
-  padding-block: 30px 64px;
-  padding-inline: 20px;
+  padding: 24px;
   background-color: #b88a5a;
   background-image:
     radial-gradient(
@@ -38,14 +38,13 @@
     0 8px 18px hsl(30 50% 20% / 0.25);
 
   .add-adventure {
-    position: absolute;
-    right: 8px;
-    bottom: 2px;
+    margin-block-start: auto;
+    align-self: end;
   }
 
   .pushpin-button {
     width: 64px;
-    height: 64px;
+    aspect-ratio: 1;
     padding: 0;
     border: 0;
     border-radius: 50%;
