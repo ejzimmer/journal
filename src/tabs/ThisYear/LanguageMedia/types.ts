@@ -1,4 +1,7 @@
-export const LANGUAGE_MEDIA_PATH = '2026/language_media';
+export const LANGUAGE_MEDIA_PATH = 'language_media';
+
+export const getLanguageMediaPath = (year: number) =>
+  `${LANGUAGE_MEDIA_PATH}/${year}`;
 
 export const LANGUAGES = ['french', 'japanese'] as const;
 export type Language = (typeof LANGUAGES)[number];
@@ -86,3 +89,5 @@ export type NewMedia =
   | (NewMediaDetails & { type: 'youtube' })
   | (NewMediaDetails & { type: 'manga'; volumeCount?: number })
   | (NewMediaDetails & { type: 'book'; volumeNames?: string[] });
+
+export type StoredMediaByYear = Record<string, Record<string, LanguageMedia>>;
