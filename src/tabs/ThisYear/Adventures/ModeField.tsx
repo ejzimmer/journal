@@ -1,72 +1,29 @@
 import { useState } from 'react';
-import { FormControl } from '../../../shared/controls/FormControl';
 import { PlusIcon } from '../../../shared/icons/Plus';
 import { useAdventureStorage } from './AdventureStorageContext';
-import { EmojiPicker } from './EmojiPicker';
-import { findUnusedColour, MODE_COLOURS } from './modeColours';
+import { NewModeForm } from './NewModeForm';
 import { AdventureMode } from './types';
 
 import './ModeField.css';
 
-const NEW_MODE = 'new';
-const DEFAULT_EMOJI = '🏃';
-
-type NewMode = Omit<AdventureMode, 'id'>;
-
 type ModeFieldProps = {
-  modes: AdventureMode[];
-  modeId: string;
+  modeId?: string;
   onSelectMode: (modeId: string) => void;
-  newMode: NewMode;
-  onChangeNewMode: (newMode: NewMode) => void;
 };
 
-export function useModeField() {
+export function ModeField({ modeId, onSelectMode }: ModeFieldProps) {
   const { modes, addMode } = useAdventureStorage();
-  const [selectedModeId, setSelectedModeId] = useState<string>();
-  const [name, setName] = useState('');
-  const [emoji, setEmoji] = useState(DEFAULT_EMOJI);
-  const [selectedColour, setSelectedColour] = useState<string>();
+  const [isNewModeOpen, setIsNewModeOpen] = useState(false);
+  const isAddingMode = isNewModeOpen || modes.length === 0;
 
-  const modeId = selectedModeId ?? modes[0]?.id ?? NEW_MODE;
-  const colour =
-    selectedColour ?? findUnusedColour(modes.map(({ colour }) => colour));
-  const newMode = { name, emoji, colour };
-
-  const updateNewMode = (mode: NewMode) => {
-    setName(mode.name);
-    setEmoji(mode.emoji);
-    setSelectedColour(mode.colour);
-  };
-
-  const saveMode = () => {
-    if (modeId !== NEW_MODE) {
-      return modeId;
+  const saveMode = (mode: Omit<AdventureMode, 'id'>) => {
+    const newModeId = addMode(mode);
+    if (newModeId) {
+      onSelectMode(newModeId);
     }
-    if (!name.trim()) {
-      return null;
-    }
-    return addMode({ ...newMode, name: name.trim() });
+    setIsNewModeOpen(false);
   };
 
-  const modeFieldProps: ModeFieldProps = {
-    modes,
-    modeId,
-    onSelectMode: setSelectedModeId,
-    newMode,
-    onChangeNewMode: updateNewMode,
-  };
-
-  return { modeFieldProps, saveMode };
-}
-
-export function ModeField({
-  modes,
-  modeId,
-  onSelectMode,
-  newMode,
-  onChangeNewMode,
-}: ModeFieldProps) {
   return (
     <>
       <div className="mode-options" role="radiogroup" aria-label="Mode">
@@ -86,43 +43,22 @@ export function ModeField({
             {mode.name}
           </label>
         ))}
-        {modeId !== NEW_MODE && (
-          <label className="mode-option new-mode-option" aria-label="New mode">
-            <input
-              type="radio"
-              name="mode"
-              onChange={() => onSelectMode(NEW_MODE)}
-            />
+        {!isAddingMode && (
+          <button
+            type="button"
+            className="mode-option new-mode-option"
+            aria-label="New mode"
+            onClick={() => setIsNewModeOpen(true)}
+          >
             <PlusIcon width="14px" />
-          </label>
+          </button>
         )}
       </div>
-      {modeId === NEW_MODE && (
-        <div className="new-mode">
-          <FormControl
-            label="Mode name"
-            hideLabel
-            value={newMode.name}
-            onChange={(name) => onChangeNewMode({ ...newMode, name })}
-          />
-          <EmojiPicker
-            value={newMode.emoji}
-            onChange={(emoji) => onChangeNewMode({ ...newMode, emoji })}
-          />
-          <div className="mode-colours" role="radiogroup" aria-label="Colour">
-            {MODE_COLOURS.map(({ name, colour }) => (
-              <input
-                key={colour}
-                type="radio"
-                name="colour"
-                aria-label={name}
-                style={{ '--swatch-colour': colour } as React.CSSProperties}
-                checked={newMode.colour === colour}
-                onChange={() => onChangeNewMode({ ...newMode, colour })}
-              />
-            ))}
-          </div>
-        </div>
+      {isAddingMode && (
+        <NewModeForm
+          usedColours={modes.map(({ colour }) => colour)}
+          onSave={saveMode}
+        />
       )}
     </>
   );

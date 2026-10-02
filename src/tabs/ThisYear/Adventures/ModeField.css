@@ -36,6 +36,7 @@
 }
 
 .new-mode-option {
+  height: auto;
   padding-block: 8px;
   padding-inline: 10px;
   border: 1px dashed var(--border-colour);
@@ -44,7 +45,7 @@
 
 .new-mode {
   display: grid;
-  grid-template-columns: auto 1fr;
+  grid-template-columns: auto 1fr auto;
   align-items: center;
   gap: 16px;
   animation: open-new-mode 0.28s cubic-bezier(0.2, 0.8, 0.3, 1);

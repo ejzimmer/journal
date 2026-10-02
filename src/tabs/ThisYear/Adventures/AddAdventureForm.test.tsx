@@ -64,7 +64,7 @@ describe('AddAdventureForm', () => {
   });
 
   describe('when the form is submitted', () => {
-    describe('with an existing mode', () => {
+    describe('with a mode selected', () => {
       it('adds the adventure with that mode', async () => {
         const { user, storage } = await openForm();
 
@@ -92,49 +92,17 @@ describe('AddAdventureForm', () => {
       });
     });
 
-    describe('with a new mode', () => {
-      it('adds the mode, then the adventure with it', async () => {
-        const { user, storage } = await openForm();
+    describe('with no mode selected', () => {
+      it('does not add the adventure', async () => {
+        const { user, storage } = await openForm([]);
 
         await user.type(
           screen.getByRole('textbox', { name: 'Adventure' }),
           'Paddle the Yarra',
         );
-        await user.click(screen.getByRole('radio', { name: 'New mode' }));
-        await user.type(
-          screen.getByRole('textbox', { name: 'Mode name' }),
-          'Kayaking',
-        );
-        await user.click(screen.getByRole('button', { name: 'Emoji' }));
-        await user.click(screen.getByRole('button', { name: '🛶' }));
-        await user.click(screen.getByRole('radio', { name: 'Yellow' }));
         await user.click(screen.getByRole('button', { name: 'Add' }));
 
-        expect(storage.addMode).toHaveBeenCalledWith({
-          name: 'Kayaking',
-          emoji: '🛶',
-          colour: '#fad200',
-        });
-        expect(storage.addAdventure).toHaveBeenCalledWith({
-          description: 'Paddle the Yarra',
-          modeId: 'kayaking',
-        });
-      });
-
-      describe('without a name', () => {
-        it('does not add the adventure', async () => {
-          const { user, storage } = await openForm();
-
-          await user.type(
-            screen.getByRole('textbox', { name: 'Adventure' }),
-            'Paddle the Yarra',
-          );
-          await user.click(screen.getByRole('radio', { name: 'New mode' }));
-          await user.click(screen.getByRole('button', { name: 'Add' }));
-
-          expect(storage.addMode).not.toHaveBeenCalled();
-          expect(storage.addAdventure).not.toHaveBeenCalled();
-        });
+        expect(storage.addAdventure).not.toHaveBeenCalled();
       });
     });
 
@@ -149,18 +117,19 @@ describe('AddAdventureForm', () => {
     });
   });
 
-  describe('when new mode is chosen', () => {
-    it('selects a colour no other mode uses', async () => {
+  describe('when the new mode button is clicked', () => {
+    it('opens the new mode form with a colour no other mode uses', async () => {
       const { user } = await openForm();
 
-      await user.click(screen.getByRole('radio', { name: 'New mode' }));
+      await user.click(screen.getByRole('button', { name: 'New mode' }));
 
+      expect(screen.getByRole('textbox', { name: 'Mode name' })).toBeVisible();
       expect(screen.getByRole('radio', { name: 'Orange' })).toBeChecked();
     });
 
-    it('hides the new mode option', async () => {
+    it('hides the new mode button', async () => {
       const { user } = await openForm();
-      const newMode = screen.getByRole('radio', { name: 'New mode' });
+      const newMode = screen.getByRole('button', { name: 'New mode' });
 
       await user.click(newMode);
 
@@ -168,8 +137,89 @@ describe('AddAdventureForm', () => {
     });
   });
 
+  describe('when a new mode is added', () => {
+    async function addKayaking() {
+      const form = await openForm();
+      await form.user.click(screen.getByRole('button', { name: 'New mode' }));
+      await form.user.type(
+        screen.getByRole('textbox', { name: 'Mode name' }),
+        'Kayaking',
+      );
+      await form.user.click(screen.getByRole('button', { name: 'Emoji' }));
+      await form.user.click(screen.getByRole('button', { name: '🛶' }));
+      await form.user.click(screen.getByRole('radio', { name: 'Yellow' }));
+      return form;
+    }
+
+    it('saves the mode', async () => {
+      const { user, storage } = await addKayaking();
+
+      await user.click(screen.getByRole('button', { name: 'Add mode' }));
+
+      expect(storage.addMode).toHaveBeenCalledWith({
+        name: 'Kayaking',
+        emoji: '🛶',
+        colour: '#fad200',
+      });
+    });
+
+    it('closes the new mode form', async () => {
+      const { user } = await addKayaking();
+      const modeName = screen.getByRole('textbox', { name: 'Mode name' });
+
+      await user.click(screen.getByRole('button', { name: 'Add mode' }));
+
+      expect(modeName).not.toBeInTheDocument();
+    });
+
+    it('selects the new mode for the adventure', async () => {
+      const { user, storage } = await addKayaking();
+
+      await user.click(screen.getByRole('button', { name: 'Add mode' }));
+      await user.type(
+        screen.getByRole('textbox', { name: 'Adventure' }),
+        'Paddle the Yarra',
+      );
+      await user.click(screen.getByRole('button', { name: 'Add' }));
+
+      expect(storage.addAdventure).toHaveBeenCalledWith({
+        description: 'Paddle the Yarra',
+        modeId: 'kayaking',
+      });
+    });
+
+    describe('by pressing Enter in the name', () => {
+      it('saves the mode without adding the adventure', async () => {
+        const { user, storage } = await addKayaking();
+        await user.type(
+          screen.getByRole('textbox', { name: 'Adventure' }),
+          'Paddle the Yarra',
+        );
+
+        await user.type(
+          screen.getByRole('textbox', { name: 'Mode name' }),
+          '{Enter}',
+        );
+
+        expect(storage.addMode).toHaveBeenCalled();
+        expect(storage.addAdventure).not.toHaveBeenCalled();
+      });
+    });
+
+    describe('without a name', () => {
+      it('does not save the mode', async () => {
+        const { user, storage } = await openForm();
+
+        await user.click(screen.getByRole('button', { name: 'New mode' }));
+        await user.click(screen.getByRole('button', { name: 'Add mode' }));
+
+        expect(storage.addMode).not.toHaveBeenCalled();
+      });
+    });
+  });
+
   describe('when there are no modes yet', () => {
-    it('starts on a new mode', async () => {
+    it('starts with the new mode form open', async () => {
       await openForm([]);
 
       expect(screen.getByRole('textbox', { name: 'Mode name' })).toBeVisible();
