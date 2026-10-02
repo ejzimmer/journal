@@ -1,5 +1,6 @@
 import { OtherGoals } from './OtherGoals';
 import { StationRunning } from './StationRunning/StationRunning';
+import { WaniKani } from './WaniKani';
 import { YarnTracking } from './YarnTracking';
 
 export function ThisYear() {
@@ -8,6 +9,7 @@ export function ThisYear() {
       <YarnTracking />
       <StationRunning />
       <OtherGoals />
+      <WaniKani />
     </div>
   );
 }
