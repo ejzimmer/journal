@@ -1,9 +1,15 @@
-import { EpisodeDetails } from './EpisodeDetails';
+import { SeasonDetails } from './SeasonDetails';
 import { formatMinutesAndSeconds } from './format';
 import { listByNumber } from './lists';
-import { TvSeries } from './types';
+import { ItemPath, TvSeries } from './types';
 
-export function TvSeriesDetails({ series }: { series: TvSeries }) {
+export function TvSeriesDetails({
+  series,
+  path,
+}: {
+  series: TvSeries;
+  path: ItemPath;
+}) {
   return (
     <>
       {series.upTo && (
@@ -15,14 +21,10 @@ export function TvSeriesDetails({ series }: { series: TvSeries }) {
       <ul>
         {listByNumber(series.seasons).map((season) => (
           <li key={season.id}>
-            Season {season.number}
-            <ul>
-              {listByNumber(season.episodes).map((episode) => (
-                <li key={episode.id}>
-                  <EpisodeDetails episode={episode} />
-                </li>
-              ))}
-            </ul>
+            <SeasonDetails
+              season={season}
+              path={[...path, 'seasons', season.id]}
+            />
           </li>
         ))}
       </ul>

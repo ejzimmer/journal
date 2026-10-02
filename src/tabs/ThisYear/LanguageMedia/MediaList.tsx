@@ -8,7 +8,7 @@ export function MediaList() {
     <ul>
       {media.map((item) => (
         <li key={item.id}>
-          <MediaDetails media={item} />
+          <MediaDetails media={item} path={[item.id]} />
         </li>
       ))}
     </ul>

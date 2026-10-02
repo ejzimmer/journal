@@ -1,9 +1,14 @@
-import { ChapterDetails } from './ChapterDetails';
-import { formatVolumeName } from './format';
+import { VolumeDetails } from './VolumeDetails';
 import { listByNumber } from './lists';
-import { PrintSeries } from './types';
+import { ItemPath, PrintSeries } from './types';
 
-export function PrintSeriesDetails({ series }: { series: PrintSeries }) {
+export function PrintSeriesDetails({
+  series,
+  path,
+}: {
+  series: PrintSeries;
+  path: ItemPath;
+}) {
   return (
     <>
       {series.upTo && (
@@ -14,15 +19,10 @@ export function PrintSeriesDetails({ series }: { series: PrintSeries }) {
       <ul>
         {listByNumber(series.volumes).map((volume) => (
           <li key={volume.id}>
-            {formatVolumeName(volume)}
-            {volume.pages !== undefined && ` (${volume.pages} pages)`}
-            <ul>
-              {listByNumber(volume.chapters).map((chapter) => (
-                <li key={chapter.id}>
-                  <ChapterDetails chapter={chapter} />
-                </li>
-              ))}
-            </ul>
+            <VolumeDetails
+              volume={volume}
+              path={[...path, 'volumes', volume.id]}
+            />
           </li>
         ))}
       </ul>

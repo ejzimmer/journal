@@ -1,11 +1,14 @@
 import { screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { MediaList } from './MediaList';
 import { renderWithLanguageMediaStorage } from './languageMediaStorageTestUtils';
 import { hugo, lupin, yotsuba } from './testMedia';
 import { LanguageMedia } from './types';
 
-const renderList = (media: LanguageMedia[]) =>
-  renderWithLanguageMediaStorage(<MediaList />, { media });
+const renderList = (media: LanguageMedia[]) => ({
+  user: userEvent.setup(),
+  ...renderWithLanguageMediaStorage(<MediaList />, { media }),
+});
 
 describe('MediaList', () => {
   describe('a tv series', () => {
@@ -127,6 +130,102 @@ describe('MediaList', () => {
       ]);
 
       expect(screen.getByText('Astérix le Gaulois')).toBeInTheDocument();
+    });
+  });
+
+  describe('deleting', () => {
+    describe('a series', () => {
+      it('deletes it from storage', async () => {
+        const { user, storageContext } = renderList([lupin]);
+
+        await user.click(screen.getByRole('button', { name: 'Delete Lupin' }));
+
+        expect(storageContext.deleteItem).toHaveBeenCalledWith(['lupin']);
+      });
+    });
+
+    describe('a season', () => {
+      it('deletes it from storage', async () => {
+        const { user, storageContext } = renderList([lupin]);
+
+        await user.click(
+          screen.getByRole('button', { name: 'Delete Season 1' }),
+        );
+
+        expect(storageContext.deleteItem).toHaveBeenCalledWith([
+          'lupin',
+          'seasons',
+          's1',
+        ]);
+      });
+    });
+
+    describe('an episode', () => {
+      it('deletes it from storage', async () => {
+        const { user, storageContext } = renderList([lupin]);
+
+        await user.click(
+          screen.getByRole('button', { name: 'Delete Chapitre 1' }),
+        );
+
+        expect(storageContext.deleteItem).toHaveBeenCalledWith([
+          'lupin',
+          'seasons',
+          's1',
+          'episodes',
+          'e1',
+        ]);
+      });
+    });
+
+    describe('a video', () => {
+      it('deletes it from storage', async () => {
+        const { user, storageContext } = renderList([hugo]);
+
+        await user.click(
+          screen.getByRole('button', { name: 'Delete https://youtu.be/1' }),
+        );
+
+        expect(storageContext.deleteItem).toHaveBeenCalledWith([
+          'hugo',
+          'videos',
+          'v1',
+        ]);
+      });
+    });
+
+    describe('a volume', () => {
+      it('deletes it from storage', async () => {
+        const { user, storageContext } = renderList([yotsuba]);
+
+        await user.click(
+          screen.getByRole('button', { name: 'Delete Volume 1' }),
+        );
+
+        expect(storageContext.deleteItem).toHaveBeenCalledWith([
+          'yotsuba',
+          'volumes',
+          'vol1',
+        ]);
+      });
+    });
+
+    describe('a chapter', () => {
+      it('deletes it from storage', async () => {
+        const { user, storageContext } = renderList([yotsuba]);
+
+        await user.click(
+          screen.getByRole('button', { name: 'Delete Chapter 1' }),
+        );
+
+        expect(storageContext.deleteItem).toHaveBeenCalledWith([
+          'yotsuba',
+          'volumes',
+          'vol1',
+          'chapters',
+          'c1',
+        ]);
+      });
     });
   });
 });
