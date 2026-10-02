@@ -1,9 +1,10 @@
 import { createContext, ReactNode, useContext, useMemo, useState } from 'react';
 import { useStorageContext } from '../../../shared/FirebaseContext';
 import { getThisYear } from '../../../shared/dates';
-import { createMedia } from './createMedia';
+import { createInitialChildren, createMediaDetails } from './createMedia';
 import {
   getLanguageMediaPath,
+  ItemPath,
   LANGUAGE_MEDIA_PATH,
   LanguageMedia,
   NewMedia,
@@ -15,8 +16,9 @@ export type LanguageMediaYearStorage = {
   media: LanguageMedia[];
 
   addMedia: (media: NewMedia) => void;
-  updateMedia: (media: LanguageMedia) => void;
-  deleteMedia: (media: LanguageMedia) => void;
+  addItem: (collection: ItemPath, item: object) => string | null;
+  updateItem: (item: ItemPath, changes: object) => void;
+  deleteItem: (item: ItemPath) => void;
 };
 
 export type LanguageMediaStorageContextType = {
@@ -32,9 +34,6 @@ export const LanguageMediaStorageContext = createContext<
   LanguageMediaStorageContextType | undefined
 >(undefined);
 
-const removeUndefinedValues = <T,>(value: T): T =>
-  JSON.parse(JSON.stringify(value));
-
 const listYearsNewestFirst = (
   thisYear: number,
   storedMediaByYear?: StoredMediaByYear,
@@ -48,7 +47,7 @@ export function LanguageMediaStorageProvider({
 }: {
   children: ReactNode;
 }) {
-  const { addItem, updateItem, deleteItem, useValue } = useStorageContext();
+  const { addItem, deleteItem, setValues, useValue } = useStorageContext();
   const { value: storedMediaByYear, loading } =
     useValue<StoredMediaByYear>(LANGUAGE_MEDIA_PATH);
   const thisYear = getThisYear();
@@ -56,17 +55,35 @@ export function LanguageMediaStorageProvider({
 
   const mediaYears = useMemo(() => {
     const createMediaYear = (year: number): LanguageMediaYearStorage => {
-      const path = getLanguageMediaPath(year);
+      const toPath = (itemPath: ItemPath) =>
+        [getLanguageMediaPath(year), ...itemPath].join('/');
+
+      const addMediaItem = (collection: ItemPath, item: object) =>
+        addItem(toPath(collection), item);
 
       return {
         year,
         media: Object.values(storedMediaByYear?.[year] ?? {}),
+
         addMedia: (newMedia) => {
-          addItem<LanguageMedia>(path, createMedia(newMedia));
+          const id = addMediaItem([], createMediaDetails(newMedia));
+          if (!id) return;
+
+          const { collection, children } = createInitialChildren(newMedia);
+          children.forEach((child) => addMediaItem([id, collection], child));
         },
-        updateMedia: (changed) =>
-          updateItem<LanguageMedia>(path, removeUndefinedValues(changed)),
-        deleteMedia: (deleted) => deleteItem<LanguageMedia>(path, deleted),
+        addItem: addMediaItem,
+        updateItem: (itemPath, changes) =>
+          setValues(
+            Object.fromEntries(
+              Object.entries(changes).map(([field, value]) => [
+                toPath([...itemPath, field]),
+                value ?? null,
+              ]),
+            ),
+          ),
+        deleteItem: (itemPath) =>
+          deleteItem(toPath(itemPath.slice(0, -1)), { id: itemPath.at(-1)! }),
       };
     };
 
@@ -80,7 +97,7 @@ export function LanguageMediaStorageProvider({
       getMediaYear: (year: number) =>
         mediaByYear.get(year) ?? createMediaYear(year),
     };
-  }, [thisYear, storedMediaByYear, addItem, updateItem, deleteItem]);
+  }, [thisYear, storedMediaByYear, addItem, deleteItem, setValues]);
 
   const value = useMemo(
     () => ({
