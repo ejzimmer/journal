@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { Skeleton } from '../../../shared/controls/Skeleton';
 import { InvalidApiKeyError } from './api';
-import { BurnedByLevel } from './BurnedByLevel';
+import { LevelGems } from './LevelGems';
 import { CurrentLevel } from './CurrentLevel';
 import { SrsProgress } from './SrsProgress';
 import { useWaniKaniData } from './useWaniKaniData';
@@ -36,7 +36,7 @@ export function WaniKaniProgress({
     <div className="wanikani">
       <CurrentLevel data={data} />
       <SrsProgress data={data} />
-      <BurnedByLevel data={data} />
+      <LevelGems data={data} />
     </div>
   );
 }

@@ -1,5 +1,5 @@
 import 'fake-indexeddb/auto';
-import { render, screen, within } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { FirebaseContext } from '../../../shared/FirebaseContext';
 import { createMockFirebaseContext } from '../../../shared/mockFirebase';
@@ -196,11 +196,21 @@ describe('WaniKani', () => {
     it('shows the percent of each type burned at each level', async () => {
       renderWaniKani('my-key');
 
-      const levelOne = await screen.findByRole('row', { name: /^1 / });
-      const percents = within(levelOne)
-        .getAllByRole('cell')
-        .map((cell) => cell.textContent);
-      expect(percents).toEqual(['100%', '100%', '0%']);
+      expect(
+        await screen.findByRole('img', {
+          name: 'Level 1: Radicals 100%, Kanji 100%, Vocabulary 0%',
+        }),
+      ).toBeInTheDocument();
+    });
+
+    it('shows every level up to 60', async () => {
+      renderWaniKani('my-key');
+
+      expect(
+        await screen.findByRole('img', {
+          name: 'Level 60: Radicals 0%, Kanji 0%, Vocabulary 0%',
+        }),
+      ).toBeInTheDocument();
     });
 
     describe('when progress has been loaded before', () => {
