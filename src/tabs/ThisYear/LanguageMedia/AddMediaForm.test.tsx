@@ -1,0 +1,138 @@
+import { screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { AddMediaForm } from './AddMediaForm';
+import { renderWithLanguageMediaStorage } from './languageMediaStorageTestUtils';
+
+function renderForm() {
+  const user = userEvent.setup();
+  const view = renderWithLanguageMediaStorage(<AddMediaForm />);
+  return { user, ...view };
+}
+
+describe('AddMediaForm', () => {
+  describe('when a tv series is submitted', () => {
+    it('adds it with its number of seasons', async () => {
+      const { user, storageContext } = renderForm();
+
+      await user.type(screen.getByRole('textbox', { name: 'Name' }), 'Lupin');
+      await user.type(screen.getByRole('spinbutton', { name: 'Seasons' }), '3');
+      await user.click(screen.getByRole('button', { name: 'Add' }));
+
+      expect(storageContext.addMedia).toHaveBeenCalledWith({
+        type: 'tv',
+        name: 'Lupin',
+        language: 'french',
+        seasonCount: 3,
+      });
+    });
+
+    describe('without a number of seasons', () => {
+      it('adds it without one', async () => {
+        const { user, storageContext } = renderForm();
+
+        await user.type(screen.getByRole('textbox', { name: 'Name' }), 'Lupin');
+        await user.click(screen.getByRole('button', { name: 'Add' }));
+
+        expect(storageContext.addMedia).toHaveBeenCalledWith({
+          type: 'tv',
+          name: 'Lupin',
+          language: 'french',
+          seasonCount: undefined,
+        });
+      });
+    });
+  });
+
+  describe('when a youtube channel is submitted', () => {
+    it('adds it in the chosen language', async () => {
+      const { user, storageContext } = renderForm();
+
+      await user.type(screen.getByRole('textbox', { name: 'Name' }), 'Yuyu');
+      await user.selectOptions(
+        screen.getByRole('combobox', { name: 'Language' }),
+        'Japanese',
+      );
+      await user.selectOptions(
+        screen.getByRole('combobox', { name: 'Type' }),
+        'YouTube channel',
+      );
+      await user.click(screen.getByRole('button', { name: 'Add' }));
+
+      expect(storageContext.addMedia).toHaveBeenCalledWith({
+        type: 'youtube',
+        name: 'Yuyu',
+        language: 'japanese',
+      });
+    });
+  });
+
+  describe('when a manga series is submitted', () => {
+    it('adds it with its number of volumes', async () => {
+      const { user, storageContext } = renderForm();
+
+      await user.type(screen.getByRole('textbox', { name: 'Name' }), 'Yotsuba');
+      await user.selectOptions(
+        screen.getByRole('combobox', { name: 'Type' }),
+        'Manga series',
+      );
+      await user.type(
+        screen.getByRole('spinbutton', { name: 'Volumes' }),
+        '15',
+      );
+      await user.click(screen.getByRole('button', { name: 'Add' }));
+
+      expect(storageContext.addMedia).toHaveBeenCalledWith({
+        type: 'manga',
+        name: 'Yotsuba',
+        language: 'french',
+        volumeCount: 15,
+      });
+    });
+  });
+
+  describe('when a book series is submitted', () => {
+    it('adds a volume for each line of titles', async () => {
+      const { user, storageContext } = renderForm();
+
+      await user.type(screen.getByRole('textbox', { name: 'Name' }), 'Astérix');
+      await user.selectOptions(
+        screen.getByRole('combobox', { name: 'Type' }),
+        'Book series',
+      );
+      await user.type(
+        screen.getByRole('textbox', { name: 'Volume titles' }),
+        'Astérix le Gaulois{Enter}{Enter}La Serpe d’or',
+      );
+      await user.click(screen.getByRole('button', { name: 'Add' }));
+
+      expect(storageContext.addMedia).toHaveBeenCalledWith({
+        type: 'book',
+        name: 'Astérix',
+        language: 'french',
+        volumeNames: ['Astérix le Gaulois', 'La Serpe d’or'],
+      });
+    });
+  });
+
+  describe('after adding', () => {
+    it('clears the form', async () => {
+      const { user } = renderForm();
+      const name = screen.getByRole('textbox', { name: 'Name' });
+
+      await user.type(name, 'Lupin');
+      await user.click(screen.getByRole('button', { name: 'Add' }));
+
+      expect(name).toHaveValue('');
+    });
+  });
+
+  describe('without a name', () => {
+    it('does not add anything', async () => {
+      const { user, storageContext } = renderForm();
+
+      await user.click(screen.getByRole('button', { name: 'Add' }));
+
+      expect(storageContext.addMedia).not.toHaveBeenCalled();
+    });
+  });
+});
