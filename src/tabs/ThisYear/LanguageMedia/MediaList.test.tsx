@@ -228,4 +228,93 @@ describe('MediaList', () => {
       });
     });
   });
+
+  describe('adding', () => {
+    describe('a season', () => {
+      it('adds it to the series', async () => {
+        const { user, storageContext } = renderList([lupin]);
+
+        await user.click(screen.getByRole('button', { name: 'Add season' }));
+
+        expect(storageContext.addItem).toHaveBeenCalledWith(
+          ['lupin', 'seasons'],
+          { number: 2 },
+        );
+      });
+
+      describe('with a number of episodes', () => {
+        it('adds each episode to the new season', async () => {
+          const { user, storageContext } = renderList([lupin]);
+          jest.mocked(storageContext.addItem).mockReturnValueOnce('s2');
+
+          await user.type(
+            screen.getByRole('spinbutton', { name: 'Episodes' }),
+            '1',
+          );
+          await user.click(screen.getByRole('button', { name: 'Add season' }));
+
+          expect(storageContext.addItem).toHaveBeenLastCalledWith(
+            ['lupin', 'seasons', 's2', 'episodes'],
+            { number: 1, lookups: 0, aiQuestions: 0 },
+          );
+        });
+      });
+    });
+
+    describe('an episode', () => {
+      it('adds it to the season', async () => {
+        const { user, storageContext } = renderList([lupin]);
+
+        await user.click(screen.getByRole('button', { name: 'Add episode' }));
+
+        expect(storageContext.addItem).toHaveBeenCalledWith(
+          ['lupin', 'seasons', 's1', 'episodes'],
+          { number: 3, lookups: 0, aiQuestions: 0 },
+        );
+      });
+    });
+
+    describe('a video', () => {
+      it('adds it to the channel', async () => {
+        const { user, storageContext } = renderList([hugo]);
+
+        await user.type(
+          screen.getByRole('textbox', { name: 'URL' }),
+          'https://youtu.be/3',
+        );
+        await user.click(screen.getByRole('button', { name: 'Add video' }));
+
+        expect(storageContext.addItem).toHaveBeenCalledWith(
+          ['hugo', 'videos'],
+          { url: 'https://youtu.be/3', lookups: 0, aiQuestions: 0 },
+        );
+      });
+    });
+
+    describe('a volume', () => {
+      it('adds it to the series', async () => {
+        const { user, storageContext } = renderList([yotsuba]);
+
+        await user.click(screen.getByRole('button', { name: 'Add volume' }));
+
+        expect(storageContext.addItem).toHaveBeenCalledWith(
+          ['yotsuba', 'volumes'],
+          { number: 2 },
+        );
+      });
+    });
+
+    describe('a chapter', () => {
+      it('adds it to the volume', async () => {
+        const { user, storageContext } = renderList([yotsuba]);
+
+        await user.click(screen.getByRole('button', { name: 'Add chapter' }));
+
+        expect(storageContext.addItem).toHaveBeenCalledWith(
+          ['yotsuba', 'volumes', 'vol1', 'chapters'],
+          { number: 3, lookups: 0, aiQuestions: 0 },
+        );
+      });
+    });
+  });
 });

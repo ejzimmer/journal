@@ -1,3 +1,5 @@
+import { AddSeasonForm } from './AddSeasonForm';
+import { useLanguageMediaStorage } from './LanguageMediaStorageContext';
 import { SeasonDetails } from './SeasonDetails';
 import { formatMinutesAndSeconds } from './format';
 import { listByNumber } from './lists';
@@ -10,6 +12,8 @@ export function TvSeriesDetails({
   series: TvSeries;
   path: ItemPath;
 }) {
+  const { addItem } = useLanguageMediaStorage();
+
   return (
     <>
       {series.upTo && (
@@ -28,6 +32,16 @@ export function TvSeriesDetails({
           </li>
         ))}
       </ul>
+      <AddSeasonForm
+        seasons={series.seasons}
+        onAdd={(season, episodes) => {
+          const seasonId = addItem([...path, 'seasons'], season);
+          if (!seasonId) return;
+          episodes.forEach((episode) =>
+            addItem([...path, 'seasons', seasonId, 'episodes'], episode),
+          );
+        }}
+      />
     </>
   );
 }

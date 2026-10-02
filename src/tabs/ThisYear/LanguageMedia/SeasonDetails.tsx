@@ -1,5 +1,7 @@
+import { AddEpisodeForm } from './AddEpisodeForm';
 import { DeleteButton } from './DeleteButton';
 import { EpisodeDetails } from './EpisodeDetails';
+import { useLanguageMediaStorage } from './LanguageMediaStorageContext';
 import { listByNumber } from './lists';
 import { ItemPath, Season } from './types';
 
@@ -10,6 +12,7 @@ export function SeasonDetails({
   season: Season;
   path: ItemPath;
 }) {
+  const { addItem } = useLanguageMediaStorage();
   const name = `Season ${season.number}`;
 
   return (
@@ -26,6 +29,10 @@ export function SeasonDetails({
           </li>
         ))}
       </ul>
+      <AddEpisodeForm
+        episodes={season.episodes}
+        onAdd={(episode) => addItem([...path, 'episodes'], episode)}
+      />
     </>
   );
 }

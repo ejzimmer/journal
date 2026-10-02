@@ -1,5 +1,7 @@
+import { AddChapterForm } from './AddChapterForm';
 import { ChapterDetails } from './ChapterDetails';
 import { DeleteButton } from './DeleteButton';
+import { useLanguageMediaStorage } from './LanguageMediaStorageContext';
 import { formatVolumeName } from './format';
 import { listByNumber } from './lists';
 import { ItemPath, Volume } from './types';
@@ -11,6 +13,7 @@ export function VolumeDetails({
   volume: Volume;
   path: ItemPath;
 }) {
+  const { addItem } = useLanguageMediaStorage();
   const name = formatVolumeName(volume);
 
   return (
@@ -28,6 +31,10 @@ export function VolumeDetails({
           </li>
         ))}
       </ul>
+      <AddChapterForm
+        chapters={volume.chapters}
+        onAdd={(chapter) => addItem([...path, 'chapters'], chapter)}
+      />
     </>
   );
 }

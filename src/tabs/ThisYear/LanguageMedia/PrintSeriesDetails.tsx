@@ -1,3 +1,5 @@
+import { AddVolumeForm } from './AddVolumeForm';
+import { useLanguageMediaStorage } from './LanguageMediaStorageContext';
 import { VolumeDetails } from './VolumeDetails';
 import { listByNumber } from './lists';
 import { ItemPath, PrintSeries } from './types';
@@ -9,6 +11,8 @@ export function PrintSeriesDetails({
   series: PrintSeries;
   path: ItemPath;
 }) {
+  const { addItem } = useLanguageMediaStorage();
+
   return (
     <>
       {series.upTo && (
@@ -26,6 +30,11 @@ export function PrintSeriesDetails({
           </li>
         ))}
       </ul>
+      <AddVolumeForm
+        volumes={series.volumes}
+        isNameRequired={series.type === 'book'}
+        onAdd={(volume) => addItem([...path, 'volumes'], volume)}
+      />
     </>
   );
 }
