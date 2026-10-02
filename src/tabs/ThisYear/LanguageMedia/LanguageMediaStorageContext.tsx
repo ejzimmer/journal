@@ -113,15 +113,23 @@ export function LanguageMediaStorageProvider({
           );
           if (changedFields.length === 0) return;
 
-          const updatedAt = getCurrentTime();
           setValues(
             Object.fromEntries(
-              changedFields.flatMap(([field, value]) => [
-                [toPath([...itemPath, field]), value ?? null],
-                [toPath([...itemPath, 'updatedAt', field]), updatedAt],
+              changedFields.map(([field, value]) => [
+                toPath([...itemPath, field]),
+                value ?? null,
               ]),
             ),
           );
+          addItem(toPath([...itemPath, 'updates']), {
+            at: getCurrentTime(),
+            changes: Object.fromEntries(
+              changedFields.map(([field, value]) => [
+                field,
+                removeUndefinedFields({ from: storedItem?.[field], to: value }),
+              ]),
+            ),
+          });
         },
         deleteItem: (itemPath) =>
           deleteItem(toPath(itemPath.slice(0, -1)), { id: itemPath.at(-1)! }),

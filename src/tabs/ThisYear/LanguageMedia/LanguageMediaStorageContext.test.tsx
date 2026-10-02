@@ -262,31 +262,45 @@ describe('LanguageMediaStorageContext', () => {
   });
 
   describe('updating an item', () => {
-    const createStorageWithLupin = (setValues: jest.Mock) =>
+    const createStorageWithLupin = (storage: Partial<ContextType>) =>
       createLanguageMediaStorage({
-        setValues,
+        ...storage,
         useValue: storeMedia({ [thisYear]: { lupin } }),
       });
+    const episodePath = `${thisYearsPath}/lupin/seasons/s1/episodes/e1`;
 
-    it('saves the changed fields with the time they were updated', () => {
+    it('saves the changed fields', () => {
       const setValues = jest.fn();
-      const storage = createStorageWithLupin(setValues);
+      const storage = createStorageWithLupin({ setValues });
 
       storage.updateItem(['lupin', 'seasons', 's1', 'episodes', 'e1'], {
         lookups: 4,
       });
 
       expect(setValues).toHaveBeenCalledWith({
-        [`${thisYearsPath}/lupin/seasons/s1/episodes/e1/lookups`]: 4,
-        [`${thisYearsPath}/lupin/seasons/s1/episodes/e1/updatedAt/lookups`]:
-          NOW,
+        [`${episodePath}/lookups`]: 4,
+      });
+    });
+
+    it('records the update with its time and what it changed', () => {
+      const addItem = jest.fn();
+      const storage = createStorageWithLupin({ addItem });
+
+      storage.updateItem(['lupin', 'seasons', 's1', 'episodes', 'e1'], {
+        lookups: 4,
+      });
+
+      expect(addItem).toHaveBeenCalledWith(`${episodePath}/updates`, {
+        at: NOW,
+        changes: { lookups: { from: 3, to: 4 } },
       });
     });
 
     describe('with some fields unchanged', () => {
-      it('saves only the ones that changed', () => {
+      it('saves and records only the ones that changed', () => {
         const setValues = jest.fn();
-        const storage = createStorageWithLupin(setValues);
+        const addItem = jest.fn();
+        const storage = createStorageWithLupin({ setValues, addItem });
 
         storage.updateItem(['lupin', 'seasons', 's1', 'episodes', 'e1'], {
           lookups: 3,
@@ -295,9 +309,11 @@ describe('LanguageMediaStorageContext', () => {
         });
 
         expect(setValues).toHaveBeenCalledWith({
-          [`${thisYearsPath}/lupin/seasons/s1/episodes/e1/understood`]: 90,
-          [`${thisYearsPath}/lupin/seasons/s1/episodes/e1/updatedAt/understood`]:
-            NOW,
+          [`${episodePath}/understood`]: 90,
+        });
+        expect(addItem).toHaveBeenCalledWith(`${episodePath}/updates`, {
+          at: NOW,
+          changes: { understood: { from: 80, to: 90 } },
         });
       });
     });
@@ -305,26 +321,39 @@ describe('LanguageMediaStorageContext', () => {
     describe('with nothing changed', () => {
       it('saves nothing', () => {
         const setValues = jest.fn();
-        const storage = createStorageWithLupin(setValues);
+        const addItem = jest.fn();
+        const storage = createStorageWithLupin({ setValues, addItem });
 
         storage.updateItem(['lupin'], {
           upTo: { timestampInSeconds: 600, episode: 1, season: 1 },
         });
 
         expect(setValues).not.toHaveBeenCalled();
+        expect(addItem).not.toHaveBeenCalled();
       });
     });
 
     describe('when a field has been cleared', () => {
       it('removes it', () => {
         const setValues = jest.fn();
-        const storage = createStorageWithLupin(setValues);
+        const storage = createStorageWithLupin({ setValues });
 
         storage.updateItem(['lupin'], { upTo: undefined });
 
         expect(setValues).toHaveBeenCalledWith({
           [`${thisYearsPath}/lupin/upTo`]: null,
-          [`${thisYearsPath}/lupin/updatedAt/upTo`]: NOW,
+        });
+      });
+
+      it('records what it was cleared from', () => {
+        const addItem = jest.fn();
+        const storage = createStorageWithLupin({ addItem });
+
+        storage.updateItem(['lupin'], { upTo: undefined });
+
+        expect(addItem).toHaveBeenCalledWith(`${thisYearsPath}/lupin/updates`, {
+          at: NOW,
+          changes: { upTo: { from: lupin.upTo } },
         });
       });
     });

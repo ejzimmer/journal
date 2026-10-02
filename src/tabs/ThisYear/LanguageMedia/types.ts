@@ -12,9 +12,16 @@ export type MediaType = (typeof MEDIA_TYPES)[number];
 export const STATUSES = ['not-started', 'in-progress', 'done'] as const;
 export type Status = (typeof STATUSES)[number];
 
+export type FieldChange = { from?: unknown; to?: unknown };
+
+export type ItemUpdate = {
+  at: string;
+  changes: Record<string, FieldChange>;
+};
+
 export type Timestamps = {
   createdAt?: string;
-  updatedAt?: Record<string, string>;
+  updates?: Record<string, ItemUpdate>;
 };
 
 export type Comprehension = {
