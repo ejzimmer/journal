@@ -95,6 +95,43 @@ describe('HealthStorageContext', () => {
         update,
       );
     });
+
+    describe('with an update already recorded', () => {
+      const update = {
+        id: 'update-1',
+        date: '2026-09-20',
+        details: '3 x 10 x 10kg',
+      };
+
+      it('replaces the update with an edited one', () => {
+        const updateItem = jest.fn();
+        const health = createHealthStorage({ updateItem });
+        const edited = {
+          ...update,
+          details: '3 x 10 x 12kg',
+          recommendation: 'increase' as const,
+        };
+
+        health.editExerciseUpdate('squat', edited);
+
+        expect(updateItem).toHaveBeenCalledWith(
+          `${EXERCISES_PATH}/squat/updates`,
+          edited,
+        );
+      });
+
+      it('deletes the update', () => {
+        const deleteItem = jest.fn();
+        const health = createHealthStorage({ deleteItem });
+
+        health.deleteExerciseUpdate('squat', update);
+
+        expect(deleteItem).toHaveBeenCalledWith(
+          `${EXERCISES_PATH}/squat/updates`,
+          update,
+        );
+      });
+    });
   });
 
   describe('while the stored data is loading', () => {

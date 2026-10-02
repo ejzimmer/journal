@@ -23,6 +23,8 @@ export type HealthStorageContextType = {
     exerciseId: string,
     update: Omit<ExerciseUpdate, 'id'>,
   ) => void;
+  editExerciseUpdate: (exerciseId: string, update: ExerciseUpdate) => void;
+  deleteExerciseUpdate: (exerciseId: string, update: ExerciseUpdate) => void;
   updateClass: (exerciseClass: ExerciseClass) => void;
 };
 
@@ -31,7 +33,7 @@ export const HealthStorageContext = createContext<
 >(undefined);
 
 export function HealthStorageProvider({ children }: { children: ReactNode }) {
-  const { addItem, updateItem, useValue } = useStorageContext();
+  const { addItem, updateItem, deleteItem, useValue } = useStorageContext();
   useHealthDataMigration();
 
   const { value: days, loading: daysLoading } =
@@ -66,6 +68,16 @@ export function HealthStorageProvider({ children }: { children: ReactNode }) {
         update,
       );
     },
+    editExerciseUpdate: (exerciseId, update) =>
+      updateItem<ExerciseUpdate>(
+        `${EXERCISES_PATH}/${exerciseId}/updates`,
+        update,
+      ),
+    deleteExerciseUpdate: (exerciseId, update) =>
+      deleteItem<ExerciseUpdate>(
+        `${EXERCISES_PATH}/${exerciseId}/updates`,
+        update,
+      ),
     updateClass: (exerciseClass) =>
       updateItem<ExerciseClass>(CLASSES_PATH, exerciseClass),
   };
