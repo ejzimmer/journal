@@ -1,6 +1,8 @@
 import { DeleteButton } from './DeleteButton';
 import { EditVideoForm } from './EditVideoForm';
 import { useLanguageMediaStorage } from './LanguageMediaStorageContext';
+import { StatusSelect } from './StatusSelect';
+import { VideoUpToForm } from './VideoUpToForm';
 import {
   formatComprehension,
   formatHoursMinutesAndSeconds,
@@ -24,6 +26,19 @@ export function VideoDetails({
       {video.upToInSeconds !== undefined &&
         `, up to ${formatHoursMinutesAndSeconds(video.upToInSeconds)}`}
       {formatStatus(video.status)}: {formatComprehension(video)}
+      {video.lengthInSeconds === undefined ? (
+        <StatusSelect
+          name={video.url}
+          status={video.status}
+          onChange={(status) => updateItem(path, { status })}
+        />
+      ) : (
+        <VideoUpToForm
+          name={video.url}
+          upToInSeconds={video.upToInSeconds}
+          onChange={(upToInSeconds) => updateItem(path, { upToInSeconds })}
+        />
+      )}
       <EditVideoForm
         video={video}
         onChange={(changes) => updateItem(path, changes)}

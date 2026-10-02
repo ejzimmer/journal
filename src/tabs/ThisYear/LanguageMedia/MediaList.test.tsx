@@ -397,4 +397,126 @@ describe('MediaList', () => {
       });
     });
   });
+
+  describe('updating progress', () => {
+    const saveIn = async (
+      user: ReturnType<typeof userEvent.setup>,
+      formName: string,
+      fieldRole: 'spinbutton' | 'textbox',
+      fieldName: string,
+      value: string,
+    ) => {
+      await user.click(screen.getByLabelText(formName));
+      const form = screen.getByRole('form', { name: formName });
+      const field = within(form).getByRole(fieldRole, { name: fieldName });
+      await user.clear(field);
+      await user.type(field, value);
+      await user.click(within(form).getByRole('button', { name: 'Save' }));
+    };
+
+    describe('of a tv series', () => {
+      it('saves where I am up to', async () => {
+        const { user, storageContext } = renderList([lupin]);
+
+        await saveIn(
+          user,
+          "Update where I'm up to",
+          'spinbutton',
+          'Episode',
+          '3',
+        );
+
+        expect(storageContext.updateItem).toHaveBeenCalledWith(['lupin'], {
+          upTo: { ...lupin.upTo, episode: 3 },
+        });
+      });
+    });
+
+    describe('of an episode without a length', () => {
+      it('saves its status', async () => {
+        const { user, storageContext } = renderList([lupin]);
+
+        await user.selectOptions(
+          screen.getByRole('combobox', { name: 'Status of Episode 2' }),
+          'Done',
+        );
+
+        expect(storageContext.updateItem).toHaveBeenCalledWith(
+          ['lupin', 'seasons', 's1', 'episodes', 'e2'],
+          { status: 'done' },
+        );
+      });
+    });
+
+    describe('of a video with a length', () => {
+      it('saves where I am up to in it', async () => {
+        const { user, storageContext } = renderList([hugo]);
+
+        await saveIn(
+          user,
+          "Update where I'm up to in https://youtu.be/1",
+          'textbox',
+          'Minutes',
+          '30',
+        );
+
+        expect(storageContext.updateItem).toHaveBeenCalledWith(
+          ['hugo', 'videos', 'v1'],
+          { upToInSeconds: 1800 },
+        );
+      });
+    });
+
+    describe('of a video without a length', () => {
+      it('saves its status', async () => {
+        const { user, storageContext } = renderList([hugo]);
+
+        await user.selectOptions(
+          screen.getByRole('combobox', {
+            name: 'Status of https://youtu.be/2',
+          }),
+          'In progress',
+        );
+
+        expect(storageContext.updateItem).toHaveBeenCalledWith(
+          ['hugo', 'videos', 'v2'],
+          { status: 'in-progress' },
+        );
+      });
+    });
+
+    describe('of a manga series', () => {
+      it('saves where I am up to', async () => {
+        const { user, storageContext } = renderList([yotsuba]);
+
+        await saveIn(
+          user,
+          "Update where I'm up to",
+          'spinbutton',
+          'Page',
+          '45',
+        );
+
+        expect(storageContext.updateItem).toHaveBeenCalledWith(['yotsuba'], {
+          upTo: { ...yotsuba.upTo, page: 45 },
+        });
+      });
+    });
+
+    describe('of a chapter without a last page', () => {
+      it('saves its status', async () => {
+        const { user, storageContext } = renderList([yotsuba]);
+
+        await user.selectOptions(
+          screen.getByRole('combobox', { name: 'Status of よつばとアイス' }),
+          'In progress',
+        );
+
+        expect(storageContext.updateItem).toHaveBeenCalledWith(
+          ['yotsuba', 'volumes', 'vol1', 'chapters', 'c2'],
+          { status: 'in-progress' },
+        );
+      });
+    });
+  });
 });

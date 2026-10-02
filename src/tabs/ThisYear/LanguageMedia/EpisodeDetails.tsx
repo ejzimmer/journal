@@ -1,6 +1,7 @@
 import { DeleteButton } from './DeleteButton';
 import { EditEpisodeForm } from './EditEpisodeForm';
 import { useLanguageMediaStorage } from './LanguageMediaStorageContext';
+import { StatusSelect } from './StatusSelect';
 import {
   formatComprehension,
   formatEpisodeName,
@@ -25,6 +26,13 @@ export function EpisodeDetails({
       {episode.lengthInSeconds !== undefined &&
         ` (${formatMinutesAndSeconds(episode.lengthInSeconds)})`}
       {formatStatus(episode.status)}: {formatComprehension(episode)}
+      {episode.lengthInSeconds === undefined && (
+        <StatusSelect
+          name={name}
+          status={episode.status}
+          onChange={(status) => updateItem(path, { status })}
+        />
+      )}
       <EditEpisodeForm
         name={name}
         episode={episode}

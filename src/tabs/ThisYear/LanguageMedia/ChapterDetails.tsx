@@ -1,6 +1,7 @@
 import { DeleteButton } from './DeleteButton';
 import { EditChapterForm } from './EditChapterForm';
 import { useLanguageMediaStorage } from './LanguageMediaStorageContext';
+import { StatusSelect } from './StatusSelect';
 import { formatChapterName, formatComprehension, formatStatus } from './format';
 import { Chapter, ItemPath } from './types';
 
@@ -19,6 +20,13 @@ export function ChapterDetails({
       {name}
       {chapter.lastPage !== undefined && ` (to page ${chapter.lastPage})`}
       {formatStatus(chapter.status)}: {formatComprehension(chapter)}
+      {chapter.lastPage === undefined && (
+        <StatusSelect
+          name={name}
+          status={chapter.status}
+          onChange={(status) => updateItem(path, { status })}
+        />
+      )}
       <EditChapterForm
         name={name}
         chapter={chapter}

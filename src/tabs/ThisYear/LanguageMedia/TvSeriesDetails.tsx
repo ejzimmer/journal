@@ -1,6 +1,7 @@
 import { AddSeasonForm } from './AddSeasonForm';
 import { useLanguageMediaStorage } from './LanguageMediaStorageContext';
 import { SeasonDetails } from './SeasonDetails';
+import { TvSeriesUpToForm } from './TvSeriesUpToForm';
 import { formatMinutesAndSeconds } from './format';
 import { listByNumber } from './lists';
 import { ItemPath, TvSeries } from './types';
@@ -12,16 +13,22 @@ export function TvSeriesDetails({
   series: TvSeries;
   path: ItemPath;
 }) {
-  const { addItem } = useLanguageMediaStorage();
+  const { addItem, updateItem } = useLanguageMediaStorage();
 
   return (
     <>
-      {series.upTo && (
-        <div>
-          Up to {series.upTo.season}-{series.upTo.episode}-
-          {formatMinutesAndSeconds(series.upTo.timestampInSeconds)}
-        </div>
-      )}
+      <div>
+        {series.upTo && (
+          <>
+            Up to {series.upTo.season}-{series.upTo.episode}-
+            {formatMinutesAndSeconds(series.upTo.timestampInSeconds)}
+          </>
+        )}
+        <TvSeriesUpToForm
+          upTo={series.upTo}
+          onChange={(upTo) => updateItem(path, { upTo })}
+        />
+      </div>
       <ul>
         {listByNumber(series.seasons).map((season) => (
           <li key={season.id}>
