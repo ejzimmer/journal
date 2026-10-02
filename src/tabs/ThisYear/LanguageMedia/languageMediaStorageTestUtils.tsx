@@ -3,22 +3,31 @@ import { render } from '@testing-library/react';
 import {
   LanguageMediaStorageContext,
   LanguageMediaStorageContextType,
+  LanguageMediaYearStorage,
 } from './LanguageMediaStorageContext';
 
 export function renderWithLanguageMediaStorage(
   ui: ReactElement,
-  overrides: Partial<LanguageMediaStorageContextType> = {},
+  overrides: Partial<LanguageMediaYearStorage> = {},
 ) {
-  const storageContext: LanguageMediaStorageContextType = {
+  const storageContext: LanguageMediaYearStorage = {
+    year: 2026,
     media: [],
-    isLoading: false,
     addMedia: jest.fn(),
     updateMedia: jest.fn(),
     deleteMedia: jest.fn(),
     ...overrides,
   };
+  const contextValue: LanguageMediaStorageContextType = {
+    years: [storageContext.year],
+    thisYear: storageContext.year,
+    selectedYear: storageContext.year,
+    isLoading: false,
+    selectYear: jest.fn(),
+    getMediaYear: () => storageContext,
+  };
   const result = render(
-    <LanguageMediaStorageContext.Provider value={storageContext}>
+    <LanguageMediaStorageContext.Provider value={contextValue}>
       {ui}
     </LanguageMediaStorageContext.Provider>,
   );
