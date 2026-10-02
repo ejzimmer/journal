@@ -39,19 +39,18 @@ function EditItemForm({
 const readRequiredNumber = (data: FormData, name: string, fallback: number) =>
   readNumber(data, name) ?? fallback;
 
-export function EditMediaForm<T extends LanguageMedia>({
+export function EditMediaForm({
   media,
   onChange,
 }: {
-  media: T;
-  onChange: (media: T) => void;
+  media: LanguageMedia;
+  onChange: (changes: Partial<LanguageMedia>) => void;
 }) {
   return (
     <EditItemForm
       name={media.name}
       onSubmit={(data) =>
         onChange({
-          ...media,
           name: readText(data, 'name') ?? media.name,
           language: data.get('language') as Language,
         })
@@ -84,14 +83,13 @@ export function EditSeasonForm({
 }: {
   name: string;
   season: Season;
-  onChange: (season: Season) => void;
+  onChange: (changes: Partial<Season>) => void;
 }) {
   return (
     <EditItemForm
       name={name}
       onSubmit={(data) =>
         onChange({
-          ...season,
           number: readRequiredNumber(data, 'number', season.number),
         })
       }
@@ -113,14 +111,13 @@ export function EditEpisodeForm({
 }: {
   name: string;
   episode: Episode;
-  onChange: (episode: Episode) => void;
+  onChange: (changes: Partial<Episode>) => void;
 }) {
   return (
     <EditItemForm
       name={name}
       onSubmit={(data) =>
         onChange({
-          ...episode,
           number: readRequiredNumber(data, 'number', episode.number),
           name: readText(data, 'name'),
           lengthInSeconds: readDuration(data, 'length'),
@@ -149,14 +146,13 @@ export function EditVideoForm({
   onChange,
 }: {
   video: Video;
-  onChange: (video: Video) => void;
+  onChange: (changes: Partial<Video>) => void;
 }) {
   return (
     <EditItemForm
       name={video.url}
       onSubmit={(data) =>
         onChange({
-          ...video,
           url: readText(data, 'url') ?? video.url,
           lengthInSeconds: readDuration(data, 'length'),
         })
@@ -188,14 +184,13 @@ export function EditVolumeForm({
   name: string;
   volume: Volume;
   isNameRequired: boolean;
-  onChange: (volume: Volume) => void;
+  onChange: (changes: Partial<Volume>) => void;
 }) {
   return (
     <EditItemForm
       name={name}
       onSubmit={(data) =>
         onChange({
-          ...volume,
           number: readRequiredNumber(data, 'number', volume.number),
           name: readText(data, 'name'),
           pages: readNumber(data, 'pages'),
@@ -226,14 +221,13 @@ export function EditChapterForm({
 }: {
   name: string;
   chapter: Chapter;
-  onChange: (chapter: Chapter) => void;
+  onChange: (changes: Partial<Chapter>) => void;
 }) {
   return (
     <EditItemForm
       name={name}
       onSubmit={(data) =>
         onChange({
-          ...chapter,
           number: readRequiredNumber(data, 'number', chapter.number),
           name: readText(data, 'name'),
           lastPage: readNumber(data, 'lastPage'),

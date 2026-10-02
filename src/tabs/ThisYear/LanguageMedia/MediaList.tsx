@@ -29,11 +29,12 @@ import {
   TvSeriesUpToForm,
   VideoUpToForm,
 } from './ProgressForms';
-import { appendItem, removeItemAt, replaceItemAt } from './listUpdates';
+import { listByNumber, listInAddedOrder } from './lists';
 import { LANGUAGE_NAMES, MEDIA_TYPE_NAMES } from './names';
 import {
   Chapter,
   Episode,
+  ItemPath,
   LanguageMedia,
   PrintSeries,
   Season,
@@ -45,37 +46,28 @@ import {
 } from './types';
 
 export function MediaList() {
-  const { media, updateMedia, deleteMedia } = useLanguageMediaStorage();
+  const { media } = useLanguageMediaStorage();
 
   return (
     <ul>
       {media.map((item) => (
         <li key={item.id}>
-          <MediaDetails
-            media={item}
-            onChange={updateMedia}
-            onDelete={() => deleteMedia(item)}
-          />
+          <MediaDetails media={item} path={[item.id]} />
         </li>
       ))}
     </ul>
   );
 }
 
-type DetailsProps<T> = {
-  onChange: (item: T) => void;
-  onDelete: () => void;
-};
+function DeleteButton({ name, path }: { name: string; path: ItemPath }) {
+  const { deleteItem } = useLanguageMediaStorage();
 
-function DeleteButton({
-  name,
-  onDelete,
-}: {
-  name: string;
-  onDelete: () => void;
-}) {
   return (
-    <button type="button" aria-label={`Delete ${name}`} onClick={onDelete}>
+    <button
+      type="button"
+      aria-label={`Delete ${name}`}
+      onClick={() => deleteItem(path)}
+    >
       Delete
     </button>
   );
@@ -83,23 +75,28 @@ function DeleteButton({
 
 function MediaDetails({
   media,
-  onChange,
-  onDelete,
-}: DetailsProps<LanguageMedia> & { media: LanguageMedia }) {
+  path,
+}: {
+  media: LanguageMedia;
+  path: ItemPath;
+}) {
+  const { updateItem } = useLanguageMediaStorage();
+
   return (
     <>
       {media.name}, {LANGUAGE_NAMES[media.language]}{' '}
       {MEDIA_TYPE_NAMES[media.type]}
-      <EditMediaForm media={media} onChange={onChange} />
-      <DeleteButton name={media.name} onDelete={onDelete} />
-      {media.type === 'tv' && (
-        <TvSeriesDetails series={media} onChange={onChange} />
-      )}
+      <EditMediaForm
+        media={media}
+        onChange={(changes) => updateItem(path, changes)}
+      />
+      <DeleteButton name={media.name} path={path} />
+      {media.type === 'tv' && <TvSeriesDetails series={media} path={path} />}
       {media.type === 'youtube' && (
-        <YoutubeChannelDetails channel={media} onChange={onChange} />
+        <YoutubeChannelDetails channel={media} path={path} />
       )}
       {(media.type === 'manga' || media.type === 'book') && (
-        <PrintSeriesDetails series={media} onChange={onChange} />
+        <PrintSeriesDetails series={media} path={path} />
       )}
     </>
   );
@@ -109,11 +106,13 @@ const formatStatus = (status?: Status) => status && `, ${STATUS_NAMES[status]}`;
 
 function TvSeriesDetails({
   series,
-  onChange,
+  path,
 }: {
   series: TvSeries;
-  onChange: (series: TvSeries) => void;
+  path: ItemPath;
 }) {
+  const { addItem, updateItem } = useLanguageMediaStorage();
+
   return (
     <>
       <div>
@@ -125,81 +124,59 @@ function TvSeriesDetails({
         )}
         <TvSeriesUpToForm
           upTo={series.upTo}
-          onChange={(upTo) => onChange({ ...series, upTo })}
+          onChange={(upTo) => updateItem(path, { upTo })}
         />
       </div>
       <ul>
-        {series.seasons?.map((season, index) => (
-          <li key={season.number}>
+        {listByNumber(series.seasons).map((season) => (
+          <li key={season.id}>
             <SeasonDetails
               season={season}
-              onChange={(changed) =>
-                onChange({
-                  ...series,
-                  seasons: replaceItemAt(series.seasons, index, changed),
-                })
-              }
-              onDelete={() =>
-                onChange({
-                  ...series,
-                  seasons: removeItemAt(series.seasons, index),
-                })
-              }
+              path={[...path, 'seasons', season.id]}
             />
           </li>
         ))}
       </ul>
       <AddSeasonForm
         seasons={series.seasons}
-        onAdd={(season) =>
-          onChange({ ...series, seasons: appendItem(series.seasons, season) })
-        }
+        onAdd={(season, episodes) => {
+          const seasonId = addItem([...path, 'seasons'], season);
+          if (!seasonId) return;
+          episodes.forEach((episode) =>
+            addItem([...path, 'seasons', seasonId, 'episodes'], episode),
+          );
+        }}
       />
     </>
   );
 }
 
-function SeasonDetails({
-  season,
-  onChange,
-  onDelete,
-}: DetailsProps<Season> & { season: Season }) {
+function SeasonDetails({ season, path }: { season: Season; path: ItemPath }) {
+  const { addItem, updateItem } = useLanguageMediaStorage();
   const name = `Season ${season.number}`;
 
   return (
     <>
       {name}
-      <EditSeasonForm name={name} season={season} onChange={onChange} />
-      <DeleteButton name={name} onDelete={onDelete} />
+      <EditSeasonForm
+        name={name}
+        season={season}
+        onChange={(changes) => updateItem(path, changes)}
+      />
+      <DeleteButton name={name} path={path} />
       <ul>
-        {season.episodes?.map((episode, index) => (
-          <li key={episode.number}>
+        {listByNumber(season.episodes).map((episode) => (
+          <li key={episode.id}>
             <EpisodeDetails
               episode={episode}
-              onChange={(changed) =>
-                onChange({
-                  ...season,
-                  episodes: replaceItemAt(season.episodes, index, changed),
-                })
-              }
-              onDelete={() =>
-                onChange({
-                  ...season,
-                  episodes: removeItemAt(season.episodes, index),
-                })
-              }
+              path={[...path, 'episodes', episode.id]}
             />
           </li>
         ))}
       </ul>
       <AddEpisodeForm
         episodes={season.episodes}
-        onAdd={(episode) =>
-          onChange({
-            ...season,
-            episodes: appendItem(season.episodes, episode),
-          })
-        }
+        onAdd={(episode) => addItem([...path, 'episodes'], episode)}
       />
     </>
   );
@@ -207,9 +184,12 @@ function SeasonDetails({
 
 function EpisodeDetails({
   episode,
-  onChange,
-  onDelete,
-}: DetailsProps<Episode> & { episode: Episode }) {
+  path,
+}: {
+  episode: Episode;
+  path: ItemPath;
+}) {
+  const { updateItem } = useLanguageMediaStorage();
   const name = formatEpisodeName(episode);
 
   return (
@@ -222,59 +202,44 @@ function EpisodeDetails({
         <StatusSelect
           name={name}
           status={episode.status}
-          onChange={(status) => onChange({ ...episode, status })}
+          onChange={(status) => updateItem(path, { status })}
         />
       )}
-      <EditEpisodeForm name={name} episode={episode} onChange={onChange} />
-      <DeleteButton name={name} onDelete={onDelete} />
+      <EditEpisodeForm
+        name={name}
+        episode={episode}
+        onChange={(changes) => updateItem(path, changes)}
+      />
+      <DeleteButton name={name} path={path} />
     </>
   );
 }
 
 function YoutubeChannelDetails({
   channel,
-  onChange,
+  path,
 }: {
   channel: YoutubeChannel;
-  onChange: (channel: YoutubeChannel) => void;
+  path: ItemPath;
 }) {
+  const { addItem } = useLanguageMediaStorage();
+
   return (
     <>
       <ul>
-        {channel.videos?.map((video, index) => (
-          <li key={index}>
-            <VideoDetails
-              video={video}
-              onChange={(changed) =>
-                onChange({
-                  ...channel,
-                  videos: replaceItemAt(channel.videos, index, changed),
-                })
-              }
-              onDelete={() =>
-                onChange({
-                  ...channel,
-                  videos: removeItemAt(channel.videos, index),
-                })
-              }
-            />
+        {listInAddedOrder(channel.videos).map((video) => (
+          <li key={video.id}>
+            <VideoDetails video={video} path={[...path, 'videos', video.id]} />
           </li>
         ))}
       </ul>
-      <AddVideoForm
-        onAdd={(video) =>
-          onChange({ ...channel, videos: appendItem(channel.videos, video) })
-        }
-      />
+      <AddVideoForm onAdd={(video) => addItem([...path, 'videos'], video)} />
     </>
   );
 }
 
-function VideoDetails({
-  video,
-  onChange,
-  onDelete,
-}: DetailsProps<Video> & { video: Video }) {
+function VideoDetails({ video, path }: { video: Video; path: ItemPath }) {
+  const { updateItem } = useLanguageMediaStorage();
   return (
     <>
       {video.url}
@@ -287,28 +252,33 @@ function VideoDetails({
         <StatusSelect
           name={video.url}
           status={video.status}
-          onChange={(status) => onChange({ ...video, status })}
+          onChange={(status) => updateItem(path, { status })}
         />
       ) : (
         <VideoUpToForm
           name={video.url}
           upToInSeconds={video.upToInSeconds}
-          onChange={(upToInSeconds) => onChange({ ...video, upToInSeconds })}
+          onChange={(upToInSeconds) => updateItem(path, { upToInSeconds })}
         />
       )}
-      <EditVideoForm video={video} onChange={onChange} />
-      <DeleteButton name={video.url} onDelete={onDelete} />
+      <EditVideoForm
+        video={video}
+        onChange={(changes) => updateItem(path, changes)}
+      />
+      <DeleteButton name={video.url} path={path} />
     </>
   );
 }
 
 function PrintSeriesDetails({
   series,
-  onChange,
+  path,
 }: {
   series: PrintSeries;
-  onChange: (series: PrintSeries) => void;
+  path: ItemPath;
 }) {
+  const { addItem, updateItem } = useLanguageMediaStorage();
+
   return (
     <>
       <div>
@@ -319,27 +289,16 @@ function PrintSeriesDetails({
         )}
         <PrintSeriesUpToForm
           upTo={series.upTo}
-          onChange={(upTo) => onChange({ ...series, upTo })}
+          onChange={(upTo) => updateItem(path, { upTo })}
         />
       </div>
       <ul>
-        {series.volumes?.map((volume, index) => (
-          <li key={volume.number}>
+        {listByNumber(series.volumes).map((volume) => (
+          <li key={volume.id}>
             <VolumeDetails
               volume={volume}
               isNameRequired={series.type === 'book'}
-              onChange={(changed) =>
-                onChange({
-                  ...series,
-                  volumes: replaceItemAt(series.volumes, index, changed),
-                })
-              }
-              onDelete={() =>
-                onChange({
-                  ...series,
-                  volumes: removeItemAt(series.volumes, index),
-                })
-              }
+              path={[...path, 'volumes', volume.id]}
             />
           </li>
         ))}
@@ -347,9 +306,7 @@ function PrintSeriesDetails({
       <AddVolumeForm
         volumes={series.volumes}
         isNameRequired={series.type === 'book'}
-        onAdd={(volume) =>
-          onChange({ ...series, volumes: appendItem(series.volumes, volume) })
-        }
+        onAdd={(volume) => addItem([...path, 'volumes'], volume)}
       />
     </>
   );
@@ -357,10 +314,14 @@ function PrintSeriesDetails({
 
 function VolumeDetails({
   volume,
+  path,
   isNameRequired,
-  onChange,
-  onDelete,
-}: DetailsProps<Volume> & { volume: Volume; isNameRequired: boolean }) {
+}: {
+  volume: Volume;
+  path: ItemPath;
+  isNameRequired: boolean;
+}) {
+  const { addItem, updateItem } = useLanguageMediaStorage();
   const name = formatVolumeName(volume);
 
   return (
@@ -371,38 +332,22 @@ function VolumeDetails({
         name={name}
         volume={volume}
         isNameRequired={isNameRequired}
-        onChange={onChange}
+        onChange={(changes) => updateItem(path, changes)}
       />
-      <DeleteButton name={name} onDelete={onDelete} />
+      <DeleteButton name={name} path={path} />
       <ul>
-        {volume.chapters?.map((chapter, index) => (
-          <li key={chapter.number}>
+        {listByNumber(volume.chapters).map((chapter) => (
+          <li key={chapter.id}>
             <ChapterDetails
               chapter={chapter}
-              onChange={(changed) =>
-                onChange({
-                  ...volume,
-                  chapters: replaceItemAt(volume.chapters, index, changed),
-                })
-              }
-              onDelete={() =>
-                onChange({
-                  ...volume,
-                  chapters: removeItemAt(volume.chapters, index),
-                })
-              }
+              path={[...path, 'chapters', chapter.id]}
             />
           </li>
         ))}
       </ul>
       <AddChapterForm
         chapters={volume.chapters}
-        onAdd={(chapter) =>
-          onChange({
-            ...volume,
-            chapters: appendItem(volume.chapters, chapter),
-          })
-        }
+        onAdd={(chapter) => addItem([...path, 'chapters'], chapter)}
       />
     </>
   );
@@ -410,9 +355,12 @@ function VolumeDetails({
 
 function ChapterDetails({
   chapter,
-  onChange,
-  onDelete,
-}: DetailsProps<Chapter> & { chapter: Chapter }) {
+  path,
+}: {
+  chapter: Chapter;
+  path: ItemPath;
+}) {
+  const { updateItem } = useLanguageMediaStorage();
   const name = formatChapterName(chapter);
 
   return (
@@ -424,11 +372,15 @@ function ChapterDetails({
         <StatusSelect
           name={name}
           status={chapter.status}
-          onChange={(status) => onChange({ ...chapter, status })}
+          onChange={(status) => updateItem(path, { status })}
         />
       )}
-      <EditChapterForm name={name} chapter={chapter} onChange={onChange} />
-      <DeleteButton name={name} onDelete={onDelete} />
+      <EditChapterForm
+        name={name}
+        chapter={chapter}
+        onChange={(changes) => updateItem(path, changes)}
+      />
+      <DeleteButton name={name} path={path} />
     </>
   );
 }

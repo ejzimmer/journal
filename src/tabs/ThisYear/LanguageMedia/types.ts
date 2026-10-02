@@ -19,6 +19,7 @@ export type Comprehension = {
 };
 
 export type Episode = Comprehension & {
+  id: string;
   number: number;
   name?: string;
   lengthInSeconds?: number;
@@ -26,8 +27,9 @@ export type Episode = Comprehension & {
 };
 
 export type Season = {
+  id: string;
   number: number;
-  episodes?: Episode[];
+  episodes?: Record<string, Episode>;
 };
 
 export type TvSeries = {
@@ -35,11 +37,12 @@ export type TvSeries = {
   type: 'tv';
   name: string;
   language: Language;
-  seasons?: Season[];
+  seasons?: Record<string, Season>;
   upTo?: { season: number; episode: number; timestampInSeconds: number };
 };
 
 export type Video = Comprehension & {
+  id: string;
   url: string;
   lengthInSeconds?: number;
   upToInSeconds?: number;
@@ -51,10 +54,11 @@ export type YoutubeChannel = {
   type: 'youtube';
   name: string;
   language: Language;
-  videos?: Video[];
+  videos?: Record<string, Video>;
 };
 
 export type Chapter = Comprehension & {
+  id: string;
   number: number;
   name?: string;
   lastPage?: number;
@@ -62,10 +66,11 @@ export type Chapter = Comprehension & {
 };
 
 export type Volume = {
+  id: string;
   number: number;
   name?: string;
   pages?: number;
-  chapters?: Chapter[];
+  chapters?: Record<string, Chapter>;
 };
 
 export type PrintSeries = {
@@ -73,14 +78,13 @@ export type PrintSeries = {
   type: 'manga' | 'book';
   name: string;
   language: Language;
-  volumes?: Volume[];
+  volumes?: Record<string, Volume>;
   upTo?: { volume: number; chapter: number; page: number };
 };
 
 export type LanguageMedia = TvSeries | YoutubeChannel | PrintSeries;
 
-export type UnsavedMedia =
-  Omit<TvSeries, 'id'> | Omit<YoutubeChannel, 'id'> | Omit<PrintSeries, 'id'>;
+export type ItemPath = string[];
 
 type NewMediaDetails = { name: string; language: Language };
 
