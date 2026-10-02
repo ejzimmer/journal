@@ -1,4 +1,4 @@
-import { screen } from '@testing-library/react';
+import { screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MediaList } from './MediaList';
 import { renderWithLanguageMediaStorage } from './languageMediaStorageTestUtils';
@@ -340,7 +340,10 @@ describe('MediaList', () => {
         const { user, storageContext } = renderList([hugo]);
 
         await user.type(
-          screen.getByRole('textbox', { name: 'URL' }),
+          within(screen.getByRole('form', { name: 'Add video' })).getByRole(
+            'textbox',
+            { name: 'URL' },
+          ),
           'https://youtu.be/3',
         );
         await user.click(screen.getByRole('button', { name: 'Add video' }));
@@ -383,6 +386,99 @@ describe('MediaList', () => {
               chapters: [
                 ...volume.chapters!,
                 { number: 3, lookups: 0, aiQuestions: 0 },
+              ],
+            },
+          ],
+        });
+      });
+    });
+  });
+
+  describe('editing', () => {
+    const renameIn = async (
+      user: ReturnType<typeof userEvent.setup>,
+      formName: string,
+      name: string,
+    ) => {
+      const form = screen.getByRole('form', { name: formName });
+      await user.clear(within(form).getByRole('textbox', { name: 'Name' }));
+      await user.type(
+        within(form).getByRole('textbox', { name: 'Name' }),
+        name,
+      );
+      await user.click(within(form).getByRole('button', { name: 'Save' }));
+    };
+
+    describe('a series', () => {
+      it('saves it', async () => {
+        const { user, storageContext } = renderList([lupin]);
+
+        await renameIn(user, 'Edit Lupin', 'ルパン');
+
+        expect(storageContext.updateMedia).toHaveBeenCalledWith({
+          ...lupin,
+          name: 'ルパン',
+        });
+      });
+    });
+
+    describe('an episode', () => {
+      it('saves the series with the change', async () => {
+        const { user, storageContext } = renderList([lupin]);
+
+        await renameIn(user, 'Edit Chapitre 1', 'Pilote');
+
+        const [season] = lupin.seasons!;
+        const [episode, otherEpisode] = season.episodes!;
+        expect(storageContext.updateMedia).toHaveBeenCalledWith({
+          ...lupin,
+          seasons: [
+            {
+              ...season,
+              episodes: [{ ...episode, name: 'Pilote' }, otherEpisode],
+            },
+          ],
+        });
+      });
+    });
+
+    describe('a video', () => {
+      it('saves the channel with the change', async () => {
+        const { user, storageContext } = renderList([hugo]);
+        const form = screen.getByRole('form', {
+          name: 'Edit https://youtu.be/2',
+        });
+
+        await user.type(
+          within(form).getByRole('textbox', { name: 'Length' }),
+          '0:10:00',
+        );
+        await user.click(within(form).getByRole('button', { name: 'Save' }));
+
+        const [video, otherVideo] = hugo.videos!;
+        expect(storageContext.updateMedia).toHaveBeenCalledWith({
+          ...hugo,
+          videos: [video, { ...otherVideo, lengthInSeconds: 600 }],
+        });
+      });
+    });
+
+    describe('a chapter', () => {
+      it('saves the series with the change', async () => {
+        const { user, storageContext } = renderList([yotsuba]);
+
+        await renameIn(user, 'Edit Chapter 1', 'よつばとあさがお');
+
+        const [volume] = yotsuba.volumes!;
+        const [chapter, otherChapter] = volume.chapters!;
+        expect(storageContext.updateMedia).toHaveBeenCalledWith({
+          ...yotsuba,
+          volumes: [
+            {
+              ...volume,
+              chapters: [
+                { ...chapter, name: 'よつばとあさがお' },
+                otherChapter,
               ],
             },
           ],

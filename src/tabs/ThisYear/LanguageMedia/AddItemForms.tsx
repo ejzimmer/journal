@@ -1,22 +1,18 @@
 import { ReactNode } from 'react';
-import { parseDuration } from './format';
+import {
+  DurationField,
+  NumberField,
+  readDuration,
+  readNumber,
+  readText,
+  TextField,
+} from './fields';
 import { Chapter, Episode, Season, Video, Volume } from './types';
 
 const NO_COMPREHENSION = { lookups: 0, aiQuestions: 0 };
 
 const findNextNumber = (items: { number: number }[] = []) =>
   Math.max(0, ...items.map(({ number }) => number)) + 1;
-
-const readText = (data: FormData, name: string) =>
-  String(data.get(name) ?? '').trim() || undefined;
-
-const readNumber = (data: FormData, name: string) =>
-  Number(data.get(name)) || undefined;
-
-const readDuration = (data: FormData, name: string) => {
-  const duration = readText(data, name);
-  return duration === undefined ? undefined : parseDuration(duration);
-};
 
 function AddItemForm({
   label,
@@ -61,10 +57,7 @@ export function AddSeasonForm({
         })
       }
     >
-      <label>
-        Episodes
-        <input name="episodes" type="number" min="0" />
-      </label>
+      <NumberField label="Episodes" name="episodes" min={0} />
     </AddItemForm>
   );
 }
@@ -88,14 +81,8 @@ export function AddEpisodeForm({
         })
       }
     >
-      <label>
-        Name
-        <input name="name" />
-      </label>
-      <label>
-        Length
-        <input name="length" pattern="\d+:\d{2}" />
-      </label>
+      <TextField label="Name" name="name" />
+      <DurationField label="Length" name="length" durationFormat="mm:ss" />
     </AddItemForm>
   );
 }
@@ -112,14 +99,8 @@ export function AddVideoForm({ onAdd }: { onAdd: (video: Video) => void }) {
         })
       }
     >
-      <label>
-        URL
-        <input name="url" type="url" required />
-      </label>
-      <label>
-        Length
-        <input name="length" pattern="\d+:\d{2}:\d{2}" />
-      </label>
+      <TextField label="URL" name="url" type="url" isRequired />
+      <DurationField label="Length" name="length" durationFormat="hh:mm:ss" />
     </AddItemForm>
   );
 }
@@ -144,14 +125,8 @@ export function AddVolumeForm({
         })
       }
     >
-      <label>
-        Name
-        <input name="name" required={isNameRequired} />
-      </label>
-      <label>
-        Pages
-        <input name="pages" type="number" min="1" />
-      </label>
+      <TextField label="Name" name="name" isRequired={isNameRequired} />
+      <NumberField label="Pages" name="pages" />
     </AddItemForm>
   );
 }
@@ -175,14 +150,8 @@ export function AddChapterForm({
         })
       }
     >
-      <label>
-        Name
-        <input name="name" />
-      </label>
-      <label>
-        Last page
-        <input name="lastPage" type="number" min="1" />
-      </label>
+      <TextField label="Name" name="name" />
+      <NumberField label="Last page" name="lastPage" />
     </AddItemForm>
   );
 }

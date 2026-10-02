@@ -6,6 +6,14 @@ import {
   AddVolumeForm,
 } from './AddItemForms';
 import {
+  EditChapterForm,
+  EditEpisodeForm,
+  EditMediaForm,
+  EditSeasonForm,
+  EditVideoForm,
+  EditVolumeForm,
+} from './EditItemForms';
+import {
   formatChapterName,
   formatComprehension,
   formatEpisodeName,
@@ -76,6 +84,7 @@ function MediaDetails({
     <>
       {media.name}, {LANGUAGE_NAMES[media.language]}{' '}
       {MEDIA_TYPE_NAMES[media.type]}
+      <EditMediaForm media={media} onChange={onChange} />
       <DeleteButton name={media.name} onDelete={onDelete} />
       {media.type === 'tv' && (
         <TvSeriesDetails series={media} onChange={onChange} />
@@ -148,12 +157,19 @@ function SeasonDetails({
   return (
     <>
       {name}
+      <EditSeasonForm name={name} season={season} onChange={onChange} />
       <DeleteButton name={name} onDelete={onDelete} />
       <ul>
         {season.episodes?.map((episode, index) => (
           <li key={episode.number}>
             <EpisodeDetails
               episode={episode}
+              onChange={(changed) =>
+                onChange({
+                  ...season,
+                  episodes: replaceItemAt(season.episodes, index, changed),
+                })
+              }
               onDelete={() =>
                 onChange({
                   ...season,
@@ -179,18 +195,19 @@ function SeasonDetails({
 
 function EpisodeDetails({
   episode,
+  onChange,
   onDelete,
-}: {
-  episode: Episode;
-  onDelete: () => void;
-}) {
+}: DetailsProps<Episode> & { episode: Episode }) {
+  const name = formatEpisodeName(episode);
+
   return (
     <>
-      {formatEpisodeName(episode)}
+      {name}
       {episode.lengthInSeconds !== undefined &&
         ` (${formatMinutesAndSeconds(episode.lengthInSeconds)})`}
       {formatStatus(episode.status)}: {formatComprehension(episode)}
-      <DeleteButton name={formatEpisodeName(episode)} onDelete={onDelete} />
+      <EditEpisodeForm name={name} episode={episode} onChange={onChange} />
+      <DeleteButton name={name} onDelete={onDelete} />
     </>
   );
 }
@@ -209,6 +226,12 @@ function YoutubeChannelDetails({
           <li key={index}>
             <VideoDetails
               video={video}
+              onChange={(changed) =>
+                onChange({
+                  ...channel,
+                  videos: replaceItemAt(channel.videos, index, changed),
+                })
+              }
               onDelete={() =>
                 onChange({
                   ...channel,
@@ -230,11 +253,9 @@ function YoutubeChannelDetails({
 
 function VideoDetails({
   video,
+  onChange,
   onDelete,
-}: {
-  video: Video;
-  onDelete: () => void;
-}) {
+}: DetailsProps<Video> & { video: Video }) {
   return (
     <>
       {video.url}
@@ -243,6 +264,7 @@ function VideoDetails({
       {video.upToInSeconds !== undefined &&
         `, up to ${formatHoursMinutesAndSeconds(video.upToInSeconds)}`}
       {formatStatus(video.status)}: {formatComprehension(video)}
+      <EditVideoForm video={video} onChange={onChange} />
       <DeleteButton name={video.url} onDelete={onDelete} />
     </>
   );
@@ -267,6 +289,7 @@ function PrintSeriesDetails({
           <li key={volume.number}>
             <VolumeDetails
               volume={volume}
+              isNameRequired={series.type === 'book'}
               onChange={(changed) =>
                 onChange({
                   ...series,
@@ -296,19 +319,34 @@ function PrintSeriesDetails({
 
 function VolumeDetails({
   volume,
+  isNameRequired,
   onChange,
   onDelete,
-}: DetailsProps<Volume> & { volume: Volume }) {
+}: DetailsProps<Volume> & { volume: Volume; isNameRequired: boolean }) {
+  const name = formatVolumeName(volume);
+
   return (
     <>
-      {formatVolumeName(volume)}
+      {name}
       {volume.pages !== undefined && ` (${volume.pages} pages)`}
-      <DeleteButton name={formatVolumeName(volume)} onDelete={onDelete} />
+      <EditVolumeForm
+        name={name}
+        volume={volume}
+        isNameRequired={isNameRequired}
+        onChange={onChange}
+      />
+      <DeleteButton name={name} onDelete={onDelete} />
       <ul>
         {volume.chapters?.map((chapter, index) => (
           <li key={chapter.number}>
             <ChapterDetails
               chapter={chapter}
+              onChange={(changed) =>
+                onChange({
+                  ...volume,
+                  chapters: replaceItemAt(volume.chapters, index, changed),
+                })
+              }
               onDelete={() =>
                 onChange({
                   ...volume,
@@ -334,17 +372,18 @@ function VolumeDetails({
 
 function ChapterDetails({
   chapter,
+  onChange,
   onDelete,
-}: {
-  chapter: Chapter;
-  onDelete: () => void;
-}) {
+}: DetailsProps<Chapter> & { chapter: Chapter }) {
+  const name = formatChapterName(chapter);
+
   return (
     <>
-      {formatChapterName(chapter)}
+      {name}
       {chapter.lastPage !== undefined && ` (to page ${chapter.lastPage})`}
       {formatStatus(chapter.status)}: {formatComprehension(chapter)}
-      <DeleteButton name={formatChapterName(chapter)} onDelete={onDelete} />
+      <EditChapterForm name={name} chapter={chapter} onChange={onChange} />
+      <DeleteButton name={name} onDelete={onDelete} />
     </>
   );
 }
