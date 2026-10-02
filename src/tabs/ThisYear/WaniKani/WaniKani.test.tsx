@@ -1,5 +1,5 @@
 import 'fake-indexeddb/auto';
-import { render, screen } from '@testing-library/react';
+import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { FirebaseContext } from '../../../shared/FirebaseContext';
 import { createMockFirebaseContext } from '../../../shared/mockFirebase';
@@ -163,8 +163,11 @@ describe('WaniKani', () => {
       renderWaniKani('my-key');
 
       const level = await screen.findByRole('region', { name: 'Level 2' });
-      expect(level).toHaveTextContent('Radicals 1 / 1');
-      expect(level).toHaveTextContent('Kanji 0 / 2');
+      expect(
+        within(level).getByRole('img', {
+          name: 'Radicals 1 of 1, Kanji 0 of 2',
+        }),
+      ).toBeInTheDocument();
     });
 
     it('predicts how long until level 60 is finished', async () => {
@@ -175,7 +178,10 @@ describe('WaniKani', () => {
       renderWaniKani('my-key');
 
       const level = await screen.findByRole('region', { name: 'Level 2' });
-      expect(level).toHaveTextContent('586 days remaining');
+      expect(
+        within(level).getByRole('img', { name: 'Days remaining' }),
+      ).toBeInTheDocument();
+      expect(level).toHaveTextContent('586');
     });
 
     it('shows how many of each type are at each SRS stage', async () => {
