@@ -105,13 +105,13 @@ describe('AddMediaForm', () => {
   });
 
   describe('when a book series is submitted', () => {
-    it('adds a volume for each line of titles', async () => {
+    it('adds it with its first volume', async () => {
       const { user, storageContext } = renderForm();
 
       await user.type(screen.getByRole('textbox', { name: 'Name' }), 'Astérix');
       await user.type(
-        screen.getByRole('textbox', { name: 'Volume titles' }),
-        'Astérix le Gaulois{Enter}{Enter}La Serpe d’or',
+        screen.getByRole('textbox', { name: 'Volume 1' }),
+        'Astérix le Gaulois',
       );
       await user.click(screen.getByRole('button', { name: 'Add' }));
 
@@ -119,7 +119,59 @@ describe('AddMediaForm', () => {
         type: 'book',
         name: 'Astérix',
         language: 'french',
-        volumeNames: ['Astérix le Gaulois', 'La Serpe d’or'],
+        volumeNames: ['Astérix le Gaulois'],
+      });
+    });
+
+    describe('with more volumes added', () => {
+      it('adds a volume for each title entered', async () => {
+        const { user, storageContext } = renderForm();
+
+        await user.type(
+          screen.getByRole('textbox', { name: 'Name' }),
+          'Astérix',
+        );
+        await user.click(
+          screen.getByRole('button', { name: 'Add another volume' }),
+        );
+        await user.click(
+          screen.getByRole('button', { name: 'Add another volume' }),
+        );
+        await user.type(
+          screen.getByRole('textbox', { name: 'Volume 1' }),
+          'Astérix le Gaulois',
+        );
+        await user.type(
+          screen.getByRole('textbox', { name: 'Volume 3' }),
+          'La Serpe d’or',
+        );
+        await user.click(screen.getByRole('button', { name: 'Add' }));
+
+        expect(storageContext.addMedia).toHaveBeenCalledWith(
+          expect.objectContaining({
+            volumeNames: ['Astérix le Gaulois', 'La Serpe d’or'],
+          }),
+        );
+      });
+
+      describe('after adding', () => {
+        it('goes back to one volume', async () => {
+          const { user } = renderForm();
+          await user.click(
+            screen.getByRole('button', { name: 'Add another volume' }),
+          );
+          const secondVolume = screen.getByRole('textbox', {
+            name: 'Volume 2',
+          });
+
+          await user.type(
+            screen.getByRole('textbox', { name: 'Name' }),
+            'Astérix',
+          );
+          await user.click(screen.getByRole('button', { name: 'Add' }));
+
+          expect(secondVolume).not.toBeInTheDocument();
+        });
       });
     });
   });
