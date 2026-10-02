@@ -8,41 +8,76 @@ import {
   STATUS_NAMES,
 } from './format';
 import { useLanguageMediaStorage } from './LanguageMediaStorageContext';
+import { removeItemAt, replaceItemAt } from './listUpdates';
 import { LANGUAGE_NAMES, MEDIA_TYPE_NAMES } from './names';
 import {
   Chapter,
   Episode,
   LanguageMedia,
   PrintSeries,
+  Season,
   Status,
   TvSeries,
   Video,
+  Volume,
   YoutubeChannel,
 } from './types';
 
 export function MediaList() {
-  const { media } = useLanguageMediaStorage();
+  const { media, updateMedia, deleteMedia } = useLanguageMediaStorage();
 
   return (
     <ul>
       {media.map((item) => (
         <li key={item.id}>
-          <MediaDetails media={item} />
+          <MediaDetails
+            media={item}
+            onChange={updateMedia}
+            onDelete={() => deleteMedia(item)}
+          />
         </li>
       ))}
     </ul>
   );
 }
 
-function MediaDetails({ media }: { media: LanguageMedia }) {
+type DetailsProps<T> = {
+  onChange: (item: T) => void;
+  onDelete: () => void;
+};
+
+function DeleteButton({
+  name,
+  onDelete,
+}: {
+  name: string;
+  onDelete: () => void;
+}) {
+  return (
+    <button type="button" aria-label={`Delete ${name}`} onClick={onDelete}>
+      Delete
+    </button>
+  );
+}
+
+function MediaDetails({
+  media,
+  onChange,
+  onDelete,
+}: DetailsProps<LanguageMedia> & { media: LanguageMedia }) {
   return (
     <>
       {media.name}, {LANGUAGE_NAMES[media.language]}{' '}
       {MEDIA_TYPE_NAMES[media.type]}
-      {media.type === 'tv' && <TvSeriesDetails series={media} />}
-      {media.type === 'youtube' && <YoutubeChannelDetails channel={media} />}
+      <DeleteButton name={media.name} onDelete={onDelete} />
+      {media.type === 'tv' && (
+        <TvSeriesDetails series={media} onChange={onChange} />
+      )}
+      {media.type === 'youtube' && (
+        <YoutubeChannelDetails channel={media} onChange={onChange} />
+      )}
       {(media.type === 'manga' || media.type === 'book') && (
-        <PrintSeriesDetails series={media} />
+        <PrintSeriesDetails series={media} onChange={onChange} />
       )}
     </>
   );
@@ -50,7 +85,13 @@ function MediaDetails({ media }: { media: LanguageMedia }) {
 
 const formatStatus = (status?: Status) => status && `, ${STATUS_NAMES[status]}`;
 
-function TvSeriesDetails({ series }: { series: TvSeries }) {
+function TvSeriesDetails({
+  series,
+  onChange,
+}: {
+  series: TvSeries;
+  onChange: (series: TvSeries) => void;
+}) {
   return (
     <>
       {series.upTo && (
@@ -60,16 +101,23 @@ function TvSeriesDetails({ series }: { series: TvSeries }) {
         </div>
       )}
       <ul>
-        {series.seasons?.map((season) => (
+        {series.seasons?.map((season, index) => (
           <li key={season.number}>
-            Season {season.number}
-            <ul>
-              {season.episodes?.map((episode) => (
-                <li key={episode.number}>
-                  <EpisodeDetails episode={episode} />
-                </li>
-              ))}
-            </ul>
+            <SeasonDetails
+              season={season}
+              onChange={(changed) =>
+                onChange({
+                  ...series,
+                  seasons: replaceItemAt(series.seasons, index, changed),
+                })
+              }
+              onDelete={() =>
+                onChange({
+                  ...series,
+                  seasons: removeItemAt(series.seasons, index),
+                })
+              }
+            />
           </li>
         ))}
       </ul>
@@ -77,30 +125,87 @@ function TvSeriesDetails({ series }: { series: TvSeries }) {
   );
 }
 
-function EpisodeDetails({ episode }: { episode: Episode }) {
+function SeasonDetails({
+  season,
+  onChange,
+  onDelete,
+}: DetailsProps<Season> & { season: Season }) {
+  const name = `Season ${season.number}`;
+
+  return (
+    <>
+      {name}
+      <DeleteButton name={name} onDelete={onDelete} />
+      <ul>
+        {season.episodes?.map((episode, index) => (
+          <li key={episode.number}>
+            <EpisodeDetails
+              episode={episode}
+              onDelete={() =>
+                onChange({
+                  ...season,
+                  episodes: removeItemAt(season.episodes, index),
+                })
+              }
+            />
+          </li>
+        ))}
+      </ul>
+    </>
+  );
+}
+
+function EpisodeDetails({
+  episode,
+  onDelete,
+}: {
+  episode: Episode;
+  onDelete: () => void;
+}) {
   return (
     <>
       {formatEpisodeName(episode)}
       {episode.lengthInSeconds !== undefined &&
         ` (${formatMinutesAndSeconds(episode.lengthInSeconds)})`}
       {formatStatus(episode.status)}: {formatComprehension(episode)}
+      <DeleteButton name={formatEpisodeName(episode)} onDelete={onDelete} />
     </>
   );
 }
 
-function YoutubeChannelDetails({ channel }: { channel: YoutubeChannel }) {
+function YoutubeChannelDetails({
+  channel,
+  onChange,
+}: {
+  channel: YoutubeChannel;
+  onChange: (channel: YoutubeChannel) => void;
+}) {
   return (
     <ul>
       {channel.videos?.map((video, index) => (
         <li key={index}>
-          <VideoDetails video={video} />
+          <VideoDetails
+            video={video}
+            onDelete={() =>
+              onChange({
+                ...channel,
+                videos: removeItemAt(channel.videos, index),
+              })
+            }
+          />
         </li>
       ))}
     </ul>
   );
 }
 
-function VideoDetails({ video }: { video: Video }) {
+function VideoDetails({
+  video,
+  onDelete,
+}: {
+  video: Video;
+  onDelete: () => void;
+}) {
   return (
     <>
       {video.url}
@@ -109,11 +214,18 @@ function VideoDetails({ video }: { video: Video }) {
       {video.upToInSeconds !== undefined &&
         `, up to ${formatHoursMinutesAndSeconds(video.upToInSeconds)}`}
       {formatStatus(video.status)}: {formatComprehension(video)}
+      <DeleteButton name={video.url} onDelete={onDelete} />
     </>
   );
 }
 
-function PrintSeriesDetails({ series }: { series: PrintSeries }) {
+function PrintSeriesDetails({
+  series,
+  onChange,
+}: {
+  series: PrintSeries;
+  onChange: (series: PrintSeries) => void;
+}) {
   return (
     <>
       {series.upTo && (
@@ -122,17 +234,23 @@ function PrintSeriesDetails({ series }: { series: PrintSeries }) {
         </div>
       )}
       <ul>
-        {series.volumes?.map((volume) => (
+        {series.volumes?.map((volume, index) => (
           <li key={volume.number}>
-            {formatVolumeName(volume)}
-            {volume.pages !== undefined && ` (${volume.pages} pages)`}
-            <ul>
-              {volume.chapters?.map((chapter) => (
-                <li key={chapter.number}>
-                  <ChapterDetails chapter={chapter} />
-                </li>
-              ))}
-            </ul>
+            <VolumeDetails
+              volume={volume}
+              onChange={(changed) =>
+                onChange({
+                  ...series,
+                  volumes: replaceItemAt(series.volumes, index, changed),
+                })
+              }
+              onDelete={() =>
+                onChange({
+                  ...series,
+                  volumes: removeItemAt(series.volumes, index),
+                })
+              }
+            />
           </li>
         ))}
       </ul>
@@ -140,12 +258,48 @@ function PrintSeriesDetails({ series }: { series: PrintSeries }) {
   );
 }
 
-function ChapterDetails({ chapter }: { chapter: Chapter }) {
+function VolumeDetails({
+  volume,
+  onChange,
+  onDelete,
+}: DetailsProps<Volume> & { volume: Volume }) {
+  return (
+    <>
+      {formatVolumeName(volume)}
+      {volume.pages !== undefined && ` (${volume.pages} pages)`}
+      <DeleteButton name={formatVolumeName(volume)} onDelete={onDelete} />
+      <ul>
+        {volume.chapters?.map((chapter, index) => (
+          <li key={chapter.number}>
+            <ChapterDetails
+              chapter={chapter}
+              onDelete={() =>
+                onChange({
+                  ...volume,
+                  chapters: removeItemAt(volume.chapters, index),
+                })
+              }
+            />
+          </li>
+        ))}
+      </ul>
+    </>
+  );
+}
+
+function ChapterDetails({
+  chapter,
+  onDelete,
+}: {
+  chapter: Chapter;
+  onDelete: () => void;
+}) {
   return (
     <>
       {formatChapterName(chapter)}
       {chapter.lastPage !== undefined && ` (to page ${chapter.lastPage})`}
       {formatStatus(chapter.status)}: {formatComprehension(chapter)}
+      <DeleteButton name={formatChapterName(chapter)} onDelete={onDelete} />
     </>
   );
 }
