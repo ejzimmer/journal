@@ -6,12 +6,12 @@ import { useHealthStorage } from './HealthStorageContext';
 import { ExerciseForm } from './ExerciseForm';
 import { UpdateChip } from './UpdateChip';
 
-type OpenForm = { kind: 'record' } | { kind: 'edit'; update: ExerciseUpdate };
+type ActiveForm = { kind: 'record' } | { kind: 'edit'; update: ExerciseUpdate };
 
 export function ExerciseRow({ exercise }: { exercise: Exercise }) {
   const { recordExercise, editExerciseUpdate, deleteExerciseUpdate } =
     useHealthStorage();
-  const [openForm, setOpenForm] = useState<OpenForm | null>(null);
+  const [activeForm, setActiveForm] = useState<ActiveForm | null>(null);
   const nameId = useId();
   const updatesRef = useRef<HTMLUListElement>(null);
   const recordButtonRef = useRef<HTMLButtonElement>(null);
@@ -32,13 +32,14 @@ export function ExerciseRow({ exercise }: { exercise: Exercise }) {
     }
   }, [updates.length]);
 
-  const editingId = openForm?.kind === 'edit' ? openForm.update.id : undefined;
+  const editingId =
+    activeForm?.kind === 'edit' ? activeForm.update.id : undefined;
 
   const findFormTrigger = () =>
     editingId ? chipRefs.current.get(editingId) : recordButtonRef.current;
 
   const closeForm = (focusTarget = findFormTrigger()) => {
-    flushSync(() => setOpenForm(null));
+    flushSync(() => setActiveForm(null));
     focusTarget?.focus();
   };
 
@@ -46,15 +47,15 @@ export function ExerciseRow({ exercise }: { exercise: Exercise }) {
     if (editingId === update.id) {
       closeForm();
     } else {
-      setOpenForm({ kind: 'edit', update });
+      setActiveForm({ kind: 'edit', update });
     }
   };
 
   const toggleRecordForm = () => {
-    if (openForm?.kind === 'record') {
+    if (activeForm?.kind === 'record') {
       closeForm();
     } else {
-      setOpenForm({ kind: 'record' });
+      setActiveForm({ kind: 'record' });
     }
   };
 
@@ -64,8 +65,8 @@ export function ExerciseRow({ exercise }: { exercise: Exercise }) {
   };
 
   const saveUpdate = (edited: Omit<ExerciseUpdate, 'id'>) => {
-    if (openForm?.kind === 'edit') {
-      editExerciseUpdate(exercise.id, { id: openForm.update.id, ...edited });
+    if (activeForm?.kind === 'edit') {
+      editExerciseUpdate(exercise.id, { id: activeForm.update.id, ...edited });
     }
     closeForm();
   };
@@ -101,26 +102,26 @@ export function ExerciseRow({ exercise }: { exercise: Exercise }) {
         ref={recordButtonRef}
         className="record"
         aria-label={`Record ${exercise.name}`}
-        aria-expanded={openForm?.kind === 'record'}
+        aria-expanded={activeForm?.kind === 'record'}
         onClick={toggleRecordForm}
       >
         <PlusIcon strokeWidth="3" />
       </button>
-      {openForm?.kind === 'record' && (
+      {activeForm?.kind === 'record' && (
         <ExerciseForm
           exerciseName={exercise.name}
           onSubmit={addUpdate}
           onCancel={() => closeForm()}
         />
       )}
-      {openForm?.kind === 'edit' && (
+      {activeForm?.kind === 'edit' && (
         <ExerciseForm
-          key={openForm.update.id}
+          key={activeForm.update.id}
           exerciseName={exercise.name}
-          update={openForm.update}
+          update={activeForm.update}
           onSubmit={saveUpdate}
           onCancel={() => closeForm()}
-          onDelete={() => deleteUpdate(openForm.update)}
+          onDelete={() => deleteUpdate(activeForm.update)}
         />
       )}
     </li>
