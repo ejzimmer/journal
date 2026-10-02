@@ -6,7 +6,7 @@ export const getLanguageMediaPath = (year: number) =>
 export const LANGUAGES = ['french', 'japanese'] as const;
 export type Language = (typeof LANGUAGES)[number];
 
-export const MEDIA_TYPES = ['tv', 'youtube', 'manga', 'book'] as const;
+export const MEDIA_TYPES = ['book', 'manga', 'youtube', 'tv'] as const;
 export type MediaType = (typeof MEDIA_TYPES)[number];
 
 export const STATUSES = ['not-started', 'in-progress', 'done'] as const;
