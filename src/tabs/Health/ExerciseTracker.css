@@ -8,7 +8,6 @@
   --chip-shadow: 0 1px 2px hsl(0 0% 0% / 0.06);
   --field-background: hsl(70 60% 98%);
   --field-border: hsl(73 33% 85%);
-  --hint: hsl(143 4% 43%);
 
   display: grid;
   gap: 8px;
@@ -182,11 +181,6 @@
         outline: 2px solid var(--focus);
         outline-offset: 1px;
       }
-    }
-
-    small {
-      font-size: 0.75rem;
-      color: var(--hint);
     }
   }
 

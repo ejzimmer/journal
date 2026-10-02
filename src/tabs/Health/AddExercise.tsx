@@ -26,12 +26,10 @@ export function AddExercise({ onAdd }: { onAdd: (name: string) => void }) {
     >
       <input
         aria-label="Exercise name"
-        placeholder="Exercise name"
         value={name}
         onChange={(event) => setName(event.target.value)}
         autoFocus
       />
-      <small>Enter to add, Esc to cancel</small>
     </form>
   ) : (
     <button
