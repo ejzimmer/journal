@@ -21,35 +21,42 @@ export function LevelGemCluster({ level, percents }: LevelGemClusterProps) {
   ).join(', ');
 
   return (
-    <div className="level-gem-cluster">
-      <svg
-        viewBox={layout.viewBox}
-        width={layout.width}
-        height={layout.height}
-        role="img"
-        aria-label={`Level ${level}: ${description}`}
+    <svg
+      className="level-gem-cluster"
+      viewBox={layout.viewBox}
+      width={layout.width}
+      height={layout.height}
+      role="img"
+      aria-label={`Level ${level}: ${description}`}
+    >
+      {SUBJECT_TYPES.map((type) => (
+        <polygon
+          key={type}
+          points={formatPoints(
+            getHexVertices(...layout.centres[type], layout.settingRadius),
+          )}
+          fill="url(#wanikani-gold)"
+        />
+      ))}
+      {SUBJECT_TYPES.map((type) => (
+        <Gem
+          key={type}
+          type={type}
+          cx={layout.centres[type][0]}
+          cy={layout.centres[type][1]}
+          r={layout.gemRadius}
+          percent={percents[type]}
+        />
+      ))}
+      <text
+        x={layout.label.x}
+        y={layout.label.y}
+        textAnchor="end"
+        dominantBaseline="central"
+        aria-hidden="true"
       >
-        {SUBJECT_TYPES.map((type) => (
-          <polygon
-            key={type}
-            points={formatPoints(
-              getHexVertices(...layout.centres[type], layout.settingRadius),
-            )}
-            fill="url(#wanikani-gold)"
-          />
-        ))}
-        {SUBJECT_TYPES.map((type) => (
-          <Gem
-            key={type}
-            type={type}
-            cx={layout.centres[type][0]}
-            cy={layout.centres[type][1]}
-            r={layout.gemRadius}
-            percent={percents[type]}
-          />
-        ))}
-      </svg>
-      <div aria-hidden="true">{level}</div>
-    </div>
+        {level}
+      </text>
+    </svg>
   );
 }
