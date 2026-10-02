@@ -57,20 +57,12 @@ export type YoutubeChannel = {
   videos?: Record<string, Video>;
 };
 
-export type Chapter = Comprehension & {
-  id: string;
-  number: number;
-  name?: string;
-  lastPage?: number;
-  status?: Status;
-};
-
-export type Volume = {
+export type Volume = Comprehension & {
   id: string;
   number: number;
   name?: string;
   pages?: number;
-  chapters?: Record<string, Chapter>;
+  status?: Status;
 };
 
 export type PrintSeries = {
@@ -79,7 +71,7 @@ export type PrintSeries = {
   name: string;
   language: Language;
   volumes?: Record<string, Volume>;
-  upTo?: { volume: number; chapter: number; page: number };
+  upTo?: { volume: number; page: number };
 };
 
 export type LanguageMedia = TvSeries | YoutubeChannel | PrintSeries;

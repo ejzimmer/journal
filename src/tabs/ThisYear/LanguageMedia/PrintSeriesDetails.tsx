@@ -19,7 +19,7 @@ export function PrintSeriesDetails({
       <div>
         {series.upTo && (
           <>
-            Up to {series.upTo.volume}-{series.upTo.chapter}-{series.upTo.page}
+            Up to {series.upTo.volume}-{series.upTo.page}
           </>
         )}
         <PrintSeriesUpToForm

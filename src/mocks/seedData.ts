@@ -421,26 +421,19 @@ const languageMedia: Record<string, LanguageMedia> = {
         id: 'vol1',
         number: 1,
         pages: 220,
-        chapters: {
-          c1: {
-            id: 'c1',
-            number: 1,
-            lastPage: 38,
-            lookups: 20,
-            aiQuestions: 3,
-            understood: 60,
-          },
-          c2: {
-            id: 'c2',
-            number: 2,
-            lookups: 0,
-            aiQuestions: 0,
-            status: 'not-started',
-          },
-        },
+        lookups: 20,
+        aiQuestions: 3,
+        understood: 60,
+      },
+      vol2: {
+        id: 'vol2',
+        number: 2,
+        lookups: 0,
+        aiQuestions: 0,
+        status: 'not-started',
       },
     },
-    upTo: { volume: 1, chapter: 2, page: 41 },
+    upTo: { volume: 1, page: 41 },
   },
 };
 

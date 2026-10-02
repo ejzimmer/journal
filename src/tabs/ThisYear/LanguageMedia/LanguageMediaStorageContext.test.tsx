@@ -166,8 +166,14 @@ describe('LanguageMediaStorageContext', () => {
         });
 
         expect(volumeCalls).toEqual([
-          [`${thisYearsPath}/new/volumes`, { number: 1 }],
-          [`${thisYearsPath}/new/volumes`, { number: 2 }],
+          [
+            `${thisYearsPath}/new/volumes`,
+            { number: 1, lookups: 0, aiQuestions: 0 },
+          ],
+          [
+            `${thisYearsPath}/new/volumes`,
+            { number: 2, lookups: 0, aiQuestions: 0 },
+          ],
         ]);
       });
     });
@@ -184,11 +190,16 @@ describe('LanguageMediaStorageContext', () => {
         expect(volumeCalls).toEqual([
           [
             `${thisYearsPath}/new/volumes`,
-            { number: 1, name: 'Astérix le Gaulois' },
+            {
+              number: 1,
+              name: 'Astérix le Gaulois',
+              lookups: 0,
+              aiQuestions: 0,
+            },
           ],
           [
             `${thisYearsPath}/new/volumes`,
-            { number: 2, name: 'La Serpe d’or' },
+            { number: 2, name: 'La Serpe d’or', lookups: 0, aiQuestions: 0 },
           ],
         ]);
       });

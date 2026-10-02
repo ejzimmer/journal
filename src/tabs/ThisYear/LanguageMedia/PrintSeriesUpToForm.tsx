@@ -17,7 +17,6 @@ export function PrintSeriesUpToForm({
       onSubmit={(data) =>
         onChange({
           volume: readNumber(data, 'volume')!,
-          chapter: readNumber(data, 'chapter')!,
           page: readNumber(data, 'page')!,
         })
       }
@@ -26,12 +25,6 @@ export function PrintSeriesUpToForm({
         label="Volume"
         name="volume"
         defaultValue={upTo?.volume}
-        isRequired
-      />
-      <NumberField
-        label="Chapter"
-        name="chapter"
-        defaultValue={upTo?.chapter}
         isRequired
       />
       <NumberField

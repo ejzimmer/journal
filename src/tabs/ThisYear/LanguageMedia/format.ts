@@ -1,4 +1,4 @@
-import { Chapter, Comprehension, Episode, Status, Volume } from './types';
+import { Comprehension, Episode, Status, Volume } from './types';
 
 const minutesAndSecondsFormat = new Intl.DurationFormat(undefined, {
   style: 'digital',
@@ -29,9 +29,6 @@ export const STATUS_NAMES: Record<Status, string> = {
 
 export const formatEpisodeName = ({ number, name }: Episode) =>
   name || `Episode ${number}`;
-
-export const formatChapterName = ({ number, name }: Chapter) =>
-  name || `Chapter ${number}`;
 
 export const formatVolumeName = ({ number, name }: Volume) =>
   name || `Volume ${number}`;
