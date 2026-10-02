@@ -7,7 +7,7 @@ import { Noticeboard } from './Noticeboard';
 
 describe('Noticeboard', () => {
   describe('when there are adventures', () => {
-    it('pins up every one, soonest first and done ones last', () => {
+    it('pins up every one in the order they were added', () => {
       const storage: AdventureStorageContextType = {
         adventures: [
           {
@@ -47,9 +47,9 @@ describe('Noticeboard', () => {
       expect(
         screen.getAllByRole('listitem').map((item) => item.textContent),
       ).toEqual([
-        'Paddle the YarraSun 1 Nov',
         'Plenty Gorge parkrun',
         'Ride to Hurstbridge',
+        'Paddle the YarraSun 1 Nov',
       ]);
     });
   });
