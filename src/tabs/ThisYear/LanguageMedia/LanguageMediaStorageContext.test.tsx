@@ -42,21 +42,14 @@ describe('LanguageMediaStorageContext', () => {
   });
 
   describe('listing media', () => {
-    it('reads it from the language media path', () => {
+    it('lists the media stored at the language media path', () => {
       const useValue = jest
         .fn()
-        .mockReturnValue({ value: undefined, loading: false });
+        .mockReturnValue({ value: { lupin }, loading: false });
 
-      createLanguageMediaStorage({ useValue });
+      const storage = createLanguageMediaStorage({ useValue });
 
       expect(useValue).toHaveBeenCalledWith(LANGUAGE_MEDIA_PATH);
-    });
-
-    it('lists the stored media', () => {
-      const storage = createLanguageMediaStorage({
-        useValue: <T,>() => ({ value: { lupin } as T, loading: false }),
-      });
-
       expect(storage.media).toEqual([lupin]);
     });
 
