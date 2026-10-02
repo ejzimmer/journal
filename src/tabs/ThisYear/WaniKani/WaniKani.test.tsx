@@ -129,7 +129,7 @@ describe('WaniKani', () => {
       await user.click(screen.getByRole('button', { name: 'Save' }));
 
       expect(
-        await screen.findByRole('heading', { name: 'Level 2' }),
+        await screen.findByRole('region', { name: 'Level 2' }),
       ).toBeInTheDocument();
       expect(fetchMock).toHaveBeenCalledWith(
         expect.any(String),
@@ -148,7 +148,7 @@ describe('WaniKani', () => {
 
       await user.type(screen.getByLabelText('WaniKani API key'), 'my-key');
       await user.click(screen.getByRole('button', { name: 'Save' }));
-      await screen.findByRole('heading', { name: 'Level 2' });
+      await screen.findByRole('region', { name: 'Level 2' });
 
       expect(setValue).toHaveBeenCalledWith(API_KEY_PATH, 'my-key');
     });
@@ -222,12 +222,12 @@ describe('WaniKani', () => {
     describe('when progress has been loaded before', () => {
       it('only asks WaniKani for what changed since then', async () => {
         const { unmount } = renderWaniKani('my-key');
-        await screen.findByRole('heading', { name: 'Level 2' });
+        await screen.findByRole('region', { name: 'Level 2' });
         unmount();
         fetchMock.mockClear();
 
         renderWaniKani('my-key');
-        await screen.findByRole('heading', { name: 'Level 2' });
+        await screen.findByRole('region', { name: 'Level 2' });
 
         expect(getRequestedUrls()).toContain(
           'https://api.wanikani.com/v2/subjects?updated_after=2026-09-01T00%3A00%3A00Z',

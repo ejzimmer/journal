@@ -27,9 +27,9 @@
     width: 70px;
     height: 70px;
 
-    h3 {
+    .level-number {
       position: relative;
-      margin: 0;
+      font-weight: bold;
       color: white;
       text-shadow: 0 0 4px #9ee3ff;
     }

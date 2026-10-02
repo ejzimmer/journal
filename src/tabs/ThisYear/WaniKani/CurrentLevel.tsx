@@ -1,4 +1,3 @@
-import { useId } from 'react';
 import { StopWatchIcon } from '../../../shared/icons/StopWatch';
 import { LevelBadge } from './LevelBadge';
 import { LevelRings } from './LevelRings';
@@ -13,17 +12,16 @@ export function CurrentLevel({ data }: { data: WaniKaniData }) {
     data.level,
   );
 
-  const headingId = useId();
   const daysToFinish = predictDaysToFinish(data.levelProgressions, data.level);
 
   return (
-    <section className="current-level" aria-labelledby={headingId}>
+    <section className="current-level" aria-label={`Level ${data.level}`}>
       <LevelRings radical={radical} kanji={kanji} />
       <div className="current-level-badge">
         <LevelBadge />
-        <h3 id={headingId} aria-label={`Level ${data.level}`}>
+        <div className="level-number" aria-hidden="true">
           {data.level}
-        </h3>
+        </div>
       </div>
       {daysToFinish !== undefined && (
         <div className="days-remaining">
