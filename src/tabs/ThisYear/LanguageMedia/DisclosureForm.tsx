@@ -25,10 +25,12 @@ export function DisclosureForm({
       onToggle={(event) => setIsOpen(event.currentTarget.open)}
     >
       <summary aria-label={label}>{summary}</summary>
-      <form aria-label={label} onSubmit={submitForm}>
-        {children}
-        <button type="submit">Save</button>
-      </form>
+      {isOpen && (
+        <form aria-label={label} onSubmit={submitForm}>
+          {children}
+          <button type="submit">Save</button>
+        </form>
+      )}
     </details>
   );
 }

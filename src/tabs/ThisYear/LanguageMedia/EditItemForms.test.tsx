@@ -100,6 +100,30 @@ describe('EditEpisodeForm', () => {
     aiQuestions: 1,
   };
 
+  describe('when the episode has changed since the form was rendered', () => {
+    it('opens with the current values', async () => {
+      const { rerender } = render(
+        <EditEpisodeForm
+          name="Chapitre 1"
+          episode={episode}
+          onChange={jest.fn()}
+        />,
+      );
+      rerender(
+        <EditEpisodeForm
+          name="Chapitre 1"
+          episode={{ ...episode, lengthInSeconds: 3000 }}
+          onChange={jest.fn()}
+        />,
+      );
+      await openForm();
+
+      expect(screen.getByRole('textbox', { name: 'Length' })).toHaveValue(
+        '50:00',
+      );
+    });
+  });
+
   it('starts with the current values', async () => {
     render(
       <EditEpisodeForm
