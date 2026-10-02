@@ -17,11 +17,11 @@ const subjects = [
 ];
 
 const assignments = [
-  { id: 11, object: 'assignment', data: assignment(1, 9, true) },
-  { id: 12, object: 'assignment', data: assignment(2, 9, true) },
-  { id: 13, object: 'assignment', data: assignment(3, 6, true) },
-  { id: 14, object: 'assignment', data: assignment(4, 5, true) },
-  { id: 15, object: 'assignment', data: assignment(5, 3, false) },
+  { id: 11, object: 'assignment', data: createAssignment(1, 9, true) },
+  { id: 12, object: 'assignment', data: createAssignment(2, 9, true) },
+  { id: 13, object: 'assignment', data: createAssignment(3, 6, true) },
+  { id: 14, object: 'assignment', data: createAssignment(4, 5, true) },
+  { id: 15, object: 'assignment', data: createAssignment(5, 3, false) },
 ];
 
 const levelProgressions = [
@@ -47,7 +47,11 @@ const levelProgressions = [
   },
 ];
 
-function assignment(subjectId: number, srsStage: number, isPassed: boolean) {
+function createAssignment(
+  subjectId: number,
+  srsStage: number,
+  isPassed: boolean,
+) {
   return {
     subject_id: subjectId,
     srs_stage: srsStage,
@@ -56,7 +60,7 @@ function assignment(subjectId: number, srsStage: number, isPassed: boolean) {
   };
 }
 
-function collection(data: unknown[]) {
+function createCollection(data: unknown[]) {
   return {
     data_updated_at: '2026-09-01T00:00:00Z',
     pages: { next_url: null },
@@ -78,11 +82,12 @@ function mockWaniKani() {
   fetchMock.mockImplementation((url: string) => {
     const { pathname } = new URL(url);
     if (pathname === '/v2/user') return respondWith({ data: { level: 2 } });
-    if (pathname === '/v2/subjects') return respondWith(collection(subjects));
+    if (pathname === '/v2/subjects')
+      return respondWith(createCollection(subjects));
     if (pathname === '/v2/assignments')
-      return respondWith(collection(assignments));
+      return respondWith(createCollection(assignments));
     if (pathname === '/v2/level_progressions')
-      return respondWith(collection(levelProgressions));
+      return respondWith(createCollection(levelProgressions));
     return respondWith({}, 404);
   });
 }

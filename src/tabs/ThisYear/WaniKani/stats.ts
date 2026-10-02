@@ -124,7 +124,7 @@ function measureDays(from: string, to: string | Temporal.Instant) {
   return Temporal.Instant.from(from).until(to).total('hours') / 24;
 }
 
-function percentile(sortedValues: number[], fraction: number) {
+function calculatePercentile(sortedValues: number[], fraction: number) {
   const index = (sortedValues.length - 1) * fraction;
   const lower = Math.floor(index);
   const upper = Math.ceil(index);
@@ -138,8 +138,8 @@ export function removeOutliers(values: number[]) {
   if (values.length < 4) return values;
 
   const sorted = values.toSorted((a, b) => a - b);
-  const lowerQuartile = percentile(sorted, 0.25);
-  const upperQuartile = percentile(sorted, 0.75);
+  const lowerQuartile = calculatePercentile(sorted, 0.25);
+  const upperQuartile = calculatePercentile(sorted, 0.75);
   const limit = upperQuartile + 1.5 * (upperQuartile - lowerQuartile);
   return values.filter((value) => value <= limit);
 }
