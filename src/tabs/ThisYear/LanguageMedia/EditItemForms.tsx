@@ -42,10 +42,12 @@ function EditItemForm({
       onToggle={(event) => setIsOpen(event.currentTarget.open)}
     >
       <summary aria-label={`Edit ${name}`}>Edit</summary>
-      <form aria-label={`Edit ${name}`} onSubmit={submitItem}>
-        {children}
-        <button type="submit">Save</button>
-      </form>
+      {isOpen && (
+        <form aria-label={`Edit ${name}`} onSubmit={submitItem}>
+          {children}
+          <button type="submit">Save</button>
+        </form>
+      )}
     </details>
   );
 }

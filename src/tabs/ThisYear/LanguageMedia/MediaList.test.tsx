@@ -327,6 +327,7 @@ describe('MediaList', () => {
       formName: string,
       name: string,
     ) => {
+      await user.click(screen.getByLabelText(formName));
       const form = screen.getByRole('form', { name: formName });
       await user.clear(within(form).getByRole('textbox', { name: 'Name' }));
       await user.type(
@@ -365,6 +366,7 @@ describe('MediaList', () => {
     describe('a video', () => {
       it('saves the changed details to the video', async () => {
         const { user, storageContext } = renderList([hugo]);
+        await user.click(screen.getByLabelText('Edit https://youtu.be/2'));
         const form = screen.getByRole('form', {
           name: 'Edit https://youtu.be/2',
         });
