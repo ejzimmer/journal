@@ -2,7 +2,7 @@ import { AddItemForm } from './AddItemForm';
 import { NumberField } from './NumberField';
 import { TextField } from './TextField';
 import { readNumber, readText } from './fields';
-import { findNextNumber, NewItem } from './newItems';
+import { findNextNumber, NewItem, NO_COMPREHENSION } from './newItems';
 import { Volume } from './types';
 
 export function AddVolumeForm({
@@ -22,6 +22,7 @@ export function AddVolumeForm({
           number: findNextNumber(volumes),
           name: readText(data, 'name'),
           pages: readNumber(data, 'pages'),
+          ...NO_COMPREHENSION,
         })
       }
     >

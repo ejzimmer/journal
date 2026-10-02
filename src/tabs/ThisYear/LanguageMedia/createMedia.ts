@@ -1,5 +1,7 @@
 import { NewMedia } from './types';
 
+const NO_COMPREHENSION = { lookups: 0, aiQuestions: 0 };
+
 const createNumbers = (count = 0) =>
   Array.from({ length: count }, (_, index) => index + 1);
 
@@ -23,6 +25,7 @@ export function createInitialChildren(newMedia: NewMedia) {
         collection: 'volumes',
         children: createNumbers(newMedia.volumeCount).map((number) => ({
           number,
+          ...NO_COMPREHENSION,
         })),
       };
     case 'book':
@@ -31,6 +34,7 @@ export function createInitialChildren(newMedia: NewMedia) {
         children: (newMedia.volumeNames ?? []).map((name, index) => ({
           number: index + 1,
           name,
+          ...NO_COMPREHENSION,
         })),
       };
     case 'youtube':

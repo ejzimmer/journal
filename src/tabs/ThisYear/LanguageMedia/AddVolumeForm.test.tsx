@@ -9,7 +9,9 @@ describe('AddVolumeForm', () => {
       const onAdd = jest.fn();
       render(
         <AddVolumeForm
-          volumes={{ vol1: { id: 'vol1', number: 1 } }}
+          volumes={{
+            vol1: { id: 'vol1', number: 1, lookups: 0, aiQuestions: 0 },
+          }}
           isNameRequired={false}
           onAdd={onAdd}
         />,
@@ -18,7 +20,12 @@ describe('AddVolumeForm', () => {
       await user.type(screen.getByRole('spinbutton', { name: 'Pages' }), '180');
       await user.click(screen.getByRole('button', { name: 'Add volume' }));
 
-      expect(onAdd).toHaveBeenCalledWith({ number: 2, pages: 180 });
+      expect(onAdd).toHaveBeenCalledWith({
+        number: 2,
+        pages: 180,
+        lookups: 0,
+        aiQuestions: 0,
+      });
     });
   });
 
@@ -37,6 +44,8 @@ describe('AddVolumeForm', () => {
       expect(onAdd).toHaveBeenCalledWith({
         number: 1,
         name: 'Astérix le Gaulois',
+        lookups: 0,
+        aiQuestions: 0,
       });
     });
 

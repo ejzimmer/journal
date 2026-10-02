@@ -83,32 +83,26 @@ describe('MediaList', () => {
     it('shows where I am up to', () => {
       renderList([yotsuba]);
 
-      expect(screen.getByText('Up to 1-2-41')).toBeInTheDocument();
+      expect(screen.getByText('Up to 1-41')).toBeInTheDocument();
     });
 
-    it('shows each volume with its number and pages', () => {
-      renderList([yotsuba]);
-
-      expect(screen.getByText('Volume 1 (220 pages)')).toBeInTheDocument();
-    });
-
-    describe('a chapter', () => {
-      it('shows its number, last page and comprehension', () => {
+    describe('a volume', () => {
+      it('shows its number, pages and comprehension', () => {
         renderList([yotsuba]);
 
         expect(
           screen.getByText(
-            'Chapter 1 (to page 38): 20 looked up, 3 asked AI, 60% understood',
+            'Volume 1 (220 pages): 20 looked up, 3 asked AI, 60% understood',
           ),
         ).toBeInTheDocument();
       });
 
-      describe('with a name', () => {
-        it('shows its name', () => {
+      describe('without pages', () => {
+        it('shows its status', () => {
           renderList([yotsuba]);
 
           expect(
-            screen.getByText('よつばとアイス: 0 looked up, 0 asked AI'),
+            screen.getByText('Volume 2, In progress: 0 looked up, 0 asked AI'),
           ).toBeInTheDocument();
         });
       });
@@ -124,12 +118,20 @@ describe('MediaList', () => {
           name: 'Astérix',
           language: 'french',
           volumes: {
-            vol1: { id: 'vol1', number: 1, name: 'Astérix le Gaulois' },
+            vol1: {
+              id: 'vol1',
+              number: 1,
+              name: 'Astérix le Gaulois',
+              lookups: 0,
+              aiQuestions: 0,
+            },
           },
         },
       ]);
 
-      expect(screen.getByText('Astérix le Gaulois')).toBeInTheDocument();
+      expect(
+        screen.getByText('Astérix le Gaulois: 0 looked up, 0 asked AI'),
+      ).toBeInTheDocument();
     });
   });
 
@@ -209,24 +211,6 @@ describe('MediaList', () => {
         ]);
       });
     });
-
-    describe('a chapter', () => {
-      it('deletes it from storage', async () => {
-        const { user, storageContext } = renderList([yotsuba]);
-
-        await user.click(
-          screen.getByRole('button', { name: 'Delete Chapter 1' }),
-        );
-
-        expect(storageContext.deleteItem).toHaveBeenCalledWith([
-          'yotsuba',
-          'volumes',
-          'vol1',
-          'chapters',
-          'c1',
-        ]);
-      });
-    });
   });
 
   describe('adding', () => {
@@ -302,19 +286,6 @@ describe('MediaList', () => {
 
         expect(storageContext.addItem).toHaveBeenCalledWith(
           ['yotsuba', 'volumes'],
-          { number: 2 },
-        );
-      });
-    });
-
-    describe('a chapter', () => {
-      it('adds it to the volume', async () => {
-        const { user, storageContext } = renderList([yotsuba]);
-
-        await user.click(screen.getByRole('button', { name: 'Add chapter' }));
-
-        expect(storageContext.addItem).toHaveBeenCalledWith(
-          ['yotsuba', 'volumes', 'vol1', 'chapters'],
           { number: 3, lookups: 0, aiQuestions: 0 },
         );
       });
@@ -384,15 +355,15 @@ describe('MediaList', () => {
       });
     });
 
-    describe('a chapter', () => {
-      it('saves the changed details to the chapter', async () => {
+    describe('a volume', () => {
+      it('saves the changed details to the volume', async () => {
         const { user, storageContext } = renderList([yotsuba]);
 
-        await renameIn(user, 'Edit Chapter 1', 'よつばとあさがお');
+        await renameIn(user, 'Edit Volume 1', 'よつばと！ 1');
 
         expect(storageContext.updateItem).toHaveBeenCalledWith(
-          ['yotsuba', 'volumes', 'vol1', 'chapters', 'c1'],
-          { number: 1, name: 'よつばとあさがお', lastPage: 38 },
+          ['yotsuba', 'volumes', 'vol1'],
+          { number: 1, name: 'よつばと！ 1', pages: 220 },
         );
       });
     });
@@ -503,18 +474,18 @@ describe('MediaList', () => {
       });
     });
 
-    describe('of a chapter without a last page', () => {
+    describe('of a volume without pages', () => {
       it('saves its status', async () => {
         const { user, storageContext } = renderList([yotsuba]);
 
         await user.selectOptions(
-          screen.getByRole('combobox', { name: 'Status of よつばとアイス' }),
-          'In progress',
+          screen.getByRole('combobox', { name: 'Status of Volume 2' }),
+          'Done',
         );
 
         expect(storageContext.updateItem).toHaveBeenCalledWith(
-          ['yotsuba', 'volumes', 'vol1', 'chapters', 'c2'],
-          { status: 'in-progress' },
+          ['yotsuba', 'volumes', 'vol2'],
+          { status: 'done' },
         );
       });
     });
@@ -553,16 +524,16 @@ describe('MediaList', () => {
       });
     });
 
-    describe('a lookup in a chapter', () => {
-      it("saves only the chapter's new lookup count", async () => {
+    describe('a lookup in a volume', () => {
+      it("saves only the volume's new lookup count", async () => {
         const { user, storageContext } = renderList([yotsuba]);
 
         await user.click(
-          screen.getByRole('button', { name: 'Add a lookup to Chapter 1' }),
+          screen.getByRole('button', { name: 'Add a lookup to Volume 1' }),
         );
 
         expect(storageContext.updateItem).toHaveBeenCalledWith(
-          ['yotsuba', 'volumes', 'vol1', 'chapters', 'c1'],
+          ['yotsuba', 'volumes', 'vol1'],
           { lookups: 21 },
         );
       });
@@ -570,12 +541,12 @@ describe('MediaList', () => {
   });
 
   describe('editing totals', () => {
-    describe('of a chapter', () => {
-      it('saves the new totals to the chapter', async () => {
+    describe('of a volume', () => {
+      it('saves the new totals to the volume', async () => {
         const { user, storageContext } = renderList([yotsuba]);
-        await user.click(screen.getByLabelText('Edit totals for Chapter 1'));
+        await user.click(screen.getByLabelText('Edit totals for Volume 1'));
         const form = screen.getByRole('form', {
-          name: 'Edit totals for Chapter 1',
+          name: 'Edit totals for Volume 1',
         });
         const understood = within(form).getByRole('spinbutton', {
           name: 'Understood (%)',
@@ -586,7 +557,7 @@ describe('MediaList', () => {
         await user.click(within(form).getByRole('button', { name: 'Save' }));
 
         expect(storageContext.updateItem).toHaveBeenCalledWith(
-          ['yotsuba', 'volumes', 'vol1', 'chapters', 'c1'],
+          ['yotsuba', 'volumes', 'vol1'],
           { lookups: 20, aiQuestions: 3, understood: 75 },
         );
       });

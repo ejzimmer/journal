@@ -9,6 +9,8 @@ describe('EditVolumeForm', () => {
     number: 1,
     name: 'Astérix le Gaulois',
     pages: 48,
+    lookups: 0,
+    aiQuestions: 0,
   };
 
   it('saves the new number, name and pages', async () => {
