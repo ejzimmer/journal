@@ -42,12 +42,15 @@ const lupin: TvSeries = {
   type: 'tv',
   name: 'Lupin',
   language: 'french',
-  seasons: [
-    {
+  seasons: {
+    s1: {
+      id: 's1',
       number: 1,
-      episodes: [{ number: 1, lookups: 3, aiQuestions: 1, understood: 80 }],
+      episodes: {
+        e1: { id: 'e1', number: 1, lookups: 3, aiQuestions: 1, understood: 80 },
+      },
     },
-  ],
+  },
   upTo: { season: 1, episode: 1, timestampInSeconds: 600 },
 };
 
@@ -119,153 +122,132 @@ describe('LanguageMediaStorageContext', () => {
 
   describe('adding media', () => {
     const addMedia = (media: NewMedia) => {
-      const addItem = jest.fn();
+      const addItem = jest.fn().mockReturnValue('new');
       createLanguageMediaStorage({ addItem }).addMedia(media);
-      return addItem.mock.calls[0];
+      return addItem.mock.calls;
     };
 
-    it("saves it to this year's path", () => {
-      const [path] = addMedia({
+    it("saves its details to this year's path", () => {
+      const [mediaCall] = addMedia({
         type: 'youtube',
         name: 'HugoDécrypte',
         language: 'french',
       });
 
-      expect(path).toBe(thisYearsPath);
+      expect(mediaCall).toEqual([
+        thisYearsPath,
+        { type: 'youtube', name: 'HugoDécrypte', language: 'french' },
+      ]);
     });
 
-    describe('a tv series', () => {
-      it('creates the given number of seasons', () => {
-        const [, series] = addMedia({
+    describe('a tv series with a number of seasons', () => {
+      it('adds each season to the new series', () => {
+        const [, ...seasonCalls] = addMedia({
           type: 'tv',
           name: 'Lupin',
           language: 'french',
           seasonCount: 2,
         });
 
-        expect(series).toEqual({
-          type: 'tv',
-          name: 'Lupin',
-          language: 'french',
-          seasons: [{ number: 1 }, { number: 2 }],
-        });
-      });
-
-      describe('without a number of seasons', () => {
-        it('creates no seasons', () => {
-          const [, series] = addMedia({
-            type: 'tv',
-            name: 'Lupin',
-            language: 'french',
-          });
-
-          expect(series.seasons).toEqual([]);
-        });
+        expect(seasonCalls).toEqual([
+          [`${thisYearsPath}/new/seasons`, { number: 1 }],
+          [`${thisYearsPath}/new/seasons`, { number: 2 }],
+        ]);
       });
     });
 
-    describe('a youtube channel', () => {
-      it('saves its name and language', () => {
-        const [, channel] = addMedia({
-          type: 'youtube',
-          name: 'Yuyu',
-          language: 'japanese',
-        });
-
-        expect(channel).toEqual({
-          type: 'youtube',
-          name: 'Yuyu',
-          language: 'japanese',
-        });
-      });
-    });
-
-    describe('a manga series', () => {
-      it('creates the given number of numbered volumes', () => {
-        const [, series] = addMedia({
+    describe('a manga series with a number of volumes', () => {
+      it('adds each numbered volume to the new series', () => {
+        const [, ...volumeCalls] = addMedia({
           type: 'manga',
           name: 'Yotsuba&!',
           language: 'japanese',
           volumeCount: 2,
         });
 
-        expect(series).toEqual({
-          type: 'manga',
-          name: 'Yotsuba&!',
-          language: 'japanese',
-          volumes: [{ number: 1 }, { number: 2 }],
-        });
+        expect(volumeCalls).toEqual([
+          [`${thisYearsPath}/new/volumes`, { number: 1 }],
+          [`${thisYearsPath}/new/volumes`, { number: 2 }],
+        ]);
       });
     });
 
-    describe('a book series', () => {
-      it('creates a volume for each name', () => {
-        const [, series] = addMedia({
+    describe('a book series with volume names', () => {
+      it('adds a volume for each name to the new series', () => {
+        const [, ...volumeCalls] = addMedia({
           type: 'book',
-          name: 'Harry Potter',
+          name: 'Astérix',
           language: 'french',
-          volumeNames: ["Harry Potter à l'école des sorciers", 'La Chambre'],
+          volumeNames: ['Astérix le Gaulois', 'La Serpe d’or'],
         });
 
-        expect(series).toEqual({
-          type: 'book',
-          name: 'Harry Potter',
-          language: 'french',
-          volumes: [
-            { number: 1, name: "Harry Potter à l'école des sorciers" },
-            { number: 2, name: 'La Chambre' },
+        expect(volumeCalls).toEqual([
+          [
+            `${thisYearsPath}/new/volumes`,
+            { number: 1, name: 'Astérix le Gaulois' },
           ],
-        });
-      });
-    });
-  });
-
-  describe('updating media', () => {
-    it('saves the changes', () => {
-      const updateItem = jest.fn();
-      const storage = createLanguageMediaStorage({ updateItem });
-      const changed = { ...lupin, name: 'Lupin (Netflix)' };
-
-      storage.updateMedia(changed);
-
-      expect(updateItem).toHaveBeenCalledWith(thisYearsPath, changed);
-    });
-
-    describe('when a nested value has been cleared', () => {
-      it('saves the media without that value', () => {
-        const updateItem = jest.fn();
-        const storage = createLanguageMediaStorage({ updateItem });
-
-        storage.updateMedia({
-          ...lupin,
-          seasons: [
-            {
-              number: 1,
-              episodes: [
-                {
-                  number: 1,
-                  lookups: 0,
-                  aiQuestions: 0,
-                  understood: undefined,
-                },
-              ],
-            },
+          [
+            `${thisYearsPath}/new/volumes`,
+            { number: 2, name: 'La Serpe d’or' },
           ],
-        });
-
-        expect(updateItem.mock.calls[0][1].seasons).toStrictEqual([
-          { number: 1, episodes: [{ number: 1, lookups: 0, aiQuestions: 0 }] },
         ]);
       });
     });
   });
 
-  it('deletes media', () => {
+  describe('adding an item', () => {
+    it('saves it under the given collection and returns its id', () => {
+      const addItem = jest.fn().mockReturnValue('e2');
+      const storage = createLanguageMediaStorage({ addItem });
+
+      const id = storage.addItem(['lupin', 'seasons', 's1', 'episodes'], {
+        number: 2,
+      });
+
+      expect(addItem).toHaveBeenCalledWith(
+        `${thisYearsPath}/lupin/seasons/s1/episodes`,
+        { number: 2 },
+      );
+      expect(id).toBe('e2');
+    });
+  });
+
+  describe('updating an item', () => {
+    it('saves only the changed fields', () => {
+      const setValues = jest.fn();
+      const storage = createLanguageMediaStorage({ setValues });
+
+      storage.updateItem(['lupin', 'seasons', 's1', 'episodes', 'e1'], {
+        lookups: 4,
+      });
+
+      expect(setValues).toHaveBeenCalledWith({
+        [`${thisYearsPath}/lupin/seasons/s1/episodes/e1/lookups`]: 4,
+      });
+    });
+
+    describe('when a field has been cleared', () => {
+      it('removes it', () => {
+        const setValues = jest.fn();
+        const storage = createLanguageMediaStorage({ setValues });
+
+        storage.updateItem(['lupin'], { upTo: undefined });
+
+        expect(setValues).toHaveBeenCalledWith({
+          [`${thisYearsPath}/lupin/upTo`]: null,
+        });
+      });
+    });
+  });
+
+  it('deletes an item', () => {
     const deleteItem = jest.fn();
     const storage = createLanguageMediaStorage({ deleteItem });
 
-    storage.deleteMedia(lupin);
+    storage.deleteItem(['lupin', 'seasons', 's1']);
 
-    expect(deleteItem).toHaveBeenCalledWith(thisYearsPath, lupin);
+    expect(deleteItem).toHaveBeenCalledWith(`${thisYearsPath}/lupin/seasons`, {
+      id: 's1',
+    });
   });
 });
