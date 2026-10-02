@@ -21,7 +21,9 @@ describe('EditVideoForm', () => {
       screen.getByRole('textbox', { name: 'URL' }),
       'https://youtu.be/2',
     );
-    await user.type(screen.getByRole('textbox', { name: 'Length' }), '1:02:05');
+    await user.type(screen.getByRole('textbox', { name: 'Hours' }), '1');
+    await user.type(screen.getByRole('textbox', { name: 'Minutes' }), '2');
+    await user.type(screen.getByRole('textbox', { name: 'Seconds' }), '5');
     await save();
 
     expect(onChange).toHaveBeenCalledWith({

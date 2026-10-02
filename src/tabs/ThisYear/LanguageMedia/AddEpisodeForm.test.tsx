@@ -17,7 +17,8 @@ describe('AddEpisodeForm', () => {
       screen.getByRole('textbox', { name: 'Name' }),
       'Chapitre 5',
     );
-    await user.type(screen.getByRole('textbox', { name: 'Length' }), '47:06');
+    await user.type(screen.getByRole('textbox', { name: 'Minutes' }), '47');
+    await user.type(screen.getByRole('textbox', { name: 'Seconds' }), '6');
     await user.click(screen.getByRole('button', { name: 'Add episode' }));
 
     expect(onAdd).toHaveBeenCalledWith({
@@ -26,6 +27,21 @@ describe('AddEpisodeForm', () => {
       lengthInSeconds: 2826,
       lookups: 0,
       aiQuestions: 0,
+    });
+  });
+
+  describe('with only minutes', () => {
+    it('adds an episode of whole minutes', async () => {
+      const user = userEvent.setup();
+      const onAdd = jest.fn();
+      render(<AddEpisodeForm episodes={episodes} onAdd={onAdd} />);
+
+      await user.type(screen.getByRole('textbox', { name: 'Minutes' }), '45');
+      await user.click(screen.getByRole('button', { name: 'Add episode' }));
+
+      expect(onAdd).toHaveBeenCalledWith(
+        expect.objectContaining({ lengthInSeconds: 2700 }),
+      );
     });
   });
 
@@ -45,13 +61,13 @@ describe('AddEpisodeForm', () => {
     });
   });
 
-  describe('with a length that is not mm:ss', () => {
+  describe('with more than 59 seconds', () => {
     it('does not add the episode', async () => {
       const user = userEvent.setup();
       const onAdd = jest.fn();
       render(<AddEpisodeForm episodes={episodes} onAdd={onAdd} />);
 
-      await user.type(screen.getByRole('textbox', { name: 'Length' }), '47');
+      await user.type(screen.getByRole('textbox', { name: 'Seconds' }), '60');
       await user.click(screen.getByRole('button', { name: 'Add episode' }));
 
       expect(onAdd).not.toHaveBeenCalled();

@@ -15,11 +15,9 @@ describe('TvSeriesUpToForm', () => {
 
     await user.clear(screen.getByRole('spinbutton', { name: 'Episode' }));
     await user.type(screen.getByRole('spinbutton', { name: 'Episode' }), '3');
-    await user.clear(screen.getByRole('textbox', { name: 'Timestamp' }));
-    await user.type(
-      screen.getByRole('textbox', { name: 'Timestamp' }),
-      '05:00',
-    );
+    await user.clear(screen.getByRole('textbox', { name: 'Minutes' }));
+    await user.type(screen.getByRole('textbox', { name: 'Minutes' }), '5');
+    await user.clear(screen.getByRole('textbox', { name: 'Seconds' }));
     await save();
 
     expect(onChange).toHaveBeenCalledWith({
