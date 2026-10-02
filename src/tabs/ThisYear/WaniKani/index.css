@@ -32,8 +32,9 @@
   }
 
   .level-gems {
-    display: flex;
-    flex-wrap: wrap;
+    display: grid;
+    grid-template-columns: repeat(15, auto);
+    justify-content: start;
     row-gap: 3px;
     column-gap: 4px;
     padding-inline-start: 8px;
