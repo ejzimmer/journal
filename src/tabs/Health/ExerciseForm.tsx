@@ -4,6 +4,7 @@ import { ExerciseUpdate, Recommendation } from '../../shared/types';
 import { Switch } from '../../shared/controls/Switch';
 import { ChevronUpIcon } from '../../shared/icons/ChevronUp';
 import { ChevronDownIcon } from '../../shared/icons/ChevronDown';
+import { MinusIcon } from '../../shared/icons/Minus';
 import { XIcon } from '../../shared/icons/X';
 import { TickIcon } from '../../shared/icons/Tick';
 import { RubbishBinIcon } from '../../shared/icons/RubbishBin';
@@ -23,7 +24,7 @@ function RecommendationIcon({ value }: { value: RecommendationOption }) {
   if (value === 'decrease') {
     return <ChevronDownIcon role="img" aria-label={value} />;
   }
-  return <span role="img" aria-label={value} />;
+  return <MinusIcon role="img" aria-label={value} />;
 }
 
 type ExerciseFormProps = {
