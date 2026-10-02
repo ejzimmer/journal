@@ -1,4 +1,4 @@
-import { ComprehensionCounters } from './ComprehensionForms';
+import { ComprehensionCounters } from './ComprehensionCounters';
 import { DeleteButton } from './DeleteButton';
 import { EditChapterForm } from './EditChapterForm';
 import { useLanguageMediaStorage } from './LanguageMediaStorageContext';

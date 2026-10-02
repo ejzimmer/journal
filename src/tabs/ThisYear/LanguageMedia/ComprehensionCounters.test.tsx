@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { ComprehensionCounters } from './ComprehensionForms';
+import { ComprehensionCounters } from './ComprehensionCounters';
 
 const comprehension = { lookups: 3, aiQuestions: 1, understood: 80 };
 
