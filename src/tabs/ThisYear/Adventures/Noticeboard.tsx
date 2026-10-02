@@ -1,16 +1,21 @@
 import { AddAdventureForm } from './AddAdventureForm';
+import { AdventureCard } from './AdventureCard';
 import { useAdventureStorage } from './AdventureStorageContext';
 
 import './Noticeboard.css';
 
 export function Noticeboard() {
-  const { adventures } = useAdventureStorage();
+  const { adventures, modes } = useAdventureStorage();
 
   return (
     <section className="noticeboard" aria-label="Adventures">
       <ul className="adventures">
         {adventures.map((adventure) => (
-          <li key={adventure.id}>{adventure.description}</li>
+          <AdventureCard
+            key={adventure.id}
+            adventure={adventure}
+            mode={modes.find(({ id }) => id === adventure.modeId)}
+          />
         ))}
       </ul>
       <div className="add-adventure">

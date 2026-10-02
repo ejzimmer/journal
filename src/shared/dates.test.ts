@@ -3,6 +3,7 @@ import {
   formatDateId,
   formatDayAndMonth,
   formatMonthAndYear,
+  formatWeekdayDayAndMonth,
   getDaysSince,
   getMillisecondsUntilTomorrow,
   getDateDaysAgo,
@@ -182,6 +183,18 @@ describe('dates', () => {
     describe("when the locale's short month is longer than three letters", () => {
       it('trims it to three', () => {
         expect(formatDayAndMonth('2026-09-20')).toBe('20 Sep');
+      });
+    });
+  });
+
+  describe('formatWeekdayDayAndMonth', () => {
+    it('shows the short weekday, day and short month', () => {
+      expect(formatWeekdayDayAndMonth('2026-10-17')).toBe('Sat 17 Oct');
+    });
+
+    describe("when the locale's short month is longer than three letters", () => {
+      it('trims it to three', () => {
+        expect(formatWeekdayDayAndMonth('2026-09-05')).toBe('Sat 5 Sep');
       });
     });
   });
