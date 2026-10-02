@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { Skeleton } from '../../../shared/controls/Skeleton';
 import { InvalidApiKeyError } from './api';
+import { GemDefs } from './GemDefs';
 import { LevelGems } from './LevelGems';
 import { CurrentLevel } from './CurrentLevel';
 import { SrsProgress } from './SrsProgress';
@@ -35,8 +36,11 @@ export function WaniKaniProgress({
   return (
     <div className="wanikani">
       <CurrentLevel data={data} />
-      <SrsProgress data={data} />
-      <LevelGems data={data} />
+      <div className="wanikani-collection">
+        <GemDefs />
+        <SrsProgress data={data} />
+        <LevelGems data={data} />
+      </div>
     </div>
   );
 }

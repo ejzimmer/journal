@@ -1,7 +1,7 @@
-import { SrsProgressBar } from './SrsProgressBar';
 import { countSubjectsBySrsGroup } from './srsGroups';
-import { SUBJECT_TYPE_LABELS } from './subjectTypeLabels';
+import { SrsVial } from './SrsVial';
 import { SUBJECT_TYPES, WaniKaniData } from './types';
+import { VialDefs } from './VialDefs';
 
 export function SrsProgress({ data }: { data: WaniKaniData }) {
   const subjectCounts = countSubjectsBySrsGroup(
@@ -10,11 +10,13 @@ export function SrsProgress({ data }: { data: WaniKaniData }) {
   );
 
   return (
-    <section>
-      {SUBJECT_TYPES.map((type) => (
-        <SrsProgressBar
+    <section className="srs-vials">
+      <VialDefs />
+      {SUBJECT_TYPES.map((type, index) => (
+        <SrsVial
           key={type}
-          label={SUBJECT_TYPE_LABELS[type]}
+          type={type}
+          index={index}
           {...subjectCounts[type]}
         />
       ))}
