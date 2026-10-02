@@ -41,7 +41,6 @@ describe('EditMediaForm', () => {
     await save();
 
     expect(onChange).toHaveBeenCalledWith({
-      ...lupin,
       name: 'ルパン',
       language: 'japanese',
     });
@@ -77,7 +76,7 @@ describe('EditSeasonForm', () => {
     render(
       <EditSeasonForm
         name="Season 1"
-        season={{ number: 1 }}
+        season={{ id: 's1', number: 1 }}
         onChange={onChange}
       />,
     );
@@ -93,6 +92,7 @@ describe('EditSeasonForm', () => {
 
 describe('EditEpisodeForm', () => {
   const episode: Episode = {
+    id: 'e1',
     number: 1,
     name: 'Chapitre 1',
     lengthInSeconds: 2826,
@@ -133,14 +133,14 @@ describe('EditEpisodeForm', () => {
     await save();
 
     expect(onChange).toHaveBeenCalledWith({
-      ...episode,
+      number: 1,
       name: 'Pilote',
       lengthInSeconds: 3000,
     });
   });
 
   describe('when the name and length are cleared', () => {
-    it('saves the episode without them', async () => {
+    it('clears them', async () => {
       const onChange = jest.fn();
       render(
         <EditEpisodeForm
@@ -155,10 +155,10 @@ describe('EditEpisodeForm', () => {
       await user.clear(screen.getByRole('textbox', { name: 'Length' }));
       await save();
 
-      expect(onChange).toHaveBeenCalledWith({
+      expect(onChange.mock.calls[0][0]).toStrictEqual({
         number: 1,
-        lookups: 2,
-        aiQuestions: 1,
+        name: undefined,
+        lengthInSeconds: undefined,
       });
     });
   });
@@ -166,6 +166,7 @@ describe('EditEpisodeForm', () => {
 
 describe('EditVideoForm', () => {
   const video: Video = {
+    id: 'v1',
     url: 'https://youtu.be/1',
     lookups: 0,
     aiQuestions: 0,
@@ -185,7 +186,6 @@ describe('EditVideoForm', () => {
     await save();
 
     expect(onChange).toHaveBeenCalledWith({
-      ...video,
       url: 'https://youtu.be/2',
       lengthInSeconds: 3725,
     });
@@ -193,7 +193,12 @@ describe('EditVideoForm', () => {
 });
 
 describe('EditVolumeForm', () => {
-  const volume: Volume = { number: 1, name: 'Astérix le Gaulois', pages: 48 };
+  const volume: Volume = {
+    id: 'vol1',
+    number: 1,
+    name: 'Astérix le Gaulois',
+    pages: 48,
+  };
 
   it('saves the new number, name and pages', async () => {
     const onChange = jest.fn();
@@ -244,7 +249,7 @@ describe('EditVolumeForm', () => {
 });
 
 describe('EditChapterForm', () => {
-  const chapter: Chapter = { number: 1, lookups: 0, aiQuestions: 0 };
+  const chapter: Chapter = { id: 'c1', number: 1, lookups: 0, aiQuestions: 0 };
 
   it('saves the new name and last page', async () => {
     const onChange = jest.fn();
@@ -265,7 +270,7 @@ describe('EditChapterForm', () => {
     await save();
 
     expect(onChange).toHaveBeenCalledWith({
-      ...chapter,
+      number: 1,
       name: 'Prologue',
       lastPage: 38,
     });

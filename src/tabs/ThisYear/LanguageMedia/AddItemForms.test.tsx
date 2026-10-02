@@ -13,7 +13,12 @@ describe('AddSeasonForm', () => {
     it('adds the next season with that many episodes', async () => {
       const user = userEvent.setup();
       const onAdd = jest.fn();
-      render(<AddSeasonForm seasons={[{ number: 1 }]} onAdd={onAdd} />);
+      render(
+        <AddSeasonForm
+          seasons={{ s1: { id: 's1', number: 1 } }}
+          onAdd={onAdd}
+        />,
+      );
 
       await user.type(
         screen.getByRole('spinbutton', { name: 'Episodes' }),
@@ -21,13 +26,10 @@ describe('AddSeasonForm', () => {
       );
       await user.click(screen.getByRole('button', { name: 'Add season' }));
 
-      expect(onAdd).toHaveBeenCalledWith({
-        number: 2,
-        episodes: [
-          { number: 1, lookups: 0, aiQuestions: 0 },
-          { number: 2, lookups: 0, aiQuestions: 0 },
-        ],
-      });
+      expect(onAdd).toHaveBeenCalledWith({ number: 2 }, [
+        { number: 1, lookups: 0, aiQuestions: 0 },
+        { number: 2, lookups: 0, aiQuestions: 0 },
+      ]);
     });
   });
 
@@ -39,16 +41,16 @@ describe('AddSeasonForm', () => {
 
       await user.click(screen.getByRole('button', { name: 'Add season' }));
 
-      expect(onAdd).toHaveBeenCalledWith({ number: 1, episodes: [] });
+      expect(onAdd).toHaveBeenCalledWith({ number: 1 }, []);
     });
   });
 });
 
 describe('AddEpisodeForm', () => {
-  const episodes = [
-    { number: 1, lookups: 0, aiQuestions: 0 },
-    { number: 4, lookups: 0, aiQuestions: 0 },
-  ];
+  const episodes = {
+    e1: { id: 'e1', number: 1, lookups: 0, aiQuestions: 0 },
+    e4: { id: 'e4', number: 4, lookups: 0, aiQuestions: 0 },
+  };
 
   it('adds an episode numbered after the last one, with its name and length', async () => {
     const user = userEvent.setup();
@@ -142,7 +144,7 @@ describe('AddVolumeForm', () => {
       const onAdd = jest.fn();
       render(
         <AddVolumeForm
-          volumes={[{ number: 1 }]}
+          volumes={{ vol1: { id: 'vol1', number: 1 } }}
           isNameRequired={false}
           onAdd={onAdd}
         />,
@@ -193,7 +195,7 @@ describe('AddChapterForm', () => {
     const onAdd = jest.fn();
     render(
       <AddChapterForm
-        chapters={[{ number: 1, lookups: 0, aiQuestions: 0 }]}
+        chapters={{ c1: { id: 'c1', number: 1, lookups: 0, aiQuestions: 0 } }}
         onAdd={onAdd}
       />,
     );
