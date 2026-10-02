@@ -4,8 +4,10 @@ import { Chapter, Episode, Season, Video, Volume } from './types';
 
 const NO_COMPREHENSION = { lookups: 0, aiQuestions: 0 };
 
-const findNextNumber = (items: { number: number }[] = []) =>
-  Math.max(0, ...items.map(({ number }) => number)) + 1;
+const findNextNumber = (items: Record<string, { number: number }> = {}) =>
+  Math.max(0, ...Object.values(items).map(({ number }) => number)) + 1;
+
+type NewItem<T> = Omit<T, 'id'>;
 
 const readText = (data: FormData, name: string) =>
   String(data.get(name) ?? '').trim() || undefined;
@@ -45,20 +47,23 @@ export function AddSeasonForm({
   seasons,
   onAdd,
 }: {
-  seasons?: Season[];
-  onAdd: (season: Season) => void;
+  seasons?: Record<string, Season>;
+  onAdd: (season: NewItem<Season>, episodes: NewItem<Episode>[]) => void;
 }) {
   return (
     <AddItemForm
       label="Add season"
       onSubmit={(data) =>
-        onAdd({
-          number: findNextNumber(seasons),
-          episodes: Array.from(
+        onAdd(
+          { number: findNextNumber(seasons) },
+          Array.from(
             { length: readNumber(data, 'episodes') ?? 0 },
-            (_, index) => ({ number: index + 1, ...NO_COMPREHENSION }),
+            (_, index) => ({
+              number: index + 1,
+              ...NO_COMPREHENSION,
+            }),
           ),
-        })
+        )
       }
     >
       <label>
@@ -73,8 +78,8 @@ export function AddEpisodeForm({
   episodes,
   onAdd,
 }: {
-  episodes?: Episode[];
-  onAdd: (episode: Episode) => void;
+  episodes?: Record<string, Episode>;
+  onAdd: (episode: NewItem<Episode>) => void;
 }) {
   return (
     <AddItemForm
@@ -100,7 +105,11 @@ export function AddEpisodeForm({
   );
 }
 
-export function AddVideoForm({ onAdd }: { onAdd: (video: Video) => void }) {
+export function AddVideoForm({
+  onAdd,
+}: {
+  onAdd: (video: NewItem<Video>) => void;
+}) {
   return (
     <AddItemForm
       label="Add video"
@@ -129,9 +138,9 @@ export function AddVolumeForm({
   isNameRequired,
   onAdd,
 }: {
-  volumes?: Volume[];
+  volumes?: Record<string, Volume>;
   isNameRequired: boolean;
-  onAdd: (volume: Volume) => void;
+  onAdd: (volume: NewItem<Volume>) => void;
 }) {
   return (
     <AddItemForm
@@ -160,8 +169,8 @@ export function AddChapterForm({
   chapters,
   onAdd,
 }: {
-  chapters?: Chapter[];
-  onAdd: (chapter: Chapter) => void;
+  chapters?: Record<string, Chapter>;
+  onAdd: (chapter: NewItem<Chapter>) => void;
 }) {
   return (
     <AddItemForm
