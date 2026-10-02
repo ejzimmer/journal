@@ -42,14 +42,16 @@ describe('predictDaysToFinish', () => {
       createProgression(58, '2026-01-21'),
     ];
 
-    it('adds what is left of the current level to the remaining levels', () => {
-      setToday('2026-01-25');
+    describe('4 days into level 58', () => {
+      it('predicts the 6 days left of a 10-day level, then 10 days each for levels 59 and 60', () => {
+        setToday('2026-01-25');
 
-      expect(predictDaysToFinish(progressions, 58)).toBe(26);
+        expect(predictDaysToFinish(progressions, 58)).toBe(26);
+      });
     });
 
-    describe('when the current level has run over the average', () => {
-      it('counts only the remaining levels', () => {
+    describe('20 days into level 58', () => {
+      it('predicts 10 days each for levels 59 and 60', () => {
         setToday('2026-02-10');
 
         expect(predictDaysToFinish(progressions, 58)).toBe(20);
