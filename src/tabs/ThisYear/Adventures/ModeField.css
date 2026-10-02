@@ -40,12 +40,6 @@
   padding-inline: 10px;
   border: 1px dashed var(--border-colour);
   color: var(--body-colour-mid);
-
-  &:has(:checked) {
-    border-color: var(--body-colour);
-    color: var(--body-colour);
-    background: white;
-  }
 }
 
 .new-mode {

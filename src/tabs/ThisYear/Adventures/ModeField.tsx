@@ -86,15 +86,16 @@ export function ModeField({
             {mode.name}
           </label>
         ))}
-        <label className="mode-option new-mode-option" aria-label="New mode">
-          <input
-            type="radio"
-            name="mode"
-            checked={modeId === NEW_MODE}
-            onChange={() => onSelectMode(NEW_MODE)}
-          />
-          <PlusIcon width="14px" />
-        </label>
+        {modeId !== NEW_MODE && (
+          <label className="mode-option new-mode-option" aria-label="New mode">
+            <input
+              type="radio"
+              name="mode"
+              onChange={() => onSelectMode(NEW_MODE)}
+            />
+            <PlusIcon width="14px" />
+          </label>
+        )}
       </div>
       {modeId === NEW_MODE && (
         <div className="new-mode">

@@ -157,6 +157,15 @@ describe('AddAdventureForm', () => {
 
       expect(screen.getByRole('radio', { name: 'Orange' })).toBeChecked();
     });
+
+    it('hides the new mode option', async () => {
+      const { user } = await openForm();
+      const newMode = screen.getByRole('radio', { name: 'New mode' });
+
+      await user.click(newMode);
+
+      expect(newMode).not.toBeInTheDocument();
+    });
   });
 
   describe('when there are no modes yet', () => {
