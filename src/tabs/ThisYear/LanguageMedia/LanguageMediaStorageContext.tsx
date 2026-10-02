@@ -34,6 +34,28 @@ export const LanguageMediaStorageContext = createContext<
   LanguageMediaStorageContextType | undefined
 >(undefined);
 
+const getCurrentTime = () => Temporal.Now.instant().toString();
+
+const findStoredItem = (
+  media: Record<string, LanguageMedia> | undefined,
+  itemPath: ItemPath,
+) =>
+  itemPath.reduce<Record<string, unknown> | undefined>(
+    (node, key) => node?.[key] as Record<string, unknown> | undefined,
+    media,
+  );
+
+const isObject = (value: unknown): value is Record<string, unknown> =>
+  typeof value === 'object' && value !== null;
+
+const isSameValue = (stored: unknown, value: unknown): boolean => {
+  if (isObject(stored) && isObject(value)) {
+    const keys = new Set([...Object.keys(stored), ...Object.keys(value)]);
+    return [...keys].every((key) => isSameValue(stored[key], value[key]));
+  }
+  return (stored ?? null) === (value ?? null);
+};
+
 const removeUndefinedFields = (item: object) =>
   Object.fromEntries(
     Object.entries(item).filter(([, value]) => value !== undefined),
@@ -64,7 +86,10 @@ export function LanguageMediaStorageProvider({
         [getLanguageMediaPath(year), ...itemPath].join('/');
 
       const addMediaItem = (collection: ItemPath, item: object) =>
-        addItem(toPath(collection), removeUndefinedFields(item));
+        addItem(toPath(collection), {
+          ...removeUndefinedFields(item),
+          createdAt: getCurrentTime(),
+        });
 
       return {
         year,
@@ -78,15 +103,26 @@ export function LanguageMediaStorageProvider({
           children.forEach((child) => addMediaItem([id, collection], child));
         },
         addItem: addMediaItem,
-        updateItem: (itemPath, changes) =>
+        updateItem: (itemPath, changes) => {
+          const storedItem = findStoredItem(
+            storedMediaByYear?.[year],
+            itemPath,
+          );
+          const changedFields = Object.entries(changes).filter(
+            ([field, value]) => !isSameValue(storedItem?.[field], value),
+          );
+          if (changedFields.length === 0) return;
+
+          const updatedAt = getCurrentTime();
           setValues(
             Object.fromEntries(
-              Object.entries(changes).map(([field, value]) => [
-                toPath([...itemPath, field]),
-                value ?? null,
+              changedFields.flatMap(([field, value]) => [
+                [toPath([...itemPath, field]), value ?? null],
+                [toPath([...itemPath, 'updatedAt', field]), updatedAt],
               ]),
             ),
-          ),
+          );
+        },
         deleteItem: (itemPath) =>
           deleteItem(toPath(itemPath.slice(0, -1)), { id: itemPath.at(-1)! }),
       };
