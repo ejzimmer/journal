@@ -1,4 +1,8 @@
-import { calculatePercentsByLevel, isUnlocked } from './levelPercents';
+import {
+  calculatePercentsByLevel,
+  findFullyBurnedTypesByLevel,
+  isUnlocked,
+} from './levelPercents';
 import { assignments, subjects } from './testFixtures';
 import { Assignment, Subject } from './types';
 
@@ -34,5 +38,14 @@ describe('calculatePercentsByLevel', () => {
 
       expect(level.percents.radical).toBe(99);
     });
+  });
+});
+
+describe('findFullyBurnedTypesByLevel', () => {
+  it('marks the types where every subject at that level is burned', () => {
+    expect(findFullyBurnedTypesByLevel(subjects, assignments, 2)).toEqual([
+      { radical: false, kanji: true, vocabulary: false },
+      { radical: false, kanji: false, vocabulary: false },
+    ]);
   });
 });

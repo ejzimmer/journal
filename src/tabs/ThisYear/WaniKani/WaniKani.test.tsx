@@ -203,6 +203,16 @@ describe('WaniKani', () => {
       ).toBeInTheDocument();
     });
 
+    it('marks the types that are fully burned at each level', async () => {
+      renderWaniKani('my-key');
+
+      expect(
+        await screen.findByRole('img', {
+          name: 'Level 1: Radicals 100% unlocked and burned, Kanji 100% unlocked and burned, Vocabulary 100% unlocked',
+        }),
+      ).toBeInTheDocument();
+    });
+
     it('shows every level up to 60', async () => {
       renderWaniKani('my-key');
 
