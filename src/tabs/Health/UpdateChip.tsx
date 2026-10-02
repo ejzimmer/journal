@@ -1,4 +1,4 @@
-import { Ref } from 'react';
+import { MouseEventHandler } from 'react';
 import { formatDate } from '../../shared/dates';
 import { ExerciseUpdate } from '../../shared/types';
 import { RecommendationIcon } from './RecommendationIcon';
@@ -6,25 +6,14 @@ import { RecommendationIcon } from './RecommendationIcon';
 type UpdateChipProps = {
   update: ExerciseUpdate;
   isEditing: boolean;
-  onClick: () => void;
-  ref: Ref<HTMLButtonElement>;
+  onClick: MouseEventHandler<HTMLButtonElement>;
 };
 
-export function UpdateChip({
-  update,
-  isEditing,
-  onClick,
-  ref,
-}: UpdateChipProps) {
+export function UpdateChip({ update, isEditing, onClick }: UpdateChipProps) {
   const { day, month, year } = formatDate(Temporal.PlainDate.from(update.date));
 
   return (
-    <button
-      ref={ref}
-      className="update"
-      aria-expanded={isEditing}
-      onClick={onClick}
-    >
+    <button className="update" aria-expanded={isEditing} onClick={onClick}>
       <time dateTime={update.date}>
         {day} {month} {year}
       </time>

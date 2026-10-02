@@ -13,12 +13,7 @@ const update: ExerciseUpdate = {
 describe('UpdateChip', () => {
   it('shows the date, details and recommendation', () => {
     render(
-      <UpdateChip
-        ref={null}
-        update={update}
-        isEditing={false}
-        onClick={jest.fn()}
-      />,
+      <UpdateChip update={update} isEditing={false} onClick={jest.fn()} />,
     );
 
     const chip = screen.getByRole('button', { name: /12 Aug 26/ });
@@ -31,12 +26,7 @@ describe('UpdateChip', () => {
   describe('when its update is being edited', () => {
     it('shows as expanded', () => {
       render(
-        <UpdateChip
-          ref={null}
-          update={update}
-          isEditing={true}
-          onClick={jest.fn()}
-        />,
+        <UpdateChip update={update} isEditing={true} onClick={jest.fn()} />,
       );
 
       expect(screen.getByRole('button', { name: /12 Aug 26/ })).toHaveAttribute(
@@ -51,12 +41,7 @@ describe('UpdateChip', () => {
       const user = userEvent.setup();
       const onClick = jest.fn();
       render(
-        <UpdateChip
-          ref={null}
-          update={update}
-          isEditing={false}
-          onClick={onClick}
-        />,
+        <UpdateChip update={update} isEditing={false} onClick={onClick} />,
       );
 
       await user.click(screen.getByRole('button', { name: /12 Aug 26/ }));

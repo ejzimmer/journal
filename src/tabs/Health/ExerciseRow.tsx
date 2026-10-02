@@ -15,7 +15,7 @@ export function ExerciseRow({ exercise }: { exercise: Exercise }) {
   const nameId = useId();
   const updatesRef = useRef<HTMLUListElement>(null);
   const recordButtonRef = useRef<HTMLButtonElement>(null);
-  const chipRefs = useRef(new Map<string, HTMLButtonElement>());
+  const formTriggerRef = useRef<HTMLButtonElement>(null);
 
   const updates = useMemo(
     () =>
@@ -35,27 +35,32 @@ export function ExerciseRow({ exercise }: { exercise: Exercise }) {
   const editingId =
     activeForm?.kind === 'edit' ? activeForm.update.id : undefined;
 
-  const findFormTrigger = () =>
-    editingId ? chipRefs.current.get(editingId) : recordButtonRef.current;
+  const openForm = (form: ActiveForm, trigger: HTMLButtonElement) => {
+    formTriggerRef.current = trigger;
+    setActiveForm(form);
+  };
 
-  const closeForm = (focusTarget = findFormTrigger()) => {
+  const closeForm = (focusTarget = formTriggerRef.current) => {
     flushSync(() => setActiveForm(null));
     focusTarget?.focus();
   };
 
-  const toggleEditForm = (update: ExerciseUpdate) => {
+  const toggleEditForm = (
+    update: ExerciseUpdate,
+    trigger: HTMLButtonElement,
+  ) => {
     if (editingId === update.id) {
       closeForm();
     } else {
-      setActiveForm({ kind: 'edit', update });
+      openForm({ kind: 'edit', update }, trigger);
     }
   };
 
-  const toggleRecordForm = () => {
+  const toggleRecordForm = (trigger: HTMLButtonElement) => {
     if (activeForm?.kind === 'record') {
       closeForm();
     } else {
-      setActiveForm({ kind: 'record' });
+      openForm({ kind: 'record' }, trigger);
     }
   };
 
@@ -85,15 +90,9 @@ export function ExerciseRow({ exercise }: { exercise: Exercise }) {
         {updates.map((update) => (
           <li key={update.id}>
             <UpdateChip
-              ref={(chip) => {
-                chipRefs.current.set(update.id, chip!);
-                return () => {
-                  chipRefs.current.delete(update.id);
-                };
-              }}
               update={update}
               isEditing={editingId === update.id}
-              onClick={() => toggleEditForm(update)}
+              onClick={(event) => toggleEditForm(update, event.currentTarget)}
             />
           </li>
         ))}
@@ -103,7 +102,7 @@ export function ExerciseRow({ exercise }: { exercise: Exercise }) {
         className="record"
         aria-label={`Record ${exercise.name}`}
         aria-expanded={activeForm?.kind === 'record'}
-        onClick={toggleRecordForm}
+        onClick={(event) => toggleRecordForm(event.currentTarget)}
       >
         <PlusIcon strokeWidth="3" />
       </button>
