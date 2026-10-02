@@ -29,6 +29,7 @@ import {
   TvSeriesUpToForm,
   VideoUpToForm,
 } from './ProgressForms';
+import { ComprehensionCounters } from './ComprehensionForms';
 import { appendItem, removeItemAt, replaceItemAt } from './listUpdates';
 import { LANGUAGE_NAMES, MEDIA_TYPE_NAMES } from './names';
 import {
@@ -225,6 +226,11 @@ function EpisodeDetails({
           onChange={(status) => onChange({ ...episode, status })}
         />
       )}
+      <ComprehensionCounters
+        name={name}
+        comprehension={episode}
+        onChange={(changes) => onChange({ ...episode, ...changes })}
+      />
       <EditEpisodeForm name={name} episode={episode} onChange={onChange} />
       <DeleteButton name={name} onDelete={onDelete} />
     </>
@@ -296,6 +302,11 @@ function VideoDetails({
           onChange={(upToInSeconds) => onChange({ ...video, upToInSeconds })}
         />
       )}
+      <ComprehensionCounters
+        name={video.url}
+        comprehension={video}
+        onChange={(changes) => onChange({ ...video, ...changes })}
+      />
       <EditVideoForm video={video} onChange={onChange} />
       <DeleteButton name={video.url} onDelete={onDelete} />
     </>
@@ -427,6 +438,11 @@ function ChapterDetails({
           onChange={(status) => onChange({ ...chapter, status })}
         />
       )}
+      <ComprehensionCounters
+        name={name}
+        comprehension={chapter}
+        onChange={(changes) => onChange({ ...chapter, ...changes })}
+      />
       <EditChapterForm name={name} chapter={chapter} onChange={onChange} />
       <DeleteButton name={name} onDelete={onDelete} />
     </>

@@ -623,4 +623,68 @@ describe('MediaList', () => {
       });
     });
   });
+
+  describe('counting', () => {
+    describe('a lookup in an episode', () => {
+      it('saves the series with the new count', async () => {
+        const { user, storageContext } = renderList([lupin]);
+
+        await user.click(
+          screen.getByRole('button', { name: 'Add a lookup to Chapitre 1' }),
+        );
+
+        const [season] = lupin.seasons!;
+        const [episode, otherEpisode] = season.episodes!;
+        expect(storageContext.updateMedia).toHaveBeenCalledWith({
+          ...lupin,
+          seasons: [
+            {
+              ...season,
+              episodes: [{ ...episode, lookups: 13 }, otherEpisode],
+            },
+          ],
+        });
+      });
+    });
+
+    describe('an AI question about a video', () => {
+      it('saves the channel with the new count', async () => {
+        const { user, storageContext } = renderList([hugo]);
+
+        await user.click(
+          screen.getByRole('button', {
+            name: 'Add an AI question to https://youtu.be/1',
+          }),
+        );
+
+        const [video, otherVideo] = hugo.videos!;
+        expect(storageContext.updateMedia).toHaveBeenCalledWith({
+          ...hugo,
+          videos: [{ ...video, aiQuestions: 2 }, otherVideo],
+        });
+      });
+    });
+
+    describe('a lookup in a chapter', () => {
+      it('saves the series with the new count', async () => {
+        const { user, storageContext } = renderList([yotsuba]);
+
+        await user.click(
+          screen.getByRole('button', { name: 'Add a lookup to Chapter 1' }),
+        );
+
+        const [volume] = yotsuba.volumes!;
+        const [chapter, otherChapter] = volume.chapters!;
+        expect(storageContext.updateMedia).toHaveBeenCalledWith({
+          ...yotsuba,
+          volumes: [
+            {
+              ...volume,
+              chapters: [{ ...chapter, lookups: 21 }, otherChapter],
+            },
+          ],
+        });
+      });
+    });
+  });
 });
