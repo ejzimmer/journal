@@ -48,8 +48,8 @@ describe('Noticeboard', () => {
         screen.getAllByRole('listitem').map((item) => item.textContent),
       ).toEqual([
         'Plenty Gorge parkrun',
-        'Ride to Hurstbridge',
         'Paddle the YarraSun 1 Nov',
+        'Ride to Hurstbridge',
       ]);
     });
   });
