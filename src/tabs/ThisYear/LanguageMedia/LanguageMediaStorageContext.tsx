@@ -1,15 +1,31 @@
-import { createContext, ReactNode, useContext, useMemo } from 'react';
+import { createContext, ReactNode, useContext, useMemo, useState } from 'react';
 import { useStorageContext } from '../../../shared/FirebaseContext';
+import { getThisYear } from '../../../shared/dates';
 import { createMedia } from './createMedia';
-import { LANGUAGE_MEDIA_PATH, LanguageMedia, NewMedia } from './types';
+import {
+  getLanguageMediaPath,
+  LANGUAGE_MEDIA_PATH,
+  LanguageMedia,
+  NewMedia,
+  StoredMediaByYear,
+} from './types';
 
-export type LanguageMediaStorageContextType = {
+export type LanguageMediaYearStorage = {
+  year: number;
   media: LanguageMedia[];
-  isLoading: boolean;
 
   addMedia: (media: NewMedia) => void;
   updateMedia: (media: LanguageMedia) => void;
   deleteMedia: (media: LanguageMedia) => void;
+};
+
+export type LanguageMediaStorageContextType = {
+  years: number[];
+  thisYear: number;
+  selectedYear: number;
+  isLoading: boolean;
+  selectYear: (year: number) => void;
+  getMediaYear: (year: number) => LanguageMediaYearStorage;
 };
 
 export const LanguageMediaStorageContext = createContext<
@@ -19,33 +35,63 @@ export const LanguageMediaStorageContext = createContext<
 const removeUndefinedValues = <T,>(value: T): T =>
   JSON.parse(JSON.stringify(value));
 
+const listYearsNewestFirst = (
+  thisYear: number,
+  storedMediaByYear?: StoredMediaByYear,
+) =>
+  [
+    ...new Set([thisYear, ...Object.keys(storedMediaByYear ?? {}).map(Number)]),
+  ].sort((a, b) => b - a);
+
 export function LanguageMediaStorageProvider({
   children,
 }: {
   children: ReactNode;
 }) {
   const { addItem, updateItem, deleteItem, useValue } = useStorageContext();
+  const { value: storedMediaByYear, loading } =
+    useValue<StoredMediaByYear>(LANGUAGE_MEDIA_PATH);
+  const thisYear = getThisYear();
+  const [selectedYear, selectYear] = useState(thisYear);
 
-  const { value: storedMedia, loading } =
-    useValue<Record<string, LanguageMedia>>(LANGUAGE_MEDIA_PATH);
+  const mediaYears = useMemo(() => {
+    const createMediaYear = (year: number): LanguageMediaYearStorage => {
+      const path = getLanguageMediaPath(year);
 
-  const media = useMemo(() => Object.values(storedMedia ?? {}), [storedMedia]);
+      return {
+        year,
+        media: Object.values(storedMediaByYear?.[year] ?? {}),
+        addMedia: (newMedia) => {
+          addItem<LanguageMedia>(path, createMedia(newMedia));
+        },
+        updateMedia: (changed) =>
+          updateItem<LanguageMedia>(path, removeUndefinedValues(changed)),
+        deleteMedia: (deleted) => deleteItem<LanguageMedia>(path, deleted),
+      };
+    };
 
-  const value: LanguageMediaStorageContextType = {
-    media,
-    isLoading: loading,
+    const years = listYearsNewestFirst(thisYear, storedMediaByYear);
+    const mediaByYear = new Map(
+      years.map((year) => [year, createMediaYear(year)]),
+    );
 
-    addMedia: (newMedia) => {
-      addItem<LanguageMedia>(LANGUAGE_MEDIA_PATH, createMedia(newMedia));
-    },
-    updateMedia: (changed) =>
-      updateItem<LanguageMedia>(
-        LANGUAGE_MEDIA_PATH,
-        removeUndefinedValues(changed),
-      ),
-    deleteMedia: (deleted) =>
-      deleteItem<LanguageMedia>(LANGUAGE_MEDIA_PATH, deleted),
-  };
+    return {
+      years,
+      getMediaYear: (year: number) =>
+        mediaByYear.get(year) ?? createMediaYear(year),
+    };
+  }, [thisYear, storedMediaByYear, addItem, updateItem, deleteItem]);
+
+  const value = useMemo(
+    () => ({
+      ...mediaYears,
+      thisYear,
+      selectedYear,
+      selectYear,
+      isLoading: loading,
+    }),
+    [mediaYears, thisYear, selectedYear, loading],
+  );
 
   return (
     <LanguageMediaStorageContext.Provider value={value}>
@@ -54,10 +100,15 @@ export function LanguageMediaStorageProvider({
   );
 }
 
-export function useLanguageMediaStorage(): LanguageMediaStorageContextType {
+export function useLanguageMediaStorageContext(): LanguageMediaStorageContextType {
   const context = useContext(LanguageMediaStorageContext);
   if (!context) {
     throw new Error('missing LanguageMediaStorageContext provider');
   }
   return context;
+}
+
+export function useLanguageMediaStorage(): LanguageMediaYearStorage {
+  const { getMediaYear, selectedYear } = useLanguageMediaStorageContext();
+  return getMediaYear(selectedYear);
 }
