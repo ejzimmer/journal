@@ -128,103 +128,89 @@ describe('removeOutliers', () => {
 });
 
 describe('predictDaysToFinish', () => {
-  const firstDay = Temporal.ZonedDateTime.from('2026-01-01T00:00:00[UTC]');
+  afterEach(() => {
+    jest.useRealTimers();
+  });
+
+  function setToday(date: string) {
+    jest.useFakeTimers({ now: new Date(`${date}T00:00:00Z`) });
+  }
 
   function createProgression(
     level: number,
-    unlockedDay: number,
-    passedDay?: number,
+    unlockedOn: string,
+    passedOn?: string,
   ): LevelProgression {
     return {
       level,
-      unlockedAt: firstDay.add({ days: unlockedDay }).toInstant().toString(),
-      passedAt:
-        passedDay === undefined
-          ? null
-          : firstDay.add({ days: passedDay }).toInstant().toString(),
+      unlockedAt: `${unlockedOn}T00:00:00Z`,
+      passedAt: passedOn ? `${passedOn}T00:00:00Z` : null,
       abandonedAt: null,
     };
   }
 
   describe('on level 58 after two 10-day levels', () => {
     const progressions = [
-      createProgression(56, 0, 10),
-      createProgression(57, 10, 20),
-      createProgression(58, 20),
+      createProgression(56, '2026-01-01', '2026-01-11'),
+      createProgression(57, '2026-01-11', '2026-01-21'),
+      createProgression(58, '2026-01-21'),
     ];
 
     it('adds what is left of the current level to the remaining levels', () => {
-      expect(
-        predictDaysToFinish(
-          progressions,
-          58,
-          firstDay.add({ days: 24 }).toInstant(),
-        ),
-      ).toBe(26);
+      setToday('2026-01-25');
+
+      expect(predictDaysToFinish(progressions, 58)).toBe(26);
     });
 
     describe('when the current level has run over the average', () => {
       it('counts only the remaining levels', () => {
-        expect(
-          predictDaysToFinish(
-            progressions,
-            58,
-            firstDay.add({ days: 40 }).toInstant(),
-          ),
-        ).toBe(20);
+        setToday('2026-02-10');
+
+        expect(predictDaysToFinish(progressions, 58)).toBe(20);
       });
     });
   });
 
   describe('when one level took unusually long', () => {
     it('leaves it out of the average', () => {
+      setToday('2026-05-21');
       const progressions = [
-        createProgression(54, 0, 10),
-        createProgression(55, 10, 20),
-        createProgression(56, 20, 30),
-        createProgression(57, 30, 130),
-        createProgression(58, 130, 140),
-        createProgression(59, 140),
+        createProgression(54, '2026-01-01', '2026-01-11'),
+        createProgression(55, '2026-01-11', '2026-01-21'),
+        createProgression(56, '2026-01-21', '2026-01-31'),
+        createProgression(57, '2026-01-31', '2026-05-11'),
+        createProgression(58, '2026-05-11', '2026-05-21'),
+        createProgression(59, '2026-05-21'),
       ];
 
-      expect(
-        predictDaysToFinish(
-          progressions,
-          59,
-          firstDay.add({ days: 140 }).toInstant(),
-        ),
-      ).toBe(20);
+      expect(predictDaysToFinish(progressions, 59)).toBe(20);
     });
   });
 
   describe('after a reset', () => {
     it('only uses the levels done since the reset', () => {
+      setToday('2026-03-12');
       const progressions = [
         {
-          ...createProgression(58, 0, 50),
-          abandonedAt: firstDay.add({ days: 60 }).toInstant().toString(),
+          ...createProgression(58, '2026-01-01', '2026-02-20'),
+          abandonedAt: '2026-03-02T00:00:00Z',
         },
-        createProgression(58, 60, 70),
-        createProgression(59, 70),
+        createProgression(58, '2026-03-02', '2026-03-12'),
+        createProgression(59, '2026-03-12'),
       ];
 
-      expect(
-        predictDaysToFinish(
-          progressions,
-          59,
-          firstDay.add({ days: 70 }).toInstant(),
-        ),
-      ).toBe(20);
+      expect(predictDaysToFinish(progressions, 59)).toBe(20);
     });
   });
 
   describe('once level 60 is passed', () => {
     it('has nothing left', () => {
+      setToday('2026-01-21');
+
       expect(
         predictDaysToFinish(
-          [createProgression(60, 0, 10)],
+          [createProgression(60, '2026-01-01', '2026-01-11')],
           60,
-          firstDay.add({ days: 20 }).toInstant(),
         ),
       ).toBe(0);
     });
@@ -232,12 +218,10 @@ describe('predictDaysToFinish', () => {
 
   describe('before any level is passed', () => {
     it('makes no prediction', () => {
+      setToday('2026-01-02');
+
       expect(
-        predictDaysToFinish(
-          [createProgression(1, 0)],
-          1,
-          firstDay.add({ days: 1 }).toInstant(),
-        ),
+        predictDaysToFinish([createProgression(1, '2026-01-01')], 1),
       ).toBeUndefined();
     });
   });

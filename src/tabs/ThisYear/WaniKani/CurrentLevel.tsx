@@ -10,11 +10,7 @@ export function CurrentLevel({ data }: { data: WaniKaniData }) {
   );
 
   const headingId = useId();
-  const daysToFinish = predictDaysToFinish(
-    data.levelProgressions,
-    data.level,
-    Temporal.Now.instant(),
-  );
+  const daysToFinish = predictDaysToFinish(data.levelProgressions, data.level);
 
   return (
     <section aria-labelledby={headingId}>

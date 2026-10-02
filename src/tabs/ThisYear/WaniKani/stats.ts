@@ -147,7 +147,6 @@ export function removeOutliers(values: number[]) {
 export function predictDaysToFinish(
   levelProgressions: LevelProgression[],
   currentLevel: number,
-  now: Temporal.Instant,
 ): number | undefined {
   const progressionsByLevel = findLatestProgressionsByLevel(levelProgressions);
   const current = progressionsByLevel.get(currentLevel);
@@ -164,7 +163,7 @@ export function predictDaysToFinish(
     typicalDurations.reduce((sum, days) => sum + days, 0) /
     typicalDurations.length;
   const daysOnCurrentLevel = current?.unlockedAt
-    ? measureDays(current.unlockedAt, now)
+    ? measureDays(current.unlockedAt, Temporal.Now.instant())
     : 0;
   const daysLeftOnCurrentLevel = Math.max(
     0,
