@@ -23,7 +23,7 @@ describe('clipVerticesBelow', () => {
 });
 
 describe('calculateGemShape', () => {
-  describe('when nothing is burned', () => {
+  describe('at 0%', () => {
     const shape = calculateGemShape(0, 0, 10, 0);
 
     it('has no fill', () => {
@@ -32,7 +32,7 @@ describe('calculateGemShape', () => {
     });
   });
 
-  describe('when half is burned', () => {
+  describe('at 50%', () => {
     const shape = calculateGemShape(0, 0, 10, 50);
 
     it('fills the bottom half of the gem', () => {
@@ -46,7 +46,7 @@ describe('calculateGemShape', () => {
     });
   });
 
-  describe('when everything is burned', () => {
+  describe('at 100%', () => {
     const shape = calculateGemShape(0, 0, 10, 100);
 
     it('fills the whole gem', () => {

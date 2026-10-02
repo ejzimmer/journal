@@ -193,12 +193,12 @@ describe('WaniKani', () => {
       ).toBeInTheDocument();
     });
 
-    it('shows the percent of each type burned at each level', async () => {
+    it('shows the percent of each type unlocked at each level', async () => {
       renderWaniKani('my-key');
 
       expect(
         await screen.findByRole('img', {
-          name: 'Level 1: Radicals 100%, Kanji 100%, Vocabulary 0%',
+          name: 'Level 2: Radicals 100% unlocked, Kanji 50% unlocked, Vocabulary 0% unlocked',
         }),
       ).toBeInTheDocument();
     });
@@ -208,7 +208,7 @@ describe('WaniKani', () => {
 
       expect(
         await screen.findByRole('img', {
-          name: 'Level 60: Radicals 0%, Kanji 0%, Vocabulary 0%',
+          name: 'Level 60: Radicals 0% unlocked, Kanji 0% unlocked, Vocabulary 0% unlocked',
         }),
       ).toBeInTheDocument();
     });
