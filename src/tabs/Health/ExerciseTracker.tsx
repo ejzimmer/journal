@@ -1,29 +1,19 @@
 import { useHealthStorage } from './HealthStorageContext';
 import { ExerciseRow } from './ExerciseRow';
-import { AddExerciseRow } from './AddExerciseRow';
+import { AddExercise } from './AddExercise';
 import './ExerciseTracker.css';
 
 export function ExerciseTracker() {
   const { exercises, addExercise } = useHealthStorage();
 
-  const numberOfUpdateColumns =
-    Math.max(
-      0,
-      ...exercises.map(({ updates }) => Object.keys(updates ?? {}).length),
-    ) + 1;
-
   return (
-    <table className="exercise-tracker">
-      <tbody>
+    <div className="exercise-tracker">
+      <ul aria-label="Exercises">
         {exercises.map((exercise) => (
-          <ExerciseRow
-            key={exercise.id}
-            exercise={exercise}
-            numberOfUpdateColumns={numberOfUpdateColumns}
-          />
+          <ExerciseRow key={exercise.id} exercise={exercise} />
         ))}
-        <AddExerciseRow onAdd={addExercise} />
-      </tbody>
-    </table>
+      </ul>
+      <AddExercise onAdd={addExercise} />
+    </div>
   );
 }

@@ -12,6 +12,11 @@ const recommendationIcons: Record<
   decrease: ChevronDownIcon,
 };
 
+const recommendationColours: Record<Recommendation, string> = {
+  increase: 'var(--increase)',
+  decrease: 'var(--decrease)',
+};
+
 export function RecommendationIcon({
   recommendation,
 }: {
@@ -20,7 +25,7 @@ export function RecommendationIcon({
   const Icon = recommendationIcons[recommendation];
 
   return (
-    <div className="recommendation">
+    <span className="recommendation">
       {/* The icon is drawn twice, a thicker white copy under the coloured one,
           to give it an outline. That's simpler than getting the same effect
           from box-shadows or filters. */}
@@ -29,9 +34,9 @@ export function RecommendationIcon({
         role="img"
         aria-label={recommendation}
         width="24px"
-        colour="var(--action-colour)"
+        colour={recommendationColours[recommendation]}
         strokeWidth="4"
       />
-    </div>
+    </span>
   );
 }

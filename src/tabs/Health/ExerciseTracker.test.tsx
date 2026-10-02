@@ -28,18 +28,13 @@ describe('ExerciseTracker', () => {
   it('shows a row for each exercise', () => {
     renderWithHealthStorage(<ExerciseTracker />, { exercises });
 
-    expect(
-      screen.getAllByRole('rowheader').map((header) => header.textContent),
-    ).toEqual(['Bulgarian split squat', 'B-stance RDL', 'Plank']);
-  });
-
-  it('gives every row one more update column than the exercise with the most updates', () => {
-    renderWithHealthStorage(<ExerciseTracker />, { exercises });
-
-    for (const { name } of exercises) {
-      const row = screen.getByRole('row', { name: new RegExp(name) });
-      expect(within(row).getAllByRole('cell')).toHaveLength(4);
-    }
+    const rows = within(
+      screen.getByRole('list', { name: 'Exercises' }),
+    ).getAllByRole('listitem', { name: /./ });
+    expect(rows).toHaveLength(3);
+    expect(rows[0]).toHaveAccessibleName('Bulgarian split squat');
+    expect(rows[1]).toHaveAccessibleName('B-stance RDL');
+    expect(rows[2]).toHaveAccessibleName('Plank');
   });
 
   describe('when an exercise is added', () => {
