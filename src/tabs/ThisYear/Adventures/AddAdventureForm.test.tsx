@@ -79,7 +79,7 @@ describe('AddAdventureForm', () => {
     });
 
     describe('with a new mode', () => {
-      it('adds the mode', async () => {
+      it('adds the mode, then the adventure with it', async () => {
         const { user, storage } = await openForm();
 
         await user.type(
@@ -93,53 +93,18 @@ describe('AddAdventureForm', () => {
         );
         await user.click(screen.getByRole('button', { name: 'Emoji' }));
         await user.click(screen.getByRole('radio', { name: '🛶' }));
+        await user.click(screen.getByRole('radio', { name: 'Yellow' }));
         await user.click(screen.getByRole('button', { name: 'Add' }));
 
         expect(storage.addMode).toHaveBeenCalledWith({
           name: 'Kayaking',
           emoji: '🛶',
-          colour: '#f9b20e',
+          colour: '#fad200',
         });
-      });
-
-      it('adds the adventure with the new mode', async () => {
-        const { user, storage } = await openForm();
-
-        await user.type(
-          screen.getByRole('textbox', { name: 'Adventure' }),
-          'Paddle the Yarra',
-        );
-        await user.click(screen.getByRole('radio', { name: 'New mode' }));
-        await user.type(
-          screen.getByRole('textbox', { name: 'Mode name' }),
-          'Kayaking',
-        );
-        await user.click(screen.getByRole('button', { name: 'Add' }));
-
         expect(storage.addAdventure).toHaveBeenCalledWith({
           description: 'Paddle the Yarra',
           modeId: 'kayaking',
         });
-      });
-
-      it('uses the colour that was picked', async () => {
-        const { user, storage } = await openForm();
-
-        await user.type(
-          screen.getByRole('textbox', { name: 'Adventure' }),
-          'Paddle the Yarra',
-        );
-        await user.click(screen.getByRole('radio', { name: 'New mode' }));
-        await user.type(
-          screen.getByRole('textbox', { name: 'Mode name' }),
-          'Kayaking',
-        );
-        await user.click(screen.getByRole('radio', { name: 'Racecourse' }));
-        await user.click(screen.getByRole('button', { name: 'Add' }));
-
-        expect(storage.addMode).toHaveBeenCalledWith(
-          expect.objectContaining({ colour: '#fad200' }),
-        );
       });
 
       describe('without a name', () => {
@@ -167,6 +132,16 @@ describe('AddAdventureForm', () => {
 
         expect(storage.addAdventure).not.toHaveBeenCalled();
       });
+    });
+  });
+
+  describe('when new mode is chosen', () => {
+    it('selects a colour no other mode uses', async () => {
+      const { user } = await openForm();
+
+      await user.click(screen.getByRole('radio', { name: 'New mode' }));
+
+      expect(screen.getByRole('radio', { name: 'Orange' })).toBeChecked();
     });
   });
 

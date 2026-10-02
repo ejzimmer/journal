@@ -1,0 +1,90 @@
+.mode-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.mode-option {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding-block: 5px;
+  padding-inline: 12px;
+  line-height: 1.4;
+  background: white;
+  border: 1px solid var(--border-colour);
+  border-top: 4px solid var(--mode-colour);
+  border-radius: 3px;
+  cursor: pointer;
+
+  input[type='radio'] {
+    width: 0;
+    height: 0;
+    overflow: hidden;
+    position: fixed;
+  }
+
+  &:has(:checked) {
+    border-color: var(--mode-colour);
+    background: color-mix(in srgb, var(--mode-colour) 16%, white);
+  }
+
+  &:has(:focus-visible) {
+    outline: 2px solid black;
+    outline-offset: 2px;
+  }
+}
+
+.new-mode-option {
+  padding-block: 8px;
+  padding-inline: 10px;
+  border: 1px dashed var(--border-colour);
+  color: var(--body-colour-mid);
+
+  &:has(:checked) {
+    border-color: var(--body-colour);
+    color: var(--body-colour);
+    background: white;
+  }
+}
+
+.new-mode {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  gap: 16px;
+  animation: open-new-mode 0.28s cubic-bezier(0.2, 0.8, 0.3, 1);
+
+  .form-control {
+    grid-column: 1 / -1;
+  }
+}
+
+.mode-colours {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+
+  input[type='radio'] {
+    appearance: none;
+    width: 28px;
+    height: 28px;
+    margin: 0;
+    background: var(--swatch-colour);
+    border: 2px solid white;
+    border-radius: 3px;
+    box-shadow: 0 0 0 1px var(--border-colour);
+    cursor: pointer;
+
+    &:checked {
+      box-shadow: 0 0 0 3px var(--body-colour);
+    }
+  }
+}
+
+@keyframes open-new-mode {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+}

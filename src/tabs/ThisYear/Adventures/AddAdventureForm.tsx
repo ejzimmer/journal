@@ -1,17 +1,12 @@
 import { useState } from 'react';
 import { FormControl } from '../../../shared/controls/FormControl';
 import { Modal, useModal } from '../../../shared/controls/Modal';
-import { PlusIcon } from '../../../shared/icons/Plus';
 import { TickIcon } from '../../../shared/icons/Tick';
 import { useAdventureStorage } from './AdventureStorageContext';
-import { EmojiPicker } from './EmojiPicker';
-import { findUnusedLineColour, LINE_COLOURS } from './lineColours';
+import { ModeField, useModeField } from './ModeField';
 import { PushpinButton } from './PushpinButton';
 
 import './AddAdventureForm.css';
-
-const NEW_MODE = 'new';
-const DEFAULT_EMOJI = '🏃';
 
 export function AddAdventureForm() {
   const [formKey, setFormKey] = useState(0);
@@ -24,23 +19,10 @@ export function AddAdventureForm() {
 }
 
 function AdventureFields() {
-  const { modes, addAdventure, addMode } = useAdventureStorage();
+  const { addAdventure } = useAdventureStorage();
   const { closeModal } = useModal();
   const [description, setDescription] = useState('');
-  const [selectedModeId, setSelectedModeId] = useState<string>();
-  const [modeName, setModeName] = useState('');
-  const [modeEmoji, setModeEmoji] = useState(DEFAULT_EMOJI);
-  const [selectedColour, setSelectedColour] = useState<string>();
-
-  const modeId = selectedModeId ?? modes[0]?.id ?? NEW_MODE;
-  const modeColour =
-    selectedColour ?? findUnusedLineColour(modes.map(({ colour }) => colour));
-
-  const saveMode = () =>
-    modeId === NEW_MODE
-      ? modeName.trim() &&
-        addMode({ name: modeName.trim(), emoji: modeEmoji, colour: modeColour })
-      : modeId;
+  const { modeFieldProps, saveMode } = useModeField();
 
   const saveAdventure = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -48,12 +30,12 @@ function AdventureFields() {
       return;
     }
 
-    const savedModeId = saveMode();
-    if (!savedModeId) {
+    const modeId = saveMode();
+    if (!modeId) {
       return;
     }
 
-    addAdventure({ description: description.trim(), modeId: savedModeId });
+    addAdventure({ description: description.trim(), modeId });
     closeModal();
   };
 
@@ -65,57 +47,7 @@ function AdventureFields() {
         value={description}
         onChange={setDescription}
       />
-      <div className="modes" role="radiogroup" aria-label="Mode">
-        {modes.map((mode) => (
-          <label
-            key={mode.id}
-            className="mode-option"
-            style={{ '--mode-colour': mode.colour } as React.CSSProperties}
-          >
-            <input
-              type="radio"
-              name="mode"
-              checked={modeId === mode.id}
-              onChange={() => setSelectedModeId(mode.id)}
-            />
-            <span aria-hidden="true">{mode.emoji}</span>
-            {mode.name}
-          </label>
-        ))}
-        <label className="mode-option new-mode-option" aria-label="New mode">
-          <input
-            type="radio"
-            name="mode"
-            checked={modeId === NEW_MODE}
-            onChange={() => setSelectedModeId(NEW_MODE)}
-          />
-          <PlusIcon width="14px" />
-        </label>
-      </div>
-      {modeId === NEW_MODE && (
-        <div className="new-mode">
-          <FormControl
-            label="Mode name"
-            hideLabel
-            value={modeName}
-            onChange={setModeName}
-          />
-          <EmojiPicker value={modeEmoji} onChange={setModeEmoji} />
-          <div className="swatches" role="radiogroup" aria-label="Colour">
-            {LINE_COLOURS.map(({ name, colour }) => (
-              <input
-                key={colour}
-                type="radio"
-                name="colour"
-                aria-label={name}
-                style={{ '--swatch-colour': colour } as React.CSSProperties}
-                checked={modeColour === colour}
-                onChange={() => setSelectedColour(colour)}
-              />
-            ))}
-          </div>
-        </div>
-      )}
+      <ModeField {...modeFieldProps} />
       <div className="footer">
         <button type="submit" className="ghost submit" aria-label="Add">
           <TickIcon width="20px" />
