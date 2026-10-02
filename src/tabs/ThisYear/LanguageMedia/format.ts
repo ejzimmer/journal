@@ -37,3 +37,8 @@ export function formatComprehension({
     ? counts
     : `${counts}, ${understood}% understood`;
 }
+
+export const parseDuration = (duration: string) =>
+  duration
+    .split(':')
+    .reduce((totalSeconds, part) => totalSeconds * 60 + Number(part), 0);

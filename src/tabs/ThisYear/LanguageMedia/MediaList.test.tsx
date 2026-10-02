@@ -298,4 +298,96 @@ describe('MediaList', () => {
       });
     });
   });
+
+  describe('adding', () => {
+    describe('a season', () => {
+      it('saves the series with it', async () => {
+        const { user, storageContext } = renderList([lupin]);
+
+        await user.click(screen.getByRole('button', { name: 'Add season' }));
+
+        expect(storageContext.updateMedia).toHaveBeenCalledWith({
+          ...lupin,
+          seasons: [...lupin.seasons!, { number: 2, episodes: [] }],
+        });
+      });
+    });
+
+    describe('an episode', () => {
+      it('saves the series with it', async () => {
+        const { user, storageContext } = renderList([lupin]);
+
+        await user.click(screen.getByRole('button', { name: 'Add episode' }));
+
+        const [season] = lupin.seasons!;
+        expect(storageContext.updateMedia).toHaveBeenCalledWith({
+          ...lupin,
+          seasons: [
+            {
+              ...season,
+              episodes: [
+                ...season.episodes!,
+                { number: 3, lookups: 0, aiQuestions: 0 },
+              ],
+            },
+          ],
+        });
+      });
+    });
+
+    describe('a video', () => {
+      it('saves the channel with it', async () => {
+        const { user, storageContext } = renderList([hugo]);
+
+        await user.type(
+          screen.getByRole('textbox', { name: 'URL' }),
+          'https://youtu.be/3',
+        );
+        await user.click(screen.getByRole('button', { name: 'Add video' }));
+
+        expect(storageContext.updateMedia).toHaveBeenCalledWith({
+          ...hugo,
+          videos: [
+            ...hugo.videos!,
+            { url: 'https://youtu.be/3', lookups: 0, aiQuestions: 0 },
+          ],
+        });
+      });
+    });
+
+    describe('a volume', () => {
+      it('saves the series with it', async () => {
+        const { user, storageContext } = renderList([yotsuba]);
+
+        await user.click(screen.getByRole('button', { name: 'Add volume' }));
+
+        expect(storageContext.updateMedia).toHaveBeenCalledWith({
+          ...yotsuba,
+          volumes: [...yotsuba.volumes!, { number: 2 }],
+        });
+      });
+    });
+
+    describe('a chapter', () => {
+      it('saves the series with it', async () => {
+        const { user, storageContext } = renderList([yotsuba]);
+
+        await user.click(screen.getByRole('button', { name: 'Add chapter' }));
+
+        const [volume] = yotsuba.volumes!;
+        expect(storageContext.updateMedia).toHaveBeenCalledWith({
+          ...yotsuba,
+          volumes: [
+            {
+              ...volume,
+              chapters: [
+                ...volume.chapters!,
+                { number: 3, lookups: 0, aiQuestions: 0 },
+              ],
+            },
+          ],
+        });
+      });
+    });
+  });
 });

@@ -1,4 +1,11 @@
 import {
+  AddChapterForm,
+  AddEpisodeForm,
+  AddSeasonForm,
+  AddVideoForm,
+  AddVolumeForm,
+} from './AddItemForms';
+import {
   formatChapterName,
   formatComprehension,
   formatEpisodeName,
@@ -8,7 +15,7 @@ import {
   STATUS_NAMES,
 } from './format';
 import { useLanguageMediaStorage } from './LanguageMediaStorageContext';
-import { removeItemAt, replaceItemAt } from './listUpdates';
+import { appendItem, removeItemAt, replaceItemAt } from './listUpdates';
 import { LANGUAGE_NAMES, MEDIA_TYPE_NAMES } from './names';
 import {
   Chapter,
@@ -121,6 +128,12 @@ function TvSeriesDetails({
           </li>
         ))}
       </ul>
+      <AddSeasonForm
+        seasons={series.seasons}
+        onAdd={(season) =>
+          onChange({ ...series, seasons: appendItem(series.seasons, season) })
+        }
+      />
     </>
   );
 }
@@ -151,6 +164,15 @@ function SeasonDetails({
           </li>
         ))}
       </ul>
+      <AddEpisodeForm
+        episodes={season.episodes}
+        onAdd={(episode) =>
+          onChange({
+            ...season,
+            episodes: appendItem(season.episodes, episode),
+          })
+        }
+      />
     </>
   );
 }
@@ -181,21 +203,28 @@ function YoutubeChannelDetails({
   onChange: (channel: YoutubeChannel) => void;
 }) {
   return (
-    <ul>
-      {channel.videos?.map((video, index) => (
-        <li key={index}>
-          <VideoDetails
-            video={video}
-            onDelete={() =>
-              onChange({
-                ...channel,
-                videos: removeItemAt(channel.videos, index),
-              })
-            }
-          />
-        </li>
-      ))}
-    </ul>
+    <>
+      <ul>
+        {channel.videos?.map((video, index) => (
+          <li key={index}>
+            <VideoDetails
+              video={video}
+              onDelete={() =>
+                onChange({
+                  ...channel,
+                  videos: removeItemAt(channel.videos, index),
+                })
+              }
+            />
+          </li>
+        ))}
+      </ul>
+      <AddVideoForm
+        onAdd={(video) =>
+          onChange({ ...channel, videos: appendItem(channel.videos, video) })
+        }
+      />
+    </>
   );
 }
 
@@ -254,6 +283,13 @@ function PrintSeriesDetails({
           </li>
         ))}
       </ul>
+      <AddVolumeForm
+        volumes={series.volumes}
+        isNameRequired={series.type === 'book'}
+        onAdd={(volume) =>
+          onChange({ ...series, volumes: appendItem(series.volumes, volume) })
+        }
+      />
     </>
   );
 }
@@ -283,6 +319,15 @@ function VolumeDetails({
           </li>
         ))}
       </ul>
+      <AddChapterForm
+        chapters={volume.chapters}
+        onAdd={(chapter) =>
+          onChange({
+            ...volume,
+            chapters: appendItem(volume.chapters, chapter),
+          })
+        }
+      />
     </>
   );
 }

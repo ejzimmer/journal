@@ -6,3 +6,8 @@ export const replaceItemAt = <T>(
   index: number,
   item: T,
 ) => items?.with(index, item);
+
+export const appendItem = <T>(items: T[] | undefined, item: T) => [
+  ...(items ?? []),
+  item,
+];
