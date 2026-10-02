@@ -1,6 +1,12 @@
-import { fetchUserLevel } from './api';
+import { fetchCollection, fetchUserLevel } from './api';
 import { fetchCachedCollection } from './collectionCache';
-import { Assignment, Subject, SubjectType, WaniKaniData } from './types';
+import {
+  Assignment,
+  LevelProgression,
+  Subject,
+  SubjectType,
+  WaniKaniData,
+} from './types';
 
 type RawSubject = { level: number; hidden_at: string | null };
 
@@ -11,6 +17,13 @@ type RawAssignment = {
   hidden: boolean;
 };
 
+type RawLevelProgression = {
+  level: number;
+  unlocked_at: string | null;
+  passed_at: string | null;
+  abandoned_at: string | null;
+};
+
 const SUBJECT_TYPES_BY_OBJECT: Record<string, SubjectType> = {
   radical: 'radical',
   kanji: 'kanji',
@@ -19,7 +32,7 @@ const SUBJECT_TYPES_BY_OBJECT: Record<string, SubjectType> = {
 };
 
 export async function fetchWaniKaniData(apiKey: string): Promise<WaniKaniData> {
-  const [level, subjects, assignments] = await Promise.all([
+  const [level, subjects, assignments, levelProgressions] = await Promise.all([
     fetchUserLevel(apiKey),
     fetchCachedCollection<RawSubject, Subject>(
       'subjects',
@@ -43,7 +56,23 @@ export async function fetchWaniKaniData(apiKey: string): Promise<WaniKaniData> {
               passedAt: data.passed_at,
             },
     ),
+    fetchLevelProgressions(apiKey),
   ]);
 
-  return { level, subjects, assignments };
+  return { level, subjects, assignments, levelProgressions };
+}
+
+async function fetchLevelProgressions(
+  apiKey: string,
+): Promise<LevelProgression[]> {
+  const { resources } = await fetchCollection<RawLevelProgression>(
+    'level_progressions',
+    apiKey,
+  );
+  return resources.map(({ data }) => ({
+    level: data.level,
+    unlockedAt: data.unlocked_at,
+    passedAt: data.passed_at,
+    abandonedAt: data.abandoned_at,
+  }));
 }

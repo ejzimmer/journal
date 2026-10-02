@@ -3,8 +3,10 @@ import {
   calculateLevelProgress,
   countSubjectsBySrsGroup,
   getSrsGroup,
+  predictDaysToFinish,
+  removeOutliers,
 } from './stats';
-import { Assignment, Subject } from './types';
+import { Assignment, LevelProgression, Subject } from './types';
 
 const subjects: Subject[] = [
   { id: 1, type: 'radical', level: 1 },
@@ -109,6 +111,100 @@ describe('calculateLevelProgress', () => {
     expect(calculateLevelProgress(subjects, assignments, 1).radical).toEqual({
       passed: 2,
       total: 2,
+    });
+  });
+});
+
+describe('removeOutliers', () => {
+  it('drops values far above the upper quartile', () => {
+    expect(removeOutliers([7, 8, 8, 9, 10, 60])).toEqual([7, 8, 8, 9, 10]);
+  });
+
+  describe('with fewer than four values', () => {
+    it('keeps them all', () => {
+      expect(removeOutliers([7, 8, 60])).toEqual([7, 8, 60]);
+    });
+  });
+});
+
+describe('predictDaysToFinish', () => {
+  const DAY = 24 * 60 * 60 * 1000;
+  const start = new Date('2026-01-01T00:00:00Z').getTime();
+  const at = (days: number) => new Date(start + days * DAY).toISOString();
+
+  function progression(
+    level: number,
+    unlockedDay: number,
+    passedDay?: number,
+  ): LevelProgression {
+    return {
+      level,
+      unlockedAt: at(unlockedDay),
+      passedAt: passedDay === undefined ? null : at(passedDay),
+      abandonedAt: null,
+    };
+  }
+
+  describe('on level 58 after two 10-day levels', () => {
+    const progressions = [
+      progression(56, 0, 10),
+      progression(57, 10, 20),
+      progression(58, 20),
+    ];
+
+    it('adds what is left of the current level to the remaining levels', () => {
+      expect(predictDaysToFinish(progressions, 58, start + 24 * DAY)).toBe(26);
+    });
+
+    describe('when the current level has run over the average', () => {
+      it('counts only the remaining levels', () => {
+        expect(predictDaysToFinish(progressions, 58, start + 40 * DAY)).toBe(
+          20,
+        );
+      });
+    });
+  });
+
+  describe('when one level took unusually long', () => {
+    it('leaves it out of the average', () => {
+      const progressions = [
+        progression(54, 0, 10),
+        progression(55, 10, 20),
+        progression(56, 20, 30),
+        progression(57, 30, 130),
+        progression(58, 130, 140),
+        progression(59, 140),
+      ];
+
+      expect(predictDaysToFinish(progressions, 59, start + 140 * DAY)).toBe(20);
+    });
+  });
+
+  describe('after a reset', () => {
+    it('only uses the levels done since the reset', () => {
+      const progressions = [
+        { ...progression(58, 0, 50), abandonedAt: at(60) },
+        progression(58, 60, 70),
+        progression(59, 70),
+      ];
+
+      expect(predictDaysToFinish(progressions, 59, start + 70 * DAY)).toBe(20);
+    });
+  });
+
+  describe('once level 60 is passed', () => {
+    it('has nothing left', () => {
+      expect(
+        predictDaysToFinish([progression(60, 0, 10)], 60, start + 20 * DAY),
+      ).toBe(0);
+    });
+  });
+
+  describe('before any level is passed', () => {
+    it('makes no prediction', () => {
+      expect(
+        predictDaysToFinish([progression(1, 0)], 1, start + DAY),
+      ).toBeUndefined();
     });
   });
 });

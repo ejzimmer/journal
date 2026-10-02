@@ -1,5 +1,6 @@
 import {
   Assignment,
+  LevelProgression,
   SRS_GROUPS,
   SrsGroup,
   Subject,
@@ -104,4 +105,74 @@ export function calculateLevelProgress(
       needed: Math.ceil(kanji.total * KANJI_PASS_RATIO),
     },
   };
+}
+
+const MAX_LEVEL = 60;
+const DAY_IN_MS = 24 * 60 * 60 * 1000;
+
+function findLatestProgressionsByLevel(levelProgressions: LevelProgression[]) {
+  const progressionsByLevel = new Map<number, LevelProgression>();
+  levelProgressions
+    .filter((progression) => !progression.abandonedAt)
+    .toSorted((a, b) => (a.unlockedAt ?? '').localeCompare(b.unlockedAt ?? ''))
+    .forEach((progression) =>
+      progressionsByLevel.set(progression.level, progression),
+    );
+  return progressionsByLevel;
+}
+
+function measureDays(from: string, to: string | number) {
+  return (new Date(to).getTime() - new Date(from).getTime()) / DAY_IN_MS;
+}
+
+function percentile(sortedValues: number[], fraction: number) {
+  const index = (sortedValues.length - 1) * fraction;
+  const lower = Math.floor(index);
+  const upper = Math.ceil(index);
+  return (
+    sortedValues[lower] +
+    (sortedValues[upper] - sortedValues[lower]) * (index - lower)
+  );
+}
+
+export function removeOutliers(values: number[]) {
+  if (values.length < 4) return values;
+
+  const sorted = values.toSorted((a, b) => a - b);
+  const lowerQuartile = percentile(sorted, 0.25);
+  const upperQuartile = percentile(sorted, 0.75);
+  const limit = upperQuartile + 1.5 * (upperQuartile - lowerQuartile);
+  return values.filter((value) => value <= limit);
+}
+
+export function predictDaysToFinish(
+  levelProgressions: LevelProgression[],
+  currentLevel: number,
+  now: number,
+): number | undefined {
+  const progressionsByLevel = findLatestProgressionsByLevel(levelProgressions);
+  const current = progressionsByLevel.get(currentLevel);
+  if (currentLevel === MAX_LEVEL && current?.passedAt) return 0;
+
+  const levelDurations = [...progressionsByLevel.values()].flatMap(
+    ({ unlockedAt, passedAt }) =>
+      unlockedAt && passedAt ? [measureDays(unlockedAt, passedAt)] : [],
+  );
+  const typicalDurations = removeOutliers(levelDurations);
+  if (typicalDurations.length === 0) return undefined;
+
+  const averageDuration =
+    typicalDurations.reduce((sum, days) => sum + days, 0) /
+    typicalDurations.length;
+  const daysOnCurrentLevel = current?.unlockedAt
+    ? measureDays(current.unlockedAt, now)
+    : 0;
+  const daysLeftOnCurrentLevel = Math.max(
+    0,
+    averageDuration - daysOnCurrentLevel,
+  );
+
+  return Math.ceil(
+    daysLeftOnCurrentLevel + averageDuration * (MAX_LEVEL - currentLevel),
+  );
 }

@@ -24,6 +24,29 @@ const assignments = [
   { id: 15, object: 'assignment', data: assignment(5, 3, false) },
 ];
 
+const levelProgressions = [
+  {
+    id: 21,
+    object: 'level_progression',
+    data: {
+      level: 1,
+      unlocked_at: '2026-09-01T00:00:00Z',
+      passed_at: '2026-09-11T00:00:00Z',
+      abandoned_at: null,
+    },
+  },
+  {
+    id: 22,
+    object: 'level_progression',
+    data: {
+      level: 2,
+      unlocked_at: '2026-09-11T00:00:00Z',
+      passed_at: null,
+      abandoned_at: null,
+    },
+  },
+];
+
 function assignment(subjectId: number, srsStage: number, isPassed: boolean) {
   return {
     subject_id: subjectId,
@@ -58,6 +81,8 @@ function mockWaniKani() {
     if (pathname === '/v2/subjects') return respondWith(collection(subjects));
     if (pathname === '/v2/assignments')
       return respondWith(collection(assignments));
+    if (pathname === '/v2/level_progressions')
+      return respondWith(collection(levelProgressions));
     return respondWith({}, 404);
   });
 }
@@ -70,6 +95,10 @@ beforeEach(async () => {
   global.fetch = fetchMock;
   localStorage.clear();
   await clearCachedCollections();
+});
+
+afterEach(() => {
+  jest.useRealTimers();
 });
 
 describe('WaniKani', () => {
@@ -120,6 +149,17 @@ describe('WaniKani', () => {
       const level = await screen.findByRole('region', { name: 'Level 2' });
       expect(level).toHaveTextContent('Radicals 1 / 1');
       expect(level).toHaveTextContent('Kanji 0 / 2');
+    });
+
+    it('predicts how long until level 60 is finished', async () => {
+      jest.useFakeTimers({
+        now: new Date('2026-09-15T00:00:00Z'),
+        doNotFake: ['setTimeout', 'setInterval', 'queueMicrotask'],
+      });
+      render(<WaniKani />);
+
+      const level = await screen.findByRole('region', { name: 'Level 2' });
+      expect(level).toHaveTextContent('586 days to finish level 60');
     });
 
     it('shows how many of each type are at each SRS stage', async () => {

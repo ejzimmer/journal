@@ -9,6 +9,7 @@ import {
   calculateBurnedPercentsByLevel,
   calculateLevelProgress,
   countSubjectsBySrsGroup,
+  predictDaysToFinish,
 } from './stats';
 import { SUBJECT_TYPES, SubjectType, WaniKaniData } from './types';
 import { useWaniKaniData } from './useWaniKaniData';
@@ -88,6 +89,11 @@ function CurrentLevel({ data }: { data: WaniKaniData }) {
   );
 
   const headingId = useId();
+  const daysToFinish = predictDaysToFinish(
+    data.levelProgressions,
+    data.level,
+    Date.now(),
+  );
 
   return (
     <section aria-labelledby={headingId}>
@@ -98,6 +104,9 @@ function CurrentLevel({ data }: { data: WaniKaniData }) {
       <div>
         Kanji {kanji.passed} / {kanji.needed}
       </div>
+      {daysToFinish !== undefined && (
+        <div>{daysToFinish} days to finish level 60</div>
+      )}
     </section>
   );
 }

@@ -22,8 +22,16 @@ export type Assignment = {
   passedAt: string | null;
 };
 
+export type LevelProgression = {
+  level: number;
+  unlockedAt: string | null;
+  passedAt: string | null;
+  abandonedAt: string | null;
+};
+
 export type WaniKaniData = {
   level: number;
   subjects: Subject[];
   assignments: Assignment[];
+  levelProgressions: LevelProgression[];
 };
