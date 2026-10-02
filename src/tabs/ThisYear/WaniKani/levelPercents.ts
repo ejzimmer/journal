@@ -1,11 +1,15 @@
 import { indexAssignmentsBySubject } from './indexAssignmentsBySubject';
-import { getSrsGroup } from './srsGroups';
 import { Assignment, Subject, SUBJECT_TYPES, SubjectType } from './types';
 
-export function calculateBurnedPercentsByLevel(
+export function isUnlocked(srsStage: number) {
+  return srsStage >= 1;
+}
+
+export function calculatePercentsByLevel(
   subjects: Subject[],
   assignments: Assignment[],
   maxLevel: number,
+  isCounted: (srsStage: number) => boolean,
 ): { level: number; percents: Record<SubjectType, number> }[] {
   const assignmentsBySubject = indexAssignmentsBySubject(assignments);
 
@@ -16,16 +20,14 @@ export function calculateBurnedPercentsByLevel(
         const subjectsAtLevel = subjects.filter(
           (subject) => subject.level === level && subject.type === type,
         );
-        const burned = subjectsAtLevel.filter(
-          (subject) =>
-            getSrsGroup(assignmentsBySubject.get(subject.id)?.srsStage ?? 0) ===
-            'burned',
+        const counted = subjectsAtLevel.filter((subject) =>
+          isCounted(assignmentsBySubject.get(subject.id)?.srsStage ?? 0),
         ).length;
         return [
           type,
           subjectsAtLevel.length === 0
             ? 0
-            : Math.floor((burned / subjectsAtLevel.length) * 100),
+            : Math.floor((counted / subjectsAtLevel.length) * 100),
         ];
       }),
     ) as Record<SubjectType, number>;

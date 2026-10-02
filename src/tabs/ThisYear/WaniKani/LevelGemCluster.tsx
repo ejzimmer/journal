@@ -17,7 +17,7 @@ type LevelGemClusterProps = {
 
 export function LevelGemCluster({ level, percents }: LevelGemClusterProps) {
   const description = SUBJECT_TYPES.map(
-    (type) => `${SUBJECT_TYPE_LABELS[type]} ${percents[type]}%`,
+    (type) => `${SUBJECT_TYPE_LABELS[type]} ${percents[type]}% unlocked`,
   ).join(', ');
 
   return (

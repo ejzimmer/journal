@@ -1,12 +1,13 @@
-import { calculateBurnedPercentsByLevel } from './burnedPercents';
+import { calculatePercentsByLevel, isUnlocked } from './levelPercents';
 import { LevelGemCluster } from './LevelGemCluster';
 import { MAX_LEVEL, WaniKaniData } from './types';
 
 export function LevelGems({ data }: { data: WaniKaniData }) {
-  const levels = calculateBurnedPercentsByLevel(
+  const levels = calculatePercentsByLevel(
     data.subjects,
     data.assignments,
     MAX_LEVEL,
+    isUnlocked,
   );
 
   return (
