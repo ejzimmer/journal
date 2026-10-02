@@ -1,41 +1,39 @@
-import { NewMedia, UnsavedMedia } from './types';
+import { NewMedia } from './types';
 
-const createNumbers = (count: number) =>
+const createNumbers = (count = 0) =>
   Array.from({ length: count }, (_, index) => index + 1);
 
-export function createMedia(newMedia: NewMedia): UnsavedMedia {
-  const { name, language } = newMedia;
+export const createMediaDetails = ({ type, name, language }: NewMedia) => ({
+  type,
+  name,
+  language,
+});
 
+export function createInitialChildren(newMedia: NewMedia) {
   switch (newMedia.type) {
     case 'tv':
       return {
-        type: 'tv',
-        name,
-        language,
-        seasons: createNumbers(newMedia.seasonCount ?? 0).map((number) => ({
+        collection: 'seasons',
+        children: createNumbers(newMedia.seasonCount).map((number) => ({
           number,
         })),
       };
-    case 'youtube':
-      return { type: 'youtube', name, language };
     case 'manga':
       return {
-        type: 'manga',
-        name,
-        language,
-        volumes: createNumbers(newMedia.volumeCount ?? 0).map((number) => ({
+        collection: 'volumes',
+        children: createNumbers(newMedia.volumeCount).map((number) => ({
           number,
         })),
       };
     case 'book':
       return {
-        type: 'book',
-        name,
-        language,
-        volumes: (newMedia.volumeNames ?? []).map((volumeName, index) => ({
+        collection: 'volumes',
+        children: (newMedia.volumeNames ?? []).map((name, index) => ({
           number: index + 1,
-          name: volumeName,
+          name,
         })),
       };
+    case 'youtube':
+      return { collection: 'videos', children: [] };
   }
 }
