@@ -1,0 +1,22 @@
+dialog.modal:has(.add-adventure-form) {
+  width: 520px;
+  padding: 24px;
+  background: hsl(43 60% 96%);
+  border: 0;
+  border-radius: 6px;
+  overflow: visible;
+}
+
+.add-adventure-form {
+  gap: 24px;
+
+  .footer {
+    display: flex;
+    justify-content: end;
+  }
+
+  .submit {
+    color: var(--success-colour);
+    opacity: 1;
+  }
+}
