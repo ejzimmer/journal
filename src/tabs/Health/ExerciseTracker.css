@@ -1,4 +1,6 @@
 table.exercise-tracker {
+  --focus: hsl(28 100% 56%);
+
   border-collapse: collapse;
   width: fit-content;
 
@@ -33,6 +35,27 @@ table.exercise-tracker {
     max-width: 300px;
     position: relative;
 
+    button.update {
+      display: block;
+      width: 100%;
+      height: auto;
+      padding: 0;
+      border: none;
+      font: inherit;
+      color: inherit;
+      text-align: start;
+
+      &:hover,
+      &:focus-visible {
+        background: none;
+      }
+
+      &:focus-visible {
+        outline: 2px solid var(--focus);
+        outline-offset: 4px;
+      }
+    }
+
     .date {
       font-weight: bold;
       margin-block-end: 0.5em;
@@ -62,35 +85,149 @@ table.exercise-tracker {
     }
   }
 
-  .exercise-form {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
+  td:has(> .exercise-form) {
+    max-width: none;
+  }
 
-    label {
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
+  .exercise-form {
+    --field-background: hsl(70 60% 98%);
+    --field-border: hsl(73 33% 85%);
+    --save: hsl(110 61% 42%);
+    --delete: hsl(28 100% 56%);
+    --delete-border: hsl(28 100% 85%);
+    --switch-background: hsl(73 49% 91%);
+    --switch-knob: hsl(42 100% 60%);
+    --switch-knob-shadow: hsl(40 100% 50% / 0.45);
+    --switch-icon: hsl(76 21% 45%);
+    --switch-icon-selected: hsl(47 100% 15%);
+
+    display: grid;
+    grid-template-columns: 200px auto;
+    gap: 10px;
+
+    textarea,
+    input {
+      font: inherit;
+      background: var(--field-background);
+      border: 1px solid var(--field-border);
+      border-radius: 8px;
+      padding: 6px 8px;
+
+      &:focus-visible {
+        outline: 2px solid var(--focus);
+        outline-offset: 1px;
+      }
+    }
+
+    textarea {
+      resize: none;
+    }
+
+    .settings {
+      display: grid;
+      gap: 10px;
+      justify-items: start;
     }
 
     fieldset {
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
       border: none;
       padding: 0;
       margin: 0;
+    }
+
+    [role='radiogroup'].switch {
+      isolation: isolate;
+      border: none;
+      border-radius: 999px;
+      padding: 2px;
+      background: var(--switch-background);
+
+      &:focus-within {
+        outline: none;
+      }
+
+      &:has(input:focus-visible) {
+        outline: 2px solid var(--focus);
+        outline-offset: 2px;
+      }
 
       label {
-        flex-direction: row;
-        align-items: center;
+        width: 36px;
+        height: 30px;
+        padding: 0;
+        align-content: center;
+        border-radius: 999px;
+        color: var(--switch-icon);
+
+        &:not(:last-of-type) {
+          border-inline-end: none;
+        }
+
+        &:has(input:not(:checked)) {
+          box-shadow: none;
+        }
+
+        &:has(input:checked),
+        &:hover {
+          color: var(--switch-icon-selected);
+        }
+
+        svg {
+          display: block;
+          justify-self: center;
+          width: 18px;
+          height: 18px;
+        }
+      }
+
+      .indicator {
+        top: 2px;
+        height: calc(100% - 4px);
+        border-radius: 999px;
+        background: var(--switch-knob);
+        box-shadow: 0 2px 6px var(--switch-knob-shadow);
       }
     }
 
     .actions {
+      grid-column: 1 / -1;
       display: flex;
-      justify-content: flex-end;
-      gap: 8px;
+      justify-content: center;
+      gap: 16px;
+
+      button {
+        width: 36px;
+        height: 36px;
+        padding: 9px;
+        border-radius: 50%;
+
+        &:focus-visible {
+          outline: 2px solid var(--focus);
+          outline-offset: 2px;
+        }
+      }
+
+      .cancel {
+        border-color: var(--field-border);
+        color: var(--switch-icon);
+      }
+
+      .save {
+        background: var(--save);
+        border-color: var(--save);
+        color: white;
+      }
+
+      .delete {
+        border-color: var(--delete-border);
+        color: var(--delete);
+
+        &.confirming {
+          background: var(--delete);
+          border-color: var(--delete);
+          color: white;
+        }
+      }
     }
   }
 }
