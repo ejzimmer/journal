@@ -456,8 +456,8 @@ describe('MediaList', () => {
           user,
           "Update where I'm up to in https://youtu.be/1",
           'textbox',
-          'Timestamp',
-          '0:30:00',
+          'Minutes',
+          '30',
         );
 
         expect(storageContext.updateItem).toHaveBeenCalledWith(
