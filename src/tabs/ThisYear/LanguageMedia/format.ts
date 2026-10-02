@@ -47,10 +47,5 @@ export function formatComprehension({
     : `${counts}, ${understood}% understood`;
 }
 
-export const parseDuration = (duration: string) =>
-  duration
-    .split(':')
-    .reduce((totalSeconds, part) => totalSeconds * 60 + Number(part), 0);
-
 export const formatStatus = (status?: Status) =>
   status && `, ${STATUS_NAMES[status]}`;

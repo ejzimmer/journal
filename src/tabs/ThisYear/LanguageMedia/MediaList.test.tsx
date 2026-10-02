@@ -372,8 +372,8 @@ describe('MediaList', () => {
         });
 
         await user.type(
-          within(form).getByRole('textbox', { name: 'Length' }),
-          '0:10:00',
+          within(form).getByRole('textbox', { name: 'Minutes' }),
+          '10',
         );
         await user.click(within(form).getByRole('button', { name: 'Save' }));
 
