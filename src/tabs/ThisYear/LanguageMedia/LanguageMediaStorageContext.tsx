@@ -34,6 +34,11 @@ export const LanguageMediaStorageContext = createContext<
   LanguageMediaStorageContextType | undefined
 >(undefined);
 
+const removeUndefinedFields = (item: object) =>
+  Object.fromEntries(
+    Object.entries(item).filter(([, value]) => value !== undefined),
+  );
+
 const listYearsNewestFirst = (
   thisYear: number,
   storedMediaByYear?: StoredMediaByYear,
@@ -59,7 +64,7 @@ export function LanguageMediaStorageProvider({
         [getLanguageMediaPath(year), ...itemPath].join('/');
 
       const addMediaItem = (collection: ItemPath, item: object) =>
-        addItem(toPath(collection), item);
+        addItem(toPath(collection), removeUndefinedFields(item));
 
       return {
         year,

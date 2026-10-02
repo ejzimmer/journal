@@ -210,6 +210,17 @@ describe('LanguageMediaStorageContext', () => {
       );
       expect(id).toBe('e2');
     });
+
+    describe('with fields left empty', () => {
+      it('saves it without them', () => {
+        const addItem = jest.fn();
+        const storage = createLanguageMediaStorage({ addItem });
+
+        storage.addItem(['yotsuba', 'volumes'], { number: 2, name: undefined });
+
+        expect(addItem.mock.calls[0][1]).toStrictEqual({ number: 2 });
+      });
+    });
   });
 
   describe('updating an item', () => {
