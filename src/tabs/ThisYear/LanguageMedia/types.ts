@@ -12,27 +12,40 @@ export type MediaType = (typeof MEDIA_TYPES)[number];
 export const STATUSES = ['not-started', 'in-progress', 'done'] as const;
 export type Status = (typeof STATUSES)[number];
 
+export type FieldChange = { from?: unknown; to?: unknown };
+
+export type ItemUpdate = {
+  at: string;
+  changes: Record<string, FieldChange>;
+};
+
+export type Timestamps = {
+  createdAt?: string;
+  updates?: Record<string, ItemUpdate>;
+};
+
 export type Comprehension = {
   lookups: number;
   aiQuestions: number;
   understood?: number;
 };
 
-export type Episode = Comprehension & {
-  id: string;
-  number: number;
-  name?: string;
-  lengthInSeconds?: number;
-  status?: Status;
-};
+export type Episode = Timestamps &
+  Comprehension & {
+    id: string;
+    number: number;
+    name?: string;
+    lengthInSeconds?: number;
+    status?: Status;
+  };
 
-export type Season = {
+export type Season = Timestamps & {
   id: string;
   number: number;
   episodes?: Record<string, Episode>;
 };
 
-export type TvSeries = {
+export type TvSeries = Timestamps & {
   id: string;
   type: 'tv';
   name: string;
@@ -41,15 +54,16 @@ export type TvSeries = {
   upTo?: { season: number; episode: number; timestampInSeconds: number };
 };
 
-export type Video = Comprehension & {
-  id: string;
-  url: string;
-  lengthInSeconds?: number;
-  upToInSeconds?: number;
-  status?: Status;
-};
+export type Video = Timestamps &
+  Comprehension & {
+    id: string;
+    url: string;
+    lengthInSeconds?: number;
+    upToInSeconds?: number;
+    status?: Status;
+  };
 
-export type YoutubeChannel = {
+export type YoutubeChannel = Timestamps & {
   id: string;
   type: 'youtube';
   name: string;
@@ -57,15 +71,16 @@ export type YoutubeChannel = {
   videos?: Record<string, Video>;
 };
 
-export type Volume = Comprehension & {
-  id: string;
-  number: number;
-  name?: string;
-  pages?: number;
-  status?: Status;
-};
+export type Volume = Timestamps &
+  Comprehension & {
+    id: string;
+    number: number;
+    name?: string;
+    pages?: number;
+    status?: Status;
+  };
 
-export type PrintSeries = {
+export type PrintSeries = Timestamps & {
   id: string;
   type: 'manga' | 'book';
   name: string;

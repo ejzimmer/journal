@@ -34,6 +34,8 @@ const storeMedia = (
   mediaByYear: Record<number, Record<string, LanguageMedia>>,
 ) => jest.fn().mockReturnValue({ value: mediaByYear, loading: false });
 
+const NOW = '2026-10-02T20:40:00Z';
+
 const thisYear = getThisYear();
 const thisYearsPath = getLanguageMediaPath(thisYear);
 
@@ -55,6 +57,16 @@ const lupin: TvSeries = {
 };
 
 describe('LanguageMediaStorageContext', () => {
+  beforeEach(() => {
+    jest
+      .spyOn(Temporal.Now, 'instant')
+      .mockReturnValue(Temporal.Instant.from(NOW));
+  });
+
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
   it('throws when the hook is used outside a provider', () => {
     const errorSpy = jest.spyOn(console, 'error').mockImplementation();
 
@@ -136,7 +148,12 @@ describe('LanguageMediaStorageContext', () => {
 
       expect(mediaCall).toEqual([
         thisYearsPath,
-        { type: 'youtube', name: 'HugoDécrypte', language: 'french' },
+        {
+          type: 'youtube',
+          name: 'HugoDécrypte',
+          language: 'french',
+          createdAt: NOW,
+        },
       ]);
     });
 
@@ -150,8 +167,8 @@ describe('LanguageMediaStorageContext', () => {
         });
 
         expect(seasonCalls).toEqual([
-          [`${thisYearsPath}/new/seasons`, { number: 1 }],
-          [`${thisYearsPath}/new/seasons`, { number: 2 }],
+          [`${thisYearsPath}/new/seasons`, { number: 1, createdAt: NOW }],
+          [`${thisYearsPath}/new/seasons`, { number: 2, createdAt: NOW }],
         ]);
       });
     });
@@ -168,11 +185,11 @@ describe('LanguageMediaStorageContext', () => {
         expect(volumeCalls).toEqual([
           [
             `${thisYearsPath}/new/volumes`,
-            { number: 1, lookups: 0, aiQuestions: 0 },
+            { number: 1, lookups: 0, aiQuestions: 0, createdAt: NOW },
           ],
           [
             `${thisYearsPath}/new/volumes`,
-            { number: 2, lookups: 0, aiQuestions: 0 },
+            { number: 2, lookups: 0, aiQuestions: 0, createdAt: NOW },
           ],
         ]);
       });
@@ -195,11 +212,18 @@ describe('LanguageMediaStorageContext', () => {
               name: 'Astérix le Gaulois',
               lookups: 0,
               aiQuestions: 0,
+              createdAt: NOW,
             },
           ],
           [
             `${thisYearsPath}/new/volumes`,
-            { number: 2, name: 'La Serpe d’or', lookups: 0, aiQuestions: 0 },
+            {
+              number: 2,
+              name: 'La Serpe d’or',
+              lookups: 0,
+              aiQuestions: 0,
+              createdAt: NOW,
+            },
           ],
         ]);
       });
@@ -207,7 +231,7 @@ describe('LanguageMediaStorageContext', () => {
   });
 
   describe('adding an item', () => {
-    it('saves it under the given collection and returns its id', () => {
+    it('saves it under the given collection with the time it was created and returns its id', () => {
       const addItem = jest.fn().mockReturnValue('e2');
       const storage = createLanguageMediaStorage({ addItem });
 
@@ -217,7 +241,7 @@ describe('LanguageMediaStorageContext', () => {
 
       expect(addItem).toHaveBeenCalledWith(
         `${thisYearsPath}/lupin/seasons/s1/episodes`,
-        { number: 2 },
+        { number: 2, createdAt: NOW },
       );
       expect(id).toBe('e2');
     });
@@ -229,34 +253,107 @@ describe('LanguageMediaStorageContext', () => {
 
         storage.addItem(['yotsuba', 'volumes'], { number: 2, name: undefined });
 
-        expect(addItem.mock.calls[0][1]).toStrictEqual({ number: 2 });
+        expect(addItem.mock.calls[0][1]).toStrictEqual({
+          number: 2,
+          createdAt: NOW,
+        });
       });
     });
   });
 
   describe('updating an item', () => {
-    it('saves only the changed fields', () => {
+    const createStorageWithLupin = (storage: Partial<ContextType>) =>
+      createLanguageMediaStorage({
+        ...storage,
+        useValue: storeMedia({ [thisYear]: { lupin } }),
+      });
+    const episodePath = `${thisYearsPath}/lupin/seasons/s1/episodes/e1`;
+
+    it('saves the changed fields', () => {
       const setValues = jest.fn();
-      const storage = createLanguageMediaStorage({ setValues });
+      const storage = createStorageWithLupin({ setValues });
 
       storage.updateItem(['lupin', 'seasons', 's1', 'episodes', 'e1'], {
         lookups: 4,
       });
 
       expect(setValues).toHaveBeenCalledWith({
-        [`${thisYearsPath}/lupin/seasons/s1/episodes/e1/lookups`]: 4,
+        [`${episodePath}/lookups`]: 4,
+      });
+    });
+
+    it('records the update with its time and what it changed', () => {
+      const addItem = jest.fn();
+      const storage = createStorageWithLupin({ addItem });
+
+      storage.updateItem(['lupin', 'seasons', 's1', 'episodes', 'e1'], {
+        lookups: 4,
+      });
+
+      expect(addItem).toHaveBeenCalledWith(`${episodePath}/updates`, {
+        at: NOW,
+        changes: { lookups: { from: 3, to: 4 } },
+      });
+    });
+
+    describe('with some fields unchanged', () => {
+      it('saves and records only the ones that changed', () => {
+        const setValues = jest.fn();
+        const addItem = jest.fn();
+        const storage = createStorageWithLupin({ setValues, addItem });
+
+        storage.updateItem(['lupin', 'seasons', 's1', 'episodes', 'e1'], {
+          lookups: 3,
+          aiQuestions: 1,
+          understood: 90,
+        });
+
+        expect(setValues).toHaveBeenCalledWith({
+          [`${episodePath}/understood`]: 90,
+        });
+        expect(addItem).toHaveBeenCalledWith(`${episodePath}/updates`, {
+          at: NOW,
+          changes: { understood: { from: 80, to: 90 } },
+        });
+      });
+    });
+
+    describe('with nothing changed', () => {
+      it('saves nothing', () => {
+        const setValues = jest.fn();
+        const addItem = jest.fn();
+        const storage = createStorageWithLupin({ setValues, addItem });
+
+        storage.updateItem(['lupin'], {
+          upTo: { timestampInSeconds: 600, episode: 1, season: 1 },
+        });
+
+        expect(setValues).not.toHaveBeenCalled();
+        expect(addItem).not.toHaveBeenCalled();
       });
     });
 
     describe('when a field has been cleared', () => {
       it('removes it', () => {
         const setValues = jest.fn();
-        const storage = createLanguageMediaStorage({ setValues });
+        const storage = createStorageWithLupin({ setValues });
 
         storage.updateItem(['lupin'], { upTo: undefined });
 
         expect(setValues).toHaveBeenCalledWith({
           [`${thisYearsPath}/lupin/upTo`]: null,
+        });
+      });
+
+      it('records what it was cleared from', () => {
+        const addItem = jest.fn();
+        const storage = createStorageWithLupin({ addItem });
+
+        storage.updateItem(['lupin'], { upTo: undefined });
+
+        expect(addItem).toHaveBeenCalledWith(`${thisYearsPath}/lupin/updates`, {
+          at: NOW,
+          changes: { upTo: { from: lupin.upTo } },
         });
       });
     });
