@@ -1,90 +1,11 @@
 import { screen } from '@testing-library/react';
 import { MediaList } from './MediaList';
 import { renderWithLanguageMediaStorage } from './languageMediaStorageTestUtils';
+import { hugo, lupin, yotsuba } from './testMedia';
 import { LanguageMedia } from './types';
 
 const renderList = (media: LanguageMedia[]) =>
   renderWithLanguageMediaStorage(<MediaList />, { media });
-
-const lupin: LanguageMedia = {
-  id: 'lupin',
-  type: 'tv',
-  name: 'Lupin',
-  language: 'french',
-  seasons: [
-    {
-      number: 1,
-      episodes: [
-        {
-          number: 1,
-          name: 'Chapitre 1',
-          lengthInSeconds: 2826,
-          lookups: 12,
-          aiQuestions: 2,
-          understood: 70,
-        },
-        {
-          number: 2,
-          lookups: 4,
-          aiQuestions: 0,
-          status: 'in-progress',
-        },
-      ],
-    },
-  ],
-  upTo: { season: 1, episode: 2, timestampInSeconds: 754 },
-};
-
-const hugo: LanguageMedia = {
-  id: 'hugo',
-  type: 'youtube',
-  name: 'HugoDécrypte',
-  language: 'french',
-  videos: [
-    {
-      url: 'https://youtu.be/1',
-      lengthInSeconds: 3725,
-      upToInSeconds: 1200,
-      lookups: 7,
-      aiQuestions: 1,
-    },
-    {
-      url: 'https://youtu.be/2',
-      lookups: 0,
-      aiQuestions: 0,
-      status: 'done',
-    },
-  ],
-};
-
-const yotsuba: LanguageMedia = {
-  id: 'yotsuba',
-  type: 'manga',
-  name: 'よつばと！',
-  language: 'japanese',
-  volumes: [
-    {
-      number: 1,
-      pages: 220,
-      chapters: [
-        {
-          number: 1,
-          lastPage: 38,
-          lookups: 20,
-          aiQuestions: 3,
-          understood: 60,
-        },
-        {
-          number: 2,
-          name: 'よつばとアイス',
-          lookups: 0,
-          aiQuestions: 0,
-        },
-      ],
-    },
-  ],
-  upTo: { volume: 1, chapter: 2, page: 41 },
-};
 
 describe('MediaList', () => {
   describe('a tv series', () => {
@@ -199,7 +120,9 @@ describe('MediaList', () => {
           type: 'book',
           name: 'Astérix',
           language: 'french',
-          volumes: [{ number: 1, name: 'Astérix le Gaulois' }],
+          volumes: {
+            vol1: { id: 'vol1', number: 1, name: 'Astérix le Gaulois' },
+          },
         },
       ]);
 

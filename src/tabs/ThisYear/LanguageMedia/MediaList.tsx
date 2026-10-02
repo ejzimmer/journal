@@ -8,6 +8,7 @@ import {
   STATUS_NAMES,
 } from './format';
 import { useLanguageMediaStorage } from './LanguageMediaStorageContext';
+import { listByNumber, listInAddedOrder } from './lists';
 import { LANGUAGE_NAMES, MEDIA_TYPE_NAMES } from './names';
 import {
   Chapter,
@@ -60,12 +61,12 @@ function TvSeriesDetails({ series }: { series: TvSeries }) {
         </div>
       )}
       <ul>
-        {series.seasons?.map((season) => (
-          <li key={season.number}>
+        {listByNumber(series.seasons).map((season) => (
+          <li key={season.id}>
             Season {season.number}
             <ul>
-              {season.episodes?.map((episode) => (
-                <li key={episode.number}>
+              {listByNumber(season.episodes).map((episode) => (
+                <li key={episode.id}>
                   <EpisodeDetails episode={episode} />
                 </li>
               ))}
@@ -91,8 +92,8 @@ function EpisodeDetails({ episode }: { episode: Episode }) {
 function YoutubeChannelDetails({ channel }: { channel: YoutubeChannel }) {
   return (
     <ul>
-      {channel.videos?.map((video, index) => (
-        <li key={index}>
+      {listInAddedOrder(channel.videos).map((video) => (
+        <li key={video.id}>
           <VideoDetails video={video} />
         </li>
       ))}
@@ -122,13 +123,13 @@ function PrintSeriesDetails({ series }: { series: PrintSeries }) {
         </div>
       )}
       <ul>
-        {series.volumes?.map((volume) => (
-          <li key={volume.number}>
+        {listByNumber(series.volumes).map((volume) => (
+          <li key={volume.id}>
             {formatVolumeName(volume)}
             {volume.pages !== undefined && ` (${volume.pages} pages)`}
             <ul>
-              {volume.chapters?.map((chapter) => (
-                <li key={chapter.number}>
+              {listByNumber(volume.chapters).map((chapter) => (
+                <li key={chapter.id}>
                   <ChapterDetails chapter={chapter} />
                 </li>
               ))}
