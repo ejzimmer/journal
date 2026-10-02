@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { AddExerciseRow } from './AddExerciseRow';
+import { AddExercise } from './AddExercise';
 
 async function openAddExerciseForm() {
   const user = userEvent.setup();
@@ -9,16 +9,10 @@ async function openAddExerciseForm() {
   return { user, button };
 }
 
-describe('AddExerciseRow', () => {
+describe('AddExercise', () => {
   describe('when the add exercise button is pressed', () => {
     it('replaces the button with a focused name field', async () => {
-      render(
-        <table>
-          <tbody>
-            <AddExerciseRow onAdd={jest.fn()} />
-          </tbody>
-        </table>,
-      );
+      render(<AddExercise onAdd={jest.fn()} />);
 
       const { button } = await openAddExerciseForm();
 
@@ -32,13 +26,7 @@ describe('AddExerciseRow', () => {
   describe('when a name is entered', () => {
     it('adds the exercise', async () => {
       const onAdd = jest.fn();
-      render(
-        <table>
-          <tbody>
-            <AddExerciseRow onAdd={onAdd} />
-          </tbody>
-        </table>,
-      );
+      render(<AddExercise onAdd={onAdd} />);
       const { user } = await openAddExerciseForm();
 
       await user.keyboard('Goblet squat{Enter}');
@@ -47,13 +35,7 @@ describe('AddExerciseRow', () => {
     });
 
     it('closes the field and returns focus to the add exercise button', async () => {
-      render(
-        <table>
-          <tbody>
-            <AddExerciseRow onAdd={jest.fn()} />
-          </tbody>
-        </table>,
-      );
+      render(<AddExercise onAdd={jest.fn()} />);
       const { user } = await openAddExerciseForm();
       const input = screen.getByRole('textbox', { name: 'Exercise name' });
 
@@ -69,13 +51,7 @@ describe('AddExerciseRow', () => {
   describe('when the name is empty', () => {
     it("doesn't add an exercise", async () => {
       const onAdd = jest.fn();
-      render(
-        <table>
-          <tbody>
-            <AddExerciseRow onAdd={onAdd} />
-          </tbody>
-        </table>,
-      );
+      render(<AddExercise onAdd={onAdd} />);
       const { user } = await openAddExerciseForm();
 
       await user.keyboard('   {Enter}');
@@ -86,13 +62,7 @@ describe('AddExerciseRow', () => {
 
   describe('when escape is pressed', () => {
     it('closes the field and returns focus to the add exercise button', async () => {
-      render(
-        <table>
-          <tbody>
-            <AddExerciseRow onAdd={jest.fn()} />
-          </tbody>
-        </table>,
-      );
+      render(<AddExercise onAdd={jest.fn()} />);
       const { user } = await openAddExerciseForm();
       const input = screen.getByRole('textbox', { name: 'Exercise name' });
 

@@ -1,22 +1,21 @@
-import { useMemo } from 'react';
+import { useId, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { flushSync } from 'react-dom';
 import { PlusIcon } from '../../shared/icons/Plus';
-import { useFormToggle } from '../../shared/controls/useFormToggle';
 import { Exercise, ExerciseUpdate } from '../../shared/types';
 import { useHealthStorage } from './HealthStorageContext';
 import { ExerciseForm } from './ExerciseForm';
-import { UpdateCell } from './UpdateCell';
+import { UpdateChip } from './UpdateChip';
 
-type ExerciseRowProps = {
-  exercise: Exercise;
-  numberOfUpdateColumns: number;
-};
+type OpenForm = { kind: 'record' } | { kind: 'edit'; update: ExerciseUpdate };
 
-export function ExerciseRow({
-  exercise,
-  numberOfUpdateColumns,
-}: ExerciseRowProps) {
-  const { recordExercise, deleteExerciseUpdate } = useHealthStorage();
-  const { isFormOpen, triggerRef, openForm, closeForm } = useFormToggle();
+export function ExerciseRow({ exercise }: { exercise: Exercise }) {
+  const { recordExercise, editExerciseUpdate, deleteExerciseUpdate } =
+    useHealthStorage();
+  const [openForm, setOpenForm] = useState<OpenForm | null>(null);
+  const nameId = useId();
+  const updatesRef = useRef<HTMLUListElement>(null);
+  const recordButtonRef = useRef<HTMLButtonElement>(null);
+  const chipRefs = useRef(new Map<string, HTMLButtonElement>());
 
   const updates = useMemo(
     () =>
@@ -25,52 +24,105 @@ export function ExerciseRow({
       ),
     [exercise.updates],
   );
-  const trailingEmptyCells = Array.from({
-    length: numberOfUpdateColumns - updates.length - 1,
-  });
+
+  useLayoutEffect(() => {
+    const list = updatesRef.current;
+    if (list) {
+      list.scrollLeft = list.scrollWidth;
+    }
+  }, [updates.length]);
+
+  const editingId = openForm?.kind === 'edit' ? openForm.update.id : undefined;
+
+  const findFormTrigger = () =>
+    editingId ? chipRefs.current.get(editingId) : recordButtonRef.current;
+
+  const closeForm = (focusTarget = findFormTrigger()) => {
+    flushSync(() => setOpenForm(null));
+    focusTarget?.focus();
+  };
+
+  const toggleEditForm = (update: ExerciseUpdate) => {
+    if (editingId === update.id) {
+      closeForm();
+    } else {
+      setOpenForm({ kind: 'edit', update });
+    }
+  };
+
+  const toggleRecordForm = () => {
+    if (openForm?.kind === 'record') {
+      closeForm();
+    } else {
+      setOpenForm({ kind: 'record' });
+    }
+  };
 
   const addUpdate = (update: Omit<ExerciseUpdate, 'id'>) => {
     recordExercise(exercise.id, update);
     closeForm();
   };
 
+  const saveUpdate = (edited: Omit<ExerciseUpdate, 'id'>) => {
+    if (openForm?.kind === 'edit') {
+      editExerciseUpdate(exercise.id, { id: openForm.update.id, ...edited });
+    }
+    closeForm();
+  };
+
   const deleteUpdate = (update: ExerciseUpdate) => {
     deleteExerciseUpdate(exercise.id, update);
-    triggerRef.current?.focus();
+    closeForm(recordButtonRef.current);
   };
 
   return (
-    <tr>
-      <th role="rowheader">{exercise.name}</th>
-      {updates.map((update) => (
-        <UpdateCell
-          key={update.id}
-          exercise={exercise}
-          update={update}
-          onDelete={deleteUpdate}
+    <li className="exercise" aria-labelledby={nameId}>
+      <span id={nameId} className="name">
+        {exercise.name}
+      </span>
+      <ul className="updates" ref={updatesRef}>
+        {updates.map((update) => (
+          <li key={update.id}>
+            <UpdateChip
+              ref={(chip) => {
+                chipRefs.current.set(update.id, chip!);
+                return () => {
+                  chipRefs.current.delete(update.id);
+                };
+              }}
+              update={update}
+              isEditing={editingId === update.id}
+              onClick={() => toggleEditForm(update)}
+            />
+          </li>
+        ))}
+      </ul>
+      <button
+        ref={recordButtonRef}
+        className="record"
+        aria-label={`Record ${exercise.name}`}
+        aria-expanded={openForm?.kind === 'record'}
+        onClick={toggleRecordForm}
+      >
+        <PlusIcon strokeWidth="3" />
+      </button>
+      {openForm?.kind === 'record' && (
+        <ExerciseForm
+          exerciseName={exercise.name}
+          onSubmit={addUpdate}
+          onCancel={() => closeForm()}
         />
-      ))}
-      <td className={isFormOpen ? '' : 'add-update'}>
-        {isFormOpen ? (
-          <ExerciseForm
-            exerciseName={exercise.name}
-            onSubmit={addUpdate}
-            onCancel={closeForm}
-          />
-        ) : (
-          <button
-            ref={triggerRef}
-            className="ghost"
-            aria-label={`Record ${exercise.name}`}
-            onClick={openForm}
-          >
-            <PlusIcon width="24px" strokeWidth="3" />
-          </button>
-        )}
-      </td>
-      {trailingEmptyCells.map((_, index) => (
-        <td key={index} />
-      ))}
-    </tr>
+      )}
+      {openForm?.kind === 'edit' && (
+        <ExerciseForm
+          key={openForm.update.id}
+          exerciseName={exercise.name}
+          update={openForm.update}
+          onSubmit={saveUpdate}
+          onCancel={() => closeForm()}
+          onDelete={() => deleteUpdate(openForm.update)}
+        />
+      )}
+    </li>
   );
 }
