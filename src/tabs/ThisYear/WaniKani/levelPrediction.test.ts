@@ -50,7 +50,7 @@ describe('predictDaysToFinish', () => {
       });
     });
 
-    describe('20 days into level 58', () => {
+    describe('when the current level has already taken longer than the average', () => {
       it('predicts 10 days each for levels 59 and 60', () => {
         setToday('2026-02-10');
 
