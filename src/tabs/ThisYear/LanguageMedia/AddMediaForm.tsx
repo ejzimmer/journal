@@ -36,13 +36,13 @@ function readNewMedia(data: FormData): NewMedia {
 
 export function AddMediaForm() {
   const { addMedia } = useLanguageMediaStorage();
-  const [type, setType] = useState<MediaType>('tv');
+  const [type, setType] = useState<MediaType>('book');
 
   const submitMedia = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     addMedia(readNewMedia(new FormData(event.currentTarget)));
     event.currentTarget.reset();
-    setType('tv');
+    setType('book');
   };
 
   return (
