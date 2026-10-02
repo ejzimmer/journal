@@ -1,3 +1,4 @@
+import { ComprehensionCounters } from './ComprehensionCounters';
 import { DeleteButton } from './DeleteButton';
 import { EditChapterForm } from './EditChapterForm';
 import { useLanguageMediaStorage } from './LanguageMediaStorageContext';
@@ -27,6 +28,11 @@ export function ChapterDetails({
           onChange={(status) => updateItem(path, { status })}
         />
       )}
+      <ComprehensionCounters
+        name={name}
+        comprehension={chapter}
+        onChange={(changes) => updateItem(path, changes)}
+      />
       <EditChapterForm
         name={name}
         chapter={chapter}

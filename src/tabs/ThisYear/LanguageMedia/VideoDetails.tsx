@@ -1,3 +1,4 @@
+import { ComprehensionCounters } from './ComprehensionCounters';
 import { DeleteButton } from './DeleteButton';
 import { EditVideoForm } from './EditVideoForm';
 import { useLanguageMediaStorage } from './LanguageMediaStorageContext';
@@ -39,6 +40,11 @@ export function VideoDetails({
           onChange={(upToInSeconds) => updateItem(path, { upToInSeconds })}
         />
       )}
+      <ComprehensionCounters
+        name={video.url}
+        comprehension={video}
+        onChange={(changes) => updateItem(path, changes)}
+      />
       <EditVideoForm
         video={video}
         onChange={(changes) => updateItem(path, changes)}

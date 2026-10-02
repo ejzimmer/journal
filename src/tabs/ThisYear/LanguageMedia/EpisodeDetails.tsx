@@ -1,3 +1,4 @@
+import { ComprehensionCounters } from './ComprehensionCounters';
 import { DeleteButton } from './DeleteButton';
 import { EditEpisodeForm } from './EditEpisodeForm';
 import { useLanguageMediaStorage } from './LanguageMediaStorageContext';
@@ -33,6 +34,11 @@ export function EpisodeDetails({
           onChange={(status) => updateItem(path, { status })}
         />
       )}
+      <ComprehensionCounters
+        name={name}
+        comprehension={episode}
+        onChange={(changes) => updateItem(path, changes)}
+      />
       <EditEpisodeForm
         name={name}
         episode={episode}

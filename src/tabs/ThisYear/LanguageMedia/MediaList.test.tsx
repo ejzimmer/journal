@@ -519,4 +519,53 @@ describe('MediaList', () => {
       });
     });
   });
+
+  describe('counting', () => {
+    describe('a lookup in an episode', () => {
+      it("saves only the episode's new lookup count", async () => {
+        const { user, storageContext } = renderList([lupin]);
+
+        await user.click(
+          screen.getByRole('button', { name: 'Add a lookup to Chapitre 1' }),
+        );
+
+        expect(storageContext.updateItem).toHaveBeenCalledWith(
+          ['lupin', 'seasons', 's1', 'episodes', 'e1'],
+          { lookups: 13 },
+        );
+      });
+    });
+
+    describe('an AI question about a video', () => {
+      it("saves only the video's new AI question count", async () => {
+        const { user, storageContext } = renderList([hugo]);
+
+        await user.click(
+          screen.getByRole('button', {
+            name: 'Add an AI question to https://youtu.be/1',
+          }),
+        );
+
+        expect(storageContext.updateItem).toHaveBeenCalledWith(
+          ['hugo', 'videos', 'v1'],
+          { aiQuestions: 2 },
+        );
+      });
+    });
+
+    describe('a lookup in a chapter', () => {
+      it("saves only the chapter's new lookup count", async () => {
+        const { user, storageContext } = renderList([yotsuba]);
+
+        await user.click(
+          screen.getByRole('button', { name: 'Add a lookup to Chapter 1' }),
+        );
+
+        expect(storageContext.updateItem).toHaveBeenCalledWith(
+          ['yotsuba', 'volumes', 'vol1', 'chapters', 'c1'],
+          { lookups: 21 },
+        );
+      });
+    });
+  });
 });
