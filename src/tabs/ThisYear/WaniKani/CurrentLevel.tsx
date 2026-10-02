@@ -1,5 +1,6 @@
 import { useId } from 'react';
-import { calculateLevelProgress, predictDaysToFinish } from './stats';
+import { predictDaysToFinish } from './levelPrediction';
+import { calculateLevelProgress } from './levelProgress';
 import { WaniKaniData } from './types';
 
 export function CurrentLevel({ data }: { data: WaniKaniData }) {

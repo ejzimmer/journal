@@ -1,4 +1,4 @@
-import { calculateBurnedPercentsByLevel } from './stats';
+import { calculateBurnedPercentsByLevel } from './burnedPercents';
 import { SUBJECT_TYPE_LABELS } from './subjectTypeLabels';
 import { SUBJECT_TYPES, WaniKaniData } from './types';
 

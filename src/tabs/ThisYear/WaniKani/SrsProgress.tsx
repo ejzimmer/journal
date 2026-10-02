@@ -1,5 +1,5 @@
 import { SrsProgressBar } from './SrsProgressBar';
-import { countSubjectsBySrsGroup } from './stats';
+import { countSubjectsBySrsGroup } from './srsGroups';
 import { SUBJECT_TYPE_LABELS } from './subjectTypeLabels';
 import { SUBJECT_TYPES, WaniKaniData } from './types';
 
