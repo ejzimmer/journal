@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ALL_EMOJI } from './emoji';
+import Picker, { EmojiStyle } from 'emoji-picker-react';
 
 import './EmojiPicker.css';
 
@@ -38,18 +38,15 @@ export function EmojiPicker({
         {value}
       </button>
       {isOpen && (
-        <div className="emoji-picker-grid" role="radiogroup" aria-label="Emoji">
-          {ALL_EMOJI.map((emoji) => (
-            <button
-              key={emoji}
-              type="button"
-              role="radio"
-              aria-checked={emoji === value}
-              onClick={() => pickEmoji(emoji)}
-            >
-              {emoji}
-            </button>
-          ))}
+        <div className="emoji-picker-popover">
+          <Picker
+            emojiStyle={EmojiStyle.NATIVE}
+            previewConfig={{ showPreview: false }}
+            skinTonesDisabled
+            autoFocusSearch
+            height={360}
+            onEmojiClick={({ emoji }) => pickEmoji(emoji)}
+          />
         </div>
       )}
     </div>

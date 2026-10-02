@@ -7,6 +7,20 @@ import {
 } from './AdventureStorageContext';
 import { AdventureMode } from './types';
 
+jest.mock('emoji-picker-react', () => ({
+  __esModule: true,
+  EmojiStyle: { NATIVE: 'native' },
+  default: ({
+    onEmojiClick,
+  }: {
+    onEmojiClick: (emoji: { emoji: string }) => void;
+  }) => (
+    <button type="button" onClick={() => onEmojiClick({ emoji: '🛶' })}>
+      🛶
+    </button>
+  ),
+}));
+
 const running: AdventureMode = {
   id: 'running',
   name: 'Running',
@@ -92,7 +106,7 @@ describe('AddAdventureForm', () => {
           'Kayaking',
         );
         await user.click(screen.getByRole('button', { name: 'Emoji' }));
-        await user.click(screen.getByRole('radio', { name: '🛶' }));
+        await user.click(screen.getByRole('button', { name: '🛶' }));
         await user.click(screen.getByRole('radio', { name: 'Yellow' }));
         await user.click(screen.getByRole('button', { name: 'Add' }));
 
