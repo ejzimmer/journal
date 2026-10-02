@@ -1,3 +1,4 @@
+import { DurationField } from './DurationField';
 import { AddItemForm } from './AddItemForm';
 import {
   findNextNumber,
@@ -31,10 +32,7 @@ export function AddEpisodeForm({
         Name
         <input name="name" />
       </label>
-      <label>
-        Length
-        <input name="length" pattern="\d+:\d{2}" />
-      </label>
+      <DurationField label="Length" name="length" durationFormat="mm:ss" />
     </AddItemForm>
   );
 }

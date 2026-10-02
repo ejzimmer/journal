@@ -1,3 +1,4 @@
+import { DurationField } from './DurationField';
 import { AddItemForm } from './AddItemForm';
 import { NewItem, NO_COMPREHENSION, readDuration } from './newItems';
 import { Video } from './types';
@@ -22,10 +23,7 @@ export function AddVideoForm({
         URL
         <input name="url" type="url" required />
       </label>
-      <label>
-        Length
-        <input name="length" pattern="\d+:\d{2}:\d{2}" />
-      </label>
+      <DurationField label="Length" name="length" durationFormat="hh:mm:ss" />
     </AddItemForm>
   );
 }
