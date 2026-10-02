@@ -1,5 +1,4 @@
 import { ReactNode } from 'react';
-import { PlusIcon } from '../../../shared/icons/Plus';
 
 export function AddItemForm({
   label,
@@ -19,9 +18,7 @@ export function AddItemForm({
   return (
     <form aria-label={label} onSubmit={submitItem}>
       {children}
-      <button type="submit" aria-label={label}>
-        <PlusIcon width="16px" />
-      </button>
+      <button type="submit">{label}</button>
     </form>
   );
 }

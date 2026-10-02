@@ -31,8 +31,11 @@ describe('EditEpisodeForm', () => {
       );
       await openDisclosureForm('Edit');
 
-      expect(screen.getByRole('textbox', { name: 'Length' })).toHaveValue(
-        '50:00',
+      expect(screen.getByRole('textbox', { name: 'Minutes' })).toHaveValue(
+        '50',
+      );
+      expect(screen.getByRole('textbox', { name: 'Seconds' })).toHaveValue(
+        '00',
       );
     });
   });
@@ -47,9 +50,8 @@ describe('EditEpisodeForm', () => {
     );
     await openDisclosureForm('Edit');
 
-    expect(screen.getByRole('textbox', { name: 'Length' })).toHaveValue(
-      '47:06',
-    );
+    expect(screen.getByRole('textbox', { name: 'Minutes' })).toHaveValue('47');
+    expect(screen.getByRole('textbox', { name: 'Seconds' })).toHaveValue('06');
   });
 
   it('saves the new name and length', async () => {
@@ -65,8 +67,9 @@ describe('EditEpisodeForm', () => {
 
     await user.clear(screen.getByRole('textbox', { name: 'Name' }));
     await user.type(screen.getByRole('textbox', { name: 'Name' }), 'Pilote');
-    await user.clear(screen.getByRole('textbox', { name: 'Length' }));
-    await user.type(screen.getByRole('textbox', { name: 'Length' }), '50:00');
+    await user.clear(screen.getByRole('textbox', { name: 'Minutes' }));
+    await user.type(screen.getByRole('textbox', { name: 'Minutes' }), '50');
+    await user.clear(screen.getByRole('textbox', { name: 'Seconds' }));
     await save();
 
     expect(onChange).toHaveBeenCalledWith({
@@ -89,7 +92,8 @@ describe('EditEpisodeForm', () => {
       const { user, save } = await openDisclosureForm('Edit');
 
       await user.clear(screen.getByRole('textbox', { name: 'Name' }));
-      await user.clear(screen.getByRole('textbox', { name: 'Length' }));
+      await user.clear(screen.getByRole('textbox', { name: 'Minutes' }));
+      await user.clear(screen.getByRole('textbox', { name: 'Seconds' }));
       await save();
 
       expect(onChange.mock.calls[0][0]).toStrictEqual({

@@ -372,8 +372,8 @@ describe('MediaList', () => {
         });
 
         await user.type(
-          within(form).getByRole('textbox', { name: 'Length' }),
-          '0:10:00',
+          within(form).getByRole('textbox', { name: 'Minutes' }),
+          '10',
         );
         await user.click(within(form).getByRole('button', { name: 'Save' }));
 
@@ -456,8 +456,8 @@ describe('MediaList', () => {
           user,
           "Update where I'm up to in https://youtu.be/1",
           'textbox',
-          'Timestamp',
-          '0:30:00',
+          'Minutes',
+          '30',
         );
 
         expect(storageContext.updateItem).toHaveBeenCalledWith(
