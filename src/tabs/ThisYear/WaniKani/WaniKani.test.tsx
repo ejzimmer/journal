@@ -1,10 +1,10 @@
 import 'fake-indexeddb/auto';
 import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { WaniKani } from '.';
+import { FirebaseContext } from '../../../shared/FirebaseContext';
+import { createMockFirebaseContext } from '../../../shared/mockFirebase';
+import { API_KEY_PATH, WaniKani } from '.';
 import { clearCachedCollections } from './collectionCache';
-
-const API_KEY_STORAGE_KEY = 'wanikaniApiKey';
 
 const subjects = [
   { id: 1, object: 'radical', data: { level: 1, hidden_at: null } },
@@ -91,9 +91,21 @@ function getRequestedUrls() {
   return fetchMock.mock.calls.map(([url]) => url as string);
 }
 
+function renderWaniKani(storedApiKey?: string) {
+  const storage = createMockFirebaseContext(
+    storedApiKey ? { wanikani: { apiKey: storedApiKey } } : {},
+  );
+  const setValue = jest.spyOn(storage, 'setValue');
+  const view = render(
+    <FirebaseContext.Provider value={storage}>
+      <WaniKani />
+    </FirebaseContext.Provider>,
+  );
+  return { ...view, setValue };
+}
+
 beforeEach(async () => {
   global.fetch = fetchMock;
-  localStorage.clear();
   await clearCachedCollections();
 });
 
@@ -106,7 +118,7 @@ describe('WaniKani', () => {
     it('loads progress with the key that gets entered', async () => {
       mockWaniKani();
       const user = userEvent.setup();
-      render(<WaniKani />);
+      renderWaniKani();
 
       await user.type(screen.getByLabelText('WaniKani API key'), 'my-key');
       await user.click(screen.getByRole('button', { name: 'Save' }));
@@ -127,24 +139,23 @@ describe('WaniKani', () => {
     it('remembers the key', async () => {
       mockWaniKani();
       const user = userEvent.setup();
-      render(<WaniKani />);
+      const { setValue } = renderWaniKani();
 
       await user.type(screen.getByLabelText('WaniKani API key'), 'my-key');
       await user.click(screen.getByRole('button', { name: 'Save' }));
       await screen.findByRole('heading', { name: 'Level 2' });
 
-      expect(localStorage.getItem(API_KEY_STORAGE_KEY)).toBe('my-key');
+      expect(setValue).toHaveBeenCalledWith(API_KEY_PATH, 'my-key');
     });
   });
 
   describe('with an API key saved', () => {
     beforeEach(() => {
-      localStorage.setItem(API_KEY_STORAGE_KEY, 'my-key');
       mockWaniKani();
     });
 
     it('shows progress through the current level', async () => {
-      render(<WaniKani />);
+      renderWaniKani('my-key');
 
       const level = await screen.findByRole('region', { name: 'Level 2' });
       expect(level).toHaveTextContent('Radicals 1 / 1');
@@ -156,14 +167,14 @@ describe('WaniKani', () => {
         now: new Date('2026-09-15T00:00:00Z'),
         doNotFake: ['setTimeout', 'setInterval', 'queueMicrotask'],
       });
-      render(<WaniKani />);
+      renderWaniKani('my-key');
 
       const level = await screen.findByRole('region', { name: 'Level 2' });
       expect(level).toHaveTextContent('586 days to finish level 60');
     });
 
     it('shows how many of each type are at each SRS stage', async () => {
-      render(<WaniKani />);
+      renderWaniKani('my-key');
 
       expect(
         await screen.findByRole('img', {
@@ -178,7 +189,7 @@ describe('WaniKani', () => {
     });
 
     it('shows the percent of each type burned at each level', async () => {
-      render(<WaniKani />);
+      renderWaniKani('my-key');
 
       const levelOne = await screen.findByRole('row', { name: /^1 / });
       const percents = within(levelOne)
@@ -189,12 +200,12 @@ describe('WaniKani', () => {
 
     describe('when progress has been loaded before', () => {
       it('only asks WaniKani for what changed since then', async () => {
-        const { unmount } = render(<WaniKani />);
+        const { unmount } = renderWaniKani('my-key');
         await screen.findByRole('heading', { name: 'Level 2' });
         unmount();
         fetchMock.mockClear();
 
-        render(<WaniKani />);
+        renderWaniKani('my-key');
         await screen.findByRole('heading', { name: 'Level 2' });
 
         expect(getRequestedUrls()).toContain(
@@ -206,17 +217,15 @@ describe('WaniKani', () => {
 
   describe('when WaniKani rejects the saved API key', () => {
     beforeEach(() => {
-      localStorage.setItem(API_KEY_STORAGE_KEY, 'old-key');
       fetchMock.mockImplementation(() => respondWith({}, 401));
     });
 
     it('asks for a new key', async () => {
-      render(<WaniKani />);
+      renderWaniKani('old-key');
 
       expect(
         await screen.findByLabelText('WaniKani API key'),
       ).toBeInTheDocument();
-      expect(localStorage.getItem(API_KEY_STORAGE_KEY)).toBeNull();
     });
   });
 });

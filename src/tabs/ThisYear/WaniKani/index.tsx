@@ -1,7 +1,7 @@
-import { useEffect, useId, useState } from 'react';
+import { useEffect, useId } from 'react';
+import { useStorageContext } from '../../../shared/FirebaseContext';
 import { Skeleton } from '../../../shared/controls/Skeleton';
 import { ApiKeyForm } from './ApiKeyForm';
-import { forgetApiKey, readApiKey, saveApiKey } from './apiKeyStorage';
 import { InvalidApiKeyError } from './api';
 import { clearCachedCollections } from './collectionCache';
 import { SrsProgressBar } from './SrsProgressBar';
@@ -22,16 +22,22 @@ const SUBJECT_TYPE_LABELS: Record<SubjectType, string> = {
   vocabulary: 'Vocabulary',
 };
 
+export const API_KEY_PATH = 'wanikani/apiKey';
+
 export function WaniKani() {
-  const [apiKey, setApiKey] = useState(readApiKey);
+  const { useValue, setValue } = useStorageContext();
+  const { value: apiKey, loading } = useValue<string>(API_KEY_PATH);
+
+  if (loading) {
+    return <Skeleton numRows={3} />;
+  }
 
   if (!apiKey) {
     return (
       <ApiKeyForm
         onSubmit={async (apiKey) => {
           await clearCachedCollections();
-          saveApiKey(apiKey);
-          setApiKey(apiKey);
+          setValue(API_KEY_PATH, apiKey);
         }}
       />
     );
@@ -41,10 +47,7 @@ export function WaniKani() {
     <WaniKaniProgress
       key={apiKey}
       apiKey={apiKey}
-      onInvalidApiKey={() => {
-        forgetApiKey();
-        setApiKey(null);
-      }}
+      onInvalidApiKey={() => setValue(API_KEY_PATH, null)}
     />
   );
 }
