@@ -1,3 +1,4 @@
+import { PlusIcon } from '../../../shared/icons/Plus';
 import { ReactNode } from 'react';
 import { parseDuration } from './format';
 import { Chapter, Episode, Season, Video, Volume } from './types';
@@ -38,7 +39,9 @@ function AddItemForm({
   return (
     <form aria-label={label} onSubmit={submitItem}>
       {children}
-      <button type="submit">{label}</button>
+      <button type="submit" aria-label={label}>
+        <PlusIcon width="16px" />
+      </button>
     </form>
   );
 }
