@@ -46,3 +46,6 @@ export function formatComprehension({
     ? counts
     : `${counts}, ${understood}% understood`;
 }
+
+export const formatStatus = (status?: Status) =>
+  status && `, ${STATUS_NAMES[status]}`;
