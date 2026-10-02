@@ -1,3 +1,5 @@
+import { DisclosureForm } from './DisclosureForm';
+import { NumberField, readZeroOrMore } from './fields';
 import { Comprehension } from './types';
 
 export function ComprehensionCounters({
@@ -33,5 +35,51 @@ export function ComprehensionCounters({
         +1 asked AI
       </button>
     </>
+  );
+}
+
+export function ComprehensionForm({
+  name,
+  comprehension,
+  onChange,
+}: {
+  name: string;
+  comprehension: Comprehension;
+  onChange: (comprehension: Comprehension) => void;
+}) {
+  return (
+    <DisclosureForm
+      summary="Totals"
+      label={`Edit totals for ${name}`}
+      onSubmit={(data) =>
+        onChange({
+          lookups: readZeroOrMore(data, 'lookups') ?? 0,
+          aiQuestions: readZeroOrMore(data, 'aiQuestions') ?? 0,
+          understood: readZeroOrMore(data, 'understood'),
+        })
+      }
+    >
+      <NumberField
+        label="Looked up"
+        name="lookups"
+        defaultValue={comprehension.lookups}
+        min={0}
+        isRequired
+      />
+      <NumberField
+        label="Asked AI"
+        name="aiQuestions"
+        defaultValue={comprehension.aiQuestions}
+        min={0}
+        isRequired
+      />
+      <NumberField
+        label="Understood (%)"
+        name="understood"
+        defaultValue={comprehension.understood}
+        min={0}
+        max={100}
+      />
+    </DisclosureForm>
   );
 }

@@ -687,4 +687,34 @@ describe('MediaList', () => {
       });
     });
   });
+
+  describe('editing totals', () => {
+    describe('of a chapter', () => {
+      it('saves the series with the new totals', async () => {
+        const { user, storageContext } = renderList([yotsuba]);
+        const form = screen.getByRole('form', {
+          name: 'Edit totals for Chapter 1',
+        });
+        const understood = within(form).getByRole('spinbutton', {
+          name: 'Understood (%)',
+        });
+
+        await user.clear(understood);
+        await user.type(understood, '75');
+        await user.click(within(form).getByRole('button', { name: 'Save' }));
+
+        const [volume] = yotsuba.volumes!;
+        const [chapter, otherChapter] = volume.chapters!;
+        expect(storageContext.updateMedia).toHaveBeenCalledWith({
+          ...yotsuba,
+          volumes: [
+            {
+              ...volume,
+              chapters: [{ ...chapter, understood: 75 }, otherChapter],
+            },
+          ],
+        });
+      });
+    });
+  });
 });

@@ -10,6 +10,11 @@ export const readText = (data: FormData, name: string) =>
 export const readNumber = (data: FormData, name: string) =>
   Number(data.get(name)) || undefined;
 
+export const readZeroOrMore = (data: FormData, name: string) => {
+  const value = readText(data, name);
+  return value === undefined ? undefined : Number(value);
+};
+
 export const readDuration = (data: FormData, name: string) => {
   const duration = readText(data, name);
   return duration === undefined ? undefined : parseDuration(duration);
@@ -48,7 +53,8 @@ export function NumberField({
   defaultValue,
   isRequired,
   min = 1,
-}: FieldProps<number> & { min?: number }) {
+  max,
+}: FieldProps<number> & { min?: number; max?: number }) {
   return (
     <label>
       {label}
@@ -56,6 +62,7 @@ export function NumberField({
         name={name}
         type="number"
         min={min}
+        max={max}
         defaultValue={defaultValue}
         required={isRequired}
       />
