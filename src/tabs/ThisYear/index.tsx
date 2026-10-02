@@ -1,3 +1,4 @@
+import { LanguageMediaGoals } from './LanguageMedia';
 import { OtherGoals } from './OtherGoals';
 import { StationRunning } from './StationRunning/StationRunning';
 import { WaniKani } from './WaniKani';
@@ -10,6 +11,7 @@ export function ThisYear() {
       <StationRunning />
       <OtherGoals />
       <WaniKani />
+      <LanguageMediaGoals />
     </div>
   );
 }
