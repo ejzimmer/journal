@@ -7,7 +7,7 @@ import { Noticeboard } from './Noticeboard';
 
 describe('Noticeboard', () => {
   describe('when there are adventures', () => {
-    it('lists every one', () => {
+    it('pins up every one, soonest first and done ones last', () => {
       const storage: AdventureStorageContextType = {
         adventures: [
           {
@@ -15,6 +15,13 @@ describe('Noticeboard', () => {
             description: 'Plenty Gorge parkrun',
             modeId: 'running',
             isDone: false,
+          },
+          {
+            id: 'yarra',
+            description: 'Paddle the Yarra',
+            modeId: 'kayaking',
+            isDone: false,
+            plannedDate: '2026-11-01',
           },
           {
             id: 'hurstbridge',
@@ -39,7 +46,11 @@ describe('Noticeboard', () => {
 
       expect(
         screen.getAllByRole('listitem').map((item) => item.textContent),
-      ).toEqual(['Plenty Gorge parkrun', 'Ride to Hurstbridge']);
+      ).toEqual([
+        'Paddle the YarraSun 1 Nov',
+        'Plenty Gorge parkrun',
+        'Ride to Hurstbridge',
+      ]);
     });
   });
 });

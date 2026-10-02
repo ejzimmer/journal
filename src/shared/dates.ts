@@ -1,4 +1,5 @@
 const monthFormatter = Intl.DateTimeFormat('en-AU', { month: 'short' });
+const weekdayFormatter = Intl.DateTimeFormat('en-AU', { weekday: 'short' });
 
 const getTodaysPlainDate = () => Temporal.Now.plainDateISO();
 
@@ -65,4 +66,10 @@ export const formatDayAndMonth = (date: string) => {
   const plainDate = Temporal.PlainDate.from(date);
 
   return `${plainDate.day.toString().padStart(2, '0')} ${formatMonth(plainDate)}`;
+};
+
+export const formatWeekdayDayAndMonth = (date: string) => {
+  const plainDate = Temporal.PlainDate.from(date);
+
+  return `${weekdayFormatter.format(plainDate)} ${plainDate.day} ${formatMonth(plainDate)}`;
 };

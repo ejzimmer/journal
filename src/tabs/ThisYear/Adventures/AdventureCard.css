@@ -1,0 +1,137 @@
+.adventure-card {
+  --tilt: 0deg;
+
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  background: #fbf8f0;
+  border-top: 10px solid var(--mode-colour, var(--border-colour));
+  box-shadow:
+    0 1px 1px hsl(0 0% 0% / 0.15),
+    0 6px 10px hsl(30 100% 8% / 0.28);
+  transform: rotate(var(--tilt));
+  transition: transform 0.15s ease;
+
+  &:nth-child(8n + 1) {
+    --tilt: -2.2deg;
+  }
+  &:nth-child(8n + 2) {
+    --tilt: 1.4deg;
+  }
+  &:nth-child(8n + 3) {
+    --tilt: -0.8deg;
+  }
+  &:nth-child(8n + 4) {
+    --tilt: 2.4deg;
+  }
+  &:nth-child(8n + 5) {
+    --tilt: -1.6deg;
+  }
+  &:nth-child(8n + 6) {
+    --tilt: 0.9deg;
+  }
+  &:nth-child(8n + 7) {
+    --tilt: 1.9deg;
+  }
+  &:nth-child(8n) {
+    --tilt: -2.6deg;
+  }
+
+  &:hover {
+    z-index: 1;
+    transform: scale(1.02);
+  }
+
+  .pin {
+    position: absolute;
+    top: -17px;
+    left: calc(50% - 8px);
+    width: 16px;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background:
+      radial-gradient(
+        circle at 35% 30%,
+        hsl(0 0% 100% / 0.55) 0 2px,
+        transparent 3px
+      ),
+      #152c6b;
+    box-shadow: 0 3px 3px hsl(0 0% 0% / 0.35);
+  }
+
+  .card-body {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+    flex-grow: 1;
+    gap: 10px;
+    padding: 14px;
+  }
+
+  .description {
+    flex-grow: 1;
+    min-height: 3.1em;
+    margin: 0;
+    font-family: 'Zilla Slab', var(--body-font);
+    line-height: 1.55;
+    overflow-wrap: anywhere;
+  }
+
+  .mode-emoji {
+    margin-inline-end: 6px;
+  }
+
+  .planned-date {
+    padding-block: 3px;
+    padding-inline: 7px;
+    font-variant-numeric: tabular-nums;
+    color: var(--body-colour-mid);
+    border: 1px dashed var(--border-colour);
+    border-radius: 3px;
+
+    &.soon {
+      color: var(--action-colour);
+      border: 1px solid var(--action-colour);
+    }
+
+    &.very-soon {
+      color: var(--error-colour);
+      border: 1px solid var(--error-colour);
+    }
+  }
+
+  &.done .card-body > :not(.done-stamp) {
+    opacity: 0.55;
+  }
+
+  .done-stamp {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    display: grid;
+    place-items: center;
+    width: 64px;
+    aspect-ratio: 1;
+    color: #152c6b;
+    background: hsl(43 60% 96% / 0.6);
+    border: 4px solid;
+    border-radius: 50%;
+    transform: translate(-50%, -50%) rotate(-14deg);
+    mix-blend-mode: multiply;
+    opacity: 0.85;
+    pointer-events: none;
+    mask-image: radial-gradient(
+      circle at 30% 40%,
+      black 55%,
+      hsl(0 0% 0% / 0.6) 56%
+    );
+    mask-size: 4px 4px;
+
+    svg {
+      width: 36px;
+      stroke-width: 2.6;
+      stroke-linejoin: round;
+    }
+  }
+}

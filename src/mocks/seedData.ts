@@ -456,6 +456,19 @@ const adventures: Record<string, Adventure> = {
     modeId: 'cycling',
     isDone: true,
   },
+  yarraTrail: {
+    id: 'yarraTrail',
+    description: 'Yarra Trail from Watsonia to Southbank',
+    modeId: 'cycling',
+    isDone: false,
+    plannedDate: '2026-10-08',
+  },
+  merriCreek: {
+    id: 'merriCreek',
+    description: 'Run the whole Merri Creek Trail',
+    modeId: 'running',
+    isDone: false,
+  },
 };
 
 export const seedData = {
