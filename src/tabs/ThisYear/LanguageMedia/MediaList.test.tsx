@@ -2,92 +2,13 @@ import { screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MediaList } from './MediaList';
 import { renderWithLanguageMediaStorage } from './languageMediaStorageTestUtils';
-import { LanguageMedia, PrintSeries, TvSeries, YoutubeChannel } from './types';
+import { hugo, lupin, yotsuba } from './testMedia';
+import { LanguageMedia } from './types';
 
 const renderList = (media: LanguageMedia[]) => ({
   user: userEvent.setup(),
   ...renderWithLanguageMediaStorage(<MediaList />, { media }),
 });
-
-const lupin: TvSeries = {
-  id: 'lupin',
-  type: 'tv',
-  name: 'Lupin',
-  language: 'french',
-  seasons: [
-    {
-      number: 1,
-      episodes: [
-        {
-          number: 1,
-          name: 'Chapitre 1',
-          lengthInSeconds: 2826,
-          lookups: 12,
-          aiQuestions: 2,
-          understood: 70,
-        },
-        {
-          number: 2,
-          lookups: 4,
-          aiQuestions: 0,
-          status: 'in-progress',
-        },
-      ],
-    },
-  ],
-  upTo: { season: 1, episode: 2, timestampInSeconds: 754 },
-};
-
-const hugo: YoutubeChannel = {
-  id: 'hugo',
-  type: 'youtube',
-  name: 'HugoDécrypte',
-  language: 'french',
-  videos: [
-    {
-      url: 'https://youtu.be/1',
-      lengthInSeconds: 3725,
-      upToInSeconds: 1200,
-      lookups: 7,
-      aiQuestions: 1,
-    },
-    {
-      url: 'https://youtu.be/2',
-      lookups: 0,
-      aiQuestions: 0,
-      status: 'done',
-    },
-  ],
-};
-
-const yotsuba: PrintSeries = {
-  id: 'yotsuba',
-  type: 'manga',
-  name: 'よつばと！',
-  language: 'japanese',
-  volumes: [
-    {
-      number: 1,
-      pages: 220,
-      chapters: [
-        {
-          number: 1,
-          lastPage: 38,
-          lookups: 20,
-          aiQuestions: 3,
-          understood: 60,
-        },
-        {
-          number: 2,
-          name: 'よつばとアイス',
-          lookups: 0,
-          aiQuestions: 0,
-        },
-      ],
-    },
-  ],
-  upTo: { volume: 1, chapter: 2, page: 41 },
-};
 
 describe('MediaList', () => {
   describe('a tv series', () => {
@@ -202,7 +123,9 @@ describe('MediaList', () => {
           type: 'book',
           name: 'Astérix',
           language: 'french',
-          volumes: [{ number: 1, name: 'Astérix le Gaulois' }],
+          volumes: {
+            vol1: { id: 'vol1', number: 1, name: 'Astérix le Gaulois' },
+          },
         },
       ]);
 
@@ -217,126 +140,142 @@ describe('MediaList', () => {
 
         await user.click(screen.getByRole('button', { name: 'Delete Lupin' }));
 
-        expect(storageContext.deleteMedia).toHaveBeenCalledWith(lupin);
+        expect(storageContext.deleteItem).toHaveBeenCalledWith(['lupin']);
       });
     });
 
     describe('a season', () => {
-      it('saves the series without it', async () => {
+      it('deletes it from storage', async () => {
         const { user, storageContext } = renderList([lupin]);
 
         await user.click(
           screen.getByRole('button', { name: 'Delete Season 1' }),
         );
 
-        expect(storageContext.updateMedia).toHaveBeenCalledWith({
-          ...lupin,
-          seasons: [],
-        });
+        expect(storageContext.deleteItem).toHaveBeenCalledWith([
+          'lupin',
+          'seasons',
+          's1',
+        ]);
       });
     });
 
     describe('an episode', () => {
-      it('saves the series without it', async () => {
+      it('deletes it from storage', async () => {
         const { user, storageContext } = renderList([lupin]);
 
         await user.click(
           screen.getByRole('button', { name: 'Delete Chapitre 1' }),
         );
 
-        const [season] = lupin.seasons!;
-        expect(storageContext.updateMedia).toHaveBeenCalledWith({
-          ...lupin,
-          seasons: [{ ...season, episodes: [season.episodes![1]] }],
-        });
+        expect(storageContext.deleteItem).toHaveBeenCalledWith([
+          'lupin',
+          'seasons',
+          's1',
+          'episodes',
+          'e1',
+        ]);
       });
     });
 
     describe('a video', () => {
-      it('saves the channel without it', async () => {
+      it('deletes it from storage', async () => {
         const { user, storageContext } = renderList([hugo]);
 
         await user.click(
           screen.getByRole('button', { name: 'Delete https://youtu.be/1' }),
         );
 
-        expect(storageContext.updateMedia).toHaveBeenCalledWith({
-          ...hugo,
-          videos: [hugo.videos![1]],
-        });
+        expect(storageContext.deleteItem).toHaveBeenCalledWith([
+          'hugo',
+          'videos',
+          'v1',
+        ]);
       });
     });
 
     describe('a volume', () => {
-      it('saves the series without it', async () => {
+      it('deletes it from storage', async () => {
         const { user, storageContext } = renderList([yotsuba]);
 
         await user.click(
           screen.getByRole('button', { name: 'Delete Volume 1' }),
         );
 
-        expect(storageContext.updateMedia).toHaveBeenCalledWith({
-          ...yotsuba,
-          volumes: [],
-        });
+        expect(storageContext.deleteItem).toHaveBeenCalledWith([
+          'yotsuba',
+          'volumes',
+          'vol1',
+        ]);
       });
     });
 
     describe('a chapter', () => {
-      it('saves the series without it', async () => {
+      it('deletes it from storage', async () => {
         const { user, storageContext } = renderList([yotsuba]);
 
         await user.click(
           screen.getByRole('button', { name: 'Delete Chapter 1' }),
         );
 
-        const [volume] = yotsuba.volumes!;
-        expect(storageContext.updateMedia).toHaveBeenCalledWith({
-          ...yotsuba,
-          volumes: [{ ...volume, chapters: [volume.chapters![1]] }],
-        });
+        expect(storageContext.deleteItem).toHaveBeenCalledWith([
+          'yotsuba',
+          'volumes',
+          'vol1',
+          'chapters',
+          'c1',
+        ]);
       });
     });
   });
 
   describe('adding', () => {
     describe('a season', () => {
-      it('saves the series with it', async () => {
+      it('adds it to the series', async () => {
         const { user, storageContext } = renderList([lupin]);
 
         await user.click(screen.getByRole('button', { name: 'Add season' }));
 
-        expect(storageContext.updateMedia).toHaveBeenCalledWith({
-          ...lupin,
-          seasons: [...lupin.seasons!, { number: 2, episodes: [] }],
+        expect(storageContext.addItem).toHaveBeenCalledWith(
+          ['lupin', 'seasons'],
+          { number: 2 },
+        );
+      });
+
+      describe('with a number of episodes', () => {
+        it('adds each episode to the new season', async () => {
+          const { user, storageContext } = renderList([lupin]);
+          jest.mocked(storageContext.addItem).mockReturnValueOnce('s2');
+
+          await user.type(
+            screen.getByRole('spinbutton', { name: 'Episodes' }),
+            '1',
+          );
+          await user.click(screen.getByRole('button', { name: 'Add season' }));
+
+          expect(storageContext.addItem).toHaveBeenLastCalledWith(
+            ['lupin', 'seasons', 's2', 'episodes'],
+            { number: 1, lookups: 0, aiQuestions: 0 },
+          );
         });
       });
     });
 
     describe('an episode', () => {
-      it('saves the series with it', async () => {
+      it('adds it to the season', async () => {
         const { user, storageContext } = renderList([lupin]);
 
         await user.click(screen.getByRole('button', { name: 'Add episode' }));
 
-        const [season] = lupin.seasons!;
-        expect(storageContext.updateMedia).toHaveBeenCalledWith({
-          ...lupin,
-          seasons: [
-            {
-              ...season,
-              episodes: [
-                ...season.episodes!,
-                { number: 3, lookups: 0, aiQuestions: 0 },
-              ],
-            },
-          ],
-        });
+        expect(storageContext.addItem).toHaveBeenCalledWith(
+          ['lupin', 'seasons', 's1', 'episodes'],
+          { number: 3, lookups: 0, aiQuestions: 0 },
+        );
       });
     });
 
     describe('a video', () => {
-      it('saves the channel with it', async () => {
+      it('adds it to the channel', async () => {
         const { user, storageContext } = renderList([hugo]);
 
         await user.type(
@@ -348,48 +287,36 @@ describe('MediaList', () => {
         );
         await user.click(screen.getByRole('button', { name: 'Add video' }));
 
-        expect(storageContext.updateMedia).toHaveBeenCalledWith({
-          ...hugo,
-          videos: [
-            ...hugo.videos!,
-            { url: 'https://youtu.be/3', lookups: 0, aiQuestions: 0 },
-          ],
-        });
+        expect(storageContext.addItem).toHaveBeenCalledWith(
+          ['hugo', 'videos'],
+          { url: 'https://youtu.be/3', lookups: 0, aiQuestions: 0 },
+        );
       });
     });
 
     describe('a volume', () => {
-      it('saves the series with it', async () => {
+      it('adds it to the series', async () => {
         const { user, storageContext } = renderList([yotsuba]);
 
         await user.click(screen.getByRole('button', { name: 'Add volume' }));
 
-        expect(storageContext.updateMedia).toHaveBeenCalledWith({
-          ...yotsuba,
-          volumes: [...yotsuba.volumes!, { number: 2 }],
-        });
+        expect(storageContext.addItem).toHaveBeenCalledWith(
+          ['yotsuba', 'volumes'],
+          { number: 2 },
+        );
       });
     });
 
     describe('a chapter', () => {
-      it('saves the series with it', async () => {
+      it('adds it to the volume', async () => {
         const { user, storageContext } = renderList([yotsuba]);
 
         await user.click(screen.getByRole('button', { name: 'Add chapter' }));
 
-        const [volume] = yotsuba.volumes!;
-        expect(storageContext.updateMedia).toHaveBeenCalledWith({
-          ...yotsuba,
-          volumes: [
-            {
-              ...volume,
-              chapters: [
-                ...volume.chapters!,
-                { number: 3, lookups: 0, aiQuestions: 0 },
-              ],
-            },
-          ],
-        });
+        expect(storageContext.addItem).toHaveBeenCalledWith(
+          ['yotsuba', 'volumes', 'vol1', 'chapters'],
+          { number: 3, lookups: 0, aiQuestions: 0 },
+        );
       });
     });
   });
@@ -410,40 +337,33 @@ describe('MediaList', () => {
     };
 
     describe('a series', () => {
-      it('saves it', async () => {
+      it('saves the changed details', async () => {
         const { user, storageContext } = renderList([lupin]);
 
         await renameIn(user, 'Edit Lupin', 'ルパン');
 
-        expect(storageContext.updateMedia).toHaveBeenCalledWith({
-          ...lupin,
+        expect(storageContext.updateItem).toHaveBeenCalledWith(['lupin'], {
           name: 'ルパン',
+          language: 'french',
         });
       });
     });
 
     describe('an episode', () => {
-      it('saves the series with the change', async () => {
+      it('saves the changed details to the episode', async () => {
         const { user, storageContext } = renderList([lupin]);
 
         await renameIn(user, 'Edit Chapitre 1', 'Pilote');
 
-        const [season] = lupin.seasons!;
-        const [episode, otherEpisode] = season.episodes!;
-        expect(storageContext.updateMedia).toHaveBeenCalledWith({
-          ...lupin,
-          seasons: [
-            {
-              ...season,
-              episodes: [{ ...episode, name: 'Pilote' }, otherEpisode],
-            },
-          ],
-        });
+        expect(storageContext.updateItem).toHaveBeenCalledWith(
+          ['lupin', 'seasons', 's1', 'episodes', 'e1'],
+          { number: 1, name: 'Pilote', lengthInSeconds: 2826 },
+        );
       });
     });
 
     describe('a video', () => {
-      it('saves the channel with the change', async () => {
+      it('saves the changed details to the video', async () => {
         const { user, storageContext } = renderList([hugo]);
         const form = screen.getByRole('form', {
           name: 'Edit https://youtu.be/2',
@@ -455,57 +375,55 @@ describe('MediaList', () => {
         );
         await user.click(within(form).getByRole('button', { name: 'Save' }));
 
-        const [video, otherVideo] = hugo.videos!;
-        expect(storageContext.updateMedia).toHaveBeenCalledWith({
-          ...hugo,
-          videos: [video, { ...otherVideo, lengthInSeconds: 600 }],
-        });
+        expect(storageContext.updateItem).toHaveBeenCalledWith(
+          ['hugo', 'videos', 'v2'],
+          { url: 'https://youtu.be/2', lengthInSeconds: 600 },
+        );
       });
     });
 
     describe('a chapter', () => {
-      it('saves the series with the change', async () => {
+      it('saves the changed details to the chapter', async () => {
         const { user, storageContext } = renderList([yotsuba]);
 
         await renameIn(user, 'Edit Chapter 1', 'よつばとあさがお');
 
-        const [volume] = yotsuba.volumes!;
-        const [chapter, otherChapter] = volume.chapters!;
-        expect(storageContext.updateMedia).toHaveBeenCalledWith({
-          ...yotsuba,
-          volumes: [
-            {
-              ...volume,
-              chapters: [
-                { ...chapter, name: 'よつばとあさがお' },
-                otherChapter,
-              ],
-            },
-          ],
-        });
+        expect(storageContext.updateItem).toHaveBeenCalledWith(
+          ['yotsuba', 'volumes', 'vol1', 'chapters', 'c1'],
+          { number: 1, name: 'よつばとあさがお', lastPage: 38 },
+        );
       });
     });
   });
 
   describe('updating progress', () => {
+    const saveIn = async (
+      user: ReturnType<typeof userEvent.setup>,
+      formName: string,
+      fieldRole: 'spinbutton' | 'textbox',
+      fieldName: string,
+      value: string,
+    ) => {
+      const form = screen.getByRole('form', { name: formName });
+      const field = within(form).getByRole(fieldRole, { name: fieldName });
+      await user.clear(field);
+      await user.type(field, value);
+      await user.click(within(form).getByRole('button', { name: 'Save' }));
+    };
+
     describe('of a tv series', () => {
       it('saves where I am up to', async () => {
         const { user, storageContext } = renderList([lupin]);
-        const form = screen.getByRole('form', {
-          name: "Update where I'm up to",
-        });
 
-        await user.clear(
-          within(form).getByRole('spinbutton', { name: 'Episode' }),
-        );
-        await user.type(
-          within(form).getByRole('spinbutton', { name: 'Episode' }),
+        await saveIn(
+          user,
+          "Update where I'm up to",
+          'spinbutton',
+          'Episode',
           '3',
         );
-        await user.click(within(form).getByRole('button', { name: 'Save' }));
 
-        expect(storageContext.updateMedia).toHaveBeenCalledWith({
-          ...lupin,
+        expect(storageContext.updateItem).toHaveBeenCalledWith(['lupin'], {
           upTo: { ...lupin.upTo, episode: 3 },
         });
       });
@@ -520,41 +438,29 @@ describe('MediaList', () => {
           'Done',
         );
 
-        const [season] = lupin.seasons!;
-        const [episode, otherEpisode] = season.episodes!;
-        expect(storageContext.updateMedia).toHaveBeenCalledWith({
-          ...lupin,
-          seasons: [
-            {
-              ...season,
-              episodes: [episode, { ...otherEpisode, status: 'done' }],
-            },
-          ],
-        });
+        expect(storageContext.updateItem).toHaveBeenCalledWith(
+          ['lupin', 'seasons', 's1', 'episodes', 'e2'],
+          { status: 'done' },
+        );
       });
     });
 
     describe('of a video with a length', () => {
       it('saves where I am up to in it', async () => {
         const { user, storageContext } = renderList([hugo]);
-        const form = screen.getByRole('form', {
-          name: "Update where I'm up to in https://youtu.be/1",
-        });
 
-        await user.clear(
-          within(form).getByRole('textbox', { name: 'Timestamp' }),
-        );
-        await user.type(
-          within(form).getByRole('textbox', { name: 'Timestamp' }),
+        await saveIn(
+          user,
+          "Update where I'm up to in https://youtu.be/1",
+          'textbox',
+          'Timestamp',
           '0:30:00',
         );
-        await user.click(within(form).getByRole('button', { name: 'Save' }));
 
-        const [video, otherVideo] = hugo.videos!;
-        expect(storageContext.updateMedia).toHaveBeenCalledWith({
-          ...hugo,
-          videos: [{ ...video, upToInSeconds: 1800 }, otherVideo],
-        });
+        expect(storageContext.updateItem).toHaveBeenCalledWith(
+          ['hugo', 'videos', 'v1'],
+          { upToInSeconds: 1800 },
+        );
       });
     });
 
@@ -569,32 +475,26 @@ describe('MediaList', () => {
           'In progress',
         );
 
-        const [video, otherVideo] = hugo.videos!;
-        expect(storageContext.updateMedia).toHaveBeenCalledWith({
-          ...hugo,
-          videos: [video, { ...otherVideo, status: 'in-progress' }],
-        });
+        expect(storageContext.updateItem).toHaveBeenCalledWith(
+          ['hugo', 'videos', 'v2'],
+          { status: 'in-progress' },
+        );
       });
     });
 
     describe('of a manga series', () => {
       it('saves where I am up to', async () => {
         const { user, storageContext } = renderList([yotsuba]);
-        const form = screen.getByRole('form', {
-          name: "Update where I'm up to",
-        });
 
-        await user.clear(
-          within(form).getByRole('spinbutton', { name: 'Page' }),
-        );
-        await user.type(
-          within(form).getByRole('spinbutton', { name: 'Page' }),
+        await saveIn(
+          user,
+          "Update where I'm up to",
+          'spinbutton',
+          'Page',
           '45',
         );
-        await user.click(within(form).getByRole('button', { name: 'Save' }));
 
-        expect(storageContext.updateMedia).toHaveBeenCalledWith({
-          ...yotsuba,
+        expect(storageContext.updateItem).toHaveBeenCalledWith(['yotsuba'], {
           upTo: { ...yotsuba.upTo, page: 45 },
         });
       });
@@ -609,46 +509,32 @@ describe('MediaList', () => {
           'In progress',
         );
 
-        const [volume] = yotsuba.volumes!;
-        const [chapter, otherChapter] = volume.chapters!;
-        expect(storageContext.updateMedia).toHaveBeenCalledWith({
-          ...yotsuba,
-          volumes: [
-            {
-              ...volume,
-              chapters: [chapter, { ...otherChapter, status: 'in-progress' }],
-            },
-          ],
-        });
+        expect(storageContext.updateItem).toHaveBeenCalledWith(
+          ['yotsuba', 'volumes', 'vol1', 'chapters', 'c2'],
+          { status: 'in-progress' },
+        );
       });
     });
   });
 
   describe('counting', () => {
     describe('a lookup in an episode', () => {
-      it('saves the series with the new count', async () => {
+      it("saves only the episode's new lookup count", async () => {
         const { user, storageContext } = renderList([lupin]);
 
         await user.click(
           screen.getByRole('button', { name: 'Add a lookup to Chapitre 1' }),
         );
 
-        const [season] = lupin.seasons!;
-        const [episode, otherEpisode] = season.episodes!;
-        expect(storageContext.updateMedia).toHaveBeenCalledWith({
-          ...lupin,
-          seasons: [
-            {
-              ...season,
-              episodes: [{ ...episode, lookups: 13 }, otherEpisode],
-            },
-          ],
-        });
+        expect(storageContext.updateItem).toHaveBeenCalledWith(
+          ['lupin', 'seasons', 's1', 'episodes', 'e1'],
+          { lookups: 13 },
+        );
       });
     });
 
     describe('an AI question about a video', () => {
-      it('saves the channel with the new count', async () => {
+      it("saves only the video's new AI question count", async () => {
         const { user, storageContext } = renderList([hugo]);
 
         await user.click(
@@ -657,33 +543,25 @@ describe('MediaList', () => {
           }),
         );
 
-        const [video, otherVideo] = hugo.videos!;
-        expect(storageContext.updateMedia).toHaveBeenCalledWith({
-          ...hugo,
-          videos: [{ ...video, aiQuestions: 2 }, otherVideo],
-        });
+        expect(storageContext.updateItem).toHaveBeenCalledWith(
+          ['hugo', 'videos', 'v1'],
+          { aiQuestions: 2 },
+        );
       });
     });
 
     describe('a lookup in a chapter', () => {
-      it('saves the series with the new count', async () => {
+      it("saves only the chapter's new lookup count", async () => {
         const { user, storageContext } = renderList([yotsuba]);
 
         await user.click(
           screen.getByRole('button', { name: 'Add a lookup to Chapter 1' }),
         );
 
-        const [volume] = yotsuba.volumes!;
-        const [chapter, otherChapter] = volume.chapters!;
-        expect(storageContext.updateMedia).toHaveBeenCalledWith({
-          ...yotsuba,
-          volumes: [
-            {
-              ...volume,
-              chapters: [{ ...chapter, lookups: 21 }, otherChapter],
-            },
-          ],
-        });
+        expect(storageContext.updateItem).toHaveBeenCalledWith(
+          ['yotsuba', 'volumes', 'vol1', 'chapters', 'c1'],
+          { lookups: 21 },
+        );
       });
     });
   });

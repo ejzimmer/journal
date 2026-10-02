@@ -367,11 +367,13 @@ const languageMedia: Record<string, LanguageMedia> = {
     type: 'tv',
     name: 'Lupin',
     language: 'french',
-    seasons: [
-      {
+    seasons: {
+      s1: {
+        id: 's1',
         number: 1,
-        episodes: [
-          {
+        episodes: {
+          e1: {
+            id: 'e1',
             number: 1,
             name: 'Chapitre 1',
             lengthInSeconds: 2826,
@@ -379,11 +381,17 @@ const languageMedia: Record<string, LanguageMedia> = {
             aiQuestions: 2,
             understood: 70,
           },
-          { number: 2, lookups: 4, aiQuestions: 0, status: 'in-progress' },
-        ],
+          e2: {
+            id: 'e2',
+            number: 2,
+            lookups: 4,
+            aiQuestions: 0,
+            status: 'in-progress',
+          },
+        },
       },
-      { number: 2 },
-    ],
+      s2: { id: 's2', number: 2 },
+    },
     upTo: { season: 1, episode: 2, timestampInSeconds: 754 },
   },
   hugo: {
@@ -391,37 +399,46 @@ const languageMedia: Record<string, LanguageMedia> = {
     type: 'youtube',
     name: 'HugoDécrypte',
     language: 'french',
-    videos: [
-      {
+    videos: {
+      v1: {
+        id: 'v1',
         url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
         lengthInSeconds: 3725,
         upToInSeconds: 1200,
         lookups: 7,
         aiQuestions: 1,
       },
-    ],
+    },
   },
   yotsuba: {
     id: 'yotsuba',
     type: 'manga',
     name: 'よつばと！',
     language: 'japanese',
-    volumes: [
-      {
+    volumes: {
+      vol1: {
+        id: 'vol1',
         number: 1,
         pages: 220,
-        chapters: [
-          {
+        chapters: {
+          c1: {
+            id: 'c1',
             number: 1,
             lastPage: 38,
             lookups: 20,
             aiQuestions: 3,
             understood: 60,
           },
-          { number: 2, lookups: 0, aiQuestions: 0, status: 'not-started' },
-        ],
+          c2: {
+            id: 'c2',
+            number: 2,
+            lookups: 0,
+            aiQuestions: 0,
+            status: 'not-started',
+          },
+        },
       },
-    ],
+    },
     upTo: { volume: 1, chapter: 2, page: 41 },
   },
 };

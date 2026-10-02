@@ -21,7 +21,7 @@ describe('ComprehensionCounters', () => {
         screen.getByRole('button', { name: 'Add a lookup to Episode 1' }),
       );
 
-      expect(onChange).toHaveBeenCalledWith({ ...comprehension, lookups: 4 });
+      expect(onChange).toHaveBeenCalledWith({ lookups: 4 });
     });
   });
 
@@ -41,10 +41,7 @@ describe('ComprehensionCounters', () => {
         screen.getByRole('button', { name: 'Add an AI question to Episode 1' }),
       );
 
-      expect(onChange).toHaveBeenCalledWith({
-        ...comprehension,
-        aiQuestions: 2,
-      });
+      expect(onChange).toHaveBeenCalledWith({ aiQuestions: 2 });
     });
   });
 });
