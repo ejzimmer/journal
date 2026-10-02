@@ -128,8 +128,7 @@ describe('removeOutliers', () => {
 });
 
 describe('predictDaysToFinish', () => {
-  const firstDay = Temporal.Instant.from('2026-01-01T00:00:00Z');
-  const addDays = (days: number) => firstDay.add({ hours: days * 24 });
+  const firstDay = Temporal.ZonedDateTime.from('2026-01-01T00:00:00[UTC]');
 
   function createProgression(
     level: number,
@@ -138,8 +137,11 @@ describe('predictDaysToFinish', () => {
   ): LevelProgression {
     return {
       level,
-      unlockedAt: addDays(unlockedDay).toString(),
-      passedAt: passedDay === undefined ? null : addDays(passedDay).toString(),
+      unlockedAt: firstDay.add({ days: unlockedDay }).toInstant().toString(),
+      passedAt:
+        passedDay === undefined
+          ? null
+          : firstDay.add({ days: passedDay }).toInstant().toString(),
       abandonedAt: null,
     };
   }
@@ -152,12 +154,24 @@ describe('predictDaysToFinish', () => {
     ];
 
     it('adds what is left of the current level to the remaining levels', () => {
-      expect(predictDaysToFinish(progressions, 58, addDays(24))).toBe(26);
+      expect(
+        predictDaysToFinish(
+          progressions,
+          58,
+          firstDay.add({ days: 24 }).toInstant(),
+        ),
+      ).toBe(26);
     });
 
     describe('when the current level has run over the average', () => {
       it('counts only the remaining levels', () => {
-        expect(predictDaysToFinish(progressions, 58, addDays(40))).toBe(20);
+        expect(
+          predictDaysToFinish(
+            progressions,
+            58,
+            firstDay.add({ days: 40 }).toInstant(),
+          ),
+        ).toBe(20);
       });
     });
   });
@@ -173,7 +187,13 @@ describe('predictDaysToFinish', () => {
         createProgression(59, 140),
       ];
 
-      expect(predictDaysToFinish(progressions, 59, addDays(140))).toBe(20);
+      expect(
+        predictDaysToFinish(
+          progressions,
+          59,
+          firstDay.add({ days: 140 }).toInstant(),
+        ),
+      ).toBe(20);
     });
   });
 
@@ -182,20 +202,30 @@ describe('predictDaysToFinish', () => {
       const progressions = [
         {
           ...createProgression(58, 0, 50),
-          abandonedAt: addDays(60).toString(),
+          abandonedAt: firstDay.add({ days: 60 }).toInstant().toString(),
         },
         createProgression(58, 60, 70),
         createProgression(59, 70),
       ];
 
-      expect(predictDaysToFinish(progressions, 59, addDays(70))).toBe(20);
+      expect(
+        predictDaysToFinish(
+          progressions,
+          59,
+          firstDay.add({ days: 70 }).toInstant(),
+        ),
+      ).toBe(20);
     });
   });
 
   describe('once level 60 is passed', () => {
     it('has nothing left', () => {
       expect(
-        predictDaysToFinish([createProgression(60, 0, 10)], 60, addDays(20)),
+        predictDaysToFinish(
+          [createProgression(60, 0, 10)],
+          60,
+          firstDay.add({ days: 20 }).toInstant(),
+        ),
       ).toBe(0);
     });
   });
@@ -203,7 +233,11 @@ describe('predictDaysToFinish', () => {
   describe('before any level is passed', () => {
     it('makes no prediction', () => {
       expect(
-        predictDaysToFinish([createProgression(1, 0)], 1, addDays(1)),
+        predictDaysToFinish(
+          [createProgression(1, 0)],
+          1,
+          firstDay.add({ days: 1 }).toInstant(),
+        ),
       ).toBeUndefined();
     });
   });
