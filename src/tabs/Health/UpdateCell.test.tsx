@@ -13,12 +13,17 @@ const update: ExerciseUpdate = {
   recommendation: 'increase',
 };
 
-function renderUpdateCell(overrides: Partial<HealthStorageContextType> = {}) {
+function renderUpdateCell({
+  onDelete = jest.fn(),
+  ...overrides
+}: Partial<HealthStorageContextType> & {
+  onDelete?: (update: ExerciseUpdate) => void;
+} = {}) {
   return renderWithHealthStorage(
     <table>
       <tbody>
         <tr>
-          <UpdateCell exercise={rdl} update={update} />
+          <UpdateCell exercise={rdl} update={update} onDelete={onDelete} />
         </tr>
       </tbody>
     </table>,
@@ -94,8 +99,8 @@ describe('UpdateCell', () => {
   describe('when the update is deleted', () => {
     describe('with one press of delete', () => {
       it('asks for confirmation instead of deleting', async () => {
-        const deleteExerciseUpdate = jest.fn();
-        renderUpdateCell({ deleteExerciseUpdate });
+        const onDelete = jest.fn();
+        renderUpdateCell({ onDelete });
         const { user } = await openEditForm();
 
         await user.click(screen.getByRole('button', { name: 'Delete' }));
@@ -103,14 +108,14 @@ describe('UpdateCell', () => {
         expect(
           screen.getByRole('button', { name: 'Confirm delete' }),
         ).toBeInTheDocument();
-        expect(deleteExerciseUpdate).not.toHaveBeenCalled();
+        expect(onDelete).not.toHaveBeenCalled();
       });
     });
 
     describe('with a second press', () => {
-      it('deletes the stored update', async () => {
-        const deleteExerciseUpdate = jest.fn();
-        renderUpdateCell({ deleteExerciseUpdate });
+      it('deletes the update', async () => {
+        const onDelete = jest.fn();
+        renderUpdateCell({ onDelete });
         const { user } = await openEditForm();
 
         await user.click(screen.getByRole('button', { name: 'Delete' }));
@@ -118,14 +123,14 @@ describe('UpdateCell', () => {
           screen.getByRole('button', { name: 'Confirm delete' }),
         );
 
-        expect(deleteExerciseUpdate).toHaveBeenCalledWith('rdl', update);
+        expect(onDelete).toHaveBeenCalledWith(update);
       });
     });
 
     describe('when focus moves away before the second press', () => {
       it('asks for confirmation again', async () => {
-        const deleteExerciseUpdate = jest.fn();
-        renderUpdateCell({ deleteExerciseUpdate });
+        const onDelete = jest.fn();
+        renderUpdateCell({ onDelete });
         const { user } = await openEditForm();
 
         await user.click(screen.getByRole('button', { name: 'Delete' }));
@@ -135,7 +140,7 @@ describe('UpdateCell', () => {
         expect(
           screen.getByRole('button', { name: 'Confirm delete' }),
         ).toBeInTheDocument();
-        expect(deleteExerciseUpdate).not.toHaveBeenCalled();
+        expect(onDelete).not.toHaveBeenCalled();
       });
     });
   });

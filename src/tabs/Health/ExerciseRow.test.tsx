@@ -129,6 +129,35 @@ describe('ExerciseRow', () => {
     });
   });
 
+  describe('when an update is deleted', () => {
+    async function deleteUpdate(user: ReturnType<typeof userEvent.setup>) {
+      await user.click(screen.getByRole('button', { name: /16 Aug 26/ }));
+      await user.click(screen.getByRole('button', { name: 'Delete' }));
+      await user.click(screen.getByRole('button', { name: 'Confirm delete' }));
+    }
+
+    it('deletes it from the exercise', async () => {
+      const user = userEvent.setup();
+      const deleteExerciseUpdate = jest.fn();
+      renderExerciseRow({ deleteExerciseUpdate });
+
+      await deleteUpdate(user);
+
+      expect(deleteExerciseUpdate).toHaveBeenCalledWith('rdl', rdl.updates?.b);
+    });
+
+    it('moves focus to the record button', async () => {
+      const user = userEvent.setup();
+      renderExerciseRow();
+
+      await deleteUpdate(user);
+
+      expect(
+        screen.getByRole('button', { name: 'Record B-stance RDL' }),
+      ).toHaveFocus();
+    });
+  });
+
   describe('when the form is cancelled', () => {
     it('closes the form and returns focus to the record button', async () => {
       renderExerciseRow();

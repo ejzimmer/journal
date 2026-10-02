@@ -8,10 +8,11 @@ import { RecommendationIcon } from './RecommendationIcon';
 type UpdateCellProps = {
   exercise: Exercise;
   update: ExerciseUpdate;
+  onDelete: (update: ExerciseUpdate) => void;
 };
 
-export function UpdateCell({ exercise, update }: UpdateCellProps) {
-  const { editExerciseUpdate, deleteExerciseUpdate } = useHealthStorage();
+export function UpdateCell({ exercise, update, onDelete }: UpdateCellProps) {
+  const { editExerciseUpdate } = useHealthStorage();
   const { isFormOpen, triggerRef, openForm, closeForm } = useFormToggle();
   const { day, month, year } = formatDate(Temporal.PlainDate.from(update.date));
 
@@ -28,7 +29,7 @@ export function UpdateCell({ exercise, update }: UpdateCellProps) {
           update={update}
           onSubmit={saveUpdate}
           onCancel={closeForm}
-          onDelete={() => deleteExerciseUpdate(exercise.id, update)}
+          onDelete={() => onDelete(update)}
         />
       </td>
     );

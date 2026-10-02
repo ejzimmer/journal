@@ -15,7 +15,7 @@ export function ExerciseRow({
   exercise,
   numberOfUpdateColumns,
 }: ExerciseRowProps) {
-  const { recordExercise } = useHealthStorage();
+  const { recordExercise, deleteExerciseUpdate } = useHealthStorage();
   const { isFormOpen, triggerRef, openForm, closeForm } = useFormToggle();
 
   const updates = useMemo(
@@ -34,11 +34,21 @@ export function ExerciseRow({
     closeForm();
   };
 
+  const deleteUpdate = (update: ExerciseUpdate) => {
+    deleteExerciseUpdate(exercise.id, update);
+    triggerRef.current?.focus();
+  };
+
   return (
     <tr>
       <th role="rowheader">{exercise.name}</th>
       {updates.map((update) => (
-        <UpdateCell key={update.id} exercise={exercise} update={update} />
+        <UpdateCell
+          key={update.id}
+          exercise={exercise}
+          update={update}
+          onDelete={deleteUpdate}
+        />
       ))}
       <td className={isFormOpen ? '' : 'add-update'}>
         {isFormOpen ? (
