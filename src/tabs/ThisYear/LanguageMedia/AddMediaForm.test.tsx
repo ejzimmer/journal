@@ -10,11 +10,25 @@ function renderForm() {
 }
 
 describe('AddMediaForm', () => {
+  describe('when it first renders', () => {
+    it('has the book series type selected', () => {
+      renderForm();
+
+      expect(screen.getByRole('combobox', { name: 'Type' })).toHaveValue(
+        'book',
+      );
+    });
+  });
+
   describe('when a tv series is submitted', () => {
     it('adds it with its number of seasons', async () => {
       const { user, storageContext } = renderForm();
 
       await user.type(screen.getByRole('textbox', { name: 'Name' }), 'Lupin');
+      await user.selectOptions(
+        screen.getByRole('combobox', { name: 'Type' }),
+        'TV series',
+      );
       await user.type(screen.getByRole('spinbutton', { name: 'Seasons' }), '3');
       await user.click(screen.getByRole('button', { name: 'Add' }));
 
@@ -31,6 +45,10 @@ describe('AddMediaForm', () => {
         const { user, storageContext } = renderForm();
 
         await user.type(screen.getByRole('textbox', { name: 'Name' }), 'Lupin');
+        await user.selectOptions(
+          screen.getByRole('combobox', { name: 'Type' }),
+          'TV series',
+        );
         await user.click(screen.getByRole('button', { name: 'Add' }));
 
         expect(storageContext.addMedia).toHaveBeenCalledWith({
@@ -44,14 +62,10 @@ describe('AddMediaForm', () => {
   });
 
   describe('when a youtube channel is submitted', () => {
-    it('adds it in the chosen language', async () => {
+    it('adds it', async () => {
       const { user, storageContext } = renderForm();
 
       await user.type(screen.getByRole('textbox', { name: 'Name' }), 'Yuyu');
-      await user.selectOptions(
-        screen.getByRole('combobox', { name: 'Language' }),
-        'Japanese',
-      );
       await user.selectOptions(
         screen.getByRole('combobox', { name: 'Type' }),
         'YouTube channel',
@@ -61,7 +75,7 @@ describe('AddMediaForm', () => {
       expect(storageContext.addMedia).toHaveBeenCalledWith({
         type: 'youtube',
         name: 'Yuyu',
-        language: 'japanese',
+        language: 'french',
       });
     });
   });
@@ -91,17 +105,13 @@ describe('AddMediaForm', () => {
   });
 
   describe('when a book series is submitted', () => {
-    it('adds a volume for each line of titles', async () => {
+    it('adds it with its first volume', async () => {
       const { user, storageContext } = renderForm();
 
       await user.type(screen.getByRole('textbox', { name: 'Name' }), 'Astérix');
-      await user.selectOptions(
-        screen.getByRole('combobox', { name: 'Type' }),
-        'Book series',
-      );
       await user.type(
-        screen.getByRole('textbox', { name: 'Volume titles' }),
-        'Astérix le Gaulois{Enter}{Enter}La Serpe d’or',
+        screen.getByRole('textbox', { name: 'Volume 1' }),
+        'Astérix le Gaulois',
       );
       await user.click(screen.getByRole('button', { name: 'Add' }));
 
@@ -109,8 +119,80 @@ describe('AddMediaForm', () => {
         type: 'book',
         name: 'Astérix',
         language: 'french',
-        volumeNames: ['Astérix le Gaulois', 'La Serpe d’or'],
+        volumeNames: ['Astérix le Gaulois'],
       });
+    });
+
+    describe('with more volumes added', () => {
+      it('adds a volume for each title entered', async () => {
+        const { user, storageContext } = renderForm();
+
+        await user.type(
+          screen.getByRole('textbox', { name: 'Name' }),
+          'Astérix',
+        );
+        await user.click(
+          screen.getByRole('button', { name: 'Add another volume' }),
+        );
+        await user.click(
+          screen.getByRole('button', { name: 'Add another volume' }),
+        );
+        await user.type(
+          screen.getByRole('textbox', { name: 'Volume 1' }),
+          'Astérix le Gaulois',
+        );
+        await user.type(
+          screen.getByRole('textbox', { name: 'Volume 3' }),
+          'La Serpe d’or',
+        );
+        await user.click(screen.getByRole('button', { name: 'Add' }));
+
+        expect(storageContext.addMedia).toHaveBeenCalledWith(
+          expect.objectContaining({
+            volumeNames: ['Astérix le Gaulois', 'La Serpe d’or'],
+          }),
+        );
+      });
+
+      describe('after adding', () => {
+        it('goes back to one volume', async () => {
+          const { user } = renderForm();
+          await user.click(
+            screen.getByRole('button', { name: 'Add another volume' }),
+          );
+          const secondVolume = screen.getByRole('textbox', {
+            name: 'Volume 2',
+          });
+
+          await user.type(
+            screen.getByRole('textbox', { name: 'Name' }),
+            'Astérix',
+          );
+          await user.click(screen.getByRole('button', { name: 'Add' }));
+
+          expect(secondVolume).not.toBeInTheDocument();
+        });
+      });
+    });
+  });
+
+  describe('when a language is chosen', () => {
+    it('adds the media in that language', async () => {
+      const { user, storageContext } = renderForm();
+
+      await user.type(
+        screen.getByRole('textbox', { name: 'Name' }),
+        'よつばと！',
+      );
+      await user.selectOptions(
+        screen.getByRole('combobox', { name: 'Language' }),
+        'Japanese',
+      );
+      await user.click(screen.getByRole('button', { name: 'Add' }));
+
+      expect(storageContext.addMedia).toHaveBeenCalledWith(
+        expect.objectContaining({ language: 'japanese' }),
+      );
     });
   });
 

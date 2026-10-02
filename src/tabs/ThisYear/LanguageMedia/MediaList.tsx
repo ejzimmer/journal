@@ -1,3 +1,4 @@
+import { RubbishBinIcon } from '../../../shared/icons/RubbishBin';
 import {
   AddChapterForm,
   AddEpisodeForm,
@@ -68,7 +69,7 @@ function DeleteButton({ name, path }: { name: string; path: ItemPath }) {
       aria-label={`Delete ${name}`}
       onClick={() => deleteItem(path)}
     >
-      Delete
+      <RubbishBinIcon width="16px" />
     </button>
   );
 }

@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { PlusIcon } from '../../../shared/icons/Plus';
 import { useLanguageMediaStorage } from './LanguageMediaStorageContext';
 import { LANGUAGE_NAMES, MEDIA_TYPE_NAMES } from './names';
 import { Language, LANGUAGES, MEDIA_TYPES, MediaType, NewMedia } from './types';
@@ -6,10 +7,10 @@ import { Language, LANGUAGES, MEDIA_TYPES, MediaType, NewMedia } from './types';
 const readCount = (data: FormData, name: string) =>
   Number(data.get(name)) || undefined;
 
-const readLines = (data: FormData, name: string) =>
-  String(data.get(name) ?? '')
-    .split('\n')
-    .map((line) => line.trim())
+const readAllText = (data: FormData, name: string) =>
+  data
+    .getAll(name)
+    .map((value) => String(value).trim())
     .filter(Boolean);
 
 function readNewMedia(data: FormData): NewMedia {
@@ -29,20 +30,22 @@ function readNewMedia(data: FormData): NewMedia {
         type,
         name,
         language,
-        volumeNames: readLines(data, 'volumeNames'),
+        volumeNames: readAllText(data, 'volumeName'),
       };
   }
 }
 
 export function AddMediaForm() {
   const { addMedia } = useLanguageMediaStorage();
-  const [type, setType] = useState<MediaType>('tv');
+  const [type, setType] = useState<MediaType>('book');
+  const [volumeNameCount, setVolumeNameCount] = useState(1);
 
   const submitMedia = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     addMedia(readNewMedia(new FormData(event.currentTarget)));
     event.currentTarget.reset();
-    setType('tv');
+    setType('book');
+    setVolumeNameCount(1);
   };
 
   return (
@@ -88,10 +91,22 @@ export function AddMediaForm() {
         </label>
       )}
       {type === 'book' && (
-        <label>
-          Volume titles
-          <textarea name="volumeNames" />
-        </label>
+        <>
+          {Array.from({ length: volumeNameCount }, (_, index) => (
+            <input
+              key={index}
+              name="volumeName"
+              aria-label={`Volume ${index + 1}`}
+            />
+          ))}
+          <button
+            type="button"
+            aria-label="Add another volume"
+            onClick={() => setVolumeNameCount((count) => count + 1)}
+          >
+            <PlusIcon width="16px" />
+          </button>
+        </>
       )}
       <button type="submit">Add</button>
     </form>
