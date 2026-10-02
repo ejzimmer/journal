@@ -1,4 +1,6 @@
 table.exercise-tracker {
+  --focus: hsl(28 100% 56%);
+
   border-collapse: collapse;
   width: fit-content;
 
@@ -32,6 +34,27 @@ table.exercise-tracker {
     min-width: 120px;
     max-width: 300px;
     position: relative;
+
+    button.update {
+      display: block;
+      width: 100%;
+      height: auto;
+      padding: 0;
+      border: none;
+      font: inherit;
+      color: inherit;
+      text-align: start;
+
+      &:hover,
+      &:focus-visible {
+        background: none;
+      }
+
+      &:focus-visible {
+        outline: 2px solid var(--focus);
+        outline-offset: 4px;
+      }
+    }
 
     .date {
       font-weight: bold;
@@ -69,8 +92,9 @@ table.exercise-tracker {
   .exercise-form {
     --field-background: hsl(70 60% 98%);
     --field-border: hsl(73 33% 85%);
-    --focus: hsl(28 100% 56%);
     --save: hsl(110 61% 42%);
+    --delete: hsl(28 100% 56%);
+    --delete-border: hsl(28 100% 85%);
     --switch-background: hsl(73 49% 91%);
     --switch-knob: hsl(42 100% 60%);
     --switch-knob-shadow: hsl(40 100% 50% / 0.45);
@@ -192,6 +216,17 @@ table.exercise-tracker {
         background: var(--save);
         border-color: var(--save);
         color: white;
+      }
+
+      .delete {
+        border-color: var(--delete-border);
+        color: var(--delete);
+
+        &.confirming {
+          background: var(--delete);
+          border-color: var(--delete);
+          color: white;
+        }
       }
     }
   }

@@ -7,6 +7,7 @@ import { ChevronDownIcon } from '../../shared/icons/ChevronDown';
 import { MinusIcon } from '../../shared/icons/Minus';
 import { XIcon } from '../../shared/icons/X';
 import { TickIcon } from '../../shared/icons/Tick';
+import { RubbishBinIcon } from '../../shared/icons/RubbishBin';
 
 type RecommendationOption = Recommendation | 'no change';
 
@@ -28,20 +29,34 @@ function RecommendationIcon({ value }: { value: RecommendationOption }) {
 
 type ExerciseFormProps = {
   exerciseName: string;
+  update?: ExerciseUpdate;
   onSubmit: (update: Omit<ExerciseUpdate, 'id'>) => void;
   onCancel: () => void;
+  onDelete?: () => void;
 };
 
 export function ExerciseForm({
   exerciseName,
+  update,
   onSubmit,
   onCancel,
+  onDelete,
 }: ExerciseFormProps) {
-  const [date, setDate] = useState(getToday());
-  const [details, setDetails] = useState('');
-  const [recommendation, setRecommendation] =
-    useState<RecommendationOption>('no change');
+  const [date, setDate] = useState(update?.date ?? getToday());
+  const [details, setDetails] = useState(update?.details ?? '');
+  const [recommendation, setRecommendation] = useState<RecommendationOption>(
+    update?.recommendation ?? 'no change',
+  );
+  const [isConfirmingDelete, setIsConfirmingDelete] = useState(false);
   const recommendationName = useId();
+
+  const handleDeleteClick = () => {
+    if (isConfirmingDelete) {
+      onDelete?.();
+    } else {
+      setIsConfirmingDelete(true);
+    }
+  };
 
   const handleSubmit = (event: FormEvent) => {
     event.preventDefault();
@@ -59,7 +74,7 @@ export function ExerciseForm({
   return (
     <form
       className="exercise-form"
-      aria-label={`Record ${exerciseName}`}
+      aria-label={`${update ? 'Edit' : 'Record'} ${exerciseName}`}
       onSubmit={handleSubmit}
       onKeyDown={(event) => event.key === 'Escape' && onCancel()}
     >
@@ -89,6 +104,19 @@ export function ExerciseForm({
         </fieldset>
       </div>
       <div className="actions">
+        {onDelete && (
+          <button
+            type="button"
+            className={`delete ${isConfirmingDelete ? 'confirming' : ''}`}
+            onClick={handleDeleteClick}
+            onBlur={() => setIsConfirmingDelete(false)}
+          >
+            <RubbishBinIcon
+              role="img"
+              aria-label={isConfirmingDelete ? 'Confirm delete' : 'Delete'}
+            />
+          </button>
+        )}
         <button type="button" className="cancel" onClick={onCancel}>
           <XIcon role="img" aria-label="Cancel" />
         </button>

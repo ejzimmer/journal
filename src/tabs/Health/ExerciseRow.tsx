@@ -38,7 +38,7 @@ export function ExerciseRow({
     <tr>
       <th role="rowheader">{exercise.name}</th>
       {updates.map((update) => (
-        <UpdateCell key={update.id} update={update} />
+        <UpdateCell key={update.id} exercise={exercise} update={update} />
       ))}
       <td className={isFormOpen ? '' : 'add-update'}>
         {isFormOpen ? (
