@@ -1,3 +1,5 @@
+export const MAX_LEVEL = 60;
+
 export const SUBJECT_TYPES = ['radical', 'kanji', 'vocabulary'] as const;
 export type SubjectType = (typeof SUBJECT_TYPES)[number];
 

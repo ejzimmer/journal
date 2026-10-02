@@ -22,9 +22,7 @@ export function CurrentLevel({ data }: { data: WaniKaniData }) {
       <div>
         Kanji {kanji.passed} / {kanji.needed}
       </div>
-      {daysToFinish !== undefined && (
-        <div>{daysToFinish} days remaining</div>
-      )}
+      {daysToFinish !== undefined && <div>{daysToFinish} days remaining</div>}
     </section>
   );
 }

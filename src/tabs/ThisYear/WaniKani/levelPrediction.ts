@@ -1,6 +1,4 @@
-import { LevelProgression } from './types';
-
-const MAX_LEVEL = 60;
+import { LevelProgression, MAX_LEVEL } from './types';
 
 function findLatestProgressionsByLevel(levelProgressions: LevelProgression[]) {
   const progressionsByLevel = new Map<number, LevelProgression>();
