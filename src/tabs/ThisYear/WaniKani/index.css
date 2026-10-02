@@ -1,0 +1,57 @@
+.wanikani {
+  --wanikani-apprentice: #dd0093;
+  --wanikani-guru: #882d9e;
+  --wanikani-master: #294ddb;
+  --wanikani-enlightened: #0093dd;
+  --wanikani-burned: #434343;
+
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+
+  h3 {
+    margin: 0;
+  }
+
+  .srs-progress {
+    margin-block-end: 8px;
+  }
+
+  .srs-progress-bar {
+    display: flex;
+    height: 12px;
+    background: var(--border-colour);
+
+    .apprentice {
+      background: var(--wanikani-apprentice);
+    }
+    .guru {
+      background: var(--wanikani-guru);
+    }
+    .master {
+      background: var(--wanikani-master);
+    }
+    .enlightened {
+      background: var(--wanikani-enlightened);
+    }
+    .burned {
+      background: var(--wanikani-burned);
+    }
+  }
+
+  table {
+    width: fit-content;
+    text-align: end;
+    border-collapse: collapse;
+  }
+
+  th,
+  td {
+    padding-inline: 8px;
+  }
+}
+
+.wanikani-api-key-form {
+  flex-direction: row;
+  align-items: end;
+}
