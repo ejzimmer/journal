@@ -175,7 +175,7 @@ describe('WaniKani', () => {
       renderWaniKani('my-key');
 
       const level = await screen.findByRole('region', { name: 'Level 2' });
-      expect(level).toHaveTextContent('586 days to finish level 60');
+      expect(level).toHaveTextContent('586 days remaining');
     });
 
     it('shows how many of each type are at each SRS stage', async () => {
