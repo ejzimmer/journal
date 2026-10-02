@@ -23,7 +23,7 @@ export function CurrentLevel({ data }: { data: WaniKaniData }) {
         Kanji {kanji.passed} / {kanji.needed}
       </div>
       {daysToFinish !== undefined && (
-        <div>{daysToFinish} days to finish level 60</div>
+        <div>{daysToFinish} days remaining</div>
       )}
     </section>
   );
