@@ -1,16 +1,25 @@
 import { Chapter, Comprehension, Episode, Status, Volume } from './types';
 
-const padTwoDigits = (value: number) => String(value).padStart(2, '0');
+const minutesAndSecondsFormat = new Intl.DurationFormat(undefined, {
+  style: 'digital',
+  hoursDisplay: 'auto',
+});
 
-export function formatMinutesAndSeconds(totalSeconds: number) {
-  const minutes = Math.floor(totalSeconds / 60);
-  return `${padTwoDigits(minutes)}:${padTwoDigits(totalSeconds % 60)}`;
-}
+const hoursMinutesAndSecondsFormat = new Intl.DurationFormat(undefined, {
+  style: 'digital',
+  hours: '2-digit',
+});
 
-export function formatHoursMinutesAndSeconds(totalSeconds: number) {
-  const hours = Math.floor(totalSeconds / 3600);
-  return `${padTwoDigits(hours)}:${formatMinutesAndSeconds(totalSeconds % 3600)}`;
-}
+const toDuration = (totalSeconds: number) =>
+  Temporal.Duration.from({ seconds: totalSeconds }).round({
+    largestUnit: 'hours',
+  });
+
+export const formatMinutesAndSeconds = (totalSeconds: number) =>
+  minutesAndSecondsFormat.format(toDuration(totalSeconds));
+
+export const formatHoursMinutesAndSeconds = (totalSeconds: number) =>
+  hoursMinutesAndSecondsFormat.format(toDuration(totalSeconds));
 
 export const STATUS_NAMES: Record<Status, string> = {
   'not-started': 'Not started',
