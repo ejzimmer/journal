@@ -26,7 +26,7 @@ export function WaniKaniProgress({
     return null;
   }
   if (error) {
-    return <div className="wanikani">Couldn't load WaniKani</div>;
+    return <div className="wanikani">Couldn't load WaniKani data</div>;
   }
   if (!data) {
     return <Skeleton numRows={3} />;
