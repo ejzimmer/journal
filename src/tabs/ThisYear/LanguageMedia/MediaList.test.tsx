@@ -486,4 +486,141 @@ describe('MediaList', () => {
       });
     });
   });
+
+  describe('updating progress', () => {
+    describe('of a tv series', () => {
+      it('saves where I am up to', async () => {
+        const { user, storageContext } = renderList([lupin]);
+        const form = screen.getByRole('form', {
+          name: "Update where I'm up to",
+        });
+
+        await user.clear(
+          within(form).getByRole('spinbutton', { name: 'Episode' }),
+        );
+        await user.type(
+          within(form).getByRole('spinbutton', { name: 'Episode' }),
+          '3',
+        );
+        await user.click(within(form).getByRole('button', { name: 'Save' }));
+
+        expect(storageContext.updateMedia).toHaveBeenCalledWith({
+          ...lupin,
+          upTo: { ...lupin.upTo, episode: 3 },
+        });
+      });
+    });
+
+    describe('of an episode without a length', () => {
+      it('saves its status', async () => {
+        const { user, storageContext } = renderList([lupin]);
+
+        await user.selectOptions(
+          screen.getByRole('combobox', { name: 'Status of Episode 2' }),
+          'Done',
+        );
+
+        const [season] = lupin.seasons!;
+        const [episode, otherEpisode] = season.episodes!;
+        expect(storageContext.updateMedia).toHaveBeenCalledWith({
+          ...lupin,
+          seasons: [
+            {
+              ...season,
+              episodes: [episode, { ...otherEpisode, status: 'done' }],
+            },
+          ],
+        });
+      });
+    });
+
+    describe('of a video with a length', () => {
+      it('saves where I am up to in it', async () => {
+        const { user, storageContext } = renderList([hugo]);
+        const form = screen.getByRole('form', {
+          name: "Update where I'm up to in https://youtu.be/1",
+        });
+
+        await user.clear(
+          within(form).getByRole('textbox', { name: 'Timestamp' }),
+        );
+        await user.type(
+          within(form).getByRole('textbox', { name: 'Timestamp' }),
+          '0:30:00',
+        );
+        await user.click(within(form).getByRole('button', { name: 'Save' }));
+
+        const [video, otherVideo] = hugo.videos!;
+        expect(storageContext.updateMedia).toHaveBeenCalledWith({
+          ...hugo,
+          videos: [{ ...video, upToInSeconds: 1800 }, otherVideo],
+        });
+      });
+    });
+
+    describe('of a video without a length', () => {
+      it('saves its status', async () => {
+        const { user, storageContext } = renderList([hugo]);
+
+        await user.selectOptions(
+          screen.getByRole('combobox', {
+            name: 'Status of https://youtu.be/2',
+          }),
+          'In progress',
+        );
+
+        const [video, otherVideo] = hugo.videos!;
+        expect(storageContext.updateMedia).toHaveBeenCalledWith({
+          ...hugo,
+          videos: [video, { ...otherVideo, status: 'in-progress' }],
+        });
+      });
+    });
+
+    describe('of a manga series', () => {
+      it('saves where I am up to', async () => {
+        const { user, storageContext } = renderList([yotsuba]);
+        const form = screen.getByRole('form', {
+          name: "Update where I'm up to",
+        });
+
+        await user.clear(
+          within(form).getByRole('spinbutton', { name: 'Page' }),
+        );
+        await user.type(
+          within(form).getByRole('spinbutton', { name: 'Page' }),
+          '45',
+        );
+        await user.click(within(form).getByRole('button', { name: 'Save' }));
+
+        expect(storageContext.updateMedia).toHaveBeenCalledWith({
+          ...yotsuba,
+          upTo: { ...yotsuba.upTo, page: 45 },
+        });
+      });
+    });
+
+    describe('of a chapter without a last page', () => {
+      it('saves its status', async () => {
+        const { user, storageContext } = renderList([yotsuba]);
+
+        await user.selectOptions(
+          screen.getByRole('combobox', { name: 'Status of よつばとアイス' }),
+          'In progress',
+        );
+
+        const [volume] = yotsuba.volumes!;
+        const [chapter, otherChapter] = volume.chapters!;
+        expect(storageContext.updateMedia).toHaveBeenCalledWith({
+          ...yotsuba,
+          volumes: [
+            {
+              ...volume,
+              chapters: [chapter, { ...otherChapter, status: 'in-progress' }],
+            },
+          ],
+        });
+      });
+    });
+  });
 });

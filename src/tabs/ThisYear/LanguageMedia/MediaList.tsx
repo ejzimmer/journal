@@ -23,6 +23,12 @@ import {
   STATUS_NAMES,
 } from './format';
 import { useLanguageMediaStorage } from './LanguageMediaStorageContext';
+import {
+  PrintSeriesUpToForm,
+  StatusSelect,
+  TvSeriesUpToForm,
+  VideoUpToForm,
+} from './ProgressForms';
 import { appendItem, removeItemAt, replaceItemAt } from './listUpdates';
 import { LANGUAGE_NAMES, MEDIA_TYPE_NAMES } from './names';
 import {
@@ -110,12 +116,18 @@ function TvSeriesDetails({
 }) {
   return (
     <>
-      {series.upTo && (
-        <div>
-          Up to {series.upTo.season}-{series.upTo.episode}-
-          {formatMinutesAndSeconds(series.upTo.timestampInSeconds)}
-        </div>
-      )}
+      <div>
+        {series.upTo && (
+          <>
+            Up to {series.upTo.season}-{series.upTo.episode}-
+            {formatMinutesAndSeconds(series.upTo.timestampInSeconds)}
+          </>
+        )}
+        <TvSeriesUpToForm
+          upTo={series.upTo}
+          onChange={(upTo) => onChange({ ...series, upTo })}
+        />
+      </div>
       <ul>
         {series.seasons?.map((season, index) => (
           <li key={season.number}>
@@ -206,6 +218,13 @@ function EpisodeDetails({
       {episode.lengthInSeconds !== undefined &&
         ` (${formatMinutesAndSeconds(episode.lengthInSeconds)})`}
       {formatStatus(episode.status)}: {formatComprehension(episode)}
+      {episode.lengthInSeconds === undefined && (
+        <StatusSelect
+          name={name}
+          status={episode.status}
+          onChange={(status) => onChange({ ...episode, status })}
+        />
+      )}
       <EditEpisodeForm name={name} episode={episode} onChange={onChange} />
       <DeleteButton name={name} onDelete={onDelete} />
     </>
@@ -264,6 +283,19 @@ function VideoDetails({
       {video.upToInSeconds !== undefined &&
         `, up to ${formatHoursMinutesAndSeconds(video.upToInSeconds)}`}
       {formatStatus(video.status)}: {formatComprehension(video)}
+      {video.lengthInSeconds === undefined ? (
+        <StatusSelect
+          name={video.url}
+          status={video.status}
+          onChange={(status) => onChange({ ...video, status })}
+        />
+      ) : (
+        <VideoUpToForm
+          name={video.url}
+          upToInSeconds={video.upToInSeconds}
+          onChange={(upToInSeconds) => onChange({ ...video, upToInSeconds })}
+        />
+      )}
       <EditVideoForm video={video} onChange={onChange} />
       <DeleteButton name={video.url} onDelete={onDelete} />
     </>
@@ -279,11 +311,17 @@ function PrintSeriesDetails({
 }) {
   return (
     <>
-      {series.upTo && (
-        <div>
-          Up to {series.upTo.volume}-{series.upTo.chapter}-{series.upTo.page}
-        </div>
-      )}
+      <div>
+        {series.upTo && (
+          <>
+            Up to {series.upTo.volume}-{series.upTo.chapter}-{series.upTo.page}
+          </>
+        )}
+        <PrintSeriesUpToForm
+          upTo={series.upTo}
+          onChange={(upTo) => onChange({ ...series, upTo })}
+        />
+      </div>
       <ul>
         {series.volumes?.map((volume, index) => (
           <li key={volume.number}>
@@ -382,6 +420,13 @@ function ChapterDetails({
       {name}
       {chapter.lastPage !== undefined && ` (to page ${chapter.lastPage})`}
       {formatStatus(chapter.status)}: {formatComprehension(chapter)}
+      {chapter.lastPage === undefined && (
+        <StatusSelect
+          name={name}
+          status={chapter.status}
+          onChange={(status) => onChange({ ...chapter, status })}
+        />
+      )}
       <EditChapterForm name={name} chapter={chapter} onChange={onChange} />
       <DeleteButton name={name} onDelete={onDelete} />
     </>
