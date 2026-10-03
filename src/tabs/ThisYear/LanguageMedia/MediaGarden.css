@@ -28,6 +28,13 @@
 .media-tree {
   position: relative;
 
+  form {
+    position: absolute;
+    inset-block-start: 100%;
+    z-index: 1;
+    background: white;
+  }
+
   svg {
     display: block;
   }
@@ -42,6 +49,7 @@
 }
 
 .sign-board {
+  height: auto;
   padding-inline: 0.6em;
   border: 2px solid var(--body-colour);
   border-radius: 6px;

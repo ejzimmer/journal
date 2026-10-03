@@ -1,11 +1,24 @@
 import { countSignposts } from './signposts';
 
-export function Signpost({ name }: { name: string }) {
+type SignpostProps = {
+  name: string;
+  isOpen: boolean;
+  onClick: () => void;
+};
+
+export function Signpost({ name, isOpen, onClick }: SignpostProps) {
   const posts = countSignposts(name);
 
   return (
     <div className="signpost">
-      <div className="sign-board">{name}</div>
+      <button
+        type="button"
+        className="sign-board"
+        aria-expanded={isOpen}
+        onClick={onClick}
+      >
+        {name}
+      </button>
       <div className="sign-posts">
         {Array.from({ length: posts }, (_, index) => (
           <div key={index} className="sign-post" />
