@@ -16,7 +16,7 @@ const isSpineDragData = (
 ): data is Record<string | symbol, unknown> & SpineDragData =>
   typeof data.seriesId === 'string' && typeof data.itemId === 'string';
 
-export function useSortableSpine({
+export function useSpineDragAndDrop({
   spineRef,
   seriesId,
   itemId,

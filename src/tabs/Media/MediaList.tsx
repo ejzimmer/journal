@@ -4,7 +4,7 @@ import { Destination } from '../../shared/drag-and-drop/types';
 import { MediaDetails } from './types';
 import { MediaEditFormProps, MediaSpine, StatusConfig } from './MediaSpine';
 import { dropSeriesItem, moveSeriesItem, sortSeriesItems } from './seriesOrder';
-import { useSeriesDropMonitor } from './useSortableSpine';
+import { useSeriesDropMonitor } from './useSpineDragAndDrop';
 
 export function MediaList<T extends MediaDetails, S extends string>({
   items,
@@ -24,7 +24,7 @@ export function MediaList<T extends MediaDetails, S extends string>({
   onReorder?: (items: T[]) => void;
 }) {
   const sortedItems = sortSeriesItems(items);
-  const sortableSeriesId =
+  const reorderSeriesId =
     onReorder && sortedItems.length > 1 ? seriesId : undefined;
 
   const moveItem = (index: number, destination: Destination) => {
@@ -35,7 +35,7 @@ export function MediaList<T extends MediaDetails, S extends string>({
     onReorder?.(dropSeriesItem({ items: sortedItems, itemId, targetId, edge }));
   };
 
-  useSeriesDropMonitor({ seriesId: sortableSeriesId, onDrop: dropItem });
+  useSeriesDropMonitor({ seriesId: reorderSeriesId, onDrop: dropItem });
 
   return (
     items && (
@@ -48,16 +48,10 @@ export function MediaList<T extends MediaDetails, S extends string>({
             hue={hue(item)}
             config={config}
             EditForm={EditForm}
-            sortable={
-              sortableSeriesId === undefined
-                ? undefined
-                : {
-                    seriesId: sortableSeriesId,
-                    isFirst: index === 0,
-                    isLast: index === sortedItems.length - 1,
-                    onMove: (destination) => moveItem(index, destination),
-                  }
-            }
+            reorderSeriesId={reorderSeriesId}
+            isFirst={index === 0}
+            isLast={index === sortedItems.length - 1}
+            onMove={(destination) => moveItem(index, destination)}
           />
         ))}
       </ul>

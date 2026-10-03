@@ -5,7 +5,7 @@ import { useMediaStorage } from './MediaStorageContext';
 import { Spine } from './Spine';
 import { getNextStatus } from './nextStatus';
 import { useFormToggle } from '../../shared/controls/useFormToggle';
-import { useSortableSpine } from './useSortableSpine';
+import { useSpineDragAndDrop } from './useSpineDragAndDrop';
 
 export type MediaEditFormProps<T extends MediaDetails> = {
   item: T;
@@ -22,18 +22,12 @@ export type StatusConfig<T extends MediaDetails, S extends string> = {
   getAuthor?: (item: T) => string | undefined;
 };
 
-export type SortableSpine = {
-  seriesId: string;
-  isFirst: boolean;
-  isLast: boolean;
-  onMove: (destination: Destination) => void;
-};
-
 const MOVE_KEYS = 'ArrowLeft ArrowRight Shift+ArrowLeft Shift+ArrowRight';
 
 function getMoveDestination(
   event: KeyboardEvent,
-  { isFirst, isLast }: SortableSpine,
+  isFirst: boolean,
+  isLast: boolean,
 ): Destination | undefined {
   if (event.key === 'ArrowLeft' && !isFirst) {
     return event.shiftKey ? 'start' : 'previous';
@@ -53,21 +47,27 @@ export function MediaSpine<T extends MediaDetails, S extends string>({
   hue,
   config,
   EditForm,
-  sortable,
+  reorderSeriesId,
+  isFirst,
+  isLast,
+  onMove,
 }: {
   item: T;
   bandHue?: number;
   hue: number;
   config: StatusConfig<T, S>;
   EditForm: ComponentType<MediaEditFormProps<T>>;
-  sortable?: SortableSpine;
+  reorderSeriesId?: string;
+  isFirst: boolean;
+  isLast: boolean;
+  onMove: (destination: Destination) => void;
 }) {
   const { updateMedia } = useMediaStorage();
   const { isFormOpen, triggerRef, openForm, closeForm } = useFormToggle();
   const spineRef = useRef<HTMLLIElement>(null);
-  const { isDragging, dropEdge } = useSortableSpine({
+  const { isDragging, dropEdge } = useSpineDragAndDrop({
     spineRef,
-    seriesId: sortable?.seriesId,
+    seriesId: reorderSeriesId,
     itemId: item.id,
   });
   const refocusAfterMoveRef = useRef(false);
@@ -79,13 +79,13 @@ export function MediaSpine<T extends MediaDetails, S extends string>({
   });
 
   const moveOnArrowKey = (event: KeyboardEvent) => {
-    if (!sortable) return;
-    const destination = getMoveDestination(event, sortable);
+    if (!reorderSeriesId) return;
+    const destination = getMoveDestination(event, isFirst, isLast);
     if (!destination) return;
 
     event.preventDefault();
     refocusAfterMoveRef.current = true;
-    sortable.onMove(destination);
+    onMove(destination);
   };
 
   const status = config.getStatus(item);
@@ -114,7 +114,7 @@ export function MediaSpine<T extends MediaDetails, S extends string>({
       onTitleClick={openForm}
       onStampClick={updateStatus}
       onTitleKeyDown={moveOnArrowKey}
-      titleKeyShortcuts={sortable && MOVE_KEYS}
+      titleKeyShortcuts={reorderSeriesId && MOVE_KEYS}
     >
       <EditForm item={item} isOpen={isFormOpen} onCancel={closeForm} />
     </Spine>
