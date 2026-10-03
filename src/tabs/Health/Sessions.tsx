@@ -1,4 +1,3 @@
-import { EmojiCheckbox } from '../../shared/controls/EmojiCheckbox';
 import { ClassBlock, ExerciseClass } from '../../shared/types';
 import { useHealthStorage } from './HealthStorageContext';
 
@@ -18,14 +17,15 @@ export function Sessions({
   const completed = block.completed ?? [];
 
   return (
-    <div className="completions">
+    <div className="sessions">
       {Array.from({ length: block.total }, (_, index) => (
         <div className="tooltip-container" key={index}>
           <div className="tooltip-anchor">
-            <EmojiCheckbox
-              label={`${exerciseClass.description}: ${getSessionName(index)}`}
-              emoji="✅"
-              isChecked={completed.includes(index)}
+            <input
+              type="checkbox"
+              className="session"
+              aria-label={`${exerciseClass.description}: ${getSessionName(index)}`}
+              checked={completed.includes(index)}
               onChange={() =>
                 updateClass({
                   ...exerciseClass,
