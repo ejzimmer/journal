@@ -1,12 +1,11 @@
 import { useMemo } from 'react';
 import { useStorageContext } from '../../../shared/FirebaseContext';
-import { Book, Reading } from './Reading';
 
 import './index.css';
 import { Bikes, BikesGoal } from './Bikes';
 import { GameGoal, GameGoalData } from './GameGoals';
 
-type Goal = Book | BikesGoal | GameGoalData;
+type Goal = BikesGoal | GameGoalData;
 
 const path = '2026/other_goals';
 const hasId = (book: Goal): book is Required<Goal> =>
@@ -43,16 +42,13 @@ export function OtherGoals() {
   );
 }
 
-const isBook = (goal: Goal): goal is Book => 'title' in goal;
 const isBikes = (goal: Goal): goal is BikesGoal =>
   'bikes' in goal && Array.isArray(goal.bikes);
 const isGame = (goal: Goal): goal is GameGoalData =>
   'name' in goal && goal.name === 'Wind Waker';
 
 const getComponent = (goal: Goal, onUpdate: (goal: Goal) => void) => {
-  if (isBook(goal)) {
-    return <Reading book={goal} onChange={onUpdate} />;
-  } else if (isBikes(goal)) {
+  if (isBikes(goal)) {
     return <Bikes goal={goal} onChange={onUpdate} />;
   } else if (isGame(goal)) {
     return <GameGoal goal={goal} onChange={onUpdate} />;
@@ -61,13 +57,6 @@ const getComponent = (goal: Goal, onUpdate: (goal: Goal) => void) => {
 };
 
 function isDone(task: any) {
-  if ('volumes' in task && Array.isArray(task.volumes)) {
-    return task.volumes.every(
-      (volume: { readPages: number; totalPages: number }) =>
-        volume.readPages === volume.totalPages,
-    );
-  }
-
   if ('bikes' in task && Array.isArray(task.bikes)) {
     return task.bikes.every((bike: { isDone: boolean }) => bike.isDone);
   }
