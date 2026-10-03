@@ -7,14 +7,18 @@
   padding: 0;
 }
 
-.tree-outline {
-  fill: none;
-  stroke: var(--body-colour);
+.tree-silhouette {
+  fill: hsl(80 16% 86%);
 }
 
 .tree-fill {
+  fill: hsl(28 42% 48%);
+}
+
+.tree-outline {
   fill: none;
-  stroke: hsl(28 42% 48%);
+  stroke: hsl(28 45% 28%);
+  stroke-linejoin: round;
 }
 
 .media-tree {

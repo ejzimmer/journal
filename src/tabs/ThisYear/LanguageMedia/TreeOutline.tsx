@@ -1,34 +1,17 @@
-import { useId } from 'react';
-import { OUTLINE_WIDTH, TreeLayout } from './treeLayout';
+import { GrownShape } from './treeGrowth';
+import { OUTLINE_WIDTH } from './treeLayout';
+import { drawShapeOutline } from './treeShapePaths';
 
-export function TreeOutline({ layout }: { layout: TreeLayout }) {
-  const maskId = useId();
-
+export function TreeOutline({ shapes }: { shapes: GrownShape[] }) {
   return (
-    <>
-      <mask id={maskId} maskUnits="userSpaceOnUse" {...layout.bounds}>
-        <rect {...layout.bounds} fill="white" />
-        {layout.pieces.map(({ key, d, width }) => (
-          <path
-            key={key}
-            d={d}
-            fill="none"
-            stroke="black"
-            strokeWidth={width}
-            strokeLinecap="round"
-          />
-        ))}
-      </mask>
-      <g className="tree-outline" mask={`url(#${maskId})`}>
-        {layout.pieces.map(({ key, d, width }) => (
-          <path
-            key={key}
-            d={d}
-            strokeWidth={width + OUTLINE_WIDTH * 2}
-            strokeLinecap="round"
-          />
-        ))}
-      </g>
-    </>
+    <g className="tree-outline">
+      {shapes.map((shape) => (
+        <path
+          key={shape.key}
+          d={drawShapeOutline(shape, shape.amount)}
+          strokeWidth={OUTLINE_WIDTH * 2}
+        />
+      ))}
+    </g>
   );
 }

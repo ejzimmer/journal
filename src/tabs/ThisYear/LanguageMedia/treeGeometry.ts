@@ -1,15 +1,10 @@
 export type Point = { x: number; y: number };
 
-export type Curve = [Point, Point, Point, Point];
+type Curve = [Point, Point, Point, Point];
 
-export type SmoothPiece = {
-  curve: Curve;
-  from: number;
-  to: number;
-  width: number;
-};
+export type EdgeSample = { at: number; left: Point; right: Point };
 
-const SAMPLES_PER_CURVE = 16;
+export const SAMPLES_PER_CURVE = 8;
 
 const toRadians = (degrees: number) => (degrees * Math.PI) / 180;
 
@@ -60,17 +55,6 @@ const findPointOnCurve = ([p0, p1, p2, p3]: Curve, t: number) => {
   };
 };
 
-export function measureCurve(curve: Curve) {
-  let length = 0;
-  let previous = curve[0];
-  for (let sample = 1; sample <= SAMPLES_PER_CURVE; sample++) {
-    const point = findPointOnCurve(curve, sample / SAMPLES_PER_CURVE);
-    length += Math.hypot(point.x - previous.x, point.y - previous.y);
-    previous = point;
-  }
-  return length;
-}
-
 const createSmoothCurve = (points: Point[], index: number): Curve => {
   const p0 = points[index - 1] ?? points[index];
   const p1 = points[index];
@@ -84,29 +68,6 @@ const createSmoothCurve = (points: Point[], index: number): Curve => {
   ];
 };
 
-export function createSmoothPieces(
-  points: Point[],
-  [startWidth, endWidth]: [number, number],
-): SmoothPiece[] {
-  const curves = points
-    .slice(1)
-    .map((_, index) => createSmoothCurve(points, index));
-  const lengths = curves.map(measureCurve);
-  const total = lengths.reduce((sum, length) => sum + length, 0);
-  const lastIndex = Math.max(curves.length - 1, 1);
-  let travelled = 0;
-  return curves.map((curve, index) => {
-    const from = travelled / total;
-    travelled += lengths[index];
-    return {
-      curve,
-      from,
-      to: travelled / total,
-      width: startWidth + (endWidth - startWidth) * (index / lastIndex),
-    };
-  });
-}
-
 export function findPointAlong(points: Point[], fraction: number) {
   const position = fraction * (points.length - 1);
   const index = Math.min(points.length - 2, Math.floor(position));
@@ -119,7 +80,80 @@ export function findPointAlong(points: Point[], fraction: number) {
   };
 }
 
-export const formatCurve = ([start, ...controls]: Curve) =>
-  `M${roundCoordinate(start.x)} ${roundCoordinate(start.y)} C${controls
-    .map(({ x, y }) => `${roundCoordinate(x)} ${roundCoordinate(y)}`)
-    .join(' ')}`;
+const findTangentOnCurve = ([p0, p1, p2, p3]: Curve, t: number) => {
+  const u = 1 - t;
+  const weights = [
+    -3 * u * u,
+    3 * u * u - 6 * u * t,
+    6 * u * t - 3 * t * t,
+    3 * t * t,
+  ];
+  const x =
+    weights[0] * p0.x +
+    weights[1] * p1.x +
+    weights[2] * p2.x +
+    weights[3] * p3.x;
+  const y =
+    weights[0] * p0.y +
+    weights[1] * p1.y +
+    weights[2] * p2.y +
+    weights[3] * p3.y;
+  const length = Math.hypot(x, y);
+  return { x: x / length, y: y / length };
+};
+
+const sampleSmoothPath = (points: Point[]) =>
+  points.slice(1).flatMap((_, index) => {
+    const curve = createSmoothCurve(points, index);
+    return Array.from(
+      { length: index === 0 ? SAMPLES_PER_CURVE + 1 : SAMPLES_PER_CURVE },
+      (_, sample) => {
+        const t = (index === 0 ? sample : sample + 1) / SAMPLES_PER_CURVE;
+        return {
+          point: findPointOnCurve(curve, t),
+          tangent: findTangentOnCurve(curve, t),
+        };
+      },
+    );
+  });
+
+const roundPoint = ({ x, y }: Point) => ({
+  x: roundCoordinate(x),
+  y: roundCoordinate(y),
+});
+
+export function traceTaperedEdges(
+  points: Point[],
+  [startWidth, endWidth]: [number, number],
+): EdgeSample[] {
+  const samples = sampleSmoothPath(points);
+  const distances = samples.reduce<number[]>(
+    (totals, { point }, index) => [
+      ...totals,
+      index === 0
+        ? 0
+        : totals[index - 1] +
+          Math.hypot(
+            point.x - samples[index - 1].point.x,
+            point.y - samples[index - 1].point.y,
+          ),
+    ],
+    [],
+  );
+  const total = distances[distances.length - 1];
+  return samples.map(({ point, tangent }, index) => {
+    const at = distances[index] / total;
+    const halfWidth = (startWidth + (endWidth - startWidth) * at) / 2;
+    return {
+      at,
+      left: roundPoint({
+        x: point.x - tangent.y * halfWidth,
+        y: point.y + tangent.x * halfWidth,
+      }),
+      right: roundPoint({
+        x: point.x + tangent.y * halfWidth,
+        y: point.y - tangent.x * halfWidth,
+      }),
+    };
+  });
+}
