@@ -493,6 +493,30 @@ export const seedData = {
   [HEALTH_PATH]: { exercises, classes },
   yarn: { '2026': yarn },
   language_media: { '2026': languageMedia },
-  '2026': { adventures },
+  '2026': {
+    adventures,
+    other_goals: {
+      lesmis1: {
+        id: 'lesmis1',
+        title: 'Les Misérables 1 : Fantine',
+        volumes: [{ totalPages: 520, readPages: 520 }],
+      },
+      lesmis2: {
+        id: 'lesmis2',
+        title: 'Les Misérables 2 : Cosette',
+        volumes: [{ totalPages: 480, readPages: 210 }],
+      },
+      lesmis3: {
+        id: 'lesmis3',
+        title: 'Les Misérables 3 : Marius',
+        volumes: [{ totalPages: 410 }],
+      },
+      chainsawman: {
+        id: 'chainsawman',
+        title: 'チェンソーマン',
+        volumes: [{ totalPages: 192, readPages: 60 }],
+      },
+    },
+  },
   adventure_modes: adventureModes,
 };
