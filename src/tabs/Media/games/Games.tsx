@@ -69,7 +69,6 @@ function GameMediaList({
 
 export function Games() {
   const { games, updateMediaSeries } = useMediaStorage();
-  const formConfig = useGameFormConfig();
 
   const series = games.filter((item): item is SeriesDetails<GameDetails> =>
     isSeries(item),
@@ -87,14 +86,6 @@ export function Games() {
             key={item.id}
             label={item.name}
             onRenameLabel={(name) => updateMediaSeries(item, name)}
-            labelAction={
-              <AddMediaForm
-                ariaLabel={`Add a game to ${item.name}`}
-                series={item}
-                className="ghost shelf-add"
-                config={formConfig}
-              />
-            }
           >
             <GameMediaList games={item.items} series={item} />
           </Shelf>
@@ -105,7 +96,7 @@ export function Games() {
           </Shelf>
         ))}
       </div>
-      <AddMediaForm ariaLabel="Add a game" config={formConfig} />
+      <AddMediaForm ariaLabel="Add a game" config={useGameFormConfig()} />
     </div>
   );
 }

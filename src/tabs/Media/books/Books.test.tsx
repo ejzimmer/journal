@@ -43,26 +43,6 @@ const getSpineTitle = (title: string) =>
   screen.getByRole('button', { name: new RegExp(`^${title},`) });
 
 describe('Books', () => {
-  describe('adding a book from a series shelf', () => {
-    it('adds the book to that series', async () => {
-      const user = userEvent.setup();
-      const { storageContext } = renderBooks();
-
-      await user.click(
-        screen.getByRole('button', { name: 'Add a book to City Watch' }),
-      );
-      await user.type(
-        screen.getByRole('textbox', { name: 'Book title' }),
-        'Jingo{Enter}',
-      );
-
-      expect(storageContext.addMedia).toHaveBeenCalledWith(
-        { type: 'book', title: 'Jingo' },
-        watch.id,
-      );
-    });
-  });
-
   describe('reordering a series with the keyboard', () => {
     describe('when ArrowLeft is pressed on a book', () => {
       it('moves the book one place earlier', async () => {

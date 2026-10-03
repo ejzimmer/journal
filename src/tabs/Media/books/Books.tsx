@@ -72,7 +72,6 @@ function BookMediaList({
 
 export function Books() {
   const { books, updateMediaSeries } = useMediaStorage();
-  const formConfig = useBookFormConfig();
 
   const series = books.filter((item): item is SeriesDetails<BookDetails> =>
     isSeries(item),
@@ -90,14 +89,6 @@ export function Books() {
             key={item.id}
             label={item.name}
             onRenameLabel={(name) => updateMediaSeries(item, name)}
-            labelAction={
-              <AddMediaForm
-                ariaLabel={`Add a book to ${item.name}`}
-                series={item}
-                className="ghost shelf-add"
-                config={formConfig}
-              />
-            }
           >
             <BookMediaList books={item.items} series={item} />
           </Shelf>
@@ -108,7 +99,7 @@ export function Books() {
           </Shelf>
         ))}
       </div>
-      <AddMediaForm ariaLabel="Add a book" config={formConfig} />
+      <AddMediaForm ariaLabel="Add a book" config={useBookFormConfig()} />
     </div>
   );
 }
