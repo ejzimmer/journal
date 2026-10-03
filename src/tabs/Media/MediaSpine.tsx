@@ -58,7 +58,7 @@ export function MediaSpine<T extends MediaDetails, S extends string>({
   hue,
   config,
   EditForm,
-  dragListId,
+  listId,
   isFirst,
   isLast,
   onMove,
@@ -68,7 +68,7 @@ export function MediaSpine<T extends MediaDetails, S extends string>({
   hue: number;
   config: StatusConfig<T, S>;
   EditForm: ComponentType<MediaEditFormProps<T>>;
-  dragListId?: string;
+  listId?: string;
   isFirst: boolean;
   isLast: boolean;
   onMove: (destination: Destination) => void;
@@ -84,7 +84,7 @@ export function MediaSpine<T extends MediaDetails, S extends string>({
   });
 
   const moveOnArrowKey = (event: KeyboardEvent) => {
-    if (!dragListId) return;
+    if (!listId) return;
     const destination = getMoveDestination(event, isFirst, isLast);
     if (!destination) return;
 
@@ -116,14 +116,14 @@ export function MediaSpine<T extends MediaDetails, S extends string>({
       onTitleClick={openForm}
       onStampClick={updateStatus}
       onTitleKeyDown={moveOnArrowKey}
-      titleKeyShortcuts={dragListId && MOVE_KEYS}
+      titleKeyShortcuts={listId && MOVE_KEYS}
     />
   );
   const editForm = (
     <EditForm item={item} isOpen={isFormOpen} onCancel={closeForm} />
   );
 
-  if (!dragListId) {
+  if (!listId) {
     return (
       <li className="spine-item">
         {spine}
@@ -138,11 +138,11 @@ export function MediaSpine<T extends MediaDetails, S extends string>({
       getData={() => ({
         [draggableTypeKey]: SPINE_DRAGGABLE_TYPE,
         id: item.id,
-        parentId: dragListId,
+        parentId: listId,
       })}
       isDroppable={(data) =>
         data[draggableTypeKey] === SPINE_DRAGGABLE_TYPE &&
-        data.parentId === dragListId
+        data.parentId === listId
       }
       allowedEdges={['left', 'right']}
       dragHandle={spine}

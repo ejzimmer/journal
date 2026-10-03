@@ -60,7 +60,7 @@ function BookMediaList({
   return (
     <MediaList
       items={books}
-      reorderListId={series && getSeriesItemsPath(series)}
+      listId={series && getSeriesItemsPath(series)}
       bandHue={series?.bandHue}
       onReorder={series && ((items) => reorderSeries(series, items))}
       hue={(book) => getCoverHue(book.author ?? book.title)}

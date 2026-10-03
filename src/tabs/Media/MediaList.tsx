@@ -8,7 +8,7 @@ import { SeriesDragAndDrop } from './SeriesDragAndDrop';
 
 export function MediaList<T extends MediaDetails, S extends string>({
   items,
-  reorderListId,
+  listId,
   bandHue,
   hue,
   config,
@@ -16,7 +16,7 @@ export function MediaList<T extends MediaDetails, S extends string>({
   onReorder,
 }: {
   items?: Record<string, T>;
-  reorderListId?: string;
+  listId?: string;
   bandHue?: number;
   hue: (item: T) => number;
   config: StatusConfig<T, S>;
@@ -25,8 +25,8 @@ export function MediaList<T extends MediaDetails, S extends string>({
 }) {
   const listRef = useRef<HTMLOListElement>(null);
   const sortedItems = sortSeriesItems(items);
-  const dragListId =
-    onReorder && sortedItems.length > 1 ? reorderListId : undefined;
+  const reorderableListId =
+    onReorder && sortedItems.length > 1 ? listId : undefined;
 
   const moveItem = (index: number, destination: Destination) => {
     if (!onReorder) return;
@@ -40,9 +40,9 @@ export function MediaList<T extends MediaDetails, S extends string>({
   return (
     items && (
       <>
-        {dragListId && onReorder && (
+        {reorderableListId && onReorder && (
           <SeriesDragAndDrop
-            listId={dragListId}
+            listId={reorderableListId}
             listRef={listRef}
             onReorder={onReorder}
           />
@@ -56,7 +56,7 @@ export function MediaList<T extends MediaDetails, S extends string>({
               hue={hue(item)}
               config={config}
               EditForm={EditForm}
-              dragListId={dragListId}
+              listId={reorderableListId}
               isFirst={index === 0}
               isLast={index === sortedItems.length - 1}
               onMove={(destination) => moveItem(index, destination)}
