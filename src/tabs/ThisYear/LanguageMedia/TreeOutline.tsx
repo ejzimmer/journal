@@ -1,15 +1,14 @@
 import { useId } from 'react';
-import { listTreeParts, OUTLINE_WIDTH, TreeLayout } from './treeLayout';
+import { OUTLINE_WIDTH, TreeLayout } from './treeLayout';
 
 export function TreeOutline({ layout }: { layout: TreeLayout }) {
   const maskId = useId();
-  const parts = listTreeParts(layout);
 
   return (
     <>
       <mask id={maskId} maskUnits="userSpaceOnUse" {...layout.bounds}>
         <rect {...layout.bounds} fill="white" />
-        {parts.map(({ key, d, width }) => (
+        {layout.pieces.map(({ key, d, width }) => (
           <path
             key={key}
             d={d}
@@ -21,7 +20,7 @@ export function TreeOutline({ layout }: { layout: TreeLayout }) {
         ))}
       </mask>
       <g className="tree-outline" mask={`url(#${maskId})`}>
-        {parts.map(({ key, d, width }) => (
+        {layout.pieces.map(({ key, d, width }) => (
           <path
             key={key}
             d={d}
