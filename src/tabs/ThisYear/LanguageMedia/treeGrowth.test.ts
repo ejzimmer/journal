@@ -1,40 +1,52 @@
-import { measurePieceGrowth } from './treeGrowth';
+import { measureShapeGrowth } from './treeGrowth';
+import { ShapeGrowth } from './treeLayout';
 
-describe('measurePieceGrowth', () => {
-  describe('for a piece of trunk', () => {
-    const trunk = { type: 'trunk', level: 1 } as const;
+describe('measureShapeGrowth', () => {
+  describe('for the trunk', () => {
+    const trunk: ShapeGrowth = { type: 'trunk', levelEnds: [0.3, 0.6, 1] };
 
-    describe('when a volume at or above its level has started', () => {
-      it('is fully grown', () => {
-        expect(measurePieceGrowth(trunk, [1, 0, 0.2])).toBe(1);
+    describe('when a volume has started', () => {
+      it('grows up to the level of the last started volume', () => {
+        expect(measureShapeGrowth(trunk, [1, 0.4, 0])).toBe(0.6);
       });
     });
 
-    describe('when only volumes below its level have started', () => {
+    describe('when the last volume has started', () => {
+      it('grows all the way to the crown', () => {
+        expect(measureShapeGrowth(trunk, [1, 1, 0.1])).toBe(1);
+      });
+    });
+
+    describe('when no volume has started', () => {
       it('has not grown', () => {
-        expect(measurePieceGrowth(trunk, [1, 0, 0])).toBe(0);
+        expect(measureShapeGrowth(trunk, [0, 0, 0])).toBe(0);
       });
     });
   });
 
-  describe('for a piece of branch', () => {
-    const branch = { type: 'branch', level: 0, start: 0.4, end: 0.6 } as const;
+  describe('for a branch', () => {
+    const branch: ShapeGrowth = {
+      type: 'branch',
+      level: 0,
+      start: 0.4,
+      end: 0.6,
+    };
 
     describe('when the volume is read past its end', () => {
       it('is fully grown', () => {
-        expect(measurePieceGrowth(branch, [0.8])).toBe(1);
+        expect(measureShapeGrowth(branch, [0.8])).toBe(1);
       });
     });
 
     describe('when the volume is read partway through it', () => {
       it('grows that far along it', () => {
-        expect(measurePieceGrowth(branch, [0.45])).toBeCloseTo(0.25);
+        expect(measureShapeGrowth(branch, [0.45])).toBeCloseTo(0.25);
       });
     });
 
     describe('when the volume is not read up to its start', () => {
       it('has not grown', () => {
-        expect(measurePieceGrowth(branch, [0.3])).toBe(0);
+        expect(measureShapeGrowth(branch, [0.3])).toBe(0);
       });
     });
   });

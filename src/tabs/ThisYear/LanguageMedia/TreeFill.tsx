@@ -1,20 +1,12 @@
-import { GrownPiece } from './treeGrowth';
+import { GrownShape } from './treeGrowth';
+import { drawShapeFill } from './treeShapePaths';
 
-export function TreeFill({ pieces }: { pieces: GrownPiece[] }) {
+export function TreeFill({ shapes }: { shapes: GrownShape[] }) {
   return (
     <g className="tree-fill">
-      {pieces
-        .filter(({ amount }) => amount > 0)
-        .map(({ key, d, width, amount }) => (
-          <path
-            key={key}
-            d={d}
-            pathLength={1}
-            strokeDasharray={`${amount} 2`}
-            strokeWidth={width}
-            strokeLinecap="round"
-          />
-        ))}
+      {shapes.map((shape) => (
+        <path key={shape.key} d={drawShapeFill(shape.edges, shape.amount)} />
+      ))}
     </g>
   );
 }

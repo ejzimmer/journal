@@ -1,35 +1,31 @@
 import { listByNumber } from './lists';
 import { createSeededRandom } from './seededRandom';
 import {
-  createSmoothPieces,
-  Curve,
+  EdgeSample,
   findPointAlong,
-  formatCurve,
   Point,
   roundCoordinate,
-  SmoothPiece,
+  SAMPLES_PER_CURVE,
+  traceTaperedEdges,
   walkPath,
 } from './treeGeometry';
 import { TREE_SPECIES, TreeSpecies } from './treeSpecies';
 import { PrintSeries, Volume } from './types';
 
-export type PieceGrowth =
-  | { type: 'trunk'; level: number }
+export type ShapeGrowth =
+  | { type: 'trunk'; levelEnds: number[] }
   | { type: 'branch'; level: number; start: number; end: number };
 
-export type TreePiece = {
+export type TreeShape = {
   key: string;
-  d: string;
-  width: number;
-  growth: PieceGrowth;
+  edges: EdgeSample[];
+  growth: ShapeGrowth;
 };
 
 export type TreeLayout = {
-  pieces: TreePiece[];
+  shapes: TreeShape[];
   bounds: { x: number; y: number; width: number; height: number };
 };
-
-type GrownPiece = Omit<TreePiece, 'd'> & { curve: Curve };
 
 const CROWN_HEIGHT = 26;
 const DEFAULT_PAGES = 200;
@@ -61,40 +57,17 @@ function createTrunkPoints(
   return points;
 }
 
-const createTrunkPieces = (
+function createTrunk(
   species: TreeSpecies,
   points: Point[],
   levelCount: number,
-): GrownPiece[] =>
-  createSmoothPieces(points, species.trunkWidths).map(
-    ({ curve, width }, index) => ({
-      key: `trunk-${index}`,
-      curve,
-      width,
-      growth: {
-        type: 'trunk',
-        level: Math.max(0, Math.min(index, levelCount - 1)),
-      },
-    }),
+): TreeShape {
+  const edges = traceTaperedEdges(points, species.trunkWidths);
+  const levelEnds = Array.from({ length: levelCount }, (_, level) =>
+    level === levelCount - 1 ? 1 : edges[(level + 1) * SAMPLES_PER_CURVE].at,
   );
-
-const createBranchPieces = (
-  key: string,
-  level: number,
-  pieces: SmoothPiece[],
-  [start, end] = [0, 1],
-): GrownPiece[] =>
-  pieces.map(({ curve, width, from, to }, index) => ({
-    key: `${key}-${index}`,
-    curve,
-    width,
-    growth: {
-      type: 'branch',
-      level,
-      start: start + from * (end - start),
-      end: start + to * (end - start),
-    },
-  }));
+  return { key: 'trunk', edges, growth: { type: 'trunk', levelEnds } };
+}
 
 function growBranch(
   species: TreeSpecies,
@@ -113,16 +86,16 @@ function growBranch(
     (angle, index) => species.bendLimb(angle, index, random),
     random,
   );
-  const limb = createBranchPieces(
-    `${volume.id}-limb`,
-    level,
-    createSmoothPieces(limbPoints, species.limbWidths),
-  );
+  const limb: TreeShape = {
+    key: `${volume.id}-limb`,
+    edges: traceTaperedEdges(limbPoints, species.limbWidths),
+    growth: { type: 'branch', level, start: 0, end: 1 },
+  };
 
   const [minTwigs, maxTwigs] = species.twigCount;
   const twigCount = minTwigs + Math.floor(random() * (maxTwigs - minTwigs + 1));
   const [, limbEndWidth] = species.limbWidths;
-  const twigs = Array.from({ length: twigCount }, (_, twig) => {
+  const twigs = Array.from({ length: twigCount }, (_, twig): TreeShape => {
     const fork = 0.35 + random() * 0.4;
     const { point, angle } = findPointAlong(limbPoints, fork);
     const twigPoints = walkPath(
@@ -133,21 +106,29 @@ function growBranch(
       (twigAngle, index) => species.bendTwig(twigAngle, index, random),
       random,
     );
-    return createBranchPieces(
-      `${volume.id}-twig-${twig}`,
-      level,
-      createSmoothPieces(twigPoints, [limbEndWidth + 1.5, limbEndWidth - 0.5]),
-      [fork, 1],
-    );
+    return {
+      key: `${volume.id}-twig-${twig}`,
+      edges: traceTaperedEdges(twigPoints, [
+        limbEndWidth + 1.5,
+        limbEndWidth - 0.5,
+      ]),
+      growth: { type: 'branch', level, start: fork, end: 1 },
+    };
   });
 
-  return [...limb, ...twigs.flat()];
+  return [limb, ...twigs];
 }
 
-function measureBounds(pieces: GrownPiece[]) {
-  const reach = Math.max(...pieces.map(({ width }) => width)) / 2;
+function measureBounds(shapes: TreeShape[]) {
+  const edges = shapes.flatMap((shape) => shape.edges);
+  const reach =
+    Math.max(
+      ...edges.map(({ left, right }) =>
+        Math.hypot(left.x - right.x, left.y - right.y),
+      ),
+    ) / 2;
   const padding = reach + OUTLINE_WIDTH + MARGIN;
-  const points = pieces.flatMap(({ curve }) => curve);
+  const points = edges.flatMap(({ left, right }) => [left, right]);
   const halfWidth = roundCoordinate(
     Math.max(...points.map(({ x }) => Math.abs(x))) + padding,
   );
@@ -181,16 +162,10 @@ export function createTreeLayout(series: PrintSeries): TreeLayout {
     );
   });
 
-  const pieces = [
-    ...createTrunkPieces(species, trunkPoints, volumes.length),
+  const shapes = [
+    createTrunk(species, trunkPoints, volumes.length),
     ...branches,
   ];
 
-  return {
-    pieces: pieces.map(({ curve, ...piece }) => ({
-      ...piece,
-      d: formatCurve(curve),
-    })),
-    bounds: measureBounds(pieces),
-  };
+  return { shapes, bounds: measureBounds(shapes) };
 }
