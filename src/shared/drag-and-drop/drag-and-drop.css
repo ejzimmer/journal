@@ -65,5 +65,6 @@
     :has(~ .menu:popover-open)
   ) {
   opacity: 1;
-  outline: 1px solid black;
+  outline: none;
+  background: var(--card-colour, var(--border-colour));
 }
