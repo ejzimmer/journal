@@ -25,6 +25,7 @@ export function MediaList<T extends MediaDetails, S extends string>({
 }) {
   const listRef = useRef<HTMLOListElement>(null);
   const sortedItems = sortSeriesItems(items);
+  const isDraggable = !!listId && !!onReorder && sortedItems.length > 1;
 
   const moveItem = (index: number, destination: Destination) => {
     if (!onReorder) return;
@@ -38,7 +39,7 @@ export function MediaList<T extends MediaDetails, S extends string>({
   return (
     items && (
       <>
-        {listId && onReorder && (
+        {isDraggable && listId && onReorder && (
           <SeriesDragAndDrop
             listId={listId}
             listRef={listRef}
@@ -55,6 +56,7 @@ export function MediaList<T extends MediaDetails, S extends string>({
               config={config}
               EditForm={EditForm}
               listId={listId}
+              isDraggable={isDraggable}
               isFirst={index === 0}
               isLast={index === sortedItems.length - 1}
               onMove={(destination) => moveItem(index, destination)}

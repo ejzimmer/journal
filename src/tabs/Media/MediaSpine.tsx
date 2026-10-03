@@ -59,6 +59,7 @@ export function MediaSpine<T extends MediaDetails, S extends string>({
   config,
   EditForm,
   listId,
+  isDraggable,
   isFirst,
   isLast,
   onMove,
@@ -69,6 +70,7 @@ export function MediaSpine<T extends MediaDetails, S extends string>({
   config: StatusConfig<T, S>;
   EditForm: ComponentType<MediaEditFormProps<T>>;
   listId?: string;
+  isDraggable: boolean;
   isFirst: boolean;
   isLast: boolean;
   onMove: (destination: Destination) => void;
@@ -84,7 +86,7 @@ export function MediaSpine<T extends MediaDetails, S extends string>({
   });
 
   const moveOnArrowKey = (event: KeyboardEvent) => {
-    if (!listId) return;
+    if (!isDraggable) return;
     const destination = getMoveDestination(event, isFirst, isLast);
     if (!destination) return;
 
@@ -116,14 +118,14 @@ export function MediaSpine<T extends MediaDetails, S extends string>({
       onTitleClick={openForm}
       onStampClick={updateStatus}
       onTitleKeyDown={moveOnArrowKey}
-      titleKeyShortcuts={listId && MOVE_KEYS}
+      titleKeyShortcuts={isDraggable ? MOVE_KEYS : undefined}
     />
   );
   const editForm = (
     <EditForm item={item} isOpen={isFormOpen} onCancel={closeForm} />
   );
 
-  if (!listId) {
+  if (!isDraggable || !listId) {
     return (
       <li className="spine-item">
         {spine}
