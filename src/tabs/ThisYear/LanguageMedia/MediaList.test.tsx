@@ -53,6 +53,14 @@ describe('MediaList', () => {
     });
   });
 
+  describe('a manga or book series', () => {
+    it('is left for the garden', () => {
+      renderList([yotsuba]);
+
+      expect(screen.getByRole('list')).toBeEmptyDOMElement();
+    });
+  });
+
   describe('a youtube channel', () => {
     describe('a video', () => {
       it('shows its url, length, where I am up to and comprehension', () => {
@@ -76,62 +84,6 @@ describe('MediaList', () => {
           ).toBeInTheDocument();
         });
       });
-    });
-  });
-
-  describe('a manga series', () => {
-    it('shows where I am up to', () => {
-      renderList([yotsuba]);
-
-      expect(screen.getByText('Up to 1-41')).toBeInTheDocument();
-    });
-
-    describe('a volume', () => {
-      it('shows its number, pages and comprehension', () => {
-        renderList([yotsuba]);
-
-        expect(
-          screen.getByText(
-            'Volume 1 (220 pages): 20 looked up, 3 asked AI, 60% understood',
-          ),
-        ).toBeInTheDocument();
-      });
-
-      describe('without pages', () => {
-        it('shows its status', () => {
-          renderList([yotsuba]);
-
-          expect(
-            screen.getByText('Volume 2, In progress: 0 looked up, 0 asked AI'),
-          ).toBeInTheDocument();
-        });
-      });
-    });
-  });
-
-  describe('a book series', () => {
-    it('shows each volume by name', () => {
-      renderList([
-        {
-          id: 'asterix',
-          type: 'book',
-          name: 'Astérix',
-          language: 'french',
-          volumes: {
-            vol1: {
-              id: 'vol1',
-              number: 1,
-              name: 'Astérix le Gaulois',
-              lookups: 0,
-              aiQuestions: 0,
-            },
-          },
-        },
-      ]);
-
-      expect(
-        screen.getByText('Astérix le Gaulois: 0 looked up, 0 asked AI'),
-      ).toBeInTheDocument();
     });
   });
 
@@ -192,22 +144,6 @@ describe('MediaList', () => {
           'hugo',
           'videos',
           'v1',
-        ]);
-      });
-    });
-
-    describe('a volume', () => {
-      it('deletes it from storage', async () => {
-        const { user, storageContext } = renderList([yotsuba]);
-
-        await user.click(
-          screen.getByRole('button', { name: 'Delete Volume 1' }),
-        );
-
-        expect(storageContext.deleteItem).toHaveBeenCalledWith([
-          'yotsuba',
-          'volumes',
-          'vol1',
         ]);
       });
     });
@@ -277,19 +213,6 @@ describe('MediaList', () => {
         );
       });
     });
-
-    describe('a volume', () => {
-      it('adds it to the series', async () => {
-        const { user, storageContext } = renderList([yotsuba]);
-
-        await user.click(screen.getByRole('button', { name: 'Add volume' }));
-
-        expect(storageContext.addItem).toHaveBeenCalledWith(
-          ['yotsuba', 'volumes'],
-          { number: 3, lookups: 0, aiQuestions: 0 },
-        );
-      });
-    });
   });
 
   describe('editing', () => {
@@ -351,19 +274,6 @@ describe('MediaList', () => {
         expect(storageContext.updateItem).toHaveBeenCalledWith(
           ['hugo', 'videos', 'v2'],
           { url: 'https://youtu.be/2', lengthInSeconds: 600 },
-        );
-      });
-    });
-
-    describe('a volume', () => {
-      it('saves the changed details to the volume', async () => {
-        const { user, storageContext } = renderList([yotsuba]);
-
-        await renameIn(user, 'Edit Volume 1', 'よつばと！ 1');
-
-        expect(storageContext.updateItem).toHaveBeenCalledWith(
-          ['yotsuba', 'volumes', 'vol1'],
-          { number: 1, name: 'よつばと！ 1', pages: 220 },
         );
       });
     });
@@ -455,40 +365,6 @@ describe('MediaList', () => {
         );
       });
     });
-
-    describe('of a manga series', () => {
-      it('saves where I am up to', async () => {
-        const { user, storageContext } = renderList([yotsuba]);
-
-        await saveIn(
-          user,
-          "Update where I'm up to",
-          'spinbutton',
-          'Page',
-          '45',
-        );
-
-        expect(storageContext.updateItem).toHaveBeenCalledWith(['yotsuba'], {
-          upTo: { ...yotsuba.upTo, page: 45 },
-        });
-      });
-    });
-
-    describe('of a volume without pages', () => {
-      it('saves its status', async () => {
-        const { user, storageContext } = renderList([yotsuba]);
-
-        await user.selectOptions(
-          screen.getByRole('combobox', { name: 'Status of Volume 2' }),
-          'Done',
-        );
-
-        expect(storageContext.updateItem).toHaveBeenCalledWith(
-          ['yotsuba', 'volumes', 'vol2'],
-          { status: 'done' },
-        );
-      });
-    });
   });
 
   describe('counting', () => {
@@ -520,45 +396,6 @@ describe('MediaList', () => {
         expect(storageContext.updateItem).toHaveBeenCalledWith(
           ['hugo', 'videos', 'v1'],
           { aiQuestions: 2 },
-        );
-      });
-    });
-
-    describe('a lookup in a volume', () => {
-      it("saves only the volume's new lookup count", async () => {
-        const { user, storageContext } = renderList([yotsuba]);
-
-        await user.click(
-          screen.getByRole('button', { name: 'Add a lookup to Volume 1' }),
-        );
-
-        expect(storageContext.updateItem).toHaveBeenCalledWith(
-          ['yotsuba', 'volumes', 'vol1'],
-          { lookups: 21 },
-        );
-      });
-    });
-  });
-
-  describe('editing totals', () => {
-    describe('of a volume', () => {
-      it('saves the new totals to the volume', async () => {
-        const { user, storageContext } = renderList([yotsuba]);
-        await user.click(screen.getByLabelText('Edit totals for Volume 1'));
-        const form = screen.getByRole('form', {
-          name: 'Edit totals for Volume 1',
-        });
-        const understood = within(form).getByRole('spinbutton', {
-          name: 'Understood (%)',
-        });
-
-        await user.clear(understood);
-        await user.type(understood, '75');
-        await user.click(within(form).getByRole('button', { name: 'Save' }));
-
-        expect(storageContext.updateItem).toHaveBeenCalledWith(
-          ['yotsuba', 'volumes', 'vol1'],
-          { lookups: 20, aiQuestions: 3, understood: 75 },
         );
       });
     });

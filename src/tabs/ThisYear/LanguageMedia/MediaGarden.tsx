@@ -1,11 +1,8 @@
 import { useLanguageMediaStorage } from './LanguageMediaStorageContext';
 import { MediaTree } from './MediaTree';
-import { LanguageMedia, PrintSeries } from './types';
+import { isPrintSeries } from './types';
 
 import './MediaGarden.css';
-
-const isPrintSeries = (media: LanguageMedia): media is PrintSeries =>
-  media.type === 'book' || media.type === 'manga';
 
 export function MediaGarden() {
   const { media } = useLanguageMediaStorage();
