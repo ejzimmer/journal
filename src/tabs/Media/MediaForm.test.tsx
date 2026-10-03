@@ -383,7 +383,7 @@ describe('EditMediaForm', () => {
       screen.getByRole('textbox', { name: 'Item title' }),
       ' (edit)',
     );
-    await user.click(screen.getByRole('button', { name: 'Cancel' }));
+    await user.click(screen.getByRole('button', { name: 'close modal' }));
 
     expect(updateMedia).not.toHaveBeenCalled();
   });
