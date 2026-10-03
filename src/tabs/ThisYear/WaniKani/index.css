@@ -1,7 +1,7 @@
 .wanikani {
   display: flex;
-  flex-direction: column;
-  gap: 24px;
+  align-items: center;
+  gap: 40px;
 
   .current-level {
     position: relative;
@@ -50,12 +50,6 @@
     gap: 4px;
     color: var(--body-colour-mid);
     font-weight: bold;
-  }
-
-  .wanikani-collection {
-    display: flex;
-    align-items: center;
-    gap: 40px;
   }
 
   .srs-vials {

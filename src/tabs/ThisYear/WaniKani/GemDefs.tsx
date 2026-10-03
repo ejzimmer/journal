@@ -42,6 +42,11 @@ export function GemDefs() {
           <stop offset="0.5" stopColor="#d4a73c" />
           <stop offset="1" stopColor="#7a5a14" />
         </linearGradient>
+        <linearGradient id="wanikani-grey" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stopColor="#f0f0f0" />
+          <stop offset="0.5" stopColor="#a8a8a8" />
+          <stop offset="1" stopColor="#5e5e5e" />
+        </linearGradient>
       </defs>
     </svg>
   );
