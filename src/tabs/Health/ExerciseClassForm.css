@@ -1,0 +1,163 @@
+.exercise-class-form {
+  --form-background: white;
+  --form-shadow: 0 1px 2px hsl(0 0% 0% / 0.08);
+  --field-background: hsl(70 60% 98%);
+  --field-border: hsl(73 33% 85%);
+  --label: hsl(143 4% 43%);
+  --save: hsl(110 61% 42%);
+  --switch-background: hsl(73 49% 91%);
+  --switch-knob: hsl(42 100% 60%);
+  --switch-knob-shadow: hsl(40 100% 50% / 0.45);
+  --switch-icon: hsl(76 21% 45%);
+  --switch-icon-selected: hsl(47 100% 15%);
+
+  display: grid;
+  gap: 10px;
+  justify-items: start;
+  margin: 0;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: var(--form-background);
+  box-shadow: var(--form-shadow);
+
+  input:not([type='radio']) {
+    font: inherit;
+    background: var(--field-background);
+    border: 1px solid var(--field-border);
+    border-radius: 8px;
+    padding: 6px 8px;
+
+    &:focus-visible {
+      outline: 2px solid var(--focus);
+      outline-offset: 1px;
+    }
+  }
+
+  .name-field {
+    display: grid;
+    gap: 3px;
+
+    span {
+      font-size: 0.7rem;
+      font-weight: 800;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+      color: var(--label);
+    }
+
+    input {
+      width: 200px;
+      max-width: 100%;
+    }
+  }
+
+  .class-kinds {
+    display: grid;
+    grid-template-columns: auto auto;
+    grid-template-rows: 35px 35px;
+    column-gap: 10px;
+    align-items: center;
+  }
+
+  .class-kind-switch {
+    grid-row: 1 / 3;
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+    padding: 3px;
+    border: none;
+    border-radius: 999px;
+    background: var(--switch-background);
+
+    label {
+      position: relative;
+      display: grid;
+      place-items: center;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      color: var(--switch-icon);
+      cursor: pointer;
+
+      &:has(input:checked) {
+        background: var(--switch-knob);
+        color: var(--switch-icon-selected);
+        box-shadow: 0 2px 6px var(--switch-knob-shadow);
+      }
+
+      &:has(input:focus-visible) {
+        outline: 2px solid var(--focus);
+        outline-offset: 2px;
+      }
+    }
+
+    input {
+      position: absolute;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    svg {
+      width: 18px;
+    }
+  }
+
+  .class-kind-row {
+    grid-column: 2;
+    display: flex;
+    gap: 6px;
+    align-items: center;
+    font-weight: 600;
+
+    input {
+      width: 52px;
+      padding: 3px 6px;
+      font-variant-numeric: tabular-nums;
+    }
+
+    &.unselected {
+      opacity: 0.55;
+      color: var(--label);
+      cursor: pointer;
+
+      input {
+        pointer-events: none;
+      }
+    }
+  }
+
+  .actions {
+    justify-self: stretch;
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+
+    button {
+      display: grid;
+      place-items: center;
+      width: 32px;
+      height: 32px;
+      padding: 8px;
+      border: 2px solid;
+      border-radius: 50%;
+      cursor: pointer;
+
+      &:focus-visible {
+        outline: 2px solid var(--focus);
+        outline-offset: 2px;
+      }
+    }
+
+    .cancel {
+      background: none;
+      border-color: var(--field-border);
+      color: var(--switch-icon);
+    }
+
+    .save {
+      background: var(--save);
+      border-color: var(--save);
+      color: white;
+    }
+  }
+}
