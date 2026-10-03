@@ -55,12 +55,12 @@ function BookMediaList({
   books?: Record<string, BookDetails>;
   series?: SeriesDetails<BookDetails>;
 }) {
-  const { reorderSeries } = useMediaStorage();
+  const { reorderSeries, getSeriesItemsPath } = useMediaStorage();
 
   return (
     <MediaList
       items={books}
-      seriesId={series?.id}
+      reorderListId={series && getSeriesItemsPath(series)}
       bandHue={series?.bandHue}
       onReorder={series && ((items) => reorderSeries(series, items))}
       hue={(book) => getCoverHue(book.author ?? book.title)}

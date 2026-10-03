@@ -1,6 +1,7 @@
 import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { renderWithMediaStorage } from '../mediaStorageTestUtils';
+import { MediaStorageContextType } from '../MediaStorageContext';
 import { BookDetails, SeriesDetails } from '../types';
 import { Books } from './Books';
 
@@ -39,6 +40,13 @@ function renderBooks() {
   });
 }
 
+function listReorderedIds(
+  reorderSeries: MediaStorageContextType['reorderSeries'],
+) {
+  const [series, items] = jest.mocked(reorderSeries).mock.calls[0];
+  return { seriesId: series.id, itemIds: items.map(({ id }) => id) };
+}
+
 const getSpineTitle = (title: string) =>
   screen.getByRole('button', { name: new RegExp(`^${title},`) });
 
@@ -52,11 +60,10 @@ describe('Books', () => {
         getSpineTitle('Men at Arms').focus();
         await user.keyboard('{ArrowLeft}');
 
-        expect(storageContext.reorderSeries).toHaveBeenCalledWith(watch, [
-          menAtArms,
-          guards,
-          feetOfClay,
-        ]);
+        expect(listReorderedIds(storageContext.reorderSeries)).toEqual({
+          seriesId: watch.id,
+          itemIds: [menAtArms.id, guards.id, feetOfClay.id],
+        });
       });
     });
 
@@ -68,11 +75,10 @@ describe('Books', () => {
         getSpineTitle('Men at Arms').focus();
         await user.keyboard('{ArrowRight}');
 
-        expect(storageContext.reorderSeries).toHaveBeenCalledWith(watch, [
-          guards,
-          feetOfClay,
-          menAtArms,
-        ]);
+        expect(listReorderedIds(storageContext.reorderSeries)).toEqual({
+          seriesId: watch.id,
+          itemIds: [guards.id, feetOfClay.id, menAtArms.id],
+        });
       });
     });
 
@@ -84,11 +90,10 @@ describe('Books', () => {
         getSpineTitle('Feet of Clay').focus();
         await user.keyboard('{Shift>}{ArrowLeft}{/Shift}');
 
-        expect(storageContext.reorderSeries).toHaveBeenCalledWith(watch, [
-          feetOfClay,
-          guards,
-          menAtArms,
-        ]);
+        expect(listReorderedIds(storageContext.reorderSeries)).toEqual({
+          seriesId: watch.id,
+          itemIds: [feetOfClay.id, guards.id, menAtArms.id],
+        });
       });
 
       it('moves the book to the end with ArrowRight', async () => {
@@ -98,11 +103,10 @@ describe('Books', () => {
         getSpineTitle('Guards! Guards!').focus();
         await user.keyboard('{Shift>}{ArrowRight}{/Shift}');
 
-        expect(storageContext.reorderSeries).toHaveBeenCalledWith(watch, [
-          menAtArms,
-          feetOfClay,
-          guards,
-        ]);
+        expect(listReorderedIds(storageContext.reorderSeries)).toEqual({
+          seriesId: watch.id,
+          itemIds: [menAtArms.id, feetOfClay.id, guards.id],
+        });
       });
     });
 

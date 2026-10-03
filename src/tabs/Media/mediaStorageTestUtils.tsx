@@ -4,6 +4,7 @@ import {
   MediaStorageContext,
   MediaStorageContextType,
 } from './MediaStorageContext';
+import { StorageContextWrapper } from '../../shared/storageContextTestUtils';
 
 export function createMediaStorageContext(
   overrides: Partial<MediaStorageContextType> = {},
@@ -22,6 +23,7 @@ export function createMediaStorageContext(
     deleteMedia: jest.fn(),
     moveMedia: jest.fn(),
     reorderSeries: jest.fn(),
+    getSeriesItemsPath: (series) => `media/books/${series.id}/items`,
     ...overrides,
   };
 }
@@ -32,9 +34,11 @@ export function renderWithMediaStorage(
 ) {
   const storageContext = createMediaStorageContext(overrides);
   const result = render(
-    <MediaStorageContext.Provider value={storageContext}>
-      {ui}
-    </MediaStorageContext.Provider>,
+    <StorageContextWrapper>
+      <MediaStorageContext.Provider value={storageContext}>
+        {ui}
+      </MediaStorageContext.Provider>
+    </StorageContextWrapper>,
   );
   return { ...result, storageContext };
 }

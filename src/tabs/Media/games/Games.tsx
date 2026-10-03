@@ -52,12 +52,12 @@ function GameMediaList({
   games?: Record<string, GameDetails>;
   series?: SeriesDetails<GameDetails>;
 }) {
-  const { reorderSeries } = useMediaStorage();
+  const { reorderSeries, getSeriesItemsPath } = useMediaStorage();
 
   return (
     <MediaList
       items={games}
-      seriesId={series?.id}
+      reorderListId={series && getSeriesItemsPath(series)}
       bandHue={series?.bandHue}
       onReorder={series && ((items) => reorderSeries(series, items))}
       hue={(game) => getCoverHue(series?.id ?? game.title)}

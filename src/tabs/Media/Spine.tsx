@@ -4,14 +4,16 @@ import {
   ReactNode,
   RefObject,
 } from 'react';
-import { Edge } from '@atlaskit/pragmatic-drag-and-drop-hitbox/types';
+import { DraggableListItem } from '../../shared/drag-and-drop/DraggableListItem';
+import { draggableTypeKey } from '../../shared/drag-and-drop/types';
 
 import './Spine.css';
 
+const SPINE_DRAGGABLE_TYPE = 'spine';
+
 export function Spine({
-  spineRef,
-  isDragging,
-  dropEdge,
+  itemId,
+  dragListId,
   status,
   hue,
   bandHue,
@@ -28,9 +30,8 @@ export function Spine({
   titleKeyShortcuts,
   children,
 }: {
-  spineRef?: RefObject<HTMLLIElement | null>;
-  isDragging?: boolean;
-  dropEdge?: Edge | null;
+  itemId: string;
+  dragListId?: string;
   status: 'todo' | 'active' | 'done';
   hue: number;
   bandHue?: number;
@@ -47,35 +48,34 @@ export function Spine({
   titleKeyShortcuts?: string;
   children?: ReactNode;
 }) {
-  return (
-    <li
-      ref={spineRef}
-      className={`spine ${status}${isDragging ? ' dragging' : ''}`}
-      style={
-        {
-          '--hue': hue,
-          ...(bandHue !== undefined && { '--band-hue': bandHue }),
-          minHeight,
-        } as CSSProperties
-      }
+  const className = `spine ${status}`;
+  const style = {
+    '--hue': hue,
+    ...(bandHue !== undefined && { '--band-hue': bandHue }),
+    minHeight,
+  } as CSSProperties;
+
+  const titleButton = (
+    <button
+      ref={titleRef}
+      className="title"
+      aria-label={titleAriaLabel}
+      aria-keyshortcuts={titleKeyShortcuts}
+      onClick={onTitleClick}
+      onKeyDown={onTitleKeyDown}
     >
+      <span className="spine-label">
+        <span className="title-text">{title}</span>
+        {author && <span className="author">{author}</span>}
+      </span>
+    </button>
+  );
+
+  const decorations = (
+    <>
       {bandHue !== undefined && (
         <span className="series-band series-band-head" />
       )}
-
-      <button
-        ref={titleRef}
-        className="title"
-        aria-label={titleAriaLabel}
-        aria-keyshortcuts={titleKeyShortcuts}
-        onClick={onTitleClick}
-        onKeyDown={onTitleKeyDown}
-      >
-        <span className="spine-label">
-          <span className="title-text">{title}</span>
-          {author && <span className="author">{author}</span>}
-        </span>
-      </button>
 
       <button
         className="stamp"
@@ -89,9 +89,41 @@ export function Spine({
         <span className="series-band series-band-tail" />
       )}
 
-      {dropEdge && <span className={`spine-drop-indicator ${dropEdge}`} />}
-
       {children}
-    </li>
+    </>
+  );
+
+  if (!dragListId) {
+    return (
+      <li className={className} style={style}>
+        {titleButton}
+        {decorations}
+      </li>
+    );
+  }
+
+  return (
+    <DraggableListItem
+      className={className}
+      style={style}
+      getData={() => ({
+        [draggableTypeKey]: SPINE_DRAGGABLE_TYPE,
+        id: itemId,
+        parentId: dragListId,
+      })}
+      isDroppable={(data) =>
+        data[draggableTypeKey] === SPINE_DRAGGABLE_TYPE &&
+        data.parentId === dragListId
+      }
+      allowedEdges={['left', 'right']}
+      dragHandle={titleButton}
+      dragPreview={
+        <div className="spine-drag-preview" style={style}>
+          {title}
+        </div>
+      }
+    >
+      {decorations}
+    </DraggableListItem>
   );
 }

@@ -37,6 +37,7 @@ export type MediaStorageContextType = {
     destination?: { id: string } | { name: string; bandHue?: number },
   ) => void;
   reorderSeries: (series: MediaSeries, items: { id: string }[]) => void;
+  getSeriesItemsPath: (series: MediaSeries) => string;
 };
 
 const getMediaKey = (type: MediaDetails['type']) =>
@@ -98,6 +99,9 @@ export function MediaStorageProvider({ children }: { children: ReactNode }) {
     const items = series.find((entry) => entry.id === seriesId)?.items;
     return { ...media, position: getNextSeriesPosition(items) };
   };
+
+  const getSeriesItemsPath = (series: MediaSeries) =>
+    `${getSeriesKey(series)}/${series.id}/items`;
 
   const deleteMediaFromSeries = (series: MediaSeries, media: MediaDetails) => {
     const key = getMediaKey(media.type);
@@ -171,8 +175,9 @@ export function MediaStorageProvider({ children }: { children: ReactNode }) {
         moveMediaToSeriesId(media, destination?.id);
       }
     },
+    getSeriesItemsPath,
     reorderSeries: (series, items) => {
-      const itemsPath = `${getSeriesKey(series)}/${series.id}/items`;
+      const itemsPath = getSeriesItemsPath(series);
       setValues(
         Object.fromEntries(
           items.map(({ id }, index) => [`${itemsPath}/${id}/position`, index]),

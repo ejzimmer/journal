@@ -5,7 +5,6 @@ import { useMediaStorage } from './MediaStorageContext';
 import { Spine } from './Spine';
 import { getNextStatus } from './nextStatus';
 import { useFormToggle } from '../../shared/controls/useFormToggle';
-import { useSpineDragAndDrop } from './useSpineDragAndDrop';
 
 export type MediaEditFormProps<T extends MediaDetails> = {
   item: T;
@@ -47,7 +46,7 @@ export function MediaSpine<T extends MediaDetails, S extends string>({
   hue,
   config,
   EditForm,
-  reorderSeriesId,
+  dragListId,
   isFirst,
   isLast,
   onMove,
@@ -57,19 +56,13 @@ export function MediaSpine<T extends MediaDetails, S extends string>({
   hue: number;
   config: StatusConfig<T, S>;
   EditForm: ComponentType<MediaEditFormProps<T>>;
-  reorderSeriesId?: string;
+  dragListId?: string;
   isFirst: boolean;
   isLast: boolean;
   onMove: (destination: Destination) => void;
 }) {
   const { updateMedia } = useMediaStorage();
   const { isFormOpen, triggerRef, openForm, closeForm } = useFormToggle();
-  const spineRef = useRef<HTMLLIElement>(null);
-  const { isDragging, dropEdge } = useSpineDragAndDrop({
-    spineRef,
-    seriesId: reorderSeriesId,
-    itemId: item.id,
-  });
   const refocusAfterMoveRef = useRef(false);
 
   useEffect(() => {
@@ -79,7 +72,7 @@ export function MediaSpine<T extends MediaDetails, S extends string>({
   });
 
   const moveOnArrowKey = (event: KeyboardEvent) => {
-    if (!reorderSeriesId) return;
+    if (!dragListId) return;
     const destination = getMoveDestination(event, isFirst, isLast);
     if (!destination) return;
 
@@ -98,9 +91,8 @@ export function MediaSpine<T extends MediaDetails, S extends string>({
 
   return (
     <Spine
-      spineRef={spineRef}
-      isDragging={isDragging}
-      dropEdge={dropEdge}
+      itemId={item.id}
+      dragListId={dragListId}
       status={config.spineStatus[status]}
       hue={hue}
       bandHue={bandHue}
@@ -114,7 +106,7 @@ export function MediaSpine<T extends MediaDetails, S extends string>({
       onTitleClick={openForm}
       onStampClick={updateStatus}
       onTitleKeyDown={moveOnArrowKey}
-      titleKeyShortcuts={reorderSeriesId && MOVE_KEYS}
+      titleKeyShortcuts={dragListId && MOVE_KEYS}
     >
       <EditForm item={item} isOpen={isFormOpen} onCancel={closeForm} />
     </Spine>
