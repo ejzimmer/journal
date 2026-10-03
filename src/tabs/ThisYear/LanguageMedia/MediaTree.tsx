@@ -1,4 +1,5 @@
 import { CSSProperties, useMemo } from 'react';
+import { BranchNames } from './BranchNames';
 import { createTreeLayout } from './treeLayout';
 import { TreeFill } from './TreeFill';
 import { listGrownShapes } from './treeGrowth';
@@ -27,6 +28,9 @@ export function MediaTree({ series }: { series: PrintSeries }) {
         <TreeOutline shapes={grownShapes} />
         <TreeSilhouette layout={layout} />
         <TreeFill shapes={grownShapes} />
+        {series.type === 'book' && (
+          <BranchNames layout={layout} series={series} />
+        )}
       </svg>
       <Signpost name={series.name} />
     </div>
