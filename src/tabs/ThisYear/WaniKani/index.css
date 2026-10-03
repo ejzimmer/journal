@@ -74,7 +74,7 @@
 
   .level-gems {
     display: grid;
-    grid-template-columns: repeat(15, auto);
+    grid-template-columns: repeat(10, auto);
     justify-content: start;
     row-gap: 3px;
     column-gap: 4px;
