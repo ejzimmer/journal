@@ -5,6 +5,11 @@
   gap: 24px;
   list-style-type: none;
   padding: 0;
+
+  > li {
+    display: flex;
+    align-items: flex-end;
+  }
 }
 
 .tree-silhouette {
