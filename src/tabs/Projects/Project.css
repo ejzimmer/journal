@@ -229,22 +229,22 @@
     overflow: hidden;
     flex-direction: row;
     gap: 4px;
+    flex: 0 1 0;
+    min-width: 0;
     transition:
-      min-width 0.2s ease-out,
+      flex-grow 0.2s ease-out,
       opacity 0.1s 0.2s linear;
-    max-width: 0;
 
     &.visible {
+      flex-grow: 1;
       opacity: 1;
-    }
-
-    &.visible.has-description {
-      max-width: max-content;
     }
 
     input {
       border-color: var(--body-colour-light);
       flex-grow: 1;
+      width: 0;
+      min-width: 0;
       font-size: 0.8em;
       padding-inline: 6px;
     }
