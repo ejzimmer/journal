@@ -47,18 +47,20 @@ function EditGameForm({
 
 function GameMediaList({
   games,
-  bandHue,
-  seriesId,
+  series,
 }: {
   games?: Record<string, GameDetails>;
-  bandHue?: number;
-  seriesId?: string;
+  series?: SeriesDetails<GameDetails>;
 }) {
+  const { reorderSeries, getSeriesItemsPath } = useMediaStorage();
+
   return (
     <MediaList
       items={games}
-      bandHue={bandHue}
-      hue={(game) => getCoverHue(seriesId ?? game.title)}
+      listId={series && getSeriesItemsPath(series)}
+      bandHue={series?.bandHue}
+      onReorder={series && ((items) => reorderSeries(series, items))}
+      hue={(game) => getCoverHue(series?.id ?? game.title)}
       config={GAME_CONFIG}
       EditForm={EditGameForm}
     />
@@ -85,11 +87,7 @@ export function Games() {
             label={item.name}
             onRenameLabel={(name) => updateMediaSeries(item, name)}
           >
-            <GameMediaList
-              games={item.items}
-              bandHue={item.bandHue}
-              seriesId={item.id}
-            />
+            <GameMediaList games={item.items} series={item} />
           </Shelf>
         ))}
         {singleGames.map((game) => (

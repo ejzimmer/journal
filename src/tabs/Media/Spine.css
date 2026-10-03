@@ -159,3 +159,40 @@
 .spine.todo .series-band {
   background: oklch(80% 0.06 var(--band-hue));
 }
+
+.spine-item {
+  display: flex;
+}
+
+.spine-item .drag-handle-mount {
+  display: flex;
+  align-items: stretch;
+}
+
+.spine-item .drop-indicator.left,
+.spine-item .drop-indicator.right {
+  position: absolute;
+  inset-block: 0;
+  width: 3px;
+  border-radius: 2px;
+  background: var(--action-colour);
+  pointer-events: none;
+}
+
+.spine-item .drop-indicator.left {
+  inset-inline-start: -3px;
+}
+
+.spine-item .drop-indicator.right {
+  inset-inline-end: -3px;
+}
+
+.spine-drag-preview {
+  writing-mode: vertical-rl;
+  padding: 16px 8px;
+  border-radius: 3px;
+  background: oklch(85% 0.085 var(--hue));
+  color: oklch(38% 0.09 var(--hue));
+  font-family: 'Literata', Georgia, 'Times New Roman', serif;
+  font-size: 14px;
+}

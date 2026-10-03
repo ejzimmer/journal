@@ -26,7 +26,9 @@
   }
 
   & > .books {
-    border-color: hsl(29, 94%, 50%);
+    --media-accent: hsl(29 94% 50%);
+    --media-accent-dark: hsl(29 94% 38%);
+    border-color: var(--media-accent);
     background: hsla(29, 97%, 46%, 0.06);
   }
 
@@ -37,7 +39,9 @@
   }
 
   & > .games {
-    border-color: hsl(187, 76%, 36%);
+    --media-accent: hsl(187 76% 36%);
+    --media-accent-dark: hsl(187 76% 26%);
+    border-color: var(--media-accent);
     background: hsla(187, 76%, 36%, 0.06);
   }
 

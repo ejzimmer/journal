@@ -50,15 +50,19 @@ function EditBookForm({
 
 function BookMediaList({
   books,
-  bandHue,
+  series,
 }: {
   books?: Record<string, BookDetails>;
-  bandHue?: number;
+  series?: SeriesDetails<BookDetails>;
 }) {
+  const { reorderSeries, getSeriesItemsPath } = useMediaStorage();
+
   return (
     <MediaList
       items={books}
-      bandHue={bandHue}
+      listId={series && getSeriesItemsPath(series)}
+      bandHue={series?.bandHue}
+      onReorder={series && ((items) => reorderSeries(series, items))}
       hue={(book) => getCoverHue(book.author ?? book.title)}
       config={BOOK_CONFIG}
       EditForm={EditBookForm}
@@ -86,7 +90,7 @@ export function Books() {
             label={item.name}
             onRenameLabel={(name) => updateMediaSeries(item, name)}
           >
-            <BookMediaList books={item.items} bandHue={item.bandHue} />
+            <BookMediaList books={item.items} series={item} />
           </Shelf>
         ))}
         {singleBooks.map((book) => (
