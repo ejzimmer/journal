@@ -10,7 +10,6 @@ import {
   NewMedia,
   StoredMediaByYear,
 } from './types';
-import { useReadingGoalMigration } from './useReadingGoalMigration';
 
 export type LanguageMediaYearStorage = {
   year: number;
@@ -75,8 +74,6 @@ export function LanguageMediaStorageProvider({
 }: {
   children: ReactNode;
 }) {
-  useReadingGoalMigration();
-
   const { addItem, deleteItem, setValues, useValue } = useStorageContext();
   const { value: storedMediaByYear, loading } =
     useValue<StoredMediaByYear>(LANGUAGE_MEDIA_PATH);

@@ -435,6 +435,40 @@ const languageMedia: Record<string, LanguageMedia> = {
     },
     upTo: { volume: 1, page: 41 },
   },
+  lesmis: {
+    id: 'lesmis',
+    type: 'book',
+    name: 'Les Misérables',
+    language: 'french',
+    volumes: {
+      t1: {
+        id: 't1',
+        number: 1,
+        name: 'Fantine',
+        pages: 520,
+        lookups: 0,
+        aiQuestions: 0,
+        status: 'done',
+      },
+      t2: {
+        id: 't2',
+        number: 2,
+        name: 'Cosette',
+        pages: 480,
+        lookups: 0,
+        aiQuestions: 0,
+      },
+      t3: {
+        id: 't3',
+        number: 3,
+        name: 'Marius',
+        pages: 410,
+        lookups: 0,
+        aiQuestions: 0,
+      },
+    },
+    upTo: { volume: 2, page: 210 },
+  },
 };
 
 const adventureModes: Record<string, AdventureMode> = {
@@ -496,26 +530,6 @@ export const seedData = {
   '2026': {
     adventures,
     other_goals: {
-      lesmis1: {
-        id: 'lesmis1',
-        title: 'Les Misérables 1 : Fantine',
-        volumes: [{ totalPages: 520, readPages: 520 }],
-      },
-      lesmis2: {
-        id: 'lesmis2',
-        title: 'Les Misérables 2 : Cosette',
-        volumes: [{ totalPages: 480, readPages: 210 }],
-      },
-      lesmis3: {
-        id: 'lesmis3',
-        title: 'Les Misérables 3 : Marius',
-        volumes: [{ totalPages: 410 }],
-      },
-      chainsawman: {
-        id: 'chainsawman',
-        title: 'チェンソーマン',
-        volumes: [{ totalPages: 192, readPages: 60 }],
-      },
       windwaker: {
         id: 'windwaker',
         name: 'Wind Waker',
