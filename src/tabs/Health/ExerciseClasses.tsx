@@ -1,7 +1,8 @@
 import { useMemo } from 'react';
 import { ExerciseClass } from '../../shared/types';
 import { useHealthStorage } from './HealthStorageContext';
-import { ExerciseClassCard, isClassDone } from './ExerciseClassCard';
+import { ExerciseClassCard } from './ExerciseClassCard';
+import { isClassDone } from './isClassDone';
 import './ExerciseClasses.css';
 
 const MIN_SET_CLASS_COLUMNS = 4;

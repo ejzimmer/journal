@@ -1,9 +1,11 @@
-import { CSSProperties, Ref, useId, useRef, useState } from 'react';
+import { useId, useRef, useState } from 'react';
 import { flushSync } from 'react-dom';
 import { ExerciseClass } from '../../shared/types';
 import { TickIcon } from '../../shared/icons/Tick';
 import { useHealthStorage } from './HealthStorageContext';
-import { Sessions } from './Sessions';
+import { SetClass } from './SetClass';
+import { WeeklyClass } from './WeeklyClass';
+import { isClassDone } from './isClassDone';
 
 type ExerciseClassCardProps = {
   exerciseClass: ExerciseClass;
@@ -69,58 +71,5 @@ export function ExerciseClassCard({
         />
       )}
     </li>
-  );
-}
-
-type ClassProps = {
-  exerciseClass: ExerciseClass;
-  onChange: (exerciseClass: ExerciseClass) => void;
-  firstSessionRef: Ref<HTMLInputElement>;
-};
-
-function SetClass({
-  exerciseClass,
-  columns,
-  onChange,
-  firstSessionRef,
-}: ClassProps & { columns: number }) {
-  return (
-    <div
-      className="set-class"
-      style={{ '--columns': columns } as CSSProperties}
-    >
-      <Sessions
-        exerciseClass={exerciseClass}
-        blockIndex={0}
-        getSessionName={(index) => `Class ${index + 1}`}
-        onChange={onChange}
-        firstSessionRef={firstSessionRef}
-      />
-    </div>
-  );
-}
-
-function WeeklyClass({ exerciseClass, onChange, firstSessionRef }: ClassProps) {
-  return (
-    <div className="weekly-class">
-      {exerciseClass.blocks.map((week, weekIndex) => (
-        <Sessions
-          key={week.id}
-          exerciseClass={exerciseClass}
-          blockIndex={weekIndex}
-          getSessionName={(index) =>
-            `Week ${weekIndex + 1}, class ${index + 1}`
-          }
-          onChange={onChange}
-          firstSessionRef={weekIndex === 0 ? firstSessionRef : undefined}
-        />
-      ))}
-    </div>
-  );
-}
-
-export function isClassDone({ blocks }: ExerciseClass) {
-  return blocks.every(
-    ({ total, completed }) => (completed?.length ?? 0) === total,
   );
 }
