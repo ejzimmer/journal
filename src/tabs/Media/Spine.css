@@ -1,7 +1,12 @@
+@property --cover-shade {
+  syntax: '<number>';
+  inherits: false;
+  initial-value: 0;
+}
+
 .spine {
   --cover-lightness: 85;
   --cover-chroma: 0.085;
-  --cover-shade: 0;
   position: relative;
   padding-inline: 6px;
   padding-block-start: 22px;
@@ -40,6 +45,7 @@
   font-family: 'Literata', Georgia, 'Times New Roman', serif;
   font-size: 14px;
   line-height: 1.25;
+  transition: --cover-shade 0.15s;
 
   &:hover {
     --cover-shade: 5;
