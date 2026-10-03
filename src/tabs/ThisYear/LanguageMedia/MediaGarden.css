@@ -15,6 +15,10 @@
   fill: hsl(28 42% 48%);
 }
 
+.branch-names {
+  fill: transparent;
+}
+
 .tree-outline {
   fill: none;
   stroke: hsl(28 45% 28%);
