@@ -15,44 +15,6 @@ ul.other-goals {
     margin-block: 4px;
   }
 
-  .basic-goal {
-    display: flex;
-    gap: 12px;
-    align-items: center;
-
-    &.in_progress {
-      font-style: italic;
-
-      .switch {
-        .indicator {
-          --dark: forestgreen;
-          --light: limegreen;
-        }
-      }
-    }
-
-    &.done {
-      font-style: italic;
-      text-decoration: line-through;
-      opacity: 0.5;
-
-      .switch {
-        .indicator {
-          --dark: rgb(61, 60, 60);
-          --light: darkgray;
-        }
-      }
-    }
-
-    .switch {
-      border-radius: 100px;
-
-      label {
-        padding: 4px 6px;
-      }
-    }
-  }
-
   .bikes {
     display: flex;
     gap: 4px;
@@ -96,45 +58,6 @@ ul.other-goals {
       position-anchor: --bike-name;
       position-area: top right;
       opacity: 0.8;
-    }
-  }
-
-  .discrete-times-goal {
-    display: grid;
-    grid-template-columns: auto 1fr;
-    gap: 0 4px;
-
-    &.done {
-      opacity: 0.5;
-
-      .description {
-        font-style: italic;
-        text-decoration: line-through;
-      }
-    }
-
-    .description {
-      grid-column: 1;
-      grid-row: 1/10;
-      align-self: center;
-    }
-    .completions {
-      grid-column: 2;
-      display: flex;
-
-      .tooltip-container:hover .tooltip {
-        opacity: 1;
-      }
-
-      label.emoji-checkbox {
-        opacity: 0.4;
-        filter: grayscale(100%);
-
-        &.done {
-          opacity: 1;
-          filter: none;
-        }
-      }
     }
   }
 }
