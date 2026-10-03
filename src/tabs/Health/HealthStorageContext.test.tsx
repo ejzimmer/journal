@@ -1,7 +1,7 @@
 import { renderHook } from '@testing-library/react';
 import { ContextType } from '../../shared/FirebaseContext';
 import { StorageContextWrapper } from '../../shared/storageContextTestUtils';
-import { DAILY_PATH, EXERCISES_PATH } from '../../shared/types';
+import { CLASSES_PATH, DAILY_PATH, EXERCISES_PATH } from '../../shared/types';
 import {
   HealthStorageProvider,
   useHealthStorage,
@@ -131,6 +131,21 @@ describe('HealthStorageContext', () => {
           update,
         );
       });
+    });
+  });
+
+  describe('classes', () => {
+    it('adds a class', () => {
+      const addItem = jest.fn();
+      const health = createHealthStorage({ addItem });
+      const wheel = {
+        description: 'Wheel',
+        blocks: [{ id: 'all', total: 30 }],
+      };
+
+      health.addClass(wheel);
+
+      expect(addItem).toHaveBeenCalledWith(CLASSES_PATH, wheel);
     });
   });
 

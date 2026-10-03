@@ -25,6 +25,7 @@ export type HealthStorageContextType = {
   ) => void;
   editExerciseUpdate: (exerciseId: string, update: ExerciseUpdate) => void;
   deleteExerciseUpdate: (exerciseId: string, update: ExerciseUpdate) => void;
+  addClass: (exerciseClass: Omit<ExerciseClass, 'id'>) => void;
   updateClass: (exerciseClass: ExerciseClass) => void;
 };
 
@@ -78,6 +79,9 @@ export function HealthStorageProvider({ children }: { children: ReactNode }) {
         `${EXERCISES_PATH}/${exerciseId}/updates`,
         update,
       ),
+    addClass: (exerciseClass) => {
+      addItem<ExerciseClass>(CLASSES_PATH, exerciseClass);
+    },
     updateClass: (exerciseClass) =>
       updateItem<ExerciseClass>(CLASSES_PATH, exerciseClass),
   };

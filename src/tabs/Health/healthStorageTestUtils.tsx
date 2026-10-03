@@ -18,6 +18,7 @@ export function createHealthStorageContext(
     recordExercise: jest.fn(),
     editExerciseUpdate: jest.fn(),
     deleteExerciseUpdate: jest.fn(),
+    addClass: jest.fn(),
     updateClass: jest.fn(),
     ...overrides,
   };
