@@ -140,15 +140,44 @@ describe('WorkStorageContext', () => {
     expect(firebaseContext.updateList).toHaveBeenCalledWith('work', [list]);
   });
 
-  it("addTask writes a new task under the list's items", () => {
-    const firebaseContext = createFirebaseContext({ [list.id]: list });
-    const workStorage = getWorkStorage(firebaseContext);
+  describe('addTask', () => {
+    it("writes a new task after the last of the list's items", () => {
+      const firebaseContext = createFirebaseContext({
+        [list.id]: {
+          ...list,
+          items: {
+            [task.id]: task,
+            'task-2': { ...task, id: 'task-2', position: 4 },
+          },
+        },
+      });
+      const workStorage = getWorkStorage(firebaseContext);
 
-    workStorage?.addTask(list.id, { description: 'New task' });
+      workStorage?.addTask(list.id, { description: 'New task' });
 
-    expect(firebaseContext.addItem).toHaveBeenCalledWith('work/list-1/items', {
-      description: 'New task',
-      parentId: 'work/list-1/items',
+      expect(firebaseContext.addItem).toHaveBeenCalledWith(
+        'work/list-1/items',
+        {
+          description: 'New task',
+          parentId: 'work/list-1/items',
+          position: 5,
+        },
+      );
+    });
+
+    it('writes a task into an empty list at the first position', () => {
+      const { items: _items, ...emptyList } = list;
+      const firebaseContext = createFirebaseContext({
+        [emptyList.id]: emptyList,
+      });
+      const workStorage = getWorkStorage(firebaseContext);
+
+      workStorage?.addTask(list.id, { description: 'New task' });
+
+      expect(firebaseContext.addItem).toHaveBeenCalledWith(
+        'work/list-1/items',
+        expect.objectContaining({ position: 0 }),
+      );
     });
   });
 
@@ -909,6 +938,7 @@ describe('WorkStorageContext labels', () => {
     expect(firebaseContext.addItem).toHaveBeenCalledWith('work/list-1/items', {
       description: 'New task',
       parentId: 'work/list-1/items',
+      position: 1,
       labelIds: [urgentLabel.id],
     });
   });

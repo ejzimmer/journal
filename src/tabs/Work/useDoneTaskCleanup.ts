@@ -6,6 +6,7 @@ import {
   sortByPosition,
 } from '../../shared/drag-and-drop/utils';
 import { WorkTask, WORK_CLEANUP_KEY, WORK_KEY } from './types';
+import { getAppendPosition } from './taskPosition';
 
 const finishedBeforeToday = (task: WorkTask) =>
   task.status === 'done' && isBeforeToday(task.lastStatusUpdate);
@@ -23,6 +24,7 @@ export function useDoneTaskCleanup() {
       if (!doneList) return;
 
       const doneListItemsKey = `${WORK_KEY}/${doneList.id}/items`;
+      let nextDonePosition = getAppendPosition(doneList);
 
       allLists.forEach((list) => {
         if (list.id === doneList.id || !list.items) return;
@@ -43,10 +45,11 @@ export function useDoneTaskCleanup() {
           { done: [], notDone: [] },
         );
 
-        done.forEach((task) =>
+        sortByPosition(done).forEach((task) =>
           addItem<WorkTask>(doneListItemsKey, {
             ...task,
             parentId: doneListItemsKey,
+            position: nextDonePosition++,
             lastStatusUpdate: getToday(),
           }),
         );
