@@ -11,3 +11,8 @@
   fill: none;
   stroke: var(--body-colour);
 }
+
+.tree-fill {
+  fill: none;
+  stroke: hsl(28 42% 48%);
+}
