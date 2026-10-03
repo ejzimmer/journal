@@ -1,4 +1,4 @@
-import { ReactElement } from 'react';
+import { ReactElement, Ref } from 'react';
 import { isTask } from '../drag-utils';
 
 import { DraggableListItem } from '../../../shared/drag-and-drop/DraggableListItem';
@@ -9,7 +9,10 @@ import { useWorkStorage } from '../WorkStorageContext';
 import { Labels } from './Labels';
 import { UpdateLabels } from './UpdateLabels';
 import { DueDate } from './DueDate';
-import { EditableText } from '../../../shared/controls/EditableText';
+import {
+  EditableText,
+  EditableTextHandle,
+} from '../../../shared/controls/EditableText';
 import { WorktreeStamp } from './WorktreeStamp';
 import { AddWorktree } from './AddWorktree';
 import { Worktree } from '../types';
@@ -20,10 +23,18 @@ type TaskProps = {
   task: WorkTask;
   listId: string;
   dragHandle: ReactElement;
+  descriptionRef?: Ref<EditableTextHandle>;
+  onDelete: () => void;
 };
 
-export function Task({ task, listId, dragHandle }: TaskProps) {
-  const { updateTask, deleteTask, addLabel, removeLabel } = useWorkStorage();
+export function Task({
+  task,
+  listId,
+  dragHandle,
+  descriptionRef,
+  onDelete,
+}: TaskProps) {
+  const { updateTask, addLabel, removeLabel } = useWorkStorage();
   const hasLabels = (task.labelIds?.length ?? 0) > 0;
 
   const onChangeWorktree = (newWorktree?: Worktree) => {
@@ -80,6 +91,7 @@ export function Task({ task, listId, dragHandle }: TaskProps) {
       </div>
       <div className="task-content">
         <EditableText
+          ref={descriptionRef}
           label={`Edit description ${task.description}`}
           value={task.description}
           onChange={(description) => {
@@ -88,7 +100,7 @@ export function Task({ task, listId, dragHandle }: TaskProps) {
               description,
             });
           }}
-          onDelete={() => deleteTask(listId, task)}
+          onDelete={onDelete}
           className="inline"
           style={{
             textDecoration: task.status === 'done' ? 'line-through' : 'none',

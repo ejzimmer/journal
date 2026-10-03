@@ -32,7 +32,7 @@ export type WorkStorageContextType = {
   addTask: (
     listId: string,
     task: Partial<WorkTask> & { description: string; labels?: Label[] },
-  ) => void;
+  ) => string | null;
   updateTask: (listId: string, task: WorkTask) => void;
   deleteTask: (listId: string, task: WorkTask) => void;
   moveTask: (args: {
@@ -232,7 +232,7 @@ export function WorkStorageProvider({ children }: { children: ReactNode }) {
     addTask: (listId, { labels: newLabels, ...task }) => {
       const resolvedIds = newLabels?.map(upsertLabel) ?? [];
       const labelIds = [...(task.labelIds ?? []), ...resolvedIds];
-      addItem(`${WORK_KEY}/${listId}/items`, {
+      return addItem(`${WORK_KEY}/${listId}/items`, {
         ...task,
         parentId: `${WORK_KEY}/${listId}/items`,
         ...(labelIds.length > 0 && { labelIds }),

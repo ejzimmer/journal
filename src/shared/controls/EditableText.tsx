@@ -1,6 +1,8 @@
 import {
   CSSProperties,
+  Ref,
   useEffect,
+  useImperativeHandle,
   useLayoutEffect,
   useRef,
   useState,
@@ -8,7 +10,12 @@ import {
 import { useFormToggle } from './useFormToggle';
 import './EditableText.css';
 
+export type EditableTextHandle = {
+  focus: () => void;
+};
+
 export type EditableTextProps = {
+  ref?: Ref<EditableTextHandle>;
   value: string;
   onChange: (text: string) => void;
   onDelete?: () => void;
@@ -26,6 +33,7 @@ const measureStyle: CSSProperties = {
 };
 
 export function EditableText({
+  ref,
   value,
   onChange,
   onDelete,
@@ -44,6 +52,10 @@ export function EditableText({
   const [inputWidth, setInputWidth] = useState<number>();
   const inputRef = useRef<HTMLInputElement>(null);
   const measureRef = useRef<HTMLSpanElement>(null);
+
+  useImperativeHandle(ref, () => ({
+    focus: () => displayRef.current?.focus(),
+  }));
 
   useEffect(() => {
     if (isEditing) {
