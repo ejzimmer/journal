@@ -16,3 +16,45 @@
   fill: none;
   stroke: hsl(28 42% 48%);
 }
+
+.media-tree {
+  position: relative;
+
+  svg {
+    display: block;
+  }
+}
+
+.signpost {
+  position: absolute;
+  inset-block-end: var(--ground);
+  inset-inline-start: calc(50% + 16px);
+  display: flex;
+  flex-direction: column;
+}
+
+.sign-board {
+  padding-inline: 0.6em;
+  border: 2px solid var(--body-colour);
+  border-radius: 6px;
+  background: hsl(33 72% 72%);
+  white-space: nowrap;
+}
+
+.sign-posts {
+  display: flex;
+  justify-content: center;
+  padding-inline: 1em;
+
+  &.two-posts {
+    justify-content: space-between;
+  }
+}
+
+.sign-post {
+  width: 6px;
+  height: 1.2em;
+  border: 2px solid var(--body-colour);
+  border-block-start: none;
+  background: hsl(28 42% 48%);
+}
