@@ -1,4 +1,4 @@
-import { findCurrentVolume } from './currentVolume';
+import { findCurrentVolume } from './findCurrentVolume';
 import { PrintSeries, Volume } from './types';
 
 const createVolume = (number: number, status?: Volume['status']): Volume => ({
