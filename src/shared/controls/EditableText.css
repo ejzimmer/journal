@@ -3,6 +3,7 @@ input.editable-text {
   font-size: inherit;
   height: unset;
   min-width: 0;
+  field-sizing: content;
   padding-block: 4px;
   padding-inline: 2px;
   border-radius: 4px;
