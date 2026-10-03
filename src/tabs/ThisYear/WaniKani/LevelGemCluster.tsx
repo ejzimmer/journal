@@ -41,7 +41,7 @@ export function LevelGemCluster({
           points={formatPoints(
             getHexVertices(...layout.centres[type], layout.settingRadius),
           )}
-          fill="url(#wanikani-gold)"
+          fill={burned[type] ? 'url(#wanikani-gold)' : 'url(#wanikani-grey)'}
         />
       ))}
       {SUBJECT_TYPES.map((type) => (
