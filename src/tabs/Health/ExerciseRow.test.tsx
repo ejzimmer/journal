@@ -20,10 +20,13 @@ const rdl: Exercise = {
   },
 };
 
-function renderExerciseRow(overrides: Partial<HealthStorageContextType> = {}) {
+function renderExerciseRow(
+  overrides: Partial<HealthStorageContextType> = {},
+  exercise = rdl,
+) {
   return renderWithHealthStorage(
     <ul>
-      <ExerciseRow exercise={rdl} />
+      <ExerciseRow exercise={exercise} />
     </ul>,
     overrides,
   );
@@ -79,6 +82,30 @@ describe('ExerciseRow', () => {
       ).toBeInTheDocument();
     });
 
+    describe('with earlier updates', () => {
+      it('fills the details in from the latest one', async () => {
+        renderExerciseRow();
+
+        await openRecordForm();
+
+        expect(screen.getByRole('textbox', { name: 'Details' })).toHaveValue(
+          '3 x 10 x 22kg',
+        );
+      });
+    });
+
+    describe('with no earlier updates', () => {
+      it('leaves the details empty', async () => {
+        renderExerciseRow({}, { id: 'rdl', name: 'B-stance RDL' });
+
+        await openRecordForm();
+
+        expect(screen.getByRole('textbox', { name: 'Details' })).toHaveValue(
+          '',
+        );
+      });
+    });
+
     describe('again', () => {
       it('closes the form', async () => {
         renderExerciseRow();
@@ -99,10 +126,9 @@ describe('ExerciseRow', () => {
       renderExerciseRow({ recordExercise });
       const { user } = await openRecordForm();
 
-      await user.type(
-        screen.getByRole('textbox', { name: 'Details' }),
-        '3 x 10 x 24kg',
-      );
+      const details = screen.getByRole('textbox', { name: 'Details' });
+      await user.clear(details);
+      await user.type(details, '3 x 10 x 24kg');
       await user.click(screen.getByRole('button', { name: 'Save' }));
 
       expect(recordExercise).toHaveBeenCalledWith(
@@ -116,10 +142,6 @@ describe('ExerciseRow', () => {
       const { user, button } = await openRecordForm();
       const form = screen.getByRole('form', { name: 'Record B-stance RDL' });
 
-      await user.type(
-        screen.getByRole('textbox', { name: 'Details' }),
-        '3 x 10 x 24kg',
-      );
       await user.click(screen.getByRole('button', { name: 'Save' }));
 
       expect(form).not.toBeInTheDocument();

@@ -30,6 +30,7 @@ function RecommendationIcon({ value }: { value: RecommendationOption }) {
 type ExerciseFormProps = {
   exerciseName: string;
   update?: ExerciseUpdate;
+  defaultDetails?: string;
   onSubmit: (update: Omit<ExerciseUpdate, 'id'>) => void;
   onCancel: () => void;
   onDelete?: () => void;
@@ -38,12 +39,13 @@ type ExerciseFormProps = {
 export function ExerciseForm({
   exerciseName,
   update,
+  defaultDetails = '',
   onSubmit,
   onCancel,
   onDelete,
 }: ExerciseFormProps) {
   const [date, setDate] = useState(update?.date ?? getToday());
-  const [details, setDetails] = useState(update?.details ?? '');
+  const [details, setDetails] = useState(update?.details ?? defaultDetails);
   const [recommendation, setRecommendation] = useState<RecommendationOption>(
     update?.recommendation ?? 'no change',
   );
