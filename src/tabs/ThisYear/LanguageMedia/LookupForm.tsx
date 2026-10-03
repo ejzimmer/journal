@@ -23,9 +23,16 @@ export function LookupForm({ series, volume, onSubmit }: LookupFormProps) {
     }
   };
 
-  const saveComprehension = (event: FormEvent<HTMLFormElement>) => {
+  const pageUpTo =
+    series.upTo?.volume === volume.number ? series.upTo.page : undefined;
+
+  const saveProgress = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
+    const page = readZeroOrMore(data, 'page');
+    if (page !== undefined) {
+      updateItem([series.id], { upTo: { volume: volume.number, page } });
+    }
     updateItem(path, {
       lookups: readZeroOrMore(data, 'lookups') ?? 0,
       aiQuestions: readZeroOrMore(data, 'aiQuestions') ?? 0,
@@ -38,7 +45,7 @@ export function LookupForm({ series, volume, onSubmit }: LookupFormProps) {
     <form
       aria-label={`Track ${name}`}
       onKeyDown={submitOnEnter}
-      onSubmit={saveComprehension}
+      onSubmit={saveProgress}
     >
       <button
         type="button"
@@ -47,6 +54,13 @@ export function LookupForm({ series, volume, onSubmit }: LookupFormProps) {
       >
         +1 looked up
       </button>
+      <NumberField
+        label="Page"
+        name="page"
+        defaultValue={pageUpTo}
+        min={0}
+        max={volume.pages}
+      />
       <NumberField
         key={volume.lookups}
         label="Looked up"

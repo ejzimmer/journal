@@ -57,6 +57,20 @@ describe('LookupForm', () => {
       );
     });
 
+    describe('with a page', () => {
+      it('saves where I am up to', async () => {
+        const { user, storageContext } = renderForm();
+        const page = screen.getByRole('spinbutton', { name: 'Page' });
+
+        await user.clear(page);
+        await user.type(page, '60{Enter}');
+
+        expect(storageContext.updateItem).toHaveBeenCalledWith(['yotsuba'], {
+          upTo: { volume: 1, page: 60 },
+        });
+      });
+    });
+
     it('closes the form', async () => {
       const { user, onSubmit } = renderForm();
 
