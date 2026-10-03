@@ -1,0 +1,13 @@
+.media-garden {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 24px;
+  list-style-type: none;
+  padding: 0;
+}
+
+.tree-outline {
+  fill: none;
+  stroke: var(--body-colour);
+}
