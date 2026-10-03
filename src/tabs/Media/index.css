@@ -30,6 +30,12 @@
     background: hsla(29, 97%, 46%, 0.06);
   }
 
+  & > .wind-waker {
+    grid-column: 1 / -1;
+    justify-self: center;
+    padding-block-start: 24px;
+  }
+
   & > .games {
     border-color: hsl(187, 76%, 36%);
     background: hsla(187, 76%, 36%, 0.06);

@@ -2,20 +2,15 @@ import { CSSProperties } from 'react';
 import { EditableText } from '../../../shared/controls/EditableText';
 import { EmojiCheckbox } from '../../../shared/controls/EmojiCheckbox';
 
-export type GameGoalData = {
-  id?: string;
-  name: string;
-  goals: Record<string, any>;
-};
+import './WindWakerGoals.css';
 
-export function GameGoal({
-  goal,
-  onChange,
+export function WindWakerGoals({
+  goals,
+  updateGoal,
 }: {
-  goal: GameGoalData;
-  onChange: (goal: GameGoalData) => void;
+  goals: Record<string, any>;
+  updateGoal: (key: string, value: any) => void;
 }) {
-  const { goals, ...data } = goal;
   const {
     arrowCapacity,
     blueChuJellies,
@@ -38,16 +33,6 @@ export function GameGoal({
     magicArmour,
     magicMeterDouble,
   } = goals;
-
-  const updateGoal = (key: string, value: any) => {
-    onChange({
-      ...data,
-      goals: {
-        ...goals,
-        [key]: value,
-      },
-    });
-  };
 
   return (
     <div className="windwaker">
