@@ -47,18 +47,20 @@ function EditGameForm({
 
 function GameMediaList({
   games,
-  bandHue,
-  seriesId,
+  series,
 }: {
   games?: Record<string, GameDetails>;
-  bandHue?: number;
-  seriesId?: string;
+  series?: SeriesDetails<GameDetails>;
 }) {
+  const { reorderSeries } = useMediaStorage();
+
   return (
     <MediaList
       items={games}
-      bandHue={bandHue}
-      hue={(game) => getCoverHue(seriesId ?? game.title)}
+      seriesId={series?.id}
+      bandHue={series?.bandHue}
+      onReorder={series && ((items) => reorderSeries(series, items))}
+      hue={(game) => getCoverHue(series?.id ?? game.title)}
       config={GAME_CONFIG}
       EditForm={EditGameForm}
     />
@@ -67,6 +69,7 @@ function GameMediaList({
 
 export function Games() {
   const { games, updateMediaSeries } = useMediaStorage();
+  const formConfig = useGameFormConfig();
 
   const series = games.filter((item): item is SeriesDetails<GameDetails> =>
     isSeries(item),
@@ -84,12 +87,16 @@ export function Games() {
             key={item.id}
             label={item.name}
             onRenameLabel={(name) => updateMediaSeries(item, name)}
+            labelAction={
+              <AddMediaForm
+                ariaLabel={`Add a game to ${item.name}`}
+                series={item}
+                className="ghost shelf-add"
+                config={formConfig}
+              />
+            }
           >
-            <GameMediaList
-              games={item.items}
-              bandHue={item.bandHue}
-              seriesId={item.id}
-            />
+            <GameMediaList games={item.items} series={item} />
           </Shelf>
         ))}
         {singleGames.map((game) => (
@@ -98,7 +105,7 @@ export function Games() {
           </Shelf>
         ))}
       </div>
-      <AddMediaForm ariaLabel="Add a game" config={useGameFormConfig()} />
+      <AddMediaForm ariaLabel="Add a game" config={formConfig} />
     </div>
   );
 }

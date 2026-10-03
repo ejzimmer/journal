@@ -19,9 +19,11 @@ export type MediaFormConfig<T extends MediaDetails> = {
 
 export function MediaForm<T extends MediaDetails>({
   item,
+  defaultSeries,
   config,
 }: {
   item?: T;
+  defaultSeries?: SeriesDetails<T>;
   config: MediaFormConfig<T>;
 }) {
   const titleRef = useRef<HTMLInputElement>(null);
@@ -42,7 +44,7 @@ export function MediaForm<T extends MediaDetails>({
 
   const currentSeries = item
     ? config.seriesList.find((series) => item.id in (series.items ?? {}))
-    : undefined;
+    : defaultSeries;
 
   const [series, setSeries] = useState<OptionType | undefined>(
     currentSeries
@@ -65,8 +67,9 @@ export function MediaForm<T extends MediaDetails>({
   };
 
   const resetSeriesBand = () => {
-    setSeries(undefined);
-    setBandHue(undefined);
+    changeSeries(
+      defaultSeries && { id: defaultSeries.id, label: defaultSeries.name },
+    );
   };
 
   const seriesOptions = config.seriesList.map((s) => ({
@@ -172,20 +175,28 @@ export function MediaForm<T extends MediaDetails>({
 
 export function AddMediaForm<T extends MediaDetails>({
   ariaLabel,
+  series,
+  className = 'outline icon',
   config,
 }: {
   ariaLabel: string;
+  series?: SeriesDetails<T>;
+  className?: string;
   config: MediaFormConfig<T>;
 }) {
   return (
     <Modal
       trigger={(props) => (
-        <button {...props} className="outline icon" aria-label={ariaLabel}>
+        <button {...props} className={className} aria-label={ariaLabel}>
           +
         </button>
       )}
     >
-      <MediaForm config={config} />
+      <MediaForm
+        key={series && `${series.id}:${series.name}:${series.bandHue}`}
+        defaultSeries={series}
+        config={config}
+      />
     </Modal>
   );
 }

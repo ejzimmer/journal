@@ -50,15 +50,19 @@ function EditBookForm({
 
 function BookMediaList({
   books,
-  bandHue,
+  series,
 }: {
   books?: Record<string, BookDetails>;
-  bandHue?: number;
+  series?: SeriesDetails<BookDetails>;
 }) {
+  const { reorderSeries } = useMediaStorage();
+
   return (
     <MediaList
       items={books}
-      bandHue={bandHue}
+      seriesId={series?.id}
+      bandHue={series?.bandHue}
+      onReorder={series && ((items) => reorderSeries(series, items))}
       hue={(book) => getCoverHue(book.author ?? book.title)}
       config={BOOK_CONFIG}
       EditForm={EditBookForm}
@@ -68,6 +72,7 @@ function BookMediaList({
 
 export function Books() {
   const { books, updateMediaSeries } = useMediaStorage();
+  const formConfig = useBookFormConfig();
 
   const series = books.filter((item): item is SeriesDetails<BookDetails> =>
     isSeries(item),
@@ -85,8 +90,16 @@ export function Books() {
             key={item.id}
             label={item.name}
             onRenameLabel={(name) => updateMediaSeries(item, name)}
+            labelAction={
+              <AddMediaForm
+                ariaLabel={`Add a book to ${item.name}`}
+                series={item}
+                className="ghost shelf-add"
+                config={formConfig}
+              />
+            }
           >
-            <BookMediaList books={item.items} bandHue={item.bandHue} />
+            <BookMediaList books={item.items} series={item} />
           </Shelf>
         ))}
         {singleBooks.map((book) => (
@@ -95,7 +108,7 @@ export function Books() {
           </Shelf>
         ))}
       </div>
-      <AddMediaForm ariaLabel="Add a book" config={useBookFormConfig()} />
+      <AddMediaForm ariaLabel="Add a book" config={formConfig} />
     </div>
   );
 }

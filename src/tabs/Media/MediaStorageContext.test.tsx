@@ -197,8 +197,54 @@ describe('MediaStorageContext', () => {
 
       expect(addItem).toHaveBeenCalledWith(
         `${BOOKS_KEY}/series-discworld/items`,
-        { type: 'book', title: 'Thud!' },
+        { type: 'book', title: 'Thud!', position: 0 },
       );
+    });
+
+    describe('when the series already has media in it', () => {
+      it('puts the new media after the last one in the series', () => {
+        const addItem = jest.fn();
+        const discworld = createSeries('series-discworld', 'Discworld', [
+          createBook('book-guards', 'Guards! Guards!', { position: 4 }),
+          createBook('book-nightwatch', 'Night Watch', { position: 1 }),
+        ]);
+        const mediaStorage = createMediaStorage({
+          ...createStoredMedia({ books: [discworld] }),
+          addItem,
+        });
+
+        mediaStorage.addMedia(
+          { type: 'book', title: 'Thud!' },
+          'series-discworld',
+        );
+
+        expect(addItem).toHaveBeenCalledWith(
+          `${BOOKS_KEY}/series-discworld/items`,
+          { type: 'book', title: 'Thud!', position: 5 },
+        );
+      });
+
+      it('counts media with no stored position by where it sits in the series', () => {
+        const addItem = jest.fn();
+        const discworld = createSeries('series-discworld', 'Discworld', [
+          createBook('book-guards', 'Guards! Guards!'),
+          createBook('book-nightwatch', 'Night Watch'),
+        ]);
+        const mediaStorage = createMediaStorage({
+          ...createStoredMedia({ books: [discworld] }),
+          addItem,
+        });
+
+        mediaStorage.addMedia(
+          { type: 'book', title: 'Thud!' },
+          'series-discworld',
+        );
+
+        expect(addItem).toHaveBeenCalledWith(
+          `${BOOKS_KEY}/series-discworld/items`,
+          { type: 'book', title: 'Thud!', position: 2 },
+        );
+      });
     });
   });
 
@@ -219,7 +265,7 @@ describe('MediaStorageContext', () => {
       expect(addItem).toHaveBeenNthCalledWith(
         2,
         `${BOOKS_KEY}/new-series/items`,
-        { type: 'book', title: 'The Wee Free Men' },
+        { type: 'book', title: 'The Wee Free Men', position: 0 },
       );
     });
   });
@@ -367,7 +413,7 @@ describe('MediaStorageContext', () => {
 
       expect(updateItem).toHaveBeenCalledWith(
         `${BOOKS_KEY}/series-earthsea/items`,
-        guards,
+        { ...guards, position: 0 },
       );
       expect(deleteItem).toHaveBeenCalledWith(
         `${BOOKS_KEY}/series-discworld/items`,
@@ -380,7 +426,7 @@ describe('MediaStorageContext', () => {
       const deleteItem = jest.fn();
       const nation = createBook('book-nation', 'Nation');
       const mediaStorage = createMediaStorage({
-        ...createStoredMedia({ books: [nation] }),
+        ...createStoredMedia({ books: [nation, discworld] }),
         updateItem,
         deleteItem,
       });
@@ -389,7 +435,7 @@ describe('MediaStorageContext', () => {
 
       expect(updateItem).toHaveBeenCalledWith(
         `${BOOKS_KEY}/series-discworld/items`,
-        nation,
+        { ...nation, position: 2 },
       );
       expect(deleteItem).toHaveBeenCalledWith(BOOKS_KEY, nation);
     });
@@ -427,7 +473,7 @@ describe('MediaStorageContext', () => {
 
       expect(updateItem).toHaveBeenCalledWith(
         `${BOOKS_KEY}/series-discworld/items`,
-        wizard,
+        { ...wizard, position: 0 },
       );
       expect(deleteItem).toHaveBeenCalledTimes(1);
       expect(deleteItem).toHaveBeenCalledWith(BOOKS_KEY, earthsea);
@@ -500,10 +546,10 @@ describe('MediaStorageContext', () => {
         type: 'series',
         name: 'Discworld',
       });
-      expect(updateItem).toHaveBeenCalledWith(
-        `${BOOKS_KEY}/new-series/items`,
-        nation,
-      );
+      expect(updateItem).toHaveBeenCalledWith(`${BOOKS_KEY}/new-series/items`, {
+        ...nation,
+        position: 0,
+      });
       expect(deleteItem).toHaveBeenCalledWith(BOOKS_KEY, nation);
     });
 
@@ -520,14 +566,56 @@ describe('MediaStorageContext', () => {
 
       mediaStorage.moveMedia(guards, { name: 'Discworld (renamed)' });
 
-      expect(updateItem).toHaveBeenCalledWith(
-        `${BOOKS_KEY}/new-series/items`,
-        guards,
-      );
+      expect(updateItem).toHaveBeenCalledWith(`${BOOKS_KEY}/new-series/items`, {
+        ...guards,
+        position: 0,
+      });
       expect(deleteItem).toHaveBeenCalledWith(
         `${BOOKS_KEY}/series-discworld/items`,
         guards,
       );
+    });
+  });
+
+  describe('reorderSeries', () => {
+    const guards = createBook('book-guards', 'Guards! Guards!');
+    const nightWatch = createBook('book-nightwatch', 'Night Watch');
+
+    it("writes each book's place in the new order to its position", () => {
+      const setValues = jest.fn();
+      const discworld = createSeries('series-discworld', 'Discworld', [
+        guards,
+        nightWatch,
+      ]);
+      const mediaStorage = createMediaStorage({
+        ...createStoredMedia({ books: [discworld] }),
+        setValues,
+      });
+
+      mediaStorage.reorderSeries(discworld, [nightWatch, guards]);
+
+      expect(setValues).toHaveBeenCalledWith({
+        [`${BOOKS_KEY}/series-discworld/items/book-nightwatch/position`]: 0,
+        [`${BOOKS_KEY}/series-discworld/items/book-guards/position`]: 1,
+      });
+    });
+
+    it('writes a game series under the games key', () => {
+      const setValues = jest.fn();
+      const hades = createGame('game-hades', 'Hades');
+      const hades2 = createGame('game-hades-2', 'Hades II');
+      const series = createSeries('series-hades', 'Hades', [hades, hades2]);
+      const mediaStorage = createMediaStorage({
+        ...createStoredMedia({ games: [series] }),
+        setValues,
+      });
+
+      mediaStorage.reorderSeries(series, [hades2, hades]);
+
+      expect(setValues).toHaveBeenCalledWith({
+        [`${GAMES_KEY}/series-hades/items/game-hades-2/position`]: 0,
+        [`${GAMES_KEY}/series-hades/items/game-hades/position`]: 1,
+      });
     });
   });
 });

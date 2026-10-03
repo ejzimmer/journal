@@ -13,6 +13,7 @@ import {
   ReadingItemDetails,
   SeriesDetails,
 } from './types';
+import { getNextSeriesPosition } from './seriesOrder';
 
 export type MediaStorageContextType = {
   books: ReadingItemDetails[];
@@ -35,6 +36,7 @@ export type MediaStorageContextType = {
     media: MediaDetails,
     destination?: { id: string } | { name: string; bandHue?: number },
   ) => void;
+  reorderSeries: (series: MediaSeries, items: { id: string }[]) => void;
 };
 
 const getMediaKey = (type: MediaDetails['type']) =>
@@ -58,7 +60,8 @@ export const MediaStorageContext = createContext<
 >(undefined);
 
 export function MediaStorageProvider({ children }: { children: ReactNode }) {
-  const { addItem, updateItem, deleteItem, useValue } = useStorageContext();
+  const { addItem, updateItem, deleteItem, setValues, useValue } =
+    useStorageContext();
 
   const { value: storedBooks, loading: booksLoading } =
     useValue<Record<string, ReadingItemDetails>>(BOOKS_KEY);
@@ -82,6 +85,18 @@ export function MediaStorageProvider({ children }: { children: ReactNode }) {
   const findSeriesContaining = (media: MediaDetails) => {
     const series = media.type === 'book' ? bookSeries : gameSeries;
     return series.find((entry) => media.id in (entry.items ?? {}));
+  };
+
+  const getSeriesKey = (series: MediaSeries) =>
+    bookSeries.some((entry) => entry.id === series.id) ? BOOKS_KEY : GAMES_KEY;
+
+  const appendToSeries = <T extends MediaDetails | NewMedia>(
+    media: T,
+    seriesId: string,
+  ): T => {
+    const series = media.type === 'book' ? bookSeries : gameSeries;
+    const items = series.find((entry) => entry.id === seriesId)?.items;
+    return { ...media, position: getNextSeriesPosition(items) };
   };
 
   const deleteMediaFromSeries = (series: MediaSeries, media: MediaDetails) => {
@@ -108,7 +123,10 @@ export function MediaStorageProvider({ children }: { children: ReactNode }) {
     isLoading: booksLoading || gamesLoading,
 
     addMedia: (media, seriesId) => {
-      addItem(getMediaPath(media.type, seriesId), media);
+      addItem(
+        getMediaPath(media.type, seriesId),
+        seriesId ? appendToSeries(media, seriesId) : media,
+      );
     },
     addMediaSeries: (name, media, bandHue) => {
       const key = getMediaKey(media.type);
@@ -117,17 +135,14 @@ export function MediaStorageProvider({ children }: { children: ReactNode }) {
         name,
         ...(bandHue !== undefined && { bandHue }),
       });
-      addItem(`${key}/${seriesId}/items`, media);
+      addItem(`${key}/${seriesId}/items`, { ...media, position: 0 });
     },
     updateMedia: (media) => {
       const currentSeries = findSeriesContaining(media);
       updateItem(getMediaPath(media.type, currentSeries?.id), media);
     },
     updateMediaSeries: (series, name, bandHue) => {
-      const key = bookSeries.some((entry) => entry.id === series.id)
-        ? BOOKS_KEY
-        : GAMES_KEY;
-      updateItem(key, {
+      updateItem(getSeriesKey(series), {
         ...series,
         name,
         ...(bandHue !== undefined && { bandHue }),
@@ -156,13 +171,24 @@ export function MediaStorageProvider({ children }: { children: ReactNode }) {
         moveMediaToSeriesId(media, destination?.id);
       }
     },
+    reorderSeries: (series, items) => {
+      const itemsPath = `${getSeriesKey(series)}/${series.id}/items`;
+      setValues(
+        Object.fromEntries(
+          items.map(({ id }, index) => [`${itemsPath}/${id}/position`, index]),
+        ),
+      );
+    },
   };
 
   function moveMediaToSeriesId(media: MediaDetails, seriesId?: string) {
     const currentSeries = findSeriesContaining(media);
     if (currentSeries?.id === seriesId) return;
 
-    updateItem(getMediaPath(media.type, seriesId), media);
+    updateItem(
+      getMediaPath(media.type, seriesId),
+      seriesId ? appendToSeries(media, seriesId) : media,
+    );
     if (currentSeries) {
       deleteMediaFromSeries(currentSeries, media);
     } else {

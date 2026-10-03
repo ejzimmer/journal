@@ -91,10 +91,21 @@
     list-style: none;
   }
 
-  .shelf-label {
+  .shelf-label-row {
+    display: flex;
+    align-items: center;
+    gap: 4px;
     margin-block-start: 5px;
     align-self: flex-start;
     margin-inline-start: 3px;
+  }
+
+  .shelf-add {
+    font-size: 20px;
+    padding: 2px 6px;
+  }
+
+  .shelf-label {
     background: hsl(44 52% 97%);
     border: 1px solid hsl(38 26% 82%);
     border-radius: 2px;

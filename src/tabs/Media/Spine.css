@@ -149,3 +149,24 @@
 .spine.todo .series-band {
   background: oklch(80% 0.06 var(--band-hue));
 }
+
+.spine.dragging {
+  opacity: 0.4;
+}
+
+.spine .spine-drop-indicator {
+  position: absolute;
+  inset-block: 0;
+  width: 3px;
+  border-radius: 2px;
+  background: var(--action-colour);
+  pointer-events: none;
+
+  &.left {
+    inset-inline-start: -3px;
+  }
+
+  &.right {
+    inset-inline-end: -3px;
+  }
+}
