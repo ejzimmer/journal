@@ -17,6 +17,11 @@
   stroke: hsl(28 42% 48%);
 }
 
+.tree-outline {
+  fill: none;
+  stroke: hsl(28 45% 28%);
+}
+
 .media-tree {
   position: relative;
 

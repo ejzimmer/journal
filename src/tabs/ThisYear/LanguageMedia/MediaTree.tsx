@@ -1,12 +1,15 @@
 import { CSSProperties, useMemo } from 'react';
 import { createTreeLayout } from './treeLayout';
 import { TreeFill } from './TreeFill';
+import { measureTreeGrowth } from './treeGrowth';
+import { TreeOutline } from './TreeOutline';
 import { TreeSilhouette } from './TreeSilhouette';
 import { Signpost } from './Signpost';
 import { PrintSeries } from './types';
 
 export function MediaTree({ series }: { series: PrintSeries }) {
   const layout = useMemo(() => createTreeLayout(series), [series]);
+  const pieces = measureTreeGrowth(layout, series);
   const { x, y, width, height } = layout.bounds;
 
   return (
@@ -22,7 +25,8 @@ export function MediaTree({ series }: { series: PrintSeries }) {
         height={height}
       >
         <TreeSilhouette layout={layout} />
-        <TreeFill layout={layout} series={series} />
+        <TreeFill pieces={pieces} />
+        <TreeOutline bounds={layout.bounds} pieces={pieces} />
       </svg>
       <Signpost name={series.name} />
     </div>
