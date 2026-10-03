@@ -1,5 +1,4 @@
 import { createStore, del, entries, promisifyRequest } from 'idb-keyval';
-import { pathsAreRelated } from './pathTree';
 
 export type OutboxOp = { updates: Record<string, unknown> };
 
@@ -40,12 +39,4 @@ export function createOutbox(dbName: string): Outbox {
       await del(id, store);
     },
   };
-}
-
-export function opsTouchPath(ops: StoredOutboxOp[], path: string): boolean {
-  return ops.some((op) =>
-    Object.keys(op.updates).some((updatePath) =>
-      pathsAreRelated(updatePath, path),
-    ),
-  );
 }

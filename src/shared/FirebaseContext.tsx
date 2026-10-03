@@ -24,7 +24,11 @@ export interface ContextType {
   updateList: <T extends Item>(listName: string, list: T[]) => void;
   setValue: <T>(path: string, value: T) => void;
   setValues: (updates: Record<string, unknown>) => void;
-  useValue: <T>(key?: string) => { value?: T; loading: boolean };
+  useValue: <T>(key?: string) => {
+    value?: T;
+    loading: boolean;
+    synced: boolean;
+  };
   moveItemBetweenLists: <T extends { id: string; position: number }>(args: {
     movedItem: T;
     sourceListId: string;
@@ -120,7 +124,10 @@ export function createFirebaseContext(database: Database): ContextType {
       });
     },
     useValue: (key?: string) => {
-      const [result, setResult] = useState<any>({ loading: true });
+      const [result, setResult] = useState<any>({
+        loading: true,
+        synced: false,
+      });
 
       useEffect(() => {
         if (!key) return;
@@ -129,8 +136,8 @@ export function createFirebaseContext(database: Database): ContextType {
 
         return onValue(reference, (snapshot) => {
           if (snapshot.val())
-            setResult({ value: snapshot.val(), loading: false });
-          else setResult({ loading: false });
+            setResult({ value: snapshot.val(), loading: false, synced: true });
+          else setResult({ loading: false, synced: true });
         });
       }, [key]);
 

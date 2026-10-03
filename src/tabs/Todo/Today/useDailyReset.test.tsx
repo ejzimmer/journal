@@ -115,4 +115,33 @@ describe('resetting daily tasks', () => {
       ]);
     });
   });
+
+  describe('when the tasks are cached locally but not yet synced from the server', () => {
+    it('waits for the server copy and resets that', () => {
+      let synced = false;
+      const storedValues: Record<string, unknown> = {
+        [DAILY_KEY]: indexById([createTask('stale', { status: 'done' })]),
+      };
+      const storage = createDailyJobsStorage(storedValues, {
+        useValue: <T,>(key?: string) => ({
+          value: key ? (storedValues[key] as T) : undefined,
+          loading: false,
+          synced: key !== DAILY_KEY || synced,
+        }),
+      });
+
+      const { rerender } = renderDailyJob(useDailyReset, storage);
+
+      storedValues[DAILY_KEY] = indexById([
+        createTask('current', { status: 'done' }),
+      ]);
+      synced = true;
+      rerender();
+
+      expect(storage.updateList).toHaveBeenCalledTimes(1);
+      expect(storage.updateList).toHaveBeenCalledWith(DAILY_KEY, [
+        expect.objectContaining({ id: 'current', status: 'ready' }),
+      ]);
+    });
+  });
 });

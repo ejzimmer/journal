@@ -11,6 +11,7 @@ import { StoredYarn, StoredYarnByYear } from './types';
 const createUseValue = (values: Record<string, unknown>) => (key: string) => ({
   value: values[key],
   loading: false,
+  synced: true,
 });
 
 const renderWithYarnProvider = <T,>(

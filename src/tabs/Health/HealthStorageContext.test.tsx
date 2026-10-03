@@ -21,6 +21,7 @@ const storeValues =
   <T,>(key?: string) => ({
     value: key ? (values[key] as T) : undefined,
     loading,
+    synced: !loading,
   });
 
 describe('HealthStorageContext', () => {

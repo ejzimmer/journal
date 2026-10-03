@@ -71,13 +71,19 @@ describe('daily jobs', () => {
     });
   });
 
-  describe("while the job's data is still loading", () => {
-    describe("when the last run time hasn't loaded", () => {
+  describe("while the job's data hasn't come from the server yet", () => {
+    describe("when the last run time hasn't come from the server yet", () => {
       it("doesn't run the job", () => {
         const run = jest.fn();
         const storage = createDailyJobsStorage(
           {},
-          { useValue: () => ({ value: undefined, loading: true }) },
+          {
+            useValue: <T,>() => ({
+              value: '2026-01-01' as T,
+              loading: false,
+              synced: false,
+            }),
+          },
         );
 
         renderDailyJob(

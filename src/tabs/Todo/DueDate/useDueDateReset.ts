@@ -16,12 +16,12 @@ const taskIsToday = (task: CalendarTask) => isToday(task.dueDate);
 
 export function useDueDateReset() {
   const { useValue, deleteItem, updateItem } = useStorageContext();
-  const { value: tasksById } =
+  const { value: tasksById, synced } =
     useValue<Record<string, CalendarTask>>(CALENDAR_KEY);
 
   useDailyJob({
     lastRunKey: CALENDAR_RESET_KEY,
-    isReady: tasksById !== undefined,
+    isReady: synced && tasksById !== undefined,
     run: () => {
       const tasks = Object.values(tasksById ?? {});
 

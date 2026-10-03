@@ -38,7 +38,7 @@ export function Projects() {
 
   const { useValue, updateList, deleteItem } = useStorageContext();
 
-  const { value, loading } =
+  const { value, loading, synced } =
     useValue<Record<string, ProjectDetails>>(PROJECTS_KEY);
   const sortedProjects = useMemo(
     () => sortByPosition(value ? Object.values(value) : []),
@@ -67,13 +67,13 @@ export function Projects() {
   const hasSortedDoneProjectsOnLoad = useRef(false);
 
   useEffect(() => {
-    if (hasSortedDoneProjectsOnLoad.current || loading) return;
+    if (hasSortedDoneProjectsOnLoad.current || !synced) return;
     hasSortedDoneProjectsOnLoad.current = true;
 
     if (hasUnsortedDoneProjects) {
       onSortDoneProjectsToEnd();
     }
-  }, [loading, hasUnsortedDoneProjects, onSortDoneProjectsToEnd]);
+  }, [synced, hasUnsortedDoneProjects, onSortDoneProjectsToEnd]);
 
   const updateFilterCategories = (
     category: Category,
