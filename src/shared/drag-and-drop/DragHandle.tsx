@@ -105,13 +105,13 @@ export function DragHandle({
                 move('start', false);
                 onClose();
               }}
-              // isDisabled={position === "start"}
+              isDisabled={position === 'start'}
             >
               <ArrowToTopIcon {...iconProps} /> Move to top
             </Menu.Action>
             <Menu.Action
               onClick={() => move('previous', true)}
-              // isDisabled={position === "start"}
+              isDisabled={position === 'start'}
             >
               <ArrowUpIcon {...iconProps} /> Move up
             </Menu.Action>

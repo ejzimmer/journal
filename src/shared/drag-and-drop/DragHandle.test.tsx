@@ -238,6 +238,41 @@ describe('DragHandle keyboard shortcuts', () => {
           'Move to bottom',
         ]);
       });
+
+      function getDisabledMenuItemLabels() {
+        return screen
+          .getAllByRole('menuitem')
+          .filter((item) => item.hasAttribute('disabled'))
+          .map((item) => item.textContent?.trim());
+      }
+
+      describe('on the first item', () => {
+        it('disables moving it further up', async () => {
+          const user = userEvent.setup();
+          render(<DragHandle list={list} index={0} onReorder={jest.fn()} />);
+
+          await user.click(screen.getByRole('button', { name: 'drag menu' }));
+
+          expect(getDisabledMenuItemLabels()).toEqual([
+            'Move to top',
+            'Move up',
+          ]);
+        });
+      });
+
+      describe('on the last item', () => {
+        it('disables moving it further down', async () => {
+          const user = userEvent.setup();
+          render(<DragHandle list={list} index={2} onReorder={jest.fn()} />);
+
+          await user.click(screen.getByRole('button', { name: 'drag menu' }));
+
+          expect(getDisabledMenuItemLabels()).toEqual([
+            'Move down',
+            'Move to bottom',
+          ]);
+        });
+      });
     });
 
     describe('when menu items are supplied', () => {
