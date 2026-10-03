@@ -1,5 +1,15 @@
-import { ComponentType, KeyboardEvent, useEffect, useRef } from 'react';
-import { Destination } from '../../shared/drag-and-drop/types';
+import {
+  ComponentType,
+  CSSProperties,
+  KeyboardEvent,
+  useEffect,
+  useRef,
+} from 'react';
+import { DraggableListItem } from '../../shared/drag-and-drop/DraggableListItem';
+import {
+  Destination,
+  draggableTypeKey,
+} from '../../shared/drag-and-drop/types';
 import { MediaDetails } from './types';
 import { useMediaStorage } from './MediaStorageContext';
 import { Spine } from './Spine';
@@ -20,6 +30,8 @@ export type StatusConfig<T extends MediaDetails, S extends string> = {
   setStatus: (item: T, status: S) => T;
   getAuthor?: (item: T) => string | undefined;
 };
+
+const SPINE_DRAGGABLE_TYPE = 'spine';
 
 const MOVE_KEYS = 'ArrowLeft ArrowRight Shift+ArrowLeft Shift+ArrowRight';
 
@@ -89,10 +101,8 @@ export function MediaSpine<T extends MediaDetails, S extends string>({
     updateMedia(config.setStatus(item, nextStatus));
   };
 
-  return (
+  const spine = (
     <Spine
-      itemId={item.id}
-      dragListId={dragListId}
       status={config.spineStatus[status]}
       hue={hue}
       bandHue={bandHue}
@@ -107,8 +117,49 @@ export function MediaSpine<T extends MediaDetails, S extends string>({
       onStampClick={updateStatus}
       onTitleKeyDown={moveOnArrowKey}
       titleKeyShortcuts={dragListId && MOVE_KEYS}
+    />
+  );
+  const editForm = (
+    <EditForm item={item} isOpen={isFormOpen} onCancel={closeForm} />
+  );
+
+  if (!dragListId) {
+    return (
+      <li className="spine-item">
+        {spine}
+        {editForm}
+      </li>
+    );
+  }
+
+  return (
+    <DraggableListItem
+      className="spine-item"
+      getData={() => ({
+        [draggableTypeKey]: SPINE_DRAGGABLE_TYPE,
+        id: item.id,
+        parentId: dragListId,
+      })}
+      isDroppable={(data) =>
+        data[draggableTypeKey] === SPINE_DRAGGABLE_TYPE &&
+        data.parentId === dragListId
+      }
+      allowedEdges={['left', 'right']}
+      dragHandle={spine}
+      dragPreview={<SpineDragPreview title={item.title} hue={hue} />}
     >
-      <EditForm item={item} isOpen={isFormOpen} onCancel={closeForm} />
-    </Spine>
+      {editForm}
+    </DraggableListItem>
+  );
+}
+
+function SpineDragPreview({ title, hue }: { title: string; hue: number }) {
+  return (
+    <div
+      className="spine-drag-preview"
+      style={{ '--hue': hue } as CSSProperties}
+    >
+      {title}
+    </div>
   );
 }

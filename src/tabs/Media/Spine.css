@@ -150,13 +150,17 @@
   background: oklch(80% 0.06 var(--band-hue));
 }
 
-.spine .drag-handle-mount {
+.spine-item {
   display: flex;
-  justify-content: center;
 }
 
-.spine .drop-indicator.left,
-.spine .drop-indicator.right {
+.spine-item .drag-handle-mount {
+  display: flex;
+  align-items: stretch;
+}
+
+.spine-item .drop-indicator.left,
+.spine-item .drop-indicator.right {
   position: absolute;
   inset-block: 0;
   width: 3px;
@@ -165,11 +169,11 @@
   pointer-events: none;
 }
 
-.spine .drop-indicator.left {
+.spine-item .drop-indicator.left {
   inset-inline-start: -3px;
 }
 
-.spine .drop-indicator.right {
+.spine-item .drop-indicator.right {
   inset-inline-end: -3px;
 }
 
