@@ -12,7 +12,7 @@ export function PushpinButton(props: ModalTriggerProps) {
       className="pushpin-button"
       aria-label="Add an adventure"
     >
-      <svg viewBox="0 0 48 48" width="64" height="64" aria-hidden="true">
+      <svg viewBox="8 8 28 28" aria-hidden="true">
         <defs>
           <radialGradient id={gradientId} cx="38%" cy="32%" r="70%">
             <stop offset="0" stopColor="#7fd494" />
