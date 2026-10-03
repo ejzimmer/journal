@@ -100,25 +100,16 @@ export function SrsVial({ type, index, total, counts }: SrsVialProps) {
       />
       <g clipPath={`url(#${innerClipId})`}>
         {layers.map(({ group, y, height }) => (
-          <g key={group}>
-            <rect
-              x="0"
-              y={y}
-              width={WIDTH}
-              height={height + 0.5}
-              fill={`url(#wanikani-liquid-${group})`}
-            >
-              <title>{`${counts[group]} ${group}`}</title>
-            </rect>
-            <line
-              x1="0"
-              x2={WIDTH}
-              y1={y}
-              y2={y}
-              stroke="white"
-              strokeOpacity={0.25}
-            />
-          </g>
+          <rect
+            key={group}
+            x="0"
+            y={y}
+            width={WIDTH}
+            height={height + 0.5}
+            fill={`url(#wanikani-liquid-${group})`}
+          >
+            <title>{`${counts[group]} ${group}`}</title>
+          </rect>
         ))}
         <g clipPath={`url(#${liquidClipId})`}>
           {bubbles.map((bubble, bubbleIndex) => (
@@ -154,23 +145,6 @@ export function SrsVial({ type, index, total, counts }: SrsVialProps) {
             </g>
           ))}
         </g>
-        <rect
-          x="0"
-          y={surfaceY}
-          width={WIDTH}
-          height="3"
-          fill="white"
-          fillOpacity={0.35}
-        />
-        <line
-          x1="0"
-          x2={WIDTH}
-          y1={surfaceY}
-          y2={surfaceY}
-          stroke="white"
-          strokeOpacity={0.9}
-          strokeWidth={1.2}
-        />
       </g>
       <rect
         x="11"
