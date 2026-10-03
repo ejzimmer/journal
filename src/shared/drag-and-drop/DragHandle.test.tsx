@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { Menu } from '../controls/Menu';
 import { DragHandle } from './DragHandle';
 import { SortableItem } from './types';
 
@@ -140,7 +141,7 @@ describe('DragHandle keyboard shortcuts', () => {
   });
 
   describe("keys DragHandle doesn't itself handle", () => {
-    it("does nothing when additionalActions isn't provided", async () => {
+    it("does nothing when actions aren't provided", async () => {
       const user = userEvent.setup();
       const onReorder = jest.fn();
       render(<DragHandle list={list} index={1} onReorder={onReorder} />);
@@ -152,7 +153,7 @@ describe('DragHandle keyboard shortcuts', () => {
       expect(onReorder).not.toHaveBeenCalled();
     });
 
-    it('forwards ArrowLeft to additionalActions.onKeyDown', async () => {
+    it('forwards ArrowLeft to actions.onKeyDown', async () => {
       const user = userEvent.setup();
       const onKeyDown = jest.fn();
       render(
@@ -160,7 +161,7 @@ describe('DragHandle keyboard shortcuts', () => {
           list={list}
           index={1}
           onReorder={jest.fn()}
-          additionalActions={{ onKeyDown }}
+          actions={{ onKeyDown }}
         />,
       );
 
@@ -173,7 +174,7 @@ describe('DragHandle keyboard shortcuts', () => {
       );
     });
 
-    it('forwards Shift+ArrowRight to additionalActions.onKeyDown', async () => {
+    it('forwards Shift+ArrowRight to actions.onKeyDown', async () => {
       const user = userEvent.setup();
       const onKeyDown = jest.fn();
       render(
@@ -181,7 +182,7 @@ describe('DragHandle keyboard shortcuts', () => {
           list={list}
           index={1}
           onReorder={jest.fn()}
-          additionalActions={{ onKeyDown }}
+          actions={{ onKeyDown }}
         />,
       );
 
@@ -204,7 +205,7 @@ describe('DragHandle keyboard shortcuts', () => {
           list={list}
           index={1}
           onReorder={jest.fn()}
-          additionalActions={{ onKeyDown }}
+          actions={{ onKeyDown }}
         />,
       );
 
@@ -217,61 +218,57 @@ describe('DragHandle keyboard shortcuts', () => {
   });
 
   describe('menu', () => {
-    describe('by default', () => {
-      it('offers moves within the list alongside the additional menu items', async () => {
+    function getMenuItemLabels() {
+      return screen
+        .getAllByRole('menuitem')
+        .map((item) => item.textContent?.trim());
+    }
+
+    describe('when no menu items are supplied', () => {
+      it('offers moves within the list', async () => {
         const user = userEvent.setup();
-        render(
-          <DragHandle
-            list={list}
-            index={1}
-            onReorder={jest.fn()}
-            additionalActions={{ menuItems: <button>Move to Later</button> }}
-          />,
-        );
+        render(<DragHandle list={list} index={1} onReorder={jest.fn()} />);
 
         await user.click(screen.getByRole('button', { name: 'drag menu' }));
 
-        expect(screen.getByText('Move to top')).toBeInTheDocument();
-        expect(screen.getByText('Move to bottom')).toBeInTheDocument();
-        expect(
-          screen.getByRole('button', { name: 'Move to Later' }),
-        ).toBeInTheDocument();
+        expect(getMenuItemLabels()).toEqual([
+          'Move to top',
+          'Move up',
+          'Move down',
+          'Move to bottom',
+        ]);
       });
     });
 
-    describe('when reorder actions are hidden', () => {
-      function renderWithoutReorderActions(onReorder = jest.fn()) {
+    describe('when menu items are supplied', () => {
+      function renderWithMenuItems(onReorder = jest.fn()) {
         render(
           <DragHandle
             list={list}
             index={1}
             onReorder={onReorder}
-            showReorderActions={false}
-            additionalActions={{ menuItems: <button>Move to Later</button> }}
+            actions={{
+              menuItems: (
+                <Menu.Action onClick={jest.fn()}>Move to Later</Menu.Action>
+              ),
+            }}
           />,
         );
       }
 
-      it('offers only the additional menu items', async () => {
+      it('offers only those menu items', async () => {
         const user = userEvent.setup();
-        renderWithoutReorderActions();
+        renderWithMenuItems();
 
         await user.click(screen.getByRole('button', { name: 'drag menu' }));
 
-        const menuButtons = screen
-          .getAllByRole('button')
-          .filter(
-            (button) => button.getAttribute('aria-label') !== 'drag menu',
-          );
-        expect(menuButtons.map((button) => button.textContent)).toEqual([
-          'Move to Later',
-        ]);
+        expect(getMenuItemLabels()).toEqual(['Move to Later']);
       });
 
-      it('still moves the item with the keyboard', async () => {
+      it('still moves the item within the list with the keyboard', async () => {
         const user = userEvent.setup();
         const onReorder = jest.fn();
-        renderWithoutReorderActions(onReorder);
+        renderWithMenuItems(onReorder);
 
         focusHandle();
         await user.keyboard('{Shift>}{ArrowDown}{/Shift}');

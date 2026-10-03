@@ -8,7 +8,7 @@ import { Menu, MenuHandle } from '../controls/Menu';
 import { Destination, SortableItem } from './types';
 import { getPosition, onChangePosition } from './utils';
 
-export type AdditionalActions = {
+export type DragHandleActions = {
   menuItems?: React.ReactNode;
   onKeyDown?: (event: React.KeyboardEvent<HTMLDivElement>) => void;
 };
@@ -17,8 +17,7 @@ type DragHandleProps = {
   list: SortableItem[];
   index: number;
   onReorder: (list: SortableItem[]) => void;
-  additionalActions?: AdditionalActions;
-  showReorderActions?: boolean;
+  actions?: DragHandleActions;
 };
 
 const iconProps = {
@@ -30,8 +29,7 @@ export function DragHandle({
   list,
   index,
   onReorder,
-  additionalActions,
-  showReorderActions = true,
+  actions,
 }: DragHandleProps) {
   const position = getPosition(index, list.length);
   const isFirst = index === 0;
@@ -80,7 +78,7 @@ export function DragHandle({
         }
         break;
       default:
-        additionalActions?.onKeyDown?.(event);
+        actions?.onKeyDown?.(event);
     }
   };
 
@@ -99,45 +97,42 @@ export function DragHandle({
         </button>
       )}
     >
-      {({ onClose }) => (
-        <>
-          {showReorderActions && (
-            <>
-              <Menu.Action
-                onClick={() => {
-                  move('start', false);
-                  onClose();
-                }}
-                // isDisabled={position === "start"}
-              >
-                <ArrowToTopIcon {...iconProps} /> Move to top
-              </Menu.Action>
-              <Menu.Action
-                onClick={() => move('previous', true)}
-                // isDisabled={position === "start"}
-              >
-                <ArrowUpIcon {...iconProps} /> Move up
-              </Menu.Action>
-              <Menu.Action
-                onClick={() => move('next', true)}
-                isDisabled={position === 'end'}
-              >
-                <ArrowDownIcon {...iconProps} /> Move down
-              </Menu.Action>
-              <Menu.Action
-                onClick={() => {
-                  move('end', false);
-                  onClose();
-                }}
-                isDisabled={position === 'end'}
-              >
-                <ArrowToBottomIcon {...iconProps} /> Move to bottom
-              </Menu.Action>
-            </>
-          )}
-          {additionalActions?.menuItems}
-        </>
-      )}
+      {({ onClose }) =>
+        actions?.menuItems ?? (
+          <>
+            <Menu.Action
+              onClick={() => {
+                move('start', false);
+                onClose();
+              }}
+              // isDisabled={position === "start"}
+            >
+              <ArrowToTopIcon {...iconProps} /> Move to top
+            </Menu.Action>
+            <Menu.Action
+              onClick={() => move('previous', true)}
+              // isDisabled={position === "start"}
+            >
+              <ArrowUpIcon {...iconProps} /> Move up
+            </Menu.Action>
+            <Menu.Action
+              onClick={() => move('next', true)}
+              isDisabled={position === 'end'}
+            >
+              <ArrowDownIcon {...iconProps} /> Move down
+            </Menu.Action>
+            <Menu.Action
+              onClick={() => {
+                move('end', false);
+                onClose();
+              }}
+              isDisabled={position === 'end'}
+            >
+              <ArrowToBottomIcon {...iconProps} /> Move to bottom
+            </Menu.Action>
+          </>
+        )
+      }
     </Menu>
   );
 }
