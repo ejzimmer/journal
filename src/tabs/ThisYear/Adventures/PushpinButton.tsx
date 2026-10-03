@@ -33,21 +33,23 @@ export function PushpinButton(props: ModalTriggerProps) {
           filter={`url(#${blurId})`}
         />
         <circle cx="25.5" cy="25.5" r="9" fill="#16602a" />
-        <circle cx="22" cy="22" r="14" fill={`url(#${gradientId})`} />
-        <ellipse
-          cx="16"
-          cy="14.5"
-          rx="4"
-          ry="2.4"
-          fill="hsl(0 0% 100% / 0.4)"
-          transform="rotate(-35 16 14.5)"
-        />
-        <path
-          d="M22 16.5 V27.5 M16.5 22 H27.5"
-          stroke="white"
-          strokeWidth="2.6"
-          strokeLinecap="round"
-        />
+        <g className="pushpin-head">
+          <circle cx="22" cy="22" r="14" fill={`url(#${gradientId})`} />
+          <ellipse
+            cx="16"
+            cy="14.5"
+            rx="4"
+            ry="2.4"
+            fill="hsl(0 0% 100% / 0.4)"
+            transform="rotate(-35 16 14.5)"
+          />
+          <path
+            d="M22 16.5 V27.5 M16.5 22 H27.5"
+            stroke="white"
+            strokeWidth="2.6"
+            strokeLinecap="round"
+          />
+        </g>
       </svg>
     </button>
   );

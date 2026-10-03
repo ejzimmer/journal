@@ -67,7 +67,7 @@
     }
 
     &:focus-visible {
-      outline-offset: 2px;
+      outline: none;
     }
 
     svg {
@@ -77,13 +77,28 @@
       overflow: visible;
     }
 
-    .pushpin-shadow {
-      transition: transform 0.18s ease;
+    .pushpin-shadow,
+    .pushpin-head {
+      transition:
+        transform 0.18s ease,
+        opacity 0.18s ease;
+      transform-box: fill-box;
+      transform-origin: center;
     }
 
-    &:hover .pushpin-shadow,
-    &:focus-visible .pushpin-shadow {
+    &:hover .pushpin-shadow {
       transform: translate(2px, 2px);
+    }
+
+    &:focus-visible {
+      .pushpin-head {
+        transform: translate(3.5px, 3.5px) scale(0.94);
+      }
+
+      .pushpin-shadow {
+        transform: translate(-1px, -1px) scale(0.85);
+        opacity: 0.6;
+      }
     }
   }
 }
