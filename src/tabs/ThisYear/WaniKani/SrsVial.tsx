@@ -99,7 +99,7 @@ export function SrsVial({ type, index, total, counts }: SrsVialProps) {
         strokeWidth={1.5}
       />
       <g clipPath={`url(#${innerClipId})`}>
-        {layers.map(({ group, y, height }) => (
+        {layers.map(({ group, y, height }, index) => (
           <g key={group}>
             <rect
               x="0"
@@ -110,14 +110,16 @@ export function SrsVial({ type, index, total, counts }: SrsVialProps) {
             >
               <title>{`${counts[group]} ${group}`}</title>
             </rect>
-            <line
-              x1="0"
-              x2={WIDTH}
-              y1={y}
-              y2={y}
-              stroke="white"
-              strokeOpacity={0.25}
-            />
+            {index > 0 && (
+              <line
+                x1="0"
+                x2={WIDTH}
+                y1={y + height}
+                y2={y + height}
+                stroke="white"
+                strokeOpacity={0.25}
+              />
+            )}
           </g>
         ))}
         <g clipPath={`url(#${liquidClipId})`}>
@@ -154,23 +156,6 @@ export function SrsVial({ type, index, total, counts }: SrsVialProps) {
             </g>
           ))}
         </g>
-        <rect
-          x="0"
-          y={surfaceY}
-          width={WIDTH}
-          height="3"
-          fill="white"
-          fillOpacity={0.35}
-        />
-        <line
-          x1="0"
-          x2={WIDTH}
-          y1={surfaceY}
-          y2={surfaceY}
-          stroke="white"
-          strokeOpacity={0.9}
-          strokeWidth={1.2}
-        />
       </g>
       <rect
         x="11"
