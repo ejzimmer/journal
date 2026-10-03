@@ -35,12 +35,10 @@ export function WaniKaniProgress({
 
   return (
     <div className="wanikani">
+      <GemDefs />
       <CurrentLevel data={data} />
-      <div className="wanikani-collection">
-        <GemDefs />
-        <SrsProgress data={data} />
-        <LevelGems data={data} />
-      </div>
+      <LevelGems data={data} />
+      <SrsProgress data={data} />
     </div>
   );
 }
