@@ -1,7 +1,7 @@
 import { CSSProperties, useMemo } from 'react';
 import { createTreeLayout } from './treeLayout';
 import { TreeFill } from './TreeFill';
-import { TreeOutline } from './TreeOutline';
+import { TreeSilhouette } from './TreeSilhouette';
 import { Signpost } from './Signpost';
 import { PrintSeries } from './types';
 
@@ -21,8 +21,8 @@ export function MediaTree({ series }: { series: PrintSeries }) {
         width={width}
         height={height}
       >
+        <TreeSilhouette layout={layout} />
         <TreeFill layout={layout} series={series} />
-        <TreeOutline layout={layout} />
       </svg>
       <Signpost name={series.name} />
     </div>

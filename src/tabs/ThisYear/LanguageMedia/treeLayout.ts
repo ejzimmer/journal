@@ -31,8 +31,6 @@ export type TreeLayout = {
 
 type GrownPiece = Omit<TreePiece, 'd'> & { curve: Curve };
 
-export const OUTLINE_WIDTH = 3;
-
 const CROWN_HEIGHT = 26;
 const DEFAULT_PAGES = 200;
 const MARGIN = 4;
@@ -146,7 +144,7 @@ function growBranch(
 
 function measureBounds(pieces: GrownPiece[]) {
   const reach = Math.max(...pieces.map(({ width }) => width)) / 2;
-  const padding = reach + OUTLINE_WIDTH + MARGIN;
+  const padding = reach + MARGIN;
   const points = pieces.flatMap(({ curve }) => curve);
   const halfWidth = roundCoordinate(
     Math.max(...points.map(({ x }) => Math.abs(x))) + padding,

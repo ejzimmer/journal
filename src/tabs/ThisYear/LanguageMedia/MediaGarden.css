@@ -7,9 +7,9 @@
   padding: 0;
 }
 
-.tree-outline {
+.tree-silhouette {
   fill: none;
-  stroke: var(--body-colour);
+  stroke: hsl(80 16% 86%);
 }
 
 .tree-fill {
