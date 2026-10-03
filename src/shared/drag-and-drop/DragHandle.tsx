@@ -18,6 +18,7 @@ type DragHandleProps = {
   index: number;
   onReorder: (list: SortableItem[]) => void;
   additionalActions?: AdditionalActions;
+  showReorderActions?: boolean;
 };
 
 const iconProps = {
@@ -30,6 +31,7 @@ export function DragHandle({
   index,
   onReorder,
   additionalActions,
+  showReorderActions = true,
 }: DragHandleProps) {
   const position = getPosition(index, list.length);
   const isFirst = index === 0;
@@ -99,36 +101,40 @@ export function DragHandle({
     >
       {({ onClose }) => (
         <>
-          <Menu.Action
-            onClick={() => {
-              move('start', false);
-              onClose();
-            }}
-            // isDisabled={position === "start"}
-          >
-            <ArrowToTopIcon {...iconProps} /> Move to top
-          </Menu.Action>
-          <Menu.Action
-            onClick={() => move('previous', true)}
-            // isDisabled={position === "start"}
-          >
-            <ArrowUpIcon {...iconProps} /> Move up
-          </Menu.Action>
-          <Menu.Action
-            onClick={() => move('next', true)}
-            isDisabled={position === 'end'}
-          >
-            <ArrowDownIcon {...iconProps} /> Move down
-          </Menu.Action>
-          <Menu.Action
-            onClick={() => {
-              move('end', false);
-              onClose();
-            }}
-            isDisabled={position === 'end'}
-          >
-            <ArrowToBottomIcon {...iconProps} /> Move to bottom
-          </Menu.Action>
+          {showReorderActions && (
+            <>
+              <Menu.Action
+                onClick={() => {
+                  move('start', false);
+                  onClose();
+                }}
+                // isDisabled={position === "start"}
+              >
+                <ArrowToTopIcon {...iconProps} /> Move to top
+              </Menu.Action>
+              <Menu.Action
+                onClick={() => move('previous', true)}
+                // isDisabled={position === "start"}
+              >
+                <ArrowUpIcon {...iconProps} /> Move up
+              </Menu.Action>
+              <Menu.Action
+                onClick={() => move('next', true)}
+                isDisabled={position === 'end'}
+              >
+                <ArrowDownIcon {...iconProps} /> Move down
+              </Menu.Action>
+              <Menu.Action
+                onClick={() => {
+                  move('end', false);
+                  onClose();
+                }}
+                isDisabled={position === 'end'}
+              >
+                <ArrowToBottomIcon {...iconProps} /> Move to bottom
+              </Menu.Action>
+            </>
+          )}
           {additionalActions?.menuItems}
         </>
       )}

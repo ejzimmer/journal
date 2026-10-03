@@ -216,6 +216,76 @@ describe('DragHandle keyboard shortcuts', () => {
     });
   });
 
+  describe('menu', () => {
+    describe('by default', () => {
+      it('offers moves within the list alongside the additional menu items', async () => {
+        const user = userEvent.setup();
+        render(
+          <DragHandle
+            list={list}
+            index={1}
+            onReorder={jest.fn()}
+            additionalActions={{ menuItems: <button>Move to Later</button> }}
+          />,
+        );
+
+        await user.click(screen.getByRole('button', { name: 'drag menu' }));
+
+        expect(screen.getByText('Move to top')).toBeInTheDocument();
+        expect(screen.getByText('Move to bottom')).toBeInTheDocument();
+        expect(
+          screen.getByRole('button', { name: 'Move to Later' }),
+        ).toBeInTheDocument();
+      });
+    });
+
+    describe('when reorder actions are hidden', () => {
+      function renderWithoutReorderActions(onReorder = jest.fn()) {
+        render(
+          <DragHandle
+            list={list}
+            index={1}
+            onReorder={onReorder}
+            showReorderActions={false}
+            additionalActions={{ menuItems: <button>Move to Later</button> }}
+          />,
+        );
+      }
+
+      it('offers only the additional menu items', async () => {
+        const user = userEvent.setup();
+        renderWithoutReorderActions();
+
+        await user.click(screen.getByRole('button', { name: 'drag menu' }));
+
+        const menuButtons = screen
+          .getAllByRole('button')
+          .filter(
+            (button) => button.getAttribute('aria-label') !== 'drag menu',
+          );
+        expect(menuButtons.map((button) => button.textContent)).toEqual([
+          'Move to Later',
+        ]);
+      });
+
+      it('still moves the item with the keyboard', async () => {
+        const user = userEvent.setup();
+        const onReorder = jest.fn();
+        renderWithoutReorderActions(onReorder);
+
+        focusHandle();
+        await user.keyboard('{Shift>}{ArrowDown}{/Shift}');
+
+        const reordered = onReorder.mock.calls[0][0];
+        expect(reordered.map((item: SortableItem) => item.id)).toEqual([
+          'a',
+          'c',
+          'b',
+        ]);
+      });
+    });
+  });
+
   it("doesn't close the menu after a keyboard move", async () => {
     const user = userEvent.setup();
     const { container } = render(
