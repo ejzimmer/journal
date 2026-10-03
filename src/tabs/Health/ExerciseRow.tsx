@@ -109,6 +109,7 @@ export function ExerciseRow({ exercise }: { exercise: Exercise }) {
       {activeForm?.kind === 'record' && (
         <ExerciseForm
           exerciseName={exercise.name}
+          defaultDetails={updates.at(-1)?.details}
           onSubmit={addUpdate}
           onCancel={() => closeForm()}
         />

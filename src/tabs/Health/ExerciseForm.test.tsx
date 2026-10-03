@@ -62,6 +62,23 @@ describe('ExerciseForm', () => {
 
       expect(screen.getByRole('radio', { name: 'no change' })).toBeChecked();
     });
+
+    describe('with default details', () => {
+      it('fills the details in with them', () => {
+        render(
+          <ExerciseForm
+            exerciseName="Plank"
+            defaultDetails="3 x 30s"
+            onSubmit={jest.fn()}
+            onCancel={jest.fn()}
+          />,
+        );
+
+        expect(screen.getByRole('textbox', { name: 'Details' })).toHaveValue(
+          '3 x 30s',
+        );
+      });
+    });
   });
 
   describe('when it is saved', () => {
