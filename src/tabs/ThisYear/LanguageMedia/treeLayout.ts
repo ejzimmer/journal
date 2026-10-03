@@ -1,123 +1,196 @@
 import { listByNumber } from './lists';
-import { Volume } from './types';
+import { createSeededRandom } from './seededRandom';
+import {
+  createSmoothPieces,
+  Curve,
+  findPointAlong,
+  formatCurve,
+  Point,
+  roundCoordinate,
+  SmoothPiece,
+  walkPath,
+} from './treeGeometry';
+import { TREE_SPECIES, TreeSpecies } from './treeSpecies';
+import { PrintSeries, Volume } from './types';
 
-export type Point = { x: number; y: number };
+export type PieceGrowth =
+  | { type: 'trunk'; level: number }
+  | { type: 'branch'; level: number; start: number; end: number };
 
-type Curve = [Point, Point, Point, Point];
-
-export type TreePart = { key: string; d: string; width: number };
-
-export type TreeLevel = { volume: Volume; stem: TreePart; branch: TreePart };
+export type TreePiece = {
+  key: string;
+  d: string;
+  width: number;
+  growth: PieceGrowth;
+};
 
 export type TreeLayout = {
-  levels: TreeLevel[];
-  crown: TreePart;
+  pieces: TreePiece[];
   bounds: { x: number; y: number; width: number; height: number };
 };
 
+type GrownPiece = Omit<TreePiece, 'd'> & { curve: Curve };
+
 export const OUTLINE_WIDTH = 3;
 
-const FIRST_LEVEL_HEIGHT = 62;
-const LEVEL_SPACING = 50;
-const CROWN_HEIGHT = 34;
-const TRUNK_WIDTH = 16;
-const BRANCH_WIDTH = 9;
+const CROWN_HEIGHT = 26;
 const DEFAULT_PAGES = 200;
 const MARGIN = 4;
+const TWIG_SEGMENTS = 3;
 
-const findAttachPoint = (level: number): Point => ({
-  x: 0,
-  y: -FIRST_LEVEL_HEIGHT - level * LEVEL_SPACING,
-});
+const pickBetween = (random: () => number, [min, max]: [number, number]) =>
+  min + random() * (max - min);
 
-const measureBranch = (volume: Volume) =>
-  70 + (volume.pages ?? DEFAULT_PAGES) * 0.21;
-
-const roundCoordinate = (value: number) => Math.round(value * 10) / 10;
-
-const formatCurve = ([start, ...controls]: Curve) =>
-  `M${roundCoordinate(start.x)} ${roundCoordinate(start.y)} C${controls
-    .map(({ x, y }) => `${roundCoordinate(x)} ${roundCoordinate(y)}`)
-    .join(' ')}`;
-
-const createStemCurve = (from: Point, to: Point): Curve => [
-  from,
-  { x: from.x, y: from.y - 15 },
-  { x: to.x, y: to.y + 15 },
-  to,
-];
-
-const createBranchCurve = (
-  attach: Point,
-  side: number,
-  length: number,
-): Curve => [
-  attach,
-  { x: attach.x + side * length * 0.35, y: attach.y + 2 },
-  { x: attach.x + side * length * 0.7, y: attach.y - length * 0.12 },
-  { x: attach.x + side * length, y: attach.y - length * 0.36 },
-];
-
-export function createTreeLayout(volumes?: Record<string, Volume>) {
-  const curves: { curve: Curve; width: number }[] = [];
-  const createPart = (key: string, curve: Curve, width: number) => {
-    curves.push({ curve, width });
-    return { key, d: formatCurve(curve), width };
-  };
-
-  const levels = listByNumber(volumes).map((volume, index) => {
-    const from = index === 0 ? { x: 0, y: 0 } : findAttachPoint(index - 1);
-    const attach = findAttachPoint(index);
-    const side = index % 2 ? 1 : -1;
-    return {
-      volume,
-      stem: createPart(
-        `stem-${volume.id}`,
-        createStemCurve(from, attach),
-        TRUNK_WIDTH,
-      ),
-      branch: createPart(
-        `branch-${volume.id}`,
-        createBranchCurve(attach, side, measureBranch(volume)),
-        BRANCH_WIDTH,
-      ),
-    };
-  });
-
-  const crownBase = levels.length
-    ? findAttachPoint(levels.length - 1)
-    : { x: 0, y: 0 };
-  const crown = createPart(
-    'crown',
-    createStemCurve(crownBase, {
-      x: crownBase.x,
-      y: crownBase.y - CROWN_HEIGHT,
-    }),
-    TRUNK_WIDTH,
-  );
-
-  const reach = Math.max(...curves.map(({ width }) => width)) / 2;
-  const padding = reach + OUTLINE_WIDTH + MARGIN;
-  const points = curves.flatMap(({ curve }) => curve);
-  const xs = points.map(({ x }) => x);
-  const ys = points.map(({ y }) => y);
-  const halfWidth = Math.max(...xs.map(Math.abs)) + padding;
-  const top = Math.min(...ys) - padding;
-  const bottom = Math.max(...ys) + padding;
-
-  return {
-    levels,
-    crown,
-    bounds: {
-      x: roundCoordinate(-halfWidth),
-      y: roundCoordinate(top),
-      width: roundCoordinate(halfWidth * 2),
-      height: roundCoordinate(bottom - top),
-    },
-  } satisfies TreeLayout;
+function createTrunkPoints(
+  species: TreeSpecies,
+  levelCount: number,
+  random: () => number,
+) {
+  const lean = (random() - 0.5) * species.trunkSway;
+  const points: Point[] = [{ x: 0, y: 0 }];
+  let height = species.firstLevel;
+  for (let level = 0; level < levelCount; level++) {
+    points.push({
+      x: lean * (level + 1) * 0.6 + (random() - 0.5) * species.trunkSway,
+      y: -height,
+    });
+    height += pickBetween(random, species.levelSpacing);
+  }
+  const top = points[points.length - 1];
+  points.push({ x: top.x + lean * 0.8, y: top.y - CROWN_HEIGHT });
+  return points;
 }
 
-export const listTreeParts = ({ levels, crown }: TreeLayout) => [
-  ...levels.flatMap(({ stem, branch }) => [stem, branch]),
-  crown,
-];
+const createTrunkPieces = (
+  species: TreeSpecies,
+  points: Point[],
+  levelCount: number,
+): GrownPiece[] =>
+  createSmoothPieces(points, species.trunkWidths).map(
+    ({ curve, width }, index) => ({
+      key: `trunk-${index}`,
+      curve,
+      width,
+      growth: {
+        type: 'trunk',
+        level: Math.max(0, Math.min(index, levelCount - 1)),
+      },
+    }),
+  );
+
+const createBranchPieces = (
+  key: string,
+  level: number,
+  pieces: SmoothPiece[],
+  [start, end] = [0, 1],
+): GrownPiece[] =>
+  pieces.map(({ curve, width, from, to }, index) => ({
+    key: `${key}-${index}`,
+    curve,
+    width,
+    growth: {
+      type: 'branch',
+      level,
+      start: start + from * (end - start),
+      end: start + to * (end - start),
+    },
+  }));
+
+function growBranch(
+  species: TreeSpecies,
+  volume: Volume,
+  level: number,
+  attach: Point,
+  side: number,
+  random: () => number,
+) {
+  const length = species.measureLimb(volume.pages ?? DEFAULT_PAGES);
+  const limbPoints = walkPath(
+    attach,
+    species.findStartAngle(side, random),
+    length,
+    species.limbSegments,
+    (angle, index) => species.bendLimb(angle, index, random),
+    random,
+  );
+  const limb = createBranchPieces(
+    `${volume.id}-limb`,
+    level,
+    createSmoothPieces(limbPoints, species.limbWidths),
+  );
+
+  const [minTwigs, maxTwigs] = species.twigCount;
+  const twigCount = minTwigs + Math.floor(random() * (maxTwigs - minTwigs + 1));
+  const [, limbEndWidth] = species.limbWidths;
+  const twigs = Array.from({ length: twigCount }, (_, twig) => {
+    const fork = 0.35 + random() * 0.4;
+    const { point, angle } = findPointAlong(limbPoints, fork);
+    const twigPoints = walkPath(
+      point,
+      species.findTwigAngle(angle, random),
+      length * (0.25 + random() * 0.15),
+      TWIG_SEGMENTS,
+      (twigAngle, index) => species.bendTwig(twigAngle, index, random),
+      random,
+    );
+    return createBranchPieces(
+      `${volume.id}-twig-${twig}`,
+      level,
+      createSmoothPieces(twigPoints, [limbEndWidth + 1.5, limbEndWidth - 0.5]),
+      [fork, 1],
+    );
+  });
+
+  return [...limb, ...twigs.flat()];
+}
+
+function measureBounds(pieces: GrownPiece[]) {
+  const reach = Math.max(...pieces.map(({ width }) => width)) / 2;
+  const padding = reach + OUTLINE_WIDTH + MARGIN;
+  const points = pieces.flatMap(({ curve }) => curve);
+  const halfWidth = roundCoordinate(
+    Math.max(...points.map(({ x }) => Math.abs(x))) + padding,
+  );
+  const top = Math.min(...points.map(({ y }) => y)) - padding;
+  const bottom = Math.max(0, ...points.map(({ y }) => y)) + padding;
+  return {
+    x: -halfWidth,
+    y: roundCoordinate(top),
+    width: halfWidth * 2,
+    height: roundCoordinate(bottom - top),
+  };
+}
+
+export function createTreeLayout(series: PrintSeries): TreeLayout {
+  const species = TREE_SPECIES[series.type];
+  const volumes = listByNumber(series.volumes);
+  const random = createSeededRandom(series.id);
+  let side = random() < 0.5 ? -1 : 1;
+  const trunkPoints = createTrunkPoints(species, volumes.length, random);
+
+  const branches = volumes.flatMap((volume, level) => {
+    const branchRandom = createSeededRandom(`${series.id}-${volume.id}`);
+    side = level === 0 || branchRandom() < 0.8 ? -side : side;
+    return growBranch(
+      species,
+      volume,
+      level,
+      trunkPoints[level + 1],
+      side,
+      branchRandom,
+    );
+  });
+
+  const pieces = [
+    ...createTrunkPieces(species, trunkPoints, volumes.length),
+    ...branches,
+  ];
+
+  return {
+    pieces: pieces.map(({ curve, ...piece }) => ({
+      ...piece,
+      d: formatCurve(curve),
+    })),
+    bounds: measureBounds(pieces),
+  };
+}

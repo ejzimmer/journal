@@ -6,10 +6,7 @@ import { Signpost } from './Signpost';
 import { PrintSeries } from './types';
 
 export function MediaTree({ series }: { series: PrintSeries }) {
-  const layout = useMemo(
-    () => createTreeLayout(series.volumes),
-    [series.volumes],
-  );
+  const layout = useMemo(() => createTreeLayout(series), [series]);
   const { x, y, width, height } = layout.bounds;
 
   return (
