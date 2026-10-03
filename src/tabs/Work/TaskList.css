@@ -292,7 +292,6 @@ ol.work-lists > li {
 input.inline {
   border: none;
   background: transparent;
-  width: 100%;
   padding-block-end: 0;
 
   &:focus {

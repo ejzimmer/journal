@@ -23,12 +23,13 @@ describe('EditableLabel', () => {
       const user = userEvent.setup();
       render(<EditableText {...defaultProps} />);
 
-      await user.click(getText(TEXT));
+      const text = getText(TEXT);
+      await user.click(text);
 
       const input = getInput();
       expect(input).toBeInTheDocument();
       expect(input).toHaveValue(TEXT);
-      expect(getText(TEXT)).not.toBeVisible();
+      expect(text).not.toBeInTheDocument();
     });
   });
 

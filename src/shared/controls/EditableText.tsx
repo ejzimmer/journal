@@ -3,7 +3,6 @@ import {
   Ref,
   useEffect,
   useImperativeHandle,
-  useLayoutEffect,
   useRef,
   useState,
 } from 'react';
@@ -24,14 +23,6 @@ export type EditableTextProps = {
   className?: string;
 };
 
-const measureStyle: CSSProperties = {
-  position: 'absolute',
-  visibility: 'hidden',
-  height: 0,
-  overflow: 'hidden',
-  whiteSpace: 'pre',
-};
-
 export function EditableText({
   ref,
   value,
@@ -49,9 +40,7 @@ export function EditableText({
     openFormOnEnterOrSpace,
   } = useFormToggle<HTMLDivElement>();
   const [text, setText] = useState(value);
-  const [inputWidth, setInputWidth] = useState<number>();
   const inputRef = useRef<HTMLInputElement>(null);
-  const measureRef = useRef<HTMLSpanElement>(null);
 
   useImperativeHandle(ref, () => ({
     focus: () => displayRef.current?.focus(),
@@ -62,12 +51,6 @@ export function EditableText({
       inputRef.current?.focus();
     }
   }, [isEditing, inputRef]);
-
-  useLayoutEffect(() => {
-    if (!isEditing || !measureRef.current) return;
-
-    setInputWidth(measureRef.current.scrollWidth + 12);
-  }, [isEditing, text]);
 
   const handleSubmit = () => {
     if (value && !text && onDelete) {
@@ -80,32 +63,23 @@ export function EditableText({
   };
 
   return isEditing ? (
-    <>
-      <span
-        ref={measureRef}
-        aria-hidden="true"
-        style={{ fontSize: '.8em', ...style, ...measureStyle }}
-      >
-        {text || ' '}
-      </span>
-      <input
-        className={`editable-text ${className}`}
-        ref={inputRef}
-        onKeyDown={(event) => {
-          if (event.key === 'Enter') {
-            handleSubmit();
-            event.preventDefault();
-          } else if (event.key === 'Escape') {
-            setText(value);
-            stopEditing();
-          }
-        }}
-        onChange={(event) => setText(event.target.value)}
-        value={text}
-        aria-label={label}
-        style={{ fontSize: '.8em', ...style, width: inputWidth }}
-      />
-    </>
+    <input
+      className={`editable-text ${className}`}
+      ref={inputRef}
+      onKeyDown={(event) => {
+        if (event.key === 'Enter') {
+          handleSubmit();
+          event.preventDefault();
+        } else if (event.key === 'Escape') {
+          setText(value);
+          stopEditing();
+        }
+      }}
+      onChange={(event) => setText(event.target.value)}
+      value={text}
+      aria-label={label}
+      style={{ fontSize: '.8em', ...style }}
+    />
   ) : (
     <div
       ref={displayRef}
