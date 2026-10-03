@@ -1,7 +1,7 @@
 .wanikani {
   display: flex;
   align-items: center;
-  gap: 40px;
+  gap: 16px;
 
   .current-level {
     position: relative;
@@ -10,13 +10,15 @@
     align-items: center;
     justify-content: center;
     gap: 8px;
-    width: 200px;
-    height: 200px;
+    width: 170px;
+    height: 170px;
   }
 
   .level-rings {
     position: absolute;
     inset: 0;
+    width: 100%;
+    height: 100%;
   }
 
   .current-level-badge {
@@ -55,7 +57,7 @@
   .srs-vials {
     display: flex;
     flex-shrink: 0;
-    gap: 14px;
+    gap: 4px;
   }
 
   .srs-vial {
