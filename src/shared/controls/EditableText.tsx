@@ -32,6 +32,18 @@ const measureStyle: CSSProperties = {
   whiteSpace: 'pre',
 };
 
+function copyTextStyles(from: HTMLElement, to: HTMLElement) {
+  const { fontFamily, fontSize, fontStyle, fontWeight, letterSpacing } =
+    getComputedStyle(from);
+  Object.assign(to.style, {
+    fontFamily,
+    fontSize,
+    fontStyle,
+    fontWeight,
+    letterSpacing,
+  });
+}
+
 export function EditableText({
   ref,
   value,
@@ -64,9 +76,12 @@ export function EditableText({
   }, [isEditing, inputRef]);
 
   useLayoutEffect(() => {
-    if (!isEditing || !measureRef.current) return;
+    const input = inputRef.current;
+    const measure = measureRef.current;
+    if (!isEditing || !input || !measure) return;
 
-    setInputWidth(measureRef.current.scrollWidth + 12);
+    copyTextStyles(input, measure);
+    setInputWidth(measure.scrollWidth + 12);
   }, [isEditing, text]);
 
   const handleSubmit = () => {
@@ -81,11 +96,7 @@ export function EditableText({
 
   return isEditing ? (
     <>
-      <span
-        ref={measureRef}
-        aria-hidden="true"
-        style={{ fontSize: '.8em', ...style, ...measureStyle }}
-      >
+      <span ref={measureRef} aria-hidden="true" style={measureStyle}>
         {text || ' '}
       </span>
       <input
