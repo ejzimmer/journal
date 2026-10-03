@@ -23,11 +23,7 @@ type UseDraggableArgs<T> = {
     targetListId: string;
     targetListItems?: T[];
   }) => void;
-  useValue?: <U>(key?: string) => {
-    value?: U;
-    loading: boolean;
-    synced: boolean;
-  };
+  useValue?: <U>(key?: string) => { value?: U };
   updateList?: <U extends { id: string }>(listName: string, list: U[]) => void;
 };
 
