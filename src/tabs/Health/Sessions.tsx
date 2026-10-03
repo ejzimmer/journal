@@ -1,18 +1,21 @@
+import { Ref } from 'react';
 import { ClassBlock, ExerciseClass } from '../../shared/types';
-import { useHealthStorage } from './HealthStorageContext';
 
 type SessionsProps = {
   exerciseClass: ExerciseClass;
   blockIndex: number;
   getSessionName: (index: number) => string;
+  onChange: (exerciseClass: ExerciseClass) => void;
+  firstSessionRef?: Ref<HTMLInputElement>;
 };
 
 export function Sessions({
   exerciseClass,
   blockIndex,
   getSessionName,
+  onChange,
+  firstSessionRef,
 }: SessionsProps) {
-  const { updateClass } = useHealthStorage();
   const block = exerciseClass.blocks[blockIndex];
   const completed = block.completed ?? [];
 
@@ -22,12 +25,13 @@ export function Sessions({
         <div className="tooltip-container" key={index}>
           <div className="tooltip-anchor">
             <input
+              ref={index === 0 ? firstSessionRef : undefined}
               type="checkbox"
               className="session"
               aria-label={`${exerciseClass.description}: ${getSessionName(index)}`}
               checked={completed.includes(index)}
               onChange={() =>
-                updateClass({
+                onChange({
                   ...exerciseClass,
                   blocks: exerciseClass.blocks.with(
                     blockIndex,
