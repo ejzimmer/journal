@@ -43,18 +43,23 @@
 
 .sign-posts {
   display: flex;
-  justify-content: center;
   padding-inline: 1em;
-
-  &.two-posts {
-    justify-content: space-between;
-  }
 }
 
 .sign-post {
+  margin-inline: auto;
   width: 6px;
   height: 1.2em;
   border: 2px solid var(--body-colour);
   border-block-start: none;
   background: hsl(28 42% 48%);
+}
+
+.sign-post:has(+ .sign-post) {
+  margin-inline: 0;
+}
+
+.sign-post + .sign-post {
+  margin-inline-start: auto;
+  margin-inline-end: 0;
 }

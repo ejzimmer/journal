@@ -6,7 +6,7 @@ export function Signpost({ name }: { name: string }) {
   return (
     <div className="signpost">
       <div className="sign-board">{name}</div>
-      <div className={posts > 1 ? 'sign-posts two-posts' : 'sign-posts'}>
+      <div className="sign-posts">
         {Array.from({ length: posts }, (_, index) => (
           <div key={index} className="sign-post" />
         ))}
