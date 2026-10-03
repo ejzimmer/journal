@@ -3,9 +3,8 @@ import { useStorageContext } from '../../../shared/FirebaseContext';
 
 import './index.css';
 import { Bikes, BikesGoal } from './Bikes';
-import { GameGoal, GameGoalData } from './GameGoals';
 
-type Goal = BikesGoal | GameGoalData;
+type Goal = BikesGoal;
 
 const path = '2026/other_goals';
 const hasId = (book: Goal): book is Required<Goal> =>
@@ -44,14 +43,10 @@ export function OtherGoals() {
 
 const isBikes = (goal: Goal): goal is BikesGoal =>
   'bikes' in goal && Array.isArray(goal.bikes);
-const isGame = (goal: Goal): goal is GameGoalData =>
-  'name' in goal && goal.name === 'Wind Waker';
 
 const getComponent = (goal: Goal, onUpdate: (goal: Goal) => void) => {
   if (isBikes(goal)) {
     return <Bikes goal={goal} onChange={onUpdate} />;
-  } else if (isGame(goal)) {
-    return <GameGoal goal={goal} onChange={onUpdate} />;
   }
   return null;
 };

@@ -2,6 +2,7 @@ import { Books } from './books/Books';
 import { Games } from './games/Games';
 import { MediaStorageProvider, useMediaStorage } from './MediaStorageContext';
 import { MediaSkeleton } from './MediaSkeleton';
+import { WindWaker } from './windWaker/WindWaker';
 
 import './index.css';
 
@@ -24,6 +25,7 @@ function MediaContent() {
     <div className="media">
       <Books />
       <Games />
+      <WindWaker />
     </div>
   );
 }
