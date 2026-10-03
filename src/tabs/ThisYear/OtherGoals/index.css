@@ -16,18 +16,33 @@ ul.other-goals {
   }
 
   .bikes {
-    display: flex;
-    gap: 4px;
+    display: grid;
+    grid-template-columns: repeat(8, 28px);
+    gap: 2px;
     padding: 0;
-    align-items: center;
 
     li {
       anchor-scope: --bike-name;
       position: relative;
+      grid-column-end: span 2;
+      width: auto;
+      justify-content: center;
+      margin: 0;
+    }
+
+    li:nth-child(1),
+    li:nth-child(8) {
+      grid-column-start: 2;
     }
 
     label {
       anchor-name: --bike-name;
+      width: 52px;
+      color: var(--body-colour);
+    }
+
+    svg {
+      width: 46px;
     }
 
     label:not(.done) {
