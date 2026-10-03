@@ -1,5 +1,5 @@
 import 'fake-indexeddb/auto';
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import { ContextType, FirebaseContext } from '../../shared/FirebaseContext';
 import { createLocalFirstContext } from '../../shared/localFirst/createLocalFirstContext';
 import { DailyJobsProvider } from '../../shared/dailyJobs/DailyJobsContext';
@@ -7,10 +7,24 @@ import { Work } from './index';
 import { WorkTask } from './types';
 import { useDoneTaskCleanup } from './useDoneTaskCleanup';
 
+let mockRemoteData: Record<string, unknown> = {};
+
 jest.mock('firebase/database', () => ({
   ref: (_database: unknown, path?: string) => ({ path }),
   update: jest.fn().mockResolvedValue(undefined),
-  onValue: () => () => {},
+  onValue: (
+    reference: { path: string },
+    callback: (snapshot: { val: () => unknown }) => void,
+  ) => {
+    const value = reference.path
+      .split('/')
+      .reduce<unknown>(
+        (node, segment) => (node as Record<string, unknown>)?.[segment],
+        mockRemoteData,
+      );
+    callback({ val: () => value });
+    return () => {};
+  },
 }));
 
 const now = Date.now();
@@ -69,7 +83,7 @@ async function renderWork(lists: Record<string, unknown>) {
     `work-tab-${Math.random()}`,
   );
   await hydrate();
-  context.setValue('work', lists);
+  mockRemoteData = { work: lists };
 
   render(
     <FirebaseContext.Provider value={context}>
@@ -104,8 +118,10 @@ describe('Work', () => {
       'list-done': createList('list-done', 'Done', 1),
     });
 
-    expect(await screen.findByTestId('positions')).toHaveTextContent(
-      'Fix the thing: 0, Another thing: 1',
+    await waitFor(() =>
+      expect(screen.getByTestId('positions')).toHaveTextContent(
+        'Fix the thing: 0, Another thing: 1',
+      ),
     );
   });
 });

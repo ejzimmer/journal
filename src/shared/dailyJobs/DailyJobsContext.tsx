@@ -68,11 +68,11 @@ export function DailyJobsProvider({ children }: { children: ReactNode }) {
 
 function DailyJobRunner({ job, today }: { job: ScheduledJob; today: string }) {
   const { useValue, setValue } = useStorageContext();
-  const { value: lastRun, loading } = useValue<string>(job.lastRunKey);
+  const { value: lastRun, synced } = useValue<string>(job.lastRunKey);
   const dayRunInThisSession = useRef<string>(undefined);
 
   useEffect(() => {
-    if (loading) return;
+    if (!synced) return;
 
     const alreadyRunThisSession = dayRunInThisSession.current === today;
     const alreadyRunToday =
@@ -82,7 +82,7 @@ function DailyJobRunner({ job, today }: { job: ScheduledJob; today: string }) {
     dayRunInThisSession.current = today;
     job.run();
     setValue(job.lastRunKey, today);
-  }, [job, today, lastRun, loading, setValue]);
+  }, [job, today, lastRun, synced, setValue]);
 
   return null;
 }

@@ -20,6 +20,7 @@ const task: WeeklyTask = {
 const useValue: ContextType['useValue'] = () => ({
   value: {} as any,
   loading: false,
+  synced: true,
 });
 
 const expectToBeInViewMode = () => {

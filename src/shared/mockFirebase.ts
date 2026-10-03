@@ -164,8 +164,13 @@ export function createMockFirebaseContext(
       Object.keys(updates).forEach((path) => notify(path));
     },
     useValue<T>(key?: string) {
-      const [result, setResult] = useState<{ value?: T; loading: boolean }>({
+      const [result, setResult] = useState<{
+        value?: T;
+        loading: boolean;
+        synced: boolean;
+      }>({
         loading: true,
+        synced: false,
       });
       // Real Firebase's onValue only invokes its callback when the resolved
       // value actually differs from what it last delivered.
@@ -192,9 +197,9 @@ export function createMockFirebaseContext(
           lastDelivered.current = { initialized: true, json: serialized };
 
           if (value !== undefined && value !== null) {
-            setResult({ value, loading: false });
+            setResult({ value, loading: false, synced: true });
           } else {
-            setResult({ loading: false });
+            setResult({ loading: false, synced: true });
           }
         };
 
