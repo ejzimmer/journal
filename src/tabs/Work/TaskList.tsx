@@ -1,5 +1,15 @@
-import { useState, MouseEvent, useMemo, JSX } from 'react';
-import { EditableText } from '../../shared/controls/EditableText';
+import {
+  useState,
+  MouseEvent,
+  useMemo,
+  JSX,
+  useRef,
+  useEffect,
+} from 'react';
+import {
+  EditableText,
+  EditableTextHandle,
+} from '../../shared/controls/EditableText';
 import { AddTaskForm } from './AddTaskForm';
 import { Task } from './Task/Task';
 import { isList, isTask } from './drag-utils';
@@ -16,7 +26,11 @@ import { useDropTarget } from '../../shared/drag-and-drop/useDropTarget';
 import { sortByPosition } from '../../shared/drag-and-drop/utils';
 import { Labels } from './Task/Labels';
 import { LabelsControl } from './LabelsControl';
-import { useFormToggle } from '../../shared/controls/useFormToggle';
+
+type PendingFocus = {
+  isReady: (tasks: WorkTask[]) => boolean;
+  moveFocus: () => void;
+};
 
 function getListData(list: WorkTask, parentId: string) {
   return {
@@ -42,16 +56,16 @@ export function TaskList({
   const [confirmDeleteModalOpen, setConfirmDeleteModalOpen] = useState(false);
   const [editingLabel, setEditingLabel] = useState(false);
 
-  const {
-    isFormOpen: addTaskFormVisible,
-    triggerRef: listRef,
-    openForm,
-    closeForm,
-  } = useFormToggle<HTMLOListElement>();
+  const [addTaskFormVisible, setAddTaskFormVisible] = useState(false);
+  const listRef = useRef<HTMLOListElement>(null);
+  const headingRef = useRef<HTMLHeadingElement>(null);
+  const taskDescriptions = useRef(new Map<string, EditableTextHandle>());
+  const pendingFocus = useRef<PendingFocus>(undefined);
+
   const showTaskForm = (event: MouseEvent) => {
     event.stopPropagation();
     if (event.target === listRef.current) {
-      openForm();
+      setAddTaskFormVisible(true);
     }
   };
 
@@ -83,6 +97,48 @@ export function TaskList({
     [sortedList],
   );
 
+  useEffect(() => {
+    if (pendingFocus.current?.isReady(sortedList)) {
+      pendingFocus.current.moveFocus();
+      pendingFocus.current = undefined;
+    }
+  }, [sortedList, addTaskFormVisible]);
+
+  const focusTaskOrHeading = (taskId?: string) => {
+    if (taskId) {
+      taskDescriptions.current.get(taskId)?.focus();
+    } else {
+      headingRef.current?.focus();
+    }
+  };
+
+  const addTaskAndFocusIt = (newTask: Parameters<typeof addTask>[1]) => {
+    const taskId = addTask(listId, newTask);
+    if (taskId) {
+      pendingFocus.current = {
+        isReady: (tasks) => tasks.some((task) => task.id === taskId),
+        moveFocus: () => focusTaskOrHeading(taskId),
+      };
+    }
+  };
+
+  const closeTaskForm = () => {
+    setAddTaskFormVisible(false);
+    pendingFocus.current ??= {
+      isReady: () => true,
+      moveFocus: () => focusTaskOrHeading(sortedList.at(-1)?.id),
+    };
+  };
+
+  const focusPreviousTaskOnceDeleted = (task: WorkTask) => {
+    const index = sortedList.findIndex(({ id }) => id === task.id);
+    const previousTask = sortedList[index - 1];
+    pendingFocus.current = {
+      isReady: (tasks) => !tasks.some(({ id }) => id === task.id),
+      moveFocus: () => focusTaskOrHeading(previousTask?.id),
+    };
+  };
+
   const dragState = useDropTarget({
     dropTargetRef: listRef,
     canDrop: ({ source }) => isTask(source.data),
@@ -111,7 +167,7 @@ export function TaskList({
     >
       <div className="work-task-list">
         <div className="heading">
-          <h2>
+          <h2 ref={headingRef} tabIndex={-1}>
             <EditableText
               label={`Edit ${list.description} name`}
               value={list.description}
@@ -163,7 +219,6 @@ export function TaskList({
         </div>
         <ol
           ref={listRef}
-          tabIndex={-1}
           onClick={showTaskForm}
           className={`tasks ${dragState}`}
         >
@@ -172,6 +227,14 @@ export function TaskList({
               key={task.id}
               listId={listId}
               task={task}
+              descriptionRef={(handle) => {
+                if (handle) {
+                  taskDescriptions.current.set(task.id, handle);
+                } else {
+                  taskDescriptions.current.delete(task.id);
+                }
+              }}
+              onDeleted={() => focusPreviousTaskOnceDeleted(task)}
               dragHandle={
                 <DragHandle
                   list={sortedList}
@@ -209,8 +272,8 @@ export function TaskList({
           {addTaskFormVisible && (
             <li className="add-task-row">
               <AddTaskForm
-                onSubmit={(newTask) => addTask(listId, newTask)}
-                onClose={closeForm}
+                onSubmit={addTaskAndFocusIt}
+                onClose={closeTaskForm}
               />
             </li>
           )}

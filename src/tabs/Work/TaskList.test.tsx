@@ -4,7 +4,10 @@ import { TaskList } from './TaskList';
 import {
   WorkStorageContext,
   WorkStorageContextType,
+  WorkStorageProvider,
 } from './WorkStorageContext';
+import { FirebaseContext } from '../../shared/FirebaseContext';
+import { createMockFirebaseContext } from '../../shared/mockFirebase';
 import { createWorkStorageContext } from './workStorageTestUtils';
 import { WorkTask, StoredLabel } from './types';
 
@@ -188,5 +191,117 @@ describe('TaskList count', () => {
     renderTaskList(labelledList.id, createStorageContext());
 
     expect(screen.queryByLabelText(/tasks remaining/)).not.toBeInTheDocument();
+  });
+});
+
+describe('TaskList focus', () => {
+  function renderStoredTaskList(list: WorkTask) {
+    const firebaseContext = createMockFirebaseContext({
+      work: { [list.id]: list },
+    });
+    render(
+      <FirebaseContext.Provider value={firebaseContext}>
+        <WorkStorageProvider>
+          <TaskList
+            listId={list.id}
+            index={0}
+            parentListId="work"
+            additionalMoveDestinations={noop}
+          />
+        </WorkStorageProvider>
+      </FirebaseContext.Provider>,
+    );
+  }
+
+  async function deleteTaskDescription(
+    user: ReturnType<typeof userEvent.setup>,
+    description: string,
+  ) {
+    await user.click(
+      screen.getByRole('button', { name: `Edit description ${description}` }),
+    );
+    await user.clear(
+      screen.getByRole('textbox', { name: `Edit description ${description}` }),
+    );
+    await user.keyboard('{Enter}');
+  }
+
+  describe('when a task is added', () => {
+    it('moves focus to the new task', async () => {
+      const user = userEvent.setup();
+      renderStoredTaskList(unlabelledList);
+
+      await user.click(screen.getByRole('list'));
+      await user.type(
+        screen.getByRole('textbox', { name: 'Description' }),
+        'write tests{Enter}',
+      );
+
+      expect(
+        screen.getByRole('button', { name: 'Edit description write tests' }),
+      ).toHaveFocus();
+    });
+  });
+
+  describe('when the add task form is cancelled', () => {
+    describe('and the list has tasks', () => {
+      it('moves focus to the last task', async () => {
+        const user = userEvent.setup();
+        renderStoredTaskList(unlabelledList);
+
+        await user.click(screen.getByRole('list'));
+        await user.keyboard('{Escape}');
+
+        expect(
+          screen.getByRole('button', { name: 'Edit description done' }),
+        ).toHaveFocus();
+      });
+    });
+
+    describe('and the list is empty', () => {
+      it('moves focus to the list heading', async () => {
+        const user = userEvent.setup();
+        renderStoredTaskList(labelledList);
+
+        await user.click(screen.getByRole('list'));
+        await user.keyboard('{Escape}');
+
+        expect(screen.getByRole('heading', { level: 2 })).toHaveFocus();
+      });
+    });
+  });
+
+  describe('when a task is deleted', () => {
+    describe('and there is a task before it', () => {
+      it('moves focus to the previous task', async () => {
+        const user = userEvent.setup();
+        renderStoredTaskList(unlabelledList);
+
+        const deletedTask = screen.getByRole('button', {
+          name: 'Edit description also not done',
+        });
+        await deleteTaskDescription(user, 'also not done');
+
+        expect(deletedTask).not.toBeInTheDocument();
+        expect(
+          screen.getByRole('button', { name: 'Edit description not done' }),
+        ).toHaveFocus();
+      });
+    });
+
+    describe('and it is the first task', () => {
+      it('moves focus to the list heading', async () => {
+        const user = userEvent.setup();
+        renderStoredTaskList(unlabelledList);
+
+        const deletedTask = screen.getByRole('button', {
+          name: 'Edit description not done',
+        });
+        await deleteTaskDescription(user, 'not done');
+
+        expect(deletedTask).not.toBeInTheDocument();
+        expect(screen.getByRole('heading', { level: 2 })).toHaveFocus();
+      });
+    });
   });
 });
