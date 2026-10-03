@@ -58,3 +58,12 @@
 .drop-indicator.right {
   order: 3;
 }
+
+.drag-handle.ghost:is(
+    :focus,
+    :has(~ .menu:focus-within),
+    :has(~ .menu:popover-open)
+  ) {
+  opacity: 1;
+  outline: 1px solid black;
+}
