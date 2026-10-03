@@ -24,7 +24,7 @@ type TaskProps = {
   listId: string;
   dragHandle: ReactElement;
   descriptionRef?: Ref<EditableTextHandle>;
-  onDelete: () => void;
+  onDeleted: () => void;
 };
 
 export function Task({
@@ -32,9 +32,9 @@ export function Task({
   listId,
   dragHandle,
   descriptionRef,
-  onDelete,
+  onDeleted,
 }: TaskProps) {
-  const { updateTask, addLabel, removeLabel } = useWorkStorage();
+  const { updateTask, deleteTask, addLabel, removeLabel } = useWorkStorage();
   const hasLabels = (task.labelIds?.length ?? 0) > 0;
 
   const onChangeWorktree = (newWorktree?: Worktree) => {
@@ -100,7 +100,10 @@ export function Task({
               description,
             });
           }}
-          onDelete={onDelete}
+          onDelete={() => {
+            deleteTask(listId, task);
+            onDeleted();
+          }}
           className="inline"
           style={{
             textDecoration: task.status === 'done' ? 'line-through' : 'none',

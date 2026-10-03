@@ -77,7 +77,6 @@ export function TaskList({
     reorderLists,
     reorderTasks,
     addTask,
-    deleteTask,
     getLabel,
     changeLabels,
     removeLabel,
@@ -131,14 +130,13 @@ export function TaskList({
     };
   };
 
-  const deleteTaskAndFocusPrevious = (task: WorkTask) => {
+  const focusPreviousTaskOnceDeleted = (task: WorkTask) => {
     const index = sortedList.findIndex(({ id }) => id === task.id);
     const previousTask = sortedList[index - 1];
     pendingFocus.current = {
       isReady: (tasks) => !tasks.some(({ id }) => id === task.id),
       moveFocus: () => focusTaskOrHeading(previousTask?.id),
     };
-    deleteTask(listId, task);
   };
 
   const dragState = useDropTarget({
@@ -236,7 +234,7 @@ export function TaskList({
                   taskDescriptions.current.delete(task.id);
                 }
               }}
-              onDelete={() => deleteTaskAndFocusPrevious(task)}
+              onDeleted={() => focusPreviousTaskOnceDeleted(task)}
               dragHandle={
                 <DragHandle
                   list={sortedList}
