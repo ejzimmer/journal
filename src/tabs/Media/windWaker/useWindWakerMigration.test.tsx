@@ -15,6 +15,7 @@ function runMigration(legacyGoals?: Record<string, unknown>) {
           useValue: <T,>(key?: string) => ({
             value: (key === LEGACY_GOALS_PATH ? legacyGoals : undefined) as T,
             loading: false,
+            synced: true,
           }),
           setValues,
         }}

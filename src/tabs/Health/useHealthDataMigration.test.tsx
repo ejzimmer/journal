@@ -16,6 +16,7 @@ function runMigration(storedValues: Record<string, unknown>) {
           useValue: <T,>(key?: string) => ({
             value: key ? (storedValues[key] as T) : undefined,
             loading: false,
+            synced: true,
           }),
           setValues,
         }}

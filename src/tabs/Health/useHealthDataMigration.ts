@@ -27,26 +27,41 @@ export function createMoveUpdates(
 
 export function useHealthDataMigration() {
   const { useValue, setValues } = useStorageContext();
-  const { value: legacyDaily } = useValue<StoredItems>(LEGACY_DAILY_PATH);
-  const { value: daily } = useValue<StoredItems>(DAILY_PATH);
-  const { value: legacyExercises } = useValue<StoredItems>(
-    LEGACY_EXERCISES_PATH,
+  const legacyDaily = useValue<StoredItems>(LEGACY_DAILY_PATH);
+  const daily = useValue<StoredItems>(DAILY_PATH);
+  const legacyExercises = useValue<StoredItems>(LEGACY_EXERCISES_PATH);
+  const exercises = useValue<StoredItems>(EXERCISES_PATH);
+  const synced = [legacyDaily, daily, legacyExercises, exercises].every(
+    (result) => result.synced,
   );
-  const { value: exercises } = useValue<StoredItems>(EXERCISES_PATH);
 
   useEffect(() => {
+    if (!synced) return;
+
     const updates = {
-      ...createMoveUpdates(LEGACY_DAILY_PATH, DAILY_PATH, legacyDaily, daily),
+      ...createMoveUpdates(
+        LEGACY_DAILY_PATH,
+        DAILY_PATH,
+        legacyDaily.value,
+        daily.value,
+      ),
       ...createMoveUpdates(
         LEGACY_EXERCISES_PATH,
         EXERCISES_PATH,
-        legacyExercises,
-        exercises,
+        legacyExercises.value,
+        exercises.value,
       ),
     };
 
     if (Object.keys(updates).length > 0) {
       setValues(updates);
     }
-  }, [legacyDaily, daily, legacyExercises, exercises, setValues]);
+  }, [
+    synced,
+    legacyDaily.value,
+    daily.value,
+    legacyExercises.value,
+    exercises.value,
+    setValues,
+  ]);
 }

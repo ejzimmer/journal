@@ -45,6 +45,7 @@ const createStoredMedia = ({
       key === GAMES_KEY ? games : books,
     ) as T,
     loading: false,
+    synced: true,
   }),
 });
 

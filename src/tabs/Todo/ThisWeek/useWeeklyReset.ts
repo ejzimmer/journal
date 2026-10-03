@@ -25,11 +25,12 @@ export function refreshTasks(
 
 export function useWeeklyReset() {
   const { useValue, updateItem } = useStorageContext();
-  const { value: tasksById } = useValue<Record<string, WeeklyTask>>(WEEKLY_KEY);
+  const { value: tasksById, synced } =
+    useValue<Record<string, WeeklyTask>>(WEEKLY_KEY);
 
   useDailyJob({
     lastRunKey: WEEKLY_RESET_KEY,
-    isReady: tasksById !== undefined,
+    isReady: synced && tasksById !== undefined,
     run: () =>
       refreshTasks(Object.values(tasksById ?? {}), (task) =>
         updateItem<WeeklyTask>(WEEKLY_KEY, task),

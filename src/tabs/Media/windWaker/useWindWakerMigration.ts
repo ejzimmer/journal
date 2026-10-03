@@ -32,13 +32,15 @@ export function createWindWakerMigration(
 
 export function useWindWakerMigration() {
   const { useValue, setValues } = useStorageContext();
-  const { value: legacyGoals } =
+  const { value: legacyGoals, synced } =
     useValue<Record<string, unknown>>(LEGACY_GOALS_PATH);
 
   useEffect(() => {
+    if (!synced) return;
+
     const updates = createWindWakerMigration(legacyGoals);
     if (Object.keys(updates).length > 0) {
       setValues(updates);
     }
-  }, [legacyGoals, setValues]);
+  }, [legacyGoals, synced, setValues]);
 }
