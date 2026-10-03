@@ -1,5 +1,6 @@
 import { useMemo } from 'react';
 import { createTreeLayout } from './treeLayout';
+import { TreeFill } from './TreeFill';
 import { TreeOutline } from './TreeOutline';
 import { PrintSeries } from './types';
 
@@ -19,6 +20,7 @@ export function MediaTree({ series }: { series: PrintSeries }) {
       width={width}
       height={height}
     >
+      <TreeFill layout={layout} series={series} />
       <TreeOutline layout={layout} />
     </svg>
   );
