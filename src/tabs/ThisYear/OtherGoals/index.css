@@ -17,8 +17,7 @@ ul.other-goals {
 
   .bikes {
     display: grid;
-    grid-template-columns: repeat(8, 28px);
-    gap: 2px;
+    grid-template-columns: repeat(8, 24px);
     padding: 0;
 
     li {
@@ -37,7 +36,8 @@ ul.other-goals {
 
     label {
       anchor-name: --bike-name;
-      width: 52px;
+      width: 48px;
+      padding: 0;
       color: var(--body-colour);
     }
 
