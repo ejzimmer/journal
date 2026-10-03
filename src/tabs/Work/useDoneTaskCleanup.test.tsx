@@ -71,6 +71,31 @@ describe('cleaning up done work tasks', () => {
       );
     });
 
+    it('goes after the tasks already in the done list', () => {
+      const storage = cleanUpLists([
+        createList('today', 'Today', 0, [
+          createDoneTask('today', 'fix-the-thing', getDateDaysAgo(1)),
+          createTask('today', 'ship-the-thing', {
+            status: 'done',
+            lastStatusUpdate: getDateDaysAgo(1),
+            position: 1,
+          }),
+        ]),
+        createList('done', 'Done', 1, [
+          createTask('done', 'old-thing', { status: 'done', position: 3 }),
+        ]),
+      ]);
+
+      expect(storage.addItem).toHaveBeenCalledWith(
+        `${WORK_KEY}/done/items`,
+        expect.objectContaining({ description: 'fix-the-thing', position: 4 }),
+      );
+      expect(storage.addItem).toHaveBeenCalledWith(
+        `${WORK_KEY}/done/items`,
+        expect.objectContaining({ description: 'ship-the-thing', position: 5 }),
+      );
+    });
+
     it('leaves the list it came from', () => {
       const storage = cleanUpLists([
         createList('today', 'Today', 0, [

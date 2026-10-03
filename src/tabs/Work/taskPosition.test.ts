@@ -15,7 +15,7 @@ describe('getAppendPosition', () => {
     expect(getAppendPosition(list)).toBe(0);
   });
 
-  it('returns the highest position already in the list', () => {
+  it('returns one past the highest position already in the list', () => {
     const listWithItems: WorkTask = {
       ...list,
       items: {
@@ -30,6 +30,6 @@ describe('getAppendPosition', () => {
       },
     };
 
-    expect(getAppendPosition(listWithItems)).toBe(3);
+    expect(getAppendPosition(listWithItems)).toBe(4);
   });
 });

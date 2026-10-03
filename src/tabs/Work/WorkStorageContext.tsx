@@ -8,6 +8,7 @@ import {
 } from 'react';
 import { useStorageContext } from '../../shared/FirebaseContext';
 import { addSourceListLabel } from './labelUtils';
+import { getAppendPosition } from './taskPosition';
 import {
   Colour,
   Label,
@@ -235,6 +236,7 @@ export function WorkStorageProvider({ children }: { children: ReactNode }) {
       return addItem(`${WORK_KEY}/${listId}/items`, {
         ...task,
         parentId: `${WORK_KEY}/${listId}/items`,
+        position: getAppendPosition(lists?.[listId]),
         ...(labelIds.length > 0 && { labelIds }),
       });
     },

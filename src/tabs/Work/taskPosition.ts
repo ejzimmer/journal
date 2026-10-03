@@ -1,11 +1,6 @@
+import { getNextPosition } from '../../shared/drag-and-drop/utils';
 import { WorkTask } from './types';
 
-export function getAppendPosition(list: WorkTask): number {
-  return list.items
-    ? Object.values(list.items).reduce(
-        (highest, item) =>
-          item.position ? Math.max(highest, item.position) : highest,
-        0,
-      )
-    : 0;
+export function getAppendPosition(list?: WorkTask): number {
+  return getNextPosition(Object.values(list?.items ?? {}));
 }
