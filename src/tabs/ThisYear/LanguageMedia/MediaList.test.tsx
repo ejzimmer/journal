@@ -281,12 +281,17 @@ describe('MediaList', () => {
     describe('a volume', () => {
       it('adds it to the series', async () => {
         const { user, storageContext } = renderList([yotsuba]);
+        const form = screen.getByRole('form', { name: 'Add volume' });
 
+        await user.type(
+          within(form).getByRole('spinbutton', { name: 'Pages' }),
+          '200',
+        );
         await user.click(screen.getByRole('button', { name: 'Add volume' }));
 
         expect(storageContext.addItem).toHaveBeenCalledWith(
           ['yotsuba', 'volumes'],
-          { number: 3, lookups: 0, aiQuestions: 0 },
+          { number: 3, pages: 200, lookups: 0, aiQuestions: 0 },
         );
       });
     });

@@ -40,6 +40,12 @@
   }
 }
 
+.add-volume {
+  position: absolute;
+  inset-block-end: 0;
+  inset-inline-start: 0;
+}
+
 .signpost {
   position: absolute;
   inset-block-end: var(--ground);

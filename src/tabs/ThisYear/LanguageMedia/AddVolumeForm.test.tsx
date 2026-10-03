@@ -39,11 +39,13 @@ describe('AddVolumeForm', () => {
         screen.getByRole('textbox', { name: 'Name' }),
         'Astérix le Gaulois',
       );
+      await user.type(screen.getByRole('spinbutton', { name: 'Pages' }), '48');
       await user.click(screen.getByRole('button', { name: 'Add volume' }));
 
       expect(onAdd).toHaveBeenCalledWith({
         number: 1,
         name: 'Astérix le Gaulois',
+        pages: 48,
         lookups: 0,
         aiQuestions: 0,
       });
@@ -54,11 +56,27 @@ describe('AddVolumeForm', () => {
         const user = userEvent.setup();
         const onAdd = jest.fn();
         render(<AddVolumeForm isNameRequired onAdd={onAdd} />);
+        await user.type(
+          screen.getByRole('spinbutton', { name: 'Pages' }),
+          '48',
+        );
 
         await user.click(screen.getByRole('button', { name: 'Add volume' }));
 
         expect(onAdd).not.toHaveBeenCalled();
       });
+    });
+  });
+
+  describe('without pages', () => {
+    it('does not add the volume', async () => {
+      const user = userEvent.setup();
+      const onAdd = jest.fn();
+      render(<AddVolumeForm isNameRequired={false} onAdd={onAdd} />);
+
+      await user.click(screen.getByRole('button', { name: 'Add volume' }));
+
+      expect(onAdd).not.toHaveBeenCalled();
     });
   });
 });

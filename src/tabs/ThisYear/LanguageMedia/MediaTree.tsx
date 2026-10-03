@@ -1,6 +1,7 @@
 import { CSSProperties, useMemo, useState } from 'react';
 import { BranchNames } from './BranchNames';
 import { findCurrentVolume } from './currentVolume';
+import { GardenVolumeAdder } from './GardenVolumeAdder';
 import { LookupForm } from './LookupForm';
 import { createTreeLayout } from './treeLayout';
 import { TreeFill } from './TreeFill';
@@ -48,6 +49,7 @@ export function MediaTree({ series }: { series: PrintSeries }) {
           onSubmit={() => setIsTracking(false)}
         />
       )}
+      <GardenVolumeAdder series={series} />
     </div>
   );
 }

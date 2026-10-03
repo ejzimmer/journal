@@ -27,7 +27,7 @@ export function AddVolumeForm({
       }
     >
       <TextField label="Name" name="name" isRequired={isNameRequired} />
-      <NumberField label="Pages" name="pages" />
+      <NumberField label="Pages" name="pages" isRequired />
     </AddItemForm>
   );
 }
