@@ -1,8 +1,32 @@
-import { screen } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
+import { useState } from 'react';
 import userEvent from '@testing-library/user-event';
 import { ExerciseClass } from '../../shared/types';
-import { renderWithHealthStorage } from './healthStorageTestUtils';
+import {
+  createHealthStorageContext,
+  renderWithHealthStorage,
+} from './healthStorageTestUtils';
+import { HealthStorageContext } from './HealthStorageContext';
 import { ExerciseClasses } from './ExerciseClasses';
+
+function StoredClasses({ initial }: { initial: ExerciseClass[] }) {
+  const [classes, setClasses] = useState(initial);
+  return (
+    <HealthStorageContext.Provider
+      value={createHealthStorageContext({
+        classes,
+        updateClass: (updated) =>
+          setClasses((current) =>
+            current.map((exerciseClass) =>
+              exerciseClass.id === updated.id ? updated : exerciseClass,
+            ),
+          ),
+      })}
+    >
+      <ExerciseClasses />
+    </HealthStorageContext.Provider>
+  );
+}
 
 describe('ExerciseClasses', () => {
   describe('a class that is a set number of classes', () => {
@@ -133,13 +157,111 @@ describe('ExerciseClasses', () => {
         classes: [finished, unfinished],
       });
 
+      const cards = screen.getAllByRole('listitem');
+      expect(cards).toHaveLength(2);
+      expect(cards[0]).toHaveAccessibleName('Unfinished');
+      expect(cards[1]).toHaveAccessibleName('Finished');
+    });
+  });
+
+  describe('a finished class', () => {
+    const handstand: ExerciseClass = {
+      id: 'handstand',
+      description: 'Handstand',
+      blocks: [{ id: 'all', total: 2, completed: [0, 1] }],
+    };
+
+    it('shows a tick in place of its classes', () => {
+      render(<StoredClasses initial={[handstand]} />);
+
       expect(
-        screen.getAllByRole('checkbox').map((box) => box.ariaLabel),
-      ).toEqual([
-        'Unfinished: Class 1',
-        'Unfinished: Class 2',
-        'Finished: Class 1',
-      ]);
+        screen.getByRole('button', {
+          name: 'Handstand: all classes done. Show classes',
+        }),
+      ).toBeInTheDocument();
+    });
+
+    describe('when the tick is pressed', () => {
+      it('shows the classes and focuses the first one', async () => {
+        const user = userEvent.setup();
+        render(<StoredClasses initial={[handstand]} />);
+        const tick = screen.getByRole('button', {
+          name: 'Handstand: all classes done. Show classes',
+        });
+
+        await user.click(tick);
+
+        expect(tick).not.toBeInTheDocument();
+        expect(
+          screen.getByRole('checkbox', { name: 'Handstand: Class 1' }),
+        ).toHaveFocus();
+      });
+
+      describe('and a class is unticked', () => {
+        it('keeps showing the classes', async () => {
+          const user = userEvent.setup();
+          render(<StoredClasses initial={[handstand]} />);
+          await user.click(
+            screen.getByRole('button', {
+              name: 'Handstand: all classes done. Show classes',
+            }),
+          );
+
+          const classTwo = screen.getByRole('checkbox', {
+            name: 'Handstand: Class 2',
+          });
+          await user.click(classTwo);
+
+          expect(classTwo).not.toBeChecked();
+        });
+
+        describe('and then ticked again', () => {
+          it('shows the tick again and focuses it', async () => {
+            const user = userEvent.setup();
+            render(<StoredClasses initial={[handstand]} />);
+            await user.click(
+              screen.getByRole('button', {
+                name: 'Handstand: all classes done. Show classes',
+              }),
+            );
+            const classTwo = screen.getByRole('checkbox', {
+              name: 'Handstand: Class 2',
+            });
+
+            await user.click(classTwo);
+            await user.click(classTwo);
+
+            expect(classTwo).not.toBeInTheDocument();
+            expect(
+              screen.getByRole('button', {
+                name: 'Handstand: all classes done. Show classes',
+              }),
+            ).toHaveFocus();
+          });
+        });
+      });
+    });
+  });
+
+  describe('when the last class of a class is ticked', () => {
+    it('shows the tick in place of its classes and focuses it', async () => {
+      const user = userEvent.setup();
+      const wheel: ExerciseClass = {
+        id: 'wheel',
+        description: 'Wheel',
+        blocks: [{ id: 'all', total: 2, completed: [0] }],
+      };
+      render(<StoredClasses initial={[wheel]} />);
+      const classTwo = screen.getByRole('checkbox', { name: 'Wheel: Class 2' });
+
+      await user.click(classTwo);
+
+      expect(classTwo).not.toBeInTheDocument();
+      expect(
+        screen.getByRole('button', {
+          name: 'Wheel: all classes done. Show classes',
+        }),
+      ).toHaveFocus();
     });
   });
 });
