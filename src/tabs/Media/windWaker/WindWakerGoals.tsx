@@ -1,6 +1,5 @@
-import { CSSProperties } from 'react';
 import { EditableText } from '../../../shared/controls/EditableText';
-import { EmojiCheckbox } from '../../../shared/controls/EmojiCheckbox';
+import { BooleanGoal } from './BooleanGoal';
 
 import './WindWakerGoals.css';
 
@@ -67,7 +66,7 @@ export function WindWakerGoals({
           }
         />
         <BooleanGoal
-          emoji={<div className="double-magic-meter" />}
+          icon={<div className="double-magic-meter" />}
           label={magicMeterDouble.label}
           isChecked={magicMeterDouble.completed}
           onChange={(isChecked) => {
@@ -78,7 +77,7 @@ export function WindWakerGoals({
           }}
         />
         <BooleanGoal
-          emoji="./blue-potion.png"
+          icon="./blue-potion.png"
           label={bluePotion.label}
           isChecked={bluePotion.unlocked}
           onChange={(isChecked) => {
@@ -86,7 +85,7 @@ export function WindWakerGoals({
           }}
         />
         <BooleanGoal
-          emoji="./green-potion.png"
+          icon="./green-potion.png"
           label={greenPotion.label}
           isChecked={greenPotion.unlocked}
           onChange={(isChecked) => {
@@ -94,7 +93,7 @@ export function WindWakerGoals({
           }}
         />
         <BooleanGoal
-          emoji="./song-of-passing.png"
+          icon="./song-of-passing.png"
           label={songOfPassing.label}
           isChecked={songOfPassing.learnt}
           onChange={(isChecked) => {
@@ -105,7 +104,7 @@ export function WindWakerGoals({
           }}
         />
         <BooleanGoal
-          emoji="./spin-attack.png"
+          icon="./spin-attack.png"
           label={spinAttack.label}
           isChecked={spinAttack.learnt}
           onChange={(isChecked) => {
@@ -113,7 +112,7 @@ export function WindWakerGoals({
           }}
         />
         <BooleanGoal
-          emoji="./heros-charm.png"
+          icon="./heros-charm.png"
           label={herosCharm.label}
           isChecked={herosCharm.collected}
           onChange={(isChecked) => {
@@ -121,7 +120,7 @@ export function WindWakerGoals({
           }}
         />
         <BooleanGoal
-          emoji="./magic-armour.png"
+          icon="./magic-armour.png"
           label={magicArmour.label}
           isChecked={magicArmour.collected}
           onChange={(isChecked) => {
@@ -130,7 +129,7 @@ export function WindWakerGoals({
         />
 
         <BooleanGoal
-          emoji="./grandma.png"
+          icon="./grandma.png"
           label={cureGrandma.label}
           isChecked={cureGrandma.cured}
           onChange={(isChecked) => {
@@ -316,38 +315,6 @@ function CountGoal({ icon, label, value, total, onChange }: CountGoalProps) {
           }}
         />
         <span className="tooltip-anchor">/{total}</span>
-        <div className="tooltip">{label}</div>
-      </div>
-    </li>
-  );
-}
-
-function BooleanGoal({
-  emoji,
-  isChecked,
-  label,
-  onChange,
-  style,
-}: {
-  emoji: string | React.ReactElement;
-  isChecked: boolean;
-  label: string;
-  onChange: (isChecked: boolean) => void;
-  style?: CSSProperties;
-}) {
-  return (
-    <li>
-      <div className="tooltip-container">
-        <div className="tooltip-anchor" style={style}>
-          <EmojiCheckbox
-            emoji={emoji}
-            isChecked={isChecked}
-            label={label}
-            onChange={() => {
-              onChange(!isChecked);
-            }}
-          />
-        </div>
         <div className="tooltip">{label}</div>
       </div>
     </li>
