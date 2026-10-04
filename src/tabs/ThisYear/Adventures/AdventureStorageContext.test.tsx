@@ -42,7 +42,7 @@ describe('AdventureStorageContext', () => {
     it('reads them from the adventures path', () => {
       const useValue = jest
         .fn()
-        .mockReturnValue({ value: undefined, loading: false });
+        .mockReturnValue({ value: undefined, loading: false, synced: true });
 
       createAdventureStorage({ useValue });
 
@@ -51,7 +51,11 @@ describe('AdventureStorageContext', () => {
 
     it('lists the stored adventures', () => {
       const storage = createAdventureStorage({
-        useValue: <T,>() => ({ value: { parkrun } as T, loading: false }),
+        useValue: <T,>() => ({
+          value: { parkrun } as T,
+          loading: false,
+          synced: true,
+        }),
       });
 
       expect(storage.adventures).toEqual([parkrun]);
@@ -123,7 +127,7 @@ describe('AdventureStorageContext', () => {
     it('reads them from the modes path', () => {
       const useValue = jest
         .fn()
-        .mockReturnValue({ value: undefined, loading: false });
+        .mockReturnValue({ value: undefined, loading: false, synced: true });
 
       createAdventureStorage({ useValue });
 
@@ -132,7 +136,11 @@ describe('AdventureStorageContext', () => {
 
     it('lists the stored modes', () => {
       const storage = createAdventureStorage({
-        useValue: <T,>() => ({ value: { running } as T, loading: false }),
+        useValue: <T,>() => ({
+          value: { running } as T,
+          loading: false,
+          synced: true,
+        }),
       });
 
       expect(storage.modes).toEqual([running]);
@@ -155,7 +163,7 @@ describe('AdventureStorageContext', () => {
   describe('while the stored data is loading', () => {
     it('says it is loading', () => {
       const storage = createAdventureStorage({
-        useValue: () => ({ value: undefined, loading: true }),
+        useValue: () => ({ value: undefined, loading: true, synced: false }),
       });
 
       expect(storage.isLoading).toBe(true);

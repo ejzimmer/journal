@@ -42,12 +42,12 @@ function renderSubtasks(subtasks: ProjectSubtask[]) {
         updateItem,
         useValue: <T,>(key?: string) => {
           if (key === `${PROJECTS_KEY}/${projectId}`) {
-            return { value: project as T, loading: false };
+            return { value: project as T, loading: false, synced: true };
           }
           if (key === subtasksKey) {
-            return { value: stored as T, loading: false };
+            return { value: stored as T, loading: false, synced: true };
           }
-          return { value: undefined, loading: false };
+          return { value: undefined, loading: false, synced: true };
         },
       },
     },

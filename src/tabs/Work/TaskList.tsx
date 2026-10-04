@@ -242,7 +242,7 @@ export function TaskList({
                   onReorder={(reorderedList) =>
                     reorderTasks(listId, reorderedList)
                   }
-                  additionalActions={{
+                  actions={{
                     menuItems: additionalMoveDestinations(task),
                     onKeyDown: onMoveTaskToList
                       ? (event) => {

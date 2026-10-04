@@ -1,4 +1,4 @@
-import { useRef, useState, useEffect } from 'react';
+import { useState } from 'react';
 import { TickIcon } from '../../shared/icons/Tick';
 
 type AddSubtaskFormProps = {
@@ -10,23 +10,11 @@ export function AddSubtaskForm({
   isFormVisible,
   onAddSubtask,
 }: AddSubtaskFormProps) {
-  const formRef = useRef<HTMLFormElement>(null);
-  const formWidthRef = useRef(0);
   const [description, setDescription] = useState('');
-
-  useEffect(() => {
-    if (formRef.current) {
-      formWidthRef.current = formRef.current.scrollWidth + 30;
-    }
-  }, []);
 
   return (
     <form
-      ref={formRef}
-      className={`add-subtask-form ${isFormVisible ? 'visible' : ''} ${
-        description ? 'has-description' : ''
-      }`}
-      style={{ minWidth: isFormVisible ? formWidthRef.current : 0 }}
+      className={`add-subtask-form ${isFormVisible ? 'visible' : ''}`}
       onSubmit={(event) => {
         event.preventDefault();
 
@@ -43,7 +31,6 @@ export function AddSubtaskForm({
         value={description}
         onChange={(event) => setDescription(event.target.value)}
         disabled={!isFormVisible}
-        size={description.length * 0.7}
         required
       />
       <button className="ghost" disabled={!isFormVisible}>

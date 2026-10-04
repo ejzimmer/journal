@@ -1,4 +1,5 @@
 import { EmojiCheckbox } from '../../../shared/controls/EmojiCheckbox';
+import { bikePictures } from './BikePictures/bikePictures';
 
 type Bike = { name: string; icon: string; isDone: boolean };
 export type BikesGoal = { id: string; bikes: Bike[] };
@@ -14,7 +15,7 @@ export function Bikes({ goal, onChange }: BikesProps) {
       {goal.bikes.map((bike, index) => (
         <li key={bike.name}>
           <EmojiCheckbox
-            emoji={bike.icon}
+            emoji={bikePictures[bike.name] ?? bike.icon}
             isChecked={bike.isDone}
             onChange={(event) =>
               onChange({

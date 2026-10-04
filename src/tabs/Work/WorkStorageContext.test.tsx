@@ -43,11 +43,13 @@ function createFirebaseContext(
         return {
           value: storedLabels as unknown as T | undefined,
           loading: storedLabels === undefined,
+          synced: storedLabels !== undefined,
         };
       }
       return {
         value: lists as unknown as T | undefined,
         loading: lists === undefined,
+        synced: lists !== undefined,
       };
     },
   };

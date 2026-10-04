@@ -11,12 +11,13 @@ import { StoredYarn, StoredYarnByYear } from './types';
 const createUseValue = (values: Record<string, unknown>) => (key: string) => ({
   value: values[key],
   loading: false,
+  synced: true,
 });
 
 const renderWithYarnProvider = <T,>(
   hook: () => T,
   values: Record<string, unknown>,
-  { setValue = jest.fn(), setValues = jest.fn() } = {},
+  { setValue = jest.fn() } = {},
 ) =>
   renderHook(hook, {
     wrapper: ({ children }: { children: ReactNode }) => (
@@ -24,7 +25,6 @@ const renderWithYarnProvider = <T,>(
         value={{
           useValue: createUseValue(values) as never,
           setValue,
-          setValues,
         }}
       >
         <YarnStorageProvider>{children}</YarnStorageProvider>
@@ -111,41 +111,6 @@ describe('YarnStorageProvider', () => {
           year: 2025,
           currentBalance: 400,
         });
-      });
-    });
-  });
-
-  describe('when the yarn is still stored under 2026/yarn', () => {
-    const legacyYarn = {
-      wool: { id: 'wool', history: { '2026-01': 300 } },
-    };
-
-    it('moves it to yarn/2026', () => {
-      const setValues = jest.fn();
-
-      renderWithYarnProvider(
-        () => useYarnStorage(),
-        { '2026/yarn': legacyYarn },
-        { setValues },
-      );
-
-      expect(setValues).toHaveBeenCalledWith({
-        'yarn/2026': legacyYarn,
-        '2026/yarn': null,
-      });
-    });
-
-    describe('and yarn/2026 already has yarn', () => {
-      it('leaves both where they are', () => {
-        const setValues = jest.fn();
-
-        renderWithYarnProvider(
-          () => useYarnStorage(),
-          { '2026/yarn': legacyYarn, yarn: { '2026': legacyYarn } },
-          { setValues },
-        );
-
-        expect(setValues).not.toHaveBeenCalled();
       });
     });
   });

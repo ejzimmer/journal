@@ -13,11 +13,11 @@ const finishedBeforeToday = (task: WorkTask) =>
 
 export function useDoneTaskCleanup() {
   const { useValue, addItem, updateList } = useStorageContext();
-  const { value: lists } = useValue<Record<string, WorkTask>>(WORK_KEY);
+  const { value: lists, synced } = useValue<Record<string, WorkTask>>(WORK_KEY);
 
   useDailyJob({
     lastRunKey: WORK_CLEANUP_KEY,
-    isReady: lists !== undefined,
+    isReady: synced && lists !== undefined,
     run: () => {
       const allLists = Object.values(lists ?? {});
       const doneList = allLists.find((list) => list.description === 'Done');

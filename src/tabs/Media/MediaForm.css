@@ -1,0 +1,38 @@
+.media-form {
+  font-family: 'Literata', Georgia, 'Times New Roman', serif;
+
+  input,
+  legend,
+  label {
+    font-family: inherit;
+  }
+
+  .media-form-fields {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+
+  .footer {
+    align-items: center;
+  }
+
+  .save {
+    --size: 40px;
+    display: grid;
+    place-items: center;
+    border: 0;
+    color: white;
+    background: var(--media-accent);
+
+    &:hover,
+    &:focus-visible {
+      background: var(--media-accent-dark);
+    }
+  }
+
+  .delete {
+    margin-inline-end: auto;
+    color: var(--media-accent-dark);
+  }
+}

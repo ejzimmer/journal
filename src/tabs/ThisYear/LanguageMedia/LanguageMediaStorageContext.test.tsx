@@ -32,7 +32,10 @@ const createLanguageMediaStorage = (storage: Partial<ContextType> = {}) =>
 
 const storeMedia = (
   mediaByYear: Record<number, Record<string, LanguageMedia>>,
-) => jest.fn().mockReturnValue({ value: mediaByYear, loading: false });
+) =>
+  jest
+    .fn()
+    .mockReturnValue({ value: mediaByYear, loading: false, synced: true });
 
 const NOW = '2026-10-02T20:40:00Z';
 
@@ -124,7 +127,7 @@ describe('LanguageMediaStorageContext', () => {
     describe('while the stored media is loading', () => {
       it('says it is loading', () => {
         const { result } = renderWithProvider(useLanguageMediaStorageContext, {
-          useValue: () => ({ value: undefined, loading: true }),
+          useValue: () => ({ value: undefined, loading: true, synced: false }),
         });
 
         expect(result.current.isLoading).toBe(true);
