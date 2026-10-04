@@ -8,6 +8,7 @@ import {
 } from './capacityLevel';
 import { CountGoal } from './CountGoal';
 import { PipGoal } from './PipGoal';
+import { SeaChart } from './SeaChart';
 
 import './WindWakerGoals.css';
 
@@ -43,36 +44,16 @@ export function WindWakerGoals({
 
   return (
     <div className="windwaker">
-      <img
-        width="200px"
-        src="./wind-waker-title.png"
-        alt="Wind Waker checklist"
+      <SeaChart
+        revealedSquares={seaChartQuandrants.revealedSquares ?? []}
+        onChange={(revealedSquares) =>
+          updateGoal('seaChartQuandrants', {
+            total: seaChartQuandrants.total,
+            revealedSquares,
+          })
+        }
       />
       <ul>
-        <CountGoal
-          icon="./heart.png"
-          label="Hearts"
-          value={hearts.collected}
-          total={hearts.total}
-          onChange={(value: number) =>
-            updateGoal('hearts', {
-              ...hearts,
-              collected: value,
-            })
-          }
-        />
-        <PipGoal
-          icon="./bottle.png"
-          label="Bottles"
-          level={bottles.collected}
-          levels={bottles.total}
-          onChange={(value: number) =>
-            updateGoal('bottles', {
-              ...bottles,
-              collected: value,
-            })
-          }
-        />
         <BooleanGoal
           icon={<div className="double-magic-meter" />}
           label={magicMeterDouble.label}
@@ -85,19 +66,19 @@ export function WindWakerGoals({
           }}
         />
         <BooleanGoal
-          icon="./blue-potion.png"
-          label={bluePotion.label}
-          isChecked={bluePotion.unlocked}
-          onChange={(isChecked) => {
-            updateGoal('bluePotion', { ...bluePotion, unlocked: isChecked });
-          }}
-        />
-        <BooleanGoal
           icon="./green-potion.png"
           label={greenPotion.label}
           isChecked={greenPotion.unlocked}
           onChange={(isChecked) => {
             updateGoal('greenPotion', { ...greenPotion, unlocked: isChecked });
+          }}
+        />
+        <BooleanGoal
+          icon="./blue-potion.png"
+          label={bluePotion.label}
+          isChecked={bluePotion.unlocked}
+          onChange={(isChecked) => {
+            updateGoal('bluePotion', { ...bluePotion, unlocked: isChecked });
           }}
         />
         <BooleanGoal
@@ -135,7 +116,6 @@ export function WindWakerGoals({
             updateGoal('magicArmour', { ...magicArmour, collected: isChecked });
           }}
         />
-
         <BooleanGoal
           icon="./grandma.png"
           label={cureGrandma.label}
@@ -145,38 +125,26 @@ export function WindWakerGoals({
           }}
         />
         <CountGoal
-          icon="🗺️"
-          label="World map"
-          value={seaChartQuandrants.revealed}
-          total={seaChartQuandrants.total}
+          icon="./heart.png"
+          label="Hearts"
+          value={hearts.collected}
+          total={hearts.total}
           onChange={(value: number) =>
-            updateGoal('seaChartQuandrants', {
-              ...seaChartQuandrants,
-              revealed: value,
+            updateGoal('hearts', {
+              ...hearts,
+              collected: value,
             })
           }
         />
-        <CountGoal
-          icon="./chart.png"
-          label="Charts"
-          value={charts.chartCollected}
-          total={charts.total}
+        <PipGoal
+          icon="./bottle.png"
+          label="Bottles"
+          level={bottles.collected}
+          levels={bottles.total}
           onChange={(value: number) =>
-            updateGoal('charts', {
-              ...charts,
-              chartCollected: value,
-            })
-          }
-        />
-        <CountGoal
-          icon="./treasure.webp"
-          label="Treasure"
-          value={charts.treasureCollected}
-          total={charts.total}
-          onChange={(value: number) =>
-            updateGoal('charts', {
-              ...charts,
-              treasureCollected: value,
+            updateGoal('bottles', {
+              ...bottles,
+              collected: value,
             })
           }
         />
@@ -216,19 +184,6 @@ export function WindWakerGoals({
             })
           }
         />
-        <CountGoal
-          icon="./joy-pendant.png"
-          label={joyPendants.label}
-          value={joyPendants.given}
-          total={joyPendants.total}
-          onChange={(value: number) =>
-            updateGoal('joyPendants', {
-              ...joyPendants,
-              given: value,
-            })
-          }
-        />
-
         <CountGoal
           icon="./blue-chu.png"
           label={blueChuJellies.label}
@@ -274,6 +229,42 @@ export function WindWakerGoals({
             updateGoal('zunariShopDecorations', {
               ...zunariShopDecorations,
               collected: value,
+            })
+          }
+        />
+        <CountGoal
+          icon="./chart.png"
+          label="Charts"
+          value={charts.chartCollected}
+          total={charts.total}
+          onChange={(value: number) =>
+            updateGoal('charts', {
+              ...charts,
+              chartCollected: value,
+            })
+          }
+        />
+        <CountGoal
+          icon="./treasure.webp"
+          label="Treasure"
+          value={charts.treasureCollected}
+          total={charts.total}
+          onChange={(value: number) =>
+            updateGoal('charts', {
+              ...charts,
+              treasureCollected: value,
+            })
+          }
+        />
+        <CountGoal
+          icon="./joy-pendant.png"
+          label={joyPendants.label}
+          value={joyPendants.given}
+          total={joyPendants.total}
+          onChange={(value: number) =>
+            updateGoal('joyPendants', {
+              ...joyPendants,
+              given: value,
             })
           }
         />

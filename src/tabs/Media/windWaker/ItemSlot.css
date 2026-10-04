@@ -1,7 +1,8 @@
 .item-slot {
   position: relative;
-  width: 62px;
-  height: 62px;
+  width: 100%;
+  aspect-ratio: 1;
+  overflow: hidden;
   border-radius: 14px;
   display: grid;
   place-items: center;
@@ -63,10 +64,6 @@
 
   &.done {
     box-shadow: 0 0 10px hsl(44 90% 58% / 0.5);
-  }
-
-  .slot-emoji {
-    font-size: 28px;
   }
 
   .slot-count {

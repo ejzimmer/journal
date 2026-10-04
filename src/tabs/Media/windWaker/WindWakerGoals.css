@@ -6,9 +6,11 @@
   --ww-gold: hsl(44 90% 58%);
   --ww-gold-dim: hsl(44 40% 40% / 0.55);
 
-  display: flex;
-  align-items: center;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 24px;
+  width: min(900px, calc(100vw - 64px));
+  box-sizing: border-box;
   padding: 20px;
   border-radius: 18px;
   color: white;
@@ -19,16 +21,26 @@
   );
 }
 
+@media (width < 640px) {
+  .windwaker {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
 .windwaker ul {
   list-style-type: none;
   margin: 0;
   display: grid;
-  grid-template-rows: auto auto auto;
-  grid-auto-flow: column;
-  padding-inline: 0;
+  grid-template-columns: repeat(5, 1fr);
+  grid-template-rows: repeat(4, 1fr);
+  aspect-ratio: 1;
+  padding: 0;
   gap: 12px;
   align-items: start;
-  justify-items: center;
+
+  li {
+    min-width: 0;
+  }
 
   li:hover .tooltip {
     opacity: 1;
