@@ -2,7 +2,7 @@ import { CSSProperties, useMemo, useState } from 'react';
 import { BranchNames } from './BranchNames';
 import { findCurrentVolume } from './findCurrentVolume';
 import { GardenVolumeAdder } from './GardenVolumeAdder';
-import { LookupForm } from './LookupForm';
+import { ProgressUpdateForm } from './ProgressUpdateForm';
 import { createTreeLayout } from './treeLayout';
 import { TreeFill } from './TreeFill';
 import { listGrownShapes } from './treeGrowth';
@@ -43,7 +43,7 @@ export function MediaTree({ series }: { series: PrintSeries }) {
         onClick={() => setIsTracking((isOpen) => !isOpen)}
       />
       {isTracking && currentVolume && (
-        <LookupForm
+        <ProgressUpdateForm
           series={series}
           volume={currentVolume}
           onSubmit={() => setIsTracking(false)}

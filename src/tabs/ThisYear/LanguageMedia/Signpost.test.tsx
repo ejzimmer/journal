@@ -4,7 +4,7 @@ import { Signpost } from './Signpost';
 
 describe('Signpost', () => {
   describe('when clicked', () => {
-    it('tells the tree', async () => {
+    it('calls onClick', async () => {
       const user = userEvent.setup();
       const onClick = jest.fn();
       render(
