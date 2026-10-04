@@ -1,5 +1,13 @@
 import { BooleanGoal } from './BooleanGoal';
+import {
+  ARROW_CAPACITIES,
+  BOMB_CAPACITIES,
+  WALLET_CAPACITIES,
+  findCapacityLevel,
+  findLevelCapacity,
+} from './capacityLevel';
 import { CountGoal } from './CountGoal';
+import { PipGoal } from './PipGoal';
 
 import './WindWakerGoals.css';
 
@@ -53,11 +61,11 @@ export function WindWakerGoals({
             })
           }
         />
-        <CountGoal
+        <PipGoal
           icon="./bottle.png"
           label="Bottles"
-          value={bottles.collected}
-          total={bottles.total}
+          level={bottles.collected}
+          levels={bottles.total}
           onChange={(value: number) =>
             updateGoal('bottles', {
               ...bottles,
@@ -172,39 +180,39 @@ export function WindWakerGoals({
             })
           }
         />
-        <CountGoal
+        <PipGoal
           icon="./quiver.png"
           label="Arrow capacity"
-          value={arrowCapacity.current}
-          total={arrowCapacity.total}
-          onChange={(value: number) =>
+          level={findCapacityLevel(ARROW_CAPACITIES, arrowCapacity.current)}
+          levels={ARROW_CAPACITIES.length}
+          onChange={(level: number) =>
             updateGoal('arrowCapacity', {
               ...arrowCapacity,
-              current: value,
+              current: findLevelCapacity(ARROW_CAPACITIES, level),
             })
           }
         />
-        <CountGoal
+        <PipGoal
           icon="./bomb-bag.png"
           label={bombCapacity.label}
-          value={bombCapacity.current}
-          total={bombCapacity.total}
-          onChange={(value: number) =>
+          level={findCapacityLevel(BOMB_CAPACITIES, bombCapacity.current)}
+          levels={BOMB_CAPACITIES.length}
+          onChange={(level: number) =>
             updateGoal('bombCapacity', {
               ...bombCapacity,
-              current: value,
+              current: findLevelCapacity(BOMB_CAPACITIES, level),
             })
           }
         />
-        <CountGoal
+        <PipGoal
           icon="./wallet.png"
           label="Wallet capacity"
-          value={walletCapacity.current}
-          total={walletCapacity.total}
-          onChange={(value: number) =>
+          level={findCapacityLevel(WALLET_CAPACITIES, walletCapacity.current)}
+          levels={WALLET_CAPACITIES.length}
+          onChange={(level: number) =>
             updateGoal('walletCapacity', {
               ...walletCapacity,
-              current: value,
+              current: findLevelCapacity(WALLET_CAPACITIES, level),
             })
           }
         />

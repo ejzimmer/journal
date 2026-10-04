@@ -27,7 +27,7 @@
   grid-auto-flow: column;
   padding-inline: 0;
   gap: 12px;
-  align-items: center;
+  align-items: start;
   justify-items: center;
 
   li:hover .tooltip {
