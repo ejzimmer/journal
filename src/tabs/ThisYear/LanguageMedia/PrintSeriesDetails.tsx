@@ -1,4 +1,4 @@
-import { AddVolumeForm } from './AddVolumeForm';
+import { AddVolumeFormLegacy } from './AddVolumeFormLegacy';
 import { useLanguageMediaStorage } from './LanguageMediaStorageContext';
 import { PrintSeriesUpToForm } from './PrintSeriesUpToForm';
 import { VolumeDetails } from './VolumeDetails';
@@ -38,7 +38,7 @@ export function PrintSeriesDetails({
           </li>
         ))}
       </ul>
-      <AddVolumeForm
+      <AddVolumeFormLegacy
         volumes={series.volumes}
         isNameRequired={series.type === 'book'}
         onAdd={(volume) => addItem([...path, 'volumes'], volume)}

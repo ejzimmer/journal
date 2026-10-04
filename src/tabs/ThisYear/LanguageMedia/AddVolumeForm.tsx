@@ -1,33 +1,48 @@
-import { AddItemForm } from './AddItemForm';
+import { FormEvent, useState } from 'react';
+import { PlusIcon } from '../../../shared/icons/Plus';
+import { readNumber, readText } from './fields';
+import { useLanguageMediaStorage } from './LanguageMediaStorageContext';
+import { findNextNumber, NO_COMPREHENSION } from './newItems';
 import { NumberField } from './NumberField';
 import { TextField } from './TextField';
-import { readNumber, readText } from './fields';
-import { findNextNumber, NewItem, NO_COMPREHENSION } from './newItems';
-import { Volume } from './types';
+import { PrintSeries } from './types';
 
-export function AddVolumeForm({
-  volumes,
-  isNameRequired,
-  onAdd,
-}: {
-  volumes?: Record<string, Volume>;
-  isNameRequired: boolean;
-  onAdd: (volume: NewItem<Volume>) => void;
-}) {
+export function AddVolumeForm({ series }: { series: PrintSeries }) {
+  const { addItem } = useLanguageMediaStorage();
+  const [isOpen, setIsOpen] = useState(false);
+
+  const addVolume = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const data = new FormData(event.currentTarget);
+    addItem([series.id, 'volumes'], {
+      number: findNextNumber(series.volumes),
+      name: readText(data, 'name'),
+      pages: readNumber(data, 'pages'),
+      ...NO_COMPREHENSION,
+    });
+    setIsOpen(false);
+  };
+
   return (
-    <AddItemForm
-      label="Add volume"
-      onSubmit={(data) =>
-        onAdd({
-          number: findNextNumber(volumes),
-          name: readText(data, 'name'),
-          pages: readNumber(data, 'pages'),
-          ...NO_COMPREHENSION,
-        })
-      }
-    >
-      <TextField label="Name" name="name" isRequired={isNameRequired} />
-      <NumberField label="Pages" name="pages" />
-    </AddItemForm>
+    <>
+      <button
+        type="button"
+        className="add-volume"
+        aria-label={`Add a volume to ${series.name}`}
+        aria-expanded={isOpen}
+        onClick={() => setIsOpen((wasOpen) => !wasOpen)}
+      >
+        <PlusIcon width="16px" />
+      </button>
+      {isOpen && (
+        <form aria-label="Add volume" onSubmit={addVolume}>
+          {series.type === 'book' && (
+            <TextField label="Name" name="name" isRequired />
+          )}
+          <NumberField label="Pages" name="pages" isRequired />
+          <button type="submit">Add volume</button>
+        </form>
+      )}
+    </>
   );
 }
