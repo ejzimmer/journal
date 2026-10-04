@@ -13,7 +13,8 @@ import { PrintSeries } from './types';
 export function MediaTree({ series }: { series: PrintSeries }) {
   const layout = useMemo(() => createTreeLayout(series), [series]);
   const grownShapes = listGrownShapes(layout, series);
-  const [isTracking, setIsTracking] = useState(false);
+  const [isProgressUpdateFormOpen, setIsProgressUpdateFormOpen] =
+    useState(false);
   const currentVolume = findCurrentVolume(series);
   const { x, y, width, height } = layout.bounds;
 
@@ -38,14 +39,14 @@ export function MediaTree({ series }: { series: PrintSeries }) {
       </svg>
       <Signpost
         name={series.name}
-        isOpen={isTracking}
-        onClick={() => setIsTracking((isOpen) => !isOpen)}
+        isOpen={isProgressUpdateFormOpen}
+        onClick={() => setIsProgressUpdateFormOpen((wasOpen) => !wasOpen)}
       />
-      {isTracking && currentVolume && (
+      {isProgressUpdateFormOpen && currentVolume && (
         <ProgressUpdateForm
           series={series}
           volume={currentVolume}
-          onSubmit={() => setIsTracking(false)}
+          onSubmit={() => setIsProgressUpdateFormOpen(false)}
         />
       )}
     </div>
