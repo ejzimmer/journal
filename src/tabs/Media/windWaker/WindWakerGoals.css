@@ -1,5 +1,22 @@
 .windwaker {
+  --ww-menu-deep: hsl(214 62% 20%);
+  --ww-menu-mid: hsl(206 66% 34%);
+  --ww-slot-in: hsl(206 60% 42%);
+  --ww-slot-out: hsl(214 60% 24%);
+  --ww-gold: hsl(44 90% 58%);
+  --ww-gold-dim: hsl(44 40% 40% / 0.55);
+
   display: flex;
+  align-items: center;
+  gap: 24px;
+  padding: 20px;
+  border-radius: 18px;
+  color: white;
+  background: radial-gradient(
+    circle at 30% 0%,
+    var(--ww-menu-mid),
+    var(--ww-menu-deep) 70%
+  );
 }
 
 .windwaker ul {
@@ -9,7 +26,8 @@
   grid-template-rows: auto auto auto;
   grid-auto-flow: column;
   padding-inline: 0;
-  gap: 6px;
+  gap: 12px;
+  align-items: center;
   font-size: 1.2em;
   justify-items: center;
 
@@ -25,22 +43,6 @@
 
     .icon {
       margin-inline-end: 4px;
-    }
-  }
-
-  label.emoji-checkbox {
-    div:not(.tooltip),
-    img {
-      opacity: 0.4;
-    }
-
-    &.done {
-      filter: none;
-
-      div:not(.tooltip),
-      img {
-        opacity: 1;
-      }
     }
   }
 

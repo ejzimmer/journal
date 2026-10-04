@@ -1,0 +1,42 @@
+.item-slot {
+  position: relative;
+  width: 62px;
+  aspect-ratio: 1;
+  border-radius: 14px;
+  display: grid;
+  place-items: center;
+  background: radial-gradient(circle, var(--ww-slot-in), var(--ww-slot-out));
+  box-shadow: inset 0 0 0 2px var(--ww-gold-dim);
+
+  &:has(input:focus-visible) {
+    outline: 2px solid white;
+    outline-offset: 2px;
+  }
+
+  &.done {
+    box-shadow:
+      inset 0 0 0 2px var(--ww-gold),
+      0 0 10px hsl(44 90% 58% / 0.5);
+  }
+
+  &.off img,
+  &.off .double-magic-meter {
+    filter: grayscale(1) brightness(0.7);
+    opacity: 0.4;
+  }
+
+  .emoji-checkbox {
+    width: 100%;
+    height: 100%;
+    padding: 0;
+    filter: none;
+  }
+
+  img {
+    width: 76%;
+    height: 76%;
+    object-fit: contain;
+    border-radius: 8px;
+    filter: drop-shadow(0 0 2px hsl(0 0% 100% / 0.6));
+  }
+}
