@@ -1,6 +1,6 @@
 import { DisclosureForm } from './DisclosureForm';
 import { NumberField } from './NumberField';
-import { readZeroOrMore } from './fields';
+import { parseNumber } from './fields';
 import { Comprehension } from './types';
 
 export function ComprehensionForm({
@@ -18,9 +18,9 @@ export function ComprehensionForm({
       label={`Edit totals for ${name}`}
       onSubmit={(data) =>
         onChange({
-          lookups: readZeroOrMore(data, 'lookups') ?? 0,
-          aiQuestions: readZeroOrMore(data, 'aiQuestions') ?? 0,
-          understood: readZeroOrMore(data, 'understood'),
+          lookups: parseNumber(data, 'lookups') ?? 0,
+          aiQuestions: parseNumber(data, 'aiQuestions') ?? 0,
+          understood: parseNumber(data, 'understood'),
         })
       }
     >
