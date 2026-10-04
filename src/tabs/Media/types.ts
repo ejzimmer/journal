@@ -26,6 +26,7 @@ export type BookDetails = {
   title: string;
   author?: string;
   status?: BookStatus;
+  position?: number;
 };
 
 export type GameDetails = {
@@ -33,6 +34,7 @@ export type GameDetails = {
   type: 'game';
   title: string;
   status?: GameStatus;
+  position?: number;
 };
 
 export function getBookStatus(book: BookDetails): BookStatus {

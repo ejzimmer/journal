@@ -5,6 +5,11 @@
   gap: 24px;
   list-style-type: none;
   padding: 0;
+
+  > li {
+    display: flex;
+    align-items: flex-end;
+  }
 }
 
 .tree-silhouette {
@@ -13,6 +18,10 @@
 
 .tree-fill {
   fill: hsl(28 42% 48%);
+}
+
+.branch-names {
+  fill: transparent;
 }
 
 .tree-outline {
@@ -24,9 +33,22 @@
 .media-tree {
   position: relative;
 
+  form {
+    position: absolute;
+    inset-block-start: 100%;
+    z-index: 1;
+    background: white;
+  }
+
   svg {
     display: block;
   }
+}
+
+.add-volume {
+  position: absolute;
+  inset-block-end: 0;
+  inset-inline-start: 0;
 }
 
 .signpost {
@@ -38,6 +60,7 @@
 }
 
 .sign-board {
+  height: auto;
   padding-inline: 0.6em;
   border: 2px solid var(--body-colour);
   border-radius: 6px;

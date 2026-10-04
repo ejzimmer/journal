@@ -104,7 +104,7 @@ export function WorkStorageProvider({ children }: { children: ReactNode }) {
     return normalized;
   }, [rawLists]);
 
-  const { value: storedLabelsById, loading: labelsLoading } =
+  const { value: storedLabelsById, synced: labelsSynced } =
     useValue<Record<string, StoredLabel>>(LABELS_KEY);
 
   const labels = useMemo(
@@ -116,7 +116,7 @@ export function WorkStorageProvider({ children }: { children: ReactNode }) {
   // than a week (lastRemoved set long enough ago) are purged for good.
   const hasSweptStaleLabels = useRef(false);
   useEffect(() => {
-    if (labelsLoading || hasSweptStaleLabels.current) return;
+    if (!labelsSynced || hasSweptStaleLabels.current) return;
     hasSweptStaleLabels.current = true;
 
     const staleBefore = Date.now() - STALE_AFTER_MS;
@@ -125,7 +125,7 @@ export function WorkStorageProvider({ children }: { children: ReactNode }) {
         deleteItem(LABELS_KEY, label);
       }
     });
-  }, [labelsLoading, labels, deleteItem]);
+  }, [labelsSynced, labels, deleteItem]);
 
   const countLabelUsage = (id: string) => {
     let count = 0;

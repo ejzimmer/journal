@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { Menu } from '../controls/Menu';
 import { DragHandle } from './DragHandle';
 import { SortableItem } from './types';
 
@@ -140,7 +141,7 @@ describe('DragHandle keyboard shortcuts', () => {
   });
 
   describe("keys DragHandle doesn't itself handle", () => {
-    it("does nothing when additionalActions isn't provided", async () => {
+    it("does nothing when actions aren't provided", async () => {
       const user = userEvent.setup();
       const onReorder = jest.fn();
       render(<DragHandle list={list} index={1} onReorder={onReorder} />);
@@ -152,7 +153,7 @@ describe('DragHandle keyboard shortcuts', () => {
       expect(onReorder).not.toHaveBeenCalled();
     });
 
-    it('forwards ArrowLeft to additionalActions.onKeyDown', async () => {
+    it('forwards ArrowLeft to actions.onKeyDown', async () => {
       const user = userEvent.setup();
       const onKeyDown = jest.fn();
       render(
@@ -160,7 +161,7 @@ describe('DragHandle keyboard shortcuts', () => {
           list={list}
           index={1}
           onReorder={jest.fn()}
-          additionalActions={{ onKeyDown }}
+          actions={{ onKeyDown }}
         />,
       );
 
@@ -173,7 +174,7 @@ describe('DragHandle keyboard shortcuts', () => {
       );
     });
 
-    it('forwards Shift+ArrowRight to additionalActions.onKeyDown', async () => {
+    it('forwards Shift+ArrowRight to actions.onKeyDown', async () => {
       const user = userEvent.setup();
       const onKeyDown = jest.fn();
       render(
@@ -181,7 +182,7 @@ describe('DragHandle keyboard shortcuts', () => {
           list={list}
           index={1}
           onReorder={jest.fn()}
-          additionalActions={{ onKeyDown }}
+          actions={{ onKeyDown }}
         />,
       );
 
@@ -204,7 +205,7 @@ describe('DragHandle keyboard shortcuts', () => {
           list={list}
           index={1}
           onReorder={jest.fn()}
-          additionalActions={{ onKeyDown }}
+          actions={{ onKeyDown }}
         />,
       );
 
@@ -213,6 +214,107 @@ describe('DragHandle keyboard shortcuts', () => {
       await user.keyboard('{ArrowDown}');
 
       expect(onKeyDown).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('menu', () => {
+    function getMenuItemLabels() {
+      return screen
+        .getAllByRole('menuitem')
+        .map((item) => item.textContent?.trim());
+    }
+
+    describe('when no menu items are supplied', () => {
+      it('offers moves within the list', async () => {
+        const user = userEvent.setup();
+        render(<DragHandle list={list} index={1} onReorder={jest.fn()} />);
+
+        await user.click(screen.getByRole('button', { name: 'drag menu' }));
+
+        expect(getMenuItemLabels()).toEqual([
+          'Move to top',
+          'Move up',
+          'Move down',
+          'Move to bottom',
+        ]);
+      });
+
+      function getDisabledMenuItemLabels() {
+        return screen
+          .getAllByRole('menuitem')
+          .filter((item) => item.hasAttribute('disabled'))
+          .map((item) => item.textContent?.trim());
+      }
+
+      describe('on the first item', () => {
+        it('disables moving it further up', async () => {
+          const user = userEvent.setup();
+          render(<DragHandle list={list} index={0} onReorder={jest.fn()} />);
+
+          await user.click(screen.getByRole('button', { name: 'drag menu' }));
+
+          expect(getDisabledMenuItemLabels()).toEqual([
+            'Move to top',
+            'Move up',
+          ]);
+        });
+      });
+
+      describe('on the last item', () => {
+        it('disables moving it further down', async () => {
+          const user = userEvent.setup();
+          render(<DragHandle list={list} index={2} onReorder={jest.fn()} />);
+
+          await user.click(screen.getByRole('button', { name: 'drag menu' }));
+
+          expect(getDisabledMenuItemLabels()).toEqual([
+            'Move down',
+            'Move to bottom',
+          ]);
+        });
+      });
+    });
+
+    describe('when menu items are supplied', () => {
+      function renderWithMenuItems(onReorder = jest.fn()) {
+        render(
+          <DragHandle
+            list={list}
+            index={1}
+            onReorder={onReorder}
+            actions={{
+              menuItems: (
+                <Menu.Action onClick={jest.fn()}>Move to Later</Menu.Action>
+              ),
+            }}
+          />,
+        );
+      }
+
+      it('offers only those menu items', async () => {
+        const user = userEvent.setup();
+        renderWithMenuItems();
+
+        await user.click(screen.getByRole('button', { name: 'drag menu' }));
+
+        expect(getMenuItemLabels()).toEqual(['Move to Later']);
+      });
+
+      it('still moves the item within the list with the keyboard', async () => {
+        const user = userEvent.setup();
+        const onReorder = jest.fn();
+        renderWithMenuItems(onReorder);
+
+        focusHandle();
+        await user.keyboard('{Shift>}{ArrowDown}{/Shift}');
+
+        const reordered = onReorder.mock.calls[0][0];
+        expect(reordered.map((item: SortableItem) => item.id)).toEqual([
+          'a',
+          'c',
+          'b',
+        ]);
+      });
     });
   });
 

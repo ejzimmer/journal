@@ -21,11 +21,12 @@ const readyForToday = (task: DailyTask) =>
 
 export function useDailyReset() {
   const { useValue, updateList } = useStorageContext();
-  const { value: tasksById } = useValue<Record<string, DailyTask>>(DAILY_KEY);
+  const { value: tasksById, synced } =
+    useValue<Record<string, DailyTask>>(DAILY_KEY);
 
   useDailyJob({
     lastRunKey: DAILY_RESET_KEY,
-    isReady: tasksById !== undefined,
+    isReady: synced && tasksById !== undefined,
     run: () => {
       const tasks = sortByPosition(Object.values(tasksById ?? {}));
       const remainingTasks = renumberPositions(

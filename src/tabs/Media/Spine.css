@@ -1,3 +1,9 @@
+@property --cover-shade {
+  syntax: '<number>';
+  inherits: false;
+  initial-value: 0;
+}
+
 .spine {
   --cover-lightness: 85;
   --cover-chroma: 0.085;
@@ -12,17 +18,23 @@
   background: linear-gradient(
     to right,
     oklch(
-        calc((var(--cover-lightness) - 8) * 1%) var(--cover-chroma) var(--hue)
+        calc((var(--cover-lightness) - var(--cover-shade) - 8) * 1%)
+          var(--cover-chroma) var(--hue)
       )
       0 2px,
     oklch(
-        calc((var(--cover-lightness) + 5) * 1%) var(--cover-chroma) var(--hue)
+        calc((var(--cover-lightness) - var(--cover-shade) + 5) * 1%)
+          var(--cover-chroma) var(--hue)
       )
       3px 6px,
-    oklch(calc(var(--cover-lightness) * 1%) var(--cover-chroma) var(--hue)) 8px
-      calc(100% - 4px),
     oklch(
-        calc((var(--cover-lightness) - 7) * 1%) var(--cover-chroma) var(--hue)
+        calc((var(--cover-lightness) - var(--cover-shade)) * 1%)
+          var(--cover-chroma) var(--hue)
+      )
+      8px calc(100% - 4px),
+    oklch(
+        calc((var(--cover-lightness) - var(--cover-shade) - 7) * 1%)
+          var(--cover-chroma) var(--hue)
       )
       calc(100% - 2px) 100%
   );
@@ -33,12 +45,10 @@
   font-family: 'Literata', Georgia, 'Times New Roman', serif;
   font-size: 14px;
   line-height: 1.25;
-  transition:
-    box-shadow 0.18s,
-    transform 0.18s;
+  transition: --cover-shade 0.15s;
 
   &:hover {
-    transform: translateY(-3px);
+    --cover-shade: 5;
   }
 
   &.todo {
@@ -148,4 +158,41 @@
 
 .spine.todo .series-band {
   background: oklch(80% 0.06 var(--band-hue));
+}
+
+.spine-item {
+  display: flex;
+}
+
+.spine-item .drag-handle-mount {
+  display: flex;
+  align-items: stretch;
+}
+
+.spine-item .drop-indicator.left,
+.spine-item .drop-indicator.right {
+  position: absolute;
+  inset-block: 0;
+  width: 3px;
+  border-radius: 2px;
+  background: var(--action-colour);
+  pointer-events: none;
+}
+
+.spine-item .drop-indicator.left {
+  inset-inline-start: -3px;
+}
+
+.spine-item .drop-indicator.right {
+  inset-inline-end: -3px;
+}
+
+.spine-drag-preview {
+  writing-mode: vertical-rl;
+  padding: 16px 8px;
+  border-radius: 3px;
+  background: oklch(85% 0.085 var(--hue));
+  color: oklch(38% 0.09 var(--hue));
+  font-family: 'Literata', Georgia, 'Times New Roman', serif;
+  font-size: 14px;
 }

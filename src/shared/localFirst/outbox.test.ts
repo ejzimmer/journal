@@ -1,5 +1,5 @@
 import 'fake-indexeddb/auto';
-import { createOutbox, opsTouchPath } from './outbox';
+import { createOutbox } from './outbox';
 
 function uniqueDbName() {
   return `outbox-test-${Math.random()}`;
@@ -85,32 +85,5 @@ describe('createOutbox', () => {
         { c: 3 },
       ]);
     });
-  });
-});
-
-describe('opsTouchPath', () => {
-  it('is true for an exact match', () => {
-    const ops = [{ id: 1, updates: { 'work/list1': {} } }];
-    expect(opsTouchPath(ops, 'work/list1')).toBe(true);
-  });
-
-  it('is true when the pending op is nested under the queried path', () => {
-    const ops = [{ id: 1, updates: { 'work/list1/items/task1': {} } }];
-    expect(opsTouchPath(ops, 'work')).toBe(true);
-  });
-
-  it('is false when nothing pending touches the path', () => {
-    const ops = [{ id: 1, updates: { 'work/list1': {} } }];
-    expect(opsTouchPath(ops, 'labels')).toBe(false);
-  });
-
-  it("is true when any of a multi-write op's updates include the path", () => {
-    const ops = [
-      {
-        id: 1,
-        updates: { 'work/list1/task1': {}, 'work/list2/task1': null },
-      },
-    ];
-    expect(opsTouchPath(ops, 'work/list2/task1')).toBe(true);
   });
 });

@@ -1,4 +1,5 @@
 import { useLanguageMediaStorage } from './LanguageMediaStorageContext';
+import { ComprehensionRecords } from './ComprehensionRecords';
 import { MediaTree } from './MediaTree';
 import { isPrintSeries } from './types';
 
@@ -12,6 +13,7 @@ export function MediaGarden() {
       {media.filter(isPrintSeries).map((series) => (
         <li key={series.id}>
           <MediaTree series={series} />
+          <ComprehensionRecords series={series} />
         </li>
       ))}
     </ul>
