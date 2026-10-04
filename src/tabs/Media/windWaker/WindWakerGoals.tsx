@@ -94,7 +94,7 @@ export function WindWakerGoals({
           }}
         />
         <BooleanGoal
-          emoji="🎶"
+          emoji="./song-of-passing.png"
           label={songOfPassing.label}
           isChecked={songOfPassing.learnt}
           onChange={(isChecked) => {
@@ -105,7 +105,7 @@ export function WindWakerGoals({
           }}
         />
         <BooleanGoal
-          emoji="⚔️"
+          emoji="./spin-attack.png"
           label={spinAttack.label}
           isChecked={spinAttack.learnt}
           onChange={(isChecked) => {
@@ -130,7 +130,7 @@ export function WindWakerGoals({
         />
 
         <BooleanGoal
-          emoji="👵"
+          emoji="./grandma.png"
           label={cureGrandma.label}
           isChecked={cureGrandma.cured}
           onChange={(isChecked) => {
@@ -174,7 +174,7 @@ export function WindWakerGoals({
           }
         />
         <CountGoal
-          icon="🏹"
+          icon="./quiver.png"
           label="Arrow capacity"
           value={arrowCapacity.current}
           total={arrowCapacity.total}
@@ -186,7 +186,7 @@ export function WindWakerGoals({
           }
         />
         <CountGoal
-          icon="💣"
+          icon="./bomb-bag.png"
           label={bombCapacity.label}
           value={bombCapacity.current}
           total={bombCapacity.total}
@@ -198,7 +198,7 @@ export function WindWakerGoals({
           }
         />
         <CountGoal
-          icon="👛"
+          icon="./wallet.png"
           label="Wallet capacity"
           value={walletCapacity.current}
           total={walletCapacity.total}
@@ -235,7 +235,7 @@ export function WindWakerGoals({
           }
         />
         <CountGoal
-          icon="🐙"
+          icon="./big-octo.png"
           label={bigOctos.label}
           value={bigOctos.defeated}
           total={bigOctos.total}
@@ -247,7 +247,7 @@ export function WindWakerGoals({
           }
         />
         <CountGoal
-          icon="🪪"
+          icon="./members-card.png"
           label={membersCards.label}
           value={membersCards.collected}
           total={membersCards.total}
