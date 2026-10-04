@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { renderWithLanguageMediaStorage } from './languageMediaStorageTestUtils';
 import { MediaTree } from './MediaTree';
@@ -27,7 +27,9 @@ const createSeries = (type: PrintSeries['type']): PrintSeries => ({
 describe('MediaTree', () => {
   describe('for a book series', () => {
     it('names each branch after its volume', () => {
-      render(<MediaTree series={createSeries('book')} />);
+      renderWithLanguageMediaStorage(
+        <MediaTree series={createSeries('book')} />,
+      );
 
       expect(screen.getByText('Fantine')).toBeInTheDocument();
       expect(screen.getByText('Cosette')).toBeInTheDocument();
@@ -36,7 +38,9 @@ describe('MediaTree', () => {
 
   describe('for a manga series', () => {
     it('leaves the branches unnamed', () => {
-      render(<MediaTree series={createSeries('manga')} />);
+      renderWithLanguageMediaStorage(
+        <MediaTree series={createSeries('manga')} />,
+      );
 
       expect(screen.queryByText('Fantine')).not.toBeInTheDocument();
     });

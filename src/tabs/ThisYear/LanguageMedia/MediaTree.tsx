@@ -1,6 +1,7 @@
 import { CSSProperties, useMemo, useState } from 'react';
 import { BranchNames } from './BranchNames';
 import { findCurrentVolume } from './findCurrentVolume';
+import { AddVolumeForm } from './AddVolumeForm';
 import { ProgressUpdateForm } from './ProgressUpdateForm';
 import { createTreeLayout } from './treeLayout';
 import { TreeFill } from './TreeFill';
@@ -48,6 +49,7 @@ export function MediaTree({ series }: { series: PrintSeries }) {
           onSubmit={() => setIsTracking(false)}
         />
       )}
+      <AddVolumeForm series={series} />
     </div>
   );
 }
