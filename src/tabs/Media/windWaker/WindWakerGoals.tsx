@@ -1,5 +1,5 @@
-import { EditableText } from '../../../shared/controls/EditableText';
 import { BooleanGoal } from './BooleanGoal';
+import { CountGoal } from './CountGoal';
 
 import './WindWakerGoals.css';
 
@@ -271,52 +271,5 @@ export function WindWakerGoals({
         />
       </ul>
     </div>
-  );
-}
-
-type CountGoalProps = {
-  icon: string;
-  label: string;
-  value: number;
-  total: number;
-  onChange: (value: number) => void;
-};
-
-function CountGoal({ icon, label, value, total, onChange }: CountGoalProps) {
-  return (
-    <li>
-      <div className="tooltip-container">
-        <span
-          className="icon"
-          style={{ opacity: 0.2 + (value ? value / total : 0) }}
-        >
-          {icon.startsWith('.') ? (
-            <img
-              src={icon}
-              alt=""
-              style={{
-                verticalAlign: 'bottom',
-                maxHeight: '24px',
-                maxWidth: '24px',
-              }}
-            />
-          ) : (
-            <span>{icon}</span>
-          )}
-        </span>
-        <EditableText
-          label={label}
-          value={value.toString()}
-          onChange={(value) => {
-            const capacity = Number.parseInt(value);
-            if (!isNaN(capacity)) {
-              onChange(capacity);
-            }
-          }}
-        />
-        <span className="tooltip-anchor">/{total}</span>
-        <div className="tooltip">{label}</div>
-      </div>
-    </li>
   );
 }
