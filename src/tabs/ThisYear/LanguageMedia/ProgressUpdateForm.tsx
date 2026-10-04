@@ -1,7 +1,7 @@
 import { KeyboardEvent, FormEvent } from 'react';
 import { useLanguageMediaStorage } from './LanguageMediaStorageContext';
 import { NumberField } from './NumberField';
-import { readNumberIncludingZero } from './fields';
+import { parseNumber } from './fields';
 import { formatVolumeName } from './format';
 import { PrintSeries, Volume } from './types';
 
@@ -33,14 +33,14 @@ export function ProgressUpdateForm({
   const saveProgress = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-    const page = readNumberIncludingZero(data, 'page');
+    const page = parseNumber(data, 'page');
     if (page !== undefined) {
       updateItem([series.id], { upTo: { volume: volume.number, page } });
     }
     updateItem(path, {
-      lookups: readNumberIncludingZero(data, 'lookups') ?? 0,
-      aiQuestions: readNumberIncludingZero(data, 'aiQuestions') ?? 0,
-      understood: readNumberIncludingZero(data, 'understood'),
+      lookups: parseNumber(data, 'lookups') ?? 0,
+      aiQuestions: parseNumber(data, 'aiQuestions') ?? 0,
+      understood: parseNumber(data, 'understood'),
     });
     onSubmit();
   };
