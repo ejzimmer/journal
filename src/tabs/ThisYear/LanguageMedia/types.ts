@@ -91,6 +91,9 @@ export type PrintSeries = Timestamps & {
 
 export type LanguageMedia = TvSeries | YoutubeChannel | PrintSeries;
 
+export const isPrintSeries = (media: LanguageMedia): media is PrintSeries =>
+  media.type === 'book' || media.type === 'manga';
+
 export type ItemPath = string[];
 
 type NewMediaDetails = { name: string; language: Language };
