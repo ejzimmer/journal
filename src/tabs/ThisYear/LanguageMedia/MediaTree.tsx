@@ -1,5 +1,7 @@
-import { CSSProperties, useMemo } from 'react';
+import { CSSProperties, useMemo, useState } from 'react';
 import { BranchNames } from './BranchNames';
+import { findCurrentVolume } from './findCurrentVolume';
+import { ProgressUpdateForm } from './ProgressUpdateForm';
 import { createTreeLayout } from './treeLayout';
 import { TreeFill } from './TreeFill';
 import { listGrownShapes } from './treeGrowth';
@@ -11,6 +13,8 @@ import { PrintSeries } from './types';
 export function MediaTree({ series }: { series: PrintSeries }) {
   const layout = useMemo(() => createTreeLayout(series), [series]);
   const grownShapes = listGrownShapes(layout, series);
+  const [isTracking, setIsTracking] = useState(false);
+  const currentVolume = findCurrentVolume(series);
   const { x, y, width, height } = layout.bounds;
 
   return (
@@ -32,7 +36,18 @@ export function MediaTree({ series }: { series: PrintSeries }) {
           <BranchNames layout={layout} series={series} />
         )}
       </svg>
-      <Signpost name={series.name} />
+      <Signpost
+        name={series.name}
+        isOpen={isTracking}
+        onClick={() => setIsTracking((isOpen) => !isOpen)}
+      />
+      {isTracking && currentVolume && (
+        <ProgressUpdateForm
+          series={series}
+          volume={currentVolume}
+          onSubmit={() => setIsTracking(false)}
+        />
+      )}
     </div>
   );
 }

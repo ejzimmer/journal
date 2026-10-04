@@ -1,4 +1,6 @@
 import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { renderWithLanguageMediaStorage } from './languageMediaStorageTestUtils';
 import { MediaTree } from './MediaTree';
 import { PrintSeries, Volume } from './types';
 
@@ -37,6 +39,41 @@ describe('MediaTree', () => {
       render(<MediaTree series={createSeries('manga')} />);
 
       expect(screen.queryByText('Fantine')).not.toBeInTheDocument();
+    });
+  });
+
+  describe('clicking the signpost', () => {
+    it('opens a form to track the current volume', async () => {
+      const user = userEvent.setup();
+      renderWithLanguageMediaStorage(
+        <MediaTree
+          series={{ ...createSeries('book'), upTo: { volume: 2, page: 5 } }}
+        />,
+      );
+
+      await user.click(screen.getByRole('button', { name: 'Series' }));
+
+      expect(
+        screen.getByRole('form', { name: 'Track Cosette' }),
+      ).toBeInTheDocument();
+    });
+
+    describe('when the form is submitted', () => {
+      it('closes the form', async () => {
+        const user = userEvent.setup();
+        renderWithLanguageMediaStorage(
+          <MediaTree series={createSeries('book')} />,
+        );
+        await user.click(screen.getByRole('button', { name: 'Series' }));
+        const form = screen.getByRole('form', { name: 'Track Fantine' });
+
+        await user.type(
+          screen.getByRole('spinbutton', { name: 'Looked up' }),
+          '{Enter}',
+        );
+
+        expect(form).not.toBeInTheDocument();
+      });
     });
   });
 });
