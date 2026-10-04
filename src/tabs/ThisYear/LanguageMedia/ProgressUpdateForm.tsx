@@ -1,17 +1,21 @@
 import { KeyboardEvent, FormEvent } from 'react';
 import { useLanguageMediaStorage } from './LanguageMediaStorageContext';
 import { NumberField } from './NumberField';
-import { readZeroOrMore } from './fields';
+import { readNumberIncludingZero } from './fields';
 import { formatVolumeName } from './format';
 import { PrintSeries, Volume } from './types';
 
-type LookupFormProps = {
+type ProgressUpdateFormProps = {
   series: PrintSeries;
   volume: Volume;
   onSubmit: () => void;
 };
 
-export function LookupForm({ series, volume, onSubmit }: LookupFormProps) {
+export function ProgressUpdateForm({
+  series,
+  volume,
+  onSubmit,
+}: ProgressUpdateFormProps) {
   const { updateItem } = useLanguageMediaStorage();
   const path = [series.id, 'volumes', volume.id];
   const name = formatVolumeName(volume);
@@ -29,14 +33,14 @@ export function LookupForm({ series, volume, onSubmit }: LookupFormProps) {
   const saveProgress = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-    const page = readZeroOrMore(data, 'page');
+    const page = readNumberIncludingZero(data, 'page');
     if (page !== undefined) {
       updateItem([series.id], { upTo: { volume: volume.number, page } });
     }
     updateItem(path, {
-      lookups: readZeroOrMore(data, 'lookups') ?? 0,
-      aiQuestions: readZeroOrMore(data, 'aiQuestions') ?? 0,
-      understood: readZeroOrMore(data, 'understood'),
+      lookups: readNumberIncludingZero(data, 'lookups') ?? 0,
+      aiQuestions: readNumberIncludingZero(data, 'aiQuestions') ?? 0,
+      understood: readNumberIncludingZero(data, 'understood'),
     });
     onSubmit();
   };

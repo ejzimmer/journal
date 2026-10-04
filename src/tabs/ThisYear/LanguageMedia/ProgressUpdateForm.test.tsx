@@ -1,6 +1,6 @@
 import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { LookupForm } from './LookupForm';
+import { ProgressUpdateForm } from './ProgressUpdateForm';
 import { renderWithLanguageMediaStorage } from './languageMediaStorageTestUtils';
 import { yotsuba } from './testMedia';
 
@@ -12,12 +12,16 @@ const renderForm = () => {
     user: userEvent.setup(),
     onSubmit,
     ...renderWithLanguageMediaStorage(
-      <LookupForm series={yotsuba} volume={volume} onSubmit={onSubmit} />,
+      <ProgressUpdateForm
+        series={yotsuba}
+        volume={volume}
+        onSubmit={onSubmit}
+      />,
     ),
   };
 };
 
-describe('LookupForm', () => {
+describe('ProgressUpdateForm', () => {
   describe('adding one lookup', () => {
     it('saves the new lookup count', async () => {
       const { user, storageContext } = renderForm();
