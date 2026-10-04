@@ -12,7 +12,6 @@ import {
 } from './types';
 import { getThisMonth, getThisYear } from '../../../shared/dates';
 import { YarnStash } from './YarnStash';
-import { useYarnPathMigration } from './useYarnPathMigration';
 
 export type YarnYearStorage = {
   yarnByType?: YarnType[];
@@ -64,8 +63,6 @@ export function YarnStorageProvider({ children }: { children: ReactNode }) {
   const [stashes] = useState(() => new Map<number, YarnStash>());
   const thisYear = getThisYear();
   const [selectedYear, selectYear] = useState(thisYear);
-
-  useYarnPathMigration(storedYarnByYear);
 
   const yarnYears = useMemo(() => {
     const getStash = (year: number) => {

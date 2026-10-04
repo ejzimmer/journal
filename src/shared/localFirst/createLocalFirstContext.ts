@@ -2,8 +2,14 @@ import { Database, onValue, ref } from 'firebase/database';
 import { useEffect, useSyncExternalStore } from 'react';
 import { ContextType } from '../FirebaseContext';
 import { createLocalStore } from './localStore';
-import { createOutbox, opsTouchPath } from './outbox';
-import { valuesAreEqual } from './pathTree';
+import { createOutbox, StoredOutboxOp } from './outbox';
+import {
+  getAtPath,
+  pathsAreRelated,
+  setAtPath,
+  Tree,
+  valuesAreEqual,
+} from './pathTree';
 import { createSyncEngine } from './syncEngine';
 
 export function createLocalFirstContext(
@@ -16,6 +22,24 @@ export function createLocalFirstContext(
   syncEngine.startSyncing();
 
   const keysWithRemoteListener = new Set<string>();
+  const syncedKeys = new Set<string>();
+  const syncListeners = new Set<() => void>();
+
+  function isSynced(key: string) {
+    return [...syncedKeys].some(
+      (syncedKey) => key === syncedKey || key.startsWith(`${syncedKey}/`),
+    );
+  }
+
+  function markSynced(key: string) {
+    syncedKeys.add(key);
+    syncListeners.forEach((onChange) => onChange());
+  }
+
+  function subscribeToSync(onChange: () => void) {
+    syncListeners.add(onChange);
+    return () => syncListeners.delete(onChange);
+  }
 
   function registerRemoteListener(key: string) {
     if (keysWithRemoteListener.has(key)) {
@@ -25,11 +49,11 @@ export function createLocalFirstContext(
 
     onValue(ref(database, key), async (snapshot) => {
       const pendingOps = await outbox.list();
-      if (opsTouchPath(pendingOps, key)) {
-        return;
-      }
-
-      localStore.writePath(key, snapshot.val());
+      localStore.writePath(
+        key,
+        applyPendingOps(key, snapshot.val(), pendingOps),
+      );
+      markSynced(key);
     });
   }
 
@@ -111,10 +135,29 @@ export function createLocalFirstContext(
         (onChange) => (key ? localStore.subscribe(key, onChange) : () => {}),
         () => (key ? localStore.readPath<T>(key) : undefined),
       );
+      const synced = useSyncExternalStore(subscribeToSync, () =>
+        key ? isSynced(key) : false,
+      );
 
-      return { value, loading: false };
+      return { value, loading: false, synced };
     },
   };
 
   return { context, hydrate: localStore.hydrate };
+}
+
+function applyPendingOps(
+  key: string,
+  remoteValue: unknown,
+  pendingOps: StoredOutboxOp[],
+): unknown {
+  const tree = pendingOps
+    .flatMap((op) => Object.entries(op.updates))
+    .filter(([path]) => pathsAreRelated(path, key))
+    .reduce<Tree>(
+      (tree, [path, value]) => setAtPath(tree, path, value),
+      setAtPath({}, key, remoteValue),
+    );
+
+  return getAtPath(tree, key);
 }

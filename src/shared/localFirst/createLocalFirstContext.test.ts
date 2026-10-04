@@ -204,7 +204,7 @@ describe('createLocalFirstContext', () => {
     });
   });
 
-  it('ignores a stale remote snapshot while a local write for that key is still unsynced', async () => {
+  it('keeps an unsynced local write on top of a remote snapshot for that key', async () => {
     const context = await setUpContext();
     mockUpdate.mockImplementation(() => new Promise(() => {}));
     const item = { id: 'task1', description: 'Local edit' };
@@ -218,9 +218,57 @@ describe('createLocalFirstContext', () => {
 
     fireRemoteSnapshot('work', {
       task1: { id: 'task1', description: 'Stale' },
+      task2: { id: 'task2', description: 'Added elsewhere' },
     });
-    await flushMicrotasks();
 
-    expect(result.current.value).toEqual({ task1: item });
+    await waitFor(() => {
+      expect(result.current.value).toEqual({
+        task1: item,
+        task2: { id: 'task2', description: 'Added elsewhere' },
+      });
+    });
+  });
+
+  describe('synced', () => {
+    describe('before a remote snapshot has arrived', () => {
+      it('is false, even when a value is cached locally', async () => {
+        const context = await setUpContext();
+        context.setValue('work', { task1: { id: 'task1' } });
+
+        const { result } = renderHook(() => context.useValue('work'));
+
+        expect(result.current.value).toEqual({ task1: { id: 'task1' } });
+        expect(result.current.synced).toBe(false);
+      });
+    });
+
+    describe('once a remote snapshot has arrived', () => {
+      it('is true for that key', async () => {
+        const context = await setUpContext();
+        const { result } = renderHook(() => context.useValue('work'));
+        await waitFor(() =>
+          expect(mockOnValueCallbacks.has('work')).toBe(true),
+        );
+
+        fireRemoteSnapshot('work', {});
+
+        await waitFor(() => expect(result.current.synced).toBe(true));
+      });
+
+      it('is true for keys nested under it', async () => {
+        const context = await setUpContext();
+        renderHook(() => context.useValue('work'));
+        await waitFor(() =>
+          expect(mockOnValueCallbacks.has('work')).toBe(true),
+        );
+        const { result: nested } = renderHook(() =>
+          context.useValue('work/list1'),
+        );
+
+        fireRemoteSnapshot('work', {});
+
+        await waitFor(() => expect(nested.current.synced).toBe(true));
+      });
+    });
   });
 });

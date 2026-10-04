@@ -12,6 +12,7 @@ export function createDailyJobsStorage(
     useValue: <T,>(key?: string) => ({
       value: key ? (storedValues[key] as T) : undefined,
       loading: false,
+      synced: true,
     }),
     setValue: jest.fn((path: string, value: unknown) => {
       storedValues[path] = value;

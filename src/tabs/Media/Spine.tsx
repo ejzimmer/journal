@@ -1,4 +1,4 @@
-import { CSSProperties, ReactNode, RefObject } from 'react';
+import { CSSProperties, KeyboardEventHandler, RefObject } from 'react';
 
 import './Spine.css';
 
@@ -15,7 +15,8 @@ export function Spine({
   titleRef,
   onTitleClick,
   onStampClick,
-  children,
+  onTitleKeyDown,
+  titleKeyShortcuts,
 }: {
   status: 'todo' | 'active' | 'done';
   hue: number;
@@ -29,10 +30,11 @@ export function Spine({
   titleRef?: RefObject<HTMLButtonElement | null>;
   onTitleClick: () => void;
   onStampClick: () => void;
-  children?: ReactNode;
+  onTitleKeyDown?: KeyboardEventHandler<HTMLButtonElement>;
+  titleKeyShortcuts?: string;
 }) {
   return (
-    <li
+    <div
       className={`spine ${status}`}
       style={
         {
@@ -50,7 +52,9 @@ export function Spine({
         ref={titleRef}
         className="title"
         aria-label={titleAriaLabel}
+        aria-keyshortcuts={titleKeyShortcuts}
         onClick={onTitleClick}
+        onKeyDown={onTitleKeyDown}
       >
         <span className="spine-label">
           <span className="title-text">{title}</span>
@@ -69,8 +73,6 @@ export function Spine({
       {bandHue !== undefined && (
         <span className="series-band series-band-tail" />
       )}
-
-      {children}
-    </li>
+    </div>
   );
 }

@@ -4,9 +4,13 @@ import { Combobox } from '../../shared/controls/combobox/Combobox';
 import { OptionType } from '../../shared/controls/combobox/types';
 import { Modal, useModal } from '../../shared/controls/Modal';
 import { ModalDialog } from '../../shared/controls/ModalDialog';
+import { TickIcon } from '../../shared/icons/Tick';
+import { RubbishBinIcon } from '../../shared/icons/RubbishBin';
 import { BandColourPicker } from './BandColourPicker';
 import { useMediaStorage } from './MediaStorageContext';
 import { MediaDetails, MediaSeries, NewMedia, SeriesDetails } from './types';
+
+import './MediaForm.css';
 
 export type MediaFormConfig<T extends MediaDetails> = {
   typeLabel: string;
@@ -124,9 +128,9 @@ export function MediaForm<T extends MediaDetails>({
   };
 
   return (
-    <form onSubmit={saveItem}>
+    <form className="media-form" onSubmit={saveItem}>
       <Modal.Body>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '18px' }}>
+        <div className="media-form-fields">
           <FormControl
             label={`${config.typeLabel} title`}
             ref={titleRef}
@@ -159,12 +163,17 @@ export function MediaForm<T extends MediaDetails>({
       </Modal.Body>
       <Modal.Footer>
         {item && (
-          <Modal.Action onClick={removeItem} className="danger">
-            Delete {config.typeLabel.toLowerCase()}
+          <Modal.Action
+            onClick={removeItem}
+            className="ghost delete"
+            aria-label={`Delete ${config.typeLabel.toLowerCase()}`}
+          >
+            <RubbishBinIcon width="20px" />
           </Modal.Action>
         )}
-        <Modal.Cancel>Cancel</Modal.Cancel>
-        <Modal.Action className="primary">Save</Modal.Action>
+        <button type="submit" className="round save" aria-label="Save">
+          <TickIcon width="18px" />
+        </button>
       </Modal.Footer>
     </form>
   );
