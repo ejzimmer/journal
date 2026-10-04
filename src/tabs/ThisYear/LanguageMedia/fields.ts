@@ -4,7 +4,7 @@ export const readText = (data: FormData, name: string) =>
 export const readNumber = (data: FormData, name: string) =>
   Number(data.get(name)) || undefined;
 
-export const readNumberIncludingZero = (data: FormData, name: string) => {
+export const parseNumber = (data: FormData, name: string) => {
   const value = readText(data, name);
   return value === undefined ? undefined : Number(value);
 };
