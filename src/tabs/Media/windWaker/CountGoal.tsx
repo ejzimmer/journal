@@ -26,11 +26,7 @@ export function CountGoal({
         className={`item-slot ring tooltip-anchor ${value >= total ? 'done' : ''}`}
         style={{ '--progress': progress } as CSSProperties}
       >
-        {icon.startsWith('.') ? (
-          <img src={icon} alt="" />
-        ) : (
-          <span className="slot-emoji">{icon}</span>
-        )}
+        <img src={icon} alt="" />
         <EditableText
           className="slot-count"
           label={label}

@@ -533,7 +533,13 @@ export const seedData = {
       herosCharm: { label: "Hero's Charm", collected: false },
       magicArmour: { label: 'Magic armour', collected: false },
       cureGrandma: { label: 'Cure Grandma', cured: true },
-      seaChartQuandrants: { revealed: 21, total: 49 },
+      seaChartQuandrants: {
+        total: 49,
+        revealedSquares: [
+          3, 9, 10, 11, 16, 17, 18, 22, 23, 24, 25, 29, 30, 31, 32, 36, 37, 38,
+          44, 45, 46,
+        ],
+      },
       charts: { chartCollected: 14, treasureCollected: 9, total: 41 },
       arrowCapacity: { current: 60, total: 99 },
       bombCapacity: { label: 'Bomb capacity', current: 30, total: 99 },
