@@ -28,22 +28,10 @@
   padding-inline: 0;
   gap: 12px;
   align-items: center;
-  font-size: 1.2em;
   justify-items: center;
 
-  li {
-    .tooltip-container {
-      display: flex;
-      gap: 0;
-    }
-
-    &:hover .tooltip {
-      opacity: 1;
-    }
-
-    .icon {
-      margin-inline-end: 4px;
-    }
+  li:hover .tooltip {
+    opacity: 1;
   }
 
   .double-magic-meter {

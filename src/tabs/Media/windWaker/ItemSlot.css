@@ -1,7 +1,7 @@
 .item-slot {
   position: relative;
   width: 62px;
-  aspect-ratio: 1;
+  height: 62px;
   border-radius: 14px;
   display: grid;
   place-items: center;
@@ -38,5 +38,52 @@
     object-fit: contain;
     border-radius: 8px;
     filter: drop-shadow(0 0 2px hsl(0 0% 100% / 0.6));
+  }
+}
+
+.item-slot.ring {
+  background: conic-gradient(
+    var(--ww-gold) var(--progress),
+    hsl(214 50% 30%) 0
+  );
+  box-shadow: none;
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 5px;
+    border-radius: 10px;
+    background: radial-gradient(circle, var(--ww-slot-in), var(--ww-slot-out));
+  }
+
+  > * {
+    position: relative;
+    z-index: 1;
+  }
+
+  &.done {
+    box-shadow: 0 0 10px hsl(44 90% 58% / 0.5);
+  }
+
+  .slot-emoji {
+    font-size: 28px;
+  }
+
+  .slot-count {
+    position: absolute;
+    z-index: 2;
+    right: 4px;
+    bottom: 2px;
+    font-size: 13px;
+    font-weight: 600;
+    text-shadow: 0 1px 2px black;
+    font-variant-numeric: tabular-nums;
+    cursor: pointer;
+  }
+
+  input.slot-count {
+    width: 3em;
+    color: black;
+    text-shadow: none;
   }
 }
