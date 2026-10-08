@@ -32,7 +32,16 @@ export function useDrawer({
   const hasScrolledIntoView = useRef(false);
 
   const height = isOpen ? openHeight : 0;
-  const lastRenderedHeight = useRef(height);
+  const [previousHeight, setPreviousHeight] = useState(height);
+
+  if (height !== previousHeight) {
+    setPreviousHeight(height);
+
+    const isResizingOpenDrawer = previousHeight > 0 && height > 0;
+    if (!isResizingOpenDrawer) {
+      setIsAnimating(true);
+    }
+  }
 
   const measureDrawerHeight = useCallback(() => {
     if (!listRef.current || !formRef.current) return;
@@ -40,16 +49,9 @@ export function useDrawer({
     setOpenHeight(listRef.current.clientHeight + formRef.current.clientHeight);
   }, [listRef, formRef]);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     measureDrawerHeight();
   }, [measureDrawerHeight, subtasks, isProjectLoaded, isFormOpen]);
-
-  useLayoutEffect(() => {
-    if (lastRenderedHeight.current === height) return;
-    lastRenderedHeight.current = height;
-
-    setIsAnimating(true);
-  }, [height]);
 
   useEffect(() => {
     const drawer = drawerRef.current;
