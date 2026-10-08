@@ -151,6 +151,15 @@ export function Project({
               flexGrow: 1,
             }}
           />
+          {onMoveToEnd && (
+            <button
+              className="icon ghost project-action-button"
+              onClick={onMoveToEnd}
+              aria-label="Move to end"
+            >
+              <ArrowToEndIcon width="20px" colour="var(--action-colour)" />
+            </button>
+          )}
           {status !== 'in_progress' && expandButton}
         </div>
 
@@ -168,16 +177,6 @@ export function Project({
                     width="20px"
                     colour="var(--action-colour)"
                   />
-                </button>
-              )}
-
-              {onMoveToEnd && (
-                <button
-                  className="icon ghost project-action-button"
-                  onClick={onMoveToEnd}
-                  aria-label="Move to end"
-                >
-                  <ArrowToEndIcon width="20px" colour="var(--action-colour)" />
                 </button>
               )}
 
