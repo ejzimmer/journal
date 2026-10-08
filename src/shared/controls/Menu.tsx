@@ -24,7 +24,7 @@ export type MenuHandle = {
 };
 
 const MenuBase = forwardRef<MenuHandle, MenuProps>(function Menu(
-  { trigger: Trigger, children, onKeyDown },
+  { trigger, children, onKeyDown },
   ref,
 ) {
   const id = useId();
@@ -56,10 +56,10 @@ const MenuBase = forwardRef<MenuHandle, MenuProps>(function Menu(
 
   return (
     <div style={{ position: 'relative' }} onKeyDown={onKeyDown}>
-      <Trigger
-        popoverTarget={id}
-        style={{ anchorName } as React.CSSProperties}
-      />
+      {trigger({
+        popoverTarget: id,
+        style: { anchorName } as React.CSSProperties,
+      })}
       <div
         id={id}
         ref={dialogRef}

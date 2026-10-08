@@ -341,7 +341,7 @@ describe('DragHandle keyboard shortcuts', () => {
         <ul>
           {items.map((item, index) => (
             <li key={item.id}>
-              {item.id}
+              <span>{item.id}</span>
               <DragHandle list={items} index={index} onReorder={setItems} />
             </li>
           ))}
@@ -387,6 +387,22 @@ describe('DragHandle keyboard shortcuts', () => {
       // "a" is now at index 2, and still focused throughout
       const handlesAfter = screen.getAllByRole('button', { name: 'drag menu' });
       expect(handlesAfter[2]).toHaveFocus();
+    });
+
+    describe('when the list re-renders between moves', () => {
+      it('keeps moving the item on each keypress', async () => {
+        const user = userEvent.setup();
+        const { rerender } = render(<ReorderableList initialList={list} />);
+
+        screen.getAllByRole('button', { name: 'drag menu' })[0].focus();
+        await user.keyboard('{ArrowDown}');
+        rerender(<ReorderableList initialList={list} />);
+        await user.keyboard('{ArrowDown}');
+
+        expect(
+          screen.getAllByText(/^[abc]$/).map((id) => id.textContent),
+        ).toEqual(['b', 'c', 'a']);
+      });
     });
   });
 });
