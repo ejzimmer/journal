@@ -3,7 +3,7 @@ import { DeleteButton } from './DeleteButton';
 import { EditSeasonForm } from './EditSeasonForm';
 import { EpisodeDetails } from './EpisodeDetails';
 import { useLanguageMediaStorage } from './LanguageMediaStorageContext';
-import { listByNumber } from './lists';
+import { getItemsByNumber } from './lists';
 import { ItemPath, Season } from './types';
 
 export function SeasonDetails({
@@ -26,7 +26,7 @@ export function SeasonDetails({
       />
       <DeleteButton name={name} path={path} />
       <ul>
-        {listByNumber(season.episodes).map((episode) => (
+        {getItemsByNumber(season.episodes).map((episode) => (
           <li key={episode.id}>
             <EpisodeDetails
               episode={episode}

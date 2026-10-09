@@ -3,7 +3,7 @@ import { createCloudShape } from './createCloudShape';
 const width = 480;
 const height = 260;
 
-const listLeftEdges = () =>
+const getLeftEdges = () =>
   createCloudShape(width, height)
     .puffs.filter(([cx]) => cx < width / 2)
     .filter(([, cy]) => cy >= 100)
@@ -28,7 +28,7 @@ describe('createCloudShape', () => {
 
   describe('the sides', () => {
     it('get wider towards the bottom', () => {
-      const edges = listLeftEdges().sort((a, b) => a.y - b.y);
+      const edges = getLeftEdges().sort((a, b) => a.y - b.y);
 
       edges.slice(1).forEach(({ edge }, index) => {
         expect(edge).toBeLessThan(edges[index].edge);
@@ -36,7 +36,7 @@ describe('createCloudShape', () => {
     });
 
     it('overhang the box at the bottom', () => {
-      const edges = listLeftEdges();
+      const edges = getLeftEdges();
       const lowest = edges.reduce((a, b) => (b.y > a.y ? b : a));
 
       expect(lowest.edge).toBeLessThan(0);

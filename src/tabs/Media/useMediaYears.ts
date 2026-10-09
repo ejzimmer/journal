@@ -6,22 +6,22 @@ import {
   SeriesDetails,
 } from './types';
 
-const listSeriesItems = <T extends MediaDetails>(series: SeriesDetails<T>) =>
+const getSeriesItems = <T extends MediaDetails>(series: SeriesDetails<T>) =>
   Object.values(series.items ?? {});
 
 const isEntryComplete = <T extends MediaDetails>(
   entry: T | SeriesDetails<T>,
 ) =>
   isSeries(entry)
-    ? listSeriesItems(entry).length > 0 &&
-      listSeriesItems(entry).every(isMediaComplete)
+    ? getSeriesItems(entry).length > 0 &&
+      getSeriesItems(entry).every(isMediaComplete)
     : isMediaComplete(entry);
 
 const getEntryCompletionYear = <T extends MediaDetails>(
   entry: T | SeriesDetails<T>,
 ) =>
   isSeries(entry)
-    ? Math.max(...listSeriesItems(entry).map(getCompletionYear))
+    ? Math.max(...getSeriesItems(entry).map(getCompletionYear))
     : getCompletionYear(entry);
 
 export function useMediaYears<T extends MediaDetails>(

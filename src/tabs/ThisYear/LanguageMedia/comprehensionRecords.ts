@@ -1,4 +1,4 @@
-import { listByNumber } from './lists';
+import { getItemsByNumber } from './lists';
 import { FieldChange, ItemUpdate, PrintSeries } from './types';
 
 export type ComprehensionRecord = {
@@ -20,8 +20,8 @@ const measureIncrease = (change?: FieldChange) =>
 const isComprehensionUpdate = ({ changes }: ItemUpdate) =>
   'lookups' in changes || 'aiQuestions' in changes || 'understood' in changes;
 
-export function listComprehensionRecords(series: PrintSeries) {
-  const updates = listByNumber(series.volumes)
+export function getComprehensionRecords(series: PrintSeries) {
+  const updates = getItemsByNumber(series.volumes)
     .flatMap(({ updates }) => Object.values(updates ?? {}))
     .filter(isComprehensionUpdate)
     .toSorted((a, b) => Temporal.Instant.compare(a.at, b.at));

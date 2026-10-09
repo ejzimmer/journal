@@ -1,6 +1,6 @@
 import {
   getAtPath,
-  findChangedFields,
+  getChangedFields,
   pathsAreRelated,
   setAtPath,
 } from './pathTree';
@@ -79,10 +79,10 @@ describe('pathsAreRelated', () => {
   });
 });
 
-describe('findChangedFields', () => {
+describe('getChangedFields', () => {
   describe('when nothing is stored at the path', () => {
     it('saves the new value whole', () => {
-      expect(findChangedFields('items/a', undefined, { id: 'a' })).toEqual([
+      expect(getChangedFields('items/a', undefined, { id: 'a' })).toEqual([
         ['items/a', { id: 'a' }],
       ]);
     });
@@ -91,7 +91,7 @@ describe('findChangedFields', () => {
   describe('when both values are objects', () => {
     it('saves only the fields that differ', () => {
       expect(
-        findChangedFields(
+        getChangedFields(
           'items/a',
           { id: 'a', name: 'Old', meta: { colour: 'red', size: 2 } },
           { id: 'a', name: 'New', meta: { colour: 'red', size: 3 } },
@@ -105,14 +105,14 @@ describe('findChangedFields', () => {
     describe('when a field is dropped from the value', () => {
       it('deletes the field', () => {
         expect(
-          findChangedFields('items/a', { id: 'a', note: 'x' }, { id: 'a' }),
+          getChangedFields('items/a', { id: 'a', note: 'x' }, { id: 'a' }),
         ).toEqual([['items/a/note', null]]);
       });
     });
 
     it('treats an undefined field as a delete', () => {
       expect(
-        findChangedFields(
+        getChangedFields(
           'items/a',
           { id: 'a', note: 'x' },
           { id: 'a', note: undefined },
@@ -121,15 +121,13 @@ describe('findChangedFields', () => {
     });
 
     it('saves nothing when they match', () => {
-      expect(findChangedFields('items/a', { id: 'a' }, { id: 'a' })).toEqual(
-        [],
-      );
+      expect(getChangedFields('items/a', { id: 'a' }, { id: 'a' })).toEqual([]);
     });
   });
 
   describe('when the values are lists', () => {
     it('saves the whole list', () => {
-      expect(findChangedFields('items/a/tags', ['x'], ['x', 'y'])).toEqual([
+      expect(getChangedFields('items/a/tags', ['x'], ['x', 'y'])).toEqual([
         ['items/a/tags', ['x', 'y']],
       ]);
     });
@@ -137,7 +135,7 @@ describe('findChangedFields', () => {
 
   describe('when the new value is missing', () => {
     it('deletes what is stored', () => {
-      expect(findChangedFields('items/a', { id: 'a' }, null)).toEqual([
+      expect(getChangedFields('items/a', { id: 'a' }, null)).toEqual([
         ['items/a', null],
       ]);
     });

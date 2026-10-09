@@ -1,7 +1,7 @@
 import { AddVideoForm } from './AddVideoForm';
 import { useLanguageMediaStorage } from './LanguageMediaStorageContext';
 import { VideoDetails } from './VideoDetails';
-import { listInAddedOrder } from './lists';
+import { getItemsInAddedOrder } from './lists';
 import { ItemPath, YoutubeChannel } from './types';
 
 export function YoutubeChannelDetails({
@@ -16,7 +16,7 @@ export function YoutubeChannelDetails({
   return (
     <>
       <ul>
-        {listInAddedOrder(channel.videos).map((video) => (
+        {getItemsInAddedOrder(channel.videos).map((video) => (
           <li key={video.id}>
             <VideoDetails video={video} path={[...path, 'videos', video.id]} />
           </li>

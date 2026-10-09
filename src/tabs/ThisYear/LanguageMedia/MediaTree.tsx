@@ -7,7 +7,7 @@ import { AddVolumeForm } from './AddVolumeForm';
 import { ProgressUpdateForm } from './ProgressUpdateForm';
 import { createTreeLayout } from './treeLayout';
 import { TreeFill } from './TreeFill';
-import { listGrownShapes } from './treeGrowth';
+import { getGrownShapes } from './treeGrowth';
 import { TreeOutline } from './TreeOutline';
 import { TreeSilhouette } from './TreeSilhouette';
 import { Signpost } from './Signpost';
@@ -15,7 +15,7 @@ import { PrintSeries } from './types';
 
 export function MediaTree({ series }: { series: PrintSeries }) {
   const layout = useMemo(() => createTreeLayout(series), [series]);
-  const grownShapes = listGrownShapes(layout, series);
+  const grownShapes = getGrownShapes(layout, series);
   const [isProgressUpdateFormOpen, setIsProgressUpdateFormOpen] =
     useState(false);
   const currentVolume = findCurrentVolume(series);

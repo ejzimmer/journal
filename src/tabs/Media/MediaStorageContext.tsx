@@ -45,7 +45,7 @@ export type MediaStorageContextType = {
 const getMediaKey = (type: MediaDetails['type']) =>
   type === 'book' ? BOOKS_KEY : GAMES_KEY;
 
-function listAuthors(books: ReadingItemDetails[]) {
+function getAuthors(books: ReadingItemDetails[]) {
   const authors = new Set<string>();
 
   books.forEach((entry) => {
@@ -83,7 +83,7 @@ export function MediaStorageProvider({ children }: { children: ReactNode }) {
     [games],
   );
 
-  const authors = useMemo(() => listAuthors(books), [books]);
+  const authors = useMemo(() => getAuthors(books), [books]);
 
   const findSeriesContaining = (media: MediaDetails) => {
     const series = media.type === 'book' ? bookSeries : gameSeries;

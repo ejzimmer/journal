@@ -18,7 +18,7 @@ export function createCloudShape(width: number, height: number) {
     Math.round((sidesBottom - SIDES_TOP) / SIDE_SPACING) + 1,
   );
 
-  const listSidePuffs = (side: 'left' | 'right'): Puff[] =>
+  const getSidePuffs = (side: 'left' | 'right'): Puff[] =>
     Array.from({ length: count }, (_, index) => {
       const y = SIDES_TOP + ((sidesBottom - SIDES_TOP) * index) / (count - 1);
       const radius = index === count - 1 || index % 2 === 0 ? 40 : 34;
@@ -26,8 +26,8 @@ export function createCloudShape(width: number, height: number) {
       return [side === 'left' ? x : width - x, y, radius];
     });
 
-  const left = listSidePuffs('left');
-  const right = listSidePuffs('right');
+  const left = getSidePuffs('left');
+  const right = getSidePuffs('right');
   const [topLeftX] = left[0];
   const [topRightX] = right[0];
   const [bottomLeftX] = left[left.length - 1];

@@ -1,4 +1,4 @@
-import { listComprehensionRecords } from './comprehensionRecords';
+import { getComprehensionRecords } from './comprehensionRecords';
 import { ItemUpdate, PrintSeries, Volume } from './types';
 
 const createUpdate = (
@@ -24,7 +24,7 @@ const createSeries = (volumes: Volume[]): PrintSeries => ({
   volumes: Object.fromEntries(volumes.map((volume) => [volume.id, volume])),
 });
 
-describe('listComprehensionRecords', () => {
+describe('getComprehensionRecords', () => {
   describe('with updates on the same day', () => {
     it('adds up what was looked up and asked that day', () => {
       const series = createSeries([
@@ -39,7 +39,7 @@ describe('listComprehensionRecords', () => {
         ]),
       ]);
 
-      expect(listComprehensionRecords(series)).toEqual([
+      expect(getComprehensionRecords(series)).toEqual([
         { date: '2026-10-03', lookups: 5, aiQuestions: 2 },
       ]);
     });
@@ -56,7 +56,7 @@ describe('listComprehensionRecords', () => {
         ]),
       ]);
 
-      expect(listComprehensionRecords(series)).toEqual([
+      expect(getComprehensionRecords(series)).toEqual([
         { date: '2026-10-03', lookups: 0, aiQuestions: 0, understood: 70 },
       ]);
     });
@@ -77,7 +77,7 @@ describe('listComprehensionRecords', () => {
         ]),
       ]);
 
-      expect(listComprehensionRecords(series).map(({ date }) => date)).toEqual([
+      expect(getComprehensionRecords(series).map(({ date }) => date)).toEqual([
         '2026-10-02',
         '2026-10-04',
       ]);
@@ -94,7 +94,7 @@ describe('listComprehensionRecords', () => {
         ]),
       ]);
 
-      expect(listComprehensionRecords(series)).toEqual([]);
+      expect(getComprehensionRecords(series)).toEqual([]);
     });
   });
 });

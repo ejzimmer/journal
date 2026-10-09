@@ -1,4 +1,4 @@
-import { listByNumber } from './lists';
+import { getItemsByNumber } from './lists';
 import { ShapeGrowth, TreeLayout } from './treeLayout';
 import { PrintSeries } from './types';
 import { readVolumeProgress } from './volumeProgress';
@@ -14,8 +14,8 @@ export function measureShapeGrowth(growth: ShapeGrowth, progress: number[]) {
   return clampFraction(((progress[level] ?? 0) - start) / (end - start));
 }
 
-export function listGrownShapes(layout: TreeLayout, series: PrintSeries) {
-  const progress = listByNumber(series.volumes).map((volume) =>
+export function getGrownShapes(layout: TreeLayout, series: PrintSeries) {
+  const progress = getItemsByNumber(series.volumes).map((volume) =>
     readVolumeProgress(series, volume),
   );
   return layout.shapes
@@ -26,4 +26,4 @@ export function listGrownShapes(layout: TreeLayout, series: PrintSeries) {
     .filter(({ amount }) => amount > 0);
 }
 
-export type GrownShape = ReturnType<typeof listGrownShapes>[number];
+export type GrownShape = ReturnType<typeof getGrownShapes>[number];
