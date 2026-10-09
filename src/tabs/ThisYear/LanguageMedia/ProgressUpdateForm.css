@@ -1,9 +1,42 @@
 dialog.progress-update-modal {
   width: 480px;
+  padding: 0;
+  overflow: visible;
+  background: none;
+  box-shadow: none;
+  filter: drop-shadow(2px 2px 2px hsl(0 0% 0% / 0.1))
+    drop-shadow(2px 2px 6px hsl(0 0% 0% / 0.1))
+    drop-shadow(2px 2px 14px hsl(0 0% 0% / 0.12));
+
+  .close-button {
+    position: absolute;
+    inset-block-start: 52px;
+    inset-inline-end: -26px;
+    margin: 0;
+  }
+}
+
+.cloud-frame {
+  position: relative;
+  isolation: isolate;
+  padding-inline: 30px;
+  padding-block: 4px 24px;
+}
+
+.cloud-shape {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  overflow: visible;
 }
 
 .progress-update-title {
+  display: grid;
+  place-items: center;
+  min-height: 44px;
+  max-width: 280px;
   margin-block: 0 18px;
+  margin-inline: auto;
   font: inherit;
   font-weight: bold;
   text-align: center;
