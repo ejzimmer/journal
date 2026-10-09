@@ -4,6 +4,7 @@ import {
   convertTreeToV1,
   convertTreeToV2,
   convertUpdatesToV2,
+  createV2Copy,
   findV2ReadPath,
   listDifferences,
   listVersionDifferences,
@@ -282,6 +283,16 @@ describe('v2Shape', () => {
 
       it('returns the entry from the converted list', () => {
         expect(convertReadValueToV1(key, { ovaryPain: true })).toBe('🥚');
+      });
+    });
+  });
+
+  describe('createV2Copy', () => {
+    describe('given a database that already has a v2 copy', () => {
+      it('reshapes everything else and leaves the old copy out', () => {
+        expect(createV2Copy({ ...v1Tree, v2: { stale: true } })).toEqual(
+          v2Tree,
+        );
       });
     });
   });

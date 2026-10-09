@@ -1,32 +1,50 @@
 import { useState } from 'react';
-import { listVersionDifferences } from '../shared/localFirst/v2Shape';
+import {
+  createV2Copy,
+  listVersionDifferences,
+} from '../shared/localFirst/v2Shape';
 import { useDataVersions } from './DataVersionsContext';
 import './index.css';
 
 const MAX_LISTED_DIFFERENCES = 50;
 
-type Comparison =
+type Progress =
   | { status: 'idle' }
   | { status: 'comparing' }
-  | { status: 'failed' }
-  | { status: 'done'; differences: string[] };
+  | { status: 'copying' }
+  | { status: 'failed'; message: string }
+  | { status: 'compared'; differences: string[] };
 
 export function DataVersions() {
-  const { readSource, switchReadSource, fetchDatabase } = useDataVersions();
-  const [comparison, setComparison] = useState<Comparison>({ status: 'idle' });
+  const { readSource, switchReadSource, fetchDatabase, replaceV2 } =
+    useDataVersions();
+  const [progress, setProgress] = useState<Progress>({ status: 'idle' });
 
   const compareVersions = async () => {
-    setComparison({ status: 'comparing' });
+    setProgress({ status: 'comparing' });
     try {
       const differences = listVersionDifferences(await fetchDatabase());
-      setComparison({ status: 'done', differences });
+      setProgress({ status: 'compared', differences });
     } catch {
-      setComparison({ status: 'failed' });
+      setProgress({ status: 'failed', message: "Couldn't load the database." });
     }
   };
 
+  const copyV1ToV2 = async () => {
+    setProgress({ status: 'copying' });
+    try {
+      await replaceV2(createV2Copy(await fetchDatabase()));
+    } catch {
+      setProgress({ status: 'failed', message: "Couldn't copy v1 to v2." });
+      return;
+    }
+    await compareVersions();
+  };
+
+  const isBusy =
+    progress.status === 'comparing' || progress.status === 'copying';
   const versionsMatch =
-    comparison.status === 'done' && comparison.differences.length === 0;
+    progress.status === 'compared' && progress.differences.length === 0;
   const otherSource = readSource === 'v1' ? 'v2' : 'v1';
 
   return (
@@ -37,11 +55,11 @@ export function DataVersions() {
       </p>
 
       <div className="actions">
-        <button
-          onClick={compareVersions}
-          disabled={comparison.status === 'comparing'}
-        >
+        <button onClick={compareVersions} disabled={isBusy}>
           Compare v1 and v2
+        </button>
+        <button onClick={copyV1ToV2} disabled={isBusy}>
+          Copy v1 to v2
         </button>
         <button
           onClick={() => switchReadSource(otherSource)}
@@ -52,27 +70,24 @@ export function DataVersions() {
       </div>
 
       <div role="status">
-        {comparison.status === 'comparing' && 'Comparing…'}
-        {comparison.status === 'failed' && "Couldn't load the database."}
-        {comparison.status === 'done' &&
+        {progress.status === 'comparing' && 'Comparing…'}
+        {progress.status === 'copying' && 'Copying…'}
+        {progress.status === 'failed' && progress.message}
+        {progress.status === 'compared' &&
           (versionsMatch
             ? 'v1 and v2 match.'
-            : `${comparison.differences.length} ${
-                comparison.differences.length === 1
-                  ? 'difference'
-                  : 'differences'
+            : `${progress.differences.length} ${
+                progress.differences.length === 1 ? 'difference' : 'differences'
               } between v1 and v2.`)}
       </div>
 
-      {comparison.status === 'done' && !versionsMatch && (
+      {progress.status === 'compared' && !versionsMatch && (
         <ul className="differences" aria-label="Differences">
-          {comparison.differences
-            .slice(0, MAX_LISTED_DIFFERENCES)
-            .map((path) => (
-              <li key={path}>
-                <code>{path}</code>
-              </li>
-            ))}
+          {progress.differences.slice(0, MAX_LISTED_DIFFERENCES).map((path) => (
+            <li key={path}>
+              <code>{path}</code>
+            </li>
+          ))}
         </ul>
       )}
     </section>

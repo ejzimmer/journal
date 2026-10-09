@@ -10,20 +10,24 @@ function renderDataVersions({
   readSource = 'v1',
   database = { projects: v1Projects, v2: { projects: v1Projects } },
   fetchDatabase = async () => database,
+  replaceV2 = jest.fn(async (v2: Record<string, unknown>) => {
+    database.v2 = v2;
+  }),
 }: {
   readSource?: ReadSource;
   database?: Record<string, unknown>;
   fetchDatabase?: () => Promise<Record<string, unknown>>;
+  replaceV2?: (v2: Record<string, unknown>) => Promise<void>;
 } = {}) {
   const switchReadSource = jest.fn();
   render(
     <DataVersionsContext.Provider
-      value={{ readSource, switchReadSource, fetchDatabase }}
+      value={{ readSource, switchReadSource, fetchDatabase, replaceV2 }}
     >
       <DataVersions />
     </DataVersionsContext.Provider>,
   );
-  return { switchReadSource, user: userEvent.setup() };
+  return { switchReadSource, replaceV2, user: userEvent.setup() };
 }
 
 describe('DataVersions', () => {
@@ -110,6 +114,54 @@ describe('DataVersions', () => {
 
         expect(
           await screen.findByText("Couldn't load the database."),
+        ).toBeInTheDocument();
+      });
+    });
+  });
+
+  describe('copying v1 to v2', () => {
+    const v1Task = { id: 'laundry', completed: ['2026-10-05'] };
+
+    describe('when the copy succeeds', () => {
+      it('replaces v2 with a reshaped copy of v1', async () => {
+        const { user, replaceV2 } = renderDataVersions({
+          database: { today: { 週: { laundry: v1Task } }, v2: { stale: 1 } },
+        });
+
+        await user.click(screen.getByRole('button', { name: 'Copy v1 to v2' }));
+
+        expect(replaceV2).toHaveBeenCalledWith({
+          today: {
+            週: {
+              laundry: { id: 'laundry', completed: { t0000: '2026-10-05' } },
+            },
+          },
+        });
+      });
+
+      it('compares the two copies again', async () => {
+        const { user } = renderDataVersions({
+          database: { today: { 週: { laundry: v1Task } } },
+        });
+
+        await user.click(screen.getByRole('button', { name: 'Copy v1 to v2' }));
+
+        expect(await screen.findByRole('status')).toHaveTextContent(
+          'v1 and v2 match.',
+        );
+      });
+    });
+
+    describe('when the copy fails', () => {
+      it('says so', async () => {
+        const { user } = renderDataVersions({
+          replaceV2: () => Promise.reject(new Error('offline')),
+        });
+
+        await user.click(screen.getByRole('button', { name: 'Copy v1 to v2' }));
+
+        expect(
+          await screen.findByText("Couldn't copy v1 to v2."),
         ).toBeInTheDocument();
       });
     });

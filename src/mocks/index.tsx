@@ -13,19 +13,20 @@ import {
   loadReadSource,
   saveReadSource,
 } from '../shared/localFirst/readSourceStorage';
-import { convertTreeToV2, V2_ROOT } from '../shared/localFirst/v2Shape';
+import { V2_ROOT } from '../shared/localFirst/v2Shape';
 
 const contextValue = createMockFirebaseContext(seedData);
+const mockDatabase: Record<string, unknown> = { ...seedData };
 const dataVersions = {
   readSource: loadReadSource(),
   switchReadSource: (source: ReadSource) => {
     saveReadSource(source);
     window.location.reload();
   },
-  fetchDatabase: async () => ({
-    ...seedData,
-    [V2_ROOT]: convertTreeToV2('', seedData),
-  }),
+  fetchDatabase: async () => mockDatabase,
+  replaceV2: async (v2: Record<string, unknown>) => {
+    mockDatabase[V2_ROOT] = v2;
+  },
 };
 
 const container = document.getElementById('root');
