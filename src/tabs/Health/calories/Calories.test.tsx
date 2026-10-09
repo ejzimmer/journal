@@ -266,7 +266,7 @@ describe('Calories', () => {
         ).toEqual(['2027', '2026']);
       });
 
-      it('starts on the latest year', async () => {
+      it('starts on this year', async () => {
         await showDots();
 
         expect(listDots().map((dot) => dot.getAttribute('aria-label'))).toEqual(

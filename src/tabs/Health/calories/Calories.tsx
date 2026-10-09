@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 import { useHealthStorage } from '../HealthStorageContext';
-import { setupDays } from '../utils';
+import { Balance, setupDays } from '../utils';
 import { Switch } from '../../../shared/controls/Switch';
 import { Days } from './Days';
 import { WeeklyCalorieTracker } from './WeeklyCalorieTracker';
@@ -8,9 +8,13 @@ import { CalorieForm } from './CalorieForm';
 import { BarChartIcon } from '../../../shared/icons/BarChart';
 import { DotGridIcon } from '../../../shared/icons/DotGrid';
 import { YearTabs } from '../../../shared/controls/YearTabs';
+import { useItemYears } from '../../../shared/years';
 import './Calories.css';
 
 type View = 'week' | 'day';
+
+const isPastDay = () => true;
+const getDayYear = ({ year }: Balance) => year;
 
 function ViewIcon({ value }: { value: View }) {
   return value === 'week' ? (
@@ -28,14 +32,10 @@ export function Calories() {
   const { days: storedDays, isLoading, updateDay } = useHealthStorage();
 
   const days = useMemo(() => setupDays(storedDays), [storedDays]);
-  const years = useMemo(
-    () => [...new Set(days.map(({ year }) => year))].reverse(),
-    [days],
-  );
-  const [selectedYear, selectYear] = useState(years[0]);
-  const daysInSelectedYear = useMemo(
-    () => days.filter(({ year }) => year === selectedYear),
-    [days, selectedYear],
+  const { years, selectedYear, selectYear, isInSelectedYear } = useItemYears(
+    days,
+    isPastDay,
+    getDayYear,
   );
   const yesterday = days[days.length - 1];
   const yesterdayId = yesterday && yesterday.id;
@@ -80,7 +80,10 @@ export function Calories() {
             selectedYear={selectedYear}
             onSelectYear={selectYear}
           >
-            <Days days={daysInSelectedYear} onSelectDay={setSelectedDayId} />
+            <Days
+              days={days.filter(isInSelectedYear)}
+              onSelectDay={setSelectedDayId}
+            />
           </YearTabs>
         </div>
         <div
