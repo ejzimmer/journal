@@ -140,7 +140,8 @@ export function SubtaskList({ projectId, isVisible }: SubtasksProps) {
         style={{
           display: 'flex',
           alignItems: 'center',
-          paddingInlineStart: '12px',
+          gap: '4px',
+          paddingInline: '12px',
           paddingBlockEnd: '8px',
         }}
       >
@@ -149,7 +150,7 @@ export function SubtaskList({ projectId, isVisible }: SubtasksProps) {
           ref={triggerRef}
           className={`icon ghost show-form ${isFormOpen ? 'form-visible' : ''}`}
           onClick={toggleForm}
-          style={{ alignSelf: 'baseline', marginInlineEnd: '12px' }}
+          style={{ alignSelf: 'baseline' }}
         >
           <PlusIcon width="16px" colour="var(--action-colour)" />
         </button>

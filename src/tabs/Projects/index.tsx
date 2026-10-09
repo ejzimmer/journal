@@ -131,6 +131,7 @@ export function Projects() {
                   deleteItem(PROJECTS_KEY, project);
                 }}
                 onMoveToStart={
+                  (project.status ?? 'ready') !== 'in_progress' ||
                   isProjectAtStart(sortedProjects, index)
                     ? undefined
                     : () =>
@@ -140,6 +141,7 @@ export function Projects() {
                         )
                 }
                 onMoveToEnd={
+                  (project.status ?? 'ready') !== 'ready' ||
                   isProjectAtEnd(sortedProjects, index)
                     ? undefined
                     : () =>

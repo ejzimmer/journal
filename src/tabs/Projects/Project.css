@@ -25,14 +25,17 @@
   );
 
   &:not(.in_progress) {
-    button.expand {
+    button.expand,
+    .project-action-button {
       opacity: 0;
       transition: opacity 0.2s;
     }
 
     &:hover button.expand,
     &:focus-within button.expand,
-    button.expand.expanded {
+    button.expand.expanded,
+    &:hover .project-action-button,
+    &:focus-within .project-action-button {
       opacity: 1;
     }
 
@@ -200,6 +203,7 @@
 
     &.settled {
       overflow: visible;
+      transition: none;
     }
   }
 
@@ -213,7 +217,8 @@
     }
   }
 
-  button.show-form {
+  button.show-form,
+  button.sort-done-to-end {
     padding: 6px;
   }
   button.show-form:focus {
