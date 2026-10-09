@@ -23,6 +23,17 @@ export const AdventureStorageContext = createContext<
   AdventureStorageContextType | undefined
 >(undefined);
 
+type Positioned = { id: string; position?: number };
+
+const sortByPosition = <T extends Positioned>(items: Record<string, T> = {}) =>
+  Object.values(items).toSorted(
+    (a, b) =>
+      (a.position ?? -1) - (b.position ?? -1) || a.id.localeCompare(b.id),
+  );
+
+const getNextPosition = (items: Positioned[]) =>
+  Math.max(-1, ...items.map(({ position }) => position ?? -1)) + 1;
+
 const removeClearedPlannedDate = ({ plannedDate, ...adventure }: Adventure) =>
   plannedDate ? { ...adventure, plannedDate } : adventure;
 
@@ -39,10 +50,10 @@ export function AdventureStorageProvider({
     useValue<Record<string, AdventureMode>>(ADVENTURE_MODES_PATH);
 
   const adventures = useMemo(
-    () => Object.values(storedAdventures ?? {}),
+    () => sortByPosition(storedAdventures),
     [storedAdventures],
   );
-  const modes = useMemo(() => Object.values(storedModes ?? {}), [storedModes]);
+  const modes = useMemo(() => sortByPosition(storedModes), [storedModes]);
 
   const value: AdventureStorageContextType = {
     adventures,
@@ -54,6 +65,7 @@ export function AdventureStorageProvider({
         description,
         modeId,
         isDone: false,
+        position: getNextPosition(adventures),
       });
     },
     updateAdventure: (adventure) =>
@@ -64,7 +76,11 @@ export function AdventureStorageProvider({
     deleteAdventure: (adventure) =>
       deleteItem<Adventure>(ADVENTURES_PATH, adventure),
 
-    addMode: (mode) => addItem<AdventureMode>(ADVENTURE_MODES_PATH, mode),
+    addMode: (mode) =>
+      addItem<AdventureMode>(ADVENTURE_MODES_PATH, {
+        ...mode,
+        position: getNextPosition(modes),
+      }),
   };
 
   return (

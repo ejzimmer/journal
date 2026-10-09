@@ -7,6 +7,7 @@ export type Adventure = {
   modeId: string;
   isDone: boolean;
   plannedDate?: string;
+  position?: number;
 };
 
 export type AdventureMode = {
@@ -14,4 +15,5 @@ export type AdventureMode = {
   name: string;
   emoji: string;
   colour: string;
+  position?: number;
 };

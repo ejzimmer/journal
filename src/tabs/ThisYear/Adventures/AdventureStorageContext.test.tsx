@@ -61,6 +61,36 @@ describe('AdventureStorageContext', () => {
       expect(storage.adventures).toEqual([parkrun]);
     });
 
+    it('lists them in the order they were added', () => {
+      const first = { ...parkrun, id: 'b', position: 0 };
+      const second = { ...parkrun, id: 'a', position: 1 };
+      const storage = createAdventureStorage({
+        useValue: <T,>() => ({
+          value: { a: second, b: first } as T,
+          loading: false,
+          synced: true,
+        }),
+      });
+
+      expect(storage.adventures).toEqual([first, second]);
+    });
+
+    describe('when some were added before they had a position', () => {
+      it('lists those first', () => {
+        const positioned = { ...parkrun, id: 'a', position: 0 };
+        const unpositioned = { ...parkrun, id: 'b' };
+        const storage = createAdventureStorage({
+          useValue: <T,>() => ({
+            value: { a: positioned, b: unpositioned } as T,
+            loading: false,
+            synced: true,
+          }),
+        });
+
+        expect(storage.adventures).toEqual([unpositioned, positioned]);
+      });
+    });
+
     describe('when there are none stored', () => {
       it('lists no adventures', () => {
         const storage = createAdventureStorage();
@@ -69,19 +99,56 @@ describe('AdventureStorageContext', () => {
       });
     });
 
-    it('adds a new adventure as not done', () => {
-      const addItem = jest.fn();
-      const storage = createAdventureStorage({ addItem });
+    describe('adding an adventure', () => {
+      it('adds it as not done', () => {
+        const addItem = jest.fn();
+        const storage = createAdventureStorage({ addItem });
 
-      storage.addAdventure({
-        description: 'Plenty Gorge parkrun',
-        modeId: 'running',
+        storage.addAdventure({
+          description: 'Plenty Gorge parkrun',
+          modeId: 'running',
+        });
+
+        expect(addItem).toHaveBeenCalledWith(
+          ADVENTURES_PATH,
+          expect.objectContaining({
+            description: 'Plenty Gorge parkrun',
+            modeId: 'running',
+            isDone: false,
+          }),
+        );
       });
 
-      expect(addItem).toHaveBeenCalledWith(ADVENTURES_PATH, {
-        description: 'Plenty Gorge parkrun',
-        modeId: 'running',
-        isDone: false,
+      describe('when there are none stored', () => {
+        it('puts it first', () => {
+          const addItem = jest.fn();
+          const storage = createAdventureStorage({ addItem });
+
+          storage.addAdventure({ description: 'Parkrun', modeId: 'running' });
+
+          expect(addItem.mock.calls[0][1].position).toBe(0);
+        });
+      });
+
+      describe('when there are some stored', () => {
+        it('puts it after the last one', () => {
+          const addItem = jest.fn();
+          const storage = createAdventureStorage({
+            addItem,
+            useValue: <T,>() => ({
+              value: {
+                a: { ...parkrun, id: 'a', position: 3 },
+                b: { ...parkrun, id: 'b' },
+              } as T,
+              loading: false,
+              synced: true,
+            }),
+          });
+
+          storage.addAdventure({ description: 'Parkrun', modeId: 'running' });
+
+          expect(addItem.mock.calls[0][1].position).toBe(4);
+        });
       });
     });
 
@@ -146,17 +213,46 @@ describe('AdventureStorageContext', () => {
       expect(storage.modes).toEqual([running]);
     });
 
-    it('adds a mode and returns its id', () => {
-      const addItem = jest.fn().mockReturnValue('running');
-      const storage = createAdventureStorage({ addItem });
+    it('lists them in the order they were added', () => {
+      const first = { ...running, id: 'b', position: 0 };
+      const second = { ...running, id: 'a', position: 1 };
+      const storage = createAdventureStorage({
+        useValue: <T,>() => ({
+          value: { a: second, b: first } as T,
+          loading: false,
+          synced: true,
+        }),
+      });
 
-      const id = storage.addMode(newRunningMode);
+      expect(storage.modes).toEqual([first, second]);
+    });
 
-      expect(addItem).toHaveBeenCalledWith(
-        ADVENTURE_MODES_PATH,
-        newRunningMode,
-      );
-      expect(id).toBe('running');
+    describe('adding a mode', () => {
+      it('saves it after the last one', () => {
+        const addItem = jest.fn();
+        const storage = createAdventureStorage({
+          addItem,
+          useValue: <T,>() => ({
+            value: { running: { ...running, position: 1 } } as T,
+            loading: false,
+            synced: true,
+          }),
+        });
+
+        storage.addMode(newRunningMode);
+
+        expect(addItem).toHaveBeenCalledWith(ADVENTURE_MODES_PATH, {
+          ...newRunningMode,
+          position: 2,
+        });
+      });
+
+      it('returns its id', () => {
+        const addItem = jest.fn().mockReturnValue('running');
+        const storage = createAdventureStorage({ addItem });
+
+        expect(storage.addMode(newRunningMode)).toBe('running');
+      });
     });
   });
 
