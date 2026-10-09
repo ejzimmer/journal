@@ -314,25 +314,22 @@ describe('MediaStorageContext', () => {
         jest.useRealTimers();
       });
 
-      const getSavedBook = (book: BookDetails) => {
-        const updateItem = jest.fn();
-        const mediaStorage = createMediaStorage({
-          ...createStoredMedia({ books: [book] }),
-          updateItem,
-        });
-
-        mediaStorage.updateMedia(book);
-
-        return updateItem.mock.calls[0][1];
-      };
-
       describe('when a book is marked read', () => {
         it('records today as the date it was finished', () => {
-          expect(
-            getSavedBook(
-              createBook('book-nation', 'Nation', { status: 'read' }),
-            ),
-          ).toHaveProperty('completedAt', '2027-03-14');
+          const updateItem = jest.fn();
+          const nation = createBook('book-nation', 'Nation');
+          const mediaStorage = createMediaStorage({
+            ...createStoredMedia({ books: [nation] }),
+            updateItem,
+          });
+
+          mediaStorage.updateMedia({ ...nation, status: 'read' });
+
+          expect(updateItem).toHaveBeenCalledWith(BOOKS_KEY, {
+            ...nation,
+            status: 'read',
+            completedAt: '2027-03-14',
+          });
         });
       });
 
@@ -357,27 +354,43 @@ describe('MediaStorageContext', () => {
 
       describe('when a finished book is edited', () => {
         it('keeps the date it was finished', () => {
-          expect(
-            getSavedBook(
-              createBook('book-nation', 'Nation', {
-                status: 'read',
-                completedAt: '2026-11-02',
-              }),
-            ),
-          ).toHaveProperty('completedAt', '2026-11-02');
+          const updateItem = jest.fn();
+          const nation = createBook('book-nation', 'Nation', {
+            status: 'read',
+            completedAt: '2026-11-02',
+          });
+          const mediaStorage = createMediaStorage({
+            ...createStoredMedia({ books: [nation] }),
+            updateItem,
+          });
+
+          mediaStorage.updateMedia({ ...nation, title: 'Nation (2008)' });
+
+          expect(updateItem).toHaveBeenCalledWith(BOOKS_KEY, {
+            ...nation,
+            title: 'Nation (2008)',
+          });
         });
       });
 
       describe('when a finished book goes back to unread', () => {
         it('drops the date it was finished', () => {
-          expect(
-            getSavedBook(
-              createBook('book-nation', 'Nation', {
-                status: 'unread',
-                completedAt: '2026-11-02',
-              }),
-            ),
-          ).toEqual(createBook('book-nation', 'Nation', { status: 'unread' }));
+          const updateItem = jest.fn();
+          const nation = createBook('book-nation', 'Nation', {
+            status: 'read',
+            completedAt: '2026-11-02',
+          });
+          const mediaStorage = createMediaStorage({
+            ...createStoredMedia({ books: [nation] }),
+            updateItem,
+          });
+
+          mediaStorage.updateMedia({ ...nation, status: 'unread' });
+
+          expect(updateItem).toHaveBeenCalledWith(
+            BOOKS_KEY,
+            createBook('book-nation', 'Nation', { status: 'unread' }),
+          );
         });
       });
     });
