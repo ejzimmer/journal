@@ -9,7 +9,7 @@ import { setWaitingRegistration } from './shared/appUpdateStore';
 import * as serviceWorkerRegistration from './serviceWorkerRegistration';
 
 import { initializeApp } from 'firebase/app';
-import { get, getDatabase, ref } from 'firebase/database';
+import { get, getDatabase, ref, set } from 'firebase/database';
 import { FirebaseContext } from './shared/FirebaseContext';
 import {
   createLocalFirstContext,
@@ -20,6 +20,7 @@ import {
   saveReadSource,
 } from './shared/localFirst/readSourceStorage';
 import { DataVersionsContext } from './DataVersions/DataVersionsContext';
+import { V2_ROOT } from './shared/localFirst/v2Shape';
 
 const firebaseConfig = {
   apiKey: 'AIzaSyAlKw5_aMOUlR3SdkbU6vHADLTUvXZHNJg',
@@ -46,6 +47,7 @@ const dataVersions = {
     window.location.reload();
   },
   fetchDatabase: async () => (await get(ref(database))).val() ?? {},
+  replaceV2: (v2: Record<string, unknown>) => set(ref(database, V2_ROOT), v2),
 };
 
 serviceWorkerRegistration.register({ onUpdate: setWaitingRegistration });

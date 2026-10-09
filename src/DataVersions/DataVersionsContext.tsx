@@ -5,6 +5,7 @@ export type DataVersionsContextType = {
   readSource: ReadSource;
   switchReadSource: (source: ReadSource) => void;
   fetchDatabase: () => Promise<Record<string, unknown>>;
+  replaceV2: (v2: Record<string, unknown>) => Promise<void>;
 };
 
 export const DataVersionsContext = createContext<

@@ -111,9 +111,13 @@ export function convertReadValueToV1(v1Key: string, v2Value: unknown): unknown {
     : getAtPath(value as Tree, v1Key.slice(readKey.length + 1));
 }
 
+export function createV2Copy(root: Tree): Tree {
+  const { [V2_ROOT]: _currentV2, ...v1 } = root;
+  return convertTreeToV2('', v1) as Tree;
+}
+
 export function listVersionDifferences(root: Tree): string[] {
-  const { [V2_ROOT]: v2 = {}, ...v1 } = root;
-  return listDifferences(convertTreeToV2('', v1), v2);
+  return listDifferences(createV2Copy(root), root[V2_ROOT] ?? {});
 }
 
 export function listDifferences(
