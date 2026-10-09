@@ -40,7 +40,7 @@ function renderBooks() {
   });
 }
 
-function listReorderedIds(
+function getReorderedIds(
   reorderSeries: MediaStorageContextType['reorderSeries'],
 ) {
   const [series, items] = jest.mocked(reorderSeries).mock.calls[0];
@@ -60,7 +60,7 @@ describe('Books', () => {
         getSpineTitle('Men at Arms').focus();
         await user.keyboard('{ArrowLeft}');
 
-        expect(listReorderedIds(storageContext.reorderSeries)).toEqual({
+        expect(getReorderedIds(storageContext.reorderSeries)).toEqual({
           seriesId: watch.id,
           itemIds: [menAtArms.id, guards.id, feetOfClay.id],
         });
@@ -75,7 +75,7 @@ describe('Books', () => {
         getSpineTitle('Men at Arms').focus();
         await user.keyboard('{ArrowRight}');
 
-        expect(listReorderedIds(storageContext.reorderSeries)).toEqual({
+        expect(getReorderedIds(storageContext.reorderSeries)).toEqual({
           seriesId: watch.id,
           itemIds: [guards.id, feetOfClay.id, menAtArms.id],
         });
@@ -90,7 +90,7 @@ describe('Books', () => {
         getSpineTitle('Feet of Clay').focus();
         await user.keyboard('{Shift>}{ArrowLeft}{/Shift}');
 
-        expect(listReorderedIds(storageContext.reorderSeries)).toEqual({
+        expect(getReorderedIds(storageContext.reorderSeries)).toEqual({
           seriesId: watch.id,
           itemIds: [feetOfClay.id, guards.id, menAtArms.id],
         });
@@ -103,7 +103,7 @@ describe('Books', () => {
         getSpineTitle('Guards! Guards!').focus();
         await user.keyboard('{Shift>}{ArrowRight}{/Shift}');
 
-        expect(listReorderedIds(storageContext.reorderSeries)).toEqual({
+        expect(getReorderedIds(storageContext.reorderSeries)).toEqual({
           seriesId: watch.id,
           itemIds: [menAtArms.id, feetOfClay.id, guards.id],
         });

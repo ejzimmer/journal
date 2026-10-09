@@ -11,7 +11,7 @@ import { createLocalStore } from './localStore';
 import { createOutbox, StoredOutboxOp } from './outbox';
 import {
   getAtPath,
-  listChangedFields,
+  findChangedFields,
   pathsAreRelated,
   setAtPath,
   Tree,
@@ -193,7 +193,7 @@ export function createLocalFirstContext(
     const changes = Object.entries(v2Updates).flatMap(([path, value]) =>
       value === null
         ? [[path, null] as [string, unknown]]
-        : listChangedFields(path, localStore.readPath(path), value),
+        : findChangedFields(path, localStore.readPath(path), value),
     );
     if (changes.length > 0) {
       commit(changes);

@@ -31,7 +31,7 @@ jest.mock('firebase/database', () => ({
   },
 }));
 
-function listSentData() {
+function getSentData() {
   return mockUpdate.mock.calls.map(([updates]) =>
     Object.fromEntries(
       Object.entries(updates as Record<string, unknown>).filter(
@@ -100,7 +100,7 @@ describe('createLocalFirstContext', () => {
     });
 
     await waitFor(() => {
-      expect(listSentData()).toContainEqual({
+      expect(getSentData()).toContainEqual({
         [`v2/work/${id}`]: expect.objectContaining({ description: 'Chores' }),
       });
     });
@@ -119,7 +119,7 @@ describe('createLocalFirstContext', () => {
     expect(result.current.value).toBeUndefined();
 
     await waitFor(() => {
-      expect(listSentData()).toContainEqual({ 'v2/work/task1': null });
+      expect(getSentData()).toContainEqual({ 'v2/work/task1': null });
     });
   });
 
@@ -148,7 +148,7 @@ describe('createLocalFirstContext', () => {
     context.deleteItem('work', { id: 'task1', description: 'Chores' });
 
     await waitFor(() => {
-      expect(listSentData()).toContainEqual({ 'v2/work/task1': null });
+      expect(getSentData()).toContainEqual({ 'v2/work/task1': null });
     });
   });
 
@@ -175,7 +175,7 @@ describe('createLocalFirstContext', () => {
     expect(removed.current.value).toBeUndefined();
 
     await waitFor(() => {
-      expect(listSentData()).toContainEqual({
+      expect(getSentData()).toContainEqual({
         'v2/new/a': 1,
         'v2/old': null,
       });
@@ -225,7 +225,7 @@ describe('createLocalFirstContext', () => {
     expect(target.current.value?.task2).toEqual({ id: 'task2', position: 1 });
 
     await waitFor(() => {
-      expect(listSentData()).toContainEqual({
+      expect(getSentData()).toContainEqual({
         'v2/work/list2/items/task1': movedItem,
         'v2/work/list1/items/task1': null,
         'v2/work/list2/items/task2/position': 1,
@@ -318,7 +318,7 @@ describe('createLocalFirstContext', () => {
       context.updateItem('projects', { ...project, status: 'done' });
 
       await waitFor(() =>
-        expect(listSentData()).toContainEqual({
+        expect(getSentData()).toContainEqual({
           'v2/projects/garden/status': 'done',
         }),
       );
@@ -334,7 +334,7 @@ describe('createLocalFirstContext', () => {
       context.updateItem('projects', withoutStatus);
 
       await waitFor(() =>
-        expect(listSentData()).toContainEqual({
+        expect(getSentData()).toContainEqual({
           'v2/projects/garden/status': null,
         }),
       );
@@ -354,7 +354,7 @@ describe('createLocalFirstContext', () => {
         ]);
 
         await waitFor(() =>
-          expect(listSentData()).toContainEqual({
+          expect(getSentData()).toContainEqual({
             'v2/projects/garden/position': 1,
             'v2/projects/shed/position': 0,
           }),
@@ -376,7 +376,7 @@ describe('createLocalFirstContext', () => {
         });
 
         await waitFor(() =>
-          expect(listSentData()).toContainEqual({
+          expect(getSentData()).toContainEqual({
             'v2/today/週/laundry/completed/t0001': '2026-10-07',
           }),
         );
@@ -402,7 +402,7 @@ describe('createLocalFirstContext', () => {
       context.updateItem('today/週', task);
 
       await waitFor(() => {
-        expect(listSentData()).toContainEqual({
+        expect(getSentData()).toContainEqual({
           'v2/today/週/laundry': v2Task,
         });
       });
@@ -420,7 +420,7 @@ describe('createLocalFirstContext', () => {
       context.setValue('health/classes/pilates/blocks/0/completed', [2]);
 
       await waitFor(() => {
-        expect(listSentData()).toContainEqual({
+        expect(getSentData()).toContainEqual({
           'v2/health/classes/pilates/blocks/week-1/completed': { s2: true },
         });
       });
@@ -517,7 +517,7 @@ describe('createLocalFirstContext', () => {
 
       expect(saveStatus.getSaveState()).toBe('saving');
       await waitFor(() =>
-        expect(listSentData()).toContainEqual({ 'v2/dailyReset': 12345 }),
+        expect(getSentData()).toContainEqual({ 'v2/dailyReset': 12345 }),
       );
     });
   });
@@ -598,7 +598,7 @@ describe('createLocalFirstContext', () => {
         );
 
         await waitFor(() =>
-          expect(listSentData()).toContainEqual({
+          expect(getSentData()).toContainEqual({
             'v2/projects/garden/status': 'done',
           }),
         );
@@ -654,7 +654,7 @@ describe('createLocalFirstContext', () => {
           conflictStatus.keepMine('v2/projects/garden/status');
 
           await waitFor(() =>
-            expect(listSentData()).toContainEqual({
+            expect(getSentData()).toContainEqual({
               'v2/projects/garden/status': 'done',
             }),
           );
@@ -721,7 +721,7 @@ describe('createLocalFirstContext', () => {
             },
           ]),
         );
-        expect(listSentData()).not.toContainEqual({
+        expect(getSentData()).not.toContainEqual({
           'v2/projects/garden': null,
         });
       });
