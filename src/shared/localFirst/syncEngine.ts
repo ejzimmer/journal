@@ -1,5 +1,5 @@
 import { Database, ref, update } from 'firebase/database';
-import { Outbox } from './outbox';
+import { Outbox, StoredOutboxOp } from './outbox';
 
 const INITIAL_BACKOFF_MS = 1000;
 const MAX_BACKOFF_MS = 30000;
@@ -14,6 +14,9 @@ export function createSyncEngine(
   outbox: Outbox,
   canSync: () => boolean = () => true,
   onSendResult: (succeeded: boolean) => void = () => {},
+  prepareUpdates: (
+    op: StoredOutboxOp,
+  ) => Promise<Record<string, unknown>> = async (op) => op.updates,
 ): SyncEngine {
   let draining = false;
   let syncing = false;
@@ -30,7 +33,10 @@ export function createSyncEngine(
         if (!next) return;
 
         try {
-          await update(ref(database), next.updates);
+          const updates = await prepareUpdates(next);
+          if (Object.keys(updates).length > 0) {
+            await update(ref(database), updates);
+          }
           await outbox.remove(next.id);
           backoffMs = INITIAL_BACKOFF_MS;
           onSendResult(true);

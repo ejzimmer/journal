@@ -3,6 +3,7 @@ import { renderHook, waitFor } from '@testing-library/react';
 import { createLocalFirstContext } from './createLocalFirstContext';
 
 const mockUpdate = jest.fn().mockResolvedValue(undefined);
+let mockServerData: Record<string, unknown> = {};
 const mockOnValueCallbacks = new Map<
   string,
   (snapshot: { val: () => unknown }) => void
@@ -12,6 +13,15 @@ jest.mock('firebase/database', () => ({
   ref: (_database: unknown, path?: string) => ({ path }),
   update: (_reference: unknown, updates: Record<string, unknown>) =>
     mockUpdate(updates),
+  get: async (reference: { path: string }) => ({
+    val: () =>
+      reference.path
+        .split('/')
+        .reduce<unknown>(
+          (node, segment) => (node as Record<string, unknown>)?.[segment],
+          mockServerData,
+        ) ?? null,
+  }),
   onValue: (
     reference: { path: string },
     callback: (snapshot: { val: () => unknown }) => void,
@@ -20,6 +30,16 @@ jest.mock('firebase/database', () => ({
     return () => mockOnValueCallbacks.delete(reference.path);
   },
 }));
+
+function listSentData() {
+  return mockUpdate.mock.calls.map(([updates]) =>
+    Object.fromEntries(
+      Object.entries(updates as Record<string, unknown>).filter(
+        ([path]) => !path.startsWith('v2/_edited/'),
+      ),
+    ),
+  );
+}
 
 function fireRemoteSnapshot(path: string, value: unknown) {
   mockOnValueCallbacks.get(path)?.({ val: () => value });
@@ -38,12 +58,13 @@ async function flushMicrotasks() {
 }
 
 async function setUpContextWithStatus() {
-  const { context, hydrate, saveStatus } = createLocalFirstContext(
-    {} as import('firebase/database').Database,
-    uniqueDbName(),
-  );
+  const { context, hydrate, saveStatus, conflictStatus } =
+    createLocalFirstContext(
+      {} as import('firebase/database').Database,
+      uniqueDbName(),
+    );
   await hydrate();
-  return { context, saveStatus };
+  return { context, saveStatus, conflictStatus };
 }
 
 async function setUpContext() {
@@ -52,6 +73,7 @@ async function setUpContext() {
 
 beforeEach(() => {
   mockOnValueCallbacks.clear();
+  mockServerData = {};
 });
 
 describe('createLocalFirstContext', () => {
@@ -78,7 +100,7 @@ describe('createLocalFirstContext', () => {
     });
 
     await waitFor(() => {
-      expect(mockUpdate).toHaveBeenCalledWith({
+      expect(listSentData()).toContainEqual({
         [`v2/work/${id}`]: expect.objectContaining({ description: 'Chores' }),
       });
     });
@@ -97,7 +119,7 @@ describe('createLocalFirstContext', () => {
     expect(result.current.value).toBeUndefined();
 
     await waitFor(() => {
-      expect(mockUpdate).toHaveBeenCalledWith({ 'v2/work/task1': null });
+      expect(listSentData()).toContainEqual({ 'v2/work/task1': null });
     });
   });
 
@@ -126,7 +148,7 @@ describe('createLocalFirstContext', () => {
     context.deleteItem('work', { id: 'task1', description: 'Chores' });
 
     await waitFor(() => {
-      expect(mockUpdate).toHaveBeenCalledWith({ 'v2/work/task1': null });
+      expect(listSentData()).toContainEqual({ 'v2/work/task1': null });
     });
   });
 
@@ -153,7 +175,7 @@ describe('createLocalFirstContext', () => {
     expect(removed.current.value).toBeUndefined();
 
     await waitFor(() => {
-      expect(mockUpdate).toHaveBeenCalledWith({
+      expect(listSentData()).toContainEqual({
         'v2/new/a': 1,
         'v2/old': null,
       });
@@ -203,7 +225,7 @@ describe('createLocalFirstContext', () => {
     expect(target.current.value?.task2).toEqual({ id: 'task2', position: 1 });
 
     await waitFor(() => {
-      expect(mockUpdate).toHaveBeenCalledWith({
+      expect(listSentData()).toContainEqual({
         'v2/work/list2/items/task1': movedItem,
         'v2/work/list1/items/task1': null,
         'v2/work/list2/items/task2/position': 1,
@@ -296,7 +318,7 @@ describe('createLocalFirstContext', () => {
       context.updateItem('projects', { ...project, status: 'done' });
 
       await waitFor(() =>
-        expect(mockUpdate).toHaveBeenCalledWith({
+        expect(listSentData()).toContainEqual({
           'v2/projects/garden/status': 'done',
         }),
       );
@@ -312,7 +334,7 @@ describe('createLocalFirstContext', () => {
       context.updateItem('projects', withoutStatus);
 
       await waitFor(() =>
-        expect(mockUpdate).toHaveBeenCalledWith({
+        expect(listSentData()).toContainEqual({
           'v2/projects/garden/status': null,
         }),
       );
@@ -332,7 +354,7 @@ describe('createLocalFirstContext', () => {
         ]);
 
         await waitFor(() =>
-          expect(mockUpdate).toHaveBeenCalledWith({
+          expect(listSentData()).toContainEqual({
             'v2/projects/garden/position': 1,
             'v2/projects/shed/position': 0,
           }),
@@ -354,7 +376,7 @@ describe('createLocalFirstContext', () => {
         });
 
         await waitFor(() =>
-          expect(mockUpdate).toHaveBeenCalledWith({
+          expect(listSentData()).toContainEqual({
             'v2/today/週/laundry/completed/t0001': '2026-10-07',
           }),
         );
@@ -380,7 +402,7 @@ describe('createLocalFirstContext', () => {
       context.updateItem('today/週', task);
 
       await waitFor(() => {
-        expect(mockUpdate).toHaveBeenCalledWith({
+        expect(listSentData()).toContainEqual({
           'v2/today/週/laundry': v2Task,
         });
       });
@@ -398,7 +420,7 @@ describe('createLocalFirstContext', () => {
       context.setValue('health/classes/pilates/blocks/0/completed', [2]);
 
       await waitFor(() => {
-        expect(mockUpdate).toHaveBeenCalledWith({
+        expect(listSentData()).toContainEqual({
           'v2/health/classes/pilates/blocks/week-1/completed': { s2: true },
         });
       });
@@ -495,7 +517,7 @@ describe('createLocalFirstContext', () => {
 
       expect(saveStatus.getSaveState()).toBe('saving');
       await waitFor(() =>
-        expect(mockUpdate).toHaveBeenCalledWith({ 'v2/dailyReset': 12345 }),
+        expect(listSentData()).toContainEqual({ 'v2/dailyReset': 12345 }),
       );
     });
   });
@@ -519,6 +541,188 @@ describe('createLocalFirstContext', () => {
 
         await waitFor(() => expect(saveStatus.getSaveState()).toBe('saving'), {
           timeout: 3000,
+        });
+      });
+    });
+  });
+
+  describe('last edit wins', () => {
+    const garden = {
+      id: 'garden',
+      description: 'Garden',
+      status: 'ready',
+      position: 0,
+    };
+
+    async function setUpWithStoredGarden() {
+      const setUp = await setUpContextWithStatus();
+      setUp.context.updateItem('projects', garden);
+      await flushMicrotasks();
+      mockUpdate.mockClear();
+      return setUp;
+    }
+
+    function editAt(time: number, edit: () => void) {
+      const now = jest.spyOn(Date, 'now').mockReturnValue(time);
+      edit();
+      now.mockRestore();
+    }
+
+    it('records when each field was edited', async () => {
+      const { context } = await setUpWithStoredGarden();
+
+      editAt(1000, () =>
+        context.updateItem('projects', { ...garden, status: 'done' }),
+      );
+
+      await waitFor(() =>
+        expect(mockUpdate).toHaveBeenCalledWith({
+          'v2/projects/garden/status': 'done',
+          'v2/_edited/projects/garden/status/_at': 1000,
+        }),
+      );
+    });
+
+    describe('when another device edited the same field earlier', () => {
+      it('sends this edit', async () => {
+        const { context } = await setUpWithStoredGarden();
+        mockServerData = {
+          v2: {
+            projects: { garden: { ...garden, status: 'paused' } },
+            _edited: { projects: { garden: { status: { _at: 500 } } } },
+          },
+        };
+
+        editAt(1000, () =>
+          context.updateItem('projects', { ...garden, status: 'done' }),
+        );
+
+        await waitFor(() =>
+          expect(listSentData()).toContainEqual({
+            'v2/projects/garden/status': 'done',
+          }),
+        );
+      });
+    });
+
+    describe('when another device edited the same field later', () => {
+      async function setUpClash() {
+        const setUp = await setUpWithStoredGarden();
+        mockServerData = {
+          v2: {
+            projects: { garden: { ...garden, status: 'paused' } },
+            _edited: { projects: { garden: { status: { _at: 2000 } } } },
+          },
+        };
+        editAt(1000, () =>
+          setUp.context.updateItem('projects', { ...garden, status: 'done' }),
+        );
+        await waitFor(() =>
+          expect(setUp.conflictStatus.listConflicts()).toHaveLength(1),
+        );
+        return setUp;
+      }
+
+      it('lists the clash with both versions and the item it belongs to', async () => {
+        const { conflictStatus } = await setUpClash();
+
+        expect(conflictStatus.listConflicts()).toEqual([
+          {
+            path: 'v2/projects/garden/status',
+            mine: 'done',
+            theirs: 'paused',
+            item: { ...garden, status: 'done' },
+          },
+        ]);
+      });
+
+      it("shows the other device's version until a choice is made", async () => {
+        const { context } = await setUpClash();
+
+        const { result } = renderHook(() =>
+          context.useValue<Record<string, { status: string }>>('projects'),
+        );
+
+        expect(result.current.value?.garden.status).toBe('paused');
+      });
+
+      describe('and this version is kept', () => {
+        it('sends it again', async () => {
+          const { conflictStatus } = await setUpClash();
+          mockUpdate.mockClear();
+
+          conflictStatus.keepMine('v2/projects/garden/status');
+
+          await waitFor(() =>
+            expect(listSentData()).toContainEqual({
+              'v2/projects/garden/status': 'done',
+            }),
+          );
+          expect(conflictStatus.listConflicts()).toEqual([]);
+        });
+      });
+
+      describe("and the other device's version is kept", () => {
+        it('clears the clash', async () => {
+          const { conflictStatus } = await setUpClash();
+
+          conflictStatus.keepTheirs('v2/projects/garden/status');
+
+          expect(conflictStatus.listConflicts()).toEqual([]);
+        });
+      });
+    });
+
+    describe('when another device deleted the item later', () => {
+      it('offers this whole item back', async () => {
+        const { context, conflictStatus } = await setUpWithStoredGarden();
+        mockServerData = {
+          v2: {
+            projects: {},
+            _edited: { projects: { garden: { _at: 2000 } } },
+          },
+        };
+
+        editAt(1000, () =>
+          context.updateItem('projects', { ...garden, status: 'done' }),
+        );
+
+        await waitFor(() =>
+          expect(conflictStatus.listConflicts()).toEqual([
+            {
+              path: 'v2/projects/garden',
+              mine: { ...garden, status: 'done' },
+              theirs: null,
+              item: { ...garden, status: 'done' },
+            },
+          ]),
+        );
+      });
+    });
+
+    describe('when this device deletes an item edited later elsewhere', () => {
+      it('lists the clash instead of deleting it', async () => {
+        const { context, conflictStatus } = await setUpWithStoredGarden();
+        mockServerData = {
+          v2: {
+            projects: { garden: { ...garden, status: 'paused' } },
+            _edited: { projects: { garden: { status: { _at: 2000 } } } },
+          },
+        };
+
+        editAt(1000, () => context.deleteItem('projects', garden));
+
+        await waitFor(() =>
+          expect(conflictStatus.listConflicts()).toEqual([
+            {
+              path: 'v2/projects/garden',
+              mine: null,
+              theirs: { ...garden, status: 'paused' },
+            },
+          ]),
+        );
+        expect(listSentData()).not.toContainEqual({
+          'v2/projects/garden': null,
         });
       });
     });

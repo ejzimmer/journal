@@ -1,6 +1,12 @@
-import { Database, onValue, ref } from 'firebase/database';
+import { Database, get, onValue, ref } from 'firebase/database';
 import { useEffect, useMemo, useSyncExternalStore } from 'react';
 import { ContextType } from '../FirebaseContext';
+import { createConflictStore } from './conflictStore';
+import {
+  Conflict,
+  createEditTimeUpdates,
+  separateConflicts,
+} from './editTimes';
 import { createLocalStore } from './localStore';
 import { createOutbox, StoredOutboxOp } from './outbox';
 import {
@@ -27,6 +33,13 @@ export type SaveStatus = {
   getSaveState: () => SaveState;
 };
 
+export type ConflictStatus = {
+  subscribe: (onChange: () => void) => () => void;
+  listConflicts: () => Conflict[];
+  keepMine: (path: string) => void;
+  keepTheirs: (path: string) => void;
+};
+
 export function createLocalFirstContext(
   database: Database,
   dbName = 'journal-local-first',
@@ -34,9 +47,11 @@ export function createLocalFirstContext(
   context: ContextType;
   hydrate: () => Promise<void>;
   saveStatus: SaveStatus;
+  conflictStatus: ConflictStatus;
 } {
   const localStore = createLocalStore(`${dbName}-local`);
   const outbox = createOutbox(`${dbName}-outbox`);
+  const conflictStore = createConflictStore(`${dbName}-conflicts`);
   const saveStatusListeners = new Set<() => void>();
   let isOutdated = false;
   let isFailing = false;
@@ -51,6 +66,7 @@ export function createLocalFirstContext(
       isFailing = !succeeded;
       notifySaveStatus();
     },
+    prepareUpdates,
   );
   void outbox.keepOnlyPathsUnder(V2_ROOT).then(() => syncEngine.startSyncing());
 
@@ -96,6 +112,73 @@ export function createLocalFirstContext(
     });
   }
 
+  async function readServerPath(path: string) {
+    return (await get(ref(database, path))).val();
+  }
+
+  async function prepareUpdates(op: StoredOutboxOp) {
+    if (op.editedAt === undefined) return op.updates;
+
+    const { kept, conflicts } = await separateConflicts(
+      op.updates,
+      op.editedAt,
+      readServerPath,
+      (path) => op.itemCopies?.[path] ?? localStore.readPath(path),
+    );
+    if (conflicts.length > 0) {
+      conflicts.forEach(({ path, theirs }) =>
+        localStore.writePath(path, theirs),
+      );
+      await conflictStore.add(
+        conflicts.map((conflict) => ({
+          ...conflict,
+          item: findItemCopy(op.itemCopies ?? {}, conflict.path),
+        })),
+      );
+    }
+    return { ...kept, ...createEditTimeUpdates(kept, op.editedAt) };
+  }
+
+  function commit(changes: [string, unknown][]) {
+    changes.forEach(([path, value]) => localStore.writePath(path, value));
+    void outbox
+      .enqueue({
+        updates: Object.fromEntries(changes),
+        editedAt: Date.now(),
+        itemCopies: findItemCopies(changes.map(([path]) => path)),
+      })
+      .then(() => syncEngine.notifyChange());
+  }
+
+  function findItemCopies(paths: string[]): Record<string, unknown> {
+    return Object.fromEntries(
+      paths.flatMap((path) => {
+        const itemPath = findItemPath(path);
+        return itemPath ? [[itemPath, localStore.readPath(itemPath)]] : [];
+      }),
+    );
+  }
+
+  function findItemCopy(itemCopies: Record<string, unknown>, path: string) {
+    return Object.entries(itemCopies).find(
+      ([itemPath]) => path === itemPath || path.startsWith(`${itemPath}/`),
+    )?.[1];
+  }
+
+  function findItemPath(path: string): string | undefined {
+    const segments = path.split('/');
+    return segments
+      .map((_, index) => segments.slice(0, segments.length - index).join('/'))
+      .find((candidate) => {
+        const value = localStore.readPath<Tree>(candidate);
+        return (
+          typeof value === 'object' &&
+          value !== null &&
+          value.id === candidate.split('/').pop()
+        );
+      });
+  }
+
   function readV1Path(path: string) {
     return convertReadValueToV1(
       path,
@@ -112,14 +195,13 @@ export function createLocalFirstContext(
         ? [[path, null] as [string, unknown]]
         : listChangedFields(path, localStore.readPath(path), value),
     );
-    if (changes.length === 0) {
-      return;
+    if (changes.length > 0) {
+      commit(changes);
     }
+  }
 
-    changes.forEach(([path, value]) => localStore.writePath(path, value));
-    void outbox
-      .enqueue({ updates: Object.fromEntries(changes) })
-      .then(() => syncEngine.notifyChange());
+  function findConflict(path: string) {
+    return conflictStore.list().find((conflict) => conflict.path === path);
   }
 
   const context: ContextType = {
@@ -200,7 +282,25 @@ export function createLocalFirstContext(
 
   return {
     context,
-    hydrate: localStore.hydrate,
+    hydrate: async () => {
+      await Promise.all([localStore.hydrate(), conflictStore.hydrate()]);
+    },
+    conflictStatus: {
+      subscribe: conflictStore.subscribe,
+      listConflicts: conflictStore.list,
+      keepMine: (path) => {
+        const conflict = findConflict(path);
+        if (!conflict) return;
+        commit([[path, conflict.mine ?? null]]);
+        void conflictStore.remove(path);
+      },
+      keepTheirs: (path) => {
+        const conflict = findConflict(path);
+        if (!conflict) return;
+        localStore.writePath(path, conflict.theirs);
+        void conflictStore.remove(path);
+      },
+    },
     saveStatus: {
       subscribe: (onChange) => {
         saveStatusListeners.add(onChange);
