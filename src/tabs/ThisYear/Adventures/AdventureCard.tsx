@@ -40,19 +40,18 @@ export function AdventureCard({ adventure, mode }: AdventureCardProps) {
           <div className="card-actions">
             <DeleteWithConfirmation
               onDelete={() => deleteAdventure(adventure)}
-              buttonClassName="ghost"
+              className="ghost"
+            />
+            <button
+              type="button"
+              className="ghost"
+              aria-label={adventure.isDone ? 'Mark not done' : 'Mark done'}
+              onClick={() =>
+                updateAdventure({ ...adventure, isDone: !adventure.isDone })
+              }
             >
-              <button
-                type="button"
-                className="ghost"
-                aria-label={adventure.isDone ? 'Mark not done' : 'Mark done'}
-                onClick={() =>
-                  updateAdventure({ ...adventure, isDone: !adventure.isDone })
-                }
-              >
-                {adventure.isDone ? <RestartArrowIcon /> : <TickIcon />}
-              </button>
-            </DeleteWithConfirmation>
+              {adventure.isDone ? <RestartArrowIcon /> : <TickIcon />}
+            </button>
           </div>
         </div>
         {adventure.isDone && (

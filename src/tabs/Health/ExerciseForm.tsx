@@ -64,17 +64,6 @@ export function ExerciseForm({
     });
   };
 
-  const formButtons = (
-    <>
-      <button type="button" className="cancel" onClick={onCancel}>
-        <XIcon role="img" aria-label="Cancel" />
-      </button>
-      <button type="submit" className="save">
-        <TickIcon role="img" aria-label="Save" />
-      </button>
-    </>
-  );
-
   return (
     <form
       className="exercise-form"
@@ -108,13 +97,13 @@ export function ExerciseForm({
         </fieldset>
       </div>
       <div className="actions">
-        {onDelete ? (
-          <DeleteWithConfirmation onDelete={onDelete}>
-            {formButtons}
-          </DeleteWithConfirmation>
-        ) : (
-          formButtons
-        )}
+        {onDelete && <DeleteWithConfirmation onDelete={onDelete} />}
+        <button type="button" className="cancel" onClick={onCancel}>
+          <XIcon role="img" aria-label="Cancel" />
+        </button>
+        <button type="submit" className="save">
+          <TickIcon role="img" aria-label="Save" />
+        </button>
       </div>
     </form>
   );

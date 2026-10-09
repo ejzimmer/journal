@@ -305,8 +305,7 @@
         }
       }
 
-      .cancel,
-      .cancel-delete {
+      .cancel {
         border-color: var(--field-border);
         color: var(--switch-icon);
       }
@@ -320,12 +319,12 @@
       .delete {
         border-color: var(--delete-border);
         color: var(--decrease);
-      }
 
-      .confirm-delete {
-        background: var(--decrease);
-        border-color: var(--decrease);
-        color: white;
+        &.confirming {
+          background: var(--decrease);
+          border-color: var(--decrease);
+          color: white;
+        }
       }
     }
   }

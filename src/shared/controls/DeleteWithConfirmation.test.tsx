@@ -5,38 +5,28 @@ import { DeleteWithConfirmation } from './DeleteWithConfirmation';
 const renderDeleteWithConfirmation = () => {
   const onDelete = jest.fn();
   render(
-    <DeleteWithConfirmation onDelete={onDelete}>
-      <button type="button">Save</button>
-    </DeleteWithConfirmation>,
+    <>
+      <DeleteWithConfirmation onDelete={onDelete} />
+      <button type="button">Elsewhere</button>
+    </>,
   );
   return { onDelete, user: userEvent.setup() };
 };
 
 describe('DeleteWithConfirmation', () => {
-  it('shows the bin alongside the other actions', () => {
-    renderDeleteWithConfirmation();
-
-    expect(screen.getByRole('button', { name: 'Delete' })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'Save' })).toBeInTheDocument();
-  });
-
   describe('when the bin is clicked', () => {
-    it('swaps the actions for a confirm and a cancel', async () => {
-      const { user } = renderDeleteWithConfirmation();
-      const save = screen.getByRole('button', { name: 'Save' });
+    it('asks for confirmation instead of deleting', async () => {
+      const { onDelete, user } = renderDeleteWithConfirmation();
 
       await user.click(screen.getByRole('button', { name: 'Delete' }));
 
-      expect(save).not.toBeInTheDocument();
       expect(
         screen.getByRole('button', { name: 'Confirm delete' }),
-      ).toHaveFocus();
-      expect(
-        screen.getByRole('button', { name: 'Cancel delete' }),
-      ).toBeInTheDocument();
+      ).toHaveClass('confirming');
+      expect(onDelete).not.toHaveBeenCalled();
     });
 
-    describe('and the delete is confirmed', () => {
+    describe('and clicked again', () => {
       it('deletes', async () => {
         const { onDelete, user } = renderDeleteWithConfirmation();
 
@@ -49,20 +39,16 @@ describe('DeleteWithConfirmation', () => {
       });
     });
 
-    describe('and the delete is cancelled', () => {
-      it('brings back the actions with focus on the bin', async () => {
+    describe('and focus moves away', () => {
+      it('goes back to asking for a first click', async () => {
         const { onDelete, user } = renderDeleteWithConfirmation();
 
         await user.click(screen.getByRole('button', { name: 'Delete' }));
-        const confirmButton = screen.getByRole('button', {
-          name: 'Confirm delete',
-        });
-        await user.click(screen.getByRole('button', { name: 'Cancel delete' }));
+        await user.click(screen.getByRole('button', { name: 'Elsewhere' }));
+        await user.click(screen.getByRole('button', { name: 'Delete' }));
 
-        expect(confirmButton).not.toBeInTheDocument();
-        expect(screen.getByRole('button', { name: 'Delete' })).toHaveFocus();
         expect(
-          screen.getByRole('button', { name: 'Save' }),
+          screen.getByRole('button', { name: 'Confirm delete' }),
         ).toBeInTheDocument();
         expect(onDelete).not.toHaveBeenCalled();
       });

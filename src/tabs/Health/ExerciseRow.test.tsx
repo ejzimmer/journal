@@ -268,7 +268,22 @@ describe('ExerciseRow', () => {
   });
 
   describe('when an update is deleted', () => {
-    describe('once it is confirmed', () => {
+    describe('with one press of delete', () => {
+      it('asks for confirmation instead of deleting', async () => {
+        const deleteExerciseUpdate = jest.fn();
+        renderExerciseRow({ deleteExerciseUpdate });
+        const { user } = await openEditForm();
+
+        await user.click(screen.getByRole('button', { name: 'Delete' }));
+
+        expect(
+          screen.getByRole('button', { name: 'Confirm delete' }),
+        ).toBeInTheDocument();
+        expect(deleteExerciseUpdate).not.toHaveBeenCalled();
+      });
+    });
+
+    describe('with a second press', () => {
       it('deletes it from the exercise', async () => {
         const deleteExerciseUpdate = jest.fn();
         renderExerciseRow({ deleteExerciseUpdate });
@@ -299,6 +314,23 @@ describe('ExerciseRow', () => {
         expect(
           screen.getByRole('button', { name: 'Record B-stance RDL' }),
         ).toHaveFocus();
+      });
+    });
+
+    describe('when focus moves away before the second press', () => {
+      it('asks for confirmation again', async () => {
+        const deleteExerciseUpdate = jest.fn();
+        renderExerciseRow({ deleteExerciseUpdate });
+        const { user } = await openEditForm();
+
+        await user.click(screen.getByRole('button', { name: 'Delete' }));
+        await user.tab();
+        await user.click(screen.getByRole('button', { name: 'Delete' }));
+
+        expect(
+          screen.getByRole('button', { name: 'Confirm delete' }),
+        ).toBeInTheDocument();
+        expect(deleteExerciseUpdate).not.toHaveBeenCalled();
       });
     });
   });

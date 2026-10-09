@@ -102,8 +102,7 @@
       width: 14px;
     }
 
-    .delete svg,
-    .cancel-delete svg {
+    .delete svg {
       width: 12px;
     }
 
@@ -112,12 +111,11 @@
     }
 
     .delete:hover,
-    .confirm-delete,
-    .confirm-delete:hover {
+    .delete.confirming {
       color: var(--error-colour);
     }
 
-    .confirm-delete {
+    .delete.confirming {
       opacity: 1;
     }
   }
