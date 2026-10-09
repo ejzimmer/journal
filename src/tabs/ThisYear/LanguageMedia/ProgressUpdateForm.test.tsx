@@ -1,4 +1,4 @@
-import { screen } from '@testing-library/react';
+import { fireEvent, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { ModalContext } from '../../../shared/controls/Modal';
 import { ProgressUpdateForm } from './ProgressUpdateForm';
@@ -69,6 +69,63 @@ describe('ProgressUpdateForm', () => {
       );
 
       expect(closeModal).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('adding one AI question', () => {
+    it('saves the new AI question count', async () => {
+      const { user, storageContext } = renderForm();
+
+      await user.click(
+        screen.getByRole('button', { name: 'Add an AI question to Volume 1' }),
+      );
+
+      expect(storageContext.updateItem).toHaveBeenCalledWith(
+        ['yotsuba', 'volumes', 'vol1'],
+        { aiQuestions: 4 },
+      );
+    });
+  });
+
+  describe('clicking save', () => {
+    describe('after moving the understood slider', () => {
+      it('saves how much I understood', async () => {
+        const { user, storageContext } = renderForm();
+
+        fireEvent.change(screen.getByRole('slider', { name: 'Understood' }), {
+          target: { value: '85' },
+        });
+        await user.click(screen.getByRole('button', { name: 'Save' }));
+
+        expect(storageContext.updateItem).toHaveBeenCalledWith(
+          ['yotsuba', 'volumes', 'vol1'],
+          { lookups: 20, aiQuestions: 3, understood: 85 },
+        );
+      });
+    });
+
+    describe('when understood has never been set', () => {
+      it('leaves it unset', async () => {
+        const { user, storageContext } = renderForm({
+          ...yotsuba,
+          volumes: { vol1: { ...volume, understood: undefined } },
+        });
+
+        await user.click(screen.getByRole('button', { name: 'Save' }));
+
+        expect(storageContext.updateItem).toHaveBeenCalledWith(
+          ['yotsuba', 'volumes', 'vol1'],
+          { lookups: 20, aiQuestions: 3, understood: undefined },
+        );
+      });
+    });
+
+    it('closes the form', async () => {
+      const { user, closeModal } = renderForm();
+
+      await user.click(screen.getByRole('button', { name: 'Save' }));
+
+      expect(closeModal).toHaveBeenCalled();
     });
   });
 
