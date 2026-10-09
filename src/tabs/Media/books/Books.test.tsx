@@ -216,6 +216,18 @@ describe('Books', () => {
       ]);
     });
 
+    describe('when nothing was finished in a year', () => {
+      it('has no tab for that year', () => {
+        renderWithMediaStorage(<Books />, {
+          books: [createReadBook('book-mort', 'Mort', 0, '2025-06-01')],
+        });
+
+        expect(
+          screen.getAllByRole('tab').map((tab) => tab.textContent),
+        ).toEqual(['2027', '2025']);
+      });
+    });
+
     describe('when this year is selected', () => {
       it('shows every book in a series that is still being read', () => {
         renderBooksOverYears();
