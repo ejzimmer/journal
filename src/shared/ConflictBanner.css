@@ -83,11 +83,11 @@
 
 .conflict .conflict-actions {
   justify-content: end;
-  margin-block-start: 4px;
+  margin-block-start: 12px;
 }
 
 .keep-all {
   justify-content: end;
-  margin-block-start: 16px;
+  margin-block-start: 32px;
   font-size: 1rem;
 }
