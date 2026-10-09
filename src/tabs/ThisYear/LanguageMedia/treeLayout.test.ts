@@ -22,7 +22,7 @@ const createSeries = (
   ...overrides,
 });
 
-const listBranchLevels = (series: PrintSeries) =>
+const getBranchLevels = (series: PrintSeries) =>
   createTreeLayout(series).shapes.flatMap(({ growth }) =>
     growth.type === 'branch' ? [growth.level] : [],
   );
@@ -44,7 +44,7 @@ describe('createTreeLayout', () => {
     ]);
 
     it('grows a branch for each volume, in volume order', () => {
-      expect([...new Set(listBranchLevels(series))]).toEqual([0, 1, 2]);
+      expect([...new Set(getBranchLevels(series))]).toEqual([0, 1, 2]);
     });
 
     it('grows the same tree every time', () => {

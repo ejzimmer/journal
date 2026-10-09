@@ -2,7 +2,7 @@ import { AddVolumeFormLegacy } from './AddVolumeFormLegacy';
 import { useLanguageMediaStorage } from './LanguageMediaStorageContext';
 import { PrintSeriesUpToForm } from './PrintSeriesUpToForm';
 import { VolumeDetails } from './VolumeDetails';
-import { listByNumber } from './lists';
+import { getItemsByNumber } from './lists';
 import { ItemPath, PrintSeries } from './types';
 
 export function PrintSeriesDetails({
@@ -28,7 +28,7 @@ export function PrintSeriesDetails({
         />
       </div>
       <ul>
-        {listByNumber(series.volumes).map((volume) => (
+        {getItemsByNumber(series.volumes).map((volume) => (
           <li key={volume.id}>
             <VolumeDetails
               volume={volume}

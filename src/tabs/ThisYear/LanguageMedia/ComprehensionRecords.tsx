@@ -1,7 +1,7 @@
 import { formatDayAndMonth } from '../../../shared/dates';
 import {
   ComprehensionRecord,
-  listComprehensionRecords,
+  getComprehensionRecords,
 } from './comprehensionRecords';
 import { PrintSeries } from './types';
 
@@ -22,7 +22,7 @@ const formatRecord = ({
 export function ComprehensionRecords({ series }: { series: PrintSeries }) {
   return (
     <ul className="comprehension-records">
-      {listComprehensionRecords(series).map((record) => (
+      {getComprehensionRecords(series).map((record) => (
         <li key={record.date}>{formatRecord(record)}</li>
       ))}
     </ul>

@@ -63,7 +63,7 @@ async function findConflict(
   readServerPath: ReadServerPath,
   findMyCopy: (path: string) => unknown,
 ): Promise<Conflict | undefined> {
-  const pathsDownToThis = listPathsDownTo(path);
+  const pathsDownToThis = getPathsDownTo(path);
   const editTimes = await Promise.all(
     pathsDownToThis.map((candidate) =>
       readServerPath(`${findEditTimesPath(candidate)}/${EDIT_TIME_KEY}`),
@@ -84,7 +84,7 @@ async function findConflict(
 
   if (value === null) {
     const editTimesBelow = await readServerPath(findEditTimesPath(path));
-    if (listEditTimes(editTimesBelow).some((time) => time > editedAt)) {
+    if (getEditTimes(editTimesBelow).some((time) => time > editedAt)) {
       return { path, mine: null, theirs: await readServerPath(path) };
     }
   }
@@ -100,18 +100,18 @@ function findEditTimesPath(dataPath: string): string {
   return `${EDITED_ROOT}/${dataPath.slice(V2_ROOT.length + 1)}`;
 }
 
-function listPathsDownTo(path: string): string[] {
+function getPathsDownTo(path: string): string[] {
   const segments = path.split('/');
   return segments
     .slice(1)
     .map((_, index) => segments.slice(0, index + 2).join('/'));
 }
 
-function listEditTimes(tree: unknown): number[] {
+function getEditTimes(tree: unknown): number[] {
   if (typeof tree !== 'object' || tree === null) return [];
   return Object.entries(tree).flatMap(([key, child]) =>
     key === EDIT_TIME_KEY && typeof child === 'number'
       ? [child]
-      : listEditTimes(child),
+      : getEditTimes(child),
   );
 }

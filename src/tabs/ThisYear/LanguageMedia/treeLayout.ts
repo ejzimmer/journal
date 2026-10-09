@@ -1,4 +1,4 @@
-import { listByNumber } from './lists';
+import { getItemsByNumber } from './lists';
 import { createSeededRandom } from './seededRandom';
 import {
   EdgeSample,
@@ -144,7 +144,7 @@ function measureBounds(shapes: TreeShape[]) {
 
 export function createTreeLayout(series: PrintSeries): TreeLayout {
   const species = TREE_SPECIES[series.type];
-  const volumes = listByNumber(series.volumes);
+  const volumes = getItemsByNumber(series.volumes);
   const random = createSeededRandom(series.id);
   let side = random() < 0.5 ? -1 : 1;
   const trunkPoints = createTrunkPoints(species, volumes.length, random);

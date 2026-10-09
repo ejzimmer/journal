@@ -80,7 +80,7 @@ function ConflictChoice({
     <li className="conflict" aria-label={caption}>
       <div className="conflict-caption">{caption}</div>
       <div className="conflict-diff">
-        {listDiffParts(
+        {getDiffParts(
           describeValue(conflict.theirs),
           describeValue(conflict.mine),
         ).map(({ text, kind }, index) =>
@@ -130,7 +130,7 @@ function ChangeChoices({
 
 type DiffPart = { text: string; kind: 'same' | 'removed' | 'added' };
 
-function listDiffParts(original: string, changed: string): DiffPart[] {
+function getDiffParts(original: string, changed: string): DiffPart[] {
   const originalWords = original.split(/(\s+)/);
   const changedWords = changed.split(/(\s+)/);
   let start = 0;
@@ -190,7 +190,7 @@ function describeDeletion({ mine, theirs }: Conflict): string | undefined {
 }
 
 function describeSection(path: string): string {
-  return capitalise(listReadableSegments(path)[0] ?? '');
+  return capitalise(getReadableSegments(path)[0] ?? '');
 }
 
 function isNameField(path: string): boolean {
@@ -218,7 +218,7 @@ function findName(value: unknown): string | undefined {
   return field && (record[field] as string);
 }
 
-function listReadableSegments(path: string): string[] {
+function getReadableSegments(path: string): string[] {
   return path
     .slice(V2_ROOT.length + 1)
     .split('/')

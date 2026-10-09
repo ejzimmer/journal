@@ -40,7 +40,7 @@ function renderBooks() {
   });
 }
 
-function listReorderedIds(
+function getReorderedIds(
   reorderSeries: MediaStorageContextType['reorderSeries'],
 ) {
   const [series, items] = jest.mocked(reorderSeries).mock.calls[0];
@@ -57,7 +57,7 @@ describe('Books', () => {
         screen.getByRole('button', { name: /^Men at Arms,/ }).focus();
         await user.keyboard('{ArrowLeft}');
 
-        expect(listReorderedIds(storageContext.reorderSeries)).toEqual({
+        expect(getReorderedIds(storageContext.reorderSeries)).toEqual({
           seriesId: theWatchSeries.id,
           itemIds: [menAtArms.id, guardsGuards.id, feetOfClay.id],
         });
@@ -72,7 +72,7 @@ describe('Books', () => {
         screen.getByRole('button', { name: /^Men at Arms,/ }).focus();
         await user.keyboard('{ArrowRight}');
 
-        expect(listReorderedIds(storageContext.reorderSeries)).toEqual({
+        expect(getReorderedIds(storageContext.reorderSeries)).toEqual({
           seriesId: theWatchSeries.id,
           itemIds: [guardsGuards.id, feetOfClay.id, menAtArms.id],
         });
@@ -87,7 +87,7 @@ describe('Books', () => {
         screen.getByRole('button', { name: /^Feet of Clay,/ }).focus();
         await user.keyboard('{Shift>}{ArrowLeft}{/Shift}');
 
-        expect(listReorderedIds(storageContext.reorderSeries)).toEqual({
+        expect(getReorderedIds(storageContext.reorderSeries)).toEqual({
           seriesId: theWatchSeries.id,
           itemIds: [feetOfClay.id, guardsGuards.id, menAtArms.id],
         });
@@ -100,7 +100,7 @@ describe('Books', () => {
         screen.getByRole('button', { name: /^Guards! Guards!,/ }).focus();
         await user.keyboard('{Shift>}{ArrowRight}{/Shift}');
 
-        expect(listReorderedIds(storageContext.reorderSeries)).toEqual({
+        expect(getReorderedIds(storageContext.reorderSeries)).toEqual({
           seriesId: theWatchSeries.id,
           itemIds: [menAtArms.id, feetOfClay.id, guardsGuards.id],
         });

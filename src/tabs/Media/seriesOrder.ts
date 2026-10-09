@@ -1,7 +1,7 @@
 import { getNextPosition } from '../../shared/drag-and-drop/utils';
 import { MediaDetails } from './types';
 
-function listSeriesPositions<T extends MediaDetails>(items: Record<string, T>) {
+function getSeriesPositions<T extends MediaDetails>(items: Record<string, T>) {
   return Object.values(items).map((item, index) => ({
     item,
     id: item.id,
@@ -12,7 +12,7 @@ function listSeriesPositions<T extends MediaDetails>(items: Record<string, T>) {
 export function sortSeriesItems<T extends MediaDetails>(
   items: Record<string, T> = {},
 ) {
-  return listSeriesPositions(items)
+  return getSeriesPositions(items)
     .toSorted((a, b) => a.position - b.position || a.id.localeCompare(b.id))
     .map(({ item }) => item);
 }
@@ -20,5 +20,5 @@ export function sortSeriesItems<T extends MediaDetails>(
 export function getNextSeriesPosition(
   items: Record<string, MediaDetails> = {},
 ) {
-  return getNextPosition(listSeriesPositions(items));
+  return getNextPosition(getSeriesPositions(items));
 }

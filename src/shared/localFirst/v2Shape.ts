@@ -191,7 +191,7 @@ function isPlainObject(value: unknown): value is Tree {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
 }
 
-function listEntries(value: unknown): unknown[] {
+function getEntries(value: unknown): unknown[] {
   if (Array.isArray(value)) return value.filter((entry) => entry != null);
   if (isPlainObject(value)) return Object.values(value);
   return [];
@@ -216,7 +216,7 @@ function createTickId(index: number): string {
 
 function convertTicksToV2(value: unknown): unknown {
   return createMapOrNothing(
-    listEntries(value).map((date, index) => [createTickId(index), date]),
+    getEntries(value).map((date, index) => [createTickId(index), date]),
   );
 }
 
@@ -226,7 +226,7 @@ function convertTicksToV1(value: unknown): unknown {
 
 function convertTrackersToPeriod(value: unknown): unknown {
   return createMapOrNothing(
-    listEntries(value).map((tracker) => [
+    getEntries(value).map((tracker) => [
       PERIOD_FIELDS[String(tracker)] ?? String(tracker),
       true,
     ]),
@@ -251,10 +251,10 @@ function convertPeriodToTrackers(value: unknown): unknown {
 
 function convertBlocksToV2(value: unknown): unknown {
   return createMapOrNothing(
-    listEntries(value).map((block, position) => {
+    getEntries(value).map((block, position) => {
       const { completed, ...rest } = block as Tree;
       const sessions = createMapOrNothing(
-        listEntries(completed).map((session) => [`s${session}`, true]),
+        getEntries(completed).map((session) => [`s${session}`, true]),
       );
       return [
         rest.id ? String(rest.id) : `b${position}`,
@@ -282,7 +282,7 @@ function convertBlocksToV1(value: unknown): unknown {
 
 function convertLabelIdsToV2(value: unknown): unknown {
   return createMapOrNothing(
-    listEntries(value).map((labelId, index) => [String(labelId), index]),
+    getEntries(value).map((labelId, index) => [String(labelId), index]),
   );
 }
 

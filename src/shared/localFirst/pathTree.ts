@@ -65,7 +65,7 @@ export function pathsAreRelated(a: string, b: string): boolean {
   return a === b || a.startsWith(`${b}/`) || b.startsWith(`${a}/`);
 }
 
-export function listChangedFields(
+export function getChangedFields(
   path: string,
   current: unknown,
   next: unknown,
@@ -76,7 +76,7 @@ export function listChangedFields(
   if (isPlainTree(current) && isPlainTree(next)) {
     const keys = new Set([...Object.keys(current), ...Object.keys(next)]);
     return [...keys].flatMap((key) =>
-      listChangedFields(`${path}/${key}`, current[key], next[key]),
+      getChangedFields(`${path}/${key}`, current[key], next[key]),
     );
   }
   return valuesAreEqual(current, next) ? [] : [[path, next]];

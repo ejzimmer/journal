@@ -8,7 +8,7 @@ const createBook = (id: string, position?: number): BookDetails => ({
   ...(position !== undefined && { position }),
 });
 
-const listIds = (items: { id: string }[]) => items.map(({ id }) => id);
+const getIds = (items: { id: string }[]) => items.map(({ id }) => id);
 
 describe('sortSeriesItems', () => {
   describe('when every item has a position', () => {
@@ -19,7 +19,7 @@ describe('sortSeriesItems', () => {
         c: createBook('c', 1),
       };
 
-      expect(listIds(sortSeriesItems(items))).toEqual(['b', 'c', 'a']);
+      expect(getIds(sortSeriesItems(items))).toEqual(['b', 'c', 'a']);
     });
   });
 
@@ -27,7 +27,7 @@ describe('sortSeriesItems', () => {
     it('keeps the stored order', () => {
       const items = { a: createBook('a'), b: createBook('b') };
 
-      expect(listIds(sortSeriesItems(items))).toEqual(['a', 'b']);
+      expect(getIds(sortSeriesItems(items))).toEqual(['a', 'b']);
     });
   });
 

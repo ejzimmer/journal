@@ -3,7 +3,7 @@ import { useLanguageMediaStorage } from './LanguageMediaStorageContext';
 import { SeasonDetails } from './SeasonDetails';
 import { TvSeriesUpToForm } from './TvSeriesUpToForm';
 import { formatMinutesAndSeconds } from './format';
-import { listByNumber } from './lists';
+import { getItemsByNumber } from './lists';
 import { ItemPath, TvSeries } from './types';
 
 export function TvSeriesDetails({
@@ -30,7 +30,7 @@ export function TvSeriesDetails({
         />
       </div>
       <ul>
-        {listByNumber(series.seasons).map((season) => (
+        {getItemsByNumber(series.seasons).map((season) => (
           <li key={season.id}>
             <SeasonDetails
               season={season}
