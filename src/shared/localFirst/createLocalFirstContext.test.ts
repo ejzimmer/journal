@@ -1,6 +1,6 @@
 import 'fake-indexeddb/auto';
 import { renderHook, waitFor } from '@testing-library/react';
-import { createLocalFirstContext } from './createLocalFirstContext';
+import { createLocalFirstContext, ReadSource } from './createLocalFirstContext';
 
 const mockUpdate = jest.fn().mockResolvedValue(undefined);
 const mockOnValueCallbacks = new Map<
@@ -37,10 +37,11 @@ async function flushMicrotasks() {
   }
 }
 
-async function setUpContext() {
+async function setUpContext(readSource: ReadSource = 'v1') {
   const { context, hydrate } = createLocalFirstContext(
     {} as import('firebase/database').Database,
     uniqueDbName(),
+    readSource,
   );
   await hydrate();
   return context;
@@ -76,6 +77,7 @@ describe('createLocalFirstContext', () => {
     await waitFor(() => {
       expect(mockUpdate).toHaveBeenCalledWith({
         [`work/${id}`]: expect.objectContaining({ description: 'Chores' }),
+        [`v2/work/${id}`]: expect.objectContaining({ description: 'Chores' }),
       });
     });
   });
@@ -93,7 +95,10 @@ describe('createLocalFirstContext', () => {
     expect(result.current.value).toBeUndefined();
 
     await waitFor(() => {
-      expect(mockUpdate).toHaveBeenCalledWith({ 'work/task1': null });
+      expect(mockUpdate).toHaveBeenCalledWith({
+        'work/task1': null,
+        'v2/work/task1': null,
+      });
     });
   });
 
@@ -122,7 +127,10 @@ describe('createLocalFirstContext', () => {
     context.deleteItem('work', { id: 'task1', description: 'Chores' });
 
     await waitFor(() => {
-      expect(mockUpdate).toHaveBeenCalledWith({ 'work/task1': null });
+      expect(mockUpdate).toHaveBeenCalledWith({
+        'work/task1': null,
+        'v2/work/task1': null,
+      });
     });
   });
 
@@ -149,7 +157,12 @@ describe('createLocalFirstContext', () => {
     expect(removed.current.value).toBeUndefined();
 
     await waitFor(() => {
-      expect(mockUpdate).toHaveBeenCalledWith({ 'new/a': 1, old: null });
+      expect(mockUpdate).toHaveBeenCalledWith({
+        'new/a': 1,
+        old: null,
+        'v2/new/a': 1,
+        'v2/old': null,
+      });
     });
   });
 
@@ -200,6 +213,9 @@ describe('createLocalFirstContext', () => {
         'work/list2/items/task1': movedItem,
         'work/list1/items/task1': null,
         'work/list2/items/task2/position': 1,
+        'v2/work/list2/items/task1': movedItem,
+        'v2/work/list1/items/task1': null,
+        'v2/work/list2/items/task2/position': 1,
       });
     });
   });
@@ -268,6 +284,90 @@ describe('createLocalFirstContext', () => {
         fireRemoteSnapshot('work', {});
 
         await waitFor(() => expect(nested.current.synced).toBe(true));
+      });
+    });
+  });
+
+  describe('saving a reshaped list', () => {
+    const task = {
+      id: 'laundry',
+      description: 'Laundry',
+      completed: ['2026-10-05', '2026-10-07'],
+    };
+    const v2Task = {
+      id: 'laundry',
+      description: 'Laundry',
+      completed: { t0000: '2026-10-05', t0001: '2026-10-07' },
+    };
+
+    it('sends the v1 shape and the v2 shape in one update', async () => {
+      const context = await setUpContext();
+
+      context.updateItem('today/週', task);
+
+      await waitFor(() => {
+        expect(mockUpdate).toHaveBeenCalledWith({
+          'today/週/laundry': task,
+          'v2/today/週/laundry': v2Task,
+        });
+      });
+    });
+  });
+
+  describe('reading from v2', () => {
+    const v2Classes = {
+      pilates: {
+        id: 'pilates',
+        blocks: {
+          'week-1': {
+            id: 'week-1',
+            total: 3,
+            position: 0,
+            completed: { s1: true },
+          },
+        },
+      },
+    };
+    const v1Classes = {
+      pilates: {
+        id: 'pilates',
+        blocks: [{ id: 'week-1', total: 3, completed: [1] }],
+      },
+    };
+
+    it('listens to the matching path under v2', async () => {
+      const context = await setUpContext('v2');
+
+      renderHook(() => context.useValue('health/classes'));
+
+      await waitFor(() =>
+        expect(mockOnValueCallbacks.has('v2/health/classes')).toBe(true),
+      );
+    });
+
+    describe('when the server sends its copy', () => {
+      it('returns it in the v1 shape', async () => {
+        const context = await setUpContext('v2');
+        const { result } = renderHook(() => context.useValue('health/classes'));
+        await waitFor(() =>
+          expect(mockOnValueCallbacks.has('v2/health/classes')).toBe(true),
+        );
+
+        fireRemoteSnapshot('v2/health/classes', v2Classes);
+
+        await waitFor(() => expect(result.current.value).toEqual(v1Classes));
+        expect(result.current.synced).toBe(true);
+      });
+    });
+
+    describe('when the app saves a change', () => {
+      it('returns the change in the v1 shape', async () => {
+        const context = await setUpContext('v2');
+        const { result } = renderHook(() => context.useValue('health/classes'));
+
+        context.updateItem('health/classes', v1Classes.pilates);
+
+        await waitFor(() => expect(result.current.value).toEqual(v1Classes));
       });
     });
   });

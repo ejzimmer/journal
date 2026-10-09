@@ -1,5 +1,5 @@
 import { Database, onValue, ref } from 'firebase/database';
-import { useEffect, useSyncExternalStore } from 'react';
+import { useEffect, useMemo, useSyncExternalStore } from 'react';
 import { ContextType } from '../FirebaseContext';
 import { createLocalStore } from './localStore';
 import { createOutbox, StoredOutboxOp } from './outbox';
@@ -11,10 +11,18 @@ import {
   valuesAreEqual,
 } from './pathTree';
 import { createSyncEngine } from './syncEngine';
+import {
+  convertReadValueToV1,
+  convertUpdatesToV2,
+  findV2ReadPath,
+} from './v2Shape';
+
+export type ReadSource = 'v1' | 'v2';
 
 export function createLocalFirstContext(
   database: Database,
   dbName = 'journal-local-first',
+  readSource: ReadSource = 'v1',
 ): { context: ContextType; hydrate: () => Promise<void> } {
   const localStore = createLocalStore(`${dbName}-local`);
   const outbox = createOutbox(`${dbName}-outbox`);
@@ -69,8 +77,15 @@ export function createLocalFirstContext(
     }
 
     changes.forEach(([path, value]) => localStore.writePath(path, value));
+    const v2Updates = convertUpdatesToV2(
+      Object.fromEntries(changes),
+      localStore.readPath,
+    );
+    Object.entries(v2Updates).forEach(([path, value]) =>
+      localStore.writePath(path, value),
+    );
     void outbox
-      .enqueue({ updates: Object.fromEntries(changes) })
+      .enqueue({ updates: { ...Object.fromEntries(changes), ...v2Updates } })
       .then(() => syncEngine.notifyChange());
   }
 
@@ -127,16 +142,26 @@ export function createLocalFirstContext(
       write(updates);
     },
     useValue: <T>(key?: string) => {
-      useEffect(() => {
-        if (key) registerRemoteListener(key);
-      }, [key]);
+      const sourceKey = key && readSource === 'v2' ? findV2ReadPath(key) : key;
 
-      const value = useSyncExternalStore(
-        (onChange) => (key ? localStore.subscribe(key, onChange) : () => {}),
-        () => (key ? localStore.readPath<T>(key) : undefined),
+      useEffect(() => {
+        if (sourceKey) registerRemoteListener(sourceKey);
+      }, [sourceKey]);
+
+      const sourceValue = useSyncExternalStore(
+        (onChange) =>
+          sourceKey ? localStore.subscribe(sourceKey, onChange) : () => {},
+        () => (sourceKey ? localStore.readPath(sourceKey) : undefined),
       );
+      const value = useMemo(
+        () =>
+          key && readSource === 'v2'
+            ? convertReadValueToV1(key, sourceValue)
+            : sourceValue,
+        [key, sourceValue],
+      ) as T | undefined;
       const synced = useSyncExternalStore(subscribeToSync, () =>
-        key ? isSynced(key) : false,
+        sourceKey ? isSynced(sourceKey) : false,
       );
 
       return { value, loading: false, synced };

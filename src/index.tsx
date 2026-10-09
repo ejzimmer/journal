@@ -9,9 +9,17 @@ import { setWaitingRegistration } from './shared/appUpdateStore';
 import * as serviceWorkerRegistration from './serviceWorkerRegistration';
 
 import { initializeApp } from 'firebase/app';
-import { getDatabase } from 'firebase/database';
+import { get, getDatabase, ref } from 'firebase/database';
 import { FirebaseContext } from './shared/FirebaseContext';
-import { createLocalFirstContext } from './shared/localFirst/createLocalFirstContext';
+import {
+  createLocalFirstContext,
+  ReadSource,
+} from './shared/localFirst/createLocalFirstContext';
+import {
+  loadReadSource,
+  saveReadSource,
+} from './shared/localFirst/readSourceStorage';
+import { DataVersionsContext } from './DataVersions/DataVersionsContext';
 
 const firebaseConfig = {
   apiKey: 'AIzaSyAlKw5_aMOUlR3SdkbU6vHADLTUvXZHNJg',
@@ -24,9 +32,21 @@ const firebaseConfig = {
     'https://journal-50dcf-default-rtdb.asia-southeast1.firebasedatabase.app',
 };
 
+const database = getDatabase(initializeApp(firebaseConfig));
+const readSource = loadReadSource();
 const { context: contextValue, hydrate } = createLocalFirstContext(
-  getDatabase(initializeApp(firebaseConfig)),
+  database,
+  undefined,
+  readSource,
 );
+const dataVersions = {
+  readSource,
+  switchReadSource: (source: ReadSource) => {
+    saveReadSource(source);
+    window.location.reload();
+  },
+  fetchDatabase: async () => (await get(ref(database))).val() ?? {},
+};
 
 serviceWorkerRegistration.register({ onUpdate: setWaitingRegistration });
 
@@ -37,9 +57,11 @@ hydrate().then(() => {
   root.render(
     <React.StrictMode>
       <FirebaseContext.Provider value={contextValue}>
-        <BrowserRouter>
-          <App />
-        </BrowserRouter>
+        <DataVersionsContext.Provider value={dataVersions}>
+          <BrowserRouter>
+            <App />
+          </BrowserRouter>
+        </DataVersionsContext.Provider>
       </FirebaseContext.Provider>
       <AppUpdateBanner />
     </React.StrictMode>,
