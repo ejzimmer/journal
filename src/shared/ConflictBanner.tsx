@@ -65,7 +65,17 @@ function ConflictChoice({
 
   return (
     <li className="conflict" aria-label={caption}>
-      <div className="conflict-caption">{caption}</div>
+      <div className="conflict-header">
+        <span className="conflict-caption">{caption}</span>
+        <div className="conflict-actions">
+          <button onClick={() => conflictStatus.keepTheirs(conflict.path)}>
+            Keep theirs
+          </button>
+          <button onClick={() => conflictStatus.keepMine(conflict.path)}>
+            Keep yours
+          </button>
+        </div>
+      </div>
       <div className="conflict-diff">
         {listDiffParts(
           describeValue(conflict.theirs),
@@ -81,20 +91,6 @@ function ConflictChoice({
         )}
       </div>
       {note && <div className="conflict-note">{note}</div>}
-      <div className="conflict-actions">
-        <button
-          className="outline"
-          onClick={() => conflictStatus.keepTheirs(conflict.path)}
-        >
-          Keep theirs
-        </button>
-        <button
-          className="primary"
-          onClick={() => conflictStatus.keepMine(conflict.path)}
-        >
-          Keep yours
-        </button>
-      </div>
     </li>
   );
 }
@@ -151,7 +147,7 @@ function describeConflict(conflict: Conflict): string {
   const itemName = findName(conflict.item);
   if (!field) return describeSection(conflict.path);
   if (!itemName || isNameField(conflict.path)) return field;
-  return `${itemName} · ${field}`;
+  return `${field} · ${itemName}`;
 }
 
 function describeDeletion({ mine, theirs }: Conflict): string | undefined {

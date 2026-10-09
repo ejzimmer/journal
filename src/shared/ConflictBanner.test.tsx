@@ -106,7 +106,7 @@ describe('ConflictBanner', () => {
         await openConflicts();
 
         const conflict = screen.getByRole('listitem', {
-          name: 'Fence · Status',
+          name: 'Status · Fence',
         });
         expect(within(conflict).getByText('done').tagName).toBe('DEL');
         expect(within(conflict).getByText('paused').tagName).toBe('INS');

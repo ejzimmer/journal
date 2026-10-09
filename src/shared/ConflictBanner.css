@@ -18,12 +18,16 @@
 }
 
 .conflict {
-  padding: 12px;
+  padding: 8px 12px;
   border: 1px solid var(--border-colour);
   border-radius: 6px;
 }
 
 .conflict-caption {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
   font-size: 0.85rem;
   color: var(--body-colour-mid);
 }
@@ -52,14 +56,29 @@
   color: var(--body-colour-mid);
 }
 
+.conflict-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 8px;
+}
+
 .conflict-actions {
   display: flex;
-  gap: 6px;
-  justify-content: end;
-  margin-block-start: 10px;
+  flex-shrink: 0;
+  gap: 4px;
 
   button {
-    height: 2rem;
-    padding-inline: 12px;
+    height: auto;
+    padding: 0 4px;
+    border: none;
+    font-size: 0.85rem;
+    color: var(--link-colour);
+
+    &:hover,
+    &:focus-visible {
+      background: none;
+      text-decoration: underline;
+    }
   }
 }
