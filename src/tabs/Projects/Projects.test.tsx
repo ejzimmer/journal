@@ -80,11 +80,6 @@ describe('Projects', () => {
       jest.useRealTimers();
     });
 
-    const getProjectNames = () =>
-      screen
-        .getAllByRole('listitem')
-        .map((item) => within(item).getByText(/ing$/).textContent);
-
     describe('when projects were finished in earlier years', () => {
       const projects = [
         createProject('knitting', 0, 'in_progress'),
@@ -106,7 +101,11 @@ describe('Projects', () => {
         it('shows the unfinished projects and the ones finished this year', () => {
           renderProjects(projects);
 
-          expect(getProjectNames()).toEqual(['knitting', 'sewing', 'quilting']);
+          expect(
+            screen
+              .getAllByRole('button', { name: 'project' })
+              .map((project) => project.textContent),
+          ).toEqual(['knitting', 'sewing', 'quilting']);
         });
       });
 
@@ -119,7 +118,11 @@ describe('Projects', () => {
 
           await user.click(screen.getByRole('tab', { name: '2025' }));
 
-          expect(getProjectNames()).toEqual(['weaving']);
+          expect(
+            screen
+              .getAllByRole('button', { name: 'project' })
+              .map((project) => project.textContent),
+          ).toEqual(['weaving']);
         });
 
         describe('when a project has no finish date', () => {
@@ -131,7 +134,11 @@ describe('Projects', () => {
 
             await user.click(screen.getByRole('tab', { name: '2026' }));
 
-            expect(getProjectNames()).toEqual(['spinning']);
+            expect(
+              screen
+                .getAllByRole('button', { name: 'project' })
+                .map((project) => project.textContent),
+            ).toEqual(['spinning']);
           });
         });
 
