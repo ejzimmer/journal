@@ -202,7 +202,7 @@ describe('Books', () => {
         bookSeries: [halfReadWatchSeries, rincewind],
       });
 
-    const listShownTitles = () =>
+    const getTitles = () =>
       screen
         .getAllByRole('button', { name: /, (unread|read)$/ })
         .map((spine) => spine.getAttribute('aria-label')?.split(',')[0]);
@@ -226,7 +226,7 @@ describe('Books', () => {
       it('shows every book in a series that is still being read', () => {
         renderBooksOverYears();
 
-        expect(listShownTitles()).toEqual([
+        expect(getTitles()).toEqual([
           'Guards! Guards!',
           'Men at Arms',
           'Feet of Clay',
@@ -240,7 +240,7 @@ describe('Books', () => {
 
         await selectYear('2025');
 
-        expect(listShownTitles()).toEqual(['Nation']);
+        expect(getTitles()).toEqual(['Nation']);
       });
 
       describe('and a series was finished that year', () => {
@@ -249,7 +249,7 @@ describe('Books', () => {
 
           await selectYear('2026');
 
-          expect(listShownTitles()).toEqual([
+          expect(getTitles()).toEqual([
             'The Colour of Magic',
             'The Light Fantastic',
           ]);
@@ -265,7 +265,7 @@ describe('Books', () => {
 
         await selectYear('2026');
 
-        expect(listShownTitles()).toEqual(['Mort']);
+        expect(getTitles()).toEqual(['Mort']);
       });
     });
   });
