@@ -129,7 +129,12 @@ export function createLocalFirstContext(
       conflicts.forEach(({ path, theirs }) =>
         localStore.writePath(path, theirs),
       );
-      await conflictStore.add(conflicts);
+      await conflictStore.add(
+        conflicts.map((conflict) => ({
+          ...conflict,
+          item: findItemCopy(op.itemCopies ?? {}, conflict.path),
+        })),
+      );
     }
     return { ...kept, ...createEditTimeUpdates(kept, op.editedAt) };
   }
@@ -152,6 +157,12 @@ export function createLocalFirstContext(
         return itemPath ? [[itemPath, localStore.readPath(itemPath)]] : [];
       }),
     );
+  }
+
+  function findItemCopy(itemCopies: Record<string, unknown>, path: string) {
+    return Object.entries(itemCopies).find(
+      ([itemPath]) => path === itemPath || path.startsWith(`${itemPath}/`),
+    )?.[1];
   }
 
   function findItemPath(path: string): string | undefined {

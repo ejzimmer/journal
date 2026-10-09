@@ -7,6 +7,7 @@ export type Conflict = {
   path: string;
   mine: unknown;
   theirs: unknown;
+  item?: unknown;
 };
 
 type ReadServerPath = (path: string) => Promise<unknown>;

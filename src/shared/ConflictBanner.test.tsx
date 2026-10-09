@@ -36,6 +36,10 @@ const descriptionClash = {
   path: 'v2/work/0b6e2f4c-1a2b-4c3d-8e9f-0a1b2c3d4e5f/description',
   mine: 'Email Sam',
   theirs: 'Email Sam about the venue',
+  item: {
+    id: '0b6e2f4c-1a2b-4c3d-8e9f-0a1b2c3d4e5f',
+    description: 'Email Sam',
+  },
 };
 const deletedTask = {
   path: 'v2/projects/0b6e2f4c-1a2b-4c3d-8e9f-0a1b2c3d4e60',
@@ -43,78 +47,91 @@ const deletedTask = {
   theirs: null,
 };
 
-async function openReview() {
-  await userEvent.click(screen.getByRole('button', { name: 'Review' }));
+async function openConflicts() {
+  await userEvent.click(screen.getByRole('button', { name: 'Resolve' }));
 }
 
 describe('ConflictBanner', () => {
-  describe('with one clash', () => {
-    it('says one change clashed', () => {
+  describe('with one conflict', () => {
+    it('says there was a conflict while uploading', () => {
       renderBanner([descriptionClash]);
 
       expect(screen.getByRole('alert')).toHaveTextContent(
-        '1 change clashed with another device.',
+        '1 conflict while uploading',
       );
     });
   });
 
-  describe('with several clashes', () => {
+  describe('with several conflicts', () => {
     it('counts them', () => {
       renderBanner([descriptionClash, deletedTask]);
 
       expect(screen.getByRole('alert')).toHaveTextContent(
-        '2 changes clashed with another device.',
+        '2 conflicts while uploading',
       );
     });
   });
 
-  describe('when reviewing', () => {
-    it('shows both versions of each clash', async () => {
-      renderBanner([descriptionClash]);
+  describe('when resolving', () => {
+    describe('a field edited on both devices', () => {
+      it('names the item and field and shows both changes', async () => {
+        renderBanner([descriptionClash]);
 
-      await openReview();
+        await openConflicts();
 
-      const choice = screen.getByRole('listitem', {
-        name: 'work › description',
+        const conflict = screen.getByRole('listitem', { name: 'Email Sam' });
+        expect(conflict).toHaveTextContent('Description');
+        expect(conflict).toHaveTextContent('Your changeKeep thisEmail Sam');
+        expect(conflict).toHaveTextContent(
+          'Incoming changeKeep thisEmail Sam about the venue',
+        );
       });
-      expect(choice).toHaveTextContent('YoursEmail Sam');
-      expect(choice).toHaveTextContent('Other deviceEmail Sam about the venue');
+
+      it('highlights the words that differ', async () => {
+        renderBanner([descriptionClash]);
+
+        await openConflicts();
+
+        expect(screen.getByText('about the venue').tagName).toBe('MARK');
+      });
     });
 
     describe('an item deleted on the other device', () => {
-      it('names the item and says it was deleted', async () => {
+      it('shows it as edited here and deleted there', async () => {
         renderBanner([deletedTask]);
 
-        await openReview();
+        await openConflicts();
 
-        const choice = screen.getByRole('listitem', { name: 'projects' });
-        expect(choice).toHaveTextContent('YoursFix gate');
-        expect(choice).toHaveTextContent('Other deviceDeleted');
+        const conflict = screen.getByRole('listitem', { name: 'Fix gate' });
+        expect(conflict).toHaveTextContent('Your changeKeep thisEdited');
+        expect(conflict).toHaveTextContent('Incoming changeKeep thisDeleted');
       });
     });
 
-    it('keeps mine when asked', async () => {
+    it('keeps your change when asked', async () => {
       const { keepMine } = renderBanner([descriptionClash]);
-      await openReview();
+      await openConflicts();
 
-      await userEvent.click(screen.getByRole('button', { name: 'Keep mine' }));
+      await userEvent.click(
+        screen.getByRole('button', { name: 'Keep your change' }),
+      );
 
       expect(keepMine).toHaveBeenCalledWith(descriptionClash.path);
     });
 
-    it("keeps the other device's when asked", async () => {
+    it('keeps the incoming change when asked', async () => {
       const { keepTheirs } = renderBanner([descriptionClash]);
-      await openReview();
+      await openConflicts();
 
       await userEvent.click(
-        screen.getByRole('button', { name: "Keep other device's" }),
+        screen.getByRole('button', { name: 'Keep incoming change' }),
       );
 
       expect(keepTheirs).toHaveBeenCalledWith(descriptionClash.path);
     });
   });
 
-  describe('once every clash is resolved', () => {
+  describe('once every conflict is resolved', () => {
     it('goes away', () => {
       const { resolveConflicts } = renderBanner([descriptionClash]);
       const banner = screen.getByRole('alert');

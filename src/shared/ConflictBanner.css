@@ -4,7 +4,7 @@
 
 .conflict-heading {
   margin-block: 0 16px;
-  font-size: 1.3rem;
+  font-size: 1.2rem;
 }
 
 .conflict-list {
@@ -14,35 +14,79 @@
   margin: 0;
   padding: 0;
   list-style: none;
+  font-size: 1rem;
 }
 
-.conflict-label {
-  font-weight: bold;
+.conflict {
+  border: 1px solid var(--border-colour);
+  border-radius: 6px;
+  overflow: hidden;
 }
 
-.conflict-versions {
-  display: grid;
-  grid-template-columns: max-content 1fr;
-  gap: 4px 12px;
-  margin-block: 8px;
-
-  dt {
-    color: hsl(0 0% 40%);
-  }
-
-  dd {
-    margin: 0;
-    overflow-wrap: anywhere;
-  }
-}
-
-.conflict-actions {
+.conflict-title {
   display: flex;
-  gap: 4px;
-  justify-content: end;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 8px 12px;
+  font-weight: 600;
+  border-block-end: 1px solid var(--border-colour);
+}
 
-  button {
-    height: 2rem;
-    padding-inline: 12px;
+.conflict-field {
+  font-weight: normal;
+  color: var(--body-colour-mid);
+}
+
+.conflict-side {
+  --side-colour: var(--action-colour);
+  padding: 8px 12px;
+  border-inline-start: 4px solid var(--side-colour);
+  background: color-mix(in srgb, var(--side-colour) 8%, white);
+
+  &.theirs {
+    --side-colour: var(--success-colour);
   }
+
+  & + & {
+    border-block-start: 1px solid var(--border-colour);
+  }
+
+  mark {
+    background: color-mix(in srgb, var(--side-colour) 22%, white);
+    color: inherit;
+    border-radius: 2px;
+  }
+}
+
+.conflict-side-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.8rem;
+  color: var(--side-colour);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+button.conflict-keep {
+  height: auto;
+  padding: 2px 8px;
+  border: none;
+  font-size: 0.85rem;
+  font-weight: normal;
+  text-transform: none;
+  letter-spacing: normal;
+  color: var(--link-colour);
+
+  &:hover,
+  &:focus-visible {
+    background: color-mix(in srgb, var(--side-colour) 18%, white);
+    text-decoration: underline;
+  }
+}
+
+.conflict-value {
+  margin-block-start: 4px;
+  overflow-wrap: anywhere;
 }

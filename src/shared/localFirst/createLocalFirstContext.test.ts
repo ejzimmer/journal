@@ -623,11 +623,16 @@ describe('createLocalFirstContext', () => {
         return setUp;
       }
 
-      it('lists the clash with both versions', async () => {
+      it('lists the clash with both versions and the item it belongs to', async () => {
         const { conflictStatus } = await setUpClash();
 
         expect(conflictStatus.listConflicts()).toEqual([
-          { path: 'v2/projects/garden/status', mine: 'done', theirs: 'paused' },
+          {
+            path: 'v2/projects/garden/status',
+            mine: 'done',
+            theirs: 'paused',
+            item: { ...garden, status: 'done' },
+          },
         ]);
       });
 
@@ -688,6 +693,7 @@ describe('createLocalFirstContext', () => {
               path: 'v2/projects/garden',
               mine: { ...garden, status: 'done' },
               theirs: null,
+              item: { ...garden, status: 'done' },
             },
           ]),
         );
