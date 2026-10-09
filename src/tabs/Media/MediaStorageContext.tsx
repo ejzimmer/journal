@@ -42,10 +42,6 @@ export type MediaStorageContextType = {
   getSeriesItemsPath: (series: MediaSeries) => string;
 };
 
-const updateMediaCompletionDate = <T extends MediaDetails | NewMedia>(
-  media: T,
-) => updateCompletionDate(media, isMediaComplete(media));
-
 const getMediaKey = (type: MediaDetails['type']) =>
   type === 'book' ? BOOKS_KEY : GAMES_KEY;
 
@@ -133,14 +129,14 @@ export function MediaStorageProvider({ children }: { children: ReactNode }) {
     isLoading: booksLoading || gamesLoading,
 
     addMedia: (newMedia, seriesId) => {
-      const media = updateMediaCompletionDate(newMedia);
+      const media = updateCompletionDate(newMedia, isMediaComplete(newMedia));
       addItem(
         getMediaPath(media.type, seriesId),
         seriesId ? appendToSeries(media, seriesId) : media,
       );
     },
     addMediaSeries: (name, newMedia, bandHue) => {
-      const media = updateMediaCompletionDate(newMedia);
+      const media = updateCompletionDate(newMedia, isMediaComplete(newMedia));
       const key = getMediaKey(media.type);
       const seriesId = addItem<MediaSeries>(key, {
         type: 'series',
@@ -153,7 +149,7 @@ export function MediaStorageProvider({ children }: { children: ReactNode }) {
       const currentSeries = findSeriesContaining(media);
       updateItem(
         getMediaPath(media.type, currentSeries?.id),
-        updateMediaCompletionDate(media),
+        updateCompletionDate(media, isMediaComplete(media)),
       );
     },
     updateMediaSeries: (series, name, bandHue) => {
@@ -172,7 +168,10 @@ export function MediaStorageProvider({ children }: { children: ReactNode }) {
       }
     },
     moveMedia: (movedMedia, destination) => {
-      const media = updateMediaCompletionDate(movedMedia);
+      const media = updateCompletionDate(
+        movedMedia,
+        isMediaComplete(movedMedia),
+      );
       if (destination && 'name' in destination) {
         const key = getMediaKey(media.type);
         const seriesId = addItem<MediaSeries>(key, {
