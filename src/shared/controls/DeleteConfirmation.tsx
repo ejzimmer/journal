@@ -1,15 +1,17 @@
 import { useEffect, useRef } from 'react';
-import { TickIcon } from '../../../shared/icons/Tick';
-import { XIcon } from '../../../shared/icons/X';
+import { TickIcon } from '../icons/Tick';
+import { XIcon } from '../icons/X';
 
 type DeleteConfirmationProps = {
   onConfirm: () => void;
   onCancel: () => void;
+  buttonClassName?: string;
 };
 
 export function DeleteConfirmation({
   onConfirm,
   onCancel,
+  buttonClassName = '',
 }: DeleteConfirmationProps) {
   const confirmButton = useRef<HTMLButtonElement>(null);
 
@@ -22,19 +24,19 @@ export function DeleteConfirmation({
       <button
         ref={confirmButton}
         type="button"
-        className="ghost confirm-delete"
+        className={`${buttonClassName} confirm-delete`}
         aria-label="Confirm delete"
         onClick={onConfirm}
       >
-        <TickIcon width="14px" />
+        <TickIcon />
       </button>
       <button
         type="button"
-        className="ghost"
+        className={`${buttonClassName} cancel-delete`}
         aria-label="Cancel delete"
         onClick={onCancel}
       >
-        <XIcon width="12px" />
+        <XIcon />
       </button>
     </>
   );

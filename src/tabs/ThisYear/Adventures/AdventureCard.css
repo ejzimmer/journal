@@ -98,6 +98,15 @@
       padding: 4px;
     }
 
+    svg {
+      width: 14px;
+    }
+
+    .delete svg,
+    .cancel-delete svg {
+      width: 12px;
+    }
+
     button:hover {
       color: var(--success-colour);
     }
