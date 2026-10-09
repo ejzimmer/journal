@@ -21,7 +21,7 @@ export function updateCompletionDate<T extends Completable>(
 export const sortYearsByNewest = (thisYear: number, years: number[]) =>
   [...new Set([thisYear, ...years])].sort((a, b) => b - a);
 
-export function useCompletionYears<T>(
+export function useItemYears<T>(
   items: T[],
   isComplete: (item: T) => boolean,
   getYear: (item: T) => number,

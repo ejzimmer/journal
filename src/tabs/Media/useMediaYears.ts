@@ -1,4 +1,4 @@
-import { getCompletionYear, useCompletionYears } from '../../shared/years';
+import { getCompletionYear, useItemYears } from '../../shared/years';
 import {
   isMediaComplete,
   isSeries,
@@ -27,15 +27,15 @@ const getEntryCompletionYear = <T extends MediaDetails>(
 export function useMediaYears<T extends MediaDetails>(
   entries: (T | SeriesDetails<T>)[],
 ) {
-  const completionYears = useCompletionYears(
+  const itemYears = useItemYears(
     entries,
     isEntryComplete,
     getEntryCompletionYear,
   );
-  const entriesInYear = entries.filter(completionYears.isInSelectedYear);
+  const entriesInYear = entries.filter(itemYears.isInSelectedYear);
 
   return {
-    ...completionYears,
+    ...itemYears,
     seriesInYear: entriesInYear.filter((entry): entry is SeriesDetails<T> =>
       isSeries(entry),
     ),

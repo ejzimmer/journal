@@ -33,7 +33,7 @@ import {
 import { useGridColumnSpan } from './useGridColumnSpan';
 import { ProjectsSkeleton } from './ProjectsSkeleton';
 import { YearTabs } from '../../shared/controls/YearTabs';
-import { getCompletionYear, useCompletionYears } from '../../shared/years';
+import { getCompletionYear, useItemYears } from '../../shared/years';
 
 const isProjectDone = (project: ProjectDetails) =>
   (project.status ?? 'ready') === 'done';
@@ -56,7 +56,7 @@ export function Projects() {
     selectYear,
     isThisYearSelected,
     isInSelectedYear,
-  } = useCompletionYears(sortedProjects, isProjectDone, getCompletionYear);
+  } = useItemYears(sortedProjects, isProjectDone, getCompletionYear);
 
   const hasUnsortedDoneProjects = sortedProjects.some(
     (project, index) =>
