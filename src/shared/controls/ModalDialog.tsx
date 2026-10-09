@@ -4,10 +4,12 @@ import { Modal, ModalContext } from './Modal';
 export function ModalDialog({
   isOpen,
   onCancel,
+  className,
   children,
 }: {
   isOpen: boolean;
   onCancel: () => void;
+  className?: string;
   children: ReactNode;
 }) {
   const modalState = useRef<'open' | 'closed'>('closed');
@@ -23,7 +25,7 @@ export function ModalDialog({
   return (
     <dialog
       ref={dialogRef}
-      className="modal"
+      className={className ? `modal ${className}` : 'modal'}
       // @ts-ignore closedby does exist really
       closedby="any"
       onClose={() => {

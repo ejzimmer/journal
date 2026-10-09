@@ -1,7 +1,11 @@
 import { KeyboardEvent, FormEvent } from 'react';
 import { useModal } from '../../../shared/controls/Modal';
+import { TickIcon } from '../../../shared/icons/Tick';
+import { CountTile } from './CountTile';
+import { LadyBeetleIcon } from './LadyBeetleIcon';
+import { PageTile } from './PageTile';
+import { UnderstoodTile } from './UnderstoodTile';
 import { useLanguageMediaStorage } from './LanguageMediaStorageContext';
-import { NumberField } from './NumberField';
 import { parseNumber } from './fields';
 import { formatVolumeName, formatVolumeTitle } from './format';
 import { PrintSeries, Volume } from './types';
@@ -49,6 +53,7 @@ export function ProgressUpdateForm({
 
   return (
     <form
+      className="progress-update-form"
       aria-label={`Track ${name}`}
       onKeyDown={submitOnEnter}
       onSubmit={saveProgress}
@@ -56,40 +61,40 @@ export function ProgressUpdateForm({
       <h2 className="progress-update-title">
         {formatVolumeTitle(series, volume)}
       </h2>
-      <button
-        type="button"
-        aria-label={`Add a lookup to ${name}`}
-        onClick={() => updateItem(path, { lookups: volume.lookups + 1 })}
-      >
-        +1 looked up
-      </button>
-      <NumberField
-        label="Page"
-        name="page"
-        defaultValue={pageUpTo}
-        min={0}
-        max={volume.pages}
-      />
-      <NumberField
-        key={volume.lookups}
-        label="Looked up"
-        name="lookups"
-        defaultValue={volume.lookups}
-        min={0}
-      />
-      <NumberField
-        label="Asked AI"
-        name="aiQuestions"
-        defaultValue={volume.aiQuestions}
-        min={0}
-      />
-      <NumberField
-        label="Understood (%)"
-        name="understood"
-        defaultValue={volume.understood}
-        min={0}
-        max={100}
-      />
+      <div className="progress-update-body">
+        <div className="progress-tiles">
+          <CountTile
+            name="lookups"
+            label="Looked up"
+            addLabel={`Add a lookup to ${name}`}
+            icon={<LadyBeetleIcon colour="red" width="45px" />}
+            count={volume.lookups}
+            onAdd={() => updateItem(path, { lookups: volume.lookups + 1 })}
+          />
+          <CountTile
+            name="aiQuestions"
+            label="Asked AI"
+            addLabel={`Add an AI question to ${name}`}
+            icon={<LadyBeetleIcon colour="yellow" width="45px" />}
+            count={volume.aiQuestions}
+            onAdd={() =>
+              updateItem(path, { aiQuestions: volume.aiQuestions + 1 })
+            }
+          />
+          <PageTile page={pageUpTo} pages={volume.pages} />
+          <UnderstoodTile
+            seriesType={series.type}
+            understood={volume.understood}
+          />
+        </div>
+        <button
+          type="submit"
+          className="progress-update-save"
+          aria-label="Save"
+        >
+          <TickIcon width="20px" strokeWidth="2.6" />
+        </button>
+      </div>
     </form>
   );
 }

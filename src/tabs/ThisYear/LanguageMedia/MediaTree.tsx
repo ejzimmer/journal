@@ -46,6 +46,7 @@ export function MediaTree({ series }: { series: PrintSeries }) {
       />
       <ModalDialog
         isOpen={isProgressUpdateFormOpen}
+        className="progress-update-modal"
         onCancel={() => setIsProgressUpdateFormOpen(false)}
       >
         {isProgressUpdateFormOpen && currentVolume && (
