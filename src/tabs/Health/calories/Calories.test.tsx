@@ -253,11 +253,6 @@ describe('Calories', () => {
         return user;
       };
 
-      const listDots = () =>
-        within(screen.getByRole('list', { name: 'by day' })).getAllByRole(
-          'button',
-        );
-
       it('has a tab for each year, newest first', async () => {
         await showDots();
 
@@ -269,9 +264,16 @@ describe('Calories', () => {
       it('starts on this year', async () => {
         await showDots();
 
-        expect(listDots().map((dot) => dot.getAttribute('aria-label'))).toEqual(
-          ['update 1 Jan', 'update 2 Jan', 'update 3 Jan', 'update 4 Jan'],
-        );
+        expect(
+          within(screen.getByRole('list', { name: 'by day' }))
+            .getAllByRole('button')
+            .map((dot) => dot.getAttribute('aria-label')),
+        ).toEqual([
+          'update 1 Jan',
+          'update 2 Jan',
+          'update 3 Jan',
+          'update 4 Jan',
+        ]);
       });
 
       describe('and an earlier year is selected', () => {
@@ -280,7 +282,11 @@ describe('Calories', () => {
 
           await user.click(screen.getByRole('tab', { name: '2026' }));
 
-          expect(listDots()).toHaveLength(365);
+          expect(
+            within(screen.getByRole('list', { name: 'by day' })).getAllByRole(
+              'button',
+            ),
+          ).toHaveLength(365);
         });
       });
     });

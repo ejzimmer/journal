@@ -35,9 +35,6 @@ const renderNoticeboard = (adventures: Adventure[]) =>
     </AdventureStorageContext.Provider>,
   );
 
-const getPinnedAdventures = () =>
-  screen.getAllByRole('listitem').map((item) => item.textContent);
-
 describe('Noticeboard', () => {
   describe('when there are adventures', () => {
     it('pins up every one in the order they were added', () => {
@@ -116,7 +113,9 @@ describe('Noticeboard', () => {
       it('pins up the adventures still to do and the ones done this year', () => {
         renderNoticeboard(adventures);
 
-        expect(getPinnedAdventures()).toEqual(['parkrun', 'yarra']);
+        expect(
+          screen.getAllByRole('listitem').map((item) => item.textContent),
+        ).toEqual(['parkrun', 'yarra']);
       });
     });
 
@@ -132,7 +131,9 @@ describe('Noticeboard', () => {
 
         await user.click(screen.getByRole('tab', { name: '2026' }));
 
-        expect(getPinnedAdventures()).toEqual(['hurstbridge']);
+        expect(
+          screen.getAllByRole('listitem').map((item) => item.textContent),
+        ).toEqual(['hurstbridge']);
         expect(addAdventure).not.toBeInTheDocument();
       });
     });

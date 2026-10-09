@@ -47,9 +47,6 @@ function listReorderedIds(
   return { seriesId: series.id, itemIds: items.map(({ id }) => id) };
 }
 
-const getSpineTitle = (title: string) =>
-  screen.getByRole('button', { name: new RegExp(`^${title},`) });
-
 describe('Books', () => {
   describe('reordering a series with the keyboard', () => {
     describe('when ArrowLeft is pressed on a book', () => {
@@ -57,7 +54,7 @@ describe('Books', () => {
         const user = userEvent.setup();
         const { storageContext } = renderBooks();
 
-        getSpineTitle('Men at Arms').focus();
+        screen.getByRole('button', { name: /^Men at Arms,/ }).focus();
         await user.keyboard('{ArrowLeft}');
 
         expect(listReorderedIds(storageContext.reorderSeries)).toEqual({
@@ -72,7 +69,7 @@ describe('Books', () => {
         const user = userEvent.setup();
         const { storageContext } = renderBooks();
 
-        getSpineTitle('Men at Arms').focus();
+        screen.getByRole('button', { name: /^Men at Arms,/ }).focus();
         await user.keyboard('{ArrowRight}');
 
         expect(listReorderedIds(storageContext.reorderSeries)).toEqual({
@@ -87,7 +84,7 @@ describe('Books', () => {
         const user = userEvent.setup();
         const { storageContext } = renderBooks();
 
-        getSpineTitle('Feet of Clay').focus();
+        screen.getByRole('button', { name: /^Feet of Clay,/ }).focus();
         await user.keyboard('{Shift>}{ArrowLeft}{/Shift}');
 
         expect(listReorderedIds(storageContext.reorderSeries)).toEqual({
@@ -100,7 +97,7 @@ describe('Books', () => {
         const user = userEvent.setup();
         const { storageContext } = renderBooks();
 
-        getSpineTitle('Guards! Guards!').focus();
+        screen.getByRole('button', { name: /^Guards! Guards!,/ }).focus();
         await user.keyboard('{Shift>}{ArrowRight}{/Shift}');
 
         expect(listReorderedIds(storageContext.reorderSeries)).toEqual({
@@ -115,7 +112,7 @@ describe('Books', () => {
         const user = userEvent.setup();
         const { storageContext } = renderBooks();
 
-        getSpineTitle('Guards! Guards!').focus();
+        screen.getByRole('button', { name: /^Guards! Guards!,/ }).focus();
         await user.keyboard('{ArrowLeft}');
 
         expect(storageContext.reorderSeries).not.toHaveBeenCalled();
@@ -127,7 +124,7 @@ describe('Books', () => {
         const user = userEvent.setup();
         const { storageContext } = renderBooks();
 
-        getSpineTitle('Feet of Clay').focus();
+        screen.getByRole('button', { name: /^Feet of Clay,/ }).focus();
         await user.keyboard('{ArrowRight}');
 
         expect(storageContext.reorderSeries).not.toHaveBeenCalled();

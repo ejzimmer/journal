@@ -80,9 +80,6 @@ describe('Projects', () => {
       jest.useRealTimers();
     });
 
-    const setUpUser = () =>
-      userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
-
     const getProjectNames = () =>
       screen
         .getAllByRole('listitem')
@@ -115,7 +112,9 @@ describe('Projects', () => {
 
       describe('and an earlier year is selected', () => {
         it('shows only the projects finished that year', async () => {
-          const user = setUpUser();
+          const user = userEvent.setup({
+            advanceTimers: jest.advanceTimersByTime,
+          });
           renderProjects(projects);
 
           await user.click(screen.getByRole('tab', { name: '2025' }));
@@ -125,7 +124,9 @@ describe('Projects', () => {
 
         describe('when a project has no finish date', () => {
           it('counts it as finished in 2026', async () => {
-            const user = setUpUser();
+            const user = userEvent.setup({
+              advanceTimers: jest.advanceTimersByTime,
+            });
             renderProjects(projects);
 
             await user.click(screen.getByRole('tab', { name: '2026' }));
@@ -135,7 +136,9 @@ describe('Projects', () => {
         });
 
         it('hides the add project form', async () => {
-          const user = setUpUser();
+          const user = userEvent.setup({
+            advanceTimers: jest.advanceTimersByTime,
+          });
           renderProjects(projects);
           const addDescription = screen.getByRole('textbox', {
             name: 'Description',
