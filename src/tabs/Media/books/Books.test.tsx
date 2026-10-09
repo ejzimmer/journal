@@ -194,7 +194,7 @@ describe('Books', () => {
         [lightFantastic.id]: lightFantastic,
       },
     };
-    const nation = createReadBook('book-nation', 'Nation', 0, '2025-05-02');
+    const nation = createReadBook('book-nation', 'Nation', 0, '2026-05-02');
 
     const renderBooksOverYears = () =>
       renderWithMediaStorage(<Books />, {
@@ -213,7 +213,6 @@ describe('Books', () => {
       expect(screen.getAllByRole('tab').map((tab) => tab.textContent)).toEqual([
         '2027',
         '2026',
-        '2025',
       ]);
     });
 
@@ -230,31 +229,19 @@ describe('Books', () => {
     });
 
     describe('when an earlier year is selected', () => {
-      it('shows the books read that year that are not in a series', async () => {
+      it('shows the books and whole series finished that year', async () => {
         const user = userEvent.setup({
           advanceTimers: jest.advanceTimersByTime,
         });
         renderBooksOverYears();
 
-        await user.click(screen.getByRole('tab', { name: '2025' }));
+        await user.click(screen.getByRole('tab', { name: '2026' }));
 
-        expect(getTitles()).toEqual(['Nation']);
-      });
-
-      describe('and a series was finished that year', () => {
-        it('shows the whole series', async () => {
-          const user = userEvent.setup({
-            advanceTimers: jest.advanceTimersByTime,
-          });
-          renderBooksOverYears();
-
-          await user.click(screen.getByRole('tab', { name: '2026' }));
-
-          expect(getTitles()).toEqual([
-            'The Colour of Magic',
-            'The Light Fantastic',
-          ]);
-        });
+        expect(getTitles()).toEqual([
+          'The Colour of Magic',
+          'The Light Fantastic',
+          'Nation',
+        ]);
       });
     });
 
