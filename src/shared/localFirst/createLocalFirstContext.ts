@@ -20,9 +20,11 @@ import {
   V2_ROOT,
 } from './v2Shape';
 
-export type OutdatedStatus = {
+export type SaveState = 'saving' | 'failing' | 'outdated';
+
+export type SaveStatus = {
   subscribe: (onChange: () => void) => () => void;
-  getIsOutdated: () => boolean;
+  getSaveState: () => SaveState;
 };
 
 export function createLocalFirstContext(
@@ -31,18 +33,30 @@ export function createLocalFirstContext(
 ): {
   context: ContextType;
   hydrate: () => Promise<void>;
-  outdatedStatus: OutdatedStatus;
+  saveStatus: SaveStatus;
 } {
   const localStore = createLocalStore(`${dbName}-local`);
   const outbox = createOutbox(`${dbName}-outbox`);
-  const outdatedListeners = new Set<() => void>();
+  const saveStatusListeners = new Set<() => void>();
   let isOutdated = false;
-  const syncEngine = createSyncEngine(database, outbox, () => !isOutdated);
+  let isFailing = false;
+  const notifySaveStatus = () =>
+    saveStatusListeners.forEach((onChange) => onChange());
+  const syncEngine = createSyncEngine(
+    database,
+    outbox,
+    () => !isOutdated,
+    (succeeded) => {
+      if (isFailing === !succeeded) return;
+      isFailing = !succeeded;
+      notifySaveStatus();
+    },
+  );
   void outbox.keepOnlyPathsUnder(V2_ROOT).then(() => syncEngine.startSyncing());
 
   onValue(ref(database, MINIMUM_APP_VERSION_PATH), (snapshot) => {
     isOutdated = Number(snapshot.val() ?? 0) > APP_DATA_VERSION;
-    outdatedListeners.forEach((onChange) => onChange());
+    notifySaveStatus();
     syncEngine.notifyChange();
   });
 
@@ -187,12 +201,13 @@ export function createLocalFirstContext(
   return {
     context,
     hydrate: localStore.hydrate,
-    outdatedStatus: {
+    saveStatus: {
       subscribe: (onChange) => {
-        outdatedListeners.add(onChange);
-        return () => outdatedListeners.delete(onChange);
+        saveStatusListeners.add(onChange);
+        return () => saveStatusListeners.delete(onChange);
       },
-      getIsOutdated: () => isOutdated,
+      getSaveState: () =>
+        isOutdated ? 'outdated' : isFailing ? 'failing' : 'saving',
     },
   };
 }

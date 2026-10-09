@@ -38,12 +38,12 @@ async function flushMicrotasks() {
 }
 
 async function setUpContextWithStatus() {
-  const { context, hydrate, outdatedStatus } = createLocalFirstContext(
+  const { context, hydrate, saveStatus } = createLocalFirstContext(
     {} as import('firebase/database').Database,
     uniqueDbName(),
   );
   await hydrate();
-  return { context, outdatedStatus };
+  return { context, saveStatus };
 }
 
 async function setUpContext() {
@@ -465,11 +465,11 @@ describe('createLocalFirstContext', () => {
 
   describe('when the server requires a newer app version', () => {
     it('reports the app as out of date', async () => {
-      const { outdatedStatus } = await setUpContextWithStatus();
+      const { saveStatus } = await setUpContextWithStatus();
 
       fireRemoteSnapshot('minimumAppVersion', 3);
 
-      expect(outdatedStatus.getIsOutdated()).toBe(true);
+      expect(saveStatus.getSaveState()).toBe('outdated');
     });
 
     it('keeps saves on this device instead of sending them', async () => {
@@ -488,15 +488,39 @@ describe('createLocalFirstContext', () => {
 
   describe('when the server allows this app version', () => {
     it('sends saves as usual', async () => {
-      const { context, outdatedStatus } = await setUpContextWithStatus();
+      const { context, saveStatus } = await setUpContextWithStatus();
       fireRemoteSnapshot('minimumAppVersion', 2);
 
       context.setValue('dailyReset', 12345);
 
-      expect(outdatedStatus.getIsOutdated()).toBe(false);
+      expect(saveStatus.getSaveState()).toBe('saving');
       await waitFor(() =>
         expect(mockUpdate).toHaveBeenCalledWith({ 'v2/dailyReset': 12345 }),
       );
+    });
+  });
+
+  describe('when the server refuses a save', () => {
+    it('reports saves as failing', async () => {
+      const { context, saveStatus } = await setUpContextWithStatus();
+      mockUpdate.mockRejectedValueOnce(new Error('PERMISSION_DENIED'));
+
+      context.setValue('dailyReset', 12345);
+
+      await waitFor(() => expect(saveStatus.getSaveState()).toBe('failing'));
+    });
+
+    describe('and a retry then succeeds', () => {
+      it('reports saves as working again', async () => {
+        const { context, saveStatus } = await setUpContextWithStatus();
+        mockUpdate.mockRejectedValueOnce(new Error('PERMISSION_DENIED'));
+        context.setValue('dailyReset', 12345);
+        await waitFor(() => expect(saveStatus.getSaveState()).toBe('failing'));
+
+        await waitFor(() => expect(saveStatus.getSaveState()).toBe('saving'), {
+          timeout: 3000,
+        });
+      });
     });
   });
 });
