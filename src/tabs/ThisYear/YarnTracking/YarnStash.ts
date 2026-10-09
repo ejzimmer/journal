@@ -9,7 +9,7 @@ export class YarnStash {
     Record<YarnTypeId, Temporal.PlainYearMonth>
   > = {};
 
-  static carryOver(previousStash?: YarnStash) {
+  static createFromUnusedBalls(previousStash?: YarnStash) {
     const stash = new YarnStash();
     if (previousStash) {
       stash.balls = previousStash.getUnusedBalls().map((ball) => ({ ...ball }));

@@ -60,7 +60,8 @@ export function YarnStorageProvider({ children }: { children: ReactNode }) {
 
   const yarnYears = useMemo(() => {
     const getStash = (year: number, previousStash?: YarnStash) => {
-      const stash = stashes.get(year) ?? YarnStash.carryOver(previousStash);
+      const stash =
+        stashes.get(year) ?? YarnStash.createFromUnusedBalls(previousStash);
       stashes.set(year, stash);
       return stash;
     };
