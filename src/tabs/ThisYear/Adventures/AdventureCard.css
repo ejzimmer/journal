@@ -85,25 +85,39 @@
 
   .card-footer {
     display: flex;
-    flex-wrap: wrap;
     align-items: center;
-    gap: 6px;
+    gap: 4px;
     align-self: stretch;
   }
 
   .card-actions {
     display: flex;
-    gap: 4px;
     margin-inline-start: auto;
+
+    button {
+      padding: 4px;
+    }
 
     button:hover {
       color: var(--success-colour);
     }
+
+    .delete:hover,
+    .confirm-delete,
+    .confirm-delete:hover {
+      color: var(--error-colour);
+    }
+
+    .confirm-delete {
+      opacity: 1;
+    }
   }
 
   .planned-date {
-    padding-block: 3px;
-    padding-inline: 7px;
+    padding-block: 2px;
+    padding-inline: 5px;
+    font-size: 0.8em;
+    white-space: nowrap;
     font-variant-numeric: tabular-nums;
     color: var(--body-colour-mid);
     border: 1px dashed var(--border-colour);
