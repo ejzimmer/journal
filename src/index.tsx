@@ -6,6 +6,7 @@ import './index.css';
 import { App } from './App';
 import { AppUpdateBanner } from './shared/AppUpdateBanner';
 import { SaveStatusBanner } from './shared/SaveStatusBanner';
+import { ConflictBanner } from './shared/ConflictBanner';
 import { setWaitingRegistration } from './shared/appUpdateStore';
 import * as serviceWorkerRegistration from './serviceWorkerRegistration';
 
@@ -29,6 +30,7 @@ const {
   context: contextValue,
   hydrate,
   saveStatus,
+  conflictStatus,
 } = createLocalFirstContext(getDatabase(initializeApp(firebaseConfig)));
 
 serviceWorkerRegistration.register({ onUpdate: setWaitingRegistration });
@@ -46,6 +48,7 @@ hydrate().then(() => {
       </FirebaseContext.Provider>
       <AppUpdateBanner />
       <SaveStatusBanner saveStatus={saveStatus} />
+      <ConflictBanner conflictStatus={conflictStatus} />
     </React.StrictMode>,
   );
 });
