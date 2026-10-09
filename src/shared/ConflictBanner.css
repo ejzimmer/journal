@@ -64,7 +64,7 @@
     height: auto;
     padding: 0 4px;
     border: none;
-    border-radius: 0;
+    border-radius: 4px;
     font-size: inherit;
     color: var(--body-colour);
     text-decoration: underline;
@@ -75,8 +75,7 @@
 
     &:hover,
     &:focus-visible {
-      background: none;
-      color: var(--link-colour);
+      background: var(--border-colour);
     }
   }
 }
