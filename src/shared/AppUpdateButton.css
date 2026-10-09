@@ -1,0 +1,20 @@
+.app-update-button {
+  position: absolute;
+  inset-block: 0 2px;
+  inset-inline-end: 0;
+  height: auto;
+  border: 0;
+  border-radius: 0;
+  color: var(--action-colour);
+  background: white;
+
+  svg {
+    width: 22px;
+  }
+
+  &:hover,
+  &:focus-visible {
+    color: var(--action-colour-dark);
+    background: white;
+  }
+}

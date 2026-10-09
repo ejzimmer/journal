@@ -1,8 +1,9 @@
 import { useEffect, useSyncExternalStore } from 'react';
 import { getWaitingRegistration, subscribe } from './appUpdateStore';
-import './AppUpdateBanner.css';
+import { RestartArrowIcon } from './icons/RestartArrow';
+import './AppUpdateButton.css';
 
-export function AppUpdateBanner() {
+export function AppUpdateButton() {
   const waitingRegistration = useSyncExternalStore(
     subscribe,
     getWaitingRegistration,
@@ -20,16 +21,14 @@ export function AppUpdateBanner() {
   if (!waitingRegistration) return null;
 
   return (
-    <div className="app-update-banner">
-      <span>A new version is available.</span>
-      <button
-        className="primary"
-        onClick={() =>
-          waitingRegistration.waiting?.postMessage({ type: 'SKIP_WAITING' })
-        }
-      >
-        Refresh
-      </button>
-    </div>
+    <button
+      className="app-update-button"
+      aria-label="Update to the new version"
+      onClick={() =>
+        waitingRegistration.waiting?.postMessage({ type: 'SKIP_WAITING' })
+      }
+    >
+      <RestartArrowIcon />
+    </button>
   );
 }

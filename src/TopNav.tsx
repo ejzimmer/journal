@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef } from 'react';
 import { NavLink } from 'react-router-dom';
 import { TABS } from './tabConfig';
+import { AppUpdateButton } from './shared/AppUpdateButton';
 
 export function TopNav() {
   const navListRef = useRef<HTMLUListElement>(null);
@@ -55,6 +56,7 @@ export function TopNav() {
           </NavItem>
         ))}
       </ul>
+      <AppUpdateButton />
     </nav>
   );
 }
