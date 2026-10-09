@@ -1,6 +1,6 @@
 import 'fake-indexeddb/auto';
 import { renderHook, waitFor } from '@testing-library/react';
-import { createLocalFirstContext, ReadSource } from './createLocalFirstContext';
+import { createLocalFirstContext } from './createLocalFirstContext';
 
 const mockUpdate = jest.fn().mockResolvedValue(undefined);
 const mockOnValueCallbacks = new Map<
@@ -37,14 +37,17 @@ async function flushMicrotasks() {
   }
 }
 
-async function setUpContext(readSource: ReadSource = 'v1') {
-  const { context, hydrate } = createLocalFirstContext(
+async function setUpContextWithStatus() {
+  const { context, hydrate, outdatedStatus } = createLocalFirstContext(
     {} as import('firebase/database').Database,
     uniqueDbName(),
-    readSource,
   );
   await hydrate();
-  return context;
+  return { context, outdatedStatus };
+}
+
+async function setUpContext() {
+  return (await setUpContextWithStatus()).context;
 }
 
 beforeEach(() => {
@@ -76,7 +79,6 @@ describe('createLocalFirstContext', () => {
 
     await waitFor(() => {
       expect(mockUpdate).toHaveBeenCalledWith({
-        [`work/${id}`]: expect.objectContaining({ description: 'Chores' }),
         [`v2/work/${id}`]: expect.objectContaining({ description: 'Chores' }),
       });
     });
@@ -95,10 +97,7 @@ describe('createLocalFirstContext', () => {
     expect(result.current.value).toBeUndefined();
 
     await waitFor(() => {
-      expect(mockUpdate).toHaveBeenCalledWith({
-        'work/task1': null,
-        'v2/work/task1': null,
-      });
+      expect(mockUpdate).toHaveBeenCalledWith({ 'v2/work/task1': null });
     });
   });
 
@@ -127,10 +126,7 @@ describe('createLocalFirstContext', () => {
     context.deleteItem('work', { id: 'task1', description: 'Chores' });
 
     await waitFor(() => {
-      expect(mockUpdate).toHaveBeenCalledWith({
-        'work/task1': null,
-        'v2/work/task1': null,
-      });
+      expect(mockUpdate).toHaveBeenCalledWith({ 'v2/work/task1': null });
     });
   });
 
@@ -158,8 +154,6 @@ describe('createLocalFirstContext', () => {
 
     await waitFor(() => {
       expect(mockUpdate).toHaveBeenCalledWith({
-        'new/a': 1,
-        old: null,
         'v2/new/a': 1,
         'v2/old': null,
       });
@@ -172,9 +166,9 @@ describe('createLocalFirstContext', () => {
       context.useValue<Record<string, unknown>>('work'),
     );
 
-    await waitFor(() => expect(mockOnValueCallbacks.has('work')).toBe(true));
+    await waitFor(() => expect(mockOnValueCallbacks.has('v2/work')).toBe(true));
 
-    fireRemoteSnapshot('work', {
+    fireRemoteSnapshot('v2/work', {
       task1: { id: 'task1', description: 'Remote' },
     });
 
@@ -210,9 +204,6 @@ describe('createLocalFirstContext', () => {
 
     await waitFor(() => {
       expect(mockUpdate).toHaveBeenCalledWith({
-        'work/list2/items/task1': movedItem,
-        'work/list1/items/task1': null,
-        'work/list2/items/task2/position': 1,
         'v2/work/list2/items/task1': movedItem,
         'v2/work/list1/items/task1': null,
         'v2/work/list2/items/task2/position': 1,
@@ -230,9 +221,9 @@ describe('createLocalFirstContext', () => {
     const { result } = renderHook(() =>
       context.useValue<Record<string, unknown>>('work'),
     );
-    await waitFor(() => expect(mockOnValueCallbacks.has('work')).toBe(true));
+    await waitFor(() => expect(mockOnValueCallbacks.has('v2/work')).toBe(true));
 
-    fireRemoteSnapshot('work', {
+    fireRemoteSnapshot('v2/work', {
       task1: { id: 'task1', description: 'Stale' },
       task2: { id: 'task2', description: 'Added elsewhere' },
     });
@@ -263,10 +254,10 @@ describe('createLocalFirstContext', () => {
         const context = await setUpContext();
         const { result } = renderHook(() => context.useValue('work'));
         await waitFor(() =>
-          expect(mockOnValueCallbacks.has('work')).toBe(true),
+          expect(mockOnValueCallbacks.has('v2/work')).toBe(true),
         );
 
-        fireRemoteSnapshot('work', {});
+        fireRemoteSnapshot('v2/work', {});
 
         await waitFor(() => expect(result.current.synced).toBe(true));
       });
@@ -275,13 +266,13 @@ describe('createLocalFirstContext', () => {
         const context = await setUpContext();
         renderHook(() => context.useValue('work'));
         await waitFor(() =>
-          expect(mockOnValueCallbacks.has('work')).toBe(true),
+          expect(mockOnValueCallbacks.has('v2/work')).toBe(true),
         );
         const { result: nested } = renderHook(() =>
           context.useValue('work/list1'),
         );
 
-        fireRemoteSnapshot('work', {});
+        fireRemoteSnapshot('v2/work', {});
 
         await waitFor(() => expect(nested.current.synced).toBe(true));
       });
@@ -300,21 +291,45 @@ describe('createLocalFirstContext', () => {
       completed: { t0000: '2026-10-05', t0001: '2026-10-07' },
     };
 
-    it('sends the v1 shape and the v2 shape in one update', async () => {
+    it('sends it in the v2 shape', async () => {
       const context = await setUpContext();
 
       context.updateItem('today/週', task);
 
       await waitFor(() => {
         expect(mockUpdate).toHaveBeenCalledWith({
-          'today/週/laundry': task,
           'v2/today/週/laundry': v2Task,
         });
       });
     });
   });
 
-  describe('reading from v2', () => {
+  describe('saving inside a reshaped list', () => {
+    it('sends the whole list as it stands after the save', async () => {
+      const context = await setUpContext();
+      context.updateItem('health/classes', {
+        id: 'pilates',
+        blocks: [{ id: 'week-1', total: 3 }],
+      });
+
+      context.setValue('health/classes/pilates/blocks/0/completed', [2]);
+
+      await waitFor(() => {
+        expect(mockUpdate).toHaveBeenCalledWith({
+          'v2/health/classes/pilates/blocks': {
+            'week-1': {
+              id: 'week-1',
+              total: 3,
+              position: 0,
+              completed: { s2: true },
+            },
+          },
+        });
+      });
+    });
+  });
+
+  describe('reading a reshaped list', () => {
     const v2Classes = {
       pilates: {
         id: 'pilates',
@@ -335,8 +350,8 @@ describe('createLocalFirstContext', () => {
       },
     };
 
-    it('listens to the matching path under v2', async () => {
-      const context = await setUpContext('v2');
+    it('listens to the same path under v2', async () => {
+      const context = await setUpContext();
 
       renderHook(() => context.useValue('health/classes'));
 
@@ -347,7 +362,7 @@ describe('createLocalFirstContext', () => {
 
     describe('when the server sends its copy', () => {
       it('returns it in the v1 shape', async () => {
-        const context = await setUpContext('v2');
+        const context = await setUpContext();
         const { result } = renderHook(() => context.useValue('health/classes'));
         await waitFor(() =>
           expect(mockOnValueCallbacks.has('v2/health/classes')).toBe(true),
@@ -362,13 +377,50 @@ describe('createLocalFirstContext', () => {
 
     describe('when the app saves a change', () => {
       it('returns the change in the v1 shape', async () => {
-        const context = await setUpContext('v2');
+        const context = await setUpContext();
         const { result } = renderHook(() => context.useValue('health/classes'));
 
         context.updateItem('health/classes', v1Classes.pilates);
 
         await waitFor(() => expect(result.current.value).toEqual(v1Classes));
       });
+    });
+  });
+
+  describe('when the server requires a newer app version', () => {
+    it('reports the app as out of date', async () => {
+      const { outdatedStatus } = await setUpContextWithStatus();
+
+      fireRemoteSnapshot('minimumAppVersion', 3);
+
+      expect(outdatedStatus.getIsOutdated()).toBe(true);
+    });
+
+    it('keeps saves on this device instead of sending them', async () => {
+      const { context } = await setUpContextWithStatus();
+      fireRemoteSnapshot('minimumAppVersion', 3);
+      mockUpdate.mockClear();
+
+      context.setValue('dailyReset', 12345);
+      await flushMicrotasks();
+
+      const { result } = renderHook(() => context.useValue('dailyReset'));
+      expect(result.current.value).toBe(12345);
+      expect(mockUpdate).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('when the server allows this app version', () => {
+    it('sends saves as usual', async () => {
+      const { context, outdatedStatus } = await setUpContextWithStatus();
+      fireRemoteSnapshot('minimumAppVersion', 2);
+
+      context.setValue('dailyReset', 12345);
+
+      expect(outdatedStatus.getIsOutdated()).toBe(false);
+      await waitFor(() =>
+        expect(mockUpdate).toHaveBeenCalledWith({ 'v2/dailyReset': 12345 }),
+      );
     });
   });
 });

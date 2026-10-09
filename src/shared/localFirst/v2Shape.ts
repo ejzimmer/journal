@@ -8,6 +8,8 @@ import { CLASSES_PATH, DAILY_PATH, WEEKLY_KEY } from '../types';
 import { getAtPath, Tree } from './pathTree';
 
 export const V2_ROOT = 'v2';
+export const APP_DATA_VERSION = 2;
+export const MINIMUM_APP_VERSION_PATH = 'minimumAppVersion';
 
 type Reshape = {
   v1Pattern: string[];
@@ -109,33 +111,6 @@ export function convertReadValueToV1(v1Key: string, v2Value: unknown): unknown {
   return readKey === v1Key
     ? value
     : getAtPath(value as Tree, v1Key.slice(readKey.length + 1));
-}
-
-export function createV2Copy(root: Tree): Tree {
-  const { [V2_ROOT]: _currentV2, ...v1 } = root;
-  return convertTreeToV2('', v1) as Tree;
-}
-
-export function listVersionDifferences(root: Tree): string[] {
-  return listDifferences(createV2Copy(root), root[V2_ROOT] ?? {});
-}
-
-export function listDifferences(
-  expected: unknown,
-  actual: unknown,
-  path = '',
-): string[] {
-  if (isPlainObject(expected) && isPlainObject(actual)) {
-    const keys = new Set([...Object.keys(expected), ...Object.keys(actual)]);
-    return [...keys].flatMap((key) =>
-      listDifferences(
-        expected[key],
-        actual[key],
-        path ? `${path}/${key}` : key,
-      ),
-    );
-  }
-  return JSON.stringify(expected) === JSON.stringify(actual) ? [] : [path];
 }
 
 function reshapeTree(

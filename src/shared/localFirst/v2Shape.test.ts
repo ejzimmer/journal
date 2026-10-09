@@ -4,10 +4,7 @@ import {
   convertTreeToV1,
   convertTreeToV2,
   convertUpdatesToV2,
-  createV2Copy,
   findV2ReadPath,
-  listDifferences,
-  listVersionDifferences,
 } from './v2Shape';
 
 const v1Tree = {
@@ -283,53 +280,6 @@ describe('v2Shape', () => {
 
       it('returns the entry from the converted list', () => {
         expect(convertReadValueToV1(key, { ovaryPain: true })).toBe('🥚');
-      });
-    });
-  });
-
-  describe('createV2Copy', () => {
-    describe('given a database that already has a v2 copy', () => {
-      it('reshapes everything else and leaves the old copy out', () => {
-        expect(createV2Copy({ ...v1Tree, v2: { stale: true } })).toEqual(
-          v2Tree,
-        );
-      });
-    });
-  });
-
-  describe('listVersionDifferences', () => {
-    describe('given a database whose v2 copy matches', () => {
-      it('finds nothing', () => {
-        expect(listVersionDifferences({ ...v1Tree, v2: v2Tree })).toEqual([]);
-      });
-    });
-
-    describe('given a database whose v2 copy is behind', () => {
-      it('lists what v2 is missing', () => {
-        const { projects, ...v2WithoutProjects } = v2Tree;
-
-        expect(
-          listVersionDifferences({ ...v1Tree, v2: v2WithoutProjects }),
-        ).toEqual(['projects']);
-      });
-    });
-  });
-
-  describe('listDifferences', () => {
-    describe('given matching trees', () => {
-      it('finds nothing', () => {
-        expect(listDifferences(v2Tree, structuredClone(v2Tree))).toEqual([]);
-      });
-    });
-
-    describe('given trees that differ', () => {
-      it('lists the path of each difference', () => {
-        expect(
-          listDifferences(
-            { a: { b: 1, c: [1, 2] }, d: 'same' },
-            { a: { b: 2, c: [1, 2], e: true }, d: 'same' },
-          ),
-        ).toEqual(['a/b', 'a/e']);
       });
     });
   });

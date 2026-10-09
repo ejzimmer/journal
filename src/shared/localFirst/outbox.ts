@@ -1,4 +1,4 @@
-import { createStore, del, entries, promisifyRequest } from 'idb-keyval';
+import { createStore, del, entries, promisifyRequest, set } from 'idb-keyval';
 
 export type OutboxOp = { updates: Record<string, unknown> };
 
@@ -9,6 +9,7 @@ export type Outbox = {
   list: () => Promise<StoredOutboxOp[]>;
   peekFront: () => Promise<StoredOutboxOp | undefined>;
   remove: (id: number) => Promise<void>;
+  keepOnlyPathsUnder: (root: string) => Promise<void>;
 };
 
 export function createOutbox(dbName: string): Outbox {
@@ -37,6 +38,20 @@ export function createOutbox(dbName: string): Outbox {
     },
     async remove(id) {
       await del(id, store);
+    },
+    async keepOnlyPathsUnder(root) {
+      const ops = await list();
+      await Promise.all(
+        ops.map(({ id, updates }) => {
+          const kept = Object.entries(updates).filter(([path]) =>
+            path.startsWith(`${root}/`),
+          );
+          if (kept.length === Object.keys(updates).length) return undefined;
+          return kept.length === 0
+            ? del(id, store)
+            : set(id, { updates: Object.fromEntries(kept) }, store);
+        }),
+      );
     },
   };
 }
