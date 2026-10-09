@@ -7,7 +7,7 @@ import { ChevronDownIcon } from '../../shared/icons/ChevronDown';
 import { MinusIcon } from '../../shared/icons/Minus';
 import { XIcon } from '../../shared/icons/X';
 import { TickIcon } from '../../shared/icons/Tick';
-import { RubbishBinIcon } from '../../shared/icons/RubbishBin';
+import { DeleteWithConfirmation } from '../../shared/controls/DeleteWithConfirmation';
 
 type RecommendationOption = Recommendation | 'no change';
 
@@ -49,16 +49,7 @@ export function ExerciseForm({
   const [recommendation, setRecommendation] = useState<RecommendationOption>(
     update?.recommendation ?? 'no change',
   );
-  const [isConfirmingDelete, setIsConfirmingDelete] = useState(false);
   const recommendationName = useId();
-
-  const handleDeleteClick = () => {
-    if (isConfirmingDelete) {
-      onDelete?.();
-    } else {
-      setIsConfirmingDelete(true);
-    }
-  };
 
   const handleSubmit = (event: FormEvent) => {
     event.preventDefault();
@@ -106,19 +97,7 @@ export function ExerciseForm({
         </fieldset>
       </div>
       <div className="actions">
-        {onDelete && (
-          <button
-            type="button"
-            className={`delete ${isConfirmingDelete ? 'confirming' : ''}`}
-            onClick={handleDeleteClick}
-            onBlur={() => setIsConfirmingDelete(false)}
-          >
-            <RubbishBinIcon
-              role="img"
-              aria-label={isConfirmingDelete ? 'Confirm delete' : 'Delete'}
-            />
-          </button>
-        )}
+        {onDelete && <DeleteWithConfirmation onDelete={onDelete} />}
         <button type="button" className="cancel" onClick={onCancel}>
           <XIcon role="img" aria-label="Cancel" />
         </button>

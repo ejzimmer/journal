@@ -98,17 +98,24 @@
       padding: 4px;
     }
 
+    svg {
+      width: 14px;
+    }
+
+    .delete svg {
+      width: 12px;
+    }
+
     button:hover {
       color: var(--success-colour);
     }
 
     .delete:hover,
-    .confirm-delete,
-    .confirm-delete:hover {
+    .delete.confirming {
       color: var(--error-colour);
     }
 
-    .confirm-delete {
+    .delete.confirming {
       opacity: 1;
     }
   }
