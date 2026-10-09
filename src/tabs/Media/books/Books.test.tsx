@@ -207,11 +207,6 @@ describe('Books', () => {
         .getAllByRole('button', { name: /, (unread|read)$/ })
         .map((spine) => spine.getAttribute('aria-label')?.split(',')[0]);
 
-    const selectYear = async (year: string) => {
-      const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
-      await user.click(screen.getByRole('tab', { name: year }));
-    };
-
     it('has a tab for this year and each year a book or a whole series was finished', () => {
       renderBooksOverYears();
 
@@ -236,18 +231,24 @@ describe('Books', () => {
 
     describe('when an earlier year is selected', () => {
       it('shows the books read that year that are not in a series', async () => {
+        const user = userEvent.setup({
+          advanceTimers: jest.advanceTimersByTime,
+        });
         renderBooksOverYears();
 
-        await selectYear('2025');
+        await user.click(screen.getByRole('tab', { name: '2025' }));
 
         expect(getTitles()).toEqual(['Nation']);
       });
 
       describe('and a series was finished that year', () => {
         it('shows the whole series', async () => {
+          const user = userEvent.setup({
+            advanceTimers: jest.advanceTimersByTime,
+          });
           renderBooksOverYears();
 
-          await selectYear('2026');
+          await user.click(screen.getByRole('tab', { name: '2026' }));
 
           expect(getTitles()).toEqual([
             'The Colour of Magic',
@@ -259,11 +260,14 @@ describe('Books', () => {
 
     describe('when a book has no date it was read', () => {
       it('counts it as read in 2026', async () => {
+        const user = userEvent.setup({
+          advanceTimers: jest.advanceTimersByTime,
+        });
         renderWithMediaStorage(<Books />, {
           books: [createReadBook('book-mort', 'Mort', 0)],
         });
 
-        await selectYear('2026');
+        await user.click(screen.getByRole('tab', { name: '2026' }));
 
         expect(getTitles()).toEqual(['Mort']);
       });
