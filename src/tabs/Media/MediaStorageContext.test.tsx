@@ -314,14 +314,14 @@ describe('MediaStorageContext', () => {
         jest.useRealTimers();
       });
 
-      const updateNation = (nation: BookDetails) => {
+      const getSavedBook = (book: BookDetails) => {
         const updateItem = jest.fn();
         const mediaStorage = createMediaStorage({
-          ...createStoredMedia({ books: [nation] }),
+          ...createStoredMedia({ books: [book] }),
           updateItem,
         });
 
-        mediaStorage.updateMedia(nation);
+        mediaStorage.updateMedia(book);
 
         return updateItem.mock.calls[0][1];
       };
@@ -329,7 +329,7 @@ describe('MediaStorageContext', () => {
       describe('when a book is marked read', () => {
         it('records today as the date it was finished', () => {
           expect(
-            updateNation(
+            getSavedBook(
               createBook('book-nation', 'Nation', { status: 'read' }),
             ),
           ).toHaveProperty('completedAt', '2027-03-14');
@@ -358,7 +358,7 @@ describe('MediaStorageContext', () => {
       describe('when a finished book is edited', () => {
         it('keeps the date it was finished', () => {
           expect(
-            updateNation(
+            getSavedBook(
               createBook('book-nation', 'Nation', {
                 status: 'read',
                 completedAt: '2026-11-02',
@@ -371,7 +371,7 @@ describe('MediaStorageContext', () => {
       describe('when a finished book goes back to unread', () => {
         it('drops the date it was finished', () => {
           expect(
-            updateNation(
+            getSavedBook(
               createBook('book-nation', 'Nation', {
                 status: 'unread',
                 completedAt: '2026-11-02',
