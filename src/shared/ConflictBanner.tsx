@@ -60,113 +60,112 @@ function ConflictChoice({
   conflict: Conflict;
   conflictStatus: ConflictStatus;
 }) {
-  const title = describeItem(conflict);
-  const field = describeField(conflict.path);
-  const [mine, theirs] = splitChangedWords(
-    describeValue(conflict.mine),
-    describeValue(conflict.theirs),
-  );
+  const caption = describeConflict(conflict);
+  const note = describeDeletion(conflict);
 
   return (
-    <li className="conflict" aria-label={title}>
-      <div className="conflict-title">
-        <span>{title}</span>
-        {field && <span className="conflict-field">{field}</span>}
+    <li className="conflict" aria-label={caption}>
+      <div className="conflict-caption">{caption}</div>
+      <div className="conflict-diff">
+        {listDiffParts(
+          describeValue(conflict.theirs),
+          describeValue(conflict.mine),
+        ).map(({ text, kind }, index) =>
+          kind === 'removed' ? (
+            <del key={index}>{text}</del>
+          ) : kind === 'added' ? (
+            <ins key={index}>{text}</ins>
+          ) : (
+            text
+          ),
+        )}
       </div>
-      <ConflictSide
-        className="mine"
-        label="Your change"
-        words={mine}
-        onKeep={() => conflictStatus.keepMine(conflict.path)}
-      />
-      <ConflictSide
-        className="theirs"
-        label="Incoming change"
-        words={theirs}
-        onKeep={() => conflictStatus.keepTheirs(conflict.path)}
-      />
+      {note && <div className="conflict-note">{note}</div>}
+      <div className="conflict-actions">
+        <button
+          className="outline"
+          onClick={() => conflictStatus.keepTheirs(conflict.path)}
+        >
+          Keep theirs
+        </button>
+        <button
+          className="primary"
+          onClick={() => conflictStatus.keepMine(conflict.path)}
+        >
+          Keep yours
+        </button>
+      </div>
     </li>
   );
 }
 
-function ConflictSide({
-  className,
-  label,
-  words,
-  onKeep,
-}: {
-  className: string;
-  label: string;
-  words: ChangedWords;
-  onKeep: () => void;
-}) {
-  return (
-    <div className={`conflict-side ${className}`}>
-      <div className="conflict-side-header">
-        <span>{label}</span>
-        <button
-          className="conflict-keep"
-          aria-label={`Keep ${label.toLowerCase()}`}
-          onClick={onKeep}
-        >
-          Keep this
-        </button>
-      </div>
-      <div className="conflict-value">
-        {words.before}
-        {words.changed && <mark>{words.changed}</mark>}
-        {words.after}
-      </div>
-    </div>
-  );
-}
+type DiffPart = { text: string; kind: 'same' | 'removed' | 'added' };
 
-type ChangedWords = { before: string; changed: string; after: string };
-
-function splitChangedWords(
-  mine: string,
-  theirs: string,
-): [ChangedWords, ChangedWords] {
-  const mineWords = mine.split(/(\s+)/);
-  const theirWords = theirs.split(/(\s+)/);
+function listDiffParts(original: string, changed: string): DiffPart[] {
+  const originalWords = original.split(/(\s+)/);
+  const changedWords = changed.split(/(\s+)/);
   let start = 0;
   while (
-    start < mineWords.length &&
-    start < theirWords.length &&
-    mineWords[start] === theirWords[start]
+    start < originalWords.length &&
+    start < changedWords.length &&
+    originalWords[start] === changedWords[start]
   ) {
     start++;
   }
   let end = 0;
   while (
-    end < mineWords.length - start &&
-    end < theirWords.length - start &&
-    mineWords[mineWords.length - 1 - end] ===
-      theirWords[theirWords.length - 1 - end]
+    end < originalWords.length - start &&
+    end < changedWords.length - start &&
+    originalWords[originalWords.length - 1 - end] ===
+      changedWords[changedWords.length - 1 - end]
   ) {
     end++;
   }
-  if (start === 0 && end === 0) {
-    return [
-      { before: mine, changed: '', after: '' },
-      { before: theirs, changed: '', after: '' },
-    ];
-  }
-  const splitWords = (words: string[]) => {
-    const changed = words.slice(start, words.length - end).join('');
-    const leadingSpace = changed.match(/^\s*/)?.[0] ?? '';
-    return {
-      before: words.slice(0, start).join('') + leadingSpace,
-      changed: changed.slice(leadingSpace.length),
-      after: words.slice(words.length - end).join(''),
-    };
-  };
-  return [splitWords(mineWords), splitWords(theirWords)];
+  const removed = originalWords
+    .slice(start, originalWords.length - end)
+    .join('');
+  const added = changedWords.slice(start, changedWords.length - end).join('');
+  const changedText = removed || added;
+  const leadingSpace = changedText.match(/^\s*/)?.[0] ?? '';
+  const trailingSpace = changedText.match(/\s*$/)?.[0] ?? '';
+  const parts: DiffPart[] = [
+    {
+      text: originalWords.slice(0, start).join('') + leadingSpace,
+      kind: 'same',
+    },
+    { text: removed.trim(), kind: 'removed' },
+    { text: removed.trim() && added.trim() ? ' ' : '', kind: 'same' },
+    { text: added.trim(), kind: 'added' },
+    {
+      text:
+        trailingSpace +
+        originalWords.slice(originalWords.length - end).join(''),
+      kind: 'same',
+    },
+  ];
+  return parts.filter(({ text }) => text !== '');
 }
 
-function describeItem({ path, item, mine, theirs }: Conflict): string {
-  const name = findName(item) ?? findName(mine) ?? findName(theirs);
-  return name ?? capitalise(listReadableSegments(path)[0] ?? '');
+function describeConflict(conflict: Conflict): string {
+  const field = describeField(conflict.path);
+  const itemName = findName(conflict.item);
+  if (!field) return describeSection(conflict.path);
+  if (!itemName || isNameField(conflict.path)) return field;
+  return `${itemName} · ${field}`;
+}
+
+function describeDeletion({ mine, theirs }: Conflict): string | undefined {
+  if (theirs === null) return 'Deleted on the other device';
+  if (mine === null) return 'Deleted on this device';
+  return undefined;
+}
+
+function describeSection(path: string): string {
+  return capitalise(listReadableSegments(path)[0] ?? '');
+}
+
+function isNameField(path: string): boolean {
+  return NAME_FIELDS.includes(path.split('/').pop() ?? '');
 }
 
 function describeField(path: string): string | undefined {
@@ -177,10 +176,10 @@ function describeField(path: string): string | undefined {
 }
 
 function describeValue(value: unknown): string {
-  if (value === null || value === undefined) return 'Deleted';
+  if (value === null || value === undefined) return '';
   if (typeof value === 'boolean') return value ? 'Yes' : 'No';
   if (typeof value !== 'object') return String(value);
-  return 'Edited';
+  return findName(value) ?? 'Edited';
 }
 
 function findName(value: unknown): string | undefined {

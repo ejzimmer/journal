@@ -10,7 +10,7 @@
 .conflict-list {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 16px;
   margin: 0;
   padding: 0;
   list-style: none;
@@ -18,75 +18,48 @@
 }
 
 .conflict {
+  padding: 12px;
   border: 1px solid var(--border-colour);
   border-radius: 6px;
-  overflow: hidden;
 }
 
-.conflict-title {
-  display: flex;
-  justify-content: space-between;
-  gap: 12px;
-  padding: 8px 12px;
-  font-weight: 600;
-  border-block-end: 1px solid var(--border-colour);
-}
-
-.conflict-field {
-  font-weight: normal;
+.conflict-caption {
+  font-size: 0.85rem;
   color: var(--body-colour-mid);
 }
 
-.conflict-side {
-  --side-colour: var(--action-colour);
-  padding: 8px 12px;
-  border-inline-start: 4px solid var(--side-colour);
-  background: color-mix(in srgb, var(--side-colour) 8%, white);
+.conflict-diff {
+  margin-block: 4px;
+  overflow-wrap: anywhere;
 
-  &.theirs {
-    --side-colour: var(--success-colour);
+  del {
+    color: var(--danger-colour-dark);
+    background: color-mix(in srgb, var(--error-colour) 12%, white);
+    border-radius: 2px;
   }
 
-  & + & {
-    border-block-start: 1px solid var(--border-colour);
-  }
-
-  mark {
-    background: color-mix(in srgb, var(--side-colour) 22%, white);
-    color: inherit;
+  ins {
+    text-decoration: none;
+    color: hsl(108 81% 24%);
+    background: color-mix(in srgb, var(--success-colour) 16%, white);
     border-radius: 2px;
   }
 }
 
-.conflict-side-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: 0.8rem;
-  color: var(--side-colour);
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.03em;
-}
-
-button.conflict-keep {
-  height: auto;
-  padding: 2px 8px;
-  border: none;
+.conflict-note {
   font-size: 0.85rem;
-  font-weight: normal;
-  text-transform: none;
-  letter-spacing: normal;
-  color: var(--link-colour);
-
-  &:hover,
-  &:focus-visible {
-    background: color-mix(in srgb, var(--side-colour) 18%, white);
-    text-decoration: underline;
-  }
+  font-style: italic;
+  color: var(--body-colour-mid);
 }
 
-.conflict-value {
-  margin-block-start: 4px;
-  overflow-wrap: anywhere;
+.conflict-actions {
+  display: flex;
+  gap: 6px;
+  justify-content: end;
+  margin-block-start: 10px;
+
+  button {
+    height: 2rem;
+    padding-inline: 12px;
+  }
 }
