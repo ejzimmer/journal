@@ -7,6 +7,14 @@
   }
 }
 
+nav.tabs {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  block-size: var(--tab-bar-height);
+  background: white;
+}
+
 nav ul {
   list-style-type: none;
   display: flex;
