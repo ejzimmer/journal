@@ -5,10 +5,10 @@ import { createLocalStore } from './localStore';
 import { createOutbox, StoredOutboxOp } from './outbox';
 import {
   getAtPath,
+  listChangedFields,
   pathsAreRelated,
   setAtPath,
   Tree,
-  valuesAreEqual,
 } from './pathTree';
 import { createSyncEngine } from './syncEngine';
 import {
@@ -93,9 +93,10 @@ export function createLocalFirstContext(
     const v2Updates = convertUpdatesToV2(updates, (unitPath) =>
       readV1PathWithUpdates(unitPath, readV1Path(unitPath), updates),
     );
-    const changes = Object.entries(v2Updates).filter(
-      ([path, value]) =>
-        value === null || !valuesAreEqual(localStore.readPath(path), value),
+    const changes = Object.entries(v2Updates).flatMap(([path, value]) =>
+      value === null
+        ? [[path, null] as [string, unknown]]
+        : listChangedFields(path, localStore.readPath(path), value),
     );
     if (changes.length === 0) {
       return;
