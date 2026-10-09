@@ -7,6 +7,7 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   --input-height: 28px;
+  --tab-bar-height: 38px;
 
   --body-colour: hsl(0 0% 20%);
   --body-colour-mid: hsl(0 0% 50%);
