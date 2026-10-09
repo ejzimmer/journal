@@ -26,7 +26,7 @@ export function DeleteConfirmation({
         aria-label="Confirm delete"
         onClick={onConfirm}
       >
-        <TickIcon width="16px" />
+        <TickIcon width="14px" />
       </button>
       <button
         type="button"
@@ -34,7 +34,7 @@ export function DeleteConfirmation({
         aria-label="Cancel delete"
         onClick={onCancel}
       >
-        <XIcon width="14px" />
+        <XIcon width="12px" />
       </button>
     </>
   );

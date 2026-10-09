@@ -64,7 +64,7 @@ export function AdventureCard({ adventure, mode }: AdventureCardProps) {
                   aria-label="Delete"
                   onClick={() => setIsConfirmingDelete(true)}
                 >
-                  <RubbishBinIcon width="14px" />
+                  <RubbishBinIcon width="12px" />
                 </button>
                 <button
                   type="button"
@@ -75,9 +75,9 @@ export function AdventureCard({ adventure, mode }: AdventureCardProps) {
                   }
                 >
                   {adventure.isDone ? (
-                    <RestartArrowIcon width="16px" />
+                    <RestartArrowIcon width="14px" />
                   ) : (
-                    <TickIcon width="16px" />
+                    <TickIcon width="14px" />
                   )}
                 </button>
               </>
