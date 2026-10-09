@@ -125,7 +125,7 @@ describe('Projects', () => {
           ).toEqual(['weaving']);
         });
 
-        describe('when a project has no finish date', () => {
+        describe('when a completed project has no finish date', () => {
           it('counts it as finished in 2026', async () => {
             const user = userEvent.setup({
               advanceTimers: jest.advanceTimersByTime,
