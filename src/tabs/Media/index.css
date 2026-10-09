@@ -12,37 +12,68 @@
     margin-block-end: 0;
   }
 
-  & > div {
-    border: 2px solid var(--border-colour);
-    border-radius: 8px;
+  & > .books,
+  & > .games {
+    border: 3px solid var(--media-accent);
+    border-radius: 14px;
     display: flex;
     flex-direction: column;
     padding-inline: 24px;
     padding-block-end: 24px;
+    background: linear-gradient(
+      to bottom,
+      color-mix(in srgb, var(--media-accent) 16%, white),
+      color-mix(in srgb, var(--media-accent) 5%, white) 40%
+    );
+    box-shadow:
+      inset 0 2px 0 hsl(0 0% 100% / 0.7),
+      0 6px 0 var(--media-accent-dark),
+      0 10px 18px color-mix(in srgb, var(--media-accent-dark) 35%, transparent);
+
+    h2 {
+      color: var(--media-accent-dark);
+      font-weight: 800;
+      letter-spacing: 0.02em;
+      text-shadow: 0 2px 0 hsl(0 0% 100% / 0.8);
+    }
 
     > button {
       align-self: end;
+      color: white;
+      border-color: var(--media-accent-dark);
+      background: linear-gradient(
+        to bottom,
+        color-mix(in srgb, var(--media-accent) 70%, white),
+        var(--media-accent) 55%
+      );
+      box-shadow:
+        inset 0 1px 0 hsl(0 0% 100% / 0.6),
+        0 3px 0 var(--media-accent-dark);
+
+      &:hover,
+      &:focus-visible {
+        background: var(--media-accent-dark);
+      }
+    }
+
+    .year-tabs [role='tab'][aria-selected='true'] {
+      border-bottom-color: var(--media-accent);
     }
   }
 
   & > .books {
-    --media-accent: hsl(29 94% 50%);
-    --media-accent-dark: hsl(29 94% 38%);
-    border-color: var(--media-accent);
-    background: hsla(29, 97%, 46%, 0.06);
+    --media-accent: hsl(24 96% 52%);
+    --media-accent-dark: hsl(18 90% 38%);
+  }
+
+  & > .games {
+    --media-accent: hsl(188 88% 40%);
+    --media-accent-dark: hsl(196 90% 28%);
   }
 
   & > .wind-waker {
     grid-column: 1 / -1;
     justify-self: center;
-    padding-block-start: 24px;
-  }
-
-  & > .games {
-    --media-accent: hsl(187 76% 36%);
-    --media-accent-dark: hsl(187 76% 26%);
-    border-color: var(--media-accent);
-    background: hsla(187, 76%, 36%, 0.06);
   }
 
   .shelves {
@@ -53,10 +84,12 @@
     background-image: repeating-linear-gradient(
       to bottom,
       transparent 0 var(--shelf-height),
-      hsl(32 40% 80%) var(--shelf-height) calc(var(--shelf-height) + 4px),
-      hsl(30 32% 66%) calc(var(--shelf-height) + 4px)
-        calc(var(--shelf-height) + 7px),
-      transparent calc(var(--shelf-height) + 7px) var(--shelf-spacing)
+      hsl(32 62% 58%) var(--shelf-height) calc(var(--shelf-height) + 2px),
+      hsl(28 58% 46%) calc(var(--shelf-height) + 2px)
+        calc(var(--shelf-height) + 6px),
+      hsl(22 56% 30%) calc(var(--shelf-height) + 6px)
+        calc(var(--shelf-height) + 10px),
+      transparent calc(var(--shelf-height) + 10px) var(--shelf-spacing)
     );
   }
 
@@ -96,13 +129,13 @@
   }
 
   .shelf-label {
-    margin-block-start: 5px;
+    margin-block-start: 8px;
     align-self: flex-start;
     margin-inline-start: 3px;
     background: hsl(44 52% 97%);
-    border: 1px solid hsl(38 26% 82%);
-    border-radius: 2px;
-    box-shadow: 0 1px 2px hsl(32 30% 50% / 0.22);
+    border: 1px solid hsl(34 40% 72%);
+    border-radius: 3px;
+    box-shadow: 0 2px 0 hsl(28 40% 55% / 0.5);
     padding: 2px 11px 3px;
     font-family: 'Dancing Script', cursive;
     font-weight: 600;
