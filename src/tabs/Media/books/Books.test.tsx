@@ -156,7 +156,7 @@ describe('Books', () => {
       ...(completedAt && { completedAt }),
     });
 
-    const halfReadWatch: SeriesDetails<BookDetails> = {
+    const halfReadWatchSeries: SeriesDetails<BookDetails> = {
       ...theWatchSeries,
       items: {
         [guardsGuards.id]: createReadBook(
@@ -198,8 +198,8 @@ describe('Books', () => {
 
     const renderBooksOverYears = () =>
       renderWithMediaStorage(<Books />, {
-        books: [halfReadWatch, rincewind, nation],
-        bookSeries: [halfReadWatch, rincewind],
+        books: [halfReadWatchSeries, rincewind, nation],
+        bookSeries: [halfReadWatchSeries, rincewind],
       });
 
     const listShownTitles = () =>
