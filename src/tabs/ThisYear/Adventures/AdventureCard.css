@@ -4,7 +4,7 @@
   position: relative;
   display: flex;
   flex-direction: column;
-  max-width: 260px;
+  max-width: 166px;
   background: #fbf8f0;
   border-top: 10px solid var(--mode-colour, var(--border-colour));
   box-shadow:
