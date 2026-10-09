@@ -22,15 +22,3 @@ export function getNextSeriesPosition(
 ) {
   return getNextPosition(listSeriesPositions(items));
 }
-
-export function mergeReorderedSeriesItems<T extends MediaDetails>(
-  items: Record<string, T> | undefined,
-  reorderedItems: { id: string }[],
-) {
-  const reorderedIds = new Set(reorderedItems.map(({ id }) => id));
-  const remainingReorderedItems = [...reorderedItems];
-
-  return sortSeriesItems(items).map(({ id }) =>
-    reorderedIds.has(id) ? remainingReorderedItems.shift()! : { id },
-  );
-}

@@ -3,7 +3,7 @@ import { AdventureCard } from './AdventureCard';
 import { useAdventureStorage } from './AdventureStorageContext';
 import { Adventure } from './types';
 import { YearTabs } from '../../../shared/controls/YearTabs';
-import { useCompletionYears } from '../../../shared/years';
+import { getCompletionYear, useCompletionYears } from '../../../shared/years';
 
 import './Noticeboard.css';
 
@@ -17,7 +17,7 @@ export function Noticeboard() {
     selectYear,
     isThisYearSelected,
     isInSelectedYear,
-  } = useCompletionYears(adventures, isAdventureDone);
+  } = useCompletionYears(adventures, isAdventureDone, getCompletionYear);
 
   return (
     <section className="noticeboard" aria-label="Adventures">

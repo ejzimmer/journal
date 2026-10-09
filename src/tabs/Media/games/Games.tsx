@@ -12,7 +12,6 @@ import { AddMediaForm, EditMediaForm } from '../MediaForm';
 import { useGameFormConfig } from './gameFormConfig';
 import { Shelf } from '../Shelf';
 import { useMediaStorage } from '../MediaStorageContext';
-import { mergeReorderedSeriesItems } from '../seriesOrder';
 import { useMediaYears } from '../useMediaYears';
 import { YearTabs } from '../../../shared/controls/YearTabs';
 
@@ -61,11 +60,7 @@ function GameMediaList({
       items={games}
       listId={series && getSeriesItemsPath(series)}
       bandHue={series?.bandHue}
-      onReorder={
-        series &&
-        ((items) =>
-          reorderSeries(series, mergeReorderedSeriesItems(series.items, items)))
-      }
+      onReorder={series && ((items) => reorderSeries(series, items))}
       hue={(game) => getCoverHue(series?.id ?? game.title)}
       config={GAME_CONFIG}
       EditForm={EditGameForm}
@@ -94,13 +89,13 @@ export function Games() {
         onSelectYear={selectYear}
       >
         <div className="shelves">
-          {seriesInYear.map(({ series, items }) => (
+          {seriesInYear.map((series) => (
             <Shelf
               key={series.id}
               label={series.name}
               onRenameLabel={(name) => updateMediaSeries(series, name)}
             >
-              <GameMediaList games={items} series={series} />
+              <GameMediaList games={series.items} series={series} />
             </Shelf>
           ))}
           {singlesInYear.map((game) => (

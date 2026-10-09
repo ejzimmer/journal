@@ -12,7 +12,6 @@ import { AddMediaForm, EditMediaForm } from '../MediaForm';
 import { useBookFormConfig } from './bookFormConfig';
 import { Shelf } from '../Shelf';
 import { useMediaStorage } from '../MediaStorageContext';
-import { mergeReorderedSeriesItems } from '../seriesOrder';
 import { useMediaYears } from '../useMediaYears';
 import { YearTabs } from '../../../shared/controls/YearTabs';
 
@@ -64,11 +63,7 @@ function BookMediaList({
       items={books}
       listId={series && getSeriesItemsPath(series)}
       bandHue={series?.bandHue}
-      onReorder={
-        series &&
-        ((items) =>
-          reorderSeries(series, mergeReorderedSeriesItems(series.items, items)))
-      }
+      onReorder={series && ((items) => reorderSeries(series, items))}
       hue={(book) => getCoverHue(book.author ?? book.title)}
       config={BOOK_CONFIG}
       EditForm={EditBookForm}
@@ -97,13 +92,13 @@ export function Books() {
         onSelectYear={selectYear}
       >
         <div className="shelves">
-          {seriesInYear.map(({ series, items }) => (
+          {seriesInYear.map((series) => (
             <Shelf
               key={series.id}
               label={series.name}
               onRenameLabel={(name) => updateMediaSeries(series, name)}
             >
-              <BookMediaList books={items} series={series} />
+              <BookMediaList books={series.items} series={series} />
             </Shelf>
           ))}
           {singlesInYear.map((book) => (

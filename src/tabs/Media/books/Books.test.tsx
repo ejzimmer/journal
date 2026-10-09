@@ -145,32 +145,59 @@ describe('Books', () => {
       jest.useRealTimers();
     });
 
-    const readGuards = { ...guards, status: 'read' as const };
-    const readFeetOfClay = {
-      ...feetOfClay,
-      status: 'read' as const,
-      completedAt: '2027-01-15',
-    };
-    const nation: BookDetails = {
-      id: 'book-nation',
+    const createReadBook = (
+      id: string,
+      title: string,
+      position: number,
+      completedAt?: string,
+    ): BookDetails => ({
+      id,
       type: 'book',
-      title: 'Nation',
+      title,
       status: 'read',
-      completedAt: '2025-05-02',
-    };
-    const watchOverYears = {
+      position,
+      ...(completedAt && { completedAt }),
+    });
+
+    const halfReadWatch: SeriesDetails<BookDetails> = {
       ...watch,
       items: {
-        [readGuards.id]: { ...readGuards, position: 0 },
+        [guards.id]: createReadBook(guards.id, guards.title, 0, '2026-04-01'),
         [menAtArms.id]: { ...menAtArms, position: 1 },
-        [readFeetOfClay.id]: { ...readFeetOfClay, position: 2 },
+        [feetOfClay.id]: createReadBook(
+          feetOfClay.id,
+          feetOfClay.title,
+          2,
+          '2027-01-15',
+        ),
       },
     };
+    const colourOfMagic = createReadBook(
+      'book-colour',
+      'The Colour of Magic',
+      0,
+      '2025-03-02',
+    );
+    const lightFantastic = createReadBook(
+      'book-light',
+      'The Light Fantastic',
+      1,
+    );
+    const rincewind: SeriesDetails<BookDetails> = {
+      id: 'series-rincewind',
+      type: 'series',
+      name: 'Rincewind',
+      items: {
+        [colourOfMagic.id]: colourOfMagic,
+        [lightFantastic.id]: lightFantastic,
+      },
+    };
+    const nation = createReadBook('book-nation', 'Nation', 0, '2025-05-02');
 
     const renderBooksOverYears = () =>
       renderWithMediaStorage(<Books />, {
-        books: [watchOverYears, nation],
-        bookSeries: [watchOverYears],
+        books: [halfReadWatch, rincewind, nation],
+        bookSeries: [halfReadWatch, rincewind],
       });
 
     const listShelvedTitles = () =>
@@ -178,7 +205,12 @@ describe('Books', () => {
         .getAllByRole('button', { name: /, (unread|read)$/ })
         .map((spine) => spine.getAttribute('aria-label')?.split(',')[0]);
 
-    it('has a tab for this year and each year a book was read', () => {
+    const selectYear = async (year: string) => {
+      const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
+      await user.click(screen.getByRole('tab', { name: year }));
+    };
+
+    it('has a tab for this year and each year a book or a whole series was finished', () => {
       renderBooksOverYears();
 
       expect(screen.getAllByRole('tab').map((tab) => tab.textContent)).toEqual([
@@ -189,53 +221,49 @@ describe('Books', () => {
     });
 
     describe('when this year is selected', () => {
-      it('shelves the unread books and the ones read this year', () => {
+      it('shelves every book in a series that is still being read', () => {
         renderBooksOverYears();
 
-        expect(listShelvedTitles()).toEqual(['Men at Arms', 'Feet of Clay']);
-      });
-
-      describe('and a book in a series is moved', () => {
-        it('keeps the books read in earlier years where they were', async () => {
-          const user = userEvent.setup({
-            advanceTimers: jest.advanceTimersByTime,
-          });
-          const { storageContext } = renderBooksOverYears();
-
-          getSpineTitle('Feet of Clay').focus();
-          await user.keyboard('{ArrowLeft}');
-
-          expect(listReorderedIds(storageContext.reorderSeries)).toEqual({
-            seriesId: watch.id,
-            itemIds: [guards.id, feetOfClay.id, menAtArms.id],
-          });
-        });
+        expect(listShelvedTitles()).toEqual([
+          'Guards! Guards!',
+          'Men at Arms',
+          'Feet of Clay',
+        ]);
       });
     });
 
     describe('when an earlier year is selected', () => {
-      it('shelves only the books read that year', async () => {
-        const user = userEvent.setup({
-          advanceTimers: jest.advanceTimersByTime,
-        });
+      it('shelves the books read that year that are not in a series', async () => {
         renderBooksOverYears();
 
-        await user.click(screen.getByRole('tab', { name: '2025' }));
+        await selectYear('2025');
 
         expect(listShelvedTitles()).toEqual(['Nation']);
       });
 
-      describe('and a book has no date it was read', () => {
-        it('counts it as read in 2026', async () => {
-          const user = userEvent.setup({
-            advanceTimers: jest.advanceTimersByTime,
-          });
+      describe('and a series was finished that year', () => {
+        it('shelves the whole series', async () => {
           renderBooksOverYears();
 
-          await user.click(screen.getByRole('tab', { name: '2026' }));
+          await selectYear('2026');
 
-          expect(listShelvedTitles()).toEqual(['Guards! Guards!']);
+          expect(listShelvedTitles()).toEqual([
+            'The Colour of Magic',
+            'The Light Fantastic',
+          ]);
         });
+      });
+    });
+
+    describe('when a book has no date it was read', () => {
+      it('counts it as read in 2026', async () => {
+        renderWithMediaStorage(<Books />, {
+          books: [createReadBook('book-mort', 'Mort', 0)],
+        });
+
+        await selectYear('2026');
+
+        expect(listShelvedTitles()).toEqual(['Mort']);
       });
     });
   });

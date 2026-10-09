@@ -21,20 +21,21 @@ export function stampCompletion<T extends Completable>(
 export const listYearsNewestFirst = (thisYear: number, years: number[]) =>
   [...new Set([thisYear, ...years])].sort((a, b) => b - a);
 
-export function useCompletionYears<T extends Completable>(
+export function useCompletionYears<T>(
   items: T[],
   isComplete: (item: T) => boolean,
+  getYear: (item: T) => number,
 ) {
   const thisYear = getThisYear();
   const [selectedYear, selectYear] = useState(thisYear);
   const years = listYearsNewestFirst(
     thisYear,
-    items.filter(isComplete).map(getCompletionYear),
+    items.filter(isComplete).map(getYear),
   );
 
   const isInSelectedYear = (item: T) =>
     isComplete(item)
-      ? getCompletionYear(item) === selectedYear
+      ? getYear(item) === selectedYear
       : selectedYear === thisYear;
 
   return {
