@@ -200,7 +200,7 @@ describe('Books', () => {
         bookSeries: [halfReadWatch, rincewind],
       });
 
-    const listShelvedTitles = () =>
+    const listShownTitles = () =>
       screen
         .getAllByRole('button', { name: /, (unread|read)$/ })
         .map((spine) => spine.getAttribute('aria-label')?.split(',')[0]);
@@ -221,10 +221,10 @@ describe('Books', () => {
     });
 
     describe('when this year is selected', () => {
-      it('shelves every book in a series that is still being read', () => {
+      it('shows every book in a series that is still being read', () => {
         renderBooksOverYears();
 
-        expect(listShelvedTitles()).toEqual([
+        expect(listShownTitles()).toEqual([
           'Guards! Guards!',
           'Men at Arms',
           'Feet of Clay',
@@ -233,21 +233,21 @@ describe('Books', () => {
     });
 
     describe('when an earlier year is selected', () => {
-      it('shelves the books read that year that are not in a series', async () => {
+      it('shows the books read that year that are not in a series', async () => {
         renderBooksOverYears();
 
         await selectYear('2025');
 
-        expect(listShelvedTitles()).toEqual(['Nation']);
+        expect(listShownTitles()).toEqual(['Nation']);
       });
 
       describe('and a series was finished that year', () => {
-        it('shelves the whole series', async () => {
+        it('shows the whole series', async () => {
           renderBooksOverYears();
 
           await selectYear('2026');
 
-          expect(listShelvedTitles()).toEqual([
+          expect(listShownTitles()).toEqual([
             'The Colour of Magic',
             'The Light Fantastic',
           ]);
@@ -263,7 +263,7 @@ describe('Books', () => {
 
         await selectYear('2026');
 
-        expect(listShelvedTitles()).toEqual(['Mort']);
+        expect(listShownTitles()).toEqual(['Mort']);
       });
     });
   });
