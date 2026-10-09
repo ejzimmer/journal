@@ -75,7 +75,7 @@
 
     &:hover,
     &:focus-visible {
-      background: var(--border-colour);
+      background: hsl(0 0% 0% / 0.06);
     }
   }
 }
