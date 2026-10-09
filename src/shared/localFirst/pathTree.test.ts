@@ -102,10 +102,12 @@ describe('listChangedFields', () => {
       ]);
     });
 
-    it('deletes fields the new value no longer has', () => {
-      expect(
-        listChangedFields('items/a', { id: 'a', note: 'x' }, { id: 'a' }),
-      ).toEqual([['items/a/note', null]]);
+    describe('when a field is dropped from the value', () => {
+      it('deletes the field', () => {
+        expect(
+          listChangedFields('items/a', { id: 'a', note: 'x' }, { id: 'a' }),
+        ).toEqual([['items/a/note', null]]);
+      });
     });
 
     it('treats an undefined field as a delete', () => {

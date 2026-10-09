@@ -1,23 +1,25 @@
-import { KeyboardEvent, ReactNode, useRef } from 'react';
+import { KeyboardEvent, ReactNode, useId, useRef } from 'react';
 import './YearTabs.css';
 
 type YearTabsProps = {
   years: number[];
   selectedYear: number;
   onSelectYear: (year: number) => void;
+  className?: string;
   children: ReactNode;
 };
-
-const getTabId = (year: number) => `yarn-year-tab-${year}`;
-const PANEL_ID = 'yarn-year-panel';
 
 export function YearTabs({
   years,
   selectedYear,
   onSelectYear,
+  className,
   children,
 }: YearTabsProps) {
   const tabRefs = useRef(new Map<number, HTMLButtonElement>());
+  const idPrefix = useId();
+  const getTabId = (year: number) => `${idPrefix}-tab-${year}`;
+  const panelId = `${idPrefix}-panel`;
 
   if (years.length < 2) {
     return children;
@@ -44,7 +46,7 @@ export function YearTabs({
   };
 
   return (
-    <div className="year-tabs">
+    <div className={`year-tabs ${className ?? ''}`}>
       <div role="tablist" aria-label="Year" onKeyDown={moveSelection}>
         {years.map((year) => {
           const isSelected = year === selectedYear;
@@ -59,7 +61,7 @@ export function YearTabs({
               role="tab"
               id={getTabId(year)}
               aria-selected={isSelected}
-              aria-controls={PANEL_ID}
+              aria-controls={panelId}
               tabIndex={isSelected ? 0 : -1}
               onClick={() => onSelectYear(year)}
             >
@@ -70,7 +72,7 @@ export function YearTabs({
       </div>
       <div
         role="tabpanel"
-        id={PANEL_ID}
+        id={panelId}
         aria-labelledby={getTabId(selectedYear)}
       >
         {children}

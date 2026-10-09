@@ -10,6 +10,7 @@ const mockDays: Balance[] = Array.from({ length: 18 }).map((_, index) => {
     day: thisDay.day,
     month: 'Jan',
     monthNumber: thisDay.month,
+    year: thisDay.year,
     dayOfWeek: thisDay.dayOfWeek,
     balance: 20000,
   };
@@ -48,5 +49,26 @@ describe('WeeklyCalorieTracker', () => {
     expect(screen.getByRole('img', { name: '14 Jan: 10,000' })).toHaveClass(
       'week-lowest',
     );
+  });
+
+  describe('when the bars are wider than the screen', () => {
+    afterEach(() => {
+      jest.restoreAllMocks();
+    });
+
+    it('scrolls to the latest week', () => {
+      jest
+        .spyOn(HTMLElement.prototype, 'scrollWidth', 'get')
+        .mockReturnValue(1200);
+      const setScrollLeft = jest.spyOn(
+        HTMLElement.prototype,
+        'scrollLeft',
+        'set',
+      );
+
+      render(<WeeklyCalorieTracker days={mockDays} />);
+
+      expect(setScrollLeft).toHaveBeenCalledWith(1200);
+    });
   });
 });

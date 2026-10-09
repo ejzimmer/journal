@@ -3,7 +3,6 @@ import {
   BookDetails,
   BookStatus,
   getBookStatus,
-  isSeries,
   SeriesDetails,
 } from '../types';
 import { getCoverHue } from '../coverHue';
@@ -13,6 +12,8 @@ import { AddMediaForm, EditMediaForm } from '../MediaForm';
 import { useBookFormConfig } from './bookFormConfig';
 import { Shelf } from '../Shelf';
 import { useMediaStorage } from '../MediaStorageContext';
+import { useMediaYears } from '../useMediaYears';
+import { YearTabs } from '../../../shared/controls/YearTabs';
 
 const BOOK_CONFIG: StatusConfig<BookDetails, BookStatus> = {
   order: BOOK_STATUS_ORDER,
@@ -72,34 +73,44 @@ function BookMediaList({
 
 export function Books() {
   const { books, updateMediaSeries } = useMediaStorage();
-
-  const series = books.filter((item): item is SeriesDetails<BookDetails> =>
-    isSeries(item),
-  );
-  const singleBooks = books.filter(
-    (item): item is BookDetails => !isSeries(item),
-  );
+  const formConfig = useBookFormConfig();
+  const {
+    years,
+    selectedYear,
+    selectYear,
+    isThisYearSelected,
+    seriesInYear,
+    singlesInYear,
+  } = useMediaYears(books);
 
   return (
     <div className="books">
       <h2>Books</h2>
-      <div className="shelves">
-        {series.map((item) => (
-          <Shelf
-            key={item.id}
-            label={item.name}
-            onRenameLabel={(name) => updateMediaSeries(item, name)}
-          >
-            <BookMediaList books={item.items} series={item} />
-          </Shelf>
-        ))}
-        {singleBooks.map((book) => (
-          <Shelf key={book.id} single>
-            <BookMediaList books={{ [book.id]: book }} />
-          </Shelf>
-        ))}
-      </div>
-      <AddMediaForm ariaLabel="Add a book" config={useBookFormConfig()} />
+      <YearTabs
+        years={years}
+        selectedYear={selectedYear}
+        onSelectYear={selectYear}
+      >
+        <div className="shelves">
+          {seriesInYear.map((series) => (
+            <Shelf
+              key={series.id}
+              label={series.name}
+              onRenameLabel={(name) => updateMediaSeries(series, name)}
+            >
+              <BookMediaList books={series.items} series={series} />
+            </Shelf>
+          ))}
+          {singlesInYear.map((book) => (
+            <Shelf key={book.id} single>
+              <BookMediaList books={{ [book.id]: book }} />
+            </Shelf>
+          ))}
+        </div>
+      </YearTabs>
+      {isThisYearSelected && (
+        <AddMediaForm ariaLabel="Add a book" config={formConfig} />
+      )}
     </div>
   );
 }

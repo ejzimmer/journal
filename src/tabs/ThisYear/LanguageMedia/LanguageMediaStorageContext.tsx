@@ -61,7 +61,7 @@ const removeUndefinedFields = (item: object) =>
     Object.entries(item).filter(([, value]) => value !== undefined),
   );
 
-const listYearsNewestFirst = (
+const sortYearsByNewest = (
   thisYear: number,
   storedMediaByYear?: StoredMediaByYear,
 ) =>
@@ -136,7 +136,7 @@ export function LanguageMediaStorageProvider({
       };
     };
 
-    const years = listYearsNewestFirst(thisYear, storedMediaByYear);
+    const years = sortYearsByNewest(thisYear, storedMediaByYear);
     const mediaByYear = new Map(
       years.map((year) => [year, createMediaYear(year)]),
     );
