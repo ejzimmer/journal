@@ -3,17 +3,8 @@
 }
 
 .conflict-heading {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  align-items: baseline;
-  gap: 4px 12px;
-  margin-block-end: 16px;
-
-  h2 {
-    margin: 0;
-    font-size: 1.2rem;
-  }
+  margin-block: 0 16px;
+  font-size: 1.2rem;
 }
 
 .conflict-list {
@@ -33,10 +24,6 @@
 }
 
 .conflict-caption {
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
   font-size: 0.85rem;
   color: var(--body-colour-mid);
 }
@@ -63,13 +50,6 @@
   font-size: 0.85rem;
   font-style: italic;
   color: var(--body-colour-mid);
-}
-
-.conflict-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  gap: 8px;
 }
 
 .conflict-actions {
@@ -101,6 +81,13 @@
   }
 }
 
-.conflict-heading .conflict-actions {
-  margin-inline-start: -4px;
+.conflict .conflict-actions {
+  justify-content: end;
+  margin-block-start: 4px;
+}
+
+.keep-all {
+  justify-content: end;
+  margin-block-start: 16px;
+  font-size: 1rem;
 }

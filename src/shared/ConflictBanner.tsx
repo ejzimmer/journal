@@ -37,33 +37,7 @@ export function ConflictBanner({
         )}
       >
         <Modal.Body>
-          <div className="conflict-heading">
-            <h2>Resolve conflicts</h2>
-            {conflicts.length > 1 && (
-              <div className="conflict-actions">
-                <button
-                  className="default"
-                  onClick={() =>
-                    conflicts.forEach(({ path }) =>
-                      conflictStatus.keepTheirs(path),
-                    )
-                  }
-                >
-                  Keep all theirs
-                </button>
-                <span aria-hidden="true">|</span>
-                <button
-                  onClick={() =>
-                    conflicts.forEach(({ path }) =>
-                      conflictStatus.keepMine(path),
-                    )
-                  }
-                >
-                  Keep all yours
-                </button>
-              </div>
-            )}
-          </div>
+          <h2 className="conflict-heading">Resolve conflicts</h2>
           <ul className="conflict-list">
             {conflicts.map((conflict) => (
               <ConflictChoice
@@ -73,6 +47,19 @@ export function ConflictBanner({
               />
             ))}
           </ul>
+          {conflicts.length > 1 && (
+            <KeepChoices
+              className="keep-all"
+              theirs="Keep all theirs"
+              yours="Keep all yours"
+              onKeepTheirs={() =>
+                conflicts.forEach(({ path }) => conflictStatus.keepTheirs(path))
+              }
+              onKeepYours={() =>
+                conflicts.forEach(({ path }) => conflictStatus.keepMine(path))
+              }
+            />
+          )}
         </Modal.Body>
       </Modal>
     </div>
@@ -91,25 +78,7 @@ function ConflictChoice({
 
   return (
     <li className="conflict" aria-label={caption}>
-      <div className="conflict-header">
-        <span className="conflict-caption">{caption}</span>
-        <div className="conflict-actions">
-          <button
-            className="default"
-            aria-label="Keep theirs"
-            onClick={() => conflictStatus.keepTheirs(conflict.path)}
-          >
-            Theirs
-          </button>
-          <span aria-hidden="true">|</span>
-          <button
-            aria-label="Keep yours"
-            onClick={() => conflictStatus.keepMine(conflict.path)}
-          >
-            Yours
-          </button>
-        </div>
-      </div>
+      <div className="conflict-caption">{caption}</div>
       <div className="conflict-diff">
         {listDiffParts(
           describeValue(conflict.theirs),
@@ -125,7 +94,49 @@ function ConflictChoice({
         )}
       </div>
       {note && <div className="conflict-note">{note}</div>}
+      <KeepChoices
+        theirs="Theirs"
+        yours="Yours"
+        theirsName="Keep theirs"
+        yoursName="Keep yours"
+        onKeepTheirs={() => conflictStatus.keepTheirs(conflict.path)}
+        onKeepYours={() => conflictStatus.keepMine(conflict.path)}
+      />
     </li>
+  );
+}
+
+function KeepChoices({
+  className = '',
+  theirs,
+  yours,
+  theirsName,
+  yoursName,
+  onKeepTheirs,
+  onKeepYours,
+}: {
+  className?: string;
+  theirs: string;
+  yours: string;
+  theirsName?: string;
+  yoursName?: string;
+  onKeepTheirs: () => void;
+  onKeepYours: () => void;
+}) {
+  return (
+    <div className={`conflict-actions ${className}`}>
+      <button
+        className="default"
+        aria-label={theirsName}
+        onClick={onKeepTheirs}
+      >
+        {theirs}
+      </button>
+      <span aria-hidden="true">|</span>
+      <button aria-label={yoursName} onClick={onKeepYours}>
+        {yours}
+      </button>
+    </div>
   );
 }
 
