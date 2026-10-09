@@ -138,12 +138,12 @@ describe('ConflictBanner', () => {
     });
 
     describe('with several conflicts', () => {
-      it('keeps all of theirs when asked', async () => {
+      it('discards all of them when asked', async () => {
         const { keepTheirs } = renderBanner([descriptionClash, statusClash]);
         await openConflicts();
 
         await userEvent.click(
-          screen.getByRole('button', { name: 'Keep all theirs' }),
+          screen.getByRole('button', { name: 'Discard all' }),
         );
 
         expect(keepTheirs.mock.calls).toEqual([
@@ -152,13 +152,11 @@ describe('ConflictBanner', () => {
         ]);
       });
 
-      it('keeps all of yours when asked', async () => {
+      it('keeps all of them when asked', async () => {
         const { keepMine } = renderBanner([descriptionClash, statusClash]);
         await openConflicts();
 
-        await userEvent.click(
-          screen.getByRole('button', { name: 'Keep all yours' }),
-        );
+        await userEvent.click(screen.getByRole('button', { name: 'Keep all' }));
 
         expect(keepMine.mock.calls).toEqual([
           [descriptionClash.path],
@@ -167,22 +165,20 @@ describe('ConflictBanner', () => {
       });
     });
 
-    it('keeps yours when asked', async () => {
+    it('keeps your change when asked', async () => {
       const { keepMine } = renderBanner([descriptionClash]);
       await openConflicts();
 
-      await userEvent.click(screen.getByRole('button', { name: 'Keep yours' }));
+      await userEvent.click(screen.getByRole('button', { name: 'Keep' }));
 
       expect(keepMine).toHaveBeenCalledWith(descriptionClash.path);
     });
 
-    it('keeps theirs when asked', async () => {
+    it('discards your change when asked', async () => {
       const { keepTheirs } = renderBanner([descriptionClash]);
       await openConflicts();
 
-      await userEvent.click(
-        screen.getByRole('button', { name: 'Keep theirs' }),
-      );
+      await userEvent.click(screen.getByRole('button', { name: 'Discard' }));
 
       expect(keepTheirs).toHaveBeenCalledWith(descriptionClash.path);
     });

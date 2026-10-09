@@ -37,7 +37,7 @@ export function ConflictBanner({
         )}
       >
         <Modal.Body>
-          <h2 className="conflict-heading">Resolve conflicts</h2>
+          <h2 className="conflict-heading">Local changes</h2>
           <ul className="conflict-list">
             {conflicts.map((conflict) => (
               <ConflictChoice
@@ -48,14 +48,14 @@ export function ConflictBanner({
             ))}
           </ul>
           {conflicts.length > 1 && (
-            <KeepChoices
+            <ChangeChoices
               className="keep-all"
-              theirs="Keep all theirs"
-              yours="Keep all yours"
-              onKeepTheirs={() =>
+              discardLabel="Discard all"
+              keepLabel="Keep all"
+              onDiscard={() =>
                 conflicts.forEach(({ path }) => conflictStatus.keepTheirs(path))
               }
-              onKeepYours={() =>
+              onKeep={() =>
                 conflicts.forEach(({ path }) => conflictStatus.keepMine(path))
               }
             />
@@ -94,48 +94,36 @@ function ConflictChoice({
         )}
       </div>
       {note && <div className="conflict-note">{note}</div>}
-      <KeepChoices
-        theirs="Theirs"
-        yours="Yours"
-        theirsName="Keep theirs"
-        yoursName="Keep yours"
-        onKeepTheirs={() => conflictStatus.keepTheirs(conflict.path)}
-        onKeepYours={() => conflictStatus.keepMine(conflict.path)}
+      <ChangeChoices
+        discardLabel="Discard"
+        keepLabel="Keep"
+        onDiscard={() => conflictStatus.keepTheirs(conflict.path)}
+        onKeep={() => conflictStatus.keepMine(conflict.path)}
       />
     </li>
   );
 }
 
-function KeepChoices({
+function ChangeChoices({
   className = '',
-  theirs,
-  yours,
-  theirsName,
-  yoursName,
-  onKeepTheirs,
-  onKeepYours,
+  discardLabel,
+  keepLabel,
+  onDiscard,
+  onKeep,
 }: {
   className?: string;
-  theirs: string;
-  yours: string;
-  theirsName?: string;
-  yoursName?: string;
-  onKeepTheirs: () => void;
-  onKeepYours: () => void;
+  discardLabel: string;
+  keepLabel: string;
+  onDiscard: () => void;
+  onKeep: () => void;
 }) {
   return (
     <div className={`conflict-actions ${className}`}>
-      <button
-        className="default"
-        aria-label={theirsName}
-        onClick={onKeepTheirs}
-      >
-        {theirs}
+      <button className="default" onClick={onDiscard}>
+        {discardLabel}
       </button>
       <span aria-hidden="true">|</span>
-      <button aria-label={yoursName} onClick={onKeepYours}>
-        {yours}
-      </button>
+      <button onClick={onKeep}>{keepLabel}</button>
     </div>
   );
 }
