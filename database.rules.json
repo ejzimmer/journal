@@ -1,0 +1,8 @@
+{
+  "rules": {
+    ".read": "auth.token.email == 'ejzimmer@gmail.com'",
+    "v2": {
+      ".write": "auth.token.email == 'ejzimmer@gmail.com'"
+    }
+  }
+}

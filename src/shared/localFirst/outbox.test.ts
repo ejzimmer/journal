@@ -86,4 +86,23 @@ describe('createOutbox', () => {
       ]);
     });
   });
+
+  describe('keepOnlyPathsUnder', () => {
+    describe('given ops that save inside and outside the root', () => {
+      it('keeps only the saves inside it, in the same order', async () => {
+        const outbox = createOutbox(uniqueDbName());
+        await outbox.enqueue({ updates: { 'v2/a': 1, a: 1 } });
+        await outbox.enqueue({ updates: { b: 2 } });
+        await outbox.enqueue({ updates: { 'v2/c': 3 } });
+
+        await outbox.keepOnlyPathsUnder('v2');
+
+        const ops = await outbox.list();
+        expect(ops.map((op) => op.updates)).toEqual([
+          { 'v2/a': 1 },
+          { 'v2/c': 3 },
+        ]);
+      });
+    });
+  });
 });

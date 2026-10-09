@@ -12,6 +12,7 @@ export type SyncEngine = {
 export function createSyncEngine(
   database: Database,
   outbox: Outbox,
+  canSync: () => boolean = () => true,
 ): SyncEngine {
   let draining = false;
   let syncing = false;
@@ -23,7 +24,7 @@ export function createSyncEngine(
     draining = true;
 
     try {
-      while (navigator.onLine) {
+      while (navigator.onLine && canSync()) {
         const next = await outbox.peekFront();
         if (!next) return;
 
@@ -66,7 +67,7 @@ export function createSyncEngine(
       });
     },
     notifyChange() {
-      void drain();
+      if (syncing) void drain();
     },
   };
 }

@@ -135,4 +135,22 @@ describe('createSyncEngine', () => {
     expect(mockUpdate).toHaveBeenCalledTimes(2);
     expect(await outbox.list()).toEqual([]);
   });
+
+  describe('when it is told it cannot sync', () => {
+    it('keeps the queued saves until it can', async () => {
+      await outbox.enqueue({ updates: { 'v2/a': 1 } });
+      let canSync = false;
+      const engine = createSyncEngine(fakeDatabase(), outbox, () => canSync);
+      engine.startSyncing();
+      await flushMicrotasks();
+      const queued = await outbox.list();
+
+      canSync = true;
+      engine.notifyChange();
+      await flushMicrotasks();
+
+      expect(queued.map((op) => op.updates)).toEqual([{ 'v2/a': 1 }]);
+      expect(mockUpdate).toHaveBeenCalledWith({ 'v2/a': 1 });
+    });
+  });
 });

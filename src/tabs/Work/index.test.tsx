@@ -6,6 +6,7 @@ import { DailyJobsProvider } from '../../shared/dailyJobs/DailyJobsContext';
 import { Work } from './index';
 import { WorkTask } from './types';
 import { useDoneTaskCleanup } from './useDoneTaskCleanup';
+import { convertTreeToV2 } from '../../shared/localFirst/v2Shape';
 
 let mockRemoteData: Record<string, unknown> = {};
 
@@ -83,7 +84,7 @@ async function renderWork(lists: Record<string, unknown>) {
     `work-tab-${Math.random()}`,
   );
   await hydrate();
-  mockRemoteData = { work: lists };
+  mockRemoteData = { v2: { work: convertTreeToV2('work', lists) } };
 
   render(
     <FirebaseContext.Provider value={context}>

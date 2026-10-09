@@ -12,22 +12,39 @@ import {
 } from './pathTree';
 import { createSyncEngine } from './syncEngine';
 import {
+  APP_DATA_VERSION,
   convertReadValueToV1,
   convertUpdatesToV2,
   findV2ReadPath,
+  MINIMUM_APP_VERSION_PATH,
+  V2_ROOT,
 } from './v2Shape';
 
-export type ReadSource = 'v1' | 'v2';
+export type OutdatedStatus = {
+  subscribe: (onChange: () => void) => () => void;
+  getIsOutdated: () => boolean;
+};
 
 export function createLocalFirstContext(
   database: Database,
   dbName = 'journal-local-first',
-  readSource: ReadSource = 'v1',
-): { context: ContextType; hydrate: () => Promise<void> } {
+): {
+  context: ContextType;
+  hydrate: () => Promise<void>;
+  outdatedStatus: OutdatedStatus;
+} {
   const localStore = createLocalStore(`${dbName}-local`);
   const outbox = createOutbox(`${dbName}-outbox`);
-  const syncEngine = createSyncEngine(database, outbox);
-  syncEngine.startSyncing();
+  const outdatedListeners = new Set<() => void>();
+  let isOutdated = false;
+  const syncEngine = createSyncEngine(database, outbox, () => !isOutdated);
+  void outbox.keepOnlyPathsUnder(V2_ROOT).then(() => syncEngine.startSyncing());
+
+  onValue(ref(database, MINIMUM_APP_VERSION_PATH), (snapshot) => {
+    isOutdated = Number(snapshot.val() ?? 0) > APP_DATA_VERSION;
+    outdatedListeners.forEach((onChange) => onChange());
+    syncEngine.notifyChange();
+  });
 
   const keysWithRemoteListener = new Set<string>();
   const syncedKeys = new Set<string>();
@@ -65,27 +82,28 @@ export function createLocalFirstContext(
     });
   }
 
+  function readV1Path(path: string) {
+    return convertReadValueToV1(
+      path,
+      localStore.readPath(findV2ReadPath(path)),
+    );
+  }
+
   function write(updates: Record<string, unknown>) {
-    const changes = Object.entries(updates).filter(
+    const v2Updates = convertUpdatesToV2(updates, (unitPath) =>
+      readV1PathWithUpdates(unitPath, readV1Path(unitPath), updates),
+    );
+    const changes = Object.entries(v2Updates).filter(
       ([path, value]) =>
-        value === null ||
-        value === undefined ||
-        !valuesAreEqual(localStore.readPath(path), value),
+        value === null || !valuesAreEqual(localStore.readPath(path), value),
     );
     if (changes.length === 0) {
       return;
     }
 
     changes.forEach(([path, value]) => localStore.writePath(path, value));
-    const v2Updates = convertUpdatesToV2(
-      Object.fromEntries(changes),
-      localStore.readPath,
-    );
-    Object.entries(v2Updates).forEach(([path, value]) =>
-      localStore.writePath(path, value),
-    );
     void outbox
-      .enqueue({ updates: { ...Object.fromEntries(changes), ...v2Updates } })
+      .enqueue({ updates: Object.fromEntries(changes) })
       .then(() => syncEngine.notifyChange());
   }
 
@@ -142,7 +160,7 @@ export function createLocalFirstContext(
       write(updates);
     },
     useValue: <T>(key?: string) => {
-      const sourceKey = key && readSource === 'v2' ? findV2ReadPath(key) : key;
+      const sourceKey = key && findV2ReadPath(key);
 
       useEffect(() => {
         if (sourceKey) registerRemoteListener(sourceKey);
@@ -154,10 +172,7 @@ export function createLocalFirstContext(
         () => (sourceKey ? localStore.readPath(sourceKey) : undefined),
       );
       const value = useMemo(
-        () =>
-          key && readSource === 'v2'
-            ? convertReadValueToV1(key, sourceValue)
-            : sourceValue,
+        () => (key ? convertReadValueToV1(key, sourceValue) : undefined),
         [key, sourceValue],
       ) as T | undefined;
       const synced = useSyncExternalStore(subscribeToSync, () =>
@@ -168,7 +183,32 @@ export function createLocalFirstContext(
     },
   };
 
-  return { context, hydrate: localStore.hydrate };
+  return {
+    context,
+    hydrate: localStore.hydrate,
+    outdatedStatus: {
+      subscribe: (onChange) => {
+        outdatedListeners.add(onChange);
+        return () => outdatedListeners.delete(onChange);
+      },
+      getIsOutdated: () => isOutdated,
+    },
+  };
+}
+
+function readV1PathWithUpdates(
+  unitPath: string,
+  currentValue: unknown,
+  updates: Record<string, unknown>,
+): unknown {
+  const tree = Object.entries(updates)
+    .filter(([path]) => pathsAreRelated(path, unitPath))
+    .reduce<Tree>(
+      (tree, [path, value]) => setAtPath(tree, path, value),
+      setAtPath({}, unitPath, currentValue),
+    );
+
+  return getAtPath(tree, unitPath);
 }
 
 function applyPendingOps(

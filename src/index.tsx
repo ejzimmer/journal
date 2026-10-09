@@ -5,22 +5,14 @@ import { BrowserRouter } from 'react-router-dom';
 import './index.css';
 import { App } from './App';
 import { AppUpdateBanner } from './shared/AppUpdateBanner';
+import { OutdatedAppBanner } from './shared/OutdatedAppBanner';
 import { setWaitingRegistration } from './shared/appUpdateStore';
 import * as serviceWorkerRegistration from './serviceWorkerRegistration';
 
 import { initializeApp } from 'firebase/app';
-import { get, getDatabase, ref, set } from 'firebase/database';
+import { getDatabase } from 'firebase/database';
 import { FirebaseContext } from './shared/FirebaseContext';
-import {
-  createLocalFirstContext,
-  ReadSource,
-} from './shared/localFirst/createLocalFirstContext';
-import {
-  loadReadSource,
-  saveReadSource,
-} from './shared/localFirst/readSourceStorage';
-import { DataVersionsContext } from './DataVersions/DataVersionsContext';
-import { V2_ROOT } from './shared/localFirst/v2Shape';
+import { createLocalFirstContext } from './shared/localFirst/createLocalFirstContext';
 
 const firebaseConfig = {
   apiKey: 'AIzaSyAlKw5_aMOUlR3SdkbU6vHADLTUvXZHNJg',
@@ -33,22 +25,11 @@ const firebaseConfig = {
     'https://journal-50dcf-default-rtdb.asia-southeast1.firebasedatabase.app',
 };
 
-const database = getDatabase(initializeApp(firebaseConfig));
-const readSource = loadReadSource();
-const { context: contextValue, hydrate } = createLocalFirstContext(
-  database,
-  undefined,
-  readSource,
-);
-const dataVersions = {
-  readSource,
-  switchReadSource: (source: ReadSource) => {
-    saveReadSource(source);
-    window.location.reload();
-  },
-  fetchDatabase: async () => (await get(ref(database))).val() ?? {},
-  replaceV2: (v2: Record<string, unknown>) => set(ref(database, V2_ROOT), v2),
-};
+const {
+  context: contextValue,
+  hydrate,
+  outdatedStatus,
+} = createLocalFirstContext(getDatabase(initializeApp(firebaseConfig)));
 
 serviceWorkerRegistration.register({ onUpdate: setWaitingRegistration });
 
@@ -59,13 +40,12 @@ hydrate().then(() => {
   root.render(
     <React.StrictMode>
       <FirebaseContext.Provider value={contextValue}>
-        <DataVersionsContext.Provider value={dataVersions}>
-          <BrowserRouter>
-            <App />
-          </BrowserRouter>
-        </DataVersionsContext.Provider>
+        <BrowserRouter>
+          <App />
+        </BrowserRouter>
       </FirebaseContext.Provider>
       <AppUpdateBanner />
+      <OutdatedAppBanner outdatedStatus={outdatedStatus} />
     </React.StrictMode>,
   );
 });
