@@ -12,7 +12,7 @@ import {
 } from './types';
 import { getThisMonth, getThisYear } from '../../../shared/dates';
 import { YarnStash } from './YarnStash';
-import { listYearsNewestFirst } from '../../../shared/years';
+import { sortYearsByNewest } from '../../../shared/years';
 
 export type YarnYearStorage = {
   yarnByType?: YarnType[];
@@ -102,7 +102,7 @@ export function YarnStorageProvider({ children }: { children: ReactNode }) {
       };
     };
 
-    const years = listYearsNewestFirst(
+    const years = sortYearsByNewest(
       thisYear,
       Object.keys(storedYarnByYear ?? {}).map(Number),
     );

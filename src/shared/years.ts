@@ -18,7 +18,7 @@ export function updateCompletionDate<T extends Completable>(
     : (incompleteItem as T);
 }
 
-export const listYearsNewestFirst = (thisYear: number, years: number[]) =>
+export const sortYearsByNewest = (thisYear: number, years: number[]) =>
   [...new Set([thisYear, ...years])].sort((a, b) => b - a);
 
 export function useCompletionYears<T>(
@@ -28,7 +28,7 @@ export function useCompletionYears<T>(
 ) {
   const thisYear = getThisYear();
   const [selectedYear, selectYear] = useState(thisYear);
-  const years = listYearsNewestFirst(
+  const years = sortYearsByNewest(
     thisYear,
     items.filter(isComplete).map(getYear),
   );
