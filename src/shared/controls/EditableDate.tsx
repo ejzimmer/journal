@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useRef } from 'react';
 import { formatDayAndMonth } from '../dates';
 import { useFormToggle } from './useFormToggle';
 
@@ -11,7 +11,6 @@ interface Props extends Omit<
 }
 
 export function EditableDate({ onChange, value, ...props }: Props) {
-  const [editingValue, setEditingValue] = useState(value);
   const {
     isFormOpen: isEditing,
     triggerRef: displayRef,
@@ -22,8 +21,8 @@ export function EditableDate({ onChange, value, ...props }: Props) {
   const inputRef = useRef<HTMLInputElement>(null);
 
   const handleSubmit = () => {
-    const inputValue = inputRef.current?.value;
-    if (inputValue && inputValue !== value) {
+    const inputValue = inputRef.current?.value ?? '';
+    if (inputValue !== value) {
       onChange(inputValue);
     }
 
@@ -45,12 +44,10 @@ export function EditableDate({ onChange, value, ...props }: Props) {
 
         if (event.key === 'Escape') {
           event.stopPropagation();
-          setEditingValue(value);
           stopEditing();
         }
       }}
-      value={editingValue}
-      onChange={(event) => setEditingValue(event.target.value)}
+      defaultValue={value}
       aria-label="Due date"
       {...props}
     />
