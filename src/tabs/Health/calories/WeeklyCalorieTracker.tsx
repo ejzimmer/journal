@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useLayoutEffect, useMemo, useRef } from 'react';
 
 import './WeeklyCalorieTracker.css';
 import {
@@ -14,6 +14,14 @@ type WeeklyCalorieTrackerProps = {
 
 export function WeeklyCalorieTracker({ days }: WeeklyCalorieTrackerProps) {
   const weeklyBalances = useMemo(() => getWeeklyBalance(days), [days]);
+  const chartRef = useRef<HTMLDivElement>(null);
+
+  useLayoutEffect(() => {
+    const chart = chartRef.current;
+    if (chart) {
+      chart.scrollLeft = chart.scrollWidth;
+    }
+  }, [weeklyBalances.length]);
 
   const weekBalances = weeklyBalances.map((balance) => balance.balance);
   const highestBalance = Math.max(...weekBalances);
@@ -21,7 +29,7 @@ export function WeeklyCalorieTracker({ days }: WeeklyCalorieTrackerProps) {
   const heightScale = Math.max(highestBalance, STARTING_BALANCE);
 
   return (
-    <div className="weekly-calories">
+    <div ref={chartRef} className="weekly-calories">
       {weeklyBalances.map((balance, index) => (
         <div className="week-container" key={index}>
           <div

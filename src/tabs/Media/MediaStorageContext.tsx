@@ -5,6 +5,7 @@ import {
   BOOKS_KEY,
   GameDetails,
   GAMES_KEY,
+  isMediaComplete,
   isSeries,
   MediaDetails,
   MediaSeries,
@@ -14,6 +15,7 @@ import {
   SeriesDetails,
 } from './types';
 import { getNextSeriesPosition } from './seriesOrder';
+import { updateCompletionDate } from '../../shared/years';
 
 export type MediaStorageContextType = {
   books: ReadingItemDetails[];
@@ -126,13 +128,15 @@ export function MediaStorageProvider({ children }: { children: ReactNode }) {
     authors,
     isLoading: booksLoading || gamesLoading,
 
-    addMedia: (media, seriesId) => {
+    addMedia: (newMedia, seriesId) => {
+      const media = updateCompletionDate(newMedia, isMediaComplete(newMedia));
       addItem(
         getMediaPath(media.type, seriesId),
         seriesId ? appendToSeries(media, seriesId) : media,
       );
     },
-    addMediaSeries: (name, media, bandHue) => {
+    addMediaSeries: (name, newMedia, bandHue) => {
+      const media = updateCompletionDate(newMedia, isMediaComplete(newMedia));
       const key = getMediaKey(media.type);
       const seriesId = addItem<MediaSeries>(key, {
         type: 'series',
@@ -143,7 +147,10 @@ export function MediaStorageProvider({ children }: { children: ReactNode }) {
     },
     updateMedia: (media) => {
       const currentSeries = findSeriesContaining(media);
-      updateItem(getMediaPath(media.type, currentSeries?.id), media);
+      updateItem(
+        getMediaPath(media.type, currentSeries?.id),
+        updateCompletionDate(media, isMediaComplete(media)),
+      );
     },
     updateMediaSeries: (series, name, bandHue) => {
       updateItem(getSeriesKey(series), {
@@ -160,7 +167,11 @@ export function MediaStorageProvider({ children }: { children: ReactNode }) {
         deleteItem(getMediaKey(media.type), media);
       }
     },
-    moveMedia: (media, destination) => {
+    moveMedia: (movedMedia, destination) => {
+      const media = updateCompletionDate(
+        movedMedia,
+        isMediaComplete(movedMedia),
+      );
       if (destination && 'name' in destination) {
         const key = getMediaKey(media.type);
         const seriesId = addItem<MediaSeries>(key, {

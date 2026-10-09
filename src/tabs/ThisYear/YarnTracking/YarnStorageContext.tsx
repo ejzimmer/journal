@@ -12,6 +12,7 @@ import {
 } from './types';
 import { getThisMonth, getThisYear } from '../../../shared/dates';
 import { YarnStash } from './YarnStash';
+import { sortYearsByNewest } from '../../../shared/years';
 
 export type YarnYearStorage = {
   yarnByType?: YarnType[];
@@ -49,42 +50,39 @@ export const convertToYarnType = (
     .sort((a, b) => Temporal.PlainYearMonth.compare(a.month, b.month)),
 });
 
-const listYearsNewestFirst = (
-  thisYear: number,
-  storedYarnByYear?: StoredYarnByYear,
-) =>
-  [
-    ...new Set([thisYear, ...Object.keys(storedYarnByYear ?? {}).map(Number)]),
-  ].sort((a, b) => b - a);
-
 export function YarnStorageProvider({ children }: { children: ReactNode }) {
   const { useValue, setValue } = useStorageContext();
-  const { value: storedYarnByYear } = useValue<StoredYarnByYear>(YARN_PATH);
+  const { value: storedYarnByYear, loading } =
+    useValue<StoredYarnByYear>(YARN_PATH);
   const [stashes] = useState(() => new Map<number, YarnStash>());
   const thisYear = getThisYear();
   const [selectedYear, selectYear] = useState(thisYear);
 
   const yarnYears = useMemo(() => {
-    const getStash = (year: number) => {
-      const stash = stashes.get(year) ?? new YarnStash();
+    const getStash = (year: number, previousStash?: YarnStash) => {
+      const stash =
+        stashes.get(year) ?? YarnStash.createFromUnusedBalls(previousStash);
       stashes.set(year, stash);
       return stash;
     };
 
     const createYarnYear = (
       year: number,
+      stash?: YarnStash,
       storedYarn?: StoredYarn,
     ): YarnYearStorage => {
-      const stash = getStash(year);
       const yarnByType =
         storedYarn &&
         Object.values(storedYarn).map((storedYarnType) =>
           convertToYarnType(storedYarnType, year),
         );
 
-      if (yarnByType) {
+      if (stash && yarnByType) {
         stash.applyBalances(yarnByType);
       }
+
+      const getBalance = (yarnType: YarnTypeId) =>
+        stash?.getBalance(yarnType) ?? 0;
 
       const saveBalance = (yarnType: YarnTypeId, grams: number) =>
         setValue(
@@ -95,33 +93,37 @@ export function YarnStorageProvider({ children }: { children: ReactNode }) {
       return {
         year,
         yarnByType,
-        pile: yarnByType && [...stash.balls],
-        currentBalance: stash.getTotalBalance(),
-        getBalance: (yarnType: YarnTypeId) => stash.getBalance(yarnType),
+        pile: stash && [...stash.balls],
+        currentBalance: stash?.getTotalBalance() ?? 0,
+        getBalance,
         addYarn: (yarnType: YarnTypeId, grams: number) =>
-          saveBalance(yarnType, stash.getBalance(yarnType) + grams),
+          saveBalance(yarnType, getBalance(yarnType) + grams),
         removeYarn: (yarnType: YarnTypeId, grams: number) =>
-          saveBalance(
-            yarnType,
-            Math.max(0, stash.getBalance(yarnType) - grams),
-          ),
+          saveBalance(yarnType, Math.max(0, getBalance(yarnType) - grams)),
       };
     };
 
-    const years = listYearsNewestFirst(thisYear, storedYarnByYear);
-    const yarnYears = new Map(
-      years.map((year) => [
-        year,
-        createYarnYear(year, storedYarnByYear?.[year]),
-      ]),
+    const years = sortYearsByNewest(
+      thisYear,
+      Object.keys(storedYarnByYear ?? {}).map(Number),
     );
+    const yarnYears = new Map<number, YarnYearStorage>();
+    let previousStash: YarnStash | undefined;
+    years.toReversed().forEach((year) => {
+      const stash = loading ? undefined : getStash(year, previousStash);
+      yarnYears.set(
+        year,
+        createYarnYear(year, stash, storedYarnByYear?.[year]),
+      );
+      previousStash = stash;
+    });
 
     return {
       years,
       getYarnYear: (year: number) =>
         yarnYears.get(year) ?? createYarnYear(year),
     };
-  }, [thisYear, storedYarnByYear, stashes, setValue]);
+  }, [thisYear, storedYarnByYear, loading, stashes, setValue]);
 
   const value = useMemo(
     () => ({ ...yarnYears, thisYear, selectedYear, selectYear }),

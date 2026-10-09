@@ -102,3 +102,20 @@
     }
   }
 }
+
+.noticeboard .year-tabs {
+  [role='tablist'] {
+    margin-block-end: 24px;
+    border-bottom-color: hsl(30 45% 25% / 0.35);
+
+    [role='tab'] {
+      color: hsl(35 60% 92% / 0.75);
+
+      &:hover,
+      &[aria-selected='true'] {
+        color: hsl(35 60% 97%);
+        border-bottom-color: hsl(35 60% 97%);
+      }
+    }
+  }
+}

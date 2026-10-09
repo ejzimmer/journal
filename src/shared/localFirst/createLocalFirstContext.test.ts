@@ -324,20 +324,22 @@ describe('createLocalFirstContext', () => {
       );
     });
 
-    it('deletes fields the item no longer has', async () => {
-      const context = await setUpContext();
-      context.updateItem('projects', project);
-      await flushMicrotasks();
-      mockUpdate.mockClear();
+    describe('when a field is dropped from the item', () => {
+      it('deletes the field', async () => {
+        const context = await setUpContext();
+        context.updateItem('projects', project);
+        await flushMicrotasks();
+        mockUpdate.mockClear();
 
-      const { status, ...withoutStatus } = project;
-      context.updateItem('projects', withoutStatus);
+        const { status, ...withoutStatus } = project;
+        context.updateItem('projects', withoutStatus);
 
-      await waitFor(() =>
-        expect(getSentData()).toContainEqual({
-          'v2/projects/garden/status': null,
-        }),
-      );
+        await waitFor(() =>
+          expect(getSentData()).toContainEqual({
+            'v2/projects/garden/status': null,
+          }),
+        );
+      });
     });
 
     describe('when a whole list is reordered', () => {
