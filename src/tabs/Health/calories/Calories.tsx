@@ -32,8 +32,7 @@ export function Calories() {
     () => [...new Set(days.map(({ year }) => year))].reverse(),
     [days],
   );
-  const [chosenYear, setChosenYear] = useState<number>();
-  const selectedYear = chosenYear ?? years[0];
+  const [selectedYear, selectYear] = useState(years[0]);
   const daysInSelectedYear = useMemo(
     () => days.filter(({ year }) => year === selectedYear),
     [days, selectedYear],
@@ -79,7 +78,7 @@ export function Calories() {
           <YearTabs
             years={years}
             selectedYear={selectedYear}
-            onSelectYear={setChosenYear}
+            onSelectYear={selectYear}
           >
             <Days days={daysInSelectedYear} onSelectDay={setSelectedDayId} />
           </YearTabs>
