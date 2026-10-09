@@ -137,6 +137,36 @@ describe('ConflictBanner', () => {
       });
     });
 
+    describe('with several conflicts', () => {
+      it('keeps all of theirs when asked', async () => {
+        const { keepTheirs } = renderBanner([descriptionClash, statusClash]);
+        await openConflicts();
+
+        await userEvent.click(
+          screen.getByRole('button', { name: 'Keep all theirs' }),
+        );
+
+        expect(keepTheirs.mock.calls).toEqual([
+          [descriptionClash.path],
+          [statusClash.path],
+        ]);
+      });
+
+      it('keeps all of yours when asked', async () => {
+        const { keepMine } = renderBanner([descriptionClash, statusClash]);
+        await openConflicts();
+
+        await userEvent.click(
+          screen.getByRole('button', { name: 'Keep all yours' }),
+        );
+
+        expect(keepMine.mock.calls).toEqual([
+          [descriptionClash.path],
+          [statusClash.path],
+        ]);
+      });
+    });
+
     it('keeps yours when asked', async () => {
       const { keepMine } = renderBanner([descriptionClash]);
       await openConflicts();

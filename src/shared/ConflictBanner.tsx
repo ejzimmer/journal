@@ -37,7 +37,33 @@ export function ConflictBanner({
         )}
       >
         <Modal.Body>
-          <h2 className="conflict-heading">Resolve conflicts</h2>
+          <div className="conflict-heading">
+            <h2>Resolve conflicts</h2>
+            {conflicts.length > 1 && (
+              <div className="conflict-actions">
+                <button
+                  className="default"
+                  onClick={() =>
+                    conflicts.forEach(({ path }) =>
+                      conflictStatus.keepTheirs(path),
+                    )
+                  }
+                >
+                  Keep all theirs
+                </button>
+                <span aria-hidden="true">|</span>
+                <button
+                  onClick={() =>
+                    conflicts.forEach(({ path }) =>
+                      conflictStatus.keepMine(path),
+                    )
+                  }
+                >
+                  Keep all yours
+                </button>
+              </div>
+            )}
+          </div>
           <ul className="conflict-list">
             {conflicts.map((conflict) => (
               <ConflictChoice
@@ -68,11 +94,19 @@ function ConflictChoice({
       <div className="conflict-header">
         <span className="conflict-caption">{caption}</span>
         <div className="conflict-actions">
-          <button onClick={() => conflictStatus.keepTheirs(conflict.path)}>
-            Keep theirs
+          <button
+            className="default"
+            aria-label="Keep theirs"
+            onClick={() => conflictStatus.keepTheirs(conflict.path)}
+          >
+            Theirs
           </button>
-          <button onClick={() => conflictStatus.keepMine(conflict.path)}>
-            Keep yours
+          <span aria-hidden="true">|</span>
+          <button
+            aria-label="Keep yours"
+            onClick={() => conflictStatus.keepMine(conflict.path)}
+          >
+            Yours
           </button>
         </div>
       </div>

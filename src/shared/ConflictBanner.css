@@ -3,8 +3,17 @@
 }
 
 .conflict-heading {
-  margin-block: 0 16px;
-  font-size: 1.2rem;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 4px 12px;
+  margin-block-end: 16px;
+
+  h2 {
+    margin: 0;
+    font-size: 1.2rem;
+  }
 }
 
 .conflict-list {
@@ -66,19 +75,32 @@
 .conflict-actions {
   display: flex;
   flex-shrink: 0;
-  gap: 4px;
+  align-items: baseline;
+  gap: 2px;
+  font-size: 0.85rem;
+  color: var(--body-colour-light);
 
   button {
     height: auto;
     padding: 0 4px;
     border: none;
-    font-size: 0.85rem;
-    color: var(--link-colour);
+    border-radius: 0;
+    font-size: inherit;
+    color: var(--body-colour);
+    text-decoration: underline;
+
+    &.default {
+      font-weight: 600;
+    }
 
     &:hover,
     &:focus-visible {
       background: none;
-      text-decoration: underline;
+      color: var(--link-colour);
     }
   }
+}
+
+.conflict-heading .conflict-actions {
+  margin-inline-start: -4px;
 }
