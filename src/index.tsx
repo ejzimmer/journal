@@ -5,7 +5,7 @@ import { BrowserRouter } from 'react-router-dom';
 import './index.css';
 import { App } from './App';
 import { AppUpdateBanner } from './shared/AppUpdateBanner';
-import { OutdatedAppBanner } from './shared/OutdatedAppBanner';
+import { SaveStatusBanner } from './shared/SaveStatusBanner';
 import { setWaitingRegistration } from './shared/appUpdateStore';
 import * as serviceWorkerRegistration from './serviceWorkerRegistration';
 
@@ -28,7 +28,7 @@ const firebaseConfig = {
 const {
   context: contextValue,
   hydrate,
-  outdatedStatus,
+  saveStatus,
 } = createLocalFirstContext(getDatabase(initializeApp(firebaseConfig)));
 
 serviceWorkerRegistration.register({ onUpdate: setWaitingRegistration });
@@ -45,7 +45,7 @@ hydrate().then(() => {
         </BrowserRouter>
       </FirebaseContext.Provider>
       <AppUpdateBanner />
-      <OutdatedAppBanner outdatedStatus={outdatedStatus} />
+      <SaveStatusBanner saveStatus={saveStatus} />
     </React.StrictMode>,
   );
 });

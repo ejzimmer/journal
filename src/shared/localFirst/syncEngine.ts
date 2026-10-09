@@ -13,6 +13,7 @@ export function createSyncEngine(
   database: Database,
   outbox: Outbox,
   canSync: () => boolean = () => true,
+  onSendResult: (succeeded: boolean) => void = () => {},
 ): SyncEngine {
   let draining = false;
   let syncing = false;
@@ -32,7 +33,9 @@ export function createSyncEngine(
           await update(ref(database), next.updates);
           await outbox.remove(next.id);
           backoffMs = INITIAL_BACKOFF_MS;
+          onSendResult(true);
         } catch (error) {
+          onSendResult(false);
           console.error(
             `Failed to sync ${JSON.stringify(next.updates)}, will retry`,
             error,
