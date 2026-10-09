@@ -21,7 +21,7 @@ const feetOfClay: BookDetails = {
   title: 'Feet of Clay',
 };
 
-const watch: SeriesDetails<BookDetails> = {
+const theWatchSeries: SeriesDetails<BookDetails> = {
   id: 'series-watch',
   type: 'series',
   name: 'City Watch',
@@ -35,8 +35,8 @@ const watch: SeriesDetails<BookDetails> = {
 
 function renderBooks() {
   return renderWithMediaStorage(<Books />, {
-    books: [watch],
-    bookSeries: [watch],
+    books: [theWatchSeries],
+    bookSeries: [theWatchSeries],
   });
 }
 
@@ -61,7 +61,7 @@ describe('Books', () => {
         await user.keyboard('{ArrowLeft}');
 
         expect(listReorderedIds(storageContext.reorderSeries)).toEqual({
-          seriesId: watch.id,
+          seriesId: theWatchSeries.id,
           itemIds: [menAtArms.id, guardsGuards.id, feetOfClay.id],
         });
       });
@@ -76,7 +76,7 @@ describe('Books', () => {
         await user.keyboard('{ArrowRight}');
 
         expect(listReorderedIds(storageContext.reorderSeries)).toEqual({
-          seriesId: watch.id,
+          seriesId: theWatchSeries.id,
           itemIds: [guardsGuards.id, feetOfClay.id, menAtArms.id],
         });
       });
@@ -91,7 +91,7 @@ describe('Books', () => {
         await user.keyboard('{Shift>}{ArrowLeft}{/Shift}');
 
         expect(listReorderedIds(storageContext.reorderSeries)).toEqual({
-          seriesId: watch.id,
+          seriesId: theWatchSeries.id,
           itemIds: [feetOfClay.id, guardsGuards.id, menAtArms.id],
         });
       });
@@ -104,7 +104,7 @@ describe('Books', () => {
         await user.keyboard('{Shift>}{ArrowRight}{/Shift}');
 
         expect(listReorderedIds(storageContext.reorderSeries)).toEqual({
-          seriesId: watch.id,
+          seriesId: theWatchSeries.id,
           itemIds: [menAtArms.id, feetOfClay.id, guardsGuards.id],
         });
       });
@@ -160,7 +160,7 @@ describe('Books', () => {
     });
 
     const halfReadWatch: SeriesDetails<BookDetails> = {
-      ...watch,
+      ...theWatchSeries,
       items: {
         [guardsGuards.id]: createReadBook(
           guardsGuards.id,
