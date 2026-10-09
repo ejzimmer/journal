@@ -1,5 +1,10 @@
 import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { AdventureCard } from './AdventureCard';
+import {
+  AdventureStorageContext,
+  AdventureStorageContextType,
+} from './AdventureStorageContext';
 import { Adventure, AdventureMode } from './types';
 
 const running: AdventureMode = {
@@ -9,21 +14,36 @@ const running: AdventureMode = {
   colour: '#d11c2e',
 };
 
-const renderCard = (details: Partial<Adventure> = {}) =>
+const renderCard = (details: Partial<Adventure> = {}) => {
+  const adventure: Adventure = {
+    id: 'parkrun',
+    description: 'Plenty Gorge parkrun',
+    modeId: 'running',
+    isDone: false,
+    ...details,
+  };
+  const storage: AdventureStorageContextType = {
+    adventures: [adventure],
+    modes: [running],
+    isLoading: false,
+    addAdventure: jest.fn(),
+    updateAdventure: jest.fn(),
+    deleteAdventure: jest.fn(),
+    addMode: jest.fn(),
+  };
   render(
-    <ul>
-      <AdventureCard
-        adventure={{
-          id: 'parkrun',
-          description: 'Plenty Gorge parkrun',
-          modeId: 'running',
-          isDone: false,
-          ...details,
-        }}
-        mode={running}
-      />
-    </ul>,
+    <AdventureStorageContext.Provider value={storage}>
+      <ul>
+        <AdventureCard adventure={adventure} mode={running} />
+      </ul>
+    </AdventureStorageContext.Provider>,
   );
+  return {
+    adventure,
+    storage,
+    user: userEvent.setup({ advanceTimers: jest.advanceTimersByTime }),
+  };
+};
 
 describe('AdventureCard', () => {
   beforeEach(() => {
@@ -44,11 +64,37 @@ describe('AdventureCard', () => {
     expect(screen.getByRole('img', { name: 'Running' })).toBeInTheDocument();
   });
 
+  describe('when it is marked done', () => {
+    it('saves it as done', async () => {
+      const { adventure, storage, user } = renderCard();
+
+      await user.click(screen.getByRole('button', { name: 'Mark done' }));
+
+      expect(storage.updateAdventure).toHaveBeenCalledWith({
+        ...adventure,
+        isDone: true,
+      });
+    });
+  });
+
   describe('when it is done', () => {
     it('shows the done stamp', () => {
       renderCard({ isDone: true });
 
       expect(screen.getByRole('img', { name: 'Done' })).toBeInTheDocument();
+    });
+
+    describe('and is marked not done', () => {
+      it('saves it as not done', async () => {
+        const { adventure, storage, user } = renderCard({ isDone: true });
+
+        await user.click(screen.getByRole('button', { name: 'Mark not done' }));
+
+        expect(storage.updateAdventure).toHaveBeenCalledWith({
+          ...adventure,
+          isDone: false,
+        });
+      });
     });
   });
 

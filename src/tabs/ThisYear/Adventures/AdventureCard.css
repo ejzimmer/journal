@@ -83,6 +83,24 @@
     margin-inline-end: 6px;
   }
 
+  .card-footer {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+    align-self: stretch;
+  }
+
+  .card-actions {
+    display: flex;
+    gap: 4px;
+    margin-inline-start: auto;
+
+    button:hover {
+      color: var(--success-colour);
+    }
+  }
+
   .planned-date {
     padding-block: 3px;
     padding-inline: 7px;

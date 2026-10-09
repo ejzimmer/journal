@@ -153,4 +153,47 @@ describe('createSyncEngine', () => {
       expect(mockUpdate).toHaveBeenCalledWith({ 'v2/a': 1 });
     });
   });
+
+  describe('when saves are prepared before sending', () => {
+    it('sends the prepared version', async () => {
+      await outbox.enqueue({ updates: { 'v2/a': 1 }, editedAt: 5 });
+      const engine = createSyncEngine(
+        fakeDatabase(),
+        outbox,
+        undefined,
+        undefined,
+        async (op) => ({ ...op.updates, 'v2/_edited/a/_at': op.editedAt }),
+      );
+
+      engine.startSyncing();
+      await flushMicrotasks();
+
+      expect(mockUpdate).toHaveBeenCalledWith({
+        'v2/a': 1,
+        'v2/_edited/a/_at': 5,
+      });
+    });
+
+    describe('and nothing is left to send', () => {
+      it('clears the save from the queue and moves on to the next', async () => {
+        await outbox.enqueue({ updates: { 'v2/a': 1 } });
+        await outbox.enqueue({ updates: { 'v2/b': 2 } });
+        const engine = createSyncEngine(
+          fakeDatabase(),
+          outbox,
+          undefined,
+          undefined,
+          async (op) => ('v2/a' in op.updates ? {} : op.updates),
+        );
+
+        engine.startSyncing();
+        await flushMicrotasks();
+
+        expect(mockUpdate.mock.calls.map((call) => call[0])).toEqual([
+          { 'v2/b': 2 },
+        ]);
+        expect(await outbox.list()).toEqual([]);
+      });
+    });
+  });
 });
