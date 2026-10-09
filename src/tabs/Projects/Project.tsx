@@ -9,6 +9,7 @@ import {
   ProjectDetails,
   PROJECT_COLOURS,
   PROJECTS_KEY,
+  ProjectStatus,
   ProjectSubtask,
 } from '../../shared/types';
 import { useLinkedTasks } from './utils';
@@ -16,6 +17,7 @@ import { ArrowToEndIcon } from '../../shared/icons/ArrowToEnd';
 import { ArrowToStartIcon } from '../../shared/icons/ArrowToStart';
 import { EditableText } from '../../shared/controls/EditableText';
 import { getToday } from '../../shared/dates';
+import { stampCompletion } from '../../shared/years';
 
 type ProjectProps = {
   project: ProjectDetails;
@@ -69,16 +71,22 @@ export function Project({
 
   const { updateLinkedTask } = useLinkedTasks(project.linkedTaskId);
 
+  const saveStatus = (nextStatus: ProjectStatus) =>
+    updateItem(
+      PROJECTS_KEY,
+      stampCompletion(
+        { ...project, status: nextStatus },
+        nextStatus === 'done',
+      ),
+    );
+
   const onChangeStatus = () => {
     if (status === 'in_progress') {
-      updateItem(PROJECTS_KEY, { ...project, status: 'done' });
+      saveStatus('done');
     } else if (status === 'done') {
-      updateItem(PROJECTS_KEY, { ...project, status: 'ready' });
+      saveStatus('ready');
     } else {
-      updateItem(PROJECTS_KEY, {
-        ...project,
-        status: 'in_progress',
-      });
+      saveStatus('in_progress');
     }
 
     updateLinkedTask({

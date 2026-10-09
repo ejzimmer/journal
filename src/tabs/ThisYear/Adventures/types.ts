@@ -7,6 +7,7 @@ export type Adventure = {
   modeId: string;
   isDone: boolean;
   plannedDate?: string;
+  completedAt?: string;
 };
 
 export type AdventureMode = {

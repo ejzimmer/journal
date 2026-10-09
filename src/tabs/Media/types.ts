@@ -27,6 +27,7 @@ export type BookDetails = {
   author?: string;
   status?: BookStatus;
   position?: number;
+  completedAt?: string;
 };
 
 export type GameDetails = {
@@ -35,6 +36,7 @@ export type GameDetails = {
   title: string;
   status?: GameStatus;
   position?: number;
+  completedAt?: string;
 };
 
 export function getBookStatus(book: BookDetails): BookStatus {
@@ -44,6 +46,9 @@ export function getBookStatus(book: BookDetails): BookStatus {
 export function getGameStatus(game: GameDetails): GameStatus {
   return game.status ?? 'unplayed';
 }
+
+export const isMediaComplete = (media: MediaDetails | NewMedia) =>
+  media.type === 'book' ? media.status === 'read' : media.status === 'played';
 
 export type NewBook = Omit<BookDetails, 'id'>;
 export type NewGame = Omit<GameDetails, 'id'>;

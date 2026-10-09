@@ -115,6 +115,69 @@ describe('YarnStorageProvider', () => {
     });
   });
 
+  describe('a new year', () => {
+    const storedYarnByYear = {
+      '2025': {
+        wool: { id: 'wool', history: { '2025-02': 600, '2025-11': 300 } },
+        cotton: { id: 'cotton', history: { '2025-04': 200 } },
+      },
+    };
+
+    describe('before any yarn is added or used', () => {
+      it('starts with the yarn left at the end of the year before', () => {
+        const { result } = renderWithYarnProvider(() => useYarnStorage(), {
+          yarn: storedYarnByYear,
+        });
+
+        expect(result.current.pile).toEqual([
+          { id: 1, yarnType: 'wool', grams: 100 },
+          { id: 2, yarnType: 'wool', grams: 200 },
+          { id: 3, yarnType: 'cotton', grams: 200 },
+        ]);
+      });
+    });
+
+    describe('when yarn is added', () => {
+      it('stores the balance carried over plus the amount', () => {
+        const setValue = jest.fn();
+        const { result } = renderWithYarnProvider(
+          () => useYarnStorage(),
+          { yarn: storedYarnByYear },
+          { setValue },
+        );
+
+        result.current.addYarn('wool', 50);
+
+        expect(setValue).toHaveBeenCalledWith(
+          'yarn/2026/wool/history/2026-09',
+          350,
+        );
+      });
+    });
+
+    describe('once yarn has been used', () => {
+      it('shows the balls used this year, but not the ones used the year before', () => {
+        const { result } = renderWithYarnProvider(() => useYarnStorage(), {
+          yarn: {
+            ...storedYarnByYear,
+            '2026': { cotton: { id: 'cotton', history: { '2026-05': 0 } } },
+          },
+        });
+
+        expect(result.current.pile).toEqual([
+          { id: 1, yarnType: 'wool', grams: 100 },
+          { id: 2, yarnType: 'wool', grams: 200 },
+          {
+            id: 3,
+            yarnType: 'cotton',
+            grams: 200,
+            usedIn: Temporal.PlainYearMonth.from('2026-05'),
+          },
+        ]);
+      });
+    });
+  });
+
   describe('yarnByType', () => {
     it('gives each yarn type its balances as year-months, oldest first', () => {
       expect(

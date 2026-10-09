@@ -111,6 +111,30 @@ describe('AdventureStorageContext', () => {
           });
         });
       });
+
+      describe('when it is marked done', () => {
+        beforeEach(() => {
+          jest.useFakeTimers();
+          jest.setSystemTime(new Date('2027-04-05'));
+        });
+
+        afterEach(() => {
+          jest.useRealTimers();
+        });
+
+        it('records today as the date it was done', () => {
+          const updateItem = jest.fn();
+          const storage = createAdventureStorage({ updateItem });
+
+          storage.updateAdventure({ ...parkrun, isDone: true });
+
+          expect(updateItem).toHaveBeenCalledWith(ADVENTURES_PATH, {
+            ...parkrun,
+            isDone: true,
+            completedAt: '2027-04-05',
+          });
+        });
+      });
     });
 
     it('deletes an adventure', () => {

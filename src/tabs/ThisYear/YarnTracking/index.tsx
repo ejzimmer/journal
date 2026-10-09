@@ -5,7 +5,9 @@ import {
   YarnStorageProvider,
   useYarnStorageContext,
 } from './YarnStorageContext';
-import { YearTabs } from './YearTabs';
+import { YearTabs } from '../../../shared/controls/YearTabs';
+
+import './YarnTracking.css';
 
 function YarnYears() {
   const { years, thisYear, selectedYear, selectYear } = useYarnStorageContext();
@@ -15,6 +17,7 @@ function YarnYears() {
       years={years}
       selectedYear={selectedYear}
       onSelectYear={selectYear}
+      className="yarn-year-tabs"
     >
       <div
         key={selectedYear}

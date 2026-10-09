@@ -8,6 +8,7 @@ export type Balance = {
   day: number;
   month: string;
   monthNumber: number;
+  year: number;
   dayOfWeek: number;
   balance?: number;
   diff?: number;
@@ -36,6 +37,7 @@ export function setupDays(dayData?: Record<string, DayData>): Balance[] {
       day,
       month,
       monthNumber: date.month,
+      year: date.year,
       dayOfWeek: date.dayOfWeek,
       diff,
       trackers,

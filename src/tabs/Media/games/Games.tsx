@@ -3,7 +3,6 @@ import {
   GameDetails,
   GameStatus,
   getGameStatus,
-  isSeries,
   SeriesDetails,
 } from '../types';
 import { getCoverHue } from '../coverHue';
@@ -13,6 +12,9 @@ import { AddMediaForm, EditMediaForm } from '../MediaForm';
 import { useGameFormConfig } from './gameFormConfig';
 import { Shelf } from '../Shelf';
 import { useMediaStorage } from '../MediaStorageContext';
+import { mergeReorderedSeriesItems } from '../seriesOrder';
+import { useMediaYears } from '../useMediaYears';
+import { YearTabs } from '../../../shared/controls/YearTabs';
 
 const GAME_CONFIG: StatusConfig<GameDetails, GameStatus> = {
   order: GAME_STATUS_ORDER,
@@ -59,7 +61,11 @@ function GameMediaList({
       items={games}
       listId={series && getSeriesItemsPath(series)}
       bandHue={series?.bandHue}
-      onReorder={series && ((items) => reorderSeries(series, items))}
+      onReorder={
+        series &&
+        ((items) =>
+          reorderSeries(series, mergeReorderedSeriesItems(series.items, items)))
+      }
       hue={(game) => getCoverHue(series?.id ?? game.title)}
       config={GAME_CONFIG}
       EditForm={EditGameForm}
@@ -69,34 +75,44 @@ function GameMediaList({
 
 export function Games() {
   const { games, updateMediaSeries } = useMediaStorage();
-
-  const series = games.filter((item): item is SeriesDetails<GameDetails> =>
-    isSeries(item),
-  );
-  const singleGames = games.filter(
-    (item): item is GameDetails => !isSeries(item),
-  );
+  const formConfig = useGameFormConfig();
+  const {
+    years,
+    selectedYear,
+    selectYear,
+    isThisYearSelected,
+    seriesInYear,
+    singlesInYear,
+  } = useMediaYears(games);
 
   return (
     <div className="games">
       <h2>Games</h2>
-      <div className="shelves">
-        {series.map((item) => (
-          <Shelf
-            key={item.id}
-            label={item.name}
-            onRenameLabel={(name) => updateMediaSeries(item, name)}
-          >
-            <GameMediaList games={item.items} series={item} />
-          </Shelf>
-        ))}
-        {singleGames.map((game) => (
-          <Shelf key={game.id} single>
-            <GameMediaList games={{ [game.id]: game }} />
-          </Shelf>
-        ))}
-      </div>
-      <AddMediaForm ariaLabel="Add a game" config={useGameFormConfig()} />
+      <YearTabs
+        years={years}
+        selectedYear={selectedYear}
+        onSelectYear={selectYear}
+      >
+        <div className="shelves">
+          {seriesInYear.map(({ series, items }) => (
+            <Shelf
+              key={series.id}
+              label={series.name}
+              onRenameLabel={(name) => updateMediaSeries(series, name)}
+            >
+              <GameMediaList games={items} series={series} />
+            </Shelf>
+          ))}
+          {singlesInYear.map((game) => (
+            <Shelf key={game.id} single>
+              <GameMediaList games={{ [game.id]: game }} />
+            </Shelf>
+          ))}
+        </div>
+      </YearTabs>
+      {isThisYearSelected && (
+        <AddMediaForm ariaLabel="Add a game" config={formConfig} />
+      )}
     </div>
   );
 }

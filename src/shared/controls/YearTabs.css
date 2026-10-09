@@ -1,7 +1,6 @@
 .year-tabs [role='tablist'] {
   display: flex;
   gap: 4px;
-  padding-inline: 60px;
   border-bottom: 1px solid var(--border-colour);
 
   [role='tab'] {

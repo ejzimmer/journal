@@ -11,6 +11,7 @@ const mockDays: Balance[] = Array.from({ length: 20 }).map((_, index) => {
     day: thisDay.day,
     month: 'Jan',
     monthNumber: thisDay.month,
+    year: thisDay.year,
     dayOfWeek: thisDay.dayOfWeek,
   };
 });

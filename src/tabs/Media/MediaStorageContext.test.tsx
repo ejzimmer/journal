@@ -294,7 +294,7 @@ describe('MediaStorageContext', () => {
         ...createStoredMedia({ books: [discworld] }),
         updateItem,
       });
-      const updated = { ...guards, status: 'read' as const };
+      const updated = { ...guards, title: 'Guards! Guards! (Discworld)' };
 
       mediaStorage.updateMedia(updated);
 
@@ -302,6 +302,84 @@ describe('MediaStorageContext', () => {
         `${BOOKS_KEY}/series-discworld/items`,
         updated,
       );
+    });
+
+    describe('completion date', () => {
+      beforeEach(() => {
+        jest.useFakeTimers();
+        jest.setSystemTime(new Date('2027-03-14'));
+      });
+
+      afterEach(() => {
+        jest.useRealTimers();
+      });
+
+      const updateNation = (nation: BookDetails) => {
+        const updateItem = jest.fn();
+        const mediaStorage = createMediaStorage({
+          ...createStoredMedia({ books: [nation] }),
+          updateItem,
+        });
+
+        mediaStorage.updateMedia(nation);
+
+        return updateItem.mock.calls[0][1];
+      };
+
+      describe('when a book is marked read', () => {
+        it('records today as the date it was finished', () => {
+          expect(
+            updateNation(
+              createBook('book-nation', 'Nation', { status: 'read' }),
+            ),
+          ).toHaveProperty('completedAt', '2027-03-14');
+        });
+      });
+
+      describe('when a game is marked played', () => {
+        it('records today as the date it was finished', () => {
+          const updateItem = jest.fn();
+          const stardew = createGame('game-stardew', 'Stardew Valley');
+          const mediaStorage = createMediaStorage({
+            ...createStoredMedia({ games: [stardew] }),
+            updateItem,
+          });
+
+          mediaStorage.updateMedia({ ...stardew, status: 'played' });
+
+          expect(updateItem).toHaveBeenCalledWith(GAMES_KEY, {
+            ...stardew,
+            status: 'played',
+            completedAt: '2027-03-14',
+          });
+        });
+      });
+
+      describe('when a finished book is edited', () => {
+        it('keeps the date it was finished', () => {
+          expect(
+            updateNation(
+              createBook('book-nation', 'Nation', {
+                status: 'read',
+                completedAt: '2026-11-02',
+              }),
+            ),
+          ).toHaveProperty('completedAt', '2026-11-02');
+        });
+      });
+
+      describe('when a finished book goes back to unread', () => {
+        it('drops the date it was finished', () => {
+          expect(
+            updateNation(
+              createBook('book-nation', 'Nation', {
+                status: 'unread',
+                completedAt: '2026-11-02',
+              }),
+            ),
+          ).toEqual(createBook('book-nation', 'Nation', { status: 'unread' }));
+        });
+      });
     });
   });
 

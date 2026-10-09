@@ -32,6 +32,11 @@ import {
 } from './utils';
 import { useGridColumnSpan } from './useGridColumnSpan';
 import { ProjectsSkeleton } from './ProjectsSkeleton';
+import { YearTabs } from '../../shared/controls/YearTabs';
+import { useCompletionYears } from '../../shared/years';
+
+const isProjectDone = (project: ProjectDetails) =>
+  (project.status ?? 'ready') === 'done';
 
 export function Projects() {
   const [filterCategories, setFilterCategories] = useState<Category[]>([]);
@@ -44,6 +49,14 @@ export function Projects() {
     () => sortByPosition(value ? Object.values(value) : []),
     [value],
   );
+
+  const {
+    years,
+    selectedYear,
+    selectYear,
+    isThisYearSelected,
+    isInSelectedYear,
+  } = useCompletionYears(sortedProjects, isProjectDone);
 
   const hasUnsortedDoneProjects = sortedProjects.some(
     (project, index) =>
@@ -111,51 +124,60 @@ export function Projects() {
           <XIcon width=".6em" colour="var(--body-colour-mid)" />
         </button>
       </div>
-      <ul className="projects">
-        {loading ? (
-          <ProjectsSkeleton />
-        ) : (
-          sortedProjects.map((project, index) => (
-            <FilteredProject
-              key={project.id}
-              project={project}
-              filter={filterCategories}
-            >
-              <Project
-                project={project}
-                onDelete={() => {
-                  updateList(
-                    PROJECTS_KEY,
-                    reorderProjects(sortedProjects, index),
-                  );
-                  deleteItem(PROJECTS_KEY, project);
-                }}
-                onMoveToStart={
-                  (project.status ?? 'ready') !== 'in_progress' ||
-                  isProjectAtStart(sortedProjects, index)
-                    ? undefined
-                    : () =>
+      <YearTabs
+        years={years}
+        selectedYear={selectedYear}
+        onSelectYear={selectYear}
+      >
+        <ul className="projects">
+          {loading ? (
+            <ProjectsSkeleton />
+          ) : (
+            sortedProjects.map(
+              (project, index) =>
+                isInSelectedYear(project) && (
+                  <FilteredProject
+                    key={project.id}
+                    project={project}
+                    filter={filterCategories}
+                  >
+                    <Project
+                      project={project}
+                      onDelete={() => {
                         updateList(
                           PROJECTS_KEY,
-                          moveProjectToStart(sortedProjects, index),
-                        )
-                }
-                onMoveToEnd={
-                  (project.status ?? 'ready') !== 'ready' ||
-                  isProjectAtEnd(sortedProjects, index)
-                    ? undefined
-                    : () =>
-                        updateList(
-                          PROJECTS_KEY,
-                          moveProjectToEnd(sortedProjects, index),
-                        )
-                }
-              />
-            </FilteredProject>
-          ))
-        )}
-      </ul>
-      <AddProjectForm />
+                          reorderProjects(sortedProjects, index),
+                        );
+                        deleteItem(PROJECTS_KEY, project);
+                      }}
+                      onMoveToStart={
+                        (project.status ?? 'ready') !== 'in_progress' ||
+                        isProjectAtStart(sortedProjects, index)
+                          ? undefined
+                          : () =>
+                              updateList(
+                                PROJECTS_KEY,
+                                moveProjectToStart(sortedProjects, index),
+                              )
+                      }
+                      onMoveToEnd={
+                        (project.status ?? 'ready') !== 'ready' ||
+                        isProjectAtEnd(sortedProjects, index)
+                          ? undefined
+                          : () =>
+                              updateList(
+                                PROJECTS_KEY,
+                                moveProjectToEnd(sortedProjects, index),
+                              )
+                      }
+                    />
+                  </FilteredProject>
+                ),
+            )
+          )}
+        </ul>
+      </YearTabs>
+      {isThisYearSelected && <AddProjectForm />}
     </div>
   );
 }

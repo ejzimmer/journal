@@ -9,6 +9,15 @@ export class YarnStash {
     Record<YarnTypeId, Temporal.PlainYearMonth>
   > = {};
 
+  static carryOver(previousStash?: YarnStash) {
+    const stash = new YarnStash();
+    if (previousStash) {
+      stash.balls = previousStash.getUnusedBalls().map((ball) => ({ ...ball }));
+      stash.nextBallId = previousStash.nextBallId;
+    }
+    return stash;
+  }
+
   getBalance(yarnType: YarnTypeId) {
     return this.getUnusedBalls(yarnType).reduce(
       (total, ball) => total + ball.grams,

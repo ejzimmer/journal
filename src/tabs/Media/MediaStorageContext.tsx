@@ -5,6 +5,7 @@ import {
   BOOKS_KEY,
   GameDetails,
   GAMES_KEY,
+  isMediaComplete,
   isSeries,
   MediaDetails,
   MediaSeries,
@@ -14,6 +15,7 @@ import {
   SeriesDetails,
 } from './types';
 import { getNextSeriesPosition } from './seriesOrder';
+import { stampCompletion } from '../../shared/years';
 
 export type MediaStorageContextType = {
   books: ReadingItemDetails[];
@@ -39,6 +41,9 @@ export type MediaStorageContextType = {
   reorderSeries: (series: MediaSeries, items: { id: string }[]) => void;
   getSeriesItemsPath: (series: MediaSeries) => string;
 };
+
+const stampMediaCompletion = <T extends MediaDetails | NewMedia>(media: T) =>
+  stampCompletion(media, isMediaComplete(media));
 
 const getMediaKey = (type: MediaDetails['type']) =>
   type === 'book' ? BOOKS_KEY : GAMES_KEY;
@@ -126,13 +131,15 @@ export function MediaStorageProvider({ children }: { children: ReactNode }) {
     authors,
     isLoading: booksLoading || gamesLoading,
 
-    addMedia: (media, seriesId) => {
+    addMedia: (newMedia, seriesId) => {
+      const media = stampMediaCompletion(newMedia);
       addItem(
         getMediaPath(media.type, seriesId),
         seriesId ? appendToSeries(media, seriesId) : media,
       );
     },
-    addMediaSeries: (name, media, bandHue) => {
+    addMediaSeries: (name, newMedia, bandHue) => {
+      const media = stampMediaCompletion(newMedia);
       const key = getMediaKey(media.type);
       const seriesId = addItem<MediaSeries>(key, {
         type: 'series',
@@ -143,7 +150,10 @@ export function MediaStorageProvider({ children }: { children: ReactNode }) {
     },
     updateMedia: (media) => {
       const currentSeries = findSeriesContaining(media);
-      updateItem(getMediaPath(media.type, currentSeries?.id), media);
+      updateItem(
+        getMediaPath(media.type, currentSeries?.id),
+        stampMediaCompletion(media),
+      );
     },
     updateMediaSeries: (series, name, bandHue) => {
       updateItem(getSeriesKey(series), {
@@ -160,7 +170,8 @@ export function MediaStorageProvider({ children }: { children: ReactNode }) {
         deleteItem(getMediaKey(media.type), media);
       }
     },
-    moveMedia: (media, destination) => {
+    moveMedia: (unstampedMedia, destination) => {
+      const media = stampMediaCompletion(unstampedMedia);
       if (destination && 'name' in destination) {
         const key = getMediaKey(media.type);
         const seriesId = addItem<MediaSeries>(key, {

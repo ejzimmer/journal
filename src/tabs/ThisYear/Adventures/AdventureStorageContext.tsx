@@ -6,6 +6,7 @@ import {
   AdventureMode,
   ADVENTURES_PATH,
 } from './types';
+import { stampCompletion } from '../../../shared/years';
 
 export type AdventureStorageContextType = {
   adventures: Adventure[];
@@ -59,7 +60,7 @@ export function AdventureStorageProvider({
     updateAdventure: (adventure) =>
       updateItem<Adventure>(
         ADVENTURES_PATH,
-        removeClearedPlannedDate(adventure),
+        stampCompletion(removeClearedPlannedDate(adventure), adventure.isDone),
       ),
     deleteAdventure: (adventure) =>
       deleteItem<Adventure>(ADVENTURES_PATH, adventure),

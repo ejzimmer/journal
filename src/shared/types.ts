@@ -94,10 +94,12 @@ export const PROJECT_COLOURS = {
 };
 export const categories = Object.keys(PROJECT_COLOURS);
 export type Category = keyof typeof PROJECT_COLOURS;
+export type ProjectStatus = 'ready' | 'in_progress' | 'done';
 export type ProjectDetails = OrderedListItem & {
   description: string;
   category: Category;
-  status?: 'ready' | 'in_progress' | 'done';
+  status?: ProjectStatus;
   subtasks?: Record<string, ProjectSubtask>;
   linkedTaskId?: string;
+  completedAt?: string;
 };

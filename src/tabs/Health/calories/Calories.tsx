@@ -7,6 +7,7 @@ import { WeeklyCalorieTracker } from './WeeklyCalorieTracker';
 import { CalorieForm } from './CalorieForm';
 import { BarChartIcon } from '../../../shared/icons/BarChart';
 import { DotGridIcon } from '../../../shared/icons/DotGrid';
+import { YearTabs } from '../../../shared/controls/YearTabs';
 import './Calories.css';
 
 type View = 'week' | 'day';
@@ -27,6 +28,16 @@ export function Calories() {
   const { days: storedDays, isLoading, updateDay } = useHealthStorage();
 
   const days = useMemo(() => setupDays(storedDays), [storedDays]);
+  const years = useMemo(
+    () => [...new Set(days.map(({ year }) => year))].reverse(),
+    [days],
+  );
+  const [chosenYear, setChosenYear] = useState<number>();
+  const selectedYear = chosenYear ?? years[0];
+  const daysInSelectedYear = useMemo(
+    () => days.filter(({ year }) => year === selectedYear),
+    [days, selectedYear],
+  );
   const yesterday = days[days.length - 1];
   const yesterdayId = yesterday && yesterday.id;
   const caloriesRecordedYesterday = typeof yesterday?.diff === 'number';
@@ -65,7 +76,13 @@ export function Calories() {
           className={`tracker-pane ${view === 'day' ? 'active' : ''}`}
           aria-hidden={view !== 'day'}
         >
-          <Days days={days} onSelectDay={setSelectedDayId} />
+          <YearTabs
+            years={years}
+            selectedYear={selectedYear}
+            onSelectYear={setChosenYear}
+          >
+            <Days days={daysInSelectedYear} onSelectDay={setSelectedDayId} />
+          </YearTabs>
         </div>
         <div
           className={`tracker-pane ${view === 'week' ? 'active' : ''}`}

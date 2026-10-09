@@ -134,4 +134,109 @@ describe('Books', () => {
       });
     });
   });
+
+  describe('years', () => {
+    beforeEach(() => {
+      jest.useFakeTimers({ advanceTimers: true });
+      jest.setSystemTime(new Date('2027-02-10'));
+    });
+
+    afterEach(() => {
+      jest.useRealTimers();
+    });
+
+    const readGuards = { ...guards, status: 'read' as const };
+    const readFeetOfClay = {
+      ...feetOfClay,
+      status: 'read' as const,
+      completedAt: '2027-01-15',
+    };
+    const nation: BookDetails = {
+      id: 'book-nation',
+      type: 'book',
+      title: 'Nation',
+      status: 'read',
+      completedAt: '2025-05-02',
+    };
+    const watchOverYears = {
+      ...watch,
+      items: {
+        [readGuards.id]: { ...readGuards, position: 0 },
+        [menAtArms.id]: { ...menAtArms, position: 1 },
+        [readFeetOfClay.id]: { ...readFeetOfClay, position: 2 },
+      },
+    };
+
+    const renderBooksOverYears = () =>
+      renderWithMediaStorage(<Books />, {
+        books: [watchOverYears, nation],
+        bookSeries: [watchOverYears],
+      });
+
+    const listShelvedTitles = () =>
+      screen
+        .getAllByRole('button', { name: /, (unread|read)$/ })
+        .map((spine) => spine.getAttribute('aria-label')?.split(',')[0]);
+
+    it('has a tab for this year and each year a book was read', () => {
+      renderBooksOverYears();
+
+      expect(screen.getAllByRole('tab').map((tab) => tab.textContent)).toEqual([
+        '2027',
+        '2026',
+        '2025',
+      ]);
+    });
+
+    describe('when this year is selected', () => {
+      it('shelves the unread books and the ones read this year', () => {
+        renderBooksOverYears();
+
+        expect(listShelvedTitles()).toEqual(['Men at Arms', 'Feet of Clay']);
+      });
+
+      describe('and a book in a series is moved', () => {
+        it('keeps the books read in earlier years where they were', async () => {
+          const user = userEvent.setup({
+            advanceTimers: jest.advanceTimersByTime,
+          });
+          const { storageContext } = renderBooksOverYears();
+
+          getSpineTitle('Feet of Clay').focus();
+          await user.keyboard('{ArrowLeft}');
+
+          expect(listReorderedIds(storageContext.reorderSeries)).toEqual({
+            seriesId: watch.id,
+            itemIds: [guards.id, feetOfClay.id, menAtArms.id],
+          });
+        });
+      });
+    });
+
+    describe('when an earlier year is selected', () => {
+      it('shelves only the books read that year', async () => {
+        const user = userEvent.setup({
+          advanceTimers: jest.advanceTimersByTime,
+        });
+        renderBooksOverYears();
+
+        await user.click(screen.getByRole('tab', { name: '2025' }));
+
+        expect(listShelvedTitles()).toEqual(['Nation']);
+      });
+
+      describe('and a book has no date it was read', () => {
+        it('counts it as read in 2026', async () => {
+          const user = userEvent.setup({
+            advanceTimers: jest.advanceTimersByTime,
+          });
+          renderBooksOverYears();
+
+          await user.click(screen.getByRole('tab', { name: '2026' }));
+
+          expect(listShelvedTitles()).toEqual(['Guards! Guards!']);
+        });
+      });
+    });
+  });
 });

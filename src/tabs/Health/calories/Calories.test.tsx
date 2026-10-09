@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Calories } from './Calories';
 import { FirebaseContext } from '../../../shared/FirebaseContext';
@@ -235,6 +235,54 @@ describe('Calories', () => {
           trackers: ['🥚'],
         }),
       );
+    });
+  });
+
+  describe('the dots', () => {
+    describe('once the days run into a second year', () => {
+      beforeEach(() => {
+        jest.setSystemTime(new Date('2027-01-05'));
+      });
+
+      const showDots = async () => {
+        const user = userEvent.setup({
+          advanceTimers: jest.advanceTimersByTime,
+        });
+        renderWithHealthStorage(<Calories />);
+        await user.click(screen.getByRole('radio', { name: 'by day' }));
+        return user;
+      };
+
+      const listDots = () =>
+        within(screen.getByRole('list', { name: 'by day' })).getAllByRole(
+          'button',
+        );
+
+      it('has a tab for each year, newest first', async () => {
+        await showDots();
+
+        expect(
+          screen.getAllByRole('tab').map((tab) => tab.textContent),
+        ).toEqual(['2027', '2026']);
+      });
+
+      it('starts on the latest year', async () => {
+        await showDots();
+
+        expect(listDots().map((dot) => dot.getAttribute('aria-label'))).toEqual(
+          ['update 1 Jan', 'update 2 Jan', 'update 3 Jan', 'update 4 Jan'],
+        );
+      });
+
+      describe('and an earlier year is selected', () => {
+        it('shows a dot for every day of that year', async () => {
+          const user = await showDots();
+
+          await user.click(screen.getByRole('tab', { name: '2026' }));
+
+          expect(listDots()).toHaveLength(365);
+        });
+      });
     });
   });
 });
