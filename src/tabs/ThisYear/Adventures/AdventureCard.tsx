@@ -1,6 +1,9 @@
+import { useEffect, useRef, useState } from 'react';
 import { RestartArrowIcon } from '../../../shared/icons/RestartArrow';
+import { RubbishBinIcon } from '../../../shared/icons/RubbishBin';
 import { TickIcon } from '../../../shared/icons/Tick';
 import { useAdventureStorage } from './AdventureStorageContext';
+import { DeleteConfirmation } from './DeleteConfirmation';
 import { PlannedDate } from './PlannedDate';
 import { Adventure, AdventureMode } from './types';
 
@@ -12,7 +15,17 @@ type AdventureCardProps = {
 };
 
 export function AdventureCard({ adventure, mode }: AdventureCardProps) {
-  const { updateAdventure } = useAdventureStorage();
+  const { updateAdventure, deleteAdventure } = useAdventureStorage();
+  const [isConfirmingDelete, setIsConfirmingDelete] = useState(false);
+  const wasConfirmingDelete = useRef(false);
+  const binButton = useRef<HTMLButtonElement>(null);
+
+  useEffect(() => {
+    if (wasConfirmingDelete.current && !isConfirmingDelete) {
+      binButton.current?.focus();
+    }
+    wasConfirmingDelete.current = isConfirmingDelete;
+  }, [isConfirmingDelete]);
 
   return (
     <li
@@ -37,20 +50,38 @@ export function AdventureCard({ adventure, mode }: AdventureCardProps) {
             />
           )}
           <div className="card-actions">
-            <button
-              type="button"
-              className="ghost"
-              aria-label={adventure.isDone ? 'Mark not done' : 'Mark done'}
-              onClick={() =>
-                updateAdventure({ ...adventure, isDone: !adventure.isDone })
-              }
-            >
-              {adventure.isDone ? (
-                <RestartArrowIcon width="16px" />
-              ) : (
-                <TickIcon width="16px" />
-              )}
-            </button>
+            {isConfirmingDelete ? (
+              <DeleteConfirmation
+                onConfirm={() => deleteAdventure(adventure)}
+                onCancel={() => setIsConfirmingDelete(false)}
+              />
+            ) : (
+              <>
+                <button
+                  ref={binButton}
+                  type="button"
+                  className="ghost delete"
+                  aria-label="Delete"
+                  onClick={() => setIsConfirmingDelete(true)}
+                >
+                  <RubbishBinIcon width="14px" />
+                </button>
+                <button
+                  type="button"
+                  className="ghost"
+                  aria-label={adventure.isDone ? 'Mark not done' : 'Mark done'}
+                  onClick={() =>
+                    updateAdventure({ ...adventure, isDone: !adventure.isDone })
+                  }
+                >
+                  {adventure.isDone ? (
+                    <RestartArrowIcon width="16px" />
+                  ) : (
+                    <TickIcon width="16px" />
+                  )}
+                </button>
+              </>
+            )}
           </div>
         </div>
         {adventure.isDone && (

@@ -99,6 +99,16 @@
     button:hover {
       color: var(--success-colour);
     }
+
+    .delete:hover,
+    .confirm-delete,
+    .confirm-delete:hover {
+      color: var(--error-colour);
+    }
+
+    .confirm-delete {
+      opacity: 1;
+    }
   }
 
   .planned-date {

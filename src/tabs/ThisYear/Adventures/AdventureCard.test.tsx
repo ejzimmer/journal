@@ -98,6 +98,47 @@ describe('AdventureCard', () => {
     });
   });
 
+  describe('when the bin is clicked', () => {
+    it('asks to confirm the delete', async () => {
+      const { user } = renderCard();
+
+      await user.click(screen.getByRole('button', { name: 'Delete' }));
+
+      expect(
+        screen.getByRole('button', { name: 'Confirm delete' }),
+      ).toHaveFocus();
+    });
+
+    describe('and the delete is confirmed', () => {
+      it('deletes the adventure', async () => {
+        const { adventure, storage, user } = renderCard();
+
+        await user.click(screen.getByRole('button', { name: 'Delete' }));
+        await user.click(
+          screen.getByRole('button', { name: 'Confirm delete' }),
+        );
+
+        expect(storage.deleteAdventure).toHaveBeenCalledWith(adventure);
+      });
+    });
+
+    describe('and the delete is cancelled', () => {
+      it('goes back to the bin', async () => {
+        const { storage, user } = renderCard();
+
+        await user.click(screen.getByRole('button', { name: 'Delete' }));
+        const confirmButton = screen.getByRole('button', {
+          name: 'Confirm delete',
+        });
+        await user.click(screen.getByRole('button', { name: 'Cancel delete' }));
+
+        expect(confirmButton).not.toBeInTheDocument();
+        expect(screen.getByRole('button', { name: 'Delete' })).toHaveFocus();
+        expect(storage.deleteAdventure).not.toHaveBeenCalled();
+      });
+    });
+  });
+
   describe('when it has a planned date', () => {
     it('shows the date', () => {
       renderCard({ plannedDate: '2026-10-17' });
