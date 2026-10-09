@@ -1,6 +1,7 @@
 import { CSSProperties, useMemo, useState } from 'react';
 import { ModalDialog } from '../../../shared/controls/ModalDialog';
 import { BranchNames } from './BranchNames';
+import { CloudFrame } from './CloudFrame';
 import { findCurrentVolume } from './findCurrentVolume';
 import { AddVolumeForm } from './AddVolumeForm';
 import { ProgressUpdateForm } from './ProgressUpdateForm';
@@ -50,7 +51,9 @@ export function MediaTree({ series }: { series: PrintSeries }) {
         onCancel={() => setIsProgressUpdateFormOpen(false)}
       >
         {isProgressUpdateFormOpen && currentVolume && (
-          <ProgressUpdateForm series={series} volume={currentVolume} />
+          <CloudFrame>
+            <ProgressUpdateForm series={series} volume={currentVolume} />
+          </CloudFrame>
         )}
       </ModalDialog>
       <AddVolumeForm series={series} />
