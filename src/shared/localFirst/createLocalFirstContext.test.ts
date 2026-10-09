@@ -38,12 +38,12 @@ async function flushMicrotasks() {
 }
 
 async function setUpContextWithStatus() {
-  const { context, hydrate, outdatedStatus } = createLocalFirstContext(
+  const { context, hydrate, saveStatus } = createLocalFirstContext(
     {} as import('firebase/database').Database,
     uniqueDbName(),
   );
   await hydrate();
-  return { context, outdatedStatus };
+  return { context, saveStatus };
 }
 
 async function setUpContext() {
@@ -279,6 +279,91 @@ describe('createLocalFirstContext', () => {
     });
   });
 
+  describe('saving a change to an item that is already stored', () => {
+    const project = {
+      id: 'garden',
+      description: 'Garden',
+      status: 'ready',
+      position: 0,
+    };
+
+    it('sends only the fields that changed', async () => {
+      const context = await setUpContext();
+      context.updateItem('projects', project);
+      await flushMicrotasks();
+      mockUpdate.mockClear();
+
+      context.updateItem('projects', { ...project, status: 'done' });
+
+      await waitFor(() =>
+        expect(mockUpdate).toHaveBeenCalledWith({
+          'v2/projects/garden/status': 'done',
+        }),
+      );
+    });
+
+    describe('when a field is dropped from the item', () => {
+      it('deletes the field', async () => {
+        const context = await setUpContext();
+        context.updateItem('projects', project);
+        await flushMicrotasks();
+        mockUpdate.mockClear();
+
+        const { status, ...withoutStatus } = project;
+        context.updateItem('projects', withoutStatus);
+
+        await waitFor(() =>
+          expect(mockUpdate).toHaveBeenCalledWith({
+            'v2/projects/garden/status': null,
+          }),
+        );
+      });
+    });
+
+    describe('when a whole list is reordered', () => {
+      it('sends only the positions that moved', async () => {
+        const context = await setUpContext();
+        const shed = { id: 'shed', description: 'Shed', position: 1 };
+        context.updateList('projects', [project, shed]);
+        await flushMicrotasks();
+        mockUpdate.mockClear();
+
+        context.updateList('projects', [
+          { ...project, position: 1 },
+          { ...shed, position: 0 },
+        ]);
+
+        await waitFor(() =>
+          expect(mockUpdate).toHaveBeenCalledWith({
+            'v2/projects/garden/position': 1,
+            'v2/projects/shed/position': 0,
+          }),
+        );
+      });
+    });
+
+    describe('when a weekly task is ticked', () => {
+      it('sends only the new tick', async () => {
+        const context = await setUpContext();
+        const task = { id: 'laundry', completed: ['2026-10-05'] };
+        context.updateItem('today/週', task);
+        await flushMicrotasks();
+        mockUpdate.mockClear();
+
+        context.updateItem('today/週', {
+          ...task,
+          completed: ['2026-10-05', '2026-10-07'],
+        });
+
+        await waitFor(() =>
+          expect(mockUpdate).toHaveBeenCalledWith({
+            'v2/today/週/laundry/completed/t0001': '2026-10-07',
+          }),
+        );
+      });
+    });
+  });
+
   describe('saving a reshaped list', () => {
     const task = {
       id: 'laundry',
@@ -305,7 +390,7 @@ describe('createLocalFirstContext', () => {
   });
 
   describe('saving inside a reshaped list', () => {
-    it('sends the whole list as it stands after the save', async () => {
+    it('sends only the part of the reshaped list that changed', async () => {
       const context = await setUpContext();
       context.updateItem('health/classes', {
         id: 'pilates',
@@ -316,14 +401,7 @@ describe('createLocalFirstContext', () => {
 
       await waitFor(() => {
         expect(mockUpdate).toHaveBeenCalledWith({
-          'v2/health/classes/pilates/blocks': {
-            'week-1': {
-              id: 'week-1',
-              total: 3,
-              position: 0,
-              completed: { s2: true },
-            },
-          },
+          'v2/health/classes/pilates/blocks/week-1/completed': { s2: true },
         });
       });
     });
@@ -389,11 +467,11 @@ describe('createLocalFirstContext', () => {
 
   describe('when the server requires a newer app version', () => {
     it('reports the app as out of date', async () => {
-      const { outdatedStatus } = await setUpContextWithStatus();
+      const { saveStatus } = await setUpContextWithStatus();
 
       fireRemoteSnapshot('minimumAppVersion', 3);
 
-      expect(outdatedStatus.getIsOutdated()).toBe(true);
+      expect(saveStatus.getSaveState()).toBe('outdated');
     });
 
     it('keeps saves on this device instead of sending them', async () => {
@@ -412,15 +490,39 @@ describe('createLocalFirstContext', () => {
 
   describe('when the server allows this app version', () => {
     it('sends saves as usual', async () => {
-      const { context, outdatedStatus } = await setUpContextWithStatus();
+      const { context, saveStatus } = await setUpContextWithStatus();
       fireRemoteSnapshot('minimumAppVersion', 2);
 
       context.setValue('dailyReset', 12345);
 
-      expect(outdatedStatus.getIsOutdated()).toBe(false);
+      expect(saveStatus.getSaveState()).toBe('saving');
       await waitFor(() =>
         expect(mockUpdate).toHaveBeenCalledWith({ 'v2/dailyReset': 12345 }),
       );
+    });
+  });
+
+  describe('when the server refuses a save', () => {
+    it('reports saves as failing', async () => {
+      const { context, saveStatus } = await setUpContextWithStatus();
+      mockUpdate.mockRejectedValueOnce(new Error('PERMISSION_DENIED'));
+
+      context.setValue('dailyReset', 12345);
+
+      await waitFor(() => expect(saveStatus.getSaveState()).toBe('failing'));
+    });
+
+    describe('and a retry then succeeds', () => {
+      it('reports saves as working again', async () => {
+        const { context, saveStatus } = await setUpContextWithStatus();
+        mockUpdate.mockRejectedValueOnce(new Error('PERMISSION_DENIED'));
+        context.setValue('dailyReset', 12345);
+        await waitFor(() => expect(saveStatus.getSaveState()).toBe('failing'));
+
+        await waitFor(() => expect(saveStatus.getSaveState()).toBe('saving'), {
+          timeout: 3000,
+        });
+      });
     });
   });
 });

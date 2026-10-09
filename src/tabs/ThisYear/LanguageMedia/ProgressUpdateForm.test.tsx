@@ -1,27 +1,52 @@
-import { screen } from '@testing-library/react';
+import { fireEvent, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { ModalContext } from '../../../shared/controls/Modal';
 import { ProgressUpdateForm } from './ProgressUpdateForm';
 import { renderWithLanguageMediaStorage } from './languageMediaStorageTestUtils';
 import { yotsuba } from './testMedia';
+import { PrintSeries } from './types';
 
 const volume = yotsuba.volumes!.vol1;
 
-const renderForm = () => {
-  const onSubmit = jest.fn();
+const renderForm = (series: PrintSeries = yotsuba) => {
+  const closeModal = jest.fn();
   return {
     user: userEvent.setup(),
-    onSubmit,
+    closeModal,
     ...renderWithLanguageMediaStorage(
-      <ProgressUpdateForm
-        series={yotsuba}
-        volume={volume}
-        onSubmit={onSubmit}
-      />,
+      <ModalContext.Provider value={{ closeModal }}>
+        <ProgressUpdateForm series={series} volume={series.volumes!.vol1} />
+      </ModalContext.Provider>,
     ),
   };
 };
 
 describe('ProgressUpdateForm', () => {
+  describe('the title', () => {
+    describe('for an unnamed volume', () => {
+      it('shows the series and volume number', () => {
+        renderForm();
+
+        expect(
+          screen.getByRole('heading', { name: 'よつばと！ 1' }),
+        ).toBeInTheDocument();
+      });
+    });
+
+    describe('for a named volume', () => {
+      it('adds the volume name', () => {
+        renderForm({
+          ...yotsuba,
+          volumes: { vol1: { ...volume, name: 'Cosette' } },
+        });
+
+        expect(
+          screen.getByRole('heading', { name: 'よつばと！ 1: Cosette' }),
+        ).toBeInTheDocument();
+      });
+    });
+  });
+
   describe('adding one lookup', () => {
     it('saves the new lookup count', async () => {
       const { user, storageContext } = renderForm();
@@ -37,13 +62,70 @@ describe('ProgressUpdateForm', () => {
     });
 
     it('keeps the form open', async () => {
-      const { user, onSubmit } = renderForm();
+      const { user, closeModal } = renderForm();
 
       await user.click(
         screen.getByRole('button', { name: 'Add a lookup to Volume 1' }),
       );
 
-      expect(onSubmit).not.toHaveBeenCalled();
+      expect(closeModal).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('adding one AI question', () => {
+    it('saves the new AI question count', async () => {
+      const { user, storageContext } = renderForm();
+
+      await user.click(
+        screen.getByRole('button', { name: 'Add an AI question to Volume 1' }),
+      );
+
+      expect(storageContext.updateItem).toHaveBeenCalledWith(
+        ['yotsuba', 'volumes', 'vol1'],
+        { aiQuestions: 4 },
+      );
+    });
+  });
+
+  describe('clicking save', () => {
+    describe('after moving the understood slider', () => {
+      it('saves how much I understood', async () => {
+        const { user, storageContext } = renderForm();
+
+        fireEvent.change(screen.getByRole('slider', { name: 'Understood' }), {
+          target: { value: '85' },
+        });
+        await user.click(screen.getByRole('button', { name: 'Save' }));
+
+        expect(storageContext.updateItem).toHaveBeenCalledWith(
+          ['yotsuba', 'volumes', 'vol1'],
+          { lookups: 20, aiQuestions: 3, understood: 85 },
+        );
+      });
+    });
+
+    describe('when understood has never been set', () => {
+      it('leaves it unset', async () => {
+        const { user, storageContext } = renderForm({
+          ...yotsuba,
+          volumes: { vol1: { ...volume, understood: undefined } },
+        });
+
+        await user.click(screen.getByRole('button', { name: 'Save' }));
+
+        expect(storageContext.updateItem).toHaveBeenCalledWith(
+          ['yotsuba', 'volumes', 'vol1'],
+          { lookups: 20, aiQuestions: 3, understood: undefined },
+        );
+      });
+    });
+
+    it('closes the form', async () => {
+      const { user, closeModal } = renderForm();
+
+      await user.click(screen.getByRole('button', { name: 'Save' }));
+
+      expect(closeModal).toHaveBeenCalled();
     });
   });
 
@@ -76,14 +158,14 @@ describe('ProgressUpdateForm', () => {
     });
 
     it('closes the form', async () => {
-      const { user, onSubmit } = renderForm();
+      const { user, closeModal } = renderForm();
 
       await user.type(
         screen.getByRole('spinbutton', { name: 'Looked up' }),
         '{Enter}',
       );
 
-      expect(onSubmit).toHaveBeenCalled();
+      expect(closeModal).toHaveBeenCalled();
     });
   });
 });

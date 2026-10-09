@@ -8,6 +8,7 @@ export type Adventure = {
   isDone: boolean;
   plannedDate?: string;
   completedAt?: string;
+  position?: number;
 };
 
 export type AdventureMode = {
@@ -15,4 +16,5 @@ export type AdventureMode = {
   name: string;
   emoji: string;
   colour: string;
+  position?: number;
 };

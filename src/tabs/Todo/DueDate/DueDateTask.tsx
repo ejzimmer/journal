@@ -37,7 +37,11 @@ export function DueDateTask({ task }: { task: CalendarTask }) {
     <>
       <EditableDate
         value={task.dueDate}
-        onChange={(date) => onChange({ ...task, dueDate: date })}
+        onChange={(date) => {
+          if (date) {
+            onChange({ ...task, dueDate: date });
+          }
+        }}
         className={`due-date ${getDateClass(task)}`}
       />
       <div className="description">

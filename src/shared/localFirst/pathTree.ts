@@ -64,3 +64,24 @@ export function valuesAreEqual(a: unknown, b: unknown): boolean {
 export function pathsAreRelated(a: string, b: string): boolean {
   return a === b || a.startsWith(`${b}/`) || b.startsWith(`${a}/`);
 }
+
+export function listChangedFields(
+  path: string,
+  current: unknown,
+  next: unknown,
+): [string, unknown][] {
+  if (next === null || next === undefined) {
+    return current === undefined ? [] : [[path, null]];
+  }
+  if (isPlainTree(current) && isPlainTree(next)) {
+    const keys = new Set([...Object.keys(current), ...Object.keys(next)]);
+    return [...keys].flatMap((key) =>
+      listChangedFields(`${path}/${key}`, current[key], next[key]),
+    );
+  }
+  return valuesAreEqual(current, next) ? [] : [[path, next]];
+}
+
+function isPlainTree(value: unknown): value is Tree {
+  return typeof value === 'object' && value !== null && !Array.isArray(value);
+}

@@ -1,4 +1,4 @@
-import { Comprehension, Episode, Status, Volume } from './types';
+import { Comprehension, Episode, PrintSeries, Status, Volume } from './types';
 
 const minutesAndSecondsFormat = new Intl.DurationFormat(undefined, {
   style: 'digital',
@@ -32,6 +32,11 @@ export const formatEpisodeName = ({ number, name }: Episode) =>
 
 export const formatVolumeName = ({ number, name }: Volume) =>
   name || `Volume ${number}`;
+
+export const formatVolumeTitle = (
+  series: PrintSeries,
+  { number, name }: Volume,
+) => `${series.name} ${number}${name ? `: ${name}` : ''}`;
 
 export function formatComprehension({
   lookups,
