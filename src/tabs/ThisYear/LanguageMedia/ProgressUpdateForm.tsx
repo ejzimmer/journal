@@ -1,22 +1,24 @@
 import { KeyboardEvent, FormEvent } from 'react';
+import { useModal } from '../../../shared/controls/Modal';
 import { useLanguageMediaStorage } from './LanguageMediaStorageContext';
 import { NumberField } from './NumberField';
 import { parseNumber } from './fields';
-import { formatVolumeName } from './format';
+import { formatVolumeName, formatVolumeTitle } from './format';
 import { PrintSeries, Volume } from './types';
+
+import './ProgressUpdateForm.css';
 
 type ProgressUpdateFormProps = {
   series: PrintSeries;
   volume: Volume;
-  onSubmit: () => void;
 };
 
 export function ProgressUpdateForm({
   series,
   volume,
-  onSubmit,
 }: ProgressUpdateFormProps) {
   const { updateItem } = useLanguageMediaStorage();
+  const { closeModal } = useModal();
   const path = [series.id, 'volumes', volume.id];
   const name = formatVolumeName(volume);
 
@@ -42,7 +44,7 @@ export function ProgressUpdateForm({
       aiQuestions: parseNumber(data, 'aiQuestions') ?? 0,
       understood: parseNumber(data, 'understood'),
     });
-    onSubmit();
+    closeModal();
   };
 
   return (
@@ -51,6 +53,9 @@ export function ProgressUpdateForm({
       onKeyDown={submitOnEnter}
       onSubmit={saveProgress}
     >
+      <h2 className="progress-update-title">
+        {formatVolumeTitle(series, volume)}
+      </h2>
       <button
         type="button"
         aria-label={`Add a lookup to ${name}`}

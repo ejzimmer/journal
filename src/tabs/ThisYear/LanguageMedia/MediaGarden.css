@@ -33,7 +33,7 @@
 .media-tree {
   position: relative;
 
-  form {
+  > form {
     position: absolute;
     inset-block-start: 100%;
     z-index: 1;
