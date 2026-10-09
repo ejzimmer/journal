@@ -17,7 +17,7 @@ import { ArrowToEndIcon } from '../../shared/icons/ArrowToEnd';
 import { ArrowToStartIcon } from '../../shared/icons/ArrowToStart';
 import { EditableText } from '../../shared/controls/EditableText';
 import { getToday } from '../../shared/dates';
-import { stampCompletion } from '../../shared/years';
+import { updateCompletionDate } from '../../shared/years';
 
 type ProjectProps = {
   project: ProjectDetails;
@@ -74,7 +74,7 @@ export function Project({
   const saveStatus = (nextStatus: ProjectStatus) =>
     updateItem(
       PROJECTS_KEY,
-      stampCompletion(
+      updateCompletionDate(
         { ...project, status: nextStatus },
         nextStatus === 'done',
       ),

@@ -8,7 +8,7 @@ export type Completable = { completedAt?: string };
 export const getCompletionYear = ({ completedAt }: Completable) =>
   completedAt ? Temporal.PlainDate.from(completedAt).year : FIRST_TRACKED_YEAR;
 
-export function stampCompletion<T extends Completable>(
+export function updateCompletionDate<T extends Completable>(
   item: T,
   isComplete: boolean,
 ): T {
