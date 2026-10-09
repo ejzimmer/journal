@@ -5,7 +5,7 @@ import { MediaStorageContextType } from '../MediaStorageContext';
 import { BookDetails, SeriesDetails } from '../types';
 import { Books } from './Books';
 
-const guards: BookDetails = {
+const guardsGuards: BookDetails = {
   id: 'book-guards',
   type: 'book',
   title: 'Guards! Guards!',
@@ -27,7 +27,7 @@ const watch: SeriesDetails<BookDetails> = {
   name: 'City Watch',
   bandHue: 40,
   items: {
-    [guards.id]: guards,
+    [guardsGuards.id]: guardsGuards,
     [menAtArms.id]: menAtArms,
     [feetOfClay.id]: feetOfClay,
   },
@@ -62,7 +62,7 @@ describe('Books', () => {
 
         expect(listReorderedIds(storageContext.reorderSeries)).toEqual({
           seriesId: watch.id,
-          itemIds: [menAtArms.id, guards.id, feetOfClay.id],
+          itemIds: [menAtArms.id, guardsGuards.id, feetOfClay.id],
         });
       });
     });
@@ -77,7 +77,7 @@ describe('Books', () => {
 
         expect(listReorderedIds(storageContext.reorderSeries)).toEqual({
           seriesId: watch.id,
-          itemIds: [guards.id, feetOfClay.id, menAtArms.id],
+          itemIds: [guardsGuards.id, feetOfClay.id, menAtArms.id],
         });
       });
     });
@@ -92,7 +92,7 @@ describe('Books', () => {
 
         expect(listReorderedIds(storageContext.reorderSeries)).toEqual({
           seriesId: watch.id,
-          itemIds: [feetOfClay.id, guards.id, menAtArms.id],
+          itemIds: [feetOfClay.id, guardsGuards.id, menAtArms.id],
         });
       });
 
@@ -105,7 +105,7 @@ describe('Books', () => {
 
         expect(listReorderedIds(storageContext.reorderSeries)).toEqual({
           seriesId: watch.id,
-          itemIds: [menAtArms.id, feetOfClay.id, guards.id],
+          itemIds: [menAtArms.id, feetOfClay.id, guardsGuards.id],
         });
       });
     });
@@ -162,7 +162,12 @@ describe('Books', () => {
     const halfReadWatch: SeriesDetails<BookDetails> = {
       ...watch,
       items: {
-        [guards.id]: createReadBook(guards.id, guards.title, 0, '2026-04-01'),
+        [guardsGuards.id]: createReadBook(
+          guardsGuards.id,
+          guardsGuards.title,
+          0,
+          '2026-04-01',
+        ),
         [menAtArms.id]: { ...menAtArms, position: 1 },
         [feetOfClay.id]: createReadBook(
           feetOfClay.id,
