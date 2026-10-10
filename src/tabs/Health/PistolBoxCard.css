@@ -52,11 +52,6 @@
     border-color: var(--block-edge);
     background: var(--block);
 
-    &.end {
-      width: calc(7 * var(--cm));
-      height: calc(16.1 * var(--cm));
-    }
-
     &.side {
       width: calc(16.1 * var(--cm));
       height: calc(10.5 * var(--cm));

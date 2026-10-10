@@ -63,11 +63,11 @@ describe('PistolBoxCard', () => {
       expect(storageContext.updatePistolBoxLevel).toHaveBeenCalledWith(5);
     });
 
-    describe('when the box is already at its highest', () => {
+    describe('when the box is already at its starting height', () => {
       it('leaves the box alone', async () => {
         const user = userEvent.setup();
         const { storageContext } = renderWithHealthStorage(<PistolBoxCard />, {
-          pistolBoxLevel: 9,
+          pistolBoxLevel: 6,
         });
 
         await user.keyboard('{Control>}z{/Control}');
