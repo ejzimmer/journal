@@ -73,6 +73,14 @@ export type ExerciseClass = {
   blocks: ClassBlock[];
 };
 
+export const PISTOL_BOX_PATH = `${HEALTH_PATH}/pistolBox`;
+
+export const DEAD_HANG_PATH = `${HEALTH_PATH}/deadHang`;
+export type DeadHangSession = {
+  date: string;
+  hangs?: number[];
+};
+
 export const PROJECTS_KEY = 'projects';
 export type ProjectSubtask = {
   id: string;

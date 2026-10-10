@@ -2,6 +2,7 @@ import { render, screen } from '@testing-library/react';
 import { useState } from 'react';
 import userEvent from '@testing-library/user-event';
 import { ExerciseClass } from '../../shared/types';
+import { getToday } from '../../shared/dates';
 import {
   createHealthStorageContext,
   renderWithHealthStorage,
@@ -141,26 +142,72 @@ describe('ExerciseClasses', () => {
     });
   });
 
-  describe('when some classes are finished', () => {
-    it('lists the finished ones last', () => {
-      const finished: ExerciseClass = {
-        id: 'finished',
-        description: 'Finished',
-        blocks: [{ id: 'all', total: 1, completed: [0] }],
-      };
-      const unfinished: ExerciseClass = {
-        id: 'unfinished',
-        description: 'Unfinished',
-        blocks: [{ id: 'all', total: 2, completed: [0] }],
-      };
-      renderWithHealthStorage(<ExerciseClasses />, {
-        classes: [finished, unfinished],
-      });
+  describe('the order of the cards', () => {
+    const finished: ExerciseClass = {
+      id: 'finished',
+      description: 'Finished class',
+      blocks: [{ id: 'all', total: 1, completed: [0] }],
+    };
+    const unfinished: ExerciseClass = {
+      id: 'unfinished',
+      description: 'Unfinished class',
+      blocks: [{ id: 'all', total: 2, completed: [0] }],
+    };
 
+    function expectCardOrder(names: string[]) {
       const cards = screen.getAllByRole('listitem', { name: /.+/ });
-      expect(cards).toHaveLength(2);
-      expect(cards[0]).toHaveAccessibleName('Unfinished');
-      expect(cards[1]).toHaveAccessibleName('Finished');
+      expect(cards).toHaveLength(names.length);
+      names.forEach((name, index) =>
+        expect(cards[index]).toHaveAccessibleName(name),
+      );
+    }
+
+    describe('when the trackers are still in progress', () => {
+      it('lists unfinished classes, then the trackers, then finished classes', () => {
+        renderWithHealthStorage(<ExerciseClasses />, {
+          classes: [finished, unfinished],
+        });
+
+        expectCardOrder([
+          'Unfinished class',
+          'Pistol squat',
+          'Dead hang',
+          'Finished class',
+        ]);
+      });
+    });
+
+    describe('when a tracker is finished', () => {
+      it('lists it after the finished classes', () => {
+        renderWithHealthStorage(<ExerciseClasses />, {
+          classes: [finished, unfinished],
+          pistolBoxLevel: 0,
+          deadHang: { date: getToday(), hangs: [31, 30] },
+        });
+
+        expectCardOrder([
+          'Unfinished class',
+          'Finished class',
+          'Pistol squat',
+          'Dead hang',
+        ]);
+      });
+    });
+
+    describe('when only one tracker is finished', () => {
+      it('keeps the other with the classes in progress', () => {
+        renderWithHealthStorage(<ExerciseClasses />, {
+          classes: [finished, unfinished],
+          deadHang: { date: getToday(), hangs: [31, 30] },
+        });
+
+        expectCardOrder([
+          'Unfinished class',
+          'Pistol squat',
+          'Finished class',
+          'Dead hang',
+        ]);
+      });
     });
   });
 
