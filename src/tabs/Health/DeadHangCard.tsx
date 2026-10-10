@@ -55,7 +55,7 @@ export function DeadHangCard() {
         <svg
           viewBox={`0 0 ${RING_SIZE} ${RING_SIZE}`}
           role="img"
-          aria-label={`${formatSeconds(sessionTotal)} of ${SESSION_GOAL_SECONDS} seconds today, longest hang ${formatSeconds(longestHang)} of ${HANG_GOAL_SECONDS} seconds`}
+          aria-label={`${sessionTotal} of ${SESSION_GOAL_SECONDS} seconds today, longest hang ${longestHang} of ${HANG_GOAL_SECONDS} seconds`}
         >
           <SessionRing hangs={hangs} liveHangSeconds={liveHangSeconds} />
           <LongestHangRing
@@ -70,7 +70,7 @@ export function DeadHangCard() {
           onClick={toggleHang}
         >
           {isHanging ? (
-            <span className="seconds">{Math.floor(liveHangSeconds)}</span>
+            <span className="seconds">{liveHangSeconds}</span>
           ) : (
             <svg viewBox="0 0 20 20" className="play">
               <path d="M6,4 L16,10 L6,16 Z" />
@@ -80,8 +80,4 @@ export function DeadHangCard() {
       </div>
     </li>
   );
-}
-
-function formatSeconds(seconds: number) {
-  return Math.round(seconds);
 }

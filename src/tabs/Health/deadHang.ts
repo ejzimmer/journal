@@ -10,12 +10,11 @@ export function getTodaysHangs(session?: DeadHangSession) {
 }
 
 export function measureLiveHang(pressedStartAt: number, now: number) {
-  return Math.max(0, now - pressedStartAt - MOUNTING_MS) / 1000;
+  return Math.floor(Math.max(0, now - pressedStartAt - MOUNTING_MS) / 1000);
 }
 
 export function measureFinishedHang(pressedStartAt: number, stoppedAt: number) {
-  const seconds = measureLiveHang(pressedStartAt, stoppedAt - MOUNTING_MS);
-  return Math.round(seconds * 10) / 10;
+  return measureLiveHang(pressedStartAt, stoppedAt - MOUNTING_MS);
 }
 
 export function calculateHangArcs(hangs: number[]) {
