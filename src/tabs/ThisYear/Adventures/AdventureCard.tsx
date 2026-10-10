@@ -2,7 +2,7 @@ import { DeleteWithConfirmation } from '../../../shared/controls/DeleteWithConfi
 import { RestartArrowIcon } from '../../../shared/icons/RestartArrow';
 import { TickIcon } from '../../../shared/icons/Tick';
 import { useAdventureStorage } from './AdventureStorageContext';
-import { PlannedDate } from './PlannedDate';
+import { PlannedDateField } from './PlannedDateField';
 import { Adventure, AdventureMode } from './types';
 
 import './AdventureCard.css';
@@ -31,12 +31,13 @@ export function AdventureCard({ adventure, mode }: AdventureCardProps) {
           {adventure.description}
         </p>
         <div className="card-footer">
-          {adventure.plannedDate && (
-            <PlannedDate
-              date={adventure.plannedDate}
-              isDone={adventure.isDone}
-            />
-          )}
+          <PlannedDateField
+            date={adventure.plannedDate}
+            isDone={adventure.isDone}
+            onChange={(plannedDate) =>
+              updateAdventure({ ...adventure, plannedDate })
+            }
+          />
           <div className="card-actions">
             <DeleteWithConfirmation
               onDelete={() => deleteAdventure(adventure)}
