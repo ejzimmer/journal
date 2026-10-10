@@ -42,14 +42,16 @@ export function placeLeaves(
   points: Point[],
   length: number,
   { leafGap, leafSplay, tuft }: ShootStyle,
+  [from, to]: [number, number] = [FIRST_LEAF, 1],
 ): Leaf[] {
   const leaves: Leaf[] = [];
   let side = 1;
-  for (let along = FIRST_LEAF * length; along < length - 2; along += leafGap) {
+  for (let along = from * length; along < to * length - 2; along += leafGap) {
     const { point, angle } = findPointAlong(points, along / length);
     leaves.push({ ...point, angle: angle + leafSplay * side });
     side = -side;
   }
+  if (to < 1) return leaves;
   const { point: tip, angle: tipAngle } = findPointAlong(points, 1);
   return [
     ...leaves,
@@ -63,6 +65,7 @@ export function growShoot(
   length: number,
   style: ShootStyle,
   random: () => number,
+  leafRanges: [number, number][] = [[FIRST_LEAF, 1]],
 ) {
   const points = walkPath(
     base,
@@ -74,19 +77,60 @@ export function growShoot(
   );
   return {
     edges: traceTaperedEdges(points, style.widths),
-    leaves: placeLeaves(points, length, style),
+    leaves: leafRanges.flatMap((range) =>
+      placeLeaves(points, length, style, range),
+    ),
   };
 }
 
-export function growShoots(shape: GrownShape, style: ShootStyle): Shoot[] {
+export function spaceShootsBetween(
+  start: number,
+  end: number,
+  flowers: number[],
+  spacing: number,
+) {
+  const anchors = flowers
+    .filter((flower) => flower > start && flower < end)
+    .toSorted((a, b) => a - b);
+  const filledGaps = [start, ...anchors].slice(0, -1).flatMap((from, index) => {
+    const to = anchors[index];
+    const count = Math.max(0, Math.round((to - from) / spacing) - 1);
+    return Array.from(
+      { length: count },
+      (_, slot) => from + ((to - from) * (slot + 1)) / (count + 1),
+    );
+  });
+  const lastAnchor = anchors.at(-1);
+  const tail: number[] = [];
+  for (
+    let along = lastAnchor === undefined ? start : lastAnchor + spacing;
+    along < end;
+    along += spacing
+  ) {
+    tail.push(along);
+  }
+  return [...(anchors.length ? [start] : []), ...filledGaps, ...tail];
+}
+
+export function growShoots(
+  shape: GrownShape,
+  style: ShootStyle,
+  flowers: number[] = [],
+): Shoot[] {
   const length = measureBranchLength(shape.edges);
   const isLimb = shape.key.endsWith('-limb');
   const end = shape.amount * length - (isLimb ? LIMB_TIP_GAP : 0);
   const random = createSeededRandom(`${shape.key}-shoots`);
   let side = random() < 0.5 ? 1 : -1;
 
+  const positions = spaceShootsBetween(
+    FIRST_SHOOT,
+    end,
+    flowers.map((flower) => flower * length),
+    style.spacing,
+  );
   const shoots: Shoot[] = [];
-  for (let along = FIRST_SHOOT; along < end; along += style.spacing) {
+  for (const along of positions) {
     const point = findBranchPoint(shape.edges, along / length);
     const [shortest, longest] = style.length;
     const shootLength = shortest + random() * (longest - shortest);

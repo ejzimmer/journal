@@ -1,4 +1,4 @@
-import { growShoots } from './growShoots';
+import { growShoots, spaceShootsBetween } from './growShoots';
 import { EdgeSample } from './treeGeometry';
 import { GrownShape } from './treeGrowth';
 import { ShootStyle } from './treeSpecies';
@@ -80,6 +80,26 @@ describe('growShoots', () => {
       const longer = growShoots(createBranch('vol1-twig-0', 1), style);
 
       expect(longer).toEqual(expect.arrayContaining(shorter));
+    });
+  });
+});
+
+describe('spaceShootsBetween', () => {
+  describe('with no flowers', () => {
+    it('spaces shoots out from the start at a steady pace', () => {
+      expect(spaceShootsBetween(10, 75, [], 20)).toEqual([10, 30, 50, 70]);
+    });
+  });
+
+  describe('with flowers', () => {
+    it('fills the gaps between them evenly', () => {
+      expect(spaceShootsBetween(10, 100, [40, 75], 20)).toEqual([
+        10, 25, 57.5, 95,
+      ]);
+    });
+
+    it('ignores flowers past the end of the read wood', () => {
+      expect(spaceShootsBetween(10, 50, [120], 20)).toEqual([10, 30]);
     });
   });
 });
