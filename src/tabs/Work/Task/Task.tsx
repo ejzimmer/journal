@@ -105,9 +105,6 @@ export function Task({
             onDeleted();
           }}
           className="inline"
-          style={{
-            textDecoration: task.status === 'done' ? 'line-through' : 'none',
-          }}
         />
         <Subtasks subtasks={task.subtasks} listId={listId} taskId={task.id} />
         {hasLabels && (
