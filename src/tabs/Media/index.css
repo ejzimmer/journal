@@ -12,37 +12,88 @@
     margin-block-end: 0;
   }
 
-  & > div {
-    border: 2px solid var(--border-colour);
-    border-radius: 8px;
+  & > .books,
+  & > .games {
     display: flex;
     flex-direction: column;
     padding-inline: 24px;
     padding-block-end: 24px;
+    background: #b88a5a;
+    border: 14px solid #5b3a21;
+    border-radius: 6px;
+    box-shadow:
+      inset 0 0 0 2px #3f2815,
+      inset 0 6px 18px hsl(0 0% 0% / 0.35),
+      0 8px 18px hsl(30 50% 20% / 0.25);
+
+    h2 {
+      color: hsl(35 60% 97%);
+      font-weight: 800;
+      letter-spacing: 0.02em;
+      text-shadow: 0 2px 0 #3f2815;
+    }
 
     > button {
+      --size: 44px;
       align-self: end;
+      width: var(--size);
+      height: var(--size);
+      padding: 0;
+      display: grid;
+      place-items: center;
+      color: white;
+      border: 2px solid var(--media-accent-dark);
+      border-radius: 50%;
+      --button-face:
+        radial-gradient(
+          circle at 35% 30%,
+          hsl(0 0% 100% / 0.6) 0 4px,
+          transparent 9px
+        ),
+        radial-gradient(
+          circle at 50% 40%,
+          var(--media-accent),
+          var(--media-accent-dark)
+        );
+      background: var(--button-face);
+      box-shadow: 0 3px 4px hsl(0 0% 0% / 0.35);
+      transition: transform 0.15s ease;
+
+      &:hover,
+      &:focus-visible {
+        transform: scale(1.08);
+        background: var(--button-face);
+      }
+    }
+
+    .year-tabs [role='tablist'] {
+      border-bottom-color: hsl(30 45% 25% / 0.35);
+
+      [role='tab'] {
+        color: hsl(35 60% 92% / 0.75);
+
+        &:hover,
+        &[aria-selected='true'] {
+          color: hsl(35 60% 97%);
+          border-bottom-color: hsl(35 60% 97%);
+        }
+      }
     }
   }
 
   & > .books {
-    --media-accent: hsl(29 94% 50%);
-    --media-accent-dark: hsl(29 94% 38%);
-    border-color: var(--media-accent);
-    background: hsla(29, 97%, 46%, 0.06);
+    --media-accent: hsl(24 96% 52%);
+    --media-accent-dark: hsl(18 90% 38%);
+  }
+
+  & > .games {
+    --media-accent: hsl(188 88% 40%);
+    --media-accent-dark: hsl(196 90% 28%);
   }
 
   & > .wind-waker {
     grid-column: 1 / -1;
     justify-self: center;
-    padding-block-start: 24px;
-  }
-
-  & > .games {
-    --media-accent: hsl(187 76% 36%);
-    --media-accent-dark: hsl(187 76% 26%);
-    border-color: var(--media-accent);
-    background: hsla(187, 76%, 36%, 0.06);
   }
 
   .shelves {
@@ -53,10 +104,12 @@
     background-image: repeating-linear-gradient(
       to bottom,
       transparent 0 var(--shelf-height),
-      hsl(32 40% 80%) var(--shelf-height) calc(var(--shelf-height) + 4px),
-      hsl(30 32% 66%) calc(var(--shelf-height) + 4px)
-        calc(var(--shelf-height) + 7px),
-      transparent calc(var(--shelf-height) + 7px) var(--shelf-spacing)
+      #3f2815 var(--shelf-height) calc(var(--shelf-height) + 2px),
+      hsl(30 50% 62%) calc(var(--shelf-height) + 2px)
+        calc(var(--shelf-height) + 5px),
+      #7a5233 calc(var(--shelf-height) + 5px) calc(var(--shelf-height) + 10px),
+      #3f2815 calc(var(--shelf-height) + 10px) calc(var(--shelf-height) + 12px),
+      transparent calc(var(--shelf-height) + 12px) var(--shelf-spacing)
     );
   }
 
@@ -96,13 +149,13 @@
   }
 
   .shelf-label {
-    margin-block-start: 5px;
+    margin-block-start: 10px;
     align-self: flex-start;
     margin-inline-start: 3px;
-    background: hsl(44 52% 97%);
-    border: 1px solid hsl(38 26% 82%);
-    border-radius: 2px;
-    box-shadow: 0 1px 2px hsl(32 30% 50% / 0.22);
+    background: #fbf8f0;
+    border: 2px solid #3f2815;
+    border-radius: 4px;
+    box-shadow: 0 3px 0 hsl(0 0% 0% / 0.25);
     padding: 2px 11px 3px;
     font-family: 'Dancing Script', cursive;
     font-weight: 600;

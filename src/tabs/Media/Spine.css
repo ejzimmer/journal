@@ -5,59 +5,51 @@
 }
 
 .spine {
-  --cover-lightness: 85;
-  --cover-chroma: 0.085;
+  --cover-lightness: 78;
+  --cover-chroma: 0.15;
+  --cover: oklch(
+    calc((var(--cover-lightness) - var(--cover-shade)) * 1%) var(--cover-chroma)
+      var(--hue)
+  );
+  --cover-highlight: oklch(
+    calc((var(--cover-lightness) - var(--cover-shade) + 13) * 1%)
+      calc(var(--cover-chroma) * 0.5) var(--hue)
+  );
+  --cover-shadow: oklch(
+    calc((var(--cover-lightness) - var(--cover-shade) - 12) * 1%)
+      var(--cover-chroma) var(--hue)
+  );
+  --ink: oklch(28% 0.09 var(--hue));
   position: relative;
   padding-inline: 6px;
   padding-block-start: 22px;
   padding-block-end: 56px;
-  border-start-start-radius: 3px;
-  border-start-end-radius: 3px;
-  border-end-end-radius: 1px;
-  border-end-start-radius: 1px;
+  border: 2.5px solid var(--ink);
+  border-radius: 7px 7px 3px 3px;
   background: linear-gradient(
     to right,
-    oklch(
-        calc((var(--cover-lightness) - var(--cover-shade) - 8) * 1%)
-          var(--cover-chroma) var(--hue)
-      )
-      0 2px,
-    oklch(
-        calc((var(--cover-lightness) - var(--cover-shade) + 5) * 1%)
-          var(--cover-chroma) var(--hue)
-      )
-      3px 6px,
-    oklch(
-        calc((var(--cover-lightness) - var(--cover-shade)) * 1%)
-          var(--cover-chroma) var(--hue)
-      )
-      8px calc(100% - 4px),
-    oklch(
-        calc((var(--cover-lightness) - var(--cover-shade) - 7) * 1%)
-          var(--cover-chroma) var(--hue)
-      )
-      calc(100% - 2px) 100%
+    var(--cover) 0 3px,
+    var(--cover-highlight) 3px 7px,
+    var(--cover) 7px calc(100% - 7px),
+    var(--cover-shadow) calc(100% - 7px)
   );
-  box-shadow:
-    inset 0 0 0 1px oklch(96% 0.02 var(--hue) / 0.45),
-    0 1px 2px oklch(45% 0.05 var(--hue) / 0.3);
-  color: oklch(38% 0.09 var(--hue));
+  box-shadow: 0 3px 0 oklch(25% 0.05 var(--hue) / 0.35);
+  color: var(--ink);
   font-family: 'Literata', Georgia, 'Times New Roman', serif;
   font-size: 14px;
+  font-weight: 600;
   line-height: 1.25;
   transition: --cover-shade 0.15s;
 
   &:hover {
-    --cover-shade: 5;
+    --cover-shade: 6;
   }
 
   &.todo {
-    --cover-lightness: 96;
-    --cover-chroma: 0.022;
-    color: oklch(48% 0.045 var(--hue));
-    box-shadow:
-      inset 0 0 0 1px oklch(99% 0.005 var(--hue) / 0.6),
-      0 1px 2px oklch(55% 0.02 var(--hue) / 0.18);
+    --cover-lightness: 94;
+    --cover-chroma: 0.04;
+    --ink: oklch(42% 0.07 var(--hue));
+    font-weight: 400;
   }
 }
 
@@ -95,7 +87,8 @@
 
 .spine .spine-label .author {
   font-size: 0.84em;
-  opacity: 0.7;
+  font-weight: 400;
+  opacity: 0.75;
   font-style: italic;
   margin-block-start: 4px;
 }
@@ -136,16 +129,17 @@
 }
 
 .spine.done .stamp {
-  color: oklch(50% 0.13 var(--band-hue, var(--hue)));
+  color: oklch(35% 0.15 var(--band-hue, var(--hue)));
   font-size: 17px;
   font-weight: 700;
 }
 
 .spine .series-band {
   position: absolute;
-  inset-inline: 4px;
-  height: 6px;
-  background: oklch(58% 0.16 var(--band-hue));
+  inset-inline: 0;
+  height: 9px;
+  background: oklch(58% 0.2 var(--band-hue));
+  border-block: 2.5px solid var(--ink);
 }
 
 .spine .series-band-head {
@@ -157,7 +151,7 @@
 }
 
 .spine.todo .series-band {
-  background: oklch(80% 0.06 var(--band-hue));
+  background: oklch(80% 0.1 var(--band-hue));
 }
 
 .spine-item {
@@ -190,9 +184,10 @@
 .spine-drag-preview {
   writing-mode: vertical-rl;
   padding: 16px 8px;
-  border-radius: 3px;
-  background: oklch(85% 0.085 var(--hue));
-  color: oklch(38% 0.09 var(--hue));
+  border: 2.5px solid oklch(28% 0.09 var(--hue));
+  border-radius: 7px 7px 3px 3px;
+  background: oklch(78% 0.15 var(--hue));
+  color: oklch(28% 0.09 var(--hue));
   font-family: 'Literata', Georgia, 'Times New Roman', serif;
   font-size: 14px;
 }
