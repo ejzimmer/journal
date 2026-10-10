@@ -18,6 +18,15 @@ export function measureFinishedHang(pressedStartAt: number, stoppedAt: number) {
   return Math.round(seconds * 10) / 10;
 }
 
+export function calculateHangArcs(hangs: number[]) {
+  let hungSoFar = 0;
+  return hangs.map((hang) => {
+    const from = hungSoFar / SESSION_GOAL_SECONDS;
+    hungSoFar += hang;
+    return { from, to: hungSoFar / SESSION_GOAL_SECONDS };
+  });
+}
+
 export function createArcPath(
   centre: number,
   radius: number,

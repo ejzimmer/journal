@@ -1,4 +1,4 @@
-import { SESSION_GOAL_SECONDS } from './deadHang';
+import { calculateHangArcs, SESSION_GOAL_SECONDS } from './deadHang';
 import { OUTER_RING_RADIUS } from './ringGeometry';
 import { RingArc } from './RingArc';
 import { RingTrack } from './RingTrack';
@@ -11,9 +11,8 @@ type SessionRingProps = {
 };
 
 export function SessionRing({ hangs, liveHangSeconds }: SessionRingProps) {
-  const isFull =
-    hangs.reduce((total, hang) => total + hang, liveHangSeconds) >=
-    SESSION_GOAL_SECONDS;
+  const sessionTotal = hangs.reduce((total, hang) => total + hang, 0);
+  const isFull = sessionTotal + liveHangSeconds >= SESSION_GOAL_SECONDS;
 
   if (isFull) {
     return (
@@ -29,25 +28,17 @@ export function SessionRing({ hangs, liveHangSeconds }: SessionRingProps) {
     );
   }
 
-  const arcs = hangs.map((hang, index) => {
-    const from =
-      hangs.slice(0, index).reduce((total, h) => total + h, 0) /
-      SESSION_GOAL_SECONDS;
-    const to = from + hang / SESSION_GOAL_SECONDS;
-    return { from, to: Math.max(from, to - GAP_BETWEEN_HANGS) };
-  });
-  const liveFrom =
-    hangs.reduce((total, hang) => total + hang, 0) / SESSION_GOAL_SECONDS;
+  const liveFrom = sessionTotal / SESSION_GOAL_SECONDS;
 
   return (
     <>
       <RingTrack radius={OUTER_RING_RADIUS} />
-      {arcs.map(({ from, to }, index) => (
+      {calculateHangArcs(hangs).map(({ from, to }, index) => (
         <RingArc
           key={index}
           radius={OUTER_RING_RADIUS}
           from={from}
-          to={to}
+          to={to - GAP_BETWEEN_HANGS}
           className="hang"
         />
       ))}
