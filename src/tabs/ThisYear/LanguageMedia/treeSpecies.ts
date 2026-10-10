@@ -52,12 +52,11 @@ const SAKURA: TreeSpecies = {
   limbWidths: [9, 4],
   limbSegments: 6,
   findStartAngle: (side, random) =>
-    side < 0 ? -165 + random() * 25 : -15 - random() * 25,
+    side < 0 ? -178 + random() * 18 : -2 - random() * 18,
   bendLimb: (angle, index, random) =>
-    turnToward(angle, UP, 0.04) + swayAlternately(index, 14 + random() * 14),
+    turnToward(angle, UP, 0.015) + swayAlternately(index, 8 + random() * 10),
   twigCount: [1, 3],
-  findTwigAngle: (angle, random) =>
-    turnToward(angle, UP, 0.55 + random() * 0.25),
+  findTwigAngle: (angle, random) => turnToward(angle, UP, 0.3 + random() * 0.2),
   bendTwig: (angle, index, random) =>
     angle + swayAlternately(index, 10 + random() * 14),
 };
