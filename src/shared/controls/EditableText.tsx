@@ -40,7 +40,7 @@ export function EditableText({
     openFormOnEnterOrSpace,
   } = useFormToggle<HTMLDivElement>();
   const [text, setText] = useState(value);
-  const inputRef = useRef<HTMLInputElement>(null);
+  const inputRef = useRef<HTMLTextAreaElement>(null);
 
   useImperativeHandle(ref, () => ({
     focus: () => displayRef.current?.focus(),
@@ -63,7 +63,7 @@ export function EditableText({
   };
 
   return isEditing ? (
-    <input
+    <textarea
       className={`editable-text ${className}`}
       ref={inputRef}
       onKeyDown={(event) => {
@@ -75,7 +75,7 @@ export function EditableText({
           stopEditing();
         }
       }}
-      onChange={(event) => setText(event.target.value)}
+      onChange={(event) => setText(event.target.value.replace(/\n/g, ''))}
       value={text}
       aria-label={label}
       style={{ fontSize: '.8em', ...style }}

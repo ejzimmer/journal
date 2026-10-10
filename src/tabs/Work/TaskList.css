@@ -513,7 +513,7 @@ form.add-task {
     box-shadow: 0 2px 0 var(--body-colour);
   }
 
-  input.editable-text {
+  textarea.editable-text {
     font-family: inherit;
     border: none;
     border-radius: 0;
