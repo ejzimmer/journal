@@ -20,6 +20,33 @@
   fill: hsl(28 42% 48%);
 }
 
+.tree-shoot {
+  fill: hsl(28 42% 48%);
+  stroke: hsl(28 45% 28%);
+  stroke-width: 0.8;
+}
+
+.tree-leaf {
+  stroke-width: 0.8;
+  stroke-linejoin: round;
+
+  &.book {
+    fill: hsl(100 26% 42%);
+    stroke: hsl(105 30% 26%);
+  }
+
+  &.manga {
+    fill: hsl(98 48% 48%);
+    stroke: hsl(105 45% 28%);
+  }
+
+  .midrib {
+    fill: none;
+    stroke-width: 0.5;
+    opacity: 0.7;
+  }
+}
+
 .branch-names {
   fill: transparent;
 }

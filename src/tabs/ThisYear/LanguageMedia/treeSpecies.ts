@@ -3,6 +3,18 @@ import { PrintSeries } from './types';
 
 type Random = () => number;
 
+export type ShootStyle = {
+  spacing: number;
+  length: [number, number];
+  splay: number;
+  bendToward: number;
+  bend: number;
+  widths: [number, number];
+  leafGap: number;
+  leafSplay: number;
+  tuft: number[];
+};
+
 export type TreeSpecies = {
   trunkWidths: [number, number];
   firstLevel: number;
@@ -16,6 +28,7 @@ export type TreeSpecies = {
   twigCount: [number, number];
   findTwigAngle: (angle: number, random: Random) => number;
   bendTwig: (angle: number, index: number, random: Random) => number;
+  shoots: ShootStyle;
 };
 
 const UP = -90;
@@ -41,6 +54,17 @@ const CALLISTEMON: TreeSpecies = {
     turnToward(angle, DOWN, 0.35 + random() * 0.2),
   bendTwig: (angle, _, random) =>
     turnToward(angle, DOWN, 0.18) + (random() - 0.5) * 12,
+  shoots: {
+    spacing: 16,
+    length: [16, 24],
+    splay: 45,
+    bendToward: DOWN,
+    bend: 0.2,
+    widths: [2, 0.9],
+    leafGap: 5.5,
+    leafSplay: 32,
+    tuft: [-28, 0, 28],
+  },
 };
 
 const SAKURA: TreeSpecies = {
@@ -59,6 +83,17 @@ const SAKURA: TreeSpecies = {
   findTwigAngle: (angle, random) => turnToward(angle, UP, 0.3 + random() * 0.2),
   bendTwig: (angle, index, random) =>
     angle + swayAlternately(index, 10 + random() * 14),
+  shoots: {
+    spacing: 18,
+    length: [15, 22],
+    splay: 45,
+    bendToward: UP,
+    bend: 0.1,
+    widths: [2.2, 1],
+    leafGap: 11,
+    leafSplay: 50,
+    tuft: [-35, 35],
+  },
 };
 
 export const TREE_SPECIES: Record<PrintSeries['type'], TreeSpecies> = {
