@@ -14,7 +14,6 @@ const MIN_SET_CLASS_COLUMNS = 4;
 
 type Card = {
   isDone: boolean;
-  isTracker: boolean;
   element: ReactElement;
 };
 
@@ -25,42 +24,39 @@ export function ExerciseClasses() {
     [classes],
   );
 
-  const cards: Card[] = [
-    ...classes.map((exerciseClass) => ({
-      isDone: isClassDone(exerciseClass),
-      isTracker: false,
-      element: (
-        <ExerciseClassCard
-          key={exerciseClass.id}
-          exerciseClass={exerciseClass}
-          countSetClassColumns={countSetClassColumns}
-        />
-      ),
-    })),
+  const classCards: Card[] = classes.map((exerciseClass) => ({
+    isDone: isClassDone(exerciseClass),
+    element: (
+      <ExerciseClassCard
+        key={exerciseClass.id}
+        exerciseClass={exerciseClass}
+        countSetClassColumns={countSetClassColumns}
+      />
+    ),
+  }));
+  const trackerCards: Card[] = [
     {
       isDone: isBoxCleared(pistolBox ?? STARTING_PISTOL_BOX),
-      isTracker: true,
       element: <PistolBoxCard key="pistol-box" />,
     },
     {
       isDone: isDeadHangSessionDone(getTodaysHangs(deadHang)),
-      isTracker: true,
       element: <DeadHangCard key="dead-hang" />,
     },
+  ];
+  const orderedCards = [
+    ...classCards.filter(({ isDone }) => !isDone),
+    ...trackerCards.filter(({ isDone }) => !isDone),
+    ...classCards.filter(({ isDone }) => isDone),
+    ...trackerCards.filter(({ isDone }) => isDone),
   ];
 
   return (
     <ul className="exercise-classes">
-      {cards
-        .toSorted((a, b) => rankCard(a) - rankCard(b))
-        .map(({ element }) => element)}
+      {orderedCards.map(({ element }) => element)}
       <AddExerciseClass />
     </ul>
   );
-}
-
-function rankCard({ isDone, isTracker }: Card) {
-  return Number(isDone) * 2 + Number(isTracker);
 }
 
 function createSetClassColumnCounter(classes: ExerciseClass[]) {
