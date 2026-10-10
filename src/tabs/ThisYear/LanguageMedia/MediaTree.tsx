@@ -6,6 +6,7 @@ import { findCurrentVolume } from './findCurrentVolume';
 import { findSignpostPlacement } from './findSignpostPlacement';
 import { getBlooms } from './getBlooms';
 import { AddVolumeForm } from './AddVolumeForm';
+import { TreeBeetles } from './TreeBeetles';
 import { ProgressUpdateForm } from './ProgressUpdateForm';
 import { createTreeLayout } from './treeLayout';
 import { TreeFill } from './TreeFill';
@@ -46,6 +47,7 @@ export function MediaTree({ series }: { series: PrintSeries }) {
         {series.type === 'book' && (
           <BranchNames layout={layout} series={series} />
         )}
+        <TreeBeetles series={series} shapes={grownShapes} />
       </svg>
       <Signpost
         name={series.name}
