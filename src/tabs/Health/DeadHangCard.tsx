@@ -21,13 +21,13 @@ const GAP_BETWEEN_HANGS = 0.012;
 export function DeadHangCard() {
   const { deadHang, setDeadHang } = useHealthStorage();
   const [pressedStartAt, setPressedStartAt] = useState<number | null>(null);
-  const [liveHang, setLiveHang] = useState(0);
+  const [liveHangSeconds, setLiveHangSeconds] = useState(0);
   const nameId = useId();
 
   useEffect(() => {
     if (pressedStartAt === null) return;
     let frame = requestAnimationFrame(function tick() {
-      setLiveHang(measureLiveHang(pressedStartAt, Date.now()));
+      setLiveHangSeconds(measureLiveHang(pressedStartAt, Date.now()));
       frame = requestAnimationFrame(tick);
     });
     return () => cancelAnimationFrame(frame);
@@ -45,7 +45,7 @@ export function DeadHangCard() {
     }
     const hang = measureFinishedHang(pressedStartAt, Date.now());
     setPressedStartAt(null);
-    setLiveHang(0);
+    setLiveHangSeconds(0);
     if (hang > 0) {
       setDeadHang({ date: getToday(), hangs: [...hangs, hang] });
     }
@@ -62,8 +62,11 @@ export function DeadHangCard() {
           role="img"
           aria-label={`${formatSeconds(sessionTotal)} of ${SESSION_GOAL_SECONDS} seconds today, longest hang ${formatSeconds(longestHang)} of ${HANG_GOAL_SECONDS} seconds`}
         >
-          <SessionRing hangs={hangs} liveHang={liveHang} />
-          <LongestHangRing longestHang={longestHang} liveHang={liveHang} />
+          <SessionRing hangs={hangs} liveHangSeconds={liveHangSeconds} />
+          <LongestHangRing
+            longestHang={longestHang}
+            liveHangSeconds={liveHangSeconds}
+          />
         </svg>
         <button
           className="hang"
@@ -72,7 +75,7 @@ export function DeadHangCard() {
           onClick={toggleHang}
         >
           {isHanging ? (
-            <span className="seconds">{Math.floor(liveHang)}</span>
+            <span className="seconds">{Math.floor(liveHangSeconds)}</span>
           ) : (
             <svg viewBox="0 0 20 20" className="play">
               <path d="M6,4 L16,10 L6,16 Z" />
@@ -86,13 +89,13 @@ export function DeadHangCard() {
 
 function SessionRing({
   hangs,
-  liveHang,
+  liveHangSeconds,
 }: {
   hangs: number[];
-  liveHang: number;
+  liveHangSeconds: number;
 }) {
   const isFull =
-    hangs.reduce((total, hang) => total + hang, liveHang) >=
+    hangs.reduce((total, hang) => total + hang, liveHangSeconds) >=
     SESSION_GOAL_SECONDS;
 
   if (isFull) {
@@ -129,7 +132,7 @@ function SessionRing({
       <Arc
         radius={OUTER_RADIUS}
         from={liveFrom}
-        to={liveFrom + liveHang / SESSION_GOAL_SECONDS}
+        to={liveFrom + liveHangSeconds / SESSION_GOAL_SECONDS}
         className="live"
       />
     </>
@@ -138,12 +141,12 @@ function SessionRing({
 
 function LongestHangRing({
   longestHang,
-  liveHang,
+  liveHangSeconds,
 }: {
   longestHang: number;
-  liveHang: number;
+  liveHangSeconds: number;
 }) {
-  const isFull = Math.max(longestHang, liveHang) >= HANG_GOAL_SECONDS;
+  const isFull = Math.max(longestHang, liveHangSeconds) >= HANG_GOAL_SECONDS;
   return (
     <>
       <Track radius={INNER_RADIUS} />
@@ -156,7 +159,7 @@ function LongestHangRing({
       <Arc
         radius={INNER_RADIUS}
         from={0}
-        to={liveHang / HANG_GOAL_SECONDS}
+        to={liveHangSeconds / HANG_GOAL_SECONDS}
         className={isFull ? 'complete' : 'current'}
       />
     </>
