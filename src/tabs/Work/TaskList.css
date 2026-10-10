@@ -526,6 +526,7 @@ form.add-task {
   }
 
   textarea.editable-text {
+    vertical-align: top;
     font: inherit;
     line-height: inherit;
     border: none;
