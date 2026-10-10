@@ -510,10 +510,19 @@ form.add-task {
 .work-task-list {
   --focus-underline: underline 2px var(--body-colour);
 
+  :is(
+    h2,
+    h2 > [role='button'],
+    .task-content > [role='button'],
+    textarea.editable-text
+  ) {
+    text-decoration-skip-ink: none;
+    text-underline-offset: 0;
+  }
+
   :is(h2, h2 > [role='button'], .task-content > [role='button']):focus-visible {
     outline: none;
     text-decoration: var(--focus-underline);
-    text-underline-offset: 0;
   }
 
   textarea.editable-text {
@@ -527,7 +536,15 @@ form.add-task {
     &:focus {
       outline: none;
       text-decoration: var(--focus-underline);
-      text-underline-offset: 0;
+    }
+  }
+
+  li.task.status-done .task-content > [role='button'] {
+    text-decoration: line-through;
+
+    &:focus-visible {
+      text-decoration: var(--focus-underline);
+      text-decoration-line: underline line-through;
     }
   }
 }

@@ -9,17 +9,23 @@ export function isBurned(srsStage: number) {
   return srsStage >= 9;
 }
 
+type LevelCount = { counted: number; total: number };
+
 export function calculatePercentsByLevel(
   subjects: Subject[],
   assignments: Assignment[],
   maxLevel: number,
   isCounted: (srsStage: number) => boolean,
-): { level: number; percents: Record<SubjectType, number> }[] {
+): {
+  level: number;
+  counts: Record<SubjectType, LevelCount>;
+  percents: Record<SubjectType, number>;
+}[] {
   const assignmentsBySubject = indexAssignmentsBySubject(assignments);
 
   return Array.from({ length: maxLevel }, (_, index) => {
     const level = index + 1;
-    const percents = Object.fromEntries(
+    const counts = Object.fromEntries(
       SUBJECT_TYPES.map((type) => {
         const subjectsAtLevel = subjects.filter(
           (subject) => subject.level === level && subject.type === type,
@@ -27,15 +33,16 @@ export function calculatePercentsByLevel(
         const counted = subjectsAtLevel.filter((subject) =>
           isCounted(assignmentsBySubject.get(subject.id)?.srsStage ?? 0),
         ).length;
-        return [
-          type,
-          subjectsAtLevel.length === 0
-            ? 0
-            : Math.floor((counted / subjectsAtLevel.length) * 100),
-        ];
+        return [type, { counted, total: subjectsAtLevel.length }];
+      }),
+    ) as Record<SubjectType, LevelCount>;
+    const percents = Object.fromEntries(
+      SUBJECT_TYPES.map((type) => {
+        const { counted, total } = counts[type];
+        return [type, total === 0 ? 0 : Math.floor((counted / total) * 100)];
       }),
     ) as Record<SubjectType, number>;
-    return { level, percents };
+    return { level, counts, percents };
   });
 }
 

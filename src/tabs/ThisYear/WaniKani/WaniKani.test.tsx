@@ -229,6 +229,63 @@ describe('WaniKani', () => {
       ).toBeInTheDocument();
     });
 
+    describe('hovering over the progress', () => {
+      it('shows how many kanji and radicals have passed on the current level rings', async () => {
+        const user = userEvent.setup();
+        renderWaniKani('my-key');
+        const rings = await screen.findByRole('img', {
+          name: 'Radicals 1 of 1, Kanji 0 of 2',
+        });
+        const kanjiRing = within(rings).getByTestId('kanji-ring');
+        const radicalRing = within(rings).getByTestId('radical-ring');
+
+        await user.hover(kanjiRing);
+        expect(screen.getByRole('tooltip')).toHaveTextContent('Kanji: 0/2');
+
+        await user.hover(radicalRing);
+        expect(screen.getByRole('tooltip')).toHaveTextContent('Radicals: 1/1');
+      });
+
+      it('shows how many of each type are unlocked on each level gem', async () => {
+        const user = userEvent.setup();
+        renderWaniKani('my-key');
+        const cluster = await screen.findByRole('img', {
+          name: /^Level 2:/,
+        });
+        const kanjiGem = within(cluster).getByTestId('kanji-gem');
+
+        await user.hover(kanjiGem);
+
+        expect(screen.getByRole('tooltip')).toHaveTextContent('Kanji: 1/2');
+      });
+
+      it('shows how many are in each SRS stage on the vial layers', async () => {
+        const user = userEvent.setup();
+        renderWaniKani('my-key');
+        const vial = await screen.findByRole('img', { name: /^Kanji:/ });
+        const apprenticeLayer = within(vial).getByTestId('apprentice-layer');
+
+        await user.hover(apprenticeLayer);
+
+        expect(screen.getByRole('tooltip')).toHaveTextContent('1 apprentice');
+      });
+
+      it('hides the tooltip when the pointer moves away', async () => {
+        const user = userEvent.setup();
+        renderWaniKani('my-key');
+        const rings = await screen.findByRole('img', {
+          name: 'Radicals 1 of 1, Kanji 0 of 2',
+        });
+        const kanjiRing = within(rings).getByTestId('kanji-ring');
+        await user.hover(kanjiRing);
+        const tooltip = screen.getByRole('tooltip');
+
+        await user.unhover(kanjiRing);
+
+        expect(tooltip).not.toBeInTheDocument();
+      });
+    });
+
     describe('when progress has been loaded before', () => {
       it('only asks WaniKani for what changed since then', async () => {
         const { unmount } = renderWaniKani('my-key');

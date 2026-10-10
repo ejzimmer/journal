@@ -21,10 +21,11 @@ export function LevelGems({ data }: { data: WaniKaniData }) {
 
   return (
     <div className="level-gems">
-      {levels.map(({ level, percents }, index) => (
+      {levels.map(({ level, counts, percents }, index) => (
         <LevelGemCluster
           key={level}
           level={level}
+          counts={counts}
           percents={percents}
           burned={burnedByLevel[index]}
         />

@@ -1,0 +1,25 @@
+.app-update-button {
+  --size: 30px;
+
+  position: absolute;
+  inset-block: 0 2px;
+  inset-inline-end: 8px;
+  width: var(--size);
+  height: var(--size);
+  margin-block: auto;
+  padding: 4px;
+  border: 0;
+  border-radius: 50%;
+  color: var(--action-colour);
+  background: white;
+
+  &.overlapping {
+    box-shadow: 0 1px 4px hsl(0 0% 0% / 0.3);
+  }
+
+  &:hover,
+  &:focus-visible {
+    color: var(--action-colour-dark);
+    background: white;
+  }
+}
