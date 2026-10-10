@@ -56,7 +56,7 @@ export function TopNav() {
           </NavItem>
         ))}
       </ul>
-      <AppUpdateButton />
+      <AppUpdateButton tabListRef={navListRef} />
     </nav>
   );
 }

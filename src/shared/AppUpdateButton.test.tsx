@@ -1,4 +1,5 @@
 import { act, render, screen } from '@testing-library/react';
+import { createRef } from 'react';
 import userEvent from '@testing-library/user-event';
 import { AppUpdateButton } from './AppUpdateButton';
 import { setWaitingRegistration } from './appUpdateStore';
@@ -14,7 +15,7 @@ describe('AppUpdateButton', () => {
           removeEventListener: jest.fn(),
         },
       });
-      render(<AppUpdateButton />);
+      render(<AppUpdateButton tabListRef={createRef()} />);
       act(() =>
         setWaitingRegistration({
           waiting: { postMessage },

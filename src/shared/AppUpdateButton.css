@@ -1,15 +1,20 @@
 .app-update-button {
+  --size: 30px;
+
   position: absolute;
   inset-block: 0 2px;
-  inset-inline-end: 0;
-  height: auto;
+  inset-inline-end: 8px;
+  width: var(--size);
+  height: var(--size);
+  margin-block: auto;
+  padding: 4px;
   border: 0;
-  border-radius: 0;
+  border-radius: 50%;
   color: var(--action-colour);
   background: white;
 
-  svg {
-    width: 22px;
+  &.overlapping {
+    box-shadow: 0 1px 4px hsl(0 0% 0% / 0.3);
   }
 
   &:hover,
