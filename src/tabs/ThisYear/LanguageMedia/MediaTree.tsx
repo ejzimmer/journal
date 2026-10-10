@@ -4,10 +4,12 @@ import { BranchNames } from './BranchNames';
 import { CloudFrame } from './CloudFrame';
 import { findCurrentVolume } from './findCurrentVolume';
 import { findSignpostPlacement } from './findSignpostPlacement';
+import { getBlooms } from './getBlooms';
 import { AddVolumeForm } from './AddVolumeForm';
 import { ProgressUpdateForm } from './ProgressUpdateForm';
 import { createTreeLayout } from './treeLayout';
 import { TreeFill } from './TreeFill';
+import { TreeFlowers } from './TreeFlowers';
 import { getGrownShapes } from './treeGrowth';
 import { TreeOutline } from './TreeOutline';
 import { TreeShoots } from './TreeShoots';
@@ -18,6 +20,7 @@ import { PrintSeries } from './types';
 export function MediaTree({ series }: { series: PrintSeries }) {
   const layout = useMemo(() => createTreeLayout(series), [series]);
   const grownShapes = getGrownShapes(layout, series);
+  const blooms = getBlooms(series);
   const [isProgressUpdateFormOpen, setIsProgressUpdateFormOpen] =
     useState(false);
   const currentVolume = findCurrentVolume(series);
@@ -35,10 +38,11 @@ export function MediaTree({ series }: { series: PrintSeries }) {
         width={width}
         height={height}
       >
-        <TreeShoots shapes={grownShapes} type={series.type} />
+        <TreeShoots shapes={grownShapes} blooms={blooms} type={series.type} />
         <TreeOutline shapes={grownShapes} />
         <TreeSilhouette layout={layout} />
         <TreeFill shapes={grownShapes} />
+        <TreeFlowers layout={layout} blooms={blooms} type={series.type} />
         {series.type === 'book' && (
           <BranchNames layout={layout} series={series} />
         )}

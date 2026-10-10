@@ -429,6 +429,16 @@ const languageMedia: Record<string, LanguageMedia> = {
         lookups: 20,
         aiQuestions: 3,
         understood: 60,
+        updates: {
+          u1: {
+            at: '2026-09-20T09:00:00Z',
+            changes: { understood: { to: 40 } },
+          },
+          u2: {
+            at: '2026-09-22T09:00:00Z',
+            changes: { understood: { from: 40, to: 60 } },
+          },
+        },
       },
       vol2: {
         id: 'vol2',
@@ -439,6 +449,18 @@ const languageMedia: Record<string, LanguageMedia> = {
       },
     },
     upTo: { volume: 1, page: 41 },
+    updates: {
+      p1: {
+        at: '2026-09-20T08:59:59Z',
+        changes: { upTo: { to: { volume: 1, page: 20 } } },
+      },
+      p2: {
+        at: '2026-09-22T08:59:59Z',
+        changes: {
+          upTo: { from: { volume: 1, page: 20 }, to: { volume: 1, page: 41 } },
+        },
+      },
+    },
   },
   lesmis: {
     id: 'lesmis',
@@ -451,17 +473,47 @@ const languageMedia: Record<string, LanguageMedia> = {
         number: 1,
         name: 'Fantine',
         pages: 520,
-        lookups: 0,
-        aiQuestions: 0,
+        lookups: 42,
+        aiQuestions: 6,
+        understood: 85,
         status: 'done',
+        updates: {
+          u1: {
+            at: '2026-09-01T09:00:00Z',
+            changes: { understood: { to: 40 } },
+          },
+          u2: {
+            at: '2026-09-02T09:00:00Z',
+            changes: { understood: { from: 40, to: 50 } },
+          },
+          u3: {
+            at: '2026-09-10T09:00:00Z',
+            changes: { understood: { from: 50, to: 70 } },
+          },
+          u4: {
+            at: '2026-09-15T09:00:00Z',
+            changes: { understood: { from: 70, to: 85 } },
+          },
+        },
       },
       t2: {
         id: 't2',
         number: 2,
         name: 'Cosette',
         pages: 480,
-        lookups: 0,
-        aiQuestions: 0,
+        lookups: 18,
+        aiQuestions: 4,
+        understood: 35,
+        updates: {
+          u5: {
+            at: '2026-09-25T09:00:00Z',
+            changes: { understood: { to: 20 } },
+          },
+          u6: {
+            at: '2026-10-05T09:00:00Z',
+            changes: { understood: { from: 20, to: 35 } },
+          },
+        },
       },
       t3: {
         id: 't3',
@@ -473,6 +525,48 @@ const languageMedia: Record<string, LanguageMedia> = {
       },
     },
     upTo: { volume: 2, page: 210 },
+    updates: {
+      p1: {
+        at: '2026-09-01T08:59:59Z',
+        changes: { upTo: { to: { volume: 1, page: 90 } } },
+      },
+      p2: {
+        at: '2026-09-02T08:59:59Z',
+        changes: {
+          upTo: { from: { volume: 1, page: 90 }, to: { volume: 1, page: 120 } },
+        },
+      },
+      p3: {
+        at: '2026-09-10T08:59:59Z',
+        changes: {
+          upTo: {
+            from: { volume: 1, page: 120 },
+            to: { volume: 1, page: 330 },
+          },
+        },
+      },
+      p4: {
+        at: '2026-09-15T08:59:59Z',
+        changes: {
+          upTo: {
+            from: { volume: 1, page: 330 },
+            to: { volume: 1, page: 470 },
+          },
+        },
+      },
+      p5: {
+        at: '2026-09-25T08:59:59Z',
+        changes: {
+          upTo: { from: { volume: 1, page: 470 }, to: { volume: 2, page: 90 } },
+        },
+      },
+      p6: {
+        at: '2026-10-05T08:59:59Z',
+        changes: {
+          upTo: { from: { volume: 2, page: 90 }, to: { volume: 2, page: 200 } },
+        },
+      },
+    },
   },
 };
 

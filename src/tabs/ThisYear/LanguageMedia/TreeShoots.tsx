@@ -1,3 +1,4 @@
+import { Bloom } from './getBlooms';
 import { growShoots } from './growShoots';
 import { GrownShape } from './treeGrowth';
 import { TreeShoot } from './TreeShoot';
@@ -6,14 +7,24 @@ import { PrintSeries } from './types';
 
 export function TreeShoots({
   shapes,
+  blooms,
   type,
 }: {
   shapes: GrownShape[];
+  blooms: Bloom[];
   type: PrintSeries['type'];
 }) {
   const shoots = shapes
     .filter(({ growth }) => growth.type === 'branch')
-    .flatMap((shape) => growShoots(shape, TREE_SPECIES[type].shoots));
+    .flatMap((shape) =>
+      growShoots(
+        shape,
+        TREE_SPECIES[type].shoots,
+        blooms
+          .filter(({ limbKey }) => limbKey === shape.key)
+          .map(({ at }) => at),
+      ),
+    );
 
   return (
     <g className="tree-shoots">
