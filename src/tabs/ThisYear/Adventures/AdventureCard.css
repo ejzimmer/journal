@@ -120,6 +120,28 @@
     }
   }
 
+  .planned-date-button {
+    padding: 0;
+    height: auto;
+    background: none;
+    border: 0;
+    line-height: inherit;
+  }
+
+  .add-planned-date {
+    padding: 4px;
+
+    svg {
+      width: 14px;
+    }
+  }
+
+  .planned-date-input {
+    flex-grow: 1;
+    min-width: 0;
+    font-size: 0.8em;
+  }
+
   .planned-date {
     padding-block: 2px;
     padding-inline: 5px;
