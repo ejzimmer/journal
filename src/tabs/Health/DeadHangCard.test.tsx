@@ -4,16 +4,6 @@ import { getDateDaysAgo, getToday } from '../../shared/dates';
 import { renderWithHealthStorage } from './healthStorageTestUtils';
 import { DeadHangCard } from './DeadHangCard';
 
-function setUpUser() {
-  return userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
-}
-
-function passSeconds(seconds: number) {
-  act(() => {
-    jest.advanceTimersByTime(seconds * 1000);
-  });
-}
-
 describe('DeadHangCard', () => {
   beforeEach(() => {
     jest.useFakeTimers();
@@ -25,24 +15,30 @@ describe('DeadHangCard', () => {
 
   describe('a hang', () => {
     it('counts from a second after start is pressed', async () => {
-      const user = setUpUser();
+      const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
       renderWithHealthStorage(<DeadHangCard />);
 
       await user.click(screen.getByRole('button', { name: 'Start hang' }));
-      passSeconds(1);
+      act(() => {
+        jest.advanceTimersByTime(1000);
+      });
       const stop = screen.getByRole('button', { name: 'Stop hang' });
       expect(stop).toHaveTextContent('0');
 
-      passSeconds(5);
+      act(() => {
+        jest.advanceTimersByTime(5000);
+      });
       expect(stop).toHaveTextContent('5');
     });
 
     it('records the time between the first second and the last', async () => {
-      const user = setUpUser();
+      const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
       const { storageContext } = renderWithHealthStorage(<DeadHangCard />);
 
       await user.click(screen.getByRole('button', { name: 'Start hang' }));
-      passSeconds(14);
+      act(() => {
+        jest.advanceTimersByTime(14_000);
+      });
       await user.click(screen.getByRole('button', { name: 'Stop hang' }));
 
       expect(storageContext.updateDeadHang).toHaveBeenCalledWith({
@@ -53,11 +49,15 @@ describe('DeadHangCard', () => {
 
     describe('that is stopped before it gets going', () => {
       it('is not recorded', async () => {
-        const user = setUpUser();
+        const user = userEvent.setup({
+          advanceTimers: jest.advanceTimersByTime,
+        });
         const { storageContext } = renderWithHealthStorage(<DeadHangCard />);
 
         await user.click(screen.getByRole('button', { name: 'Start hang' }));
-        passSeconds(1.5);
+        act(() => {
+          jest.advanceTimersByTime(1500);
+        });
         await user.click(screen.getByRole('button', { name: 'Stop hang' }));
 
         expect(storageContext.updateDeadHang).not.toHaveBeenCalled();
@@ -83,13 +83,17 @@ describe('DeadHangCard', () => {
       });
 
       it('adds a new hang to them', async () => {
-        const user = setUpUser();
+        const user = userEvent.setup({
+          advanceTimers: jest.advanceTimersByTime,
+        });
         const { storageContext } = renderWithHealthStorage(<DeadHangCard />, {
           deadHang: { date: getToday(), hangs: [12, 9] },
         });
 
         await user.click(screen.getByRole('button', { name: 'Start hang' }));
-        passSeconds(10);
+        act(() => {
+          jest.advanceTimersByTime(10_000);
+        });
         await user.click(screen.getByRole('button', { name: 'Stop hang' }));
 
         expect(storageContext.updateDeadHang).toHaveBeenCalledWith({
@@ -101,7 +105,9 @@ describe('DeadHangCard', () => {
 
     describe('when the last hangs were on an earlier day', () => {
       it('starts a new session', async () => {
-        const user = setUpUser();
+        const user = userEvent.setup({
+          advanceTimers: jest.advanceTimersByTime,
+        });
         const { storageContext } = renderWithHealthStorage(<DeadHangCard />, {
           deadHang: { date: getDateDaysAgo(1), hangs: [12, 9] },
         });
@@ -113,7 +119,9 @@ describe('DeadHangCard', () => {
         ).toBeInTheDocument();
 
         await user.click(screen.getByRole('button', { name: 'Start hang' }));
-        passSeconds(7);
+        act(() => {
+          jest.advanceTimersByTime(7000);
+        });
         await user.click(screen.getByRole('button', { name: 'Stop hang' }));
 
         expect(storageContext.updateDeadHang).toHaveBeenCalledWith({
