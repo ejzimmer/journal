@@ -514,7 +514,7 @@ form.add-task {
     h2,
     h2 > [role='button'],
     .task-content > [role='button'],
-    input.editable-text
+    textarea.editable-text
   ) {
     text-decoration-skip-ink: none;
     text-underline-offset: 0;
@@ -525,11 +525,13 @@ form.add-task {
     text-decoration: var(--focus-underline);
   }
 
-  input.editable-text {
-    font-family: inherit;
+  textarea.editable-text {
+    vertical-align: top;
+    font: inherit;
+    line-height: inherit;
     border: none;
     border-radius: 0;
-    padding: 6px 0 2px;
+    padding: 0;
     background: transparent;
 
     &:focus {

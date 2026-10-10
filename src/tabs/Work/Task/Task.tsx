@@ -105,6 +105,7 @@ export function Task({
             onDeleted();
           }}
           className="inline"
+          style={{ fontSize: 'inherit' }}
         />
         <Subtasks subtasks={task.subtasks} listId={listId} taskId={task.id} />
         {hasLabels && (

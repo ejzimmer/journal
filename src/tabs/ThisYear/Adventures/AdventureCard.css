@@ -79,6 +79,15 @@
     overflow-wrap: anywhere;
   }
 
+  div.description-text {
+    display: inline;
+  }
+
+  textarea.description-text {
+    font-family: inherit;
+    vertical-align: top;
+  }
+
   .mode-emoji {
     margin-inline-end: 6px;
   }
@@ -102,21 +111,8 @@
       width: 14px;
     }
 
-    .delete svg {
-      width: 12px;
-    }
-
     button:hover {
       color: var(--success-colour);
-    }
-
-    .delete:hover,
-    .delete.confirming {
-      color: var(--error-colour);
-    }
-
-    .delete.confirming {
-      opacity: 1;
     }
   }
 

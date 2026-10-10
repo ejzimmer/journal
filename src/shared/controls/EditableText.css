@@ -1,4 +1,8 @@
-input.editable-text {
+textarea.editable-text {
+  max-width: 100%;
+  resize: none;
+  font-family: inherit;
+  line-height: inherit;
   border: 1px solid black;
   font-size: inherit;
   height: unset;

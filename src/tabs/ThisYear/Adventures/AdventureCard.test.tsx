@@ -98,14 +98,31 @@ describe('AdventureCard', () => {
     });
   });
 
-  describe('when a delete is confirmed', () => {
-    it('deletes the adventure', async () => {
+  describe('when the description is edited', () => {
+    it('saves the new description', async () => {
       const { adventure, storage, user } = renderCard();
 
-      await user.click(screen.getByRole('button', { name: 'Delete' }));
-      await user.click(screen.getByRole('button', { name: 'Confirm delete' }));
+      await user.click(screen.getByRole('button', { name: 'Description' }));
+      const input = screen.getByRole('textbox', { name: 'Description' });
+      await user.clear(input);
+      await user.type(input, 'Westerfolds parkrun{Enter}');
 
-      expect(storage.deleteAdventure).toHaveBeenCalledWith(adventure);
+      expect(storage.updateAdventure).toHaveBeenCalledWith({
+        ...adventure,
+        description: 'Westerfolds parkrun',
+      });
+    });
+
+    describe('to nothing', () => {
+      it('deletes the adventure', async () => {
+        const { adventure, storage, user } = renderCard();
+
+        await user.click(screen.getByRole('button', { name: 'Description' }));
+        await user.clear(screen.getByRole('textbox', { name: 'Description' }));
+        await user.keyboard('{Enter}');
+
+        expect(storage.deleteAdventure).toHaveBeenCalledWith(adventure);
+      });
     });
   });
 

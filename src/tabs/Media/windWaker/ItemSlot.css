@@ -78,8 +78,9 @@
     cursor: pointer;
   }
 
-  input.slot-count {
-    width: 3em;
+  textarea.slot-count {
+    box-sizing: content-box;
+    width: calc(var(--digits) * 1ch);
     color: black;
     text-shadow: none;
   }
