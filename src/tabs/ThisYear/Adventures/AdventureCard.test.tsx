@@ -114,29 +114,15 @@ describe('AdventureCard', () => {
     });
 
     describe('to nothing', () => {
-      it('keeps the old description', async () => {
-        const { storage, user } = renderCard();
+      it('deletes the adventure', async () => {
+        const { adventure, storage, user } = renderCard();
 
         await user.click(screen.getByRole('button', { name: 'Description' }));
         await user.clear(screen.getByRole('textbox', { name: 'Description' }));
         await user.keyboard('{Enter}');
 
-        expect(storage.updateAdventure).not.toHaveBeenCalled();
-        expect(screen.getByRole('listitem')).toHaveTextContent(
-          'Plenty Gorge parkrun',
-        );
+        expect(storage.deleteAdventure).toHaveBeenCalledWith(adventure);
       });
-    });
-  });
-
-  describe('when a delete is confirmed', () => {
-    it('deletes the adventure', async () => {
-      const { adventure, storage, user } = renderCard();
-
-      await user.click(screen.getByRole('button', { name: 'Delete' }));
-      await user.click(screen.getByRole('button', { name: 'Confirm delete' }));
-
-      expect(storage.deleteAdventure).toHaveBeenCalledWith(adventure);
     });
   });
 

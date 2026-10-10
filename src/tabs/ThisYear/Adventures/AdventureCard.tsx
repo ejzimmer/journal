@@ -1,5 +1,4 @@
 import { EditableText } from '../../../shared/controls/EditableText';
-import { DeleteWithConfirmation } from '../../../shared/controls/DeleteWithConfirmation';
 import { RestartArrowIcon } from '../../../shared/icons/RestartArrow';
 import { TickIcon } from '../../../shared/icons/Tick';
 import { useAdventureStorage } from './AdventureStorageContext';
@@ -35,8 +34,9 @@ export function AdventureCard({ adventure, mode }: AdventureCardProps) {
             style={{ fontSize: 'inherit' }}
             value={adventure.description}
             onChange={(description) =>
-              description && updateAdventure({ ...adventure, description })
+              updateAdventure({ ...adventure, description })
             }
+            onDelete={() => deleteAdventure(adventure)}
           />
         </div>
         <div className="card-footer">
@@ -48,10 +48,6 @@ export function AdventureCard({ adventure, mode }: AdventureCardProps) {
             }
           />
           <div className="card-actions">
-            <DeleteWithConfirmation
-              onDelete={() => deleteAdventure(adventure)}
-              className="ghost"
-            />
             <button
               type="button"
               className="ghost"
