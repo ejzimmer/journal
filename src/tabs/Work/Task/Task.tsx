@@ -106,7 +106,8 @@ export function Task({
           }}
           className="inline"
           style={{
-            textDecoration: task.status === 'done' ? 'line-through' : 'none',
+            fontSize: 'inherit',
+            ...(task.status === 'done' && { textDecoration: 'line-through' }),
           }}
         />
         <Subtasks subtasks={task.subtasks} listId={listId} taskId={task.id} />

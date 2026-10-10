@@ -508,21 +508,26 @@ form.add-task {
 }
 
 .work-task-list {
+  --focus-underline: underline 2px var(--body-colour);
+
   :is(h2, h2 > [role='button'], .task-content > [role='button']):focus-visible {
     outline: none;
-    box-shadow: 0 2px 0 var(--body-colour);
+    text-decoration: var(--focus-underline);
+    text-underline-offset: 0;
   }
 
   textarea.editable-text {
-    font-family: inherit;
+    font: inherit;
+    line-height: inherit;
     border: none;
     border-radius: 0;
-    padding: 6px 0 2px;
+    padding: 0;
     background: transparent;
 
     &:focus {
       outline: none;
-      box-shadow: 0 2px 0 var(--body-colour);
+      text-decoration: var(--focus-underline);
+      text-underline-offset: 0;
     }
   }
 }

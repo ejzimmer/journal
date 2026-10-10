@@ -78,7 +78,7 @@
     cursor: pointer;
   }
 
-  input.slot-count {
+  textarea.slot-count {
     width: 3em;
     color: black;
     text-shadow: none;

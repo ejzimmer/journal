@@ -170,6 +170,7 @@ export function TaskList({
           <h2 ref={headingRef} tabIndex={-1}>
             <EditableText
               label={`Edit ${list.description} name`}
+              style={{ fontSize: 'inherit' }}
               value={list.description}
               onChange={(description) => {
                 if (description) {
