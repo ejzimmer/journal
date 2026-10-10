@@ -9,6 +9,14 @@ export function getTodaysHangs(session?: DeadHangSession) {
   return session && isToday(session.date) ? (session.hangs ?? []) : [];
 }
 
+export function isDeadHangSessionDone(hangs: number[]) {
+  const sessionTotal = hangs.reduce((total, hang) => total + hang, 0);
+  return (
+    sessionTotal >= SESSION_GOAL_SECONDS &&
+    Math.max(0, ...hangs) >= HANG_GOAL_SECONDS
+  );
+}
+
 export function measureLiveHang(pressedStartAt: number, now: number) {
   return Math.floor(Math.max(0, now - pressedStartAt - MOUNTING_MS) / 1000);
 }
