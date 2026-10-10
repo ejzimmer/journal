@@ -1,5 +1,5 @@
 import { createTreeLayout } from './treeLayout';
-import { EdgeSample } from './treeGeometry';
+import { EdgeSample, SAMPLES_PER_CURVE } from './treeGeometry';
 import { PrintSeries, Volume } from './types';
 
 const createVolume = (number: number, pages?: number): Volume => ({
@@ -106,6 +106,28 @@ describe('createTreeLayout', () => {
       );
 
       expect(shapes.map(({ key }) => key)).toContain('vol1-twig-0');
+    });
+  });
+
+  describe('for a manga series', () => {
+    it('starts each limb out close to horizontal', () => {
+      const series = createSeries(
+        [1, 2, 3, 4].map((number) => createVolume(number, 200)),
+        { type: 'manga' },
+      );
+      const climbOf = (key: string) => {
+        const { edges } = findShape(series, key);
+        const base = findMiddle(edges[0]);
+        const next = findMiddle(edges[SAMPLES_PER_CURVE]);
+        return (
+          (Math.atan2(base.y - next.y, Math.abs(next.x - base.x)) * 180) /
+          Math.PI
+        );
+      };
+
+      [1, 2, 3, 4].forEach((number) => {
+        expect(climbOf(`vol${number}-limb`)).toBeLessThan(30);
+      });
     });
   });
 
