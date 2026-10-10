@@ -21,13 +21,13 @@ const GAP_BETWEEN_HANGS = 0.012;
 export function DeadHangCard() {
   const { deadHang, setDeadHang } = useHealthStorage();
   const [pressedStartAt, setPressedStartAt] = useState<number | null>(null);
-  const [now, setNow] = useState(() => Date.now());
+  const [liveHang, setLiveHang] = useState(0);
   const nameId = useId();
 
   useEffect(() => {
     if (pressedStartAt === null) return;
     let frame = requestAnimationFrame(function tick() {
-      setNow(Date.now());
+      setLiveHang(measureLiveHang(pressedStartAt, Date.now()));
       frame = requestAnimationFrame(tick);
     });
     return () => cancelAnimationFrame(frame);
@@ -35,18 +35,17 @@ export function DeadHangCard() {
 
   const hangs = getTodaysHangs(deadHang);
   const isHanging = pressedStartAt !== null;
-  const liveHang = isHanging ? measureLiveHang(pressedStartAt, now) : 0;
   const sessionTotal = hangs.reduce((total, hang) => total + hang, 0);
   const longestHang = Math.max(0, ...hangs);
 
   const toggleHang = () => {
     if (pressedStartAt === null) {
-      setNow(Date.now());
       setPressedStartAt(Date.now());
       return;
     }
     const hang = measureFinishedHang(pressedStartAt, Date.now());
     setPressedStartAt(null);
+    setLiveHang(0);
     if (hang > 0) {
       setDeadHang({ date: getToday(), hangs: [...hangs, hang] });
     }
