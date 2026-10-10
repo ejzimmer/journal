@@ -43,7 +43,7 @@
   }
 
   .badge-shine {
-    animation: wanikani-badge-shine 4s ease-in-out infinite;
+    animation: wanikani-badge-shine 180s ease-in-out infinite;
   }
 
   .days-remaining {
@@ -90,6 +90,20 @@
     }
   }
 
+  .wanikani-tooltip {
+    position: fixed;
+
+    .tooltip-anchor {
+      position: fixed;
+      pointer-events: none;
+    }
+
+    .tooltip {
+      position: fixed;
+      opacity: 1;
+    }
+  }
+
   .gem-defs {
     position: absolute;
     width: 0;
@@ -98,10 +112,10 @@
 }
 
 @keyframes wanikani-badge-shine {
-  0%,
-  70% {
+  0% {
     transform: translateX(-60px) skewX(-20deg);
   }
+  0.67%,
   100% {
     transform: translateX(80px) skewX(-20deg);
   }
