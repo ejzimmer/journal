@@ -10,6 +10,7 @@ import { createTreeLayout } from './treeLayout';
 import { TreeFill } from './TreeFill';
 import { getGrownShapes } from './treeGrowth';
 import { TreeOutline } from './TreeOutline';
+import { TreeShoots } from './TreeShoots';
 import { TreeSilhouette } from './TreeSilhouette';
 import { Signpost } from './Signpost';
 import { PrintSeries } from './types';
@@ -34,6 +35,7 @@ export function MediaTree({ series }: { series: PrintSeries }) {
         width={width}
         height={height}
       >
+        <TreeShoots shapes={grownShapes} type={series.type} />
         <TreeOutline shapes={grownShapes} />
         <TreeSilhouette layout={layout} />
         <TreeFill shapes={grownShapes} />
