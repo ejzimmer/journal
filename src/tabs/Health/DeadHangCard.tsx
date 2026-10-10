@@ -14,7 +14,7 @@ import { LongestHangRing } from './LongestHangRing';
 import './DeadHangCard.css';
 
 export function DeadHangCard() {
-  const { deadHang, setDeadHang } = useHealthStorage();
+  const { deadHang, updateDeadHang } = useHealthStorage();
   const [pressedStartAt, setPressedStartAt] = useState<number | null>(null);
   const [liveHangSeconds, setLiveHangSeconds] = useState(0);
   const nameId = useId();
@@ -42,7 +42,7 @@ export function DeadHangCard() {
     setPressedStartAt(null);
     setLiveHangSeconds(0);
     if (hang > 0) {
-      setDeadHang({ date: getToday(), hangs: [...hangs, hang] });
+      updateDeadHang({ date: getToday(), hangs: [...hangs, hang] });
     }
   };
 

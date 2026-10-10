@@ -17,13 +17,14 @@ const BLOCK_ACTIONS: Record<BlockPose, string> = {
 };
 
 export function PistolBoxCard() {
-  const { pistolBox = STARTING_PISTOL_BOX, setPistolBox } = useHealthStorage();
+  const { pistolBox = STARTING_PISTOL_BOX, updatePistolBox } =
+    useHealthStorage();
   const historyRef = useRef<PistolBox[]>([]);
   const nameId = useId();
 
   const changeBox = (next: PistolBox) => {
     historyRef.current.push(pistolBox);
-    setPistolBox(next);
+    updatePistolBox(next);
   };
 
   useEffect(() => {
@@ -34,11 +35,11 @@ export function PistolBoxCard() {
       }
       event.preventDefault();
       historyRef.current.pop();
-      setPistolBox(previous);
+      updatePistolBox(previous);
     };
     document.addEventListener('keydown', undoLastChange);
     return () => document.removeEventListener('keydown', undoLastChange);
-  }, [setPistolBox]);
+  }, [updatePistolBox]);
 
   const blocks = pistolBox.blocks ?? [];
 

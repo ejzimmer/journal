@@ -10,10 +10,10 @@ import {
 import { PistolBoxCard } from './PistolBoxCard';
 
 function StoredPistolBox({ initial }: { initial: PistolBox }) {
-  const [pistolBox, setPistolBox] = useState(initial);
+  const [pistolBox, updatePistolBox] = useState(initial);
   return (
     <HealthStorageContext.Provider
-      value={createHealthStorageContext({ pistolBox, setPistolBox })}
+      value={createHealthStorageContext({ pistolBox, updatePistolBox })}
     >
       <PistolBoxCard />
       <input aria-label="Notes" />
@@ -49,7 +49,7 @@ describe('PistolBoxCard', () => {
         screen.getByRole('button', { name: 'Turn block on its side' }),
       );
 
-      expect(storageContext.setPistolBox).toHaveBeenCalledWith({
+      expect(storageContext.updatePistolBox).toHaveBeenCalledWith({
         mats: 1,
         blocks: ['side'],
       });
@@ -63,7 +63,7 @@ describe('PistolBoxCard', () => {
 
       await user.click(screen.getByRole('button', { name: 'Lay block flat' }));
 
-      expect(storageContext.setPistolBox).toHaveBeenCalledWith({
+      expect(storageContext.updatePistolBox).toHaveBeenCalledWith({
         mats: 1,
         blocks: ['flat', 'flat'],
       });
@@ -77,7 +77,7 @@ describe('PistolBoxCard', () => {
 
       await user.click(screen.getByRole('button', { name: 'Take block off' }));
 
-      expect(storageContext.setPistolBox).toHaveBeenCalledWith({
+      expect(storageContext.updatePistolBox).toHaveBeenCalledWith({
         mats: 1,
         blocks: ['side'],
       });
@@ -93,7 +93,7 @@ describe('PistolBoxCard', () => {
         screen.getAllByRole('button', { name: 'Take mat off' })[0],
       );
 
-      expect(storageContext.setPistolBox).toHaveBeenCalledWith({ mats: 1 });
+      expect(storageContext.updatePistolBox).toHaveBeenCalledWith({ mats: 1 });
     });
   });
 

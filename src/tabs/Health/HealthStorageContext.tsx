@@ -32,8 +32,8 @@ export type HealthStorageContextType = {
   deleteExerciseUpdate: (exerciseId: string, update: ExerciseUpdate) => void;
   addClass: (exerciseClass: Omit<ExerciseClass, 'id'>) => void;
   updateClass: (exerciseClass: ExerciseClass) => void;
-  setPistolBox: (pistolBox: PistolBox) => void;
-  setDeadHang: (deadHang: DeadHangSession) => void;
+  updatePistolBox: (pistolBox: PistolBox) => void;
+  updateDeadHang: (deadHang: DeadHangSession) => void;
 };
 
 export const HealthStorageContext = createContext<
@@ -102,8 +102,8 @@ export function HealthStorageProvider({ children }: { children: ReactNode }) {
     },
     updateClass: (exerciseClass) =>
       updateItem<ExerciseClass>(CLASSES_PATH, exerciseClass),
-    setPistolBox: (box) => setValue<PistolBox>(PISTOL_BOX_PATH, box),
-    setDeadHang: (session) =>
+    updatePistolBox: (box) => setValue<PistolBox>(PISTOL_BOX_PATH, box),
+    updateDeadHang: (session) =>
       setValue<DeadHangSession>(DEAD_HANG_PATH, session),
   };
 

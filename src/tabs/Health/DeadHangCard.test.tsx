@@ -45,7 +45,7 @@ describe('DeadHangCard', () => {
       passSeconds(14);
       await user.click(screen.getByRole('button', { name: 'Stop hang' }));
 
-      expect(storageContext.setDeadHang).toHaveBeenCalledWith({
+      expect(storageContext.updateDeadHang).toHaveBeenCalledWith({
         date: getToday(),
         hangs: [12],
       });
@@ -60,7 +60,7 @@ describe('DeadHangCard', () => {
         passSeconds(1.5);
         await user.click(screen.getByRole('button', { name: 'Stop hang' }));
 
-        expect(storageContext.setDeadHang).not.toHaveBeenCalled();
+        expect(storageContext.updateDeadHang).not.toHaveBeenCalled();
         expect(
           screen.getByRole('button', { name: 'Start hang' }),
         ).toBeInTheDocument();
@@ -92,7 +92,7 @@ describe('DeadHangCard', () => {
         passSeconds(10);
         await user.click(screen.getByRole('button', { name: 'Stop hang' }));
 
-        expect(storageContext.setDeadHang).toHaveBeenCalledWith({
+        expect(storageContext.updateDeadHang).toHaveBeenCalledWith({
           date: getToday(),
           hangs: [12, 9, 8],
         });
@@ -116,7 +116,7 @@ describe('DeadHangCard', () => {
         passSeconds(7);
         await user.click(screen.getByRole('button', { name: 'Stop hang' }));
 
-        expect(storageContext.setDeadHang).toHaveBeenCalledWith({
+        expect(storageContext.updateDeadHang).toHaveBeenCalledWith({
           date: getToday(),
           hangs: [5],
         });
