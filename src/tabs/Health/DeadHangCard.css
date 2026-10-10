@@ -1,0 +1,94 @@
+.dead-hang {
+  --track: hsl(73 33% 85%);
+  --hang: hsl(105 56% 51%);
+  --live: hsl(105 56% 51% / 0.45);
+  --longest: hsl(42 100% 60%);
+  --current: hsl(28 100% 56%);
+
+  .rings {
+    display: grid;
+    place-items: center;
+
+    > * {
+      grid-area: 1 / 1;
+    }
+
+    > svg {
+      width: 150px;
+      height: 150px;
+      fill: none;
+
+      .track {
+        stroke: var(--track);
+      }
+
+      .hang {
+        stroke: var(--hang);
+      }
+
+      .live {
+        stroke: var(--live);
+      }
+
+      .longest {
+        stroke: var(--longest);
+      }
+
+      .current {
+        stroke: var(--current);
+      }
+
+      .complete {
+        stroke: var(--done-tick);
+      }
+    }
+  }
+
+  button.hang {
+    display: grid;
+    place-items: center;
+    width: 68px;
+    height: 68px;
+    padding: 0;
+    border: 3px solid var(--done-tick);
+    border-radius: 50%;
+    background: var(--done-tick);
+    color: white;
+
+    &:hover,
+    &:focus-visible {
+      background: var(--done-tick-hover);
+      border-color: var(--done-tick-hover);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--focus);
+      outline-offset: 2px;
+    }
+
+    &[aria-pressed='true'] {
+      background: white;
+      color: var(--done-tick);
+
+      &:hover,
+      &:focus-visible {
+        background: white;
+      }
+    }
+
+    .play {
+      width: 30px;
+      margin-inline-start: 4px;
+      fill: currentColor;
+      stroke: currentColor;
+      stroke-width: 2;
+      stroke-linejoin: round;
+    }
+
+    .seconds {
+      font-size: 1.9rem;
+      font-weight: 800;
+      font-variant-numeric: tabular-nums;
+    }
+  }
+}

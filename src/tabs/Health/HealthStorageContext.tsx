@@ -4,16 +4,22 @@ import {
   CLASSES_PATH,
   DAILY_PATH,
   DayData,
+  DEAD_HANG_PATH,
+  DeadHangSession,
   Exercise,
   ExerciseClass,
   EXERCISES_PATH,
   ExerciseUpdate,
+  PISTOL_BOX_PATH,
+  PistolBox,
 } from '../../shared/types';
 
 export type HealthStorageContextType = {
   days?: Record<string, DayData>;
   exercises: Exercise[];
   classes: ExerciseClass[];
+  pistolBox?: PistolBox;
+  deadHang?: DeadHangSession;
   isLoading: boolean;
 
   updateDay: (day: DayData) => void;
@@ -26,6 +32,8 @@ export type HealthStorageContextType = {
   deleteExerciseUpdate: (exerciseId: string, update: ExerciseUpdate) => void;
   addClass: (exerciseClass: Omit<ExerciseClass, 'id'>) => void;
   updateClass: (exerciseClass: ExerciseClass) => void;
+  setPistolBox: (pistolBox: PistolBox) => void;
+  setDeadHang: (deadHang: DeadHangSession) => void;
 };
 
 export const HealthStorageContext = createContext<
@@ -33,7 +41,8 @@ export const HealthStorageContext = createContext<
 >(undefined);
 
 export function HealthStorageProvider({ children }: { children: ReactNode }) {
-  const { addItem, updateItem, deleteItem, useValue } = useStorageContext();
+  const { addItem, updateItem, deleteItem, setValue, useValue } =
+    useStorageContext();
 
   const { value: days, loading: daysLoading } =
     useValue<Record<string, DayData>>(DAILY_PATH);
@@ -41,6 +50,10 @@ export function HealthStorageProvider({ children }: { children: ReactNode }) {
     useValue<Record<string, Exercise>>(EXERCISES_PATH);
   const { value: storedClasses, loading: classesLoading } =
     useValue<Record<string, ExerciseClass>>(CLASSES_PATH);
+  const { value: pistolBox, loading: pistolBoxLoading } =
+    useValue<PistolBox>(PISTOL_BOX_PATH);
+  const { value: deadHang, loading: deadHangLoading } =
+    useValue<DeadHangSession>(DEAD_HANG_PATH);
 
   const exercises = useMemo(
     () => Object.values(storedExercises ?? {}),
@@ -55,7 +68,14 @@ export function HealthStorageProvider({ children }: { children: ReactNode }) {
     days,
     exercises,
     classes,
-    isLoading: daysLoading || exercisesLoading || classesLoading,
+    pistolBox,
+    deadHang,
+    isLoading:
+      daysLoading ||
+      exercisesLoading ||
+      classesLoading ||
+      pistolBoxLoading ||
+      deadHangLoading,
 
     updateDay: (day) => updateItem<DayData>(DAILY_PATH, day),
     addExercise: (name) => {
@@ -82,6 +102,9 @@ export function HealthStorageProvider({ children }: { children: ReactNode }) {
     },
     updateClass: (exerciseClass) =>
       updateItem<ExerciseClass>(CLASSES_PATH, exerciseClass),
+    setPistolBox: (box) => setValue<PistolBox>(PISTOL_BOX_PATH, box),
+    setDeadHang: (session) =>
+      setValue<DeadHangSession>(DEAD_HANG_PATH, session),
   };
 
   return (

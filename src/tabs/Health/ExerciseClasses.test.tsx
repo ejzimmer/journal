@@ -157,7 +157,7 @@ describe('ExerciseClasses', () => {
         classes: [finished, unfinished],
       });
 
-      const cards = screen.getAllByRole('listitem', { name: /.+/ });
+      const cards = screen.getAllByRole('listitem', { name: /finished/i });
       expect(cards).toHaveLength(2);
       expect(cards[0]).toHaveAccessibleName('Unfinished');
       expect(cards[1]).toHaveAccessibleName('Finished');

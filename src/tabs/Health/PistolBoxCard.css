@@ -1,0 +1,88 @@
+.pistol-box {
+  --cm: 2.1px;
+  --mat: hsl(76 21% 62%);
+  --mat-edge: hsl(76 21% 48%);
+  --block: hsl(42 100% 60%);
+  --block-edge: hsl(40 90% 45%);
+  --floor: hsl(73 25% 72%);
+
+  .stack {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    align-items: center;
+    width: calc(40 * var(--cm));
+    height: 134px;
+    border-block-end: 2px solid var(--floor);
+  }
+
+  button.mat,
+  button.block {
+    display: block;
+    flex-shrink: 0;
+    padding: 0;
+    border: 1px solid;
+    cursor: pointer;
+    transition: opacity 0.15s;
+
+    &:hover {
+      opacity: 0.8;
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--focus);
+      outline-offset: 1px;
+    }
+  }
+
+  button.mat {
+    width: calc(36 * var(--cm));
+    height: calc(5 * var(--cm));
+    border-radius: 3px;
+    border-color: var(--mat-edge);
+    background: var(--mat);
+  }
+
+  button.block {
+    border-radius: 4px;
+    border-color: var(--block-edge);
+    background: var(--block);
+
+    &.end {
+      width: calc(7 * var(--cm));
+      height: calc(16.1 * var(--cm));
+    }
+
+    &.side {
+      width: calc(16.1 * var(--cm));
+      height: calc(10.5 * var(--cm));
+    }
+
+    &.flat {
+      width: calc(16.1 * var(--cm));
+      height: calc(7 * var(--cm));
+    }
+  }
+
+  .cleared {
+    display: grid;
+    place-items: center;
+    width: 56px;
+    height: 56px;
+    margin-block-end: 10px;
+    border: 4px solid var(--done-tick);
+    border-radius: 50%;
+    color: var(--done-tick);
+
+    svg {
+      width: 30px;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    button.mat,
+    button.block {
+      transition: none;
+    }
+  }
+}
