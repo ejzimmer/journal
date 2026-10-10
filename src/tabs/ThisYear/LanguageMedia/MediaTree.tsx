@@ -3,6 +3,7 @@ import { ModalDialog } from '../../../shared/controls/ModalDialog';
 import { BranchNames } from './BranchNames';
 import { CloudFrame } from './CloudFrame';
 import { findCurrentVolume } from './findCurrentVolume';
+import { findSignpostPlacement } from './findSignpostPlacement';
 import { AddVolumeForm } from './AddVolumeForm';
 import { ProgressUpdateForm } from './ProgressUpdateForm';
 import { createTreeLayout } from './treeLayout';
@@ -42,6 +43,7 @@ export function MediaTree({ series }: { series: PrintSeries }) {
       </svg>
       <Signpost
         name={series.name}
+        placement={findSignpostPlacement(layout)}
         isOpen={isProgressUpdateFormOpen}
         onClick={() => setIsProgressUpdateFormOpen((wasOpen) => !wasOpen)}
       />

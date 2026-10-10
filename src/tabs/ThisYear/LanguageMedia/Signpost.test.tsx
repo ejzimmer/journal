@@ -8,7 +8,12 @@ describe('Signpost', () => {
       const user = userEvent.setup();
       const onClick = jest.fn();
       render(
-        <Signpost name="Les Misérables" isOpen={false} onClick={onClick} />,
+        <Signpost
+          name="Les Misérables"
+          placement={{ side: 'right', offset: 16 }}
+          isOpen={false}
+          onClick={onClick}
+        />,
       );
 
       await user.click(screen.getByRole('button', { name: 'Les Misérables' }));
