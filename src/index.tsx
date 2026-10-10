@@ -4,7 +4,6 @@ import { BrowserRouter } from 'react-router-dom';
 
 import './index.css';
 import { App } from './App';
-import { AppUpdateBanner } from './shared/AppUpdateBanner';
 import { SaveStatusBanner } from './shared/SaveStatusBanner';
 import { ConflictBanner } from './shared/ConflictBanner';
 import { setWaitingRegistration } from './shared/appUpdateStore';
@@ -46,7 +45,6 @@ hydrate().then(() => {
           <App />
         </BrowserRouter>
       </FirebaseContext.Provider>
-      <AppUpdateBanner />
       <SaveStatusBanner saveStatus={saveStatus} />
       <ConflictBanner conflictStatus={conflictStatus} />
     </React.StrictMode>,
