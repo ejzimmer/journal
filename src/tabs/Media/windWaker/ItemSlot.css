@@ -79,7 +79,8 @@
   }
 
   textarea.slot-count {
-    width: 3em;
+    box-sizing: content-box;
+    width: calc(var(--digits) * 1ch);
     color: black;
     text-shadow: none;
   }
