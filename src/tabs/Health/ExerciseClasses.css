@@ -16,7 +16,8 @@ ul.exercise-classes {
   gap: 12px;
   align-items: flex-start;
 
-  li.exercise-class {
+  li.exercise-class,
+  li.tracker-card {
     display: grid;
     gap: 6px;
     padding: 10px 12px;

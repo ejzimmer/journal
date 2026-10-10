@@ -8,8 +8,10 @@ import {
 import {
   Category,
   Exercise,
+  DeadHangSession,
   ExerciseClass,
   HEALTH_PATH,
+  PistolBox,
   ProjectDetails,
   ProjectSubtask,
   PROJECTS_KEY,
@@ -346,6 +348,10 @@ const exercises: Record<string, Exercise> = {
   },
 };
 
+const pistolBox: PistolBox = { mats: 3, blocks: ['side', 'flat'] };
+
+const deadHang: DeadHangSession = { date: todaysDate, hangs: [12, 9, 14] };
+
 const classes: Record<string, ExerciseClass> = {
   'class-wheel': {
     id: 'class-wheel',
@@ -560,7 +566,7 @@ export const seedData = {
     },
   },
   [PROJECTS_KEY]: projects,
-  [HEALTH_PATH]: { exercises, classes },
+  [HEALTH_PATH]: { exercises, classes, pistolBox, deadHang },
   yarn: { '2026': yarn },
   language_media: { '2026': languageMedia },
   '2026': {

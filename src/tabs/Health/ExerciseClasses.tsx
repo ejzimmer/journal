@@ -3,6 +3,8 @@ import { ExerciseClass } from '../../shared/types';
 import { useHealthStorage } from './HealthStorageContext';
 import { ExerciseClassCard } from './ExerciseClassCard';
 import { AddExerciseClass } from './AddExerciseClass';
+import { PistolBoxCard } from './PistolBoxCard';
+import { DeadHangCard } from './DeadHangCard';
 import { isClassDone } from './isClassDone';
 import './ExerciseClasses.css';
 
@@ -31,6 +33,8 @@ export function ExerciseClasses() {
           countSetClassColumns={countSetClassColumns}
         />
       ))}
+      <PistolBoxCard />
+      <DeadHangCard />
       <AddExerciseClass />
     </ul>
   );
