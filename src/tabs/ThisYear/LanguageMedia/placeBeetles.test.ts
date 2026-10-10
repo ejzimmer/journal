@@ -27,11 +27,11 @@ const createSeries = (
 describe('placeBeetles', () => {
   describe('for a volume with look-ups and AI questions', () => {
     const beetles = placeBeetles(
-      createSeries({ lookups: 25, aiQuestions: 8 }),
+      createSeries({ lookups: 3, aiQuestions: 1 }),
       [createBranch('vol1-limb', 1)],
     );
 
-    it('puts a red beetle on for every ten look-ups and a yellow one for every ten AI questions, alternating', () => {
+    it('puts a red beetle on for every look-up and a yellow one for every AI question, alternating', () => {
       expect(beetles.map(({ colour }) => colour)).toEqual([
         'red',
         'yellow',
@@ -56,7 +56,7 @@ describe('placeBeetles', () => {
 
   describe('for a volume with several grown branches', () => {
     const beetles = placeBeetles(
-      createSeries({ lookups: 30, aiQuestions: 0 }),
+      createSeries({ lookups: 3, aiQuestions: 0 }),
       [
         createBranch('vol1-limb', 1),
         createBranch('vol1-twig-0', 0.5),
