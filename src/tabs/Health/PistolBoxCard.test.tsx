@@ -42,7 +42,7 @@ describe('PistolBoxCard', () => {
     it('turns a block on its end onto its side', async () => {
       const user = userEvent.setup();
       const { storageContext } = renderWithHealthStorage(<PistolBoxCard />, {
-        pistolBox: { mats: 1, blocks: ['end'] },
+        pistolBox: { mats: 1, blocks: [0] },
       });
 
       await user.click(
@@ -51,35 +51,35 @@ describe('PistolBoxCard', () => {
 
       expect(storageContext.updatePistolBox).toHaveBeenCalledWith({
         mats: 1,
-        blocks: ['side'],
+        blocks: [1],
       });
     });
 
     it('lays a block on its side flat', async () => {
       const user = userEvent.setup();
       const { storageContext } = renderWithHealthStorage(<PistolBoxCard />, {
-        pistolBox: { mats: 1, blocks: ['side', 'flat'] },
+        pistolBox: { mats: 1, blocks: [1, 2] },
       });
 
       await user.click(screen.getByRole('button', { name: 'Lay block flat' }));
 
       expect(storageContext.updatePistolBox).toHaveBeenCalledWith({
         mats: 1,
-        blocks: ['flat', 'flat'],
+        blocks: [2, 2],
       });
     });
 
     it('takes a flat block off the box', async () => {
       const user = userEvent.setup();
       const { storageContext } = renderWithHealthStorage(<PistolBoxCard />, {
-        pistolBox: { mats: 1, blocks: ['side', 'flat'] },
+        pistolBox: { mats: 1, blocks: [1, 2] },
       });
 
       await user.click(screen.getByRole('button', { name: 'Take block off' }));
 
       expect(storageContext.updatePistolBox).toHaveBeenCalledWith({
         mats: 1,
-        blocks: ['side'],
+        blocks: [1],
       });
     });
 
@@ -112,7 +112,7 @@ describe('PistolBoxCard', () => {
   describe('undoing', () => {
     it('puts the box back one change at a time with ctrl+z', async () => {
       const user = userEvent.setup();
-      render(<StoredPistolBox initial={{ mats: 1, blocks: ['side'] }} />);
+      render(<StoredPistolBox initial={{ mats: 1, blocks: [1] }} />);
 
       await user.click(screen.getByRole('button', { name: 'Lay block flat' }));
       await user.click(screen.getByRole('button', { name: 'Take block off' }));
@@ -134,7 +134,7 @@ describe('PistolBoxCard', () => {
 
     it('puts the box back with cmd+z', async () => {
       const user = userEvent.setup();
-      render(<StoredPistolBox initial={{ mats: 1, blocks: ['flat'] }} />);
+      render(<StoredPistolBox initial={{ mats: 1, blocks: [2] }} />);
 
       await user.click(screen.getByRole('button', { name: 'Take block off' }));
       await user.keyboard('{Meta>}z{/Meta}');

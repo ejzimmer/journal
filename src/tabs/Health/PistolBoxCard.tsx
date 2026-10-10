@@ -1,8 +1,9 @@
 import { useEffect, useId, useRef } from 'react';
-import { BlockPose, PistolBox } from '../../shared/types';
+import { PistolBox } from '../../shared/types';
 import { TickIcon } from '../../shared/icons/Tick';
 import { useHealthStorage } from './HealthStorageContext';
 import {
+  BLOCK_POSES,
   isBoxCleared,
   lowerBlock,
   removeMat,
@@ -10,11 +11,11 @@ import {
 } from './pistolBox';
 import './PistolBoxCard.css';
 
-const BLOCK_ACTIONS: Record<BlockPose, string> = {
-  end: 'Turn block on its side',
-  side: 'Lay block flat',
-  flat: 'Take block off',
-};
+const BLOCK_ACTIONS = [
+  'Turn block on its side',
+  'Lay block flat',
+  'Take block off',
+];
 
 export function PistolBoxCard() {
   const { pistolBox = STARTING_PISTOL_BOX, updatePistolBox } =
@@ -58,7 +59,7 @@ export function PistolBoxCard() {
           .map((pose, index) => (
             <button
               key={`block-${index}`}
-              className={`block ${pose}`}
+              className={`block ${BLOCK_POSES[pose]}`}
               aria-label={BLOCK_ACTIONS[pose]}
               onClick={() => changeBox(lowerBlock(pistolBox, index))}
             />

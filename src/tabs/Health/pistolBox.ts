@@ -1,24 +1,21 @@
-import { BlockPose, PistolBox } from '../../shared/types';
+import { PistolBox } from '../../shared/types';
+
+export const BLOCK_POSES = ['end', 'side', 'flat'] as const;
 
 export const STARTING_PISTOL_BOX: PistolBox = {
   mats: 3,
-  blocks: ['side', 'flat'],
-};
-
-const LOWER_POSES: Record<BlockPose, BlockPose | undefined> = {
-  end: 'side',
-  side: 'flat',
-  flat: undefined,
+  blocks: [1, 2],
 };
 
 export function lowerBlock(box: PistolBox, index: number): PistolBox {
   const blocks = box.blocks ?? [];
-  const lowerPose = LOWER_POSES[blocks[index]];
+  const lowerPose = blocks[index] + 1;
   return {
     ...box,
-    blocks: lowerPose
-      ? blocks.with(index, lowerPose)
-      : blocks.toSpliced(index, 1),
+    blocks:
+      lowerPose < BLOCK_POSES.length
+        ? blocks.with(index, lowerPose)
+        : blocks.toSpliced(index, 1),
   };
 }
 

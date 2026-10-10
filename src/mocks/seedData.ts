@@ -348,7 +348,7 @@ const exercises: Record<string, Exercise> = {
   },
 };
 
-const pistolBox: PistolBox = { mats: 3, blocks: ['side', 'flat'] };
+const pistolBox: PistolBox = { mats: 3, blocks: [1, 2] };
 
 const deadHang: DeadHangSession = { date: todaysDate, hangs: [12, 9, 14] };
 
