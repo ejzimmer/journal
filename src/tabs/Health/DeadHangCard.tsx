@@ -39,7 +39,7 @@ export function DeadHangCard() {
   const longestHang = Math.max(0, ...hangs);
 
   const toggleHang = () => {
-    if (pressedStartAt === null) {
+    if (!isHanging) {
       setPressedStartAt(Date.now());
       return;
     }
