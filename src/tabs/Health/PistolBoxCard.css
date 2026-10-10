@@ -6,35 +6,40 @@
   --block-edge: hsl(40 90% 45%);
   --floor: hsl(73 25% 72%);
 
-  .stack {
+  button.stack {
     display: flex;
     flex-direction: column;
     justify-content: flex-end;
     align-items: center;
     width: calc(40 * var(--cm));
-    border-block-end: 2px solid var(--floor);
-  }
-
-  button.mat,
-  button.block {
-    display: block;
-    flex-shrink: 0;
+    height: auto;
     padding: 0;
-    border: 1px solid;
+    border: none;
+    border-radius: 0;
+    border-block-end: 2px solid var(--floor);
+    background: none;
     cursor: pointer;
     transition: opacity 0.15s;
 
-    &:hover {
+    &:hover,
+    &:focus-visible {
+      background: none;
       opacity: 0.8;
     }
 
     &:focus-visible {
       outline: 2px solid var(--focus);
-      outline-offset: 1px;
+      outline-offset: 2px;
     }
   }
 
-  button.mat {
+  .mat,
+  .block {
+    flex-shrink: 0;
+    border: 1px solid;
+  }
+
+  .mat {
     width: calc(36 * var(--cm));
     height: calc(5 * var(--cm));
     border-radius: 3px;
@@ -42,7 +47,7 @@
     background: var(--mat);
   }
 
-  button.block {
+  .block {
     border-radius: 4px;
     border-color: var(--block-edge);
     background: var(--block);
@@ -80,7 +85,7 @@
 
   @media (prefers-reduced-motion: reduce) {
     button.mat,
-    button.block {
+    .block {
       transition: none;
     }
   }

@@ -1,28 +1,35 @@
-import { PistolBox } from '../../shared/types';
+type BlockPose = 'end' | 'side' | 'flat';
 
-export const BLOCK_POSES = ['end', 'side', 'flat'] as const;
-
-export const STARTING_PISTOL_BOX: PistolBox = {
-  mats: 3,
-  blocks: [1, 2],
+type PistolBox = {
+  mats: number;
+  blocks: BlockPose[];
 };
 
-export function lowerBlock(box: PistolBox, index: number): PistolBox {
-  const blocks = box.blocks ?? [];
-  const lowerPose = blocks[index] + 1;
-  return {
-    ...box,
-    blocks:
-      lowerPose < BLOCK_POSES.length
-        ? blocks.with(index, lowerPose)
-        : blocks.toSpliced(index, 1),
-  };
+export const PISTOL_BOX_LEVELS: PistolBox[] = [
+  { mats: 0, blocks: [] },
+  { mats: 1, blocks: [] },
+  { mats: 2, blocks: [] },
+  { mats: 3, blocks: [] },
+  { mats: 3, blocks: ['flat'] },
+  { mats: 3, blocks: ['flat', 'flat'] },
+  { mats: 3, blocks: ['side', 'flat'] },
+  { mats: 3, blocks: ['side', 'side'] },
+  { mats: 3, blocks: ['end', 'side'] },
+  { mats: 3, blocks: ['end', 'end'] },
+];
+
+export const STARTING_PISTOL_BOX_LEVEL = 6;
+
+const TOP_LEVEL = PISTOL_BOX_LEVELS.length - 1;
+
+export function lowerPistolBox(level: number) {
+  return Math.max(0, level - 1);
 }
 
-export function removeMat(box: PistolBox): PistolBox {
-  return { ...box, mats: Math.max(0, box.mats - 1) };
+export function raisePistolBox(level: number) {
+  return Math.min(TOP_LEVEL, level + 1);
 }
 
-export function isBoxCleared(box: PistolBox) {
-  return box.mats === 0 && !box.blocks?.length;
+export function isBoxCleared(level: number) {
+  return level === 0;
 }

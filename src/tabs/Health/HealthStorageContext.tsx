@@ -11,14 +11,13 @@ import {
   EXERCISES_PATH,
   ExerciseUpdate,
   PISTOL_BOX_PATH,
-  PistolBox,
 } from '../../shared/types';
 
 export type HealthStorageContextType = {
   days?: Record<string, DayData>;
   exercises: Exercise[];
   classes: ExerciseClass[];
-  pistolBox?: PistolBox;
+  pistolBoxLevel?: number;
   deadHang?: DeadHangSession;
   isLoading: boolean;
 
@@ -32,7 +31,7 @@ export type HealthStorageContextType = {
   deleteExerciseUpdate: (exerciseId: string, update: ExerciseUpdate) => void;
   addClass: (exerciseClass: Omit<ExerciseClass, 'id'>) => void;
   updateClass: (exerciseClass: ExerciseClass) => void;
-  updatePistolBox: (pistolBox: PistolBox) => void;
+  updatePistolBoxLevel: (level: number) => void;
   updateDeadHang: (deadHang: DeadHangSession) => void;
 };
 
@@ -50,8 +49,8 @@ export function HealthStorageProvider({ children }: { children: ReactNode }) {
     useValue<Record<string, Exercise>>(EXERCISES_PATH);
   const { value: storedClasses, loading: classesLoading } =
     useValue<Record<string, ExerciseClass>>(CLASSES_PATH);
-  const { value: pistolBox, loading: pistolBoxLoading } =
-    useValue<PistolBox>(PISTOL_BOX_PATH);
+  const { value: pistolBoxLevel, loading: pistolBoxLoading } =
+    useValue<number>(PISTOL_BOX_PATH);
   const { value: deadHang, loading: deadHangLoading } =
     useValue<DeadHangSession>(DEAD_HANG_PATH);
 
@@ -68,7 +67,7 @@ export function HealthStorageProvider({ children }: { children: ReactNode }) {
     days,
     exercises,
     classes,
-    pistolBox,
+    pistolBoxLevel,
     deadHang,
     isLoading:
       daysLoading ||
@@ -102,7 +101,7 @@ export function HealthStorageProvider({ children }: { children: ReactNode }) {
     },
     updateClass: (exerciseClass) =>
       updateItem<ExerciseClass>(CLASSES_PATH, exerciseClass),
-    updatePistolBox: (box) => setValue<PistolBox>(PISTOL_BOX_PATH, box),
+    updatePistolBoxLevel: (level) => setValue<number>(PISTOL_BOX_PATH, level),
     updateDeadHang: (session) =>
       setValue<DeadHangSession>(DEAD_HANG_PATH, session),
   };

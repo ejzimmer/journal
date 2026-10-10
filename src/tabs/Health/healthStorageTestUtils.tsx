@@ -20,7 +20,7 @@ export function createHealthStorageContext(
     deleteExerciseUpdate: jest.fn(),
     addClass: jest.fn(),
     updateClass: jest.fn(),
-    updatePistolBox: jest.fn(),
+    updatePistolBoxLevel: jest.fn(),
     updateDeadHang: jest.fn(),
     ...overrides,
   };

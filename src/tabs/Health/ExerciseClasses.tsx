@@ -6,7 +6,7 @@ import { AddExerciseClass } from './AddExerciseClass';
 import { PistolBoxCard } from './PistolBoxCard';
 import { DeadHangCard } from './DeadHangCard';
 import { isClassDone } from './isClassDone';
-import { isBoxCleared, STARTING_PISTOL_BOX } from './pistolBox';
+import { isBoxCleared, STARTING_PISTOL_BOX_LEVEL } from './pistolBox';
 import { getTodaysHangs, isDeadHangSessionDone } from './deadHang';
 import './ExerciseClasses.css';
 
@@ -18,7 +18,7 @@ type Card = {
 };
 
 export function ExerciseClasses() {
-  const { classes, pistolBox, deadHang } = useHealthStorage();
+  const { classes, pistolBoxLevel, deadHang } = useHealthStorage();
   const countSetClassColumns = useMemo(
     () => createSetClassColumnCounter(classes),
     [classes],
@@ -36,7 +36,7 @@ export function ExerciseClasses() {
   }));
   const trackerCards: Card[] = [
     {
-      isDone: isBoxCleared(pistolBox ?? STARTING_PISTOL_BOX),
+      isDone: isBoxCleared(pistolBoxLevel ?? STARTING_PISTOL_BOX_LEVEL),
       element: <PistolBoxCard key="pistol-box" />,
     },
     {

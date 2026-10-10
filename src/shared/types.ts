@@ -74,10 +74,6 @@ export type ExerciseClass = {
 };
 
 export const PISTOL_BOX_PATH = `${HEALTH_PATH}/pistolBox`;
-export type PistolBox = {
-  mats: number;
-  blocks?: number[];
-};
 
 export const DEAD_HANG_PATH = `${HEALTH_PATH}/deadHang`;
 export type DeadHangSession = {

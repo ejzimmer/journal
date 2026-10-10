@@ -181,7 +181,7 @@ describe('ExerciseClasses', () => {
       it('lists it after the finished classes', () => {
         renderWithHealthStorage(<ExerciseClasses />, {
           classes: [finished, unfinished],
-          pistolBox: { mats: 0 },
+          pistolBoxLevel: 0,
           deadHang: { date: getToday(), hangs: [31, 30] },
         });
 
