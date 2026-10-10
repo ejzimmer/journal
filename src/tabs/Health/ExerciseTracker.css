@@ -186,7 +186,9 @@
 
   .exercise-form {
     --delete-border: hsl(28 100% 85%);
+    --save-hover: hsl(110 61% 34%);
     --switch-background: hsl(73 49% 91%);
+    --switch-option-hover: hsl(73 33% 85%);
     --switch-knob: hsl(42 100% 60%);
     --switch-knob-shadow: hsl(40 100% 50% / 0.45);
     --switch-icon: hsl(76 21% 45%);
@@ -263,6 +265,10 @@
 
         &:has(input:not(:checked)) {
           box-shadow: none;
+
+          &:hover {
+            background: var(--switch-option-hover);
+          }
         }
 
         &:has(input:checked),
@@ -314,6 +320,12 @@
         background: var(--increase);
         border-color: var(--increase);
         color: white;
+
+        &:hover,
+        &:focus-visible {
+          background: var(--save-hover);
+          border-color: var(--save-hover);
+        }
       }
 
       .delete {
