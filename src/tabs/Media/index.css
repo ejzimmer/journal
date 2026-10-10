@@ -39,27 +39,15 @@
       display: grid;
       place-items: center;
       color: white;
-      border: 2px solid var(--media-accent-dark);
+      border: 0;
       border-radius: 50%;
-      --button-face:
-        radial-gradient(
-          circle at 35% 30%,
-          hsl(0 0% 100% / 0.6) 0 4px,
-          transparent 9px
-        ),
-        radial-gradient(
-          circle at 50% 40%,
-          var(--media-accent),
-          var(--media-accent-dark)
-        );
-      background: var(--button-face);
-      box-shadow: 0 3px 4px hsl(0 0% 0% / 0.35);
-      transition: transform 0.15s ease;
+      background: var(--media-accent);
+      box-shadow: 0 2px 4px hsl(30 50% 20% / 0.25);
+      transition: background 0.15s ease;
 
       &:hover,
       &:focus-visible {
-        transform: scale(1.08);
-        background: var(--button-face);
+        background: var(--media-accent-dark);
       }
     }
   }
