@@ -18,19 +18,16 @@
     flex-direction: column;
     padding-inline: 24px;
     padding-block-end: 24px;
-    background: #b88a5a;
-    border: 14px solid #5b3a21;
-    border-radius: 6px;
+    background: hsl(43 60% 96%);
+    border-radius: 12px;
     box-shadow:
-      inset 0 0 0 2px #3f2815,
-      inset 0 6px 18px hsl(0 0% 0% / 0.35),
-      0 8px 18px hsl(30 50% 20% / 0.25);
+      0 1px 1px hsl(0 0% 0% / 0.12),
+      0 8px 18px hsl(30 50% 20% / 0.18);
 
     h2 {
-      color: hsl(35 60% 97%);
+      color: hsl(28 45% 28%);
       font-weight: 800;
       letter-spacing: 0.02em;
-      text-shadow: 0 2px 0 #3f2815;
     }
 
     > button {
@@ -65,20 +62,6 @@
         background: var(--button-face);
       }
     }
-
-    .year-tabs [role='tablist'] {
-      border-bottom-color: hsl(30 45% 25% / 0.35);
-
-      [role='tab'] {
-        color: hsl(35 60% 92% / 0.75);
-
-        &:hover,
-        &[aria-selected='true'] {
-          color: hsl(35 60% 97%);
-          border-bottom-color: hsl(35 60% 97%);
-        }
-      }
-    }
   }
 
   & > .books {
@@ -104,12 +87,13 @@
     background-image: repeating-linear-gradient(
       to bottom,
       transparent 0 var(--shelf-height),
-      #3f2815 var(--shelf-height) calc(var(--shelf-height) + 2px),
-      hsl(30 50% 62%) calc(var(--shelf-height) + 2px)
-        calc(var(--shelf-height) + 5px),
-      #7a5233 calc(var(--shelf-height) + 5px) calc(var(--shelf-height) + 10px),
-      #3f2815 calc(var(--shelf-height) + 10px) calc(var(--shelf-height) + 12px),
-      transparent calc(var(--shelf-height) + 12px) var(--shelf-spacing)
+      hsl(32 62% 74%) var(--shelf-height) calc(var(--shelf-height) + 8px),
+      hsl(28 50% 52%) calc(var(--shelf-height) + 8px)
+        calc(var(--shelf-height) + 18px),
+      hsl(26 50% 34%) calc(var(--shelf-height) + 18px)
+        calc(var(--shelf-height) + 20px),
+      hsl(30 50% 20% / 0.22) calc(var(--shelf-height) + 20px),
+      transparent calc(var(--shelf-height) + 30px) var(--shelf-spacing)
     );
   }
 
@@ -137,6 +121,8 @@
     padding-inline: 2px;
     margin: 0;
     list-style: none;
+    position: relative;
+    top: 5px;
   }
 
   .matched-set {
@@ -149,13 +135,13 @@
   }
 
   .shelf-label {
-    margin-block-start: 10px;
+    margin-block-start: 26px;
     align-self: flex-start;
     margin-inline-start: 3px;
     background: #fbf8f0;
-    border: 2px solid #3f2815;
-    border-radius: 4px;
-    box-shadow: 0 3px 0 hsl(0 0% 0% / 0.25);
+    border: 1px solid hsl(34 40% 78%);
+    border-radius: 3px;
+    box-shadow: 0 2px 4px hsl(30 50% 20% / 0.2);
     padding: 2px 11px 3px;
     font-family: 'Dancing Script', cursive;
     font-weight: 600;

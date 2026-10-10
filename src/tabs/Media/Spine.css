@@ -33,7 +33,9 @@
     var(--cover) 7px calc(100% - 7px),
     var(--cover-shadow) calc(100% - 7px)
   );
-  box-shadow: 0 3px 0 oklch(25% 0.05 var(--hue) / 0.35);
+  box-shadow:
+    4px 0 6px -2px hsl(30 50% 15% / 0.35),
+    0 4px 4px -2px hsl(30 50% 15% / 0.3);
   color: var(--ink);
   font-family: 'Literata', Georgia, 'Times New Roman', serif;
   font-size: 14px;
