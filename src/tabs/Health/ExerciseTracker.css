@@ -186,6 +186,7 @@
 
   .exercise-form {
     --delete-border: hsl(28 100% 85%);
+    --save-hover: hsl(110 61% 34%);
     --switch-background: hsl(73 49% 91%);
     --switch-knob: hsl(42 100% 60%);
     --switch-knob-shadow: hsl(40 100% 50% / 0.45);
@@ -263,11 +264,23 @@
 
         &:has(input:not(:checked)) {
           box-shadow: none;
+
+          &:hover {
+            color: var(--switch-knob);
+
+            svg {
+              filter: drop-shadow(0 0 2px var(--switch-knob))
+                drop-shadow(0 0 4px var(--switch-knob-shadow));
+            }
+          }
         }
 
-        &:has(input:checked),
-        &:hover {
+        &:has(input:checked) {
           color: var(--switch-icon-selected);
+
+          &:hover {
+            color: white;
+          }
         }
 
         svg {
@@ -314,6 +327,12 @@
         background: var(--increase);
         border-color: var(--increase);
         color: white;
+
+        &:hover,
+        &:focus-visible {
+          background: var(--save-hover);
+          border-color: var(--save-hover);
+        }
       }
 
       .delete {
