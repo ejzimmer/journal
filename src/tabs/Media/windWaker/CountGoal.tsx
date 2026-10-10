@@ -30,6 +30,7 @@ export function CountGoal({
         <EditableText
           className="slot-count"
           label={label}
+          style={{ '--digits': total.toString().length } as CSSProperties}
           value={value.toString()}
           onChange={(text) => {
             const count = Number.parseInt(text);

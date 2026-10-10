@@ -1,3 +1,4 @@
+import { EditableText } from '../../../shared/controls/EditableText';
 import { DeleteWithConfirmation } from '../../../shared/controls/DeleteWithConfirmation';
 import { RestartArrowIcon } from '../../../shared/icons/RestartArrow';
 import { TickIcon } from '../../../shared/icons/Tick';
@@ -22,14 +23,22 @@ export function AdventureCard({ adventure, mode }: AdventureCardProps) {
     >
       <span className="pin" aria-hidden="true" />
       <div className="card-body">
-        <p className="description">
+        <div className="description">
           {mode && (
             <span className="mode-emoji" role="img" aria-label={mode.name}>
               {mode.emoji}
             </span>
           )}
-          {adventure.description}
-        </p>
+          <EditableText
+            className="description-text"
+            label="Description"
+            style={{ fontSize: 'inherit' }}
+            value={adventure.description}
+            onChange={(description) =>
+              description && updateAdventure({ ...adventure, description })
+            }
+          />
+        </div>
         <div className="card-footer">
           <PlannedDateField
             date={adventure.plannedDate}

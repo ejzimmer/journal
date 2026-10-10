@@ -79,6 +79,15 @@
     overflow-wrap: anywhere;
   }
 
+  div.description-text {
+    display: inline;
+  }
+
+  textarea.description-text {
+    font-family: inherit;
+    vertical-align: top;
+  }
+
   .mode-emoji {
     margin-inline-end: 6px;
   }
