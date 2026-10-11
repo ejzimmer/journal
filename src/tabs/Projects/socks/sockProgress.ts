@@ -25,13 +25,6 @@ export function countKnittedSections(socks: SockProgress) {
   return SOCKS.reduce((total, sock) => total + socks.knittedSections[sock], 0);
 }
 
-export function getKnittedCountAfterClick(
-  sectionIndex: number,
-  knittedCount: number,
-) {
-  return sectionIndex < knittedCount ? sectionIndex : sectionIndex + 1;
-}
-
 export function clampKnittedCount(count: number) {
   return Math.min(Math.max(count, 0), SECTIONS_PER_SOCK);
 }

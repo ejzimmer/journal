@@ -36,29 +36,25 @@ const getSock = (name: 'first' | 'second') =>
 
 describe('SockTracker', () => {
   describe('clicking a section', () => {
-    describe('when it has not been knitted', () => {
-      it('knits the sock up to and including that section', async () => {
+    describe('when it is the next one to knit', () => {
+      it('knits it', async () => {
         const user = userEvent.setup();
         const { setValue } = renderSockTracker(createSocks(6, 1));
 
-        await user.click(
-          within(getSock('second')).getByText('Knit through heel'),
-        );
+        await user.click(within(getSock('second')).getByText('Knit leg'));
 
-        expect(setValue).toHaveBeenCalledWith(socksKey, createSocks(6, 3));
+        expect(setValue).toHaveBeenCalledWith(socksKey, createSocks(6, 2));
       });
     });
 
-    describe('when it has been knitted', () => {
-      it('unravels the sock back to the start of that section', async () => {
+    describe('when it is the last one knitted', () => {
+      it('unravels it', async () => {
         const user = userEvent.setup();
         const { setValue } = renderSockTracker(createSocks(5, 2));
 
-        await user.click(
-          within(getSock('first')).getByText('Unravel from leg'),
-        );
+        await user.click(within(getSock('first')).getByText('Unravel instep'));
 
-        expect(setValue).toHaveBeenCalledWith(socksKey, createSocks(1, 2));
+        expect(setValue).toHaveBeenCalledWith(socksKey, createSocks(4, 2));
       });
     });
 
@@ -67,9 +63,7 @@ describe('SockTracker', () => {
         const user = userEvent.setup();
         const { setValue } = renderSockTracker(createSocks(0, 0, 'toe_up'));
 
-        await user.click(
-          within(getSock('first')).getByText('Knit through toe'),
-        );
+        await user.click(within(getSock('first')).getByText('Knit toe'));
 
         expect(setValue).toHaveBeenCalledWith(
           socksKey,

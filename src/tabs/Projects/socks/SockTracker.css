@@ -29,17 +29,17 @@
 
   .sock-section path {
     fill: color(from var(--sock-knit) srgb r g b / 0.12);
-    cursor: pointer;
     transition:
       fill 0.25s,
       opacity 0.2s;
   }
 
-  .sock-section.next path {
+  .sock-section.changeable path {
     fill: color(from var(--sock-knit) srgb r g b / 0.28);
+    cursor: pointer;
   }
 
-  .sock-section.to-knit path {
+  .sock-section.changeable:not(.knitted):hover path {
     fill: color(from var(--sock-knit) srgb r g b / 0.62);
   }
 
@@ -47,7 +47,7 @@
     fill: var(--sock-knit);
   }
 
-  .sock-section.to-unravel {
+  .sock-section.knitted.changeable:hover {
     opacity: 0.38;
   }
 
