@@ -71,18 +71,24 @@ describe('DueDateTask', () => {
         repeats: true,
       };
 
-      it('adds a ready copy due a week after its current due date', async () => {
+      it('finishes it and adds a repeating copy due a week after its current due date', async () => {
         const user = userEvent.setup();
         const addItem = jest.fn();
+        const updateItem = jest.fn();
         renderWithStorage(
           <CategoriesContext.Provider value={['🛒', '📓']}>
             <DueDateTask task={repeatingTask} />
           </CategoriesContext.Provider>,
-          { value: { addItem } },
+          { value: { addItem, updateItem } },
         );
 
         await user.click(screen.getByDisplayValue('finished'));
 
+        expect(updateItem).toHaveBeenCalledWith('today/暦', {
+          ...repeatingTask,
+          status: 'finished',
+          repeats: false,
+        });
         expect(addItem).toHaveBeenCalledWith('today/暦', {
           parentId: 'calendar',
           position: 0,
@@ -92,25 +98,6 @@ describe('DueDateTask', () => {
           status: 'ready',
           statusUpdateDate: getToday(),
           repeats: true,
-        });
-      });
-
-      it('finishes the task and hands the repeat on to the copy', async () => {
-        const user = userEvent.setup();
-        const updateItem = jest.fn();
-        renderWithStorage(
-          <CategoriesContext.Provider value={['🛒', '📓']}>
-            <DueDateTask task={repeatingTask} />
-          </CategoriesContext.Provider>,
-          { value: { updateItem } },
-        );
-
-        await user.click(screen.getByDisplayValue('finished'));
-
-        expect(updateItem).toHaveBeenCalledWith('today/暦', {
-          ...repeatingTask,
-          status: 'finished',
-          repeats: false,
         });
       });
     });
