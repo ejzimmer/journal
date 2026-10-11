@@ -15,13 +15,9 @@ export type BeetleSpot = {
   forward: boolean;
 };
 
-const QUESTIONS_PER_BEETLE = 10;
 const MIN_PERCH_AMOUNT = 0.2;
 const BASE_GAP = 0.12;
 const TIP_GAP = 0.08;
-
-const countBeetles = (questions: number) =>
-  Math.ceil(questions / QUESTIONS_PER_BEETLE);
 
 function interleaveColours(reds: number, yellows: number) {
   return Array.from({ length: Math.max(reds, yellows) }, (_, index) => [
@@ -41,8 +37,8 @@ export function placeBeetles(
     );
     if (!perches.length) return [];
     const colours = interleaveColours(
-      countBeetles(volume.lookups),
-      countBeetles(volume.aiQuestions),
+      volume.lookups,
+      volume.aiQuestions,
     );
     const slots = Math.ceil(colours.length / perches.length);
 
