@@ -25,10 +25,33 @@ const getDateClass = (task: CalendarTask) => {
   return '';
 };
 
+const createNextOccurrence = ({
+  id,
+  dueDate,
+  ...task
+}: CalendarTask): Omit<CalendarTask, 'id'> => ({
+  ...task,
+  dueDate: Temporal.PlainDate.from(dueDate).add({ weeks: 1 }).toString(),
+  status: 'ready',
+});
+
 export function DueDateTask({ task }: { task: CalendarTask }) {
-  const { updateItem, deleteItem } = useStorageContext();
+  const { addItem, updateItem, deleteItem } = useStorageContext();
 
   const onChange = (task: CalendarTask) => updateItem(CALENDAR_KEY, task);
+  const onStatusChange = (status: CalendarTask['status']) => {
+    const statusUpdateDate = getToday();
+
+    if (status === 'finished' && task.repeats) {
+      addItem<CalendarTask>(CALENDAR_KEY, {
+        ...createNextOccurrence(task),
+        statusUpdateDate,
+      });
+      onChange({ ...task, status, statusUpdateDate, repeats: false });
+    } else {
+      onChange({ ...task, status, statusUpdateDate });
+    }
+  };
   const onDelete = () => {
     deleteItem<CalendarTask>(CALENDAR_KEY, task);
   };
@@ -63,9 +86,7 @@ export function DueDateTask({ task }: { task: CalendarTask }) {
       <Switch
         options={[...STATUSES]}
         value={task.status}
-        onChange={(status) =>
-          onChange({ ...task, status, statusUpdateDate: getToday() })
-        }
+        onChange={onStatusChange}
         name={task.id}
         Option={StatusOption}
       />

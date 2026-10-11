@@ -87,3 +87,21 @@
     }
   }
 }
+
+.todo-task-list.calendar .due-date-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+
+  .repeats {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 14px;
+    cursor: pointer;
+
+    input {
+      margin: 0;
+    }
+  }
+}

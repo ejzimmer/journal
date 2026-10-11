@@ -6,13 +6,14 @@ import { getToday } from '../../../shared/dates';
 
 export function AddDueDateTaskForm() {
   const [dueDate, setDueDate] = useState(getToday());
+  const [repeats, setRepeats] = useState(false);
 
   const getAdditionalFieldValue = () => {
     if (!dueDate) {
       return false;
     }
 
-    return { dueDate };
+    return { dueDate, repeats };
   };
 
   return (
@@ -20,12 +21,22 @@ export function AddDueDateTaskForm() {
       listId={CALENDAR_KEY}
       getAdditionalFieldValues={getAdditionalFieldValue}
     >
-      <FormControl
-        label="Due date"
-        type="date"
-        value={dueDate}
-        onChange={setDueDate}
-      />
+      <div className="due-date-fields">
+        <FormControl
+          label="Due date"
+          type="date"
+          value={dueDate}
+          onChange={setDueDate}
+        />
+        <label className="repeats">
+          <input
+            type="checkbox"
+            checked={repeats}
+            onChange={(event) => setRepeats(event.target.checked)}
+          />
+          Repeats weekly
+        </label>
+      </div>
     </AddTaskForm>
   );
 }

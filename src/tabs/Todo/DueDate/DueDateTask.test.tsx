@@ -62,4 +62,79 @@ describe('DueDateTask', () => {
       expect(updateItem).not.toHaveBeenCalled();
     });
   });
+
+  describe('when the user finishes the task', () => {
+    describe('and it repeats', () => {
+      const repeatingTask: CalendarTask = {
+        ...task,
+        dueDate: '2026-08-12',
+        repeats: true,
+      };
+
+      it('adds a ready copy due a week after its current due date', async () => {
+        const user = userEvent.setup();
+        const addItem = jest.fn();
+        renderWithStorage(
+          <CategoriesContext.Provider value={['🛒', '📓']}>
+            <DueDateTask task={repeatingTask} />
+          </CategoriesContext.Provider>,
+          { value: { addItem } },
+        );
+
+        await user.click(screen.getByDisplayValue('finished'));
+
+        expect(addItem).toHaveBeenCalledWith('today/暦', {
+          parentId: 'calendar',
+          position: 0,
+          description: 'Pay rent',
+          category: '🛒',
+          dueDate: '2026-08-19',
+          status: 'ready',
+          statusUpdateDate: getToday(),
+          repeats: true,
+        });
+      });
+
+      it('finishes the task and hands the repeat on to the copy', async () => {
+        const user = userEvent.setup();
+        const updateItem = jest.fn();
+        renderWithStorage(
+          <CategoriesContext.Provider value={['🛒', '📓']}>
+            <DueDateTask task={repeatingTask} />
+          </CategoriesContext.Provider>,
+          { value: { updateItem } },
+        );
+
+        await user.click(screen.getByDisplayValue('finished'));
+
+        expect(updateItem).toHaveBeenCalledWith('today/暦', {
+          ...repeatingTask,
+          status: 'finished',
+          repeats: false,
+        });
+      });
+    });
+
+    describe("and it doesn't repeat", () => {
+      it('finishes the task without adding another', async () => {
+        const user = userEvent.setup();
+        const addItem = jest.fn();
+        const updateItem = jest.fn();
+        renderWithStorage(
+          <CategoriesContext.Provider value={['🛒', '📓']}>
+            <DueDateTask task={task} />
+          </CategoriesContext.Provider>,
+          { value: { addItem, updateItem } },
+        );
+
+        await user.click(screen.getByDisplayValue('finished'));
+
+        expect(updateItem).toHaveBeenCalledWith('today/暦', {
+          ...task,
+          status: 'finished',
+        });
+        expect(addItem).not.toHaveBeenCalled();
+      });
+    });
+  });
 });
