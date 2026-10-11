@@ -30,18 +30,22 @@ export function SockPicture({
   const id = useId();
   const clipId = `${id}-clip`;
   const stitchesId = `${id}-stitches`;
-  const [previewCount, setPreviewCount] = useState<number | null>(null);
+  const [hoveredKnittedCount, setHoveredKnittedCount] = useState<number | null>(
+    null,
+  );
 
   const knitOrder = getKnitOrder(direction);
   const isCuffKnitted = knitOrder.indexOf('cuff') < knittedCount;
 
   const getSectionClassName = (index: number) => {
-    if (previewCount !== null && previewCount !== knittedCount) {
-      const isInPreview =
-        index >= Math.min(previewCount, knittedCount) &&
-        index < Math.max(previewCount, knittedCount);
-      if (isInPreview) {
-        return previewCount > knittedCount ? 'to-knit' : 'knitted to-unravel';
+    if (hoveredKnittedCount !== null && hoveredKnittedCount !== knittedCount) {
+      const isHoverPreview =
+        index >= Math.min(hoveredKnittedCount, knittedCount) &&
+        index < Math.max(hoveredKnittedCount, knittedCount);
+      if (isHoverPreview) {
+        return hoveredKnittedCount > knittedCount
+          ? 'to-knit'
+          : 'knitted to-unravel';
       }
     }
     if (index < knittedCount) return 'knitted';
@@ -80,7 +84,7 @@ export function SockPicture({
       aria-valuetext={`${knittedCount} of ${SECTIONS_PER_SOCK} sections knitted`}
       transform={getSockTransform(sock)}
       onKeyDown={onKeyDown}
-      onMouseLeave={() => setPreviewCount(null)}
+      onMouseLeave={() => setHoveredKnittedCount(null)}
     >
       <defs>
         <clipPath id={clipId}>
@@ -106,7 +110,7 @@ export function SockPicture({
               <path
                 d={SOCK_SECTION_SHAPES[section]}
                 onClick={() => onChangeKnittedCount(nextCount)}
-                onMouseEnter={() => setPreviewCount(nextCount)}
+                onMouseEnter={() => setHoveredKnittedCount(nextCount)}
               >
                 <title>
                   {index < knittedCount
