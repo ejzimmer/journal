@@ -4,6 +4,7 @@ import { BranchNames } from './BranchNames';
 import { CloudFrame } from './CloudFrame';
 import { findCurrentVolume } from './findCurrentVolume';
 import { findSignpostPlacement } from './findSignpostPlacement';
+import { getItemsByNumber } from './lists';
 import { getBlooms } from './getBlooms';
 import { AddVolumeForm } from './AddVolumeForm';
 import { TreeBeetles } from './TreeBeetles';
@@ -17,10 +18,14 @@ import { TreeShoots } from './TreeShoots';
 import { TreeSilhouette } from './TreeSilhouette';
 import { Signpost } from './Signpost';
 import { PrintSeries } from './types';
+import { readVolumeProgress } from './volumeProgress';
 
 export function MediaTree({ series }: { series: PrintSeries }) {
   const layout = useMemo(() => createTreeLayout(series), [series]);
-  const grownShapes = getGrownShapes(layout, series);
+  const progress = getItemsByNumber(series.volumes).map((volume) =>
+    readVolumeProgress(series, volume),
+  );
+  const grownShapes = getGrownShapes(layout, progress);
   const blooms = getBlooms(series);
   const [isProgressUpdateFormOpen, setIsProgressUpdateFormOpen] =
     useState(false);

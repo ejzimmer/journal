@@ -119,7 +119,7 @@ function growBranch(
   return [limb, ...twigs];
 }
 
-function measureBounds(shapes: TreeShape[]) {
+export function measureBounds(shapes: TreeShape[]) {
   const edges = shapes.flatMap((shape) => shape.edges);
   const reach =
     Math.max(
