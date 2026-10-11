@@ -1,5 +1,7 @@
 import { useMemo } from 'react';
 import { createCactusLayout } from './cactusLayout';
+import { CactusRibs } from './CactusRibs';
+import { CactusSpines } from './CactusSpines';
 import { getItemsInAddedOrder } from './lists';
 import { getGrownShapes } from './treeGrowth';
 import { TreeFill } from './TreeFill';
@@ -23,9 +25,11 @@ export function MediaCactus({ channel }: { channel: YoutubeChannel }) {
         width={width}
         height={height}
       >
+        <CactusSpines shapes={grownShapes} />
         <TreeOutline shapes={grownShapes} />
         <TreeSilhouette layout={layout} />
         <TreeFill shapes={grownShapes} />
+        <CactusRibs shapes={grownShapes} />
       </svg>
     </div>
   );
