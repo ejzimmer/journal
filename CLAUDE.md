@@ -18,6 +18,10 @@ Default to no comments at all. Write code that reads on its own - name things we
 
 A function name should describe what the function does. As such, it should include both a verb and a noun - `createItem`, NOT `item`. If a function name uses the verb "resolve" because it does multiple things, it's probably a bad function.
 
+## One component per file
+
+Give every component its own props type, and its own file. A child component only belongs in its parent's file when it's very small (under 10 lines), has no real logic of its own, and is tightly coupled to the parent. Anything bigger, or anything with state, handlers or derived values, gets its own file, even if only the parent uses it. When a component starts doing several jobs, split those jobs into child components rather than letting the file grow.
+
 ## Node version
 
 The project runs on the Node version in `.nvmrc` (also pinned in `package.json` engines). Containers for Claude Code on the web start on an older Node, where `yarn` refuses to install and the `src/tabs/Health/calories` suites fail with `Temporal is not defined`. `.claude/hooks/session-start.sh` installs and selects the pinned version at session start; if those failures ever show up, check `node -v` before treating them as pre-existing.
