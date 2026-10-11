@@ -80,39 +80,73 @@ describe('SockTracker', () => {
   });
 
   describe('using the keyboard on a sock', () => {
-    describe('pressing up', () => {
-      it('knits the next section', async () => {
-        const user = userEvent.setup();
-        const { setValue } = renderSockTracker(createSocks(2, 0));
-
-        getSock('first').focus();
-        await user.keyboard('{ArrowUp}');
-
-        expect(setValue).toHaveBeenCalledWith(socksKey, createSocks(3, 0));
-      });
-
-      describe('when the sock is fully knitted', () => {
-        it('keeps it at the last section', async () => {
+    describe('when the socks are knit cuff down', () => {
+      describe('pressing down', () => {
+        it('knits the next section', async () => {
           const user = userEvent.setup();
-          const { setValue } = renderSockTracker(createSocks(6, 0));
+          const { setValue } = renderSockTracker(createSocks(2, 0));
 
           getSock('first').focus();
+          await user.keyboard('{ArrowDown}');
+
+          expect(setValue).toHaveBeenCalledWith(socksKey, createSocks(3, 0));
+        });
+
+        describe('when the sock is fully knitted', () => {
+          it('keeps it at the last section', async () => {
+            const user = userEvent.setup();
+            const { setValue } = renderSockTracker(createSocks(6, 0));
+
+            getSock('first').focus();
+            await user.keyboard('{ArrowDown}');
+
+            expect(setValue).toHaveBeenCalledWith(socksKey, createSocks(6, 0));
+          });
+        });
+      });
+
+      describe('pressing up', () => {
+        it('unravels the last knitted section', async () => {
+          const user = userEvent.setup();
+          const { setValue } = renderSockTracker(createSocks(6, 4));
+
+          getSock('second').focus();
           await user.keyboard('{ArrowUp}');
 
-          expect(setValue).toHaveBeenCalledWith(socksKey, createSocks(6, 0));
+          expect(setValue).toHaveBeenCalledWith(socksKey, createSocks(6, 3));
         });
       });
     });
 
-    describe('pressing down', () => {
-      it('unravels the last knitted section', async () => {
-        const user = userEvent.setup();
-        const { setValue } = renderSockTracker(createSocks(6, 4));
+    describe('when the socks are knit toe up', () => {
+      describe('pressing up', () => {
+        it('knits the next section', async () => {
+          const user = userEvent.setup();
+          const { setValue } = renderSockTracker(createSocks(2, 0, 'toe_up'));
 
-        getSock('second').focus();
-        await user.keyboard('{ArrowDown}');
+          getSock('first').focus();
+          await user.keyboard('{ArrowUp}');
 
-        expect(setValue).toHaveBeenCalledWith(socksKey, createSocks(6, 3));
+          expect(setValue).toHaveBeenCalledWith(
+            socksKey,
+            createSocks(3, 0, 'toe_up'),
+          );
+        });
+      });
+
+      describe('pressing down', () => {
+        it('unravels the last knitted section', async () => {
+          const user = userEvent.setup();
+          const { setValue } = renderSockTracker(createSocks(6, 4, 'toe_up'));
+
+          getSock('second').focus();
+          await user.keyboard('{ArrowDown}');
+
+          expect(setValue).toHaveBeenCalledWith(
+            socksKey,
+            createSocks(6, 3, 'toe_up'),
+          );
+        });
       });
     });
   });

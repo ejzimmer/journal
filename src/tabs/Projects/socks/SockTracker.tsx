@@ -108,10 +108,14 @@ function SockPicture({
   };
 
   const onKeyDown = (event: KeyboardEvent<SVGGElement>) => {
+    const [knitKey, unravelKey] =
+      direction === 'cuff_down'
+        ? ['ArrowDown', 'ArrowUp']
+        : ['ArrowUp', 'ArrowDown'];
     const keyCounts: Record<string, number> = {
-      ArrowUp: knittedCount + 1,
+      [knitKey]: knittedCount + 1,
       ArrowRight: knittedCount + 1,
-      ArrowDown: knittedCount - 1,
+      [unravelKey]: knittedCount - 1,
       ArrowLeft: knittedCount - 1,
       Home: 0,
       End: SECTIONS_PER_SOCK,
