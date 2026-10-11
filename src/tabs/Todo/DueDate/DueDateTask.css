@@ -99,27 +99,26 @@
   .repeats input {
     appearance: none;
     position: relative;
-    width: 20px;
-    height: 20px;
-    padding: 0;
-    margin: 8px 0;
+    width: 36px;
+    height: 36px;
+    margin: 0;
+    background: hsl(0 0% 100% / 0.5);
     cursor: pointer;
 
-    &:checked {
-      background: var(--action-colour);
-      border-color: var(--action-colour);
+    &:hover {
+      border-color: var(--border-colour-hover);
+    }
 
-      &::after {
-        content: '';
-        position: absolute;
-        left: 6px;
-        top: 2px;
-        width: 5px;
-        height: 10px;
-        border: solid white;
-        border-width: 0 2px 2px 0;
-        transform: rotate(45deg);
-      }
+    &:checked::after {
+      content: '';
+      position: absolute;
+      left: 12px;
+      top: 6px;
+      width: 8px;
+      height: 16px;
+      border: solid var(--body-colour);
+      border-width: 0 2px 2px 0;
+      transform: rotate(45deg);
     }
   }
 }
