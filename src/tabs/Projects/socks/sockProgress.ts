@@ -1,10 +1,21 @@
 import {
   PROJECTS_KEY,
-  SOCK_SECTIONS,
   SOCKS,
   SockDirection,
   SockProgress,
 } from '../../../shared/types';
+
+export const SOCK_CATEGORY = '🧦';
+
+export const SOCK_SECTIONS = [
+  'cuff',
+  'leg',
+  'heel',
+  'gusset',
+  'instep',
+  'toe',
+] as const;
+export type SockSectionName = (typeof SOCK_SECTIONS)[number];
 
 export const SECTIONS_PER_SOCK = SOCK_SECTIONS.length;
 export const SECTIONS_PER_PAIR = SECTIONS_PER_SOCK * SOCKS.length;

@@ -10,8 +10,8 @@ import {
   PROJECT_COLOURS,
   PROJECTS_KEY,
   ProjectStatus,
-  SOCK_CATEGORY,
 } from '../../shared/types';
+import { SOCK_CATEGORY } from './socks/sockProgress';
 import { useLinkedTasks } from './utils';
 import { ArrowToEndIcon } from '../../shared/icons/ArrowToEnd';
 import { ArrowToStartIcon } from '../../shared/icons/ArrowToStart';

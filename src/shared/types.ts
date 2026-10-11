@@ -103,16 +103,6 @@ export const PROJECT_COLOURS = {
 export const categories = Object.keys(PROJECT_COLOURS);
 export type Category = keyof typeof PROJECT_COLOURS;
 export type ProjectStatus = 'ready' | 'in_progress' | 'done';
-export const SOCK_CATEGORY = '🧦';
-export const SOCK_SECTIONS = [
-  'cuff',
-  'leg',
-  'heel',
-  'gusset',
-  'instep',
-  'toe',
-] as const;
-export type SockSection = (typeof SOCK_SECTIONS)[number];
 export const SOCKS = ['first', 'second'] as const;
 export type Sock = (typeof SOCKS)[number];
 export type SockDirection = 'cuff_down' | 'toe_up';

@@ -8,12 +8,11 @@ import {
   ProjectDetails,
   PROJECTS_KEY,
   ProjectSubtask,
-  SOCK_CATEGORY,
 } from '../../shared/types';
 import { CATEGORIES } from '../../shared/utils';
 import { getNextPosition } from '../../shared/drag-and-drop/utils';
 import { getSubtasksKey } from './utils';
-import { NEW_SOCK_PROGRESS } from './socks/sockProgress';
+import { NEW_SOCK_PROGRESS, SOCK_CATEGORY } from './socks/sockProgress';
 
 type CategoryOption = Category | typeof SOCK_CATEGORY;
 

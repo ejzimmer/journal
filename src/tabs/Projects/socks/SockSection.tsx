@@ -1,8 +1,8 @@
-import { SockSection as Section } from '../../../shared/types';
+import { SockSectionName } from './sockProgress';
 import { SOCK_SECTION_SHAPES } from './sockShape';
 
 type SockSectionProps = {
-  section: Section;
+  section: SockSectionName;
   isKnitted: boolean;
   canChange: boolean;
   stitchesFill: string;
