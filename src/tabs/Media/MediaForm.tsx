@@ -6,6 +6,7 @@ import { Modal, useModal } from '../../shared/controls/Modal';
 import { ModalDialog } from '../../shared/controls/ModalDialog';
 import { TickIcon } from '../../shared/icons/Tick';
 import { RubbishBinIcon } from '../../shared/icons/RubbishBin';
+import { PlusIcon } from '../../shared/icons/Plus';
 import { BandColourPicker } from './BandColourPicker';
 import { useMediaStorage } from './MediaStorageContext';
 import { MediaDetails, MediaSeries, NewMedia, SeriesDetails } from './types';
@@ -190,7 +191,7 @@ export function AddMediaForm<T extends MediaDetails>({
     <Modal
       trigger={(props) => (
         <button {...props} className="outline icon" aria-label={ariaLabel}>
-          +
+          <PlusIcon width="26" strokeWidth="3.5" />
         </button>
       )}
     >
