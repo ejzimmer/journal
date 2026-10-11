@@ -6,7 +6,7 @@ const interpolatePoint = (from: Point, to: Point, t: number) => ({
   y: roundCoordinate(from.y + (to.y - from.y) * t),
 });
 
-function cutEdges(edges: EdgeSample[], amount: number) {
+export function cutEdges(edges: EdgeSample[], amount: number) {
   if (amount >= 1) {
     return edges;
   }

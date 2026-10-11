@@ -115,6 +115,25 @@
   }
 }
 
+.cactus-ribs {
+  fill: none;
+  stroke: hsl(106 32% 33%);
+  stroke-width: 1.1;
+  stroke-linecap: round;
+}
+
+.cactus-areoles {
+  fill: hsl(48 55% 90%);
+  stroke: none;
+}
+
+.cactus-spines {
+  fill: none;
+  stroke: hsl(36 30% 48%);
+  stroke-width: 0.5;
+  stroke-linecap: round;
+}
+
 .media-tree {
   position: relative;
 
