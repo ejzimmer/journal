@@ -14,6 +14,13 @@ const running: AdventureMode = {
   colour: '#d11c2e',
 };
 
+const cycling: AdventureMode = {
+  id: 'cycling',
+  name: 'Cycling',
+  emoji: '🚲',
+  colour: '#2a9940',
+};
+
 const renderCard = (details: Partial<Adventure> = {}) => {
   const adventure: Adventure = {
     id: 'parkrun',
@@ -24,7 +31,7 @@ const renderCard = (details: Partial<Adventure> = {}) => {
   };
   const storage: AdventureStorageContextType = {
     adventures: [adventure],
-    modes: [running],
+    modes: [running, cycling],
     isLoading: false,
     addAdventure: jest.fn(),
     updateAdventure: jest.fn(),
@@ -61,7 +68,7 @@ describe('AdventureCard', () => {
     expect(screen.getByRole('listitem')).toHaveTextContent(
       '🏃Plenty Gorge parkrun',
     );
-    expect(screen.getByRole('img', { name: 'Running' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Running' })).toBeInTheDocument();
   });
 
   describe('when it is marked done', () => {
@@ -122,6 +129,20 @@ describe('AdventureCard', () => {
         await user.keyboard('{Enter}');
 
         expect(storage.deleteAdventure).toHaveBeenCalledWith(adventure);
+      });
+    });
+  });
+
+  describe('when the mode is changed', () => {
+    it('saves the new mode', async () => {
+      const { adventure, storage, user } = renderCard();
+
+      await user.click(screen.getByRole('button', { name: 'Running' }));
+      await user.click(screen.getByRole('button', { name: 'Cycling' }));
+
+      expect(storage.updateAdventure).toHaveBeenCalledWith({
+        ...adventure,
+        modeId: 'cycling',
       });
     });
   });

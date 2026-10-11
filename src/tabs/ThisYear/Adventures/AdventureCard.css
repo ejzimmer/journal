@@ -88,10 +88,6 @@
     vertical-align: top;
   }
 
-  .mode-emoji {
-    margin-inline-end: 6px;
-  }
-
   .card-footer {
     display: flex;
     align-items: center;
