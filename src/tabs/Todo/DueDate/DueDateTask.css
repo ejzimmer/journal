@@ -96,29 +96,37 @@
     grid-column: 1 / -1;
   }
 
-  .repeats input {
-    appearance: none;
+  .repeats .box {
     position: relative;
     width: 36px;
     height: 36px;
-    margin: 0;
-    background: hsl(0 0% 100% / 0.5);
-    cursor: pointer;
 
-    &:hover {
-      border-color: var(--border-colour-hover);
+    input {
+      appearance: none;
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      background: hsl(0 0% 100% / 0.5);
+      cursor: pointer;
+
+      &:hover {
+        border-color: var(--border-colour-hover);
+      }
+
+      &:focus-visible {
+        outline-offset: 0;
+      }
     }
 
-    &:checked::after {
-      content: '';
+    svg {
       position: absolute;
-      left: 12px;
-      top: 6px;
-      width: 8px;
-      height: 16px;
-      border: solid var(--body-colour);
-      border-width: 0 2px 2px 0;
-      transform: rotate(45deg);
+      inset: 8px;
+      pointer-events: none;
+      display: none;
+    }
+
+    input:checked + svg {
+      display: block;
     }
   }
 }
