@@ -88,8 +88,6 @@
     }
 
     .combobox {
-      top: 10px;
-
       input {
         padding-inline: 16px;
       }

@@ -4,15 +4,13 @@ import { AddDueDateTaskForm } from './AddDueDateTaskForm';
 import { CategoriesContext } from '..';
 import { renderWithStorage } from '../../../shared/storageContextTestUtils';
 
-const renderForm = () => {
-  const addItem = jest.fn();
+const renderForm = (addItem: jest.Mock) => {
   renderWithStorage(
     <CategoriesContext.Provider value={['🛒']}>
       <AddDueDateTaskForm />
     </CategoriesContext.Provider>,
     { value: { addItem } },
   );
-  return addItem;
 };
 
 const fillInTask = async (user: ReturnType<typeof userEvent.setup>) => {
@@ -26,15 +24,14 @@ const fillInTask = async (user: ReturnType<typeof userEvent.setup>) => {
 };
 
 describe('AddDueDateTaskForm', () => {
-  describe('when the user ticks Repeats weekly', () => {
+  describe('when the user ticks Repeats', () => {
     it('adds a repeating task', async () => {
       const user = userEvent.setup();
-      const addItem = renderForm();
+      const addItem = jest.fn();
+      renderForm(addItem);
 
       await fillInTask(user);
-      await user.click(
-        screen.getByRole('checkbox', { name: 'Repeats weekly' }),
-      );
+      await user.click(screen.getByRole('checkbox', { name: 'Repeats' }));
       await user.click(screen.getByRole('button', { name: 'Create' }));
 
       expect(addItem).toHaveBeenCalledWith(
@@ -48,10 +45,11 @@ describe('AddDueDateTaskForm', () => {
     });
   });
 
-  describe('when the user leaves Repeats weekly unticked', () => {
+  describe('when the user leaves Repeats unticked', () => {
     it('adds a one-off task', async () => {
       const user = userEvent.setup();
-      const addItem = renderForm();
+      const addItem = jest.fn();
+      renderForm(addItem);
 
       await fillInTask(user);
       await user.click(screen.getByRole('button', { name: 'Create' }));

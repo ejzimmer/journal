@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useId, useState } from 'react';
 import { AddTaskForm } from '../AddTaskForm';
 import { CALENDAR_KEY } from '../../../shared/types';
 import { FormControl } from '../../../shared/controls/FormControl';
@@ -7,6 +7,7 @@ import { getToday } from '../../../shared/dates';
 export function AddDueDateTaskForm() {
   const [dueDate, setDueDate] = useState(getToday());
   const [repeats, setRepeats] = useState(false);
+  const repeatsId = useId();
 
   const getAdditionalFieldValue = () => {
     if (!dueDate) {
@@ -21,21 +22,20 @@ export function AddDueDateTaskForm() {
       listId={CALENDAR_KEY}
       getAdditionalFieldValues={getAdditionalFieldValue}
     >
-      <div className="due-date-fields">
-        <FormControl
-          label="Due date"
-          type="date"
-          value={dueDate}
-          onChange={setDueDate}
+      <FormControl
+        label="Due date"
+        type="date"
+        value={dueDate}
+        onChange={setDueDate}
+      />
+      <div className="form-control repeats">
+        <label htmlFor={repeatsId}>Repeats</label>
+        <input
+          id={repeatsId}
+          type="checkbox"
+          checked={repeats}
+          onChange={(event) => setRepeats(event.target.checked)}
         />
-        <label className="repeats">
-          <input
-            type="checkbox"
-            checked={repeats}
-            onChange={(event) => setRepeats(event.target.checked)}
-          />
-          Repeats weekly
-        </label>
       </div>
     </AddTaskForm>
   );

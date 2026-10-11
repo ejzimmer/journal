@@ -88,20 +88,38 @@
   }
 }
 
-.todo-task-list.calendar .due-date-fields {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
+.todo-task-list.calendar form.add-task-form {
+  grid-template-columns: repeat(3, min-content) 1fr;
+  max-width: 480px;
 
-  .repeats {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 14px;
+  .description {
+    grid-column: 1 / -1;
+  }
+
+  .repeats input {
+    appearance: none;
+    position: relative;
+    width: 20px;
+    height: 20px;
+    padding: 0;
+    margin: 8px 0;
     cursor: pointer;
 
-    input {
-      margin: 0;
+    &:checked {
+      background: var(--action-colour);
+      border-color: var(--action-colour);
+
+      &::after {
+        content: '';
+        position: absolute;
+        left: 6px;
+        top: 2px;
+        width: 5px;
+        height: 10px;
+        border: solid white;
+        border-width: 0 2px 2px 0;
+        transform: rotate(45deg);
+      }
     }
   }
 }
