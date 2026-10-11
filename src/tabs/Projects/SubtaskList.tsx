@@ -25,6 +25,7 @@ import {
 import { useDraggableList } from '../../shared/drag-and-drop/useDraggableList';
 import { useDrawer } from './useDrawer';
 import { useFormToggle } from '../../shared/controls/useFormToggle';
+import { SockTracker } from './socks/SockTracker';
 
 type SubtasksProps = {
   projectId: string;
@@ -36,6 +37,7 @@ export function SubtaskList({ projectId, isVisible }: SubtasksProps) {
   const drawerRef = useRef<HTMLDivElement>(null);
   const listRef = useRef<HTMLOListElement>(null);
   const formRef = useRef<HTMLDivElement>(null);
+  const trackerRef = useRef<HTMLDivElement>(null);
   const subtasksKey = getSubtasksKey(projectId);
 
   const { useValue, addItem, updateList } = useStorageContext();
@@ -65,6 +67,7 @@ export function SubtaskList({ projectId, isVisible }: SubtasksProps) {
     drawerRef,
     listRef,
     formRef,
+    trackerRef,
     subtasks,
     isProjectLoaded,
     isOpen: isVisible,
@@ -116,6 +119,13 @@ export function SubtaskList({ projectId, isVisible }: SubtasksProps) {
       style={{ height: drawerHeight }}
       ref={drawerRef}
     >
+      {project.socks && (
+        <SockTracker
+          projectId={projectId}
+          socks={project.socks}
+          trackerRef={trackerRef}
+        />
+      )}
       <ol className="subtasks" ref={listRef}>
         {sortedTasks.map((task, index) => (
           <Subtask
