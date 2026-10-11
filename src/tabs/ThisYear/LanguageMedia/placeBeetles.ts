@@ -1,9 +1,8 @@
 import { measureBranchLength } from './findBranchPoint';
 import { LadyBeetleColour } from './LadyBeetle';
-import { getItemsByNumber } from './lists';
 import { EdgeSample } from './treeGeometry';
 import { GrownShape } from './treeGrowth';
-import { PrintSeries } from './types';
+import { Comprehension } from './types';
 
 export type BeetleSpot = {
   key: string;
@@ -26,20 +25,19 @@ function interleaveColours(reds: number, yellows: number) {
   ]).flat();
 }
 
+type BeetleHost = Comprehension & { id: string };
+
 export function placeBeetles(
-  series: PrintSeries,
+  hosts: BeetleHost[],
   shapes: GrownShape[],
 ): BeetleSpot[] {
-  return getItemsByNumber(series.volumes).flatMap((volume) => {
+  return hosts.flatMap((host) => {
     const perches = shapes.filter(
       ({ key, amount }) =>
-        key.startsWith(`${volume.id}-`) && amount > MIN_PERCH_AMOUNT,
+        key.startsWith(`${host.id}-`) && amount > MIN_PERCH_AMOUNT,
     );
     if (!perches.length) return [];
-    const colours = interleaveColours(
-      volume.lookups,
-      volume.aiQuestions,
-    );
+    const colours = interleaveColours(host.lookups, host.aiQuestions);
     const slots = Math.ceil(colours.length / perches.length);
 
     return colours.map((colour, index) => {
@@ -47,7 +45,7 @@ export function placeBeetles(
       const slot = Math.floor(index / perches.length);
       const range: [number, number] = [BASE_GAP, perch.amount - TIP_GAP];
       return {
-        key: `${volume.id}-beetle-${index}`,
+        key: `${host.id}-beetle-${index}`,
         colour,
         edges: perch.edges,
         length: measureBranchLength(perch.edges),

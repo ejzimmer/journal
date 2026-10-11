@@ -115,6 +115,57 @@
   }
 }
 
+.cactus-ribs {
+  fill: none;
+  stroke: hsl(106 32% 33%);
+  stroke-width: 1.1;
+  stroke-linecap: round;
+}
+
+.cactus-areoles {
+  fill: hsl(48 55% 90%);
+  stroke: none;
+}
+
+.saguaro-bud {
+  ellipse {
+    fill: hsl(78 45% 56%);
+    stroke: hsl(95 40% 28%);
+    stroke-width: 0.6;
+  }
+
+  path {
+    fill: none;
+    stroke: hsl(95 40% 34%);
+    stroke-width: 0.5;
+  }
+}
+
+.saguaro-stalk {
+  stroke: hsl(85 40% 45%);
+  stroke-width: 2;
+  stroke-linecap: round;
+}
+
+.saguaro-petal {
+  fill: hsl(50 60% 97%);
+  stroke: hsl(40 22% 60%);
+  stroke-width: 0.5;
+}
+
+.saguaro-centre {
+  fill: hsl(48 92% 58%);
+  stroke: hsl(40 70% 42%);
+  stroke-width: 0.5;
+}
+
+.cactus-spines {
+  fill: none;
+  stroke: hsl(36 30% 48%);
+  stroke-width: 0.5;
+  stroke-linecap: round;
+}
+
 .media-tree {
   position: relative;
 

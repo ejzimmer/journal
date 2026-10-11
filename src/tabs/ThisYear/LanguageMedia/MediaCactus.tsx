@@ -1,6 +1,10 @@
 import { useMemo } from 'react';
+import { CactusCrowns } from './CactusCrowns';
 import { createCactusLayout } from './cactusLayout';
+import { CactusRibs } from './CactusRibs';
+import { CactusSpines } from './CactusSpines';
 import { getItemsInAddedOrder } from './lists';
+import { TreeBeetles } from './TreeBeetles';
 import { getGrownShapes } from './treeGrowth';
 import { TreeFill } from './TreeFill';
 import { TreeOutline } from './TreeOutline';
@@ -10,7 +14,8 @@ import { readVideoProgress } from './videoProgress';
 
 export function MediaCactus({ channel }: { channel: YoutubeChannel }) {
   const layout = useMemo(() => createCactusLayout(channel), [channel]);
-  const progress = getItemsInAddedOrder(channel.videos).map(readVideoProgress);
+  const videos = getItemsInAddedOrder(channel.videos);
+  const progress = videos.map(readVideoProgress);
   const grownShapes = getGrownShapes(layout, progress);
   const { x, y, width, height } = layout.bounds;
 
@@ -23,9 +28,13 @@ export function MediaCactus({ channel }: { channel: YoutubeChannel }) {
         width={width}
         height={height}
       >
+        <CactusSpines shapes={grownShapes} />
         <TreeOutline shapes={grownShapes} />
         <TreeSilhouette layout={layout} />
         <TreeFill shapes={grownShapes} />
+        <CactusRibs shapes={grownShapes} />
+        <CactusCrowns channel={channel} shapes={grownShapes} />
+        <TreeBeetles hosts={videos} shapes={grownShapes} />
       </svg>
     </div>
   );
