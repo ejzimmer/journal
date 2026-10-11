@@ -1,7 +1,7 @@
 import { placeBeetles } from './placeBeetles';
 import { EdgeSample } from './treeGeometry';
 import { GrownShape } from './treeGrowth';
-import { PrintSeries, Volume } from './types';
+import { Volume } from './types';
 
 const createBranch = (key: string, amount: number): GrownShape => ({
   key,
@@ -14,24 +14,17 @@ const createBranch = (key: string, amount: number): GrownShape => ({
   })),
 });
 
-const createSeries = (
+const createVolume = (
   questions: Pick<Volume, 'lookups' | 'aiQuestions'>,
-): PrintSeries => ({
-  id: 'series',
-  type: 'book',
-  name: 'Series',
-  language: 'french',
-  volumes: { vol1: { id: 'vol1', number: 1, pages: 200, ...questions } },
-});
+): Volume[] => [{ id: 'vol1', number: 1, pages: 200, ...questions }];
 
 describe('placeBeetles', () => {
-  describe('for a volume with look-ups and AI questions', () => {
-    const beetles = placeBeetles(
-      createSeries({ lookups: 25, aiQuestions: 8 }),
-      [createBranch('vol1-limb', 1)],
-    );
+  describe('for an item with look-ups and AI questions', () => {
+    const beetles = placeBeetles(createVolume({ lookups: 3, aiQuestions: 1 }), [
+      createBranch('vol1-limb', 1),
+    ]);
 
-    it('puts a red beetle on for every ten look-ups and a yellow one for every ten AI questions, alternating', () => {
+    it('puts a red beetle on for every look-up and a yellow one for every AI question, alternating', () => {
       expect(beetles.map(({ colour }) => colour)).toEqual([
         'red',
         'yellow',
@@ -54,18 +47,15 @@ describe('placeBeetles', () => {
     });
   });
 
-  describe('for a volume with several grown branches', () => {
-    const beetles = placeBeetles(
-      createSeries({ lookups: 30, aiQuestions: 0 }),
-      [
-        createBranch('vol1-limb', 1),
-        createBranch('vol1-twig-0', 0.5),
-        createBranch('vol1-twig-1', 0.1),
-        createBranch('vol2-limb', 1),
-      ],
-    );
+  describe('for an item with several grown branches', () => {
+    const beetles = placeBeetles(createVolume({ lookups: 3, aiQuestions: 0 }), [
+      createBranch('vol1-limb', 1),
+      createBranch('vol1-twig-0', 0.5),
+      createBranch('vol1-twig-1', 0.1),
+      createBranch('vol2-limb', 1),
+    ]);
 
-    it('shares the beetles between the volume’s branches that have grown far enough to hold one', () => {
+    it('shares the beetles between the item’s branches that have grown far enough to hold one', () => {
       expect(beetles.map(({ edges }) => edges)).toEqual([
         createBranch('vol1-limb', 1).edges,
         createBranch('vol1-twig-0', 0.5).edges,

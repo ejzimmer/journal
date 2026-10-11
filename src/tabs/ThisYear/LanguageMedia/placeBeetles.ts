@@ -1,9 +1,8 @@
 import { measureBranchLength } from './findBranchPoint';
 import { LadyBeetleColour } from './LadyBeetle';
-import { getItemsByNumber } from './lists';
 import { EdgeSample } from './treeGeometry';
 import { GrownShape } from './treeGrowth';
-import { PrintSeries } from './types';
+import { Comprehension } from './types';
 
 export type BeetleSpot = {
   key: string;
@@ -15,13 +14,9 @@ export type BeetleSpot = {
   forward: boolean;
 };
 
-const QUESTIONS_PER_BEETLE = 10;
 const MIN_PERCH_AMOUNT = 0.2;
 const BASE_GAP = 0.12;
 const TIP_GAP = 0.08;
-
-const countBeetles = (questions: number) =>
-  Math.ceil(questions / QUESTIONS_PER_BEETLE);
 
 function interleaveColours(reds: number, yellows: number) {
   return Array.from({ length: Math.max(reds, yellows) }, (_, index) => [
@@ -30,20 +25,19 @@ function interleaveColours(reds: number, yellows: number) {
   ]).flat();
 }
 
+type BeetleHost = Comprehension & { id: string };
+
 export function placeBeetles(
-  series: PrintSeries,
+  hosts: BeetleHost[],
   shapes: GrownShape[],
 ): BeetleSpot[] {
-  return getItemsByNumber(series.volumes).flatMap((volume) => {
+  return hosts.flatMap((host) => {
     const perches = shapes.filter(
       ({ key, amount }) =>
-        key.startsWith(`${volume.id}-`) && amount > MIN_PERCH_AMOUNT,
+        key.startsWith(`${host.id}-`) && amount > MIN_PERCH_AMOUNT,
     );
     if (!perches.length) return [];
-    const colours = interleaveColours(
-      countBeetles(volume.lookups),
-      countBeetles(volume.aiQuestions),
-    );
+    const colours = interleaveColours(host.lookups, host.aiQuestions);
     const slots = Math.ceil(colours.length / perches.length);
 
     return colours.map((colour, index) => {
@@ -51,7 +45,7 @@ export function placeBeetles(
       const slot = Math.floor(index / perches.length);
       const range: [number, number] = [BASE_GAP, perch.amount - TIP_GAP];
       return {
-        key: `${volume.id}-beetle-${index}`,
+        key: `${host.id}-beetle-${index}`,
         colour,
         edges: perch.edges,
         length: measureBranchLength(perch.edges),

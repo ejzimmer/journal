@@ -1,18 +1,17 @@
 import { Beetle } from './Beetle';
 import { placeBeetles } from './placeBeetles';
 import { GrownShape } from './treeGrowth';
-import { PrintSeries } from './types';
+import { Comprehension } from './types';
 
-export function TreeBeetles({
-  series,
-  shapes,
-}: {
-  series: PrintSeries;
+type TreeBeetlesProps = {
+  hosts: (Comprehension & { id: string })[];
   shapes: GrownShape[];
-}) {
+};
+
+export function TreeBeetles({ hosts, shapes }: TreeBeetlesProps) {
   return (
     <g className="tree-beetles">
-      {placeBeetles(series, shapes).map((spot) => (
+      {placeBeetles(hosts, shapes).map((spot) => (
         <Beetle key={spot.key} spot={spot} />
       ))}
     </g>

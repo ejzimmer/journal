@@ -22,9 +22,8 @@ import { readVolumeProgress } from './volumeProgress';
 
 export function MediaTree({ series }: { series: PrintSeries }) {
   const layout = useMemo(() => createTreeLayout(series), [series]);
-  const progress = getItemsByNumber(series.volumes).map((volume) =>
-    readVolumeProgress(series, volume),
-  );
+  const volumes = getItemsByNumber(series.volumes);
+  const progress = volumes.map((volume) => readVolumeProgress(series, volume));
   const grownShapes = getGrownShapes(layout, progress);
   const blooms = getBlooms(series);
   const [isProgressUpdateFormOpen, setIsProgressUpdateFormOpen] =
@@ -52,7 +51,7 @@ export function MediaTree({ series }: { series: PrintSeries }) {
         {series.type === 'book' && (
           <BranchNames layout={layout} series={series} />
         )}
-        <TreeBeetles series={series} shapes={grownShapes} />
+        <TreeBeetles hosts={volumes} shapes={grownShapes} />
       </svg>
       <Signpost
         name={series.name}
