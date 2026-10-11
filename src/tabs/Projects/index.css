@@ -18,6 +18,23 @@
     grid-template-columns: repeat(auto-fill, var(--grid-unit));
     justify-content: center;
     gap: var(--shelf-gap);
+
+    @media (width < 640px) {
+      display: flex;
+      flex-direction: column;
+
+      .project {
+        min-width: 0;
+      }
+
+      .project-name {
+        white-space: normal;
+      }
+
+      .project-skeleton {
+        height: calc(var(--small-h) * var(--row-span, 1));
+      }
+    }
   }
 
   .project-item {
