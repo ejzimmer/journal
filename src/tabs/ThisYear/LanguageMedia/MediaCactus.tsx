@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import { CactusCrowns } from './CactusCrowns';
 import { createCactusLayout } from './cactusLayout';
 import { CactusRibs } from './CactusRibs';
 import { CactusSpines } from './CactusSpines';
@@ -30,6 +31,7 @@ export function MediaCactus({ channel }: { channel: YoutubeChannel }) {
         <TreeSilhouette layout={layout} />
         <TreeFill shapes={grownShapes} />
         <CactusRibs shapes={grownShapes} />
+        <CactusCrowns channel={channel} shapes={grownShapes} />
       </svg>
     </div>
   );
