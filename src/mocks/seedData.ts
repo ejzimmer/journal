@@ -241,9 +241,15 @@ const projects = indexById<ProjectDetails>([
     ]),
   }),
   createProject('project-socks', 'Knit the striped socks', '🧶', 1, {
+    status: 'in_progress',
+    socks: {
+      direction: 'cuff_down',
+      knittedSections: { first: 6, second: 2 },
+    },
     subtasks: indexById([
-      createSubtask('subtask-yarn', 'Wind the yarn', '🧶', 0),
-      createSubtask('subtask-heel', 'Learn a better heel', '🧶', 1),
+      createSubtask('subtask-finishing', 'Finishing', '🧶', 0),
+      createSubtask('subtask-yarn', 'Wind the yarn', '🧶', 1, 'done'),
+      createSubtask('subtask-heel', 'Learn a better heel', '🧶', 2),
     ]),
   }),
   createProject('project-quilt', 'Finish the quilt binding', '🪡', 2),

@@ -103,6 +103,13 @@ export const PROJECT_COLOURS = {
 export const categories = Object.keys(PROJECT_COLOURS);
 export type Category = keyof typeof PROJECT_COLOURS;
 export type ProjectStatus = 'ready' | 'in_progress' | 'done';
+export const SOCKS = ['first', 'second'] as const;
+export type Sock = (typeof SOCKS)[number];
+export type SockDirection = 'cuff_down' | 'toe_up';
+export type SockProgress = {
+  direction: SockDirection;
+  knittedSections: Record<Sock, number>;
+};
 export type ProjectDetails = OrderedListItem & {
   description: string;
   category: Category;
@@ -110,4 +117,5 @@ export type ProjectDetails = OrderedListItem & {
   subtasks?: Record<string, ProjectSubtask>;
   linkedTaskId?: string;
   completedAt?: string;
+  socks?: SockProgress;
 };
