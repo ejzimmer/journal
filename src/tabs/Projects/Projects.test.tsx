@@ -210,4 +210,37 @@ describe('Projects', () => {
       });
     });
   });
+
+  describe('sock projects', () => {
+    const socks = createProject('socks', 0, 'in_progress', {
+      socks: {
+        direction: 'cuff_down',
+        knittedSections: { first: 6, second: 2 },
+      },
+    });
+
+    it('shows a sock in place of the knitting emoji', () => {
+      renderProjects([socks]);
+
+      expect(screen.getByRole('listitem')).toHaveTextContent('🧦');
+    });
+
+    it('counts knitted sections towards the progress', () => {
+      renderProjects([socks]);
+
+      expect(screen.getByRole('listitem')).toHaveTextContent('8 of 12');
+    });
+
+    describe('when a ready project has a knitted section', () => {
+      it('moves it to in progress', () => {
+        const readySocks = { ...socks, status: 'ready' as const };
+        const { updateItem } = renderProjects([readySocks]);
+
+        expect(updateItem).toHaveBeenCalledWith(PROJECTS_KEY, {
+          ...readySocks,
+          status: 'in_progress',
+        });
+      });
+    });
+  });
 });

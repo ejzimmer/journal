@@ -10,14 +10,15 @@ import {
   PROJECT_COLOURS,
   PROJECTS_KEY,
   ProjectStatus,
-  ProjectSubtask,
 } from '../../shared/types';
+import { SOCK_CATEGORY } from './socks/sockProgress';
 import { useLinkedTasks } from './utils';
 import { ArrowToEndIcon } from '../../shared/icons/ArrowToEnd';
 import { ArrowToStartIcon } from '../../shared/icons/ArrowToStart';
 import { EditableText } from '../../shared/controls/EditableText';
 import { getToday } from '../../shared/dates';
 import { updateCompletionDate } from '../../shared/years';
+import { SECTIONS_PER_PAIR, countKnittedSections } from './socks/sockProgress';
 
 type ProjectProps = {
   project: ProjectDetails;
@@ -97,6 +98,11 @@ export function Project({
 
   const subtasks = Object.values(project.subtasks ?? {});
   const doneSubtasks = subtasks.filter((subtask) => subtask.status === 'done');
+  const knittedSections = project.socks
+    ? countKnittedSections(project.socks)
+    : 0;
+  const doneSteps = doneSubtasks.length + knittedSections;
+  const totalSteps = subtasks.length + (project.socks ? SECTIONS_PER_PAIR : 0);
   const longestSubtaskLength = Math.max(
     0,
     ...subtasks.map((subtask) => subtask.description.length),
@@ -110,7 +116,7 @@ export function Project({
     '--longest-subtask-chars': longestSubtaskLength,
   } as CSSProperties;
 
-  if (status === 'ready' && doneSubtasks.length > 0) {
+  if (status === 'ready' && doneSteps > 0) {
     updateItem<ProjectDetails>(PROJECTS_KEY, {
       ...project,
       status: 'in_progress',
@@ -137,7 +143,7 @@ export function Project({
       <div className="project-details">
         <div className="project-main-row">
           <EmojiCheckbox
-            emoji={project.category}
+            emoji={project.socks ? SOCK_CATEGORY : project.category}
             isChecked={status === 'done'}
             useTickForDone
             onChange={onChangeStatus}
@@ -173,7 +179,7 @@ export function Project({
 
         {status === 'in_progress' && (
           <div className="project-meta-row">
-            <SubtaskProgress subtasks={subtasks} doneSubtasks={doneSubtasks} />
+            <SubtaskProgress done={doneSteps} total={totalSteps} />
             <div className="project-actions">
               {onMoveToStart && (
                 <button
@@ -201,14 +207,14 @@ export function Project({
 }
 
 type SubtaskProgressProps = {
-  subtasks: ProjectSubtask[];
-  doneSubtasks: ProjectSubtask[];
+  done: number;
+  total: number;
 };
 
-function SubtaskProgress({ subtasks, doneSubtasks }: SubtaskProgressProps) {
-  if (subtasks.length === 0) return null;
+function SubtaskProgress({ done, total }: SubtaskProgressProps) {
+  if (total === 0) return null;
 
-  const donePercentage = (doneSubtasks.length / subtasks.length) * 100;
+  const donePercentage = (done / total) * 100;
 
   return (
     <div className="subtasks-progress">
@@ -219,7 +225,7 @@ function SubtaskProgress({ subtasks, doneSubtasks }: SubtaskProgressProps) {
         />
       </div>
       <span className="subtasks-progress-count">
-        {doneSubtasks.length} of {subtasks.length}
+        {done} of {total}
       </span>
     </div>
   );

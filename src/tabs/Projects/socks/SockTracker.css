@@ -1,0 +1,126 @@
+.sock-tracker {
+  --sock-knit: var(--project-colour-solid);
+  --sock-arrow: hsl(339 78% 66%);
+  --sock-arrow-selected: hsl(339 78% 49%);
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding-block-start: 12px;
+  padding-inline: 12px;
+
+  .sock-pair {
+    flex-grow: 1;
+    max-width: 210px;
+    margin-inline: auto;
+    overflow: visible;
+  }
+
+  .sock {
+    outline: none;
+
+    &:focus-visible .sock-outline {
+      stroke: var(--body-colour);
+    }
+  }
+
+  .sock-background {
+    fill: white;
+  }
+
+  .sock-section path {
+    fill: color(from var(--sock-knit) srgb r g b / 0.12);
+    transition:
+      fill 0.25s,
+      opacity 0.2s;
+  }
+
+  .sock-section.changeable path {
+    fill: color(from var(--sock-knit) srgb r g b / 0.28);
+    cursor: pointer;
+  }
+
+  .sock-section.changeable:not(.knitted):hover path {
+    fill: color(from var(--sock-knit) srgb r g b / 0.62);
+  }
+
+  .sock-section.knitted path {
+    fill: var(--sock-knit);
+  }
+
+  .sock-section.knitted.changeable:hover {
+    opacity: 0.38;
+  }
+
+  .sock-section .sock-stitches {
+    pointer-events: none;
+  }
+
+  .sock-stitch {
+    fill: none;
+    stroke: white;
+    stroke-opacity: 0.38;
+    stroke-width: 2;
+    stroke-linecap: round;
+  }
+
+  .sock-ribs {
+    stroke: color(from var(--sock-knit) srgb r g b / 0.4);
+    stroke-width: 2.25;
+    pointer-events: none;
+
+    &.knitted {
+      stroke: color-mix(in srgb, var(--sock-knit), black 20%);
+      stroke-opacity: 0.55;
+    }
+  }
+
+  .sock-section-lines {
+    fill: none;
+    stroke: color(from var(--sock-knit) srgb r g b / 0.55);
+    stroke-width: 2.5;
+    stroke-dasharray: 5.5 4.5;
+    pointer-events: none;
+  }
+
+  .sock-outline {
+    fill: none;
+    stroke: color(from var(--sock-knit) srgb r g b / 0.9);
+    stroke-width: 5;
+    pointer-events: none;
+  }
+
+  .sock-direction {
+    display: flex;
+    gap: 2px;
+    flex-shrink: 0;
+    margin: 0;
+    padding: 2px;
+    border: 2px solid color(from var(--sock-knit) srgb r g b / 0.9);
+    border-radius: 999px;
+
+    label {
+      display: grid;
+      place-items: center;
+      padding: 3px 8px;
+      border-radius: 999px;
+      color: var(--sock-arrow);
+      cursor: pointer;
+      transition: all 0.2s;
+
+      &:has(input:checked) {
+        background: color-mix(in srgb, var(--sock-knit) 42%, white);
+        color: var(--sock-arrow-selected);
+      }
+
+      &:has(input:focus-visible) {
+        outline: 2px solid var(--sock-knit);
+        outline-offset: 1px;
+      }
+    }
+
+    input {
+      position: fixed;
+      top: -100vh;
+    }
+  }
+}
