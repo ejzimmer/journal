@@ -32,6 +32,7 @@ export type CalendarTaskDetails = {
   dueDate: string;
   status: (typeof STATUSES)[number];
   statusUpdateDate: string;
+  repeats?: boolean;
 };
 export type CalendarTask = CalendarTaskDetails & TodoTask;
 
