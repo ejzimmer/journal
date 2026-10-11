@@ -1,5 +1,6 @@
 import { useLanguageMediaStorage } from './LanguageMediaStorageContext';
 import { ComprehensionRecords } from './ComprehensionRecords';
+import { MediaCactus } from './MediaCactus';
 import { MediaTree } from './MediaTree';
 import { isPrintSeries } from './types';
 
@@ -10,12 +11,24 @@ export function MediaGarden() {
 
   return (
     <ul className="media-garden">
-      {media.filter(isPrintSeries).map((series) => (
-        <li key={series.id}>
-          <MediaTree series={series} />
-          <ComprehensionRecords series={series} />
-        </li>
-      ))}
+      {media.map((item) => {
+        if (isPrintSeries(item)) {
+          return (
+            <li key={item.id}>
+              <MediaTree series={item} />
+              <ComprehensionRecords series={item} />
+            </li>
+          );
+        }
+        if (item.type === 'youtube') {
+          return (
+            <li key={item.id}>
+              <MediaCactus channel={item} />
+            </li>
+          );
+        }
+        return null;
+      })}
     </ul>
   );
 }

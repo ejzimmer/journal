@@ -105,6 +105,16 @@
   stroke-linejoin: round;
 }
 
+.media-cactus {
+  .tree-fill {
+    fill: hsl(104 30% 42%);
+  }
+
+  .tree-outline {
+    stroke: hsl(110 36% 22%);
+  }
+}
+
 .media-tree {
   position: relative;
 

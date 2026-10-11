@@ -12,13 +12,15 @@ const lesMiserables: PrintSeries = {
 };
 
 describe('MediaGarden', () => {
-  it('grows a tree for each book and manga series', () => {
+  it('grows a tree for each book and manga series and a cactus for each YouTube channel', () => {
     renderWithLanguageMediaStorage(<MediaGarden />, {
       media: [lupin, yotsuba, hugo, lesMiserables],
     });
 
     expect(
-      screen.getAllByRole('img').map((tree) => tree.getAttribute('aria-label')),
-    ).toEqual(['よつばと！', 'Les Misérables']);
+      screen
+        .getAllByRole('img')
+        .map((plant) => plant.getAttribute('aria-label')),
+    ).toEqual(['よつばと！', 'HugoDécrypte', 'Les Misérables']);
   });
 });
