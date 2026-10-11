@@ -35,7 +35,7 @@ export function SockPicture({
   const knitOrder = getKnitOrder(direction);
   const isCuffKnitted = knitOrder.indexOf('cuff') < knittedCount;
 
-  const getSectionState = (index: number) => {
+  const getSectionClassName = (index: number) => {
     if (previewCount !== null && previewCount !== knittedCount) {
       const isInPreview =
         index >= Math.min(previewCount, knittedCount) &&
@@ -99,10 +99,10 @@ export function SockPicture({
         <rect className="sock-background" width="500" height="500" />
         {knitOrder.map((section, index) => {
           const nextCount = getKnittedCountAfterClick(index, knittedCount);
-          const state = getSectionState(index);
+          const className = getSectionClassName(index);
 
           return (
-            <g key={section} className={`sock-section ${state}`}>
+            <g key={section} className={`sock-section ${className}`}>
               <path
                 d={SOCK_SECTION_SHAPES[section]}
                 onClick={() => onChangeKnittedCount(nextCount)}
@@ -114,7 +114,7 @@ export function SockPicture({
                     : `Knit through ${section}`}
                 </title>
               </path>
-              {state.includes('knitted') && (
+              {className.includes('knitted') && (
                 <path
                   className="sock-stitches"
                   d={SOCK_SECTION_SHAPES[section]}
