@@ -2,6 +2,7 @@ import { EditableText } from '../../../shared/controls/EditableText';
 import { RestartArrowIcon } from '../../../shared/icons/RestartArrow';
 import { TickIcon } from '../../../shared/icons/Tick';
 import { useAdventureStorage } from './AdventureStorageContext';
+import { ModePicker } from './ModePicker';
 import { PlannedDateField } from './PlannedDateField';
 import { Adventure, AdventureMode } from './types';
 
@@ -24,9 +25,10 @@ export function AdventureCard({ adventure, mode }: AdventureCardProps) {
       <div className="card-body">
         <div className="description">
           {mode && (
-            <span className="mode-emoji" role="img" aria-label={mode.name}>
-              {mode.emoji}
-            </span>
+            <ModePicker
+              mode={mode}
+              onChange={(modeId) => updateAdventure({ ...adventure, modeId })}
+            />
           )}
           <EditableText
             className="description-text"

@@ -1,0 +1,56 @@
+.mode-picker {
+  position: relative;
+  margin-inline-end: 6px;
+
+  .mode-emoji {
+    height: auto;
+    padding: 2px;
+    border: 0;
+    font: inherit;
+    line-height: 1;
+    vertical-align: baseline;
+  }
+
+  .mode-choices {
+    position: absolute;
+    top: calc(100% + 6px);
+    left: -6px;
+    z-index: 1;
+    display: flex;
+    gap: 6px;
+    padding: 6px;
+    background: #fbf8f0;
+    border-radius: 22px;
+    box-shadow:
+      0 2px 4px hsl(0 0% 0% / 0.2),
+      0 8px 18px hsl(30 100% 8% / 0.25);
+  }
+
+  .mode-choice {
+    display: grid;
+    place-items: center;
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    background: #fbf8f0;
+    box-shadow: inset 0 0 0 2.5px var(--choice-colour);
+    line-height: 1;
+
+    &:hover,
+    &:focus-visible {
+      background: #fbf8f0;
+      outline: 2px solid var(--body-colour);
+      outline-offset: 2px;
+    }
+
+    &[aria-pressed='true'] {
+      background: var(--choice-colour);
+    }
+  }
+}
+
+.adventure-card:has(.mode-choices) {
+  z-index: 2;
+}
