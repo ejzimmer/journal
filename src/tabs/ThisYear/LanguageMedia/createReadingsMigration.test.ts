@@ -60,12 +60,13 @@ describe('createReadingsMigration', () => {
         {
           p1: upToUpdate('2026-10-03T08:00:00Z', 30),
           p2: upToUpdate('2026-10-04T08:00:00Z', 60),
+          p3: upToUpdate('2026-10-04T10:00:00Z', 70),
         },
       ),
       NOW,
     );
 
-    it('turns each day of it into one reading, at the page I was up to that day', () => {
+    it('turns each day of it into one reading, at the page I was up to by the end of that day', () => {
       expect(migration).toMatchObject({
         [`${VOLUME_PATH}/readings/migrated-2026-10-03`]: {
           id: 'migrated-2026-10-03',
@@ -80,7 +81,7 @@ describe('createReadingsMigration', () => {
           lookups: 0,
           aiQuestions: 0,
           understood: 60,
-          page: 60,
+          page: 70,
         },
       });
     });

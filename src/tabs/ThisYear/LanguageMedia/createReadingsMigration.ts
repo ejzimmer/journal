@@ -33,6 +33,14 @@ function findPageAt(series: PrintSeries, volume: Volume, instant?: string) {
   return upTo?.volume === volume.number ? upTo.page : 0;
 }
 
+const findEndOfDay = (date: string) =>
+  Temporal.PlainDate.from(date)
+    .add({ days: 1 })
+    .toZonedDateTime(Temporal.Now.timeZoneId())
+    .toInstant()
+    .subtract({ nanoseconds: 1 })
+    .toString();
+
 function groupUpdatesByDate(volume: Volume) {
   const groups = new Map<string, ItemUpdate[]>();
   Object.values(volume.updates ?? {})
@@ -69,7 +77,7 @@ function createDayReading(
     lookups: sumIncreases('lookups'),
     aiQuestions: sumIncreases('aiQuestions'),
     ...(understood !== undefined && { understood: Number(understood) }),
-    page: findPageAt(series, volume, lastAt),
+    page: findPageAt(series, volume, findEndOfDay(date)),
   };
 }
 
