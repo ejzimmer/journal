@@ -168,6 +168,8 @@
 
 .media-tree {
   position: relative;
+  display: flex;
+  align-items: flex-end;
 
   > form {
     position: absolute;
@@ -194,18 +196,21 @@
 }
 
 .signpost {
-  position: absolute;
-  inset-block-end: var(--ground);
+  position: relative;
+  z-index: 1;
   display: flex;
   flex-direction: column;
+  margin-block-end: var(--ground);
 }
 
 .signpost.on-right {
-  inset-inline-start: calc(50% + var(--sign-offset));
+  order: 1;
+  margin-inline-start: calc(var(--sign-offset) - var(--tree-width) / 2);
 }
 
 .signpost.on-left {
-  inset-inline-end: calc(50% + var(--sign-offset));
+  order: -1;
+  margin-inline-end: calc(var(--sign-offset) - var(--tree-width) / 2);
 }
 
 .sign-board {
