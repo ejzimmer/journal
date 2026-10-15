@@ -1,17 +1,23 @@
 import { CallistemonFlowerIcon } from './CallistemonFlowerIcon';
+import { SaguaroFlowerIcon } from './SaguaroFlowerIcon';
 import { SakuraFlowerIcon } from './SakuraFlowerIcon';
-import { PrintSeries } from './types';
+import { PrintSeries, YoutubeChannel } from './types';
+
+export type FlowerType = PrintSeries['type'] | YoutubeChannel['type'];
+
+const FLOWER_ICONS = {
+  book: CallistemonFlowerIcon,
+  manga: SakuraFlowerIcon,
+  youtube: SaguaroFlowerIcon,
+};
 
 export function TreeFlowerIcon({
-  seriesType,
+  flowerType,
   width,
 }: {
-  seriesType: PrintSeries['type'];
+  flowerType: FlowerType;
   width?: string;
 }) {
-  return seriesType === 'book' ? (
-    <CallistemonFlowerIcon width={width} />
-  ) : (
-    <SakuraFlowerIcon width={width} />
-  );
+  const FlowerIcon = FLOWER_ICONS[flowerType];
+  return <FlowerIcon width={width} />;
 }
