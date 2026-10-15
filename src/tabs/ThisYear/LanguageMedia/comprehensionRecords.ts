@@ -1,5 +1,6 @@
 import { getItemsByNumber } from './lists';
-import { FieldChange, ItemUpdate, PrintSeries } from './types';
+import { getReadings } from './getReadings';
+import { PrintSeries } from './types';
 
 export type ComprehensionRecord = {
   date: string;
@@ -8,27 +9,20 @@ export type ComprehensionRecord = {
   understood?: number;
 };
 
-const readLocalDate = (instant: string) =>
+export const readLocalDate = (instant: string) =>
   Temporal.Instant.from(instant)
     .toZonedDateTimeISO(Temporal.Now.timeZoneId())
     .toPlainDate()
     .toString();
 
-const measureIncrease = (change?: FieldChange) =>
-  change ? Number(change.to ?? 0) - Number(change.from ?? 0) : 0;
-
-const isComprehensionUpdate = ({ changes }: ItemUpdate) =>
-  'lookups' in changes || 'aiQuestions' in changes || 'understood' in changes;
-
 export function getComprehensionRecords(series: PrintSeries) {
-  const updates = getItemsByNumber(series.volumes)
-    .flatMap(({ updates }) => Object.values(updates ?? {}))
-    .filter(isComprehensionUpdate)
-    .toSorted((a, b) => Temporal.Instant.compare(a.at, b.at));
+  const readings = getItemsByNumber(series.volumes)
+    .flatMap(getReadings)
+    .toSorted((a, b) => Temporal.Instant.compare(a.createdAt, b.createdAt));
 
   const recordsByDate = new Map<string, ComprehensionRecord>();
-  updates.forEach(({ at, changes }) => {
-    const date = readLocalDate(at);
+  readings.forEach(({ createdAt, lookups, aiQuestions, understood }) => {
+    const date = readLocalDate(createdAt);
     const record = recordsByDate.get(date) ?? {
       date,
       lookups: 0,
@@ -36,12 +30,9 @@ export function getComprehensionRecords(series: PrintSeries) {
     };
     recordsByDate.set(date, {
       ...record,
-      lookups: record.lookups + measureIncrease(changes.lookups),
-      aiQuestions: record.aiQuestions + measureIncrease(changes.aiQuestions),
-      understood:
-        changes.understood?.to === undefined
-          ? record.understood
-          : Number(changes.understood.to),
+      lookups: record.lookups + lookups,
+      aiQuestions: record.aiQuestions + aiQuestions,
+      understood: understood ?? record.understood,
     });
   });
 

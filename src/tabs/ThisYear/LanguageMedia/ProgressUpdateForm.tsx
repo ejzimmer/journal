@@ -1,4 +1,4 @@
-import { KeyboardEvent, FormEvent } from 'react';
+import { KeyboardEvent, FormEvent, useState } from 'react';
 import { useModal } from '../../../shared/controls/Modal';
 import { TickIcon } from '../../../shared/icons/Tick';
 import { CountTile } from './CountTile';
@@ -8,7 +8,7 @@ import { UnderstoodTile } from './UnderstoodTile';
 import { useLanguageMediaStorage } from './LanguageMediaStorageContext';
 import { parseNumber } from './fields';
 import { formatVolumeName, formatVolumeTitle } from './format';
-import { PrintSeries, Volume } from './types';
+import { PrintSeries, Reading, Volume } from './types';
 
 import './ProgressUpdateForm.css';
 
@@ -21,9 +21,11 @@ export function ProgressUpdateForm({
   series,
   volume,
 }: ProgressUpdateFormProps) {
-  const { updateItem } = useLanguageMediaStorage();
+  const { addItem, updateItem } = useLanguageMediaStorage();
   const { closeModal } = useModal();
-  const path = [series.id, 'volumes', volume.id];
+  const [readingId, setReadingId] = useState<string | null>(null);
+  const readingsPath = [series.id, 'volumes', volume.id, 'readings'];
+  const reading = readingId ? volume.readings?.[readingId] : undefined;
   const name = formatVolumeName(volume);
 
   const submitOnEnter = (event: KeyboardEvent<HTMLFormElement>) => {
@@ -36,6 +38,21 @@ export function ProgressUpdateForm({
   const pageUpTo =
     series.upTo?.volume === volume.number ? series.upTo.page : undefined;
 
+  const saveReading = (changes: Partial<Reading>) => {
+    if (readingId) {
+      updateItem([...readingsPath, readingId], changes);
+    } else {
+      setReadingId(
+        addItem(readingsPath, {
+          lookups: 0,
+          aiQuestions: 0,
+          page: pageUpTo,
+          ...changes,
+        }),
+      );
+    }
+  };
+
   const saveProgress = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
@@ -43,11 +60,18 @@ export function ProgressUpdateForm({
     if (page !== undefined) {
       updateItem([series.id], { upTo: { volume: volume.number, page } });
     }
-    updateItem(path, {
+    const changes = {
       lookups: parseNumber(data, 'lookups') ?? 0,
       aiQuestions: parseNumber(data, 'aiQuestions') ?? 0,
       understood: parseNumber(data, 'understood'),
-    });
+    };
+    const isEmpty =
+      !changes.lookups &&
+      !changes.aiQuestions &&
+      changes.understood === undefined;
+    if (readingId || !isEmpty) {
+      saveReading({ ...changes, page: page ?? pageUpTo });
+    }
     closeModal();
   };
 
@@ -68,24 +92,21 @@ export function ProgressUpdateForm({
             label="Looked up"
             addLabel={`Add a lookup to ${name}`}
             icon={<LadyBeetleIcon colour="red" width="45px" />}
-            count={volume.lookups}
-            onAdd={() => updateItem(path, { lookups: volume.lookups + 1 })}
+            count={reading?.lookups ?? 0}
+            onAdd={() => saveReading({ lookups: (reading?.lookups ?? 0) + 1 })}
           />
           <CountTile
             name="aiQuestions"
             label="Asked AI"
             addLabel={`Add an AI question to ${name}`}
             icon={<LadyBeetleIcon colour="yellow" width="45px" />}
-            count={volume.aiQuestions}
+            count={reading?.aiQuestions ?? 0}
             onAdd={() =>
-              updateItem(path, { aiQuestions: volume.aiQuestions + 1 })
+              saveReading({ aiQuestions: (reading?.aiQuestions ?? 0) + 1 })
             }
           />
           <PageTile page={pageUpTo} pages={volume.pages} />
-          <UnderstoodTile
-            seriesType={series.type}
-            understood={volume.understood}
-          />
+          <UnderstoodTile seriesType={series.type} />
         </div>
         <button
           type="submit"

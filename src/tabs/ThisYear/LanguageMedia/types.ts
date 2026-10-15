@@ -71,14 +71,21 @@ export type YoutubeChannel = Timestamps & {
   videos?: Record<string, Video>;
 };
 
-export type Volume = Timestamps &
+export type Reading = Timestamps &
   Comprehension & {
     id: string;
-    number: number;
-    name?: string;
-    pages?: number;
-    status?: Status;
+    createdAt: string;
+    page?: number;
   };
+
+export type Volume = Timestamps & {
+  id: string;
+  number: number;
+  name?: string;
+  pages?: number;
+  status?: Status;
+  readings?: Record<string, Reading>;
+};
 
 export type PrintSeries = Timestamps & {
   id: string;

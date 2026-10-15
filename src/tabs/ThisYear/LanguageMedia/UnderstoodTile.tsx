@@ -4,12 +4,10 @@ import { PrintSeries } from './types';
 
 export function UnderstoodTile({
   seriesType,
-  understood,
 }: {
   seriesType: PrintSeries['type'];
-  understood?: number;
 }) {
-  const [value, setValue] = useState(understood);
+  const [value, setValue] = useState<number>();
 
   return (
     <div

@@ -11,13 +11,13 @@ const series: PrintSeries = {
     vol1: {
       id: 'vol1',
       number: 1,
-      lookups: 5,
-      aiQuestions: 0,
-      understood: 70,
-      updates: {
-        u1: {
-          at: '2026-10-03T09:00:00Z',
-          changes: { lookups: { from: 0, to: 5 }, understood: { to: 70 } },
+      readings: {
+        r1: {
+          id: 'r1',
+          createdAt: '2026-10-03T09:00:00Z',
+          lookups: 5,
+          aiQuestions: 0,
+          understood: 70,
         },
       },
     },

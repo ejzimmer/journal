@@ -6,8 +6,6 @@ const createVolume = (number: number, pages?: number): Volume => ({
   id: `vol${number}`,
   number,
   pages,
-  lookups: 0,
-  aiQuestions: 0,
 });
 
 const createSeries = (

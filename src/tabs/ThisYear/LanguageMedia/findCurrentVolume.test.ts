@@ -5,8 +5,6 @@ const createVolume = (number: number, status?: Volume['status']): Volume => ({
   id: `vol${number}`,
   number,
   status,
-  lookups: 0,
-  aiQuestions: 0,
 });
 
 const createSeries = (

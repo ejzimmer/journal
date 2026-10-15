@@ -4,6 +4,7 @@ import { createCactusLayout } from './cactusLayout';
 import { CactusRibs } from './CactusRibs';
 import { CactusSpines } from './CactusSpines';
 import { getItemsInAddedOrder } from './lists';
+import { placeBeetles } from './placeBeetles';
 import { TreeBeetles } from './TreeBeetles';
 import { getGrownShapes } from './treeGrowth';
 import { TreeFill } from './TreeFill';
@@ -34,7 +35,7 @@ export function MediaCactus({ channel }: { channel: YoutubeChannel }) {
         <TreeFill shapes={grownShapes} />
         <CactusRibs shapes={grownShapes} />
         <CactusCrowns channel={channel} shapes={grownShapes} />
-        <TreeBeetles hosts={videos} shapes={grownShapes} />
+        <TreeBeetles spots={placeBeetles(videos, grownShapes)} />
       </svg>
     </div>
   );

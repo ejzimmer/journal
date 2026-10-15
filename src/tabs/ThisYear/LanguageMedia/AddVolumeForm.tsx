@@ -4,7 +4,7 @@ import { TickIcon } from '../../../shared/icons/Tick';
 import { CountField } from './CountField';
 import { readNumber, readText } from './fields';
 import { useLanguageMediaStorage } from './LanguageMediaStorageContext';
-import { findNextNumber, NO_COMPREHENSION } from './newItems';
+import { findNextNumber } from './newItems';
 import { PrintSeries } from './types';
 import { VolumeNameField } from './VolumeNameField';
 
@@ -22,7 +22,6 @@ export function AddVolumeForm({ series }: { series: PrintSeries }) {
       number,
       name: readText(data, 'name'),
       pages: readNumber(data, 'pages'),
-      ...NO_COMPREHENSION,
     });
     closeModal();
   };

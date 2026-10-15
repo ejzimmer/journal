@@ -463,25 +463,28 @@ const languageMedia: Record<string, LanguageMedia> = {
         id: 'vol1',
         number: 1,
         pages: 220,
-        lookups: 20,
-        aiQuestions: 3,
-        understood: 60,
-        updates: {
-          u1: {
-            at: '2026-09-20T09:00:00Z',
-            changes: { understood: { to: 40 } },
+        readings: {
+          r1: {
+            id: 'r1',
+            createdAt: '2026-09-20T09:00:00Z',
+            page: 20,
+            lookups: 5,
+            aiQuestions: 1,
+            understood: 40,
           },
-          u2: {
-            at: '2026-09-22T09:00:00Z',
-            changes: { understood: { from: 40, to: 60 } },
+          r2: {
+            id: 'r2',
+            createdAt: '2026-09-22T09:00:00Z',
+            page: 41,
+            lookups: 3,
+            aiQuestions: 0,
+            understood: 60,
           },
         },
       },
       vol2: {
         id: 'vol2',
         number: 2,
-        lookups: 0,
-        aiQuestions: 0,
         status: 'not-started',
       },
     },
@@ -510,26 +513,39 @@ const languageMedia: Record<string, LanguageMedia> = {
         number: 1,
         name: 'Fantine',
         pages: 520,
-        lookups: 42,
-        aiQuestions: 6,
-        understood: 85,
         status: 'done',
-        updates: {
-          u1: {
-            at: '2026-09-01T09:00:00Z',
-            changes: { understood: { to: 40 } },
+        readings: {
+          r3: {
+            id: 'r3',
+            createdAt: '2026-09-01T09:00:00Z',
+            page: 90,
+            lookups: 4,
+            aiQuestions: 1,
+            understood: 40,
           },
-          u2: {
-            at: '2026-09-02T09:00:00Z',
-            changes: { understood: { from: 40, to: 50 } },
+          r4: {
+            id: 'r4',
+            createdAt: '2026-09-02T09:00:00Z',
+            page: 120,
+            lookups: 2,
+            aiQuestions: 0,
+            understood: 50,
           },
-          u3: {
-            at: '2026-09-10T09:00:00Z',
-            changes: { understood: { from: 50, to: 70 } },
+          r5: {
+            id: 'r5',
+            createdAt: '2026-09-10T09:00:00Z',
+            page: 330,
+            lookups: 5,
+            aiQuestions: 1,
+            understood: 70,
           },
-          u4: {
-            at: '2026-09-15T09:00:00Z',
-            changes: { understood: { from: 70, to: 85 } },
+          r6: {
+            id: 'r6',
+            createdAt: '2026-09-15T09:00:00Z',
+            page: 470,
+            lookups: 3,
+            aiQuestions: 1,
+            understood: 85,
           },
         },
       },
@@ -538,17 +554,22 @@ const languageMedia: Record<string, LanguageMedia> = {
         number: 2,
         name: 'Cosette',
         pages: 480,
-        lookups: 18,
-        aiQuestions: 4,
-        understood: 35,
-        updates: {
-          u5: {
-            at: '2026-09-25T09:00:00Z',
-            changes: { understood: { to: 20 } },
+        readings: {
+          r7: {
+            id: 'r7',
+            createdAt: '2026-09-25T09:00:00Z',
+            page: 90,
+            lookups: 3,
+            aiQuestions: 1,
+            understood: 20,
           },
-          u6: {
-            at: '2026-10-05T09:00:00Z',
-            changes: { understood: { from: 20, to: 35 } },
+          r8: {
+            id: 'r8',
+            createdAt: '2026-10-05T09:00:00Z',
+            page: 200,
+            lookups: 2,
+            aiQuestions: 0,
+            understood: 35,
           },
         },
       },
@@ -557,8 +578,6 @@ const languageMedia: Record<string, LanguageMedia> = {
         number: 3,
         name: 'Marius',
         pages: 410,
-        lookups: 0,
-        aiQuestions: 0,
       },
     },
     upTo: { volume: 2, page: 210 },
