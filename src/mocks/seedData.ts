@@ -355,7 +355,11 @@ const exercises: Record<string, Exercise> = {
 
 const pistolBoxLevel = 6;
 
-const deadHang: DeadHangSession = { date: todaysDate, hangs: [12, 9, 14] };
+const deadHang: DeadHangSession = {
+  date: todaysDate,
+  hangs: [12, 9, 14],
+  bestHang: 22,
+};
 
 const classes: Record<string, ExerciseClass> = {
   'class-wheel': {
