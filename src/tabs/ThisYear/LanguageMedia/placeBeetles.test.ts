@@ -14,9 +14,32 @@ const createBranch = (key: string, amount: number): GrownShape => ({
   })),
 });
 
+const createTrunk = (amount: number): GrownShape => ({
+  key: 'trunk',
+  amount,
+  growth: { type: 'trunk', levelEnds: [1] },
+  edges: Array.from({ length: 21 }, (_, index): EdgeSample => ({
+    at: index / 20,
+    left: { x: -4, y: -index * 10 },
+    right: { x: 4, y: -index * 10 },
+  })),
+});
+
 const createVolume = (
   questions: Pick<Volume, 'lookups' | 'aiQuestions'>,
 ): Volume[] => [{ id: 'vol1', number: 1, pages: 200, ...questions }];
+
+const createLimb = (amount: number): GrownShape => {
+  const limb = createBranch('vol1-limb', amount);
+  return {
+    ...limb,
+    edges: limb.edges.map(({ at, left, right }) => ({
+      at,
+      left: { x: left.x, y: left.y - 100 },
+      right: { x: right.x, y: right.y - 100 },
+    })),
+  };
+};
 
 describe('placeBeetles', () => {
   describe('for an item with look-ups and AI questions', () => {
@@ -55,34 +78,58 @@ describe('placeBeetles', () => {
       createBranch('vol2-limb', 1),
     ]);
 
-    it('shares the beetles between the item’s branches that have grown far enough to hold one', () => {
+    it('shares the beetles between the item’s branches that have room for one', () => {
       expect(beetles.map(({ edges }) => edges)).toEqual([
         createBranch('vol1-limb', 1).edges,
-        createBranch('vol1-twig-0', 0.5).edges,
         createBranch('vol1-limb', 1).edges,
+        createBranch('vol1-twig-0', 0.5).edges,
       ]);
     });
 
     it('keeps each beetle off the ungrown end of its branch', () => {
-      expect(beetles[1].range).toEqual([0.12, 0.42]);
+      expect(beetles[2].range).toEqual([0.12, 0.42]);
     });
   });
 
-  describe('for an item whose branches have only just started growing', () => {
-    const beetles = placeBeetles(createVolume({ lookups: 2, aiQuestions: 1 }), [
-      createBranch('vol1-limb', 0.15),
-      createBranch('vol1-twig-0', 0.05),
+  describe('for an item with more beetles than its branches have room for', () => {
+    const limb = createLimb(0.5);
+    const trunk = createTrunk(1);
+    const beetles = placeBeetles(createVolume({ lookups: 3, aiQuestions: 2 }), [
+      trunk,
+      limb,
     ]);
+    const onTrunk = beetles.filter(({ edges }) => edges === trunk.edges);
 
-    it('puts all of its beetles on its longest branch', () => {
-      expect(beetles.map(({ edges }) => edges)).toEqual(
-        Array(3).fill(createBranch('vol1-limb', 0.15).edges),
+    it('fills the branch', () => {
+      expect(beetles.filter(({ edges }) => edges === limb.edges)).toHaveLength(
+        2,
       );
     });
 
-    it('keeps the beetles within the grown part of the branch', () => {
-      expect(beetles[0].range[0]).toBeCloseTo(0.045);
-      expect(beetles[0].range[1]).toBeCloseTo(0.12);
+    it('sends the rest to climb the trunk', () => {
+      expect(onTrunk.map(({ colour }) => colour)).toEqual([
+        'red',
+        'yellow',
+        'red',
+      ]);
+    });
+
+    it('keeps the climbers just below where the branch joins the trunk', () => {
+      expect(onTrunk[0].range).toEqual([0.5 - 36 / 200, 0.5]);
+    });
+  });
+
+  describe('for an item whose branch is too short to hold any beetles', () => {
+    const trunk = createTrunk(1);
+    const beetles = placeBeetles(createVolume({ lookups: 2, aiQuestions: 1 }), [
+      trunk,
+      createLimb(0.15),
+    ]);
+
+    it('puts all of its beetles on the trunk', () => {
+      expect(beetles.map(({ edges }) => edges)).toEqual(
+        Array(3).fill(trunk.edges),
+      );
     });
   });
 });

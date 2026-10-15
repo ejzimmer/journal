@@ -14,11 +14,19 @@ export type BeetleSpot = {
   forward: boolean;
 };
 
-const MIN_PERCH_AMOUNT = 0.2;
 const BASE_GAP = 0.12;
 const TIP_GAP = 0.08;
-const SHORT_BASE_GAP = 0.3;
-const SHORT_TIP_GAP = 0.2;
+const BEETLE_ROOM = 12;
+const TRUNK_FOOT = 0.02;
+
+type BeetleHost = Comprehension & { id: string };
+
+type Perch = {
+  shape: GrownShape;
+  length: number;
+  range: [number, number];
+  colours: LadyBeetleColour[];
+};
 
 function interleaveColours(reds: number, yellows: number) {
   return Array.from({ length: Math.max(reds, yellows) }, (_, index) => [
@@ -27,47 +35,111 @@ function interleaveColours(reds: number, yellows: number) {
   ]).flat();
 }
 
-type BeetleHost = Comprehension & { id: string };
-
-function findPerches(host: BeetleHost, shapes: GrownShape[]) {
-  const hostShapes = shapes.filter(({ key }) => key.startsWith(`${host.id}-`));
-  const roomyShapes = hostShapes.filter(
-    ({ amount }) => amount > MIN_PERCH_AMOUNT,
-  );
-  if (roomyShapes.length || !hostShapes.length) return roomyShapes;
-  return [hostShapes.reduce((a, b) => (b.amount > a.amount ? b : a))];
+function createPerch(shape: GrownShape): Perch {
+  return {
+    shape,
+    length: measureBranchLength(shape.edges),
+    range: [BASE_GAP, shape.amount - TIP_GAP],
+    colours: [],
+  };
 }
 
-function measurePerchRange(amount: number): [number, number] {
-  return [
-    Math.min(BASE_GAP, amount * SHORT_BASE_GAP),
-    amount - Math.min(TIP_GAP, amount * SHORT_TIP_GAP),
-  ];
+function measureRoom({ length, range: [min, max] }: Perch) {
+  return Math.max(0, Math.floor(((max - min) * length) / BEETLE_ROOM));
+}
+
+function shareColours(perches: Perch[], colours: LadyBeetleColour[]) {
+  const overflow: LadyBeetleColour[] = [];
+  let next = 0;
+  colours.forEach((colour) => {
+    const withRoom = perches.filter(
+      (perch) => perch.colours.length < measureRoom(perch),
+    );
+    if (!withRoom.length) {
+      overflow.push(colour);
+      return;
+    }
+    withRoom[next % withRoom.length].colours.push(colour);
+    next++;
+  });
+  return overflow;
+}
+
+function findMiddle({ left, right }: EdgeSample) {
+  return { x: (left.x + right.x) / 2, y: (left.y + right.y) / 2 };
+}
+
+function findNearestAt(edges: EdgeSample[], target: EdgeSample) {
+  const { x, y } = findMiddle(target);
+  const measureDistance = (sample: EdgeSample) => {
+    const middle = findMiddle(sample);
+    return Math.hypot(middle.x - x, middle.y - y);
+  };
+  return edges.reduce((nearest, sample) =>
+    measureDistance(sample) < measureDistance(nearest) ? sample : nearest,
+  ).at;
+}
+
+function createTrunkPerch(
+  trunk: GrownShape,
+  branch: GrownShape,
+  colours: LadyBeetleColour[],
+): Perch {
+  const length = measureBranchLength(trunk.edges);
+  const top = Math.min(
+    trunk.amount,
+    findNearestAt(trunk.edges, branch.edges[0]),
+  );
+  const bottom = Math.max(
+    TRUNK_FOOT,
+    top - (colours.length * BEETLE_ROOM) / length,
+  );
+  return { shape: trunk, length, range: [bottom, top], colours };
+}
+
+function placeOnPerch(
+  { shape, length, range, colours }: Perch,
+  keyPrefix: string,
+): BeetleSpot[] {
+  const [min, max] = range;
+  return colours.map((colour, slot) => ({
+    key: `${keyPrefix}-${slot}`,
+    colour,
+    edges: shape.edges,
+    length,
+    range,
+    at: min + ((max - min) * (slot + 0.5)) / colours.length,
+    forward: slot % 2 === 0,
+  }));
 }
 
 export function placeBeetles(
   hosts: BeetleHost[],
   shapes: GrownShape[],
 ): BeetleSpot[] {
+  const trunk = shapes.find(({ key }) => key === 'trunk');
   return hosts.flatMap((host) => {
-    const perches = findPerches(host, shapes);
-    if (!perches.length) return [];
-    const colours = interleaveColours(host.lookups, host.aiQuestions);
-    const slots = Math.ceil(colours.length / perches.length);
+    const hostShapes = shapes.filter(({ key }) =>
+      key.startsWith(`${host.id}-`),
+    );
+    if (!hostShapes.length) return [];
+    const perches = hostShapes.map(createPerch);
+    const overflow = shareColours(
+      perches,
+      interleaveColours(host.lookups, host.aiQuestions),
+    );
+    const trunkPerches =
+      trunk && overflow.length
+        ? [createTrunkPerch(trunk, hostShapes[0], overflow)]
+        : [];
 
-    return colours.map((colour, index) => {
-      const perch = perches[index % perches.length];
-      const slot = Math.floor(index / perches.length);
-      const range = measurePerchRange(perch.amount);
-      return {
-        key: `${host.id}-beetle-${index}`,
-        colour,
-        edges: perch.edges,
-        length: measureBranchLength(perch.edges),
-        range,
-        at: range[0] + ((range[1] - range[0]) * (slot + 0.5)) / slots,
-        forward: (index + slot) % 2 === 0,
-      };
-    });
+    return [
+      ...perches.flatMap((perch) =>
+        placeOnPerch(perch, `${perch.shape.key}-beetle`),
+      ),
+      ...trunkPerches.flatMap((perch) =>
+        placeOnPerch(perch, `${host.id}-trunk-beetle`),
+      ),
+    ];
   });
 }
