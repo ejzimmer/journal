@@ -66,15 +66,13 @@ export function DeadHangCard() {
         >
           <g
             data-testid="session-ring"
-            {...createTooltipHandlers(
-              `Today: ${sessionTotal}/${SESSION_GOAL_SECONDS}`,
-            )}
+            {...createTooltipHandlers(`${sessionTotal}s`)}
           >
             <SessionRing hangs={hangs} liveHangSeconds={liveHangSeconds} />
           </g>
           <g
             data-testid="best-hang-ring"
-            {...createTooltipHandlers(`Best: ${bestHang}/${HANG_GOAL_SECONDS}`)}
+            {...createTooltipHandlers(`${bestHang}s`)}
           >
             <BestHangRing
               bestHang={bestHang}
