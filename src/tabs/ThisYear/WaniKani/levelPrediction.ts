@@ -25,6 +25,10 @@ function calculatePercentile(sortedValues: number[], fraction: number) {
   );
 }
 
+function calculateAverage(values: number[]) {
+  return values.reduce((sum, value) => sum + value, 0) / values.length;
+}
+
 export function removeOutliers(values: number[]) {
   if (values.length < 4) return values;
 
@@ -50,12 +54,14 @@ export function predictDaysToFinish(
   const typicalDurations = removeOutliers(levelDurations);
   if (typicalDurations.length === 0) return undefined;
 
-  const averageDuration =
-    typicalDurations.reduce((sum, days) => sum + days, 0) /
-    typicalDurations.length;
   const daysOnCurrentLevel = current?.unlockedAt
     ? measureDays(current.unlockedAt, Temporal.Now.instant())
     : 0;
+  const completedAverage = calculateAverage(typicalDurations);
+  const averageDuration =
+    daysOnCurrentLevel > completedAverage
+      ? calculateAverage([...typicalDurations, daysOnCurrentLevel])
+      : completedAverage;
   const daysLeftOnCurrentLevel = Math.max(
     0,
     averageDuration - daysOnCurrentLevel,
