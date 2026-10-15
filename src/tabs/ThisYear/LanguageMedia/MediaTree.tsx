@@ -34,7 +34,12 @@ export function MediaTree({ series }: { series: PrintSeries }) {
   return (
     <div
       className="media-tree"
-      style={{ '--ground': `${y + height}px` } as CSSProperties}
+      style={
+        {
+          '--ground': `${y + height}px`,
+          '--tree-width': `${width}px`,
+        } as CSSProperties
+      }
     >
       <svg
         role="img"
