@@ -67,4 +67,22 @@ describe('placeBeetles', () => {
       expect(beetles[1].range).toEqual([0.12, 0.42]);
     });
   });
+
+  describe('for an item whose branches have only just started growing', () => {
+    const beetles = placeBeetles(createVolume({ lookups: 2, aiQuestions: 1 }), [
+      createBranch('vol1-limb', 0.15),
+      createBranch('vol1-twig-0', 0.05),
+    ]);
+
+    it('puts all of its beetles on its longest branch', () => {
+      expect(beetles.map(({ edges }) => edges)).toEqual(
+        Array(3).fill(createBranch('vol1-limb', 0.15).edges),
+      );
+    });
+
+    it('keeps the beetles within the grown part of the branch', () => {
+      expect(beetles[0].range[0]).toBeCloseTo(0.045);
+      expect(beetles[0].range[1]).toBeCloseTo(0.12);
+    });
+  });
 });
