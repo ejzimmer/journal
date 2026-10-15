@@ -181,9 +181,7 @@ describe('DeadHangCard', () => {
 
       await user.hover(screen.getByTestId('session-ring'));
 
-      expect(screen.getByRole('tooltip')).toHaveTextContent(
-        'Today: 21 of 60 seconds',
-      );
+      expect(screen.getByRole('tooltip')).toHaveTextContent('Today: 21/60');
     });
 
     it('shows the best hang on the inner ring', async () => {
@@ -192,9 +190,7 @@ describe('DeadHangCard', () => {
 
       await user.hover(screen.getByTestId('best-hang-ring'));
 
-      expect(screen.getByRole('tooltip')).toHaveTextContent(
-        'Best hang: 25 seconds',
-      );
+      expect(screen.getByRole('tooltip')).toHaveTextContent('Best: 25/30');
     });
 
     it('hides the tooltip when the pointer moves away', async () => {
