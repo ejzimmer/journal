@@ -1,9 +1,8 @@
-import { ComprehensionCounters } from './ComprehensionCounters';
-import { ComprehensionForm } from './ComprehensionForm';
 import { DeleteButton } from './DeleteButton';
 import { EditVolumeForm } from './EditVolumeForm';
 import { useLanguageMediaStorage } from './LanguageMediaStorageContext';
 import { StatusSelect } from './StatusSelect';
+import { sumReadings } from './sumReadings';
 import { formatComprehension, formatStatus, formatVolumeName } from './format';
 import { ItemPath, Volume } from './types';
 
@@ -23,7 +22,7 @@ export function VolumeDetails({
     <>
       {name}
       {volume.pages !== undefined && ` (${volume.pages} pages)`}
-      {formatStatus(volume.status)}: {formatComprehension(volume)}
+      {formatStatus(volume.status)}: {formatComprehension(sumReadings(volume))}
       {volume.pages === undefined && (
         <StatusSelect
           name={name}
@@ -31,16 +30,6 @@ export function VolumeDetails({
           onChange={(status) => updateItem(path, { status })}
         />
       )}
-      <ComprehensionCounters
-        name={name}
-        comprehension={volume}
-        onChange={(changes) => updateItem(path, changes)}
-      />
-      <ComprehensionForm
-        name={name}
-        comprehension={volume}
-        onChange={(changes) => updateItem(path, changes)}
-      />
       <EditVolumeForm
         name={name}
         volume={volume}
