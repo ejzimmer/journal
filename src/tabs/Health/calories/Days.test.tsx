@@ -90,4 +90,34 @@ describe('Days', () => {
 
     expect(screen.queryByRole('img')).not.toBeInTheDocument();
   });
+
+  describe('dot colours', () => {
+    const renderDiffs = (diffs: number[]) => {
+      const days = mockDays
+        .slice(0, diffs.length)
+        .map((day, index) => ({ ...day, diff: diffs[index] }));
+      render(<Days days={days} onSelectDay={jest.fn()} />);
+      return screen.getAllByRole('listitem');
+    };
+
+    describe('on a deficit day', () => {
+      it('shows 370 or more as the darkest green', () => {
+        const [at, beyond] = renderDiffs([370, 900]);
+        expect(at).toHaveStyle({ '--day-colour': 'lch(78% 230 104)' });
+        expect(beyond).toHaveStyle({ '--day-colour': 'lch(78% 230 104)' });
+      });
+
+      it('scales lighter deficits against 370', () => {
+        const [half] = renderDiffs([185, 900]);
+        expect(half).toHaveStyle({ '--day-colour': 'lch(89% 115 104)' });
+      });
+    });
+
+    describe('on a surplus day', () => {
+      it('scales against the largest difference shown', () => {
+        const [half] = renderDiffs([-450, 900]);
+        expect(half).toHaveStyle({ '--day-colour': 'lch(89% 115 77)' });
+      });
+    });
+  });
 });

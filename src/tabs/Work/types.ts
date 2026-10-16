@@ -54,7 +54,14 @@ const idFor = (description: string) =>
   `standard-${description.toLowerCase().replace(/\s+/g, '-')}`;
 
 export const STANDARD_CHECKLIST = new Map(
-  ['test', 'review', 'PR', 'QA', 'build', 'mark PR ready', 'approvals'].map(
-    (description) => [idFor(description), description],
-  ),
+  [
+    'test',
+    'review',
+    'PR',
+    'QA',
+    'build',
+    'mark PR ready',
+    'approvals',
+    'FG',
+  ].map((description) => [idFor(description), description]),
 );

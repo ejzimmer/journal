@@ -219,11 +219,16 @@
   border: 2px solid var(--body-colour);
   border-radius: 6px;
   background: hsl(33 72% 72%);
+  text-align: center;
   white-space: nowrap;
 }
 
 .sign-legs {
-  position: relative;
+  display: grid;
+
+  > * {
+    grid-area: 1 / 1;
+  }
 }
 
 .sign-posts {
@@ -250,10 +255,9 @@
 }
 
 .sign-hangers {
-  position: absolute;
-  inset-block-start: 0;
-  inset-inline: 0;
   display: flex;
+  align-items: flex-start;
+  padding-inline: 1em;
   justify-content: center;
   gap: 18px;
 }
