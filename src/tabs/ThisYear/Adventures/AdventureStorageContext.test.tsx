@@ -278,28 +278,24 @@ describe('AdventureStorageContext', () => {
         expect(storage.addMode(newRunningMode)).toBe('running');
       });
     });
-    describe('deleting a mode', () => {
-      it('removes it from the modes path', () => {
-        const deleteItem = jest.fn();
-        const storage = createAdventureStorage({ deleteItem });
+    it('deletes a mode', () => {
+      const deleteItem = jest.fn();
+      const storage = createAdventureStorage({ deleteItem });
 
-        storage.deleteMode(running);
+      storage.deleteMode(running);
 
-        expect(deleteItem).toHaveBeenCalledWith(ADVENTURE_MODES_PATH, running);
-      });
+      expect(deleteItem).toHaveBeenCalledWith(ADVENTURE_MODES_PATH, running);
     });
 
-    describe('updating a mode', () => {
-      it('saves it to the modes path', () => {
-        const updateItem = jest.fn();
-        const storage = createAdventureStorage({ updateItem });
+    it('updates a mode', () => {
+      const updateItem = jest.fn();
+      const storage = createAdventureStorage({ updateItem });
 
-        storage.updateMode({ ...running, name: 'Jogging' });
+      storage.updateMode({ ...running, name: 'Jogging' });
 
-        expect(updateItem).toHaveBeenCalledWith(ADVENTURE_MODES_PATH, {
-          ...running,
-          name: 'Jogging',
-        });
+      expect(updateItem).toHaveBeenCalledWith(ADVENTURE_MODES_PATH, {
+        ...running,
+        name: 'Jogging',
       });
     });
   });
