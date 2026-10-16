@@ -1,48 +1,56 @@
-import { FormEvent, useState } from 'react';
-import { PlusIcon } from '../../../shared/icons/Plus';
+import { FormEvent } from 'react';
+import { useModal } from '../../../shared/controls/Modal';
+import { TickIcon } from '../../../shared/icons/Tick';
+import { CountField } from './CountField';
 import { readNumber, readText } from './fields';
 import { useLanguageMediaStorage } from './LanguageMediaStorageContext';
 import { findNextNumber, NO_COMPREHENSION } from './newItems';
-import { NumberField } from './NumberField';
-import { TextField } from './TextField';
 import { PrintSeries } from './types';
+import { VolumeNameField } from './VolumeNameField';
+
+import './AddMediaForm.css';
 
 export function AddVolumeForm({ series }: { series: PrintSeries }) {
   const { addItem } = useLanguageMediaStorage();
-  const [isOpen, setIsOpen] = useState(false);
+  const { closeModal } = useModal();
+  const number = findNextNumber(series.volumes);
 
   const addVolume = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
     addItem([series.id, 'volumes'], {
-      number: findNextNumber(series.volumes),
+      number,
       name: readText(data, 'name'),
       pages: readNumber(data, 'pages'),
       ...NO_COMPREHENSION,
     });
-    setIsOpen(false);
+    closeModal();
   };
 
   return (
-    <>
-      <button
-        type="button"
-        className="add-volume"
-        aria-label={`Add a volume to ${series.name}`}
-        aria-expanded={isOpen}
-        onClick={() => setIsOpen((wasOpen) => !wasOpen)}
-      >
-        <PlusIcon width="16px" />
-      </button>
-      {isOpen && (
-        <form aria-label="Add volume" onSubmit={addVolume}>
-          {series.type === 'book' && (
-            <TextField label="Name" name="name" isRequired />
-          )}
-          <NumberField label="Pages" name="pages" isRequired />
-          <button type="submit">Add volume</button>
-        </form>
-      )}
-    </>
+    <form
+      className="add-volume-form"
+      aria-label="Add volume"
+      onSubmit={addVolume}
+    >
+      <h2 className="progress-update-title">
+        <span>
+          {series.name} <span className="new-volume-number">{number}</span>
+        </span>
+      </h2>
+      <div className="add-media-body">
+        {series.type === 'book' && (
+          <VolumeNameField name="name" label="Name" isRequired />
+        )}
+        <CountField name="pages" label="Pages" icon="📖" isRequired />
+        <button
+          type="submit"
+          className="progress-update-save"
+          aria-label="Add volume"
+        >
+          <TickIcon width="20px" strokeWidth="2.6" />
+        </button>
+      </div>
+    </form>
   );
 }

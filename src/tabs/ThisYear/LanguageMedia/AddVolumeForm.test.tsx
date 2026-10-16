@@ -1,5 +1,6 @@
 import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { ModalContext } from '../../../shared/controls/Modal';
 import { AddVolumeForm } from './AddVolumeForm';
 import { renderWithLanguageMediaStorage } from './languageMediaStorageTestUtils';
 import { yotsuba } from './testMedia';
@@ -13,27 +14,34 @@ const miserables: PrintSeries = {
   volumes: {},
 };
 
-const renderForm = (series: PrintSeries) => ({
-  user: userEvent.setup(),
-  ...renderWithLanguageMediaStorage(<AddVolumeForm series={series} />),
-});
-
-const openForm = async (
-  user: ReturnType<typeof userEvent.setup>,
-  series: PrintSeries,
-) => {
-  await user.click(
-    screen.getByRole('button', { name: `Add a volume to ${series.name}` }),
-  );
-  return screen.getByRole('form', { name: 'Add volume' });
+const renderForm = (series: PrintSeries) => {
+  const closeModal = jest.fn();
+  return {
+    user: userEvent.setup(),
+    closeModal,
+    ...renderWithLanguageMediaStorage(
+      <ModalContext.Provider value={{ closeModal }}>
+        <AddVolumeForm series={series} />
+      </ModalContext.Provider>,
+    ),
+  };
 };
 
 describe('AddVolumeForm', () => {
+  describe('the title', () => {
+    it('shows the series and the new volume number', () => {
+      renderForm(yotsuba);
+
+      expect(
+        screen.getByRole('heading', { name: 'よつばと！ 3' }),
+      ).toBeInTheDocument();
+    });
+  });
+
   describe('for manga', () => {
     describe('with pages', () => {
       it('adds the next volume to the series', async () => {
         const { user, storageContext } = renderForm(yotsuba);
-        await openForm(user, yotsuba);
 
         await user.type(
           screen.getByRole('spinbutton', { name: 'Pages' }),
@@ -48,8 +56,7 @@ describe('AddVolumeForm', () => {
       });
 
       it('closes the form', async () => {
-        const { user } = renderForm(yotsuba);
-        const form = await openForm(user, yotsuba);
+        const { user, closeModal } = renderForm(yotsuba);
 
         await user.type(
           screen.getByRole('spinbutton', { name: 'Pages' }),
@@ -57,14 +64,13 @@ describe('AddVolumeForm', () => {
         );
         await user.click(screen.getByRole('button', { name: 'Add volume' }));
 
-        expect(form).not.toBeInTheDocument();
+        expect(closeModal).toHaveBeenCalled();
       });
     });
 
     describe('without pages', () => {
       it('does not add the volume', async () => {
         const { user, storageContext } = renderForm(yotsuba);
-        await openForm(user, yotsuba);
 
         await user.click(screen.getByRole('button', { name: 'Add volume' }));
 
@@ -77,7 +83,6 @@ describe('AddVolumeForm', () => {
     describe('with a name and pages', () => {
       it('adds the volume with its name', async () => {
         const { user, storageContext } = renderForm(miserables);
-        await openForm(user, miserables);
 
         await user.type(
           screen.getByRole('textbox', { name: 'Name' }),
@@ -105,7 +110,6 @@ describe('AddVolumeForm', () => {
     describe('without a name', () => {
       it('does not add the volume', async () => {
         const { user, storageContext } = renderForm(miserables);
-        await openForm(user, miserables);
 
         await user.type(
           screen.getByRole('spinbutton', { name: 'Pages' }),
