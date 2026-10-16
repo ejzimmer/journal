@@ -268,26 +268,24 @@ describe('AddAdventureForm', () => {
   });
 
   describe('deleting a mode', () => {
-    describe('when an adventure uses one of the modes', () => {
-      it('only offers to delete the unused modes', async () => {
-        await openForm(
-          [running, cycling],
-          [
-            {
-              id: 'parkrun',
-              description: 'Plenty Gorge parkrun',
-              modeId: 'running',
-              isDone: false,
-            },
-          ],
-        );
+    it('shows the delete button on unused modes', async () => {
+      await openForm(
+        [running, cycling],
+        [
+          {
+            id: 'parkrun',
+            description: 'Plenty Gorge parkrun',
+            modeId: 'running',
+            isDone: false,
+          },
+        ],
+      );
 
-        expect(
-          screen
-            .getAllByRole('button', { name: /^Delete/ })
-            .map((button) => button.getAttribute('aria-label')),
-        ).toEqual(['Delete Cycling']);
-      });
+      expect(
+        screen
+          .getAllByRole('button', { name: /^Delete/ })
+          .map((button) => button.getAttribute('aria-label')),
+      ).toEqual(['Delete Cycling']);
     });
 
     describe('when the bin is clicked', () => {
