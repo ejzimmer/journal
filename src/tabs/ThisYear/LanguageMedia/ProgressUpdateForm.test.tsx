@@ -23,26 +23,59 @@ const renderForm = (series: PrintSeries = yotsuba) => {
 
 describe('ProgressUpdateForm', () => {
   describe('the title', () => {
-    describe('for an unnamed volume', () => {
-      it('shows the series and volume number', () => {
-        renderForm();
+    describe('for a manga', () => {
+      describe('with an unnamed volume', () => {
+        it('shows the series and volume number', () => {
+          renderForm();
 
-        expect(
-          screen.getByRole('heading', { name: 'よつばと！ 1' }),
-        ).toBeInTheDocument();
+          expect(
+            screen.getByRole('heading', { name: 'よつばと！ 1' }),
+          ).toBeInTheDocument();
+        });
+      });
+
+      describe('with a named volume', () => {
+        it('adds the volume name', () => {
+          renderForm({
+            ...yotsuba,
+            volumes: { vol1: { ...volume, name: 'Cosette' } },
+          });
+
+          expect(
+            screen.getByRole('heading', { name: 'よつばと！ 1: Cosette' }),
+          ).toBeInTheDocument();
+        });
       });
     });
 
-    describe('for a named volume', () => {
-      it('adds the volume name', () => {
-        renderForm({
-          ...yotsuba,
-          volumes: { vol1: { ...volume, name: 'Cosette' } },
-        });
+    describe('for a book', () => {
+      const archives: PrintSeries = {
+        ...yotsuba,
+        type: 'book',
+        name: 'Les Archives de Roshar',
+      };
 
-        expect(
-          screen.getByRole('heading', { name: 'よつばと！ 1: Cosette' }),
-        ).toBeInTheDocument();
+      describe('with an unnamed volume', () => {
+        it('shows the series and volume number', () => {
+          renderForm(archives);
+
+          expect(
+            screen.getByRole('heading', { name: 'Les Archives de Roshar 1' }),
+          ).toBeInTheDocument();
+        });
+      });
+
+      describe('with a named volume', () => {
+        it('shows only the volume name', () => {
+          renderForm({
+            ...archives,
+            volumes: { vol1: { ...volume, name: 'Le Livre des Radieux 1' } },
+          });
+
+          expect(
+            screen.getByRole('heading', { name: 'Le Livre des Radieux 1' }),
+          ).toBeInTheDocument();
+        });
       });
     });
   });
