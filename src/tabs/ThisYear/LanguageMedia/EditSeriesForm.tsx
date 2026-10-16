@@ -12,7 +12,7 @@ import { Language, LANGUAGES, PrintSeries } from './types';
 
 import './ProgressUpdateForm.css';
 import './AddMediaForm.css';
-import './EditSeriesForm.css';
+import './GardenEditForms.css';
 
 export function EditSeriesForm({ series }: { series: PrintSeries }) {
   const { updateItem } = useLanguageMediaStorage();
@@ -40,7 +40,7 @@ export function EditSeriesForm({ series }: { series: PrintSeries }) {
 
   return (
     <form
-      className="edit-series-form"
+      className="edit-media-form"
       aria-label={`Edit ${series.name}`}
       onSubmit={saveSeries}
     >

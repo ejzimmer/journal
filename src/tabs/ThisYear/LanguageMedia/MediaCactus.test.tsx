@@ -41,4 +41,17 @@ describe('MediaCactus', () => {
       });
     });
   });
+
+  describe('clicking the edit sign', () => {
+    it('opens a form to edit the channel', async () => {
+      const user = userEvent.setup();
+      renderWithLanguageMediaStorage(<MediaCactus channel={hugo} />);
+
+      await user.click(screen.getByRole('button', { name: 'Edit' }));
+
+      expect(
+        screen.getByRole('form', { name: 'Edit HugoDécrypte' }),
+      ).toBeInTheDocument();
+    });
+  });
 });
