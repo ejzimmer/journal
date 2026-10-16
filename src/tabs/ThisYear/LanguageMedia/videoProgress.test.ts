@@ -10,9 +10,31 @@ const video: Video = {
 };
 
 describe('readVideoProgress', () => {
+  describe('when nothing says how far I got', () => {
+    it('assumes I watched all of it', () => {
+      expect(readVideoProgress(video)).toBe(1);
+    });
+
+    describe('and the video has no length', () => {
+      it('assumes I watched all of it', () => {
+        expect(
+          readVideoProgress({ ...video, lengthInSeconds: undefined }),
+        ).toBe(1);
+      });
+    });
+  });
+
   describe('when the video is marked done', () => {
-    it('has finished it', () => {
-      expect(readVideoProgress({ ...video, status: 'done' })).toBe(1);
+    it('has finished it, whatever time it was up to', () => {
+      expect(
+        readVideoProgress({ ...video, status: 'done', upToInSeconds: 300 }),
+      ).toBe(1);
+    });
+  });
+
+  describe('when the video is marked not started', () => {
+    it('has not watched any of it', () => {
+      expect(readVideoProgress({ ...video, status: 'not-started' })).toBe(0);
     });
   });
 
@@ -20,23 +42,23 @@ describe('readVideoProgress', () => {
     it('has watched up to that point', () => {
       expect(readVideoProgress({ ...video, upToInSeconds: 300 })).toBe(0.25);
     });
-  });
 
-  describe('when I have not started the video', () => {
-    it('has not watched any of it', () => {
-      expect(readVideoProgress(video)).toBe(0);
+    describe('and the time is past the end', () => {
+      it('stops at the whole video', () => {
+        expect(readVideoProgress({ ...video, upToInSeconds: 1500 })).toBe(1);
+      });
     });
-  });
 
-  describe('when the video has no length', () => {
-    it('cannot tell how far through I am', () => {
-      expect(
-        readVideoProgress({
-          ...video,
-          lengthInSeconds: undefined,
-          upToInSeconds: 300,
-        }),
-      ).toBe(0);
+    describe('and the video has no length', () => {
+      it('assumes I watched all of it', () => {
+        expect(
+          readVideoProgress({
+            ...video,
+            lengthInSeconds: undefined,
+            upToInSeconds: 300,
+          }),
+        ).toBe(1);
+      });
     });
   });
 });

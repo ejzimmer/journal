@@ -6,6 +6,9 @@ export function readVideoProgress({
   upToInSeconds,
 }: Video) {
   if (status === 'done') return 1;
-  if (!lengthInSeconds || !upToInSeconds) return 0;
-  return Math.min(1, upToInSeconds / lengthInSeconds);
+  if (status === 'not-started') return 0;
+  if (lengthInSeconds && upToInSeconds !== undefined) {
+    return Math.min(1, upToInSeconds / lengthInSeconds);
+  }
+  return 1;
 }
