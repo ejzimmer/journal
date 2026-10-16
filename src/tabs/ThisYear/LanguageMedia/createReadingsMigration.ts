@@ -1,5 +1,6 @@
 import { readLocalDate } from './comprehensionRecords';
 import { findUpToAt } from './findUpToAt';
+import { IMPORT_UPDATE_KEY } from './createImportUpdateRekey';
 import {
   Comprehension,
   FieldChange,
@@ -13,9 +14,9 @@ import {
 } from './types';
 
 type LegacyVolume = Volume & Partial<Comprehension>;
+type MigratedReading = Omit<Reading, 'id'>;
 
 const LEGACY_FIELDS = ['lookups', 'aiQuestions', 'understood'] as const;
-const IMPORT_UPDATE_KEY = 'migration';
 
 const isLegacyVolume = (volume: LegacyVolume) =>
   LEGACY_FIELDS.some((field) => field in volume);
@@ -71,7 +72,7 @@ function createDayReading(
   volume: Volume,
   date: string,
   updates: ItemUpdate[],
-): Reading {
+): MigratedReading {
   const lastAt = updates.at(-1)!.at;
   const understood = updates.findLast(
     ({ changes }) => changes.understood?.to !== undefined,
@@ -85,7 +86,6 @@ function createDayReading(
       ),
     );
   return {
-    id: `migrated-${date}`,
     createdAt: lastAt,
     lookups: sumIncreases('lookups'),
     aiQuestions: sumIncreases('aiQuestions'),
@@ -97,9 +97,9 @@ function createDayReading(
 function createRemainderReading(
   series: PrintSeries,
   volume: LegacyVolume,
-  dayReadings: Reading[],
+  dayReadings: MigratedReading[],
   at: string,
-): Reading | undefined {
+): MigratedReading | undefined {
   const sum = (field: 'lookups' | 'aiQuestions') =>
     dayReadings.reduce((total, reading) => total + reading[field], 0);
   const lookups = Math.max(0, (volume.lookups ?? 0) - sum('lookups'));
@@ -111,7 +111,6 @@ function createRemainderReading(
     volume.understood !== undefined && dayReadings.length === 0;
   if (!lookups && !aiQuestions && !hasOnlyUnderstood) return undefined;
   return {
-    id: 'migrated-remainder',
     createdAt: at,
     lookups,
     aiQuestions,
@@ -119,7 +118,7 @@ function createRemainderReading(
   };
 }
 
-function fillUnderstood(readings: Reading[], fallback?: number) {
+function fillUnderstood(readings: MigratedReading[], fallback?: number) {
   const firstKnown =
     readings.find(({ understood }) => understood !== undefined)?.understood ??
     fallback;
@@ -137,6 +136,7 @@ function migrateVolume(
   volume: LegacyVolume,
   path: string,
   at: string,
+  createId: () => string,
 ) {
   const dayReadings = [...groupUpdatesByDate(series, volume)].map(
     ([date, updates]) => createDayReading(series, volume, date, updates),
@@ -147,7 +147,10 @@ function migrateVolume(
     volume.understood,
   );
   return [
-    ...readings.map((reading) => [`${path}/readings/${reading.id}`, reading]),
+    ...readings.map((reading) => {
+      const id = createId();
+      return [`${path}/readings/${id}`, { id, ...reading }];
+    }),
     ...LEGACY_FIELDS.map((field) => [`${path}/${field}`, null]),
   ];
 }
@@ -155,6 +158,7 @@ function migrateVolume(
 export function createReadingsMigration(
   storedMediaByYear: StoredMediaByYear = {},
   at: string,
+  createId: () => string,
 ): Record<string, unknown> {
   return Object.fromEntries(
     Object.entries(storedMediaByYear).flatMap(([year, mediaById]) =>
@@ -169,6 +173,7 @@ export function createReadingsMigration(
                 volume,
                 `${getLanguageMediaPath(Number(year))}/${series.id}/volumes/${volume.id}`,
                 at,
+                createId,
               ),
             ),
         ),

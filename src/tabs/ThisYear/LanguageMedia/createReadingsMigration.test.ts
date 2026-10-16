@@ -22,6 +22,11 @@ const createStore = (
     },
   }) as unknown as StoredMediaByYear;
 
+const migrate = (store: StoredMediaByYear) => {
+  let count = 0;
+  return createReadingsMigration(store, NOW, () => `id-${++count}`);
+};
+
 const upToUpdate = (at: string, page: number): ItemUpdate => ({
   at,
   changes: { upTo: { to: { volume: 1, page } } },
@@ -29,7 +34,7 @@ const upToUpdate = (at: string, page: number): ItemUpdate => ({
 
 describe('createReadingsMigration', () => {
   describe('for a volume with a history of look-ups, AI questions and understood', () => {
-    const migration = createReadingsMigration(
+    const migration = migrate(
       createStore(
         {
           lookups: 3,
@@ -63,20 +68,19 @@ describe('createReadingsMigration', () => {
           p3: upToUpdate('2026-10-04T10:00:00Z', 70),
         },
       ),
-      NOW,
     );
 
     it('turns each day of it into one reading, at the page I was up to by the end of that day', () => {
       expect(migration).toMatchObject({
-        [`${VOLUME_PATH}/readings/migrated-2026-10-03`]: {
-          id: 'migrated-2026-10-03',
+        [`${VOLUME_PATH}/readings/id-1`]: {
+          id: 'id-1',
           createdAt: '2026-10-03T10:00:00Z',
           lookups: 3,
           aiQuestions: 1,
           page: 30,
         },
-        [`${VOLUME_PATH}/readings/migrated-2026-10-04`]: {
-          id: 'migrated-2026-10-04',
+        [`${VOLUME_PATH}/readings/id-2`]: {
+          id: 'id-2',
           createdAt: '2026-10-04T10:00:00Z',
           lookups: 0,
           aiQuestions: 0,
@@ -102,7 +106,7 @@ describe('createReadingsMigration', () => {
   });
 
   describe('for a day when I only saved a page', () => {
-    const migration = createReadingsMigration(
+    const migration = migrate(
       createStore(
         {
           lookups: 1,
@@ -119,12 +123,11 @@ describe('createReadingsMigration', () => {
           p1: upToUpdate('2026-10-05T09:00:00Z', 80),
         },
       ),
-      NOW,
     );
 
     it('makes a reading of just that page', () => {
-      expect(migration[`${VOLUME_PATH}/readings/migrated-2026-10-05`]).toEqual({
-        id: 'migrated-2026-10-05',
+      expect(migration[`${VOLUME_PATH}/readings/id-2`]).toEqual({
+        id: 'id-2',
         createdAt: '2026-10-05T09:00:00Z',
         lookups: 0,
         aiQuestions: 0,
@@ -136,14 +139,14 @@ describe('createReadingsMigration', () => {
       expect(
         Object.keys(migration).filter((path) => path.includes('/readings/')),
       ).toEqual([
-        `${VOLUME_PATH}/readings/migrated-2026-10-03`,
-        `${VOLUME_PATH}/readings/migrated-2026-10-05`,
+        `${VOLUME_PATH}/readings/id-1`,
+        `${VOLUME_PATH}/readings/id-2`,
       ]);
     });
   });
 
   describe('for readings with no understood of their own', () => {
-    const migration = createReadingsMigration(
+    const migration = migrate(
       createStore(
         {
           lookups: 3,
@@ -165,34 +168,32 @@ describe('createReadingsMigration', () => {
           p2: upToUpdate('2026-10-14T09:00:00Z', 90),
         },
       ),
-      NOW,
     );
-    const understoodOn = (date: string) =>
+    const understoodOn = (id: string) =>
       (
-        migration[`${VOLUME_PATH}/readings/migrated-${date}`] as {
+        migration[`${VOLUME_PATH}/readings/${id}`] as {
           understood?: number;
         }
       ).understood;
 
     it('carries the understood from before them forward', () => {
-      expect(understoodOn('2026-10-13')).toBe(85);
-      expect(understoodOn('2026-10-14')).toBe(85);
+      expect(understoodOn('id-3')).toBe(85);
+      expect(understoodOn('id-4')).toBe(85);
     });
 
     it('gives the ones before any understood the first one saved', () => {
-      expect(understoodOn('2026-10-04')).toBe(85);
+      expect(understoodOn('id-1')).toBe(85);
     });
   });
 
   describe('for a volume with totals and no history', () => {
     it('makes one reading of them, now, at the page I am up to', () => {
-      const migration = createReadingsMigration(
+      const migration = migrate(
         createStore({ lookups: 5, aiQuestions: 1, understood: 54 }),
-        NOW,
       );
 
-      expect(migration[`${VOLUME_PATH}/readings/migrated-remainder`]).toEqual({
-        id: 'migrated-remainder',
+      expect(migration[`${VOLUME_PATH}/readings/id-1`]).toEqual({
+        id: 'id-1',
         createdAt: NOW,
         lookups: 5,
         aiQuestions: 1,
@@ -204,7 +205,7 @@ describe('createReadingsMigration', () => {
 
   describe('for a volume with more in its totals than in its history', () => {
     it('makes a reading of the difference', () => {
-      const migration = createReadingsMigration(
+      const migration = migrate(
         createStore({
           lookups: 7,
           aiQuestions: 0,
@@ -215,22 +216,18 @@ describe('createReadingsMigration', () => {
             },
           },
         }),
-        NOW,
       );
 
       expect(migration).toMatchObject({
-        [`${VOLUME_PATH}/readings/migrated-2026-10-03`]: { lookups: 2 },
-        [`${VOLUME_PATH}/readings/migrated-remainder`]: { lookups: 5 },
+        [`${VOLUME_PATH}/readings/id-1`]: { lookups: 2 },
+        [`${VOLUME_PATH}/readings/id-2`]: { lookups: 5 },
       });
     });
   });
 
   describe('for a volume with nothing recorded', () => {
     it('only removes the empty totals', () => {
-      const migration = createReadingsMigration(
-        createStore({ lookups: 0, aiQuestions: 0 }),
-        NOW,
-      );
+      const migration = migrate(createStore({ lookups: 0, aiQuestions: 0 }));
 
       expect(migration).toEqual({
         [`${VOLUME_PATH}/lookups`]: null,
@@ -242,13 +239,12 @@ describe('createReadingsMigration', () => {
 
   describe('once every volume has readings', () => {
     it('has nothing to change', () => {
-      const migration = createReadingsMigration(
+      const migration = migrate(
         createStore({
           readings: {
             r1: { id: 'r1', createdAt: NOW, lookups: 1, aiQuestions: 0 },
           },
         }),
-        NOW,
       );
 
       expect(migration).toEqual({});
