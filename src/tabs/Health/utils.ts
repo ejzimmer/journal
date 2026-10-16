@@ -64,21 +64,39 @@ export const getWeeklyBalance = (balances: Balance[]): Required<Balance>[] => {
     : weeklyBalances;
 };
 
+const OVER_BALANCE = 20000;
+const STEADY_BALANCE = 19000;
+const BAND_SIZE = 1000;
+
 export const getWeekClass = ({
   balance,
-  highestBalance,
   lowestBalance,
 }: {
-  balance: Required<Balance>;
-  highestBalance: number;
+  balance: number;
   lowestBalance: number;
 }) => {
   const className = 'week hovertext-anchor';
-  if (balance.balance === highestBalance) {
-    return `${className} week-highest`;
+  if (balance > OVER_BALANCE) {
+    return `${className} week-over`;
   }
-  if (balance.balance === lowestBalance) {
+  if (balance < lowestBalance + BAND_SIZE) {
     return `${className} week-lowest`;
   }
-  return className;
+  if (balance >= STEADY_BALANCE) {
+    return className;
+  }
+  return `${className} week-between`;
+};
+
+export const getWeekLowestShare = ({
+  balance,
+  lowestBalance,
+}: {
+  balance: number;
+  lowestBalance: number;
+}) => {
+  const lowestBand = Math.floor((lowestBalance + BAND_SIZE) / BAND_SIZE);
+  const steadyBand = STEADY_BALANCE / BAND_SIZE;
+  const band = Math.floor(balance / BAND_SIZE);
+  return (steadyBand - band) / (steadyBand - lowestBand + 1);
 };
