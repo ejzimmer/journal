@@ -1,37 +1,22 @@
-import { KeyboardEvent, FormEvent, ReactNode } from 'react';
+import { FormEvent, KeyboardEvent, useState } from 'react';
 import { useModal } from '../../../shared/controls/Modal';
 import { TickIcon } from '../../../shared/icons/Tick';
 import { CountTile } from './CountTile';
 import { LadyBeetleIcon } from './LadyBeetleIcon';
 import { UnderstoodTile } from './UnderstoodTile';
 import { useLanguageMediaStorage } from './LanguageMediaStorageContext';
-import { parseNumber } from './fields';
-import { FlowerType } from './TreeFlowerIcon';
-import { Comprehension, ItemPath } from './types';
+import { VideoLengthTile } from './VideoLengthTile';
+import { VideoUrlTile } from './VideoUrlTile';
+import { parseNumber, readDuration, readText } from './fields';
+import { YoutubeChannel } from './types';
 
 import './ProgressUpdateForm.css';
 
-type ComprehensionUpdateFormProps = {
-  title: string;
-  name: string;
-  path: ItemPath;
-  comprehension: Comprehension;
-  flowerType: FlowerType;
-  positionTile: ReactNode;
-  onSave: (data: FormData, changes: Comprehension) => void;
-};
-
-export function ComprehensionUpdateForm({
-  title,
-  name,
-  path,
-  comprehension,
-  flowerType,
-  positionTile,
-  onSave,
-}: ComprehensionUpdateFormProps) {
-  const { updateItem } = useLanguageMediaStorage();
+export function WatchedVideoForm({ channel }: { channel: YoutubeChannel }) {
+  const { addItem } = useLanguageMediaStorage();
   const { closeModal } = useModal();
+  const [lookups, setLookups] = useState(0);
+  const [aiQuestions, setAiQuestions] = useState(0);
 
   const submitOnEnter = (event: KeyboardEvent<HTMLFormElement>) => {
     if (event.key === 'Enter' && event.target instanceof HTMLInputElement) {
@@ -40,10 +25,15 @@ export function ComprehensionUpdateForm({
     }
   };
 
-  const saveProgress = (event: FormEvent<HTMLFormElement>) => {
+  const addWatchedVideo = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-    onSave(data, {
+    const lengthInSeconds = readDuration(data, 'length');
+    addItem([channel.id, 'videos'], {
+      url: readText(data, 'url'),
+      lengthInSeconds,
+      upToInSeconds: lengthInSeconds,
+      status: 'done',
       lookups: parseNumber(data, 'lookups') ?? 0,
       aiQuestions: parseNumber(data, 'aiQuestions') ?? 0,
       understood: parseNumber(data, 'understood'),
@@ -54,38 +44,32 @@ export function ComprehensionUpdateForm({
   return (
     <form
       className="progress-update-form"
-      aria-label={`Track ${name}`}
+      aria-label={`Add a watched video to ${channel.name}`}
       onKeyDown={submitOnEnter}
-      onSubmit={saveProgress}
+      onSubmit={addWatchedVideo}
     >
-      <h2 className="progress-update-title">{title}</h2>
+      <h2 className="progress-update-title">{channel.name}</h2>
       <div className="progress-update-body">
         <div className="progress-tiles">
+          <VideoUrlTile />
           <CountTile
             name="lookups"
             label="Looked up"
-            addLabel={`Add a lookup to ${name}`}
+            addLabel="Add a lookup"
             icon={<LadyBeetleIcon colour="red" width="45px" />}
-            count={comprehension.lookups}
-            onAdd={() =>
-              updateItem(path, { lookups: comprehension.lookups + 1 })
-            }
+            count={lookups}
+            onAdd={() => setLookups((count) => count + 1)}
           />
           <CountTile
             name="aiQuestions"
             label="Asked AI"
-            addLabel={`Add an AI question to ${name}`}
+            addLabel="Add an AI question"
             icon={<LadyBeetleIcon colour="yellow" width="45px" />}
-            count={comprehension.aiQuestions}
-            onAdd={() =>
-              updateItem(path, { aiQuestions: comprehension.aiQuestions + 1 })
-            }
+            count={aiQuestions}
+            onAdd={() => setAiQuestions((count) => count + 1)}
           />
-          {positionTile}
-          <UnderstoodTile
-            flowerType={flowerType}
-            understood={comprehension.understood}
-          />
+          <VideoLengthTile />
+          <UnderstoodTile mediaType="youtube" />
         </div>
         <button
           type="submit"

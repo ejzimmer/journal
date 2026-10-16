@@ -249,3 +249,23 @@ dialog.progress-update-modal {
     }
   }
 }
+
+.url-tile {
+  grid-column: 1 / -1;
+
+  input {
+    flex: 1;
+    min-width: 0;
+    padding-block: 4px;
+    border: 0;
+    border-block-end: 2px solid var(--border-colour);
+    font: inherit;
+    color: inherit;
+    background: transparent;
+
+    &:focus-visible {
+      outline: none;
+      border-color: var(--border-colour-hover);
+    }
+  }
+}

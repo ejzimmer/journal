@@ -1,21 +1,22 @@
 import { CSSProperties, useState } from 'react';
-import { FlowerType, TreeFlowerIcon } from './TreeFlowerIcon';
+import { MediaTypeIcon } from './MediaTypeIcon';
+import { MediaType } from './types';
 
 export function UnderstoodTile({
-  flowerType,
+  mediaType,
   understood,
 }: {
-  flowerType: FlowerType;
+  mediaType: MediaType;
   understood?: number;
 }) {
   const [value, setValue] = useState(understood);
 
   return (
     <div
-      className={`progress-tile understood-tile ${flowerType} tooltip-container`}
+      className={`progress-tile understood-tile ${mediaType} tooltip-container`}
     >
       <span className="flower-icon tooltip-anchor">
-        <TreeFlowerIcon flowerType={flowerType} width="44px" />
+        <MediaTypeIcon type={mediaType} width="44px" />
       </span>
       <div className="tooltip" aria-hidden="true">
         Understood
