@@ -214,12 +214,16 @@
 }
 
 .sign-board {
-  height: auto;
+  padding-block: 2px;
   padding-inline: 0.6em;
   border: 2px solid var(--body-colour);
   border-radius: 6px;
   background: hsl(33 72% 72%);
   white-space: nowrap;
+}
+
+.sign-legs {
+  position: relative;
 }
 
 .sign-posts {
@@ -230,7 +234,7 @@
 .sign-post {
   margin-inline: auto;
   width: 6px;
-  height: 1.2em;
+  height: 3.2em;
   border: 2px solid var(--body-colour);
   border-block-start: none;
   background: hsl(28 42% 48%);
@@ -243,4 +247,77 @@
 .sign-post + .sign-post {
   margin-inline-start: auto;
   margin-inline-end: 0;
+}
+
+.sign-hangers {
+  position: absolute;
+  inset-block-start: 0;
+  inset-inline: 0;
+  display: flex;
+  justify-content: center;
+  gap: 18px;
+}
+
+.hanging-sign {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transform-origin: top center;
+
+  &.swinging {
+    animation: swing-sign 1.4s ease-out;
+  }
+}
+
+@keyframes swing-sign {
+  15% {
+    transform: rotate(14deg);
+  }
+  35% {
+    transform: rotate(-10deg);
+  }
+  55% {
+    transform: rotate(6deg);
+  }
+  75% {
+    transform: rotate(-3deg);
+  }
+  90% {
+    transform: rotate(1deg);
+  }
+}
+
+.sign-chains {
+  display: flex;
+  gap: 10px;
+}
+
+.sign-chain {
+  display: block;
+  margin-block-end: -1px;
+  fill: none;
+  stroke: hsl(28 10% 35%);
+  stroke-width: 1.2;
+}
+
+.hanging-board {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 28px;
+  padding: 0;
+  border: 2px solid var(--body-colour);
+  border-radius: 4px;
+  background: hsl(33 72% 72%);
+  color: hsl(28 45% 30%);
+
+  svg {
+    display: block;
+    filter: drop-shadow(0 1px 0 hsl(33 80% 86%));
+  }
+
+  &:hover,
+  &:focus-visible {
+    background: hsl(33 72% 76%);
+  }
 }
