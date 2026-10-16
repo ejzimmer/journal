@@ -78,23 +78,36 @@
       }
 
       .done {
+        position: relative;
         border-start-start-radius: 100px;
         border-end-start-radius: 100px;
-        background-image: linear-gradient(
-          var(--neon-edge),
-          var(--neon) 25%,
-          var(--neon-core) 50%,
-          var(--neon) 75%,
-          var(--neon-edge)
-        );
-        box-shadow:
-          0 0 4px var(--neon),
-          0 0 12px var(--neon),
-          0 0 24px color-mix(in srgb, var(--neon) 50%, transparent);
+        background-color: color-mix(in srgb, var(--neon) 18%, hsl(210 20% 94%));
         opacity: var(--fill-opacity, 1);
+
+        &::before {
+          content: '';
+          position: absolute;
+          inset: 6px 2px 6px 6px;
+          border-radius: 100px;
+          background-image: linear-gradient(
+            var(--neon-edge),
+            var(--neon) 30%,
+            var(--neon-core) 50%,
+            var(--neon) 70%,
+            var(--neon-edge)
+          );
+          box-shadow:
+            0 0 3px var(--neon),
+            0 0 8px var(--neon),
+            0 0 18px color-mix(in srgb, var(--neon) 60%, transparent);
+        }
 
         &:last-child {
           border-radius: 100px;
+
+          &::before {
+            inset-inline-end: 6px;
+          }
         }
       }
     }
