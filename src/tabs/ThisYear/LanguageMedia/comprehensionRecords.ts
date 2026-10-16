@@ -1,5 +1,4 @@
 import { getLocalDate } from '../../../shared/dates';
-import { getItemsByNumber } from './lists';
 import { getProgressUpdates } from './getProgressUpdates';
 import { PrintSeries } from './types';
 
@@ -11,25 +10,25 @@ export type ComprehensionRecord = {
 };
 
 export function getComprehensionRecords(series: PrintSeries) {
-  const updates = getItemsByNumber(series.volumes)
+  const updates = Object.values(series.volumes ?? {})
     .flatMap(getProgressUpdates)
     .toSorted((a, b) => Temporal.Instant.compare(a.at, b.at));
 
-  const recordsByDate = new Map<string, ComprehensionRecord>();
+  const totalsByDate = new Map<string, ComprehensionRecord>();
   updates.forEach(({ at, lookups, aiQuestions, understood }) => {
     const date = getLocalDate(at);
-    const record = recordsByDate.get(date) ?? {
+    const totals = totalsByDate.get(date) ?? {
       date,
       lookups: 0,
       aiQuestions: 0,
     };
-    recordsByDate.set(date, {
-      ...record,
-      lookups: record.lookups + lookups,
-      aiQuestions: record.aiQuestions + aiQuestions,
-      understood: understood ?? record.understood,
+    totalsByDate.set(date, {
+      ...totals,
+      lookups: totals.lookups + lookups,
+      aiQuestions: totals.aiQuestions + aiQuestions,
+      understood: understood ?? totals.understood,
     });
   });
 
-  return [...recordsByDate.values()];
+  return [...totalsByDate.values()];
 }
