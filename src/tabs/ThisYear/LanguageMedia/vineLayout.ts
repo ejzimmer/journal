@@ -35,6 +35,7 @@ const SHOOT_WIDTHS: [number, number] = [2, 1.4];
 const TRUNK_SAMPLE_SPACING = 2;
 const BRANCH_SAMPLE_SPACING = 6;
 const MARGIN = 2;
+const LEAF_ROOM = 10;
 
 const measureLength = (points: Point[]) =>
   points
@@ -222,7 +223,7 @@ export function createVineLayout(series: TvSeries): VineLayout {
     return shapes;
   });
 
-  const top = beamTop - RAFTER_HEIGHT - MARGIN;
+  const top = beamTop - RAFTER_HEIGHT - LEAF_ROOM;
   return {
     shapes: [trunkShape, ...seasonShapes],
     bounds: {
