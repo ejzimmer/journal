@@ -42,7 +42,7 @@
   .menu-divider {
     margin: 0;
     border: none;
-    block-size: 2px;
+    block-size: 1px;
     background: var(--border-colour);
   }
 }
