@@ -1,14 +1,14 @@
 import { CallistemonFlowerIcon } from './CallistemonFlowerIcon';
-import { MorningGloryIcon } from './MorningGloryIcon';
 import { SaguaroBlossomIcon } from './SaguaroBlossomIcon';
 import { SakuraFlowerIcon } from './SakuraFlowerIcon';
+import { WisteriaRacemeIcon } from './WisteriaRacemeIcon';
 import { MediaType } from './types';
 
 const ICONS = {
   book: CallistemonFlowerIcon,
   manga: SakuraFlowerIcon,
   youtube: SaguaroBlossomIcon,
-  tv: MorningGloryIcon,
+  tv: WisteriaRacemeIcon,
 };
 
 export function MediaTypeIcon({
