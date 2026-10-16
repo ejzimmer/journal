@@ -1,4 +1,4 @@
-import { CSSProperties, MouseEvent } from 'react';
+import { CSSProperties } from 'react';
 import { getDaysSince, isToday } from '../../../shared/dates';
 import { WeeklyTask } from '../../../shared/types';
 import { dateToWeekday } from './utils';
@@ -7,7 +7,7 @@ type ProgressIndicatorProps = Pick<
   WeeklyTask,
   'completed' | 'frequency' | 'description'
 > & {
-  onAdd: (event: MouseEvent) => void;
+  onAdd: () => void;
   onRemove: () => void;
 };
 
