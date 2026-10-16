@@ -1,8 +1,10 @@
 import { CSSProperties, useMemo, useState } from 'react';
 import { ModalDialog } from '../../../shared/controls/ModalDialog';
 import { OpenBookIcon } from '../../../shared/icons/OpenBook';
+import { PencilIcon } from '../../../shared/icons/Pencil';
 import { BranchNames } from './BranchNames';
 import { CloudFrame } from './CloudFrame';
+import { EditSeriesForm } from './EditSeriesForm';
 import { findCurrentVolume } from './findCurrentVolume';
 import { findSignpostPlacement } from './findSignpostPlacement';
 import { getItemsByNumber } from './lists';
@@ -30,6 +32,7 @@ export function MediaTree({ series }: { series: PrintSeries }) {
   const blooms = getBlooms(series);
   const [isProgressUpdateFormOpen, setIsProgressUpdateFormOpen] =
     useState(false);
+  const [isEditFormOpen, setIsEditFormOpen] = useState(false);
   const currentVolume = findCurrentVolume(series);
   const { x, y, width, height } = layout.bounds;
 
@@ -66,6 +69,11 @@ export function MediaTree({ series }: { series: PrintSeries }) {
           icon={<OpenBookIcon width="18px" />}
           onClick={() => setIsProgressUpdateFormOpen(true)}
         />
+        <HangingSign
+          label="Edit"
+          icon={<PencilIcon width="18px" />}
+          onClick={() => setIsEditFormOpen(true)}
+        />
       </Signpost>
       <ModalDialog
         isOpen={isProgressUpdateFormOpen}
@@ -75,6 +83,17 @@ export function MediaTree({ series }: { series: PrintSeries }) {
         {isProgressUpdateFormOpen && currentVolume && (
           <CloudFrame>
             <ProgressUpdateForm series={series} volume={currentVolume} />
+          </CloudFrame>
+        )}
+      </ModalDialog>
+      <ModalDialog
+        isOpen={isEditFormOpen}
+        className="progress-update-modal"
+        onCancel={() => setIsEditFormOpen(false)}
+      >
+        {isEditFormOpen && (
+          <CloudFrame>
+            <EditSeriesForm series={series} />
           </CloudFrame>
         )}
       </ModalDialog>
