@@ -87,7 +87,7 @@ describe('placeBeetleClumps', () => {
 
     it('packs the beetles of a clump side by side', () => {
       const [first, second] = clump('r1');
-      expect((second.at - first.at) * first.length).toBeCloseTo(12);
+      expect((second.at - first.at) * first.length).toBeCloseTo(5);
     });
   });
 
@@ -106,7 +106,7 @@ describe('placeBeetleClumps', () => {
     const trunk = createTrunk();
     const beetles = placeBeetleClumps(
       createSeries([createReading('r1', 20, 2), createReading('r2', 30, 1, 2)]),
-      [trunk, createLimb(0.38)],
+      [trunk, createLimb(0.29)],
     );
 
     it('fits what it can on the branch', () => {

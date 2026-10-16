@@ -65,11 +65,12 @@ export function ProgressUpdateForm({
       aiQuestions: parseNumber(data, 'aiQuestions') ?? 0,
       understood: parseNumber(data, 'understood'),
     };
-    const isEmpty =
-      !changes.lookups &&
-      !changes.aiQuestions &&
-      changes.understood === undefined;
-    if (readingId || !isEmpty) {
+    const hasProgress =
+      changes.lookups > 0 ||
+      changes.aiQuestions > 0 ||
+      changes.understood !== undefined ||
+      (page !== undefined && page !== pageUpTo);
+    if (readingId || hasProgress) {
       saveReading({ ...changes, page: page ?? pageUpTo });
     }
     closeModal();

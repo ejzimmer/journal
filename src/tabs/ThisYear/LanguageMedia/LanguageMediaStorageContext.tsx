@@ -10,7 +10,7 @@ import {
   NewMedia,
   StoredMediaByYear,
 } from './types';
-import { useReadingsMigration } from './useReadingsMigration';
+import { useLanguageMediaMigrations } from './useLanguageMediaMigrations';
 
 export type LanguageMediaYearStorage = {
   year: number;
@@ -75,7 +75,7 @@ export function LanguageMediaStorageProvider({
 }: {
   children: ReactNode;
 }) {
-  useReadingsMigration();
+  useLanguageMediaMigrations();
 
   const { addItem, deleteItem, setValues, useValue } = useStorageContext();
   const { value: storedMediaByYear, loading } =
@@ -116,22 +116,25 @@ export function LanguageMediaStorageProvider({
           );
           if (changedFields.length === 0) return;
 
-          setValues(
-            Object.fromEntries(
+          setValues({
+            ...Object.fromEntries(
               changedFields.map(([field, value]) => [
                 toPath([...itemPath, field]),
                 value ?? null,
               ]),
             ),
-          );
-          addItem(toPath([...itemPath, 'updates']), {
-            at: getCurrentTime(),
-            changes: Object.fromEntries(
-              changedFields.map(([field, value]) => [
-                field,
-                removeUndefinedFields({ from: storedItem?.[field], to: value }),
-              ]),
-            ),
+            [toPath([...itemPath, 'updates', crypto.randomUUID()])]: {
+              at: getCurrentTime(),
+              changes: Object.fromEntries(
+                changedFields.map(([field, value]) => [
+                  field,
+                  removeUndefinedFields({
+                    from: storedItem?.[field],
+                    to: value,
+                  }),
+                ]),
+              ),
+            },
           });
         },
         deleteItem: (itemPath) =>

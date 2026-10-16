@@ -231,6 +231,16 @@ describe('ProgressUpdateForm', () => {
           upTo: { volume: 1, page: 60 },
         });
       });
+
+      it('saves a reading at that page', async () => {
+        const { storageContext } = await typePage();
+
+        expect(storageContext.addItem).toHaveBeenCalledWith(READINGS_PATH, {
+          lookups: 0,
+          aiQuestions: 0,
+          page: 60,
+        });
+      });
     });
 
     it('closes the form', async () => {

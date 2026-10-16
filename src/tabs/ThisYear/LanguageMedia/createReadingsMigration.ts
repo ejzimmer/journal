@@ -15,6 +15,7 @@ import {
 type LegacyVolume = Volume & Partial<Comprehension>;
 
 const LEGACY_FIELDS = ['lookups', 'aiQuestions', 'understood'] as const;
+const IMPORT_UPDATE_KEY = 'migration';
 
 const isLegacyVolume = (volume: LegacyVolume) =>
   LEGACY_FIELDS.some((field) => field in volume);
@@ -41,10 +42,22 @@ const findEndOfDay = (date: string) =>
     .subtract({ nanoseconds: 1 })
     .toString();
 
-function groupUpdatesByDate(volume: Volume) {
+function findPageSaves(series: PrintSeries, volume: Volume) {
+  return Object.entries(series.updates ?? {})
+    .filter(
+      ([key, { changes }]) =>
+        key !== IMPORT_UPDATE_KEY &&
+        (changes.upTo?.to as PrintSeries['upTo'])?.volume === volume.number,
+    )
+    .map(([, update]) => update);
+}
+
+function groupUpdatesByDate(series: PrintSeries, volume: Volume) {
   const groups = new Map<string, ItemUpdate[]>();
-  Object.values(volume.updates ?? {})
-    .filter(isComprehensionUpdate)
+  [
+    ...Object.values(volume.updates ?? {}).filter(isComprehensionUpdate),
+    ...findPageSaves(series, volume),
+  ]
     .toSorted((a, b) => Temporal.Instant.compare(a.at, b.at))
     .forEach((update) => {
       const date = readLocalDate(update.at);
@@ -94,18 +107,29 @@ function createRemainderReading(
     0,
     (volume.aiQuestions ?? 0) - sum('aiQuestions'),
   );
-  const hasUnrecordedUnderstood =
-    volume.understood !== undefined &&
-    dayReadings.every(({ understood }) => understood === undefined);
-  if (!lookups && !aiQuestions && !hasUnrecordedUnderstood) return undefined;
+  const hasOnlyUnderstood =
+    volume.understood !== undefined && dayReadings.length === 0;
+  if (!lookups && !aiQuestions && !hasOnlyUnderstood) return undefined;
   return {
     id: 'migrated-remainder',
     createdAt: at,
     lookups,
     aiQuestions,
-    ...(hasUnrecordedUnderstood && { understood: volume.understood }),
     page: findPageAt(series, volume),
   };
+}
+
+function fillUnderstood(readings: Reading[], fallback?: number) {
+  const firstKnown =
+    readings.find(({ understood }) => understood !== undefined)?.understood ??
+    fallback;
+  let lastKnown = firstKnown;
+  return readings.map((reading) => {
+    lastKnown = reading.understood ?? lastKnown;
+    return lastKnown === undefined
+      ? reading
+      : { ...reading, understood: lastKnown };
+  });
 }
 
 function migrateVolume(
@@ -114,11 +138,14 @@ function migrateVolume(
   path: string,
   at: string,
 ) {
-  const dayReadings = [...groupUpdatesByDate(volume)].map(([date, updates]) =>
-    createDayReading(series, volume, date, updates),
+  const dayReadings = [...groupUpdatesByDate(series, volume)].map(
+    ([date, updates]) => createDayReading(series, volume, date, updates),
   );
   const remainder = createRemainderReading(series, volume, dayReadings, at);
-  const readings = remainder ? [...dayReadings, remainder] : dayReadings;
+  const readings = fillUnderstood(
+    remainder ? [...dayReadings, remainder] : dayReadings,
+    volume.understood,
+  );
   return [
     ...readings.map((reading) => [`${path}/readings/${reading.id}`, reading]),
     ...LEGACY_FIELDS.map((field) => [`${path}/${field}`, null]),
