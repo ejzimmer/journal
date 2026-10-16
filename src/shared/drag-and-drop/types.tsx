@@ -6,7 +6,13 @@ export type Destination = 'start' | 'previous' | 'next' | 'end';
 export type DraggingState =
   | { type: 'idle' }
   | { type: 'preview'; container: HTMLElement }
-  | { type: 'is-dragging-over'; closestEdge: Edge | null };
+  | {
+      type: 'is-dragging-over';
+      closestEdge: Edge | null;
+      sourceData: Record<string | symbol, unknown>;
+    };
+export type SourceState = 'idle' | 'in-place' | 'moved';
+
 export const IDLE: DraggingState = { type: 'idle' };
 
 export type SortableItem = {

@@ -2,6 +2,16 @@ import { CSSProperties, KeyboardEventHandler, RefObject } from 'react';
 
 import './Spine.css';
 
+export type SpineAppearance = {
+  status: 'todo' | 'active' | 'done';
+  hue: number;
+  bandHue?: number;
+  minHeight: number;
+  title: string;
+  author?: string;
+  glyph: string;
+};
+
 export function Spine({
   status,
   hue,
@@ -17,14 +27,7 @@ export function Spine({
   onStampClick,
   onTitleKeyDown,
   titleKeyShortcuts,
-}: {
-  status: 'todo' | 'active' | 'done';
-  hue: number;
-  bandHue?: number;
-  minHeight: number;
-  title: string;
-  author?: string;
-  glyph: string;
+}: SpineAppearance & {
   titleAriaLabel: string;
   stampAriaLabel: string;
   titleRef?: RefObject<HTMLButtonElement | null>;

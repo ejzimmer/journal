@@ -11,7 +11,13 @@ import {
 import { attachClosestEdge } from '@atlaskit/pragmatic-drag-and-drop-hitbox/closest-edge/attach-closest-edge';
 import { extractClosestEdge } from '@atlaskit/pragmatic-drag-and-drop-hitbox/closest-edge/extract-closest-edge';
 import { Edge } from '@atlaskit/pragmatic-drag-and-drop-hitbox/types';
-import { Draggable, DraggingState, IDLE, draggableTypeKey } from './types';
+import {
+  Draggable,
+  DraggingState,
+  IDLE,
+  SourceState,
+  draggableTypeKey,
+} from './types';
 
 import './drag-and-drop.css';
 
@@ -21,6 +27,10 @@ type DraggableListItemProps = {
   isDroppable: (data: any) => boolean;
   allowedEdges: Edge[];
   dragHandle: ReactElement;
+  renderDropIndicator?: (
+    sourceData: Record<string | symbol, unknown>,
+    edge: Edge,
+  ) => ReactNode;
   children: ReactNode;
   className?: string;
   style?: React.CSSProperties;
@@ -32,6 +42,7 @@ export function DraggableListItem({
   isDroppable,
   allowedEdges,
   dragHandle,
+  renderDropIndicator,
   children,
   className,
   style,
@@ -39,6 +50,7 @@ export function DraggableListItem({
   const listItemRef = useRef<HTMLLIElement | null>(null);
   const dragHandleMountRef = useRef<HTMLSpanElement | null>(null);
   const [draggingState, setDraggingState] = useState<DraggingState>(IDLE);
+  const [sourceState, setSourceState] = useState<SourceState>('idle');
 
   useEffect(() => {
     const row = listItemRef.current;
@@ -65,8 +77,19 @@ export function DraggableListItem({
             },
           });
         },
+        onDragStart() {
+          setSourceState('in-place');
+        },
+        onDrag({ location }) {
+          const isOverAnotherItem = location.current.dropTargets.some(
+            (target) =>
+              target.element !== row && extractClosestEdge(target.data),
+          );
+          setSourceState(isOverAnotherItem ? 'moved' : 'in-place');
+        },
         onDrop() {
           setDraggingState(IDLE);
+          setSourceState('idle');
         },
       }),
       dropTargetForElements({
@@ -86,7 +109,7 @@ export function DraggableListItem({
         getData({ input }) {
           const data = getData();
           return attachClosestEdge(data, {
-            element: row,
+            element: renderDropIndicator ? dragSource : row,
             input,
             allowedEdges,
           });
@@ -94,11 +117,15 @@ export function DraggableListItem({
         getIsSticky() {
           return true;
         },
-        onDragEnter({ self }) {
+        onDragEnter({ self, source }) {
           const closestEdge = extractClosestEdge(self.data);
-          setDraggingState({ type: 'is-dragging-over', closestEdge });
+          setDraggingState({
+            type: 'is-dragging-over',
+            closestEdge,
+            sourceData: source.data,
+          });
         },
-        onDrag({ self }) {
+        onDrag({ self, source }) {
           const closestEdge = extractClosestEdge(self.data);
 
           // Only need to update react state if something has changed.
@@ -110,7 +137,11 @@ export function DraggableListItem({
             ) {
               return current;
             }
-            return { type: 'is-dragging-over', closestEdge };
+            return {
+              type: 'is-dragging-over',
+              closestEdge,
+              sourceData: source.data,
+            };
           });
         },
         onDragLeave() {
@@ -121,13 +152,14 @@ export function DraggableListItem({
         },
       }),
     );
-  }, [allowedEdges, getData, isDroppable]);
+  }, [allowedEdges, getData, isDroppable, renderDropIndicator]);
 
   return (
     <>
       <li
         ref={listItemRef}
         className={`${className ?? ''} draggable-item`}
+        data-drag-source={sourceState === 'idle' ? undefined : sourceState}
         style={style}
       >
         <span ref={dragHandleMountRef} className="drag-handle-mount">
@@ -136,7 +168,14 @@ export function DraggableListItem({
         {children}
         {draggingState.type === 'is-dragging-over' &&
         draggingState.closestEdge ? (
-          <DropIndicator edge={draggingState.closestEdge} />
+          renderDropIndicator ? (
+            renderDropIndicator(
+              draggingState.sourceData,
+              draggingState.closestEdge,
+            )
+          ) : (
+            <DropIndicator edge={draggingState.closestEdge} />
+          )
         ) : null}
       </li>
       {draggingState.type === 'preview' &&
