@@ -6,7 +6,7 @@ import {
 } from './gemGeometry';
 import { SUBJECT_TYPE_LABELS } from './subjectTypeLabels';
 import { SUBJECT_TYPES, SubjectType } from './types';
-import { useTooltip } from './useTooltip';
+import { useTooltip } from '../../../shared/useTooltip';
 
 const SETTING_RADIUS = 16;
 const layout = calculateClusterLayout(SETTING_RADIUS);

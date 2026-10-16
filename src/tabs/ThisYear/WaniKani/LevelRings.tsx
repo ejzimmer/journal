@@ -1,6 +1,6 @@
 import { GEM_COLOURS } from './gemColours';
 import { calculateRingDash, drawStar, findPointOnRing } from './ringGeometry';
-import { useTooltip } from './useTooltip';
+import { useTooltip } from '../../../shared/useTooltip';
 
 const SIZE = 200;
 const CENTRE = SIZE / 2;

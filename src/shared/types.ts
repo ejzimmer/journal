@@ -80,6 +80,7 @@ export const DEAD_HANG_PATH = `${HEALTH_PATH}/deadHang`;
 export type DeadHangSession = {
   date: string;
   hangs?: number[];
+  bestHang?: number;
 };
 
 export const PROJECTS_KEY = 'projects';

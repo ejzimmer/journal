@@ -44,6 +44,7 @@ describe('DeadHangCard', () => {
       expect(storageContext.updateDeadHang).toHaveBeenCalledWith({
         date: getToday(),
         hangs: [12],
+        bestHang: 12,
       });
     });
 
@@ -70,14 +71,14 @@ describe('DeadHangCard', () => {
 
   describe('the session', () => {
     describe('when there are hangs from today', () => {
-      it('shows the total and the longest hang', () => {
+      it('shows the total and the best hang', () => {
         renderWithHealthStorage(<DeadHangCard />, {
           deadHang: { date: getToday(), hangs: [12, 9, 14] },
         });
 
         expect(
           screen.getByRole('img', {
-            name: '35 of 60 seconds today, longest hang 14 of 30 seconds',
+            name: '35 of 60 seconds today, best hang 14 of 30 seconds',
           }),
         ).toBeInTheDocument();
       });
@@ -99,6 +100,7 @@ describe('DeadHangCard', () => {
         expect(storageContext.updateDeadHang).toHaveBeenCalledWith({
           date: getToday(),
           hangs: [12, 9, 8],
+          bestHang: 12,
         });
       });
     });
@@ -114,7 +116,7 @@ describe('DeadHangCard', () => {
 
         expect(
           screen.getByRole('img', {
-            name: '0 of 60 seconds today, longest hang 0 of 30 seconds',
+            name: '0 of 60 seconds today, best hang 12 of 30 seconds',
           }),
         ).toBeInTheDocument();
 
@@ -127,8 +129,80 @@ describe('DeadHangCard', () => {
         expect(storageContext.updateDeadHang).toHaveBeenCalledWith({
           date: getToday(),
           hangs: [5],
+          bestHang: 12,
         });
       });
+    });
+
+    describe('when an earlier day had a longer hang than today', () => {
+      const deadHang = { date: getToday(), hangs: [12, 9], bestHang: 25 };
+
+      it('shows the earlier hang as the best', () => {
+        renderWithHealthStorage(<DeadHangCard />, { deadHang });
+
+        expect(
+          screen.getByRole('img', {
+            name: '21 of 60 seconds today, best hang 25 of 30 seconds',
+          }),
+        ).toBeInTheDocument();
+      });
+
+      describe('and a new hang beats it', () => {
+        it('records the new hang as the best', async () => {
+          const user = userEvent.setup({
+            advanceTimers: jest.advanceTimersByTime,
+          });
+          const { storageContext } = renderWithHealthStorage(<DeadHangCard />, {
+            deadHang,
+          });
+
+          await user.click(screen.getByRole('button', { name: 'Start hang' }));
+          act(() => {
+            jest.advanceTimersByTime(30_000);
+          });
+          await user.click(screen.getByRole('button', { name: 'Stop hang' }));
+
+          expect(storageContext.updateDeadHang).toHaveBeenCalledWith({
+            date: getToday(),
+            hangs: [12, 9, 28],
+            bestHang: 28,
+          });
+        });
+      });
+    });
+  });
+
+  describe('hovering the rings', () => {
+    const deadHang = { date: getToday(), hangs: [12, 9], bestHang: 25 };
+
+    it('shows the total for today on the outer ring', async () => {
+      const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
+      renderWithHealthStorage(<DeadHangCard />, { deadHang });
+
+      await user.hover(screen.getByTestId('session-ring'));
+
+      expect(screen.getByRole('tooltip')).toHaveTextContent('21s');
+    });
+
+    it('shows the best hang on the inner ring', async () => {
+      const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
+      renderWithHealthStorage(<DeadHangCard />, { deadHang });
+
+      await user.hover(screen.getByTestId('best-hang-ring'));
+
+      expect(screen.getByRole('tooltip')).toHaveTextContent('25s');
+    });
+
+    it('hides the tooltip when the pointer moves away', async () => {
+      const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
+      renderWithHealthStorage(<DeadHangCard />, { deadHang });
+      const ring = screen.getByTestId('session-ring');
+      await user.hover(ring);
+      const tooltip = screen.getByRole('tooltip');
+
+      await user.unhover(ring);
+
+      expect(tooltip).not.toBeInTheDocument();
     });
   });
 });
