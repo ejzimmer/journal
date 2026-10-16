@@ -5,16 +5,19 @@ import { EmojiPicker } from './EmojiPicker';
 import { findUnusedColour, MODE_COLOURS } from './modeColours';
 import { AdventureMode } from './types';
 
-type NewModeFormProps = {
+type ModeFormProps = {
+  mode?: AdventureMode;
   usedColours: string[];
   onSave: (mode: Omit<AdventureMode, 'id'>) => void;
 };
 
-export function NewModeForm({ usedColours, onSave }: NewModeFormProps) {
+export function ModeForm({ mode, usedColours, onSave }: ModeFormProps) {
   const nameInput = useRef<HTMLInputElement>(null);
-  const [name, setName] = useState('');
-  const [emoji, setEmoji] = useState('🏃');
-  const [colour, setColour] = useState(() => findUnusedColour(usedColours));
+  const [name, setName] = useState(mode?.name ?? '');
+  const [emoji, setEmoji] = useState(mode?.emoji ?? '🏃');
+  const [colour, setColour] = useState(
+    () => mode?.colour ?? findUnusedColour(usedColours),
+  );
 
   const saveMode = () => {
     if (name.trim()) {
@@ -24,8 +27,8 @@ export function NewModeForm({ usedColours, onSave }: NewModeFormProps) {
 
   return (
     <fieldset
-      className="new-mode"
-      aria-label="New mode"
+      className="mode-form"
+      aria-label={mode ? `Edit ${mode.name}` : 'New mode'}
       onKeyDown={(event) => {
         if (event.key === 'Enter' && event.target === nameInput.current) {
           event.preventDefault();
@@ -57,7 +60,7 @@ export function NewModeForm({ usedColours, onSave }: NewModeFormProps) {
       <button
         type="button"
         className="ghost save-mode"
-        aria-label="Add mode"
+        aria-label={mode ? 'Save mode' : 'Add mode'}
         onClick={saveMode}
       >
         <TickIcon width="18px" />

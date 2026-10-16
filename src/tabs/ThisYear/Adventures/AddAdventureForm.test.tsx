@@ -44,6 +44,7 @@ async function openForm(modes: AdventureMode[] = [running, cycling]) {
     updateAdventure: jest.fn(),
     deleteAdventure: jest.fn(),
     addMode: jest.fn().mockReturnValue('kayaking'),
+    updateMode: jest.fn(),
   };
   render(
     <AdventureStorageContext.Provider value={storage}>
@@ -215,6 +216,62 @@ describe('AddAdventureForm', () => {
 
         expect(storage.addMode).not.toHaveBeenCalled();
       });
+    });
+  });
+
+  describe("when a mode's edit button is clicked", () => {
+    it('opens the mode form filled in with that mode', async () => {
+      const { user } = await openForm();
+
+      await user.click(screen.getByRole('button', { name: 'Edit Cycling' }));
+
+      expect(screen.getByRole('textbox', { name: 'Mode name' })).toHaveValue(
+        'Cycling',
+      );
+      expect(screen.getByRole('button', { name: 'Emoji' })).toHaveTextContent(
+        '🚲',
+      );
+      expect(screen.getByRole('radio', { name: 'Green' })).toBeChecked();
+    });
+
+    it('hides the new mode button', async () => {
+      const { user } = await openForm();
+      const newMode = screen.getByRole('button', { name: 'New mode' });
+
+      await user.click(screen.getByRole('button', { name: 'Edit Cycling' }));
+
+      expect(newMode).not.toBeInTheDocument();
+    });
+  });
+
+  describe('when an edited mode is saved', () => {
+    async function renameCycling() {
+      const form = await openForm();
+      await form.user.click(
+        screen.getByRole('button', { name: 'Edit Cycling' }),
+      );
+      const modeName = screen.getByRole('textbox', { name: 'Mode name' });
+      await form.user.clear(modeName);
+      await form.user.type(modeName, 'Riding');
+      await form.user.click(screen.getByRole('radio', { name: 'Blue' }));
+      await form.user.click(screen.getByRole('button', { name: 'Save mode' }));
+      return { ...form, modeName };
+    }
+
+    it('updates the mode', async () => {
+      const { storage } = await renameCycling();
+
+      expect(storage.updateMode).toHaveBeenCalledWith({
+        ...cycling,
+        name: 'Riding',
+        colour: '#4baae3',
+      });
+    });
+
+    it('closes the mode form', async () => {
+      const { modeName } = await renameCycling();
+
+      expect(modeName).not.toBeInTheDocument();
     });
   });
 

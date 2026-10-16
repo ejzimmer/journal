@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { PlusIcon } from '../../../shared/icons/Plus';
 import { useAdventureStorage } from './AdventureStorageContext';
+import { ModeForm } from './ModeForm';
 import { ModeOption } from './ModeOption';
-import { NewModeForm } from './NewModeForm';
 import { AdventureMode } from './types';
 
 import './ModeField.css';
@@ -12,17 +12,24 @@ type ModeFieldProps = {
   onSelectMode: (modeId: string) => void;
 };
 
+type ModeFormTarget = AdventureMode | 'new';
+
 export function ModeField({ modeId, onSelectMode }: ModeFieldProps) {
-  const { modes, addMode } = useAdventureStorage();
-  const [isNewModeOpen, setIsNewModeOpen] = useState(false);
-  const isAddingMode = isNewModeOpen || modes.length === 0;
+  const { modes, addMode, updateMode } = useAdventureStorage();
+  const [openFormTarget, setOpenFormTarget] = useState<ModeFormTarget>();
+  const formTarget = modes.length === 0 ? 'new' : openFormTarget;
+  const editingMode = formTarget === 'new' ? undefined : formTarget;
 
   const saveMode = (mode: Omit<AdventureMode, 'id'>) => {
-    const newModeId = addMode(mode);
-    if (newModeId) {
-      onSelectMode(newModeId);
+    if (editingMode) {
+      updateMode({ ...editingMode, ...mode });
+    } else {
+      const newModeId = addMode(mode);
+      if (newModeId) {
+        onSelectMode(newModeId);
+      }
     }
-    setIsNewModeOpen(false);
+    setOpenFormTarget(undefined);
   };
 
   return (
@@ -34,21 +41,24 @@ export function ModeField({ modeId, onSelectMode }: ModeFieldProps) {
             mode={mode}
             isSelected={modeId === mode.id}
             onSelect={() => onSelectMode(mode.id)}
+            onEdit={() => setOpenFormTarget(mode)}
           />
         ))}
-        {!isAddingMode && (
+        {!formTarget && (
           <button
             type="button"
             className="mode-option new-mode-option"
             aria-label="New mode"
-            onClick={() => setIsNewModeOpen(true)}
+            onClick={() => setOpenFormTarget('new')}
           >
             <PlusIcon width="14px" />
           </button>
         )}
       </div>
-      {isAddingMode && (
-        <NewModeForm
+      {formTarget && (
+        <ModeForm
+          key={editingMode?.id ?? 'new'}
+          mode={editingMode}
           usedColours={modes.map(({ colour }) => colour)}
           onSave={saveMode}
         />
