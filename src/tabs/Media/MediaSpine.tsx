@@ -1,10 +1,4 @@
-import {
-  ComponentType,
-  CSSProperties,
-  KeyboardEvent,
-  useEffect,
-  useRef,
-} from 'react';
+import { ComponentType, KeyboardEvent, useEffect, useRef } from 'react';
 import { DraggableListItem } from '../../shared/drag-and-drop/DraggableListItem';
 import {
   Destination,
@@ -12,7 +6,8 @@ import {
 } from '../../shared/drag-and-drop/types';
 import { MediaDetails } from './types';
 import { useMediaStorage } from './MediaStorageContext';
-import { Spine } from './Spine';
+import { Spine, SpineAppearance } from './Spine';
+import { SpineCopy } from './SpineCopy';
 import { getNextStatus } from './nextStatus';
 import { useFormToggle } from '../../shared/controls/useFormToggle';
 
@@ -46,6 +41,10 @@ function getMoveDestination(
   if (event.key === 'ArrowRight' && !isLast) {
     return event.shiftKey ? 'end' : 'next';
   }
+}
+
+function readSpineAppearance(data: Record<string | symbol, unknown>) {
+  return data.appearance as SpineAppearance;
 }
 
 function getSpineHeight(title: string) {
@@ -103,15 +102,19 @@ export function MediaSpine<T extends MediaDetails, S extends string>({
     updateMedia(config.setStatus(item, nextStatus));
   };
 
+  const appearance: SpineAppearance = {
+    status: config.spineStatus[status],
+    hue,
+    bandHue,
+    minHeight: getSpineHeight(item.title),
+    title: item.title,
+    author,
+    glyph: config.glyph[status],
+  };
+
   const spine = (
     <Spine
-      status={config.spineStatus[status]}
-      hue={hue}
-      bandHue={bandHue}
-      minHeight={getSpineHeight(item.title)}
-      title={item.title}
-      author={author}
-      glyph={config.glyph[status]}
+      {...appearance}
       titleAriaLabel={`${item.title}${author ? `, ${author}` : ''}, ${status}`}
       stampAriaLabel={`${item.title}: ${status}. Change to ${nextStatus}`}
       titleRef={triggerRef}
@@ -141,6 +144,7 @@ export function MediaSpine<T extends MediaDetails, S extends string>({
         [draggableTypeKey]: SPINE_DRAGGABLE_TYPE,
         id: item.id,
         parentId: listId,
+        appearance,
       })}
       isDroppable={(data) =>
         data[draggableTypeKey] === SPINE_DRAGGABLE_TYPE &&
@@ -148,20 +152,17 @@ export function MediaSpine<T extends MediaDetails, S extends string>({
       }
       allowedEdges={['left', 'right']}
       dragHandle={spine}
-      dragPreview={<SpineDragPreview title={item.title} hue={hue} />}
+      dragPreview={
+        <SpineCopy appearance={appearance} className="spine-drag-preview" />
+      }
+      renderDropIndicator={(sourceData, edge) => (
+        <SpineCopy
+          appearance={readSpineAppearance(sourceData)}
+          className={`spine-drop-ghost ${edge}`}
+        />
+      )}
     >
       {editForm}
     </DraggableListItem>
-  );
-}
-
-function SpineDragPreview({ title, hue }: { title: string; hue: number }) {
-  return (
-    <div
-      className="spine-drag-preview"
-      style={{ '--hue': hue } as CSSProperties}
-    >
-      {title}
-    </div>
   );
 }
