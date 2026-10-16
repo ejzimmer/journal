@@ -238,32 +238,21 @@ describe('AddAdventureForm', () => {
   });
 
   describe('when an edited mode is saved', () => {
-    async function renameCycling() {
-      const form = await openForm();
-      await form.user.click(
-        screen.getByRole('button', { name: 'Edit Cycling' }),
-      );
+    it('updates the mode and closes the mode form', async () => {
+      const { user, storage } = await openForm();
+      await user.click(screen.getByRole('button', { name: 'Edit Cycling' }));
       const modeName = screen.getByRole('textbox', { name: 'Mode name' });
-      await form.user.clear(modeName);
-      await form.user.type(modeName, 'Riding');
-      await form.user.click(screen.getByRole('radio', { name: 'Blue' }));
-      await form.user.click(screen.getByRole('button', { name: 'Save mode' }));
-      return { ...form, modeName };
-    }
+      await user.clear(modeName);
+      await user.type(modeName, 'Riding');
+      await user.click(screen.getByRole('radio', { name: 'Blue' }));
 
-    it('updates the mode', async () => {
-      const { storage } = await renameCycling();
+      await user.click(screen.getByRole('button', { name: 'Save mode' }));
 
       expect(storage.updateMode).toHaveBeenCalledWith({
         ...cycling,
         name: 'Riding',
         colour: '#4baae3',
       });
-    });
-
-    it('closes the mode form', async () => {
-      const { modeName } = await renameCycling();
-
       expect(modeName).not.toBeInTheDocument();
     });
   });
