@@ -304,7 +304,7 @@ describe('AddAdventureForm', () => {
       });
     });
 
-    describe('when it is being edited', () => {
+    describe('when the mode is open in the mode form', () => {
       it('closes the mode form', async () => {
         const { user } = await openForm();
         await user.click(screen.getByRole('button', { name: 'Edit Cycling' }));
@@ -320,27 +320,29 @@ describe('AddAdventureForm', () => {
         expect(modeName).not.toBeInTheDocument();
       });
     });
-  });
 
-  describe('when the selected mode is deleted', () => {
-    it('selects another mode', async () => {
-      const { user, storage, replaceModes } = await openForm();
-      await user.type(
-        screen.getByRole('textbox', { name: 'Adventure' }),
-        'Ride to Hurstbridge',
-      );
-      await user.click(screen.getByRole('radio', { name: 'Cycling' }));
+    describe('when the mode is selected for the adventure', () => {
+      it('selects another mode', async () => {
+        const { user, storage, replaceModes } = await openForm();
+        await user.type(
+          screen.getByRole('textbox', { name: 'Adventure' }),
+          'Ride to Hurstbridge',
+        );
+        await user.click(screen.getByRole('radio', { name: 'Cycling' }));
 
-      await user.click(screen.getByRole('button', { name: 'Delete Cycling' }));
-      await user.click(
-        screen.getByRole('button', { name: 'Confirm delete Cycling' }),
-      );
-      replaceModes([running]);
-      await user.click(screen.getByRole('button', { name: 'Add' }));
+        await user.click(
+          screen.getByRole('button', { name: 'Delete Cycling' }),
+        );
+        await user.click(
+          screen.getByRole('button', { name: 'Confirm delete Cycling' }),
+        );
+        replaceModes([running]);
+        await user.click(screen.getByRole('button', { name: 'Add' }));
 
-      expect(storage.addAdventure).toHaveBeenCalledWith({
-        description: 'Ride to Hurstbridge',
-        modeId: 'running',
+        expect(storage.addAdventure).toHaveBeenCalledWith({
+          description: 'Ride to Hurstbridge',
+          modeId: 'running',
+        });
       });
     });
   });
