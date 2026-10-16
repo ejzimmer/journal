@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { PlusIcon } from '../../../shared/icons/Plus';
 import { useAdventureStorage } from './AdventureStorageContext';
+import { ModeOption } from './ModeOption';
 import { NewModeForm } from './NewModeForm';
 import { AdventureMode } from './types';
 
@@ -28,20 +29,12 @@ export function ModeField({ modeId, onSelectMode }: ModeFieldProps) {
     <>
       <div className="mode-options" role="radiogroup" aria-label="Mode">
         {modes.map((mode) => (
-          <label
+          <ModeOption
             key={mode.id}
-            className="mode-option"
-            style={{ '--mode-colour': mode.colour } as React.CSSProperties}
-          >
-            <input
-              type="radio"
-              name="mode"
-              checked={modeId === mode.id}
-              onChange={() => onSelectMode(mode.id)}
-            />
-            <span aria-hidden="true">{mode.emoji}</span>
-            {mode.name}
-          </label>
+            mode={mode}
+            isSelected={modeId === mode.id}
+            onSelect={() => onSelectMode(mode.id)}
+          />
         ))}
         {!isAddingMode && (
           <button
