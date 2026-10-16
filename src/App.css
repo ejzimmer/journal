@@ -61,6 +61,8 @@ nav ul {
     }
 
     &.tab-overflow {
+      margin-inline: auto;
+
       &.unused {
         position: absolute;
         visibility: hidden;
