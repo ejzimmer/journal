@@ -1,6 +1,7 @@
 import { SubmitEvent, useRef } from 'react';
 
 import './AddDoneMenu.css';
+import { PlusIcon } from '../../../shared/icons/Plus';
 import { Menu } from '../../../shared/controls/Menu';
 import { getDateDaysAgo, getToday } from '../../../shared/dates';
 
@@ -53,7 +54,9 @@ export function AddDoneMenu({ category, onAdd }: AddDoneMenuProps) {
                 min={getDateDaysAgo(OLDEST_TRACKED_DAYS_AGO)}
                 max={getToday()}
               />
-              <button>Add</button>
+              <button type="submit" className="icon subtle" aria-label="Add">
+                <PlusIcon width="16px" />
+              </button>
             </form>
           </>
         );
