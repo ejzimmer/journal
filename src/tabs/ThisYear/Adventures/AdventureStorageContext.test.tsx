@@ -278,6 +278,19 @@ describe('AdventureStorageContext', () => {
         expect(storage.addMode(newRunningMode)).toBe('running');
       });
     });
+    describe('updating a mode', () => {
+      it('saves it to the modes path', () => {
+        const updateItem = jest.fn();
+        const storage = createAdventureStorage({ updateItem });
+
+        storage.updateMode({ ...running, name: 'Jogging' });
+
+        expect(updateItem).toHaveBeenCalledWith(ADVENTURE_MODES_PATH, {
+          ...running,
+          name: 'Jogging',
+        });
+      });
+    });
   });
 
   describe('while the stored data is loading', () => {

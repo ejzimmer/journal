@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { PlusIcon } from '../../../shared/icons/Plus';
 import { useAdventureStorage } from './AdventureStorageContext';
+import { ModeForm } from './ModeForm';
 import { ModeOption } from './ModeOption';
-import { NewModeForm } from './NewModeForm';
 import { AdventureMode } from './types';
 
 import './ModeField.css';
@@ -13,16 +13,20 @@ type ModeFieldProps = {
 };
 
 export function ModeField({ modeId, onSelectMode }: ModeFieldProps) {
-  const { modes, addMode } = useAdventureStorage();
-  const [isNewModeOpen, setIsNewModeOpen] = useState(false);
-  const isAddingMode = isNewModeOpen || modes.length === 0;
+  const { modes, addMode, updateMode } = useAdventureStorage();
+  const [modeForm, setModeForm] = useState<{ mode?: AdventureMode }>();
+  const openModeForm = modes.length === 0 ? {} : modeForm;
 
   const saveMode = (mode: Omit<AdventureMode, 'id'>) => {
-    const newModeId = addMode(mode);
-    if (newModeId) {
-      onSelectMode(newModeId);
+    if (openModeForm?.mode) {
+      updateMode({ ...openModeForm.mode, ...mode });
+    } else {
+      const newModeId = addMode(mode);
+      if (newModeId) {
+        onSelectMode(newModeId);
+      }
     }
-    setIsNewModeOpen(false);
+    setModeForm(undefined);
   };
 
   return (
@@ -34,21 +38,24 @@ export function ModeField({ modeId, onSelectMode }: ModeFieldProps) {
             mode={mode}
             isSelected={modeId === mode.id}
             onSelect={() => onSelectMode(mode.id)}
+            onEdit={() => setModeForm({ mode })}
           />
         ))}
-        {!isAddingMode && (
+        {!openModeForm && (
           <button
             type="button"
             className="mode-option new-mode-option"
             aria-label="New mode"
-            onClick={() => setIsNewModeOpen(true)}
+            onClick={() => setModeForm({})}
           >
             <PlusIcon width="14px" />
           </button>
         )}
       </div>
-      {isAddingMode && (
-        <NewModeForm
+      {openModeForm && (
+        <ModeForm
+          key={openModeForm.mode?.id ?? 'new'}
+          mode={openModeForm.mode}
           usedColours={modes.map(({ colour }) => colour)}
           onSave={saveMode}
         />

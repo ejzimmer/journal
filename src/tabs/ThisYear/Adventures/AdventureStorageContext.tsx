@@ -18,6 +18,7 @@ export type AdventureStorageContextType = {
   deleteAdventure: (adventure: Adventure) => void;
 
   addMode: (mode: Omit<AdventureMode, 'id'>) => string | null;
+  updateMode: (mode: AdventureMode) => void;
 };
 
 export const AdventureStorageContext = createContext<
@@ -85,6 +86,7 @@ export function AdventureStorageProvider({
         ...mode,
         position: getNextPosition(modes),
       }),
+    updateMode: (mode) => updateItem<AdventureMode>(ADVENTURE_MODES_PATH, mode),
   };
 
   return (

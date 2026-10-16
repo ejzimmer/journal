@@ -44,6 +44,7 @@ async function openForm(modes: AdventureMode[] = [running, cycling]) {
     updateAdventure: jest.fn(),
     deleteAdventure: jest.fn(),
     addMode: jest.fn().mockReturnValue('kayaking'),
+    updateMode: jest.fn(),
   };
   render(
     <AdventureStorageContext.Provider value={storage}>
@@ -215,6 +216,44 @@ describe('AddAdventureForm', () => {
 
         expect(storage.addMode).not.toHaveBeenCalled();
       });
+    });
+  });
+
+  describe("when a mode's edit button is clicked", () => {
+    it('replaces the new mode button with the mode form, filled in with that mode', async () => {
+      const { user } = await openForm();
+      const newMode = screen.getByRole('button', { name: 'New mode' });
+
+      await user.click(screen.getByRole('button', { name: 'Edit Cycling' }));
+
+      expect(newMode).not.toBeInTheDocument();
+      expect(screen.getByRole('textbox', { name: 'Mode name' })).toHaveValue(
+        'Cycling',
+      );
+      expect(screen.getByRole('button', { name: 'Emoji' })).toHaveTextContent(
+        '🚲',
+      );
+      expect(screen.getByRole('radio', { name: 'Green' })).toBeChecked();
+    });
+  });
+
+  describe('when an edited mode is saved', () => {
+    it('updates the mode and closes the mode form', async () => {
+      const { user, storage } = await openForm();
+      await user.click(screen.getByRole('button', { name: 'Edit Cycling' }));
+      const modeName = screen.getByRole('textbox', { name: 'Mode name' });
+      await user.clear(modeName);
+      await user.type(modeName, 'Riding');
+      await user.click(screen.getByRole('radio', { name: 'Blue' }));
+
+      await user.click(screen.getByRole('button', { name: 'Save mode' }));
+
+      expect(storage.updateMode).toHaveBeenCalledWith({
+        ...cycling,
+        name: 'Riding',
+        colour: '#4baae3',
+      });
+      expect(modeName).not.toBeInTheDocument();
     });
   });
 
