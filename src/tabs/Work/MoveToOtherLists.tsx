@@ -1,9 +1,12 @@
 import { Menu } from '../../shared/controls/Menu';
-import { useWorkStorage } from './WorkStorageContext';
 import { ArrowRightIcon } from '../../shared/icons/ArrowRight';
-import { WorkTask, WORK_KEY } from './types';
-import { getAppendPosition } from './taskPosition';
-import { getToday } from '../../shared/dates';
+import { ReturnArrowIcon } from '../../shared/icons/ReturnArrow';
+import { WorkTask } from './types';
+import { MoveToListAction } from './MoveToListAction';
+import {
+  findPriorityDestination,
+  TODAY_LIST_NAME,
+} from './priorityDestination';
 
 type MoveToOtherListsProps = {
   allLists: WorkTask[];
@@ -12,36 +15,55 @@ type MoveToOtherListsProps = {
   task: WorkTask;
 };
 
+const iconProps = { width: '16px', colour: 'var(--action-colour-dark)' };
+
 export function MoveToOtherLists({
   allLists,
   currentListId,
   doneListId,
   task,
 }: MoveToOtherListsProps) {
-  const { moveTask } = useWorkStorage();
-
+  const currentList = allLists.find(({ id }) => id === currentListId);
   const otherLists = allLists.filter(
     ({ id }) => id !== currentListId && id !== doneListId,
   );
+  const priorityDestination = findPriorityDestination(
+    otherLists,
+    currentList,
+    task,
+  );
+  const remainingLists = otherLists.filter(
+    (list) => list !== priorityDestination,
+  );
 
-  return otherLists.map((destination) => (
-    <Menu.Action
-      onClick={() => {
-        moveTask({
-          task,
-          movedItem: {
-            ...task,
-            position: getAppendPosition(destination),
-            lastStatusUpdate: getToday(),
-          },
-          sourceListId: `${WORK_KEY}/${currentListId}/items`,
-          targetListId: `${WORK_KEY}/${destination.id}/items`,
-        });
-      }}
-      key={destination.id}
-    >
-      <ArrowRightIcon width="16px" colour="var(--action-colour-dark)" />
-      {destination.description}
-    </Menu.Action>
-  ));
+  return (
+    <>
+      {priorityDestination && (
+        <>
+          <MoveToListAction
+            task={task}
+            currentListId={currentListId}
+            destination={priorityDestination}
+            icon={
+              priorityDestination.description === TODAY_LIST_NAME ? (
+                <ArrowRightIcon {...iconProps} />
+              ) : (
+                <ReturnArrowIcon {...iconProps} />
+              )
+            }
+          />
+          <Menu.Divider />
+        </>
+      )}
+      {remainingLists.map((destination) => (
+        <MoveToListAction
+          key={destination.id}
+          task={task}
+          currentListId={currentListId}
+          destination={destination}
+          icon={<ArrowRightIcon {...iconProps} />}
+        />
+      ))}
+    </>
+  );
 }

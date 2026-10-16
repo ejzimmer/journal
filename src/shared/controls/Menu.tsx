@@ -91,6 +91,10 @@ function Action({
   );
 }
 
-const Menu = Object.assign(MenuBase, { Action });
+function Divider() {
+  return <hr className="menu-divider" />;
+}
+
+const Menu = Object.assign(MenuBase, { Action, Divider });
 
 export { Menu };
