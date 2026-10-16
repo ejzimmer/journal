@@ -90,20 +90,6 @@
     }
   }
 
-  .wanikani-tooltip {
-    position: fixed;
-
-    .tooltip-anchor {
-      position: fixed;
-      pointer-events: none;
-    }
-
-    .tooltip {
-      position: fixed;
-      opacity: 1;
-    }
-  }
-
   .gem-defs {
     position: absolute;
     width: 0;

@@ -1,24 +1,24 @@
 import { render, screen } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
 import { Signpost } from './Signpost';
 
 describe('Signpost', () => {
-  describe('when clicked', () => {
-    it('calls onClick', async () => {
-      const user = userEvent.setup();
-      const onClick = jest.fn();
-      render(
-        <Signpost
-          name="Les Misérables"
-          placement={{ side: 'right', offset: 16 }}
-          isOpen={false}
-          onClick={onClick}
-        />,
-      );
+  it('shows the name on its board', () => {
+    render(
+      <Signpost name="Les Misérables" placement={{ side: 'right', offset: 16 }}>
+        <button type="button">Update</button>
+      </Signpost>,
+    );
 
-      await user.click(screen.getByRole('button', { name: 'Les Misérables' }));
+    expect(screen.getByText('Les Misérables')).toBeInTheDocument();
+  });
 
-      expect(onClick).toHaveBeenCalled();
-    });
+  it('hangs its signs beneath the board', () => {
+    render(
+      <Signpost name="Les Misérables" placement={{ side: 'right', offset: 16 }}>
+        <button type="button">Update</button>
+      </Signpost>,
+    );
+
+    expect(screen.getByRole('button', { name: 'Update' })).toBeInTheDocument();
   });
 });

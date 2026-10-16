@@ -4,7 +4,7 @@ import { EMPTY_GEM_COLOUR, GEM_COLOURS } from './gemColours';
 import { formatPoints, getHexVertices } from './gemGeometry';
 import { SUBJECT_TYPE_LABELS } from './subjectTypeLabels';
 import { SRS_GROUPS, SrsGroup, SubjectType } from './types';
-import { useTooltip } from './useTooltip';
+import { useTooltip } from '../../../shared/useTooltip';
 import { calculateLiquidLayers, createBubbles, drawTube } from './vialGeometry';
 
 const WIDTH = 52;

@@ -12,7 +12,7 @@ export function useTooltip() {
   });
 
   const tooltip = state && (
-    <div className="tooltip-container wanikani-tooltip">
+    <div className="tooltip-container pointer-tooltip">
       <div
         className="tooltip-anchor"
         style={{

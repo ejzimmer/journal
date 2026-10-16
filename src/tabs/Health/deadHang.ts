@@ -9,6 +9,10 @@ export function getTodaysHangs(session?: DeadHangSession) {
   return session && isToday(session.date) ? (session.hangs ?? []) : [];
 }
 
+export function findBestHang(session?: DeadHangSession) {
+  return Math.max(session?.bestHang ?? 0, ...(session?.hangs ?? []));
+}
+
 export function isDeadHangSessionDone(hangs: number[]) {
   const sessionTotal = hangs.reduce((total, hang) => total + hang, 0);
   return (

@@ -1,12 +1,17 @@
 import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { ModalContext } from '../../../shared/controls/Modal';
 import { AddMediaForm } from './AddMediaForm';
 import { renderWithLanguageMediaStorage } from './languageMediaStorageTestUtils';
 
 function renderForm() {
-  const user = userEvent.setup();
-  const view = renderWithLanguageMediaStorage(<AddMediaForm />);
-  return { user, ...view };
+  const closeModal = jest.fn();
+  const view = renderWithLanguageMediaStorage(
+    <ModalContext.Provider value={{ closeModal }}>
+      <AddMediaForm />
+    </ModalContext.Provider>,
+  );
+  return { user: userEvent.setup(), closeModal, ...view };
 }
 
 describe('AddMediaForm', () => {
@@ -14,9 +19,13 @@ describe('AddMediaForm', () => {
     it('has the book series type selected', () => {
       renderForm();
 
-      expect(screen.getByRole('combobox', { name: 'Type' })).toHaveValue(
-        'book',
-      );
+      expect(screen.getByRole('radio', { name: 'Book series' })).toBeChecked();
+    });
+
+    it('has French selected', () => {
+      renderForm();
+
+      expect(screen.getByRole('radio', { name: 'French' })).toBeChecked();
     });
   });
 
@@ -25,10 +34,7 @@ describe('AddMediaForm', () => {
       const { user, storageContext } = renderForm();
 
       await user.type(screen.getByRole('textbox', { name: 'Name' }), 'Lupin');
-      await user.selectOptions(
-        screen.getByRole('combobox', { name: 'Type' }),
-        'TV series',
-      );
+      await user.click(screen.getByRole('radio', { name: 'TV series' }));
       await user.type(screen.getByRole('spinbutton', { name: 'Seasons' }), '3');
       await user.click(screen.getByRole('button', { name: 'Add' }));
 
@@ -45,10 +51,7 @@ describe('AddMediaForm', () => {
         const { user, storageContext } = renderForm();
 
         await user.type(screen.getByRole('textbox', { name: 'Name' }), 'Lupin');
-        await user.selectOptions(
-          screen.getByRole('combobox', { name: 'Type' }),
-          'TV series',
-        );
+        await user.click(screen.getByRole('radio', { name: 'TV series' }));
         await user.click(screen.getByRole('button', { name: 'Add' }));
 
         expect(storageContext.addMedia).toHaveBeenCalledWith({
@@ -66,10 +69,7 @@ describe('AddMediaForm', () => {
       const { user, storageContext } = renderForm();
 
       await user.type(screen.getByRole('textbox', { name: 'Name' }), 'Yuyu');
-      await user.selectOptions(
-        screen.getByRole('combobox', { name: 'Type' }),
-        'YouTube channel',
-      );
+      await user.click(screen.getByRole('radio', { name: 'YouTube channel' }));
       await user.click(screen.getByRole('button', { name: 'Add' }));
 
       expect(storageContext.addMedia).toHaveBeenCalledWith({
@@ -85,10 +85,7 @@ describe('AddMediaForm', () => {
       const { user, storageContext } = renderForm();
 
       await user.type(screen.getByRole('textbox', { name: 'Name' }), 'Yotsuba');
-      await user.selectOptions(
-        screen.getByRole('combobox', { name: 'Type' }),
-        'Manga series',
-      );
+      await user.click(screen.getByRole('radio', { name: 'Manga series' }));
       await user.type(
         screen.getByRole('spinbutton', { name: 'Volumes' }),
         '15',
@@ -153,26 +150,6 @@ describe('AddMediaForm', () => {
           }),
         );
       });
-
-      describe('after adding', () => {
-        it('goes back to one volume', async () => {
-          const { user } = renderForm();
-          await user.click(
-            screen.getByRole('button', { name: 'Add another volume' }),
-          );
-          const secondVolume = screen.getByRole('textbox', {
-            name: 'Volume 2',
-          });
-
-          await user.type(
-            screen.getByRole('textbox', { name: 'Name' }),
-            'Astérix',
-          );
-          await user.click(screen.getByRole('button', { name: 'Add' }));
-
-          expect(secondVolume).not.toBeInTheDocument();
-        });
-      });
     });
   });
 
@@ -184,10 +161,7 @@ describe('AddMediaForm', () => {
         screen.getByRole('textbox', { name: 'Name' }),
         'よつばと！',
       );
-      await user.selectOptions(
-        screen.getByRole('combobox', { name: 'Language' }),
-        'Japanese',
-      );
+      await user.click(screen.getByRole('radio', { name: 'Japanese' }));
       await user.click(screen.getByRole('button', { name: 'Add' }));
 
       expect(storageContext.addMedia).toHaveBeenCalledWith(
@@ -197,14 +171,13 @@ describe('AddMediaForm', () => {
   });
 
   describe('after adding', () => {
-    it('clears the form', async () => {
-      const { user } = renderForm();
-      const name = screen.getByRole('textbox', { name: 'Name' });
+    it('closes the form', async () => {
+      const { user, closeModal } = renderForm();
 
-      await user.type(name, 'Lupin');
+      await user.type(screen.getByRole('textbox', { name: 'Name' }), 'Lupin');
       await user.click(screen.getByRole('button', { name: 'Add' }));
 
-      expect(name).toHaveValue('');
+      expect(closeModal).toHaveBeenCalled();
     });
   });
 

@@ -282,3 +282,17 @@ dialog {
   z-index: 1;
   width: max-content;
 }
+
+.pointer-tooltip {
+  position: fixed;
+
+  .tooltip-anchor {
+    position: fixed;
+    pointer-events: none;
+  }
+
+  .tooltip {
+    position: fixed;
+    opacity: 1;
+  }
+}

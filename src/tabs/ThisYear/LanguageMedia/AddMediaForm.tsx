@@ -1,8 +1,15 @@
-import { useState } from 'react';
-import { PlusIcon } from '../../../shared/icons/Plus';
+import { FormEvent, useState } from 'react';
+import { useModal } from '../../../shared/controls/Modal';
+import { Switch } from '../../../shared/controls/Switch';
+import { TickIcon } from '../../../shared/icons/Tick';
+import { BookVolumeNames } from './BookVolumeNames';
+import { CountField } from './CountField';
+import { LanguageOption } from './LanguageOption';
 import { useLanguageMediaStorage } from './LanguageMediaStorageContext';
-import { LANGUAGE_NAMES, MEDIA_TYPE_NAMES } from './names';
+import { MediaTypeOption } from './MediaTypeOption';
 import { Language, LANGUAGES, MEDIA_TYPES, MediaType, NewMedia } from './types';
+
+import './AddMediaForm.css';
 
 const readCount = (data: FormData, name: string) =>
   Number(data.get(name)) || undefined;
@@ -13,10 +20,12 @@ const readAllText = (data: FormData, name: string) =>
     .map((value) => String(value).trim())
     .filter(Boolean);
 
-function readNewMedia(data: FormData): NewMedia {
+function readNewMedia(
+  data: FormData,
+  type: MediaType,
+  language: Language,
+): NewMedia {
   const name = String(data.get('name')).trim();
-  const language = data.get('language') as Language;
-  const type = data.get('type') as MediaType;
 
   switch (type) {
     case 'tv':
@@ -37,78 +46,57 @@ function readNewMedia(data: FormData): NewMedia {
 
 export function AddMediaForm() {
   const { addMedia } = useLanguageMediaStorage();
+  const { closeModal } = useModal();
   const [type, setType] = useState<MediaType>('book');
-  const [volumeNameCount, setVolumeNameCount] = useState(1);
+  const [language, setLanguage] = useState<Language>('french');
 
-  const submitMedia = (event: React.FormEvent<HTMLFormElement>) => {
+  const submitMedia = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    addMedia(readNewMedia(new FormData(event.currentTarget)));
-    event.currentTarget.reset();
-    setType('book');
-    setVolumeNameCount(1);
+    addMedia(readNewMedia(new FormData(event.currentTarget), type, language));
+    closeModal();
   };
 
   return (
-    <form onSubmit={submitMedia}>
-      <label>
-        Name
-        <input name="name" required />
-      </label>
-      <label>
-        Language
-        <select name="language">
-          {LANGUAGES.map((language) => (
-            <option key={language} value={language}>
-              {LANGUAGE_NAMES[language]}
-            </option>
-          ))}
-        </select>
-      </label>
-      <label>
-        Type
-        <select
-          name="type"
+    <form
+      className="add-media-form"
+      aria-label="Add media"
+      onSubmit={submitMedia}
+    >
+      <input
+        className="add-media-name"
+        name="name"
+        aria-label="Name"
+        autoComplete="off"
+        required
+      />
+      <div className="add-media-switches">
+        <Switch
+          options={[...MEDIA_TYPES]}
           value={type}
-          onChange={(event) => setType(event.target.value as MediaType)}
-        >
-          {MEDIA_TYPES.map((mediaType) => (
-            <option key={mediaType} value={mediaType}>
-              {MEDIA_TYPE_NAMES[mediaType]}
-            </option>
-          ))}
-        </select>
-      </label>
-      {type === 'tv' && (
-        <label>
-          Seasons
-          <input name="seasons" type="number" min="0" />
-        </label>
-      )}
-      {type === 'manga' && (
-        <label>
-          Volumes
-          <input name="volumes" type="number" min="0" />
-        </label>
-      )}
-      {type === 'book' && (
-        <>
-          {Array.from({ length: volumeNameCount }, (_, index) => (
-            <input
-              key={index}
-              name="volumeName"
-              aria-label={`Volume ${index + 1}`}
-            />
-          ))}
-          <button
-            type="button"
-            aria-label="Add another volume"
-            onClick={() => setVolumeNameCount((count) => count + 1)}
-          >
-            <PlusIcon width="16px" />
-          </button>
-        </>
-      )}
-      <button type="submit">Add</button>
+          onChange={setType}
+          name="type"
+          Option={MediaTypeOption}
+        />
+        <Switch
+          options={[...LANGUAGES]}
+          value={language}
+          onChange={setLanguage}
+          name="language"
+          Option={LanguageOption}
+        />
+      </div>
+      <div className="add-media-body">
+        {type === 'book' && <BookVolumeNames />}
+        {type === 'manga' && (
+          <CountField name="volumes" label="Volumes" icon="📚" />
+        )}
+        {type === 'tv' && (
+          <CountField name="seasons" label="Seasons" icon="📺" />
+        )}
+        <button type="submit" className="progress-update-save" aria-label="Add">
+          <TickIcon width="20px" strokeWidth="2.6" />
+        </button>
+      </div>
     </form>
   );
 }

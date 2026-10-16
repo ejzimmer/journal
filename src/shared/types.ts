@@ -32,6 +32,7 @@ export type CalendarTaskDetails = {
   dueDate: string;
   status: (typeof STATUSES)[number];
   statusUpdateDate: string;
+  repeats?: boolean;
 };
 export type CalendarTask = CalendarTaskDetails & TodoTask;
 
@@ -79,6 +80,7 @@ export const DEAD_HANG_PATH = `${HEALTH_PATH}/deadHang`;
 export type DeadHangSession = {
   date: string;
   hangs?: number[];
+  bestHang?: number;
 };
 
 export const PROJECTS_KEY = 'projects';

@@ -51,10 +51,16 @@ describe('predictDaysToFinish', () => {
     });
 
     describe('when the current level has already taken longer than the average', () => {
-      it('predicts 10 days each for levels 59 and 60', () => {
+      it('counts the time so far as a level duration and predicts that pace for levels 59 and 60', () => {
         setToday('2026-02-10');
 
-        expect(predictDaysToFinish(progressions, 58)).toBe(20);
+        expect(predictDaysToFinish(progressions, 58)).toBe(27);
+      });
+
+      it('predicts more days for each extra day spent on it', () => {
+        setToday('2026-02-13');
+
+        expect(predictDaysToFinish(progressions, 58)).toBe(29);
       });
     });
   });
