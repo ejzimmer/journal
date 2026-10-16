@@ -66,8 +66,15 @@ nav ul {
         visibility: hidden;
       }
 
-      > div > button {
+      > div {
         height: 100%;
+      }
+
+      > div > button {
+        display: flex;
+        align-items: center;
+        height: 100%;
+        padding-inline: 8px;
         border: 0;
         border-radius: 0;
 
