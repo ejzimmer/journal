@@ -78,36 +78,24 @@
       }
 
       .done {
-        position: relative;
+        --led-width: calc(100% / var(--lit-segments));
         border-start-start-radius: 100px;
         border-end-start-radius: 100px;
-        background-color: color-mix(in srgb, var(--neon) 18%, hsl(210 20% 94%));
+        background-color: color-mix(in srgb, var(--neon) 60%, white);
+        background-image: radial-gradient(
+          ellipse 32px 20px,
+          var(--neon-core),
+          var(--neon) 35%,
+          transparent
+        );
+        background-size: var(--led-width) 100%;
+        box-shadow:
+          0 0 6px var(--neon),
+          0 0 16px color-mix(in srgb, var(--neon) 60%, transparent);
         opacity: var(--fill-opacity, 1);
-
-        &::before {
-          content: '';
-          position: absolute;
-          inset: 6px 2px 6px 6px;
-          border-radius: 100px;
-          background-image: linear-gradient(
-            var(--neon-edge),
-            var(--neon) 30%,
-            var(--neon-core) 50%,
-            var(--neon) 70%,
-            var(--neon-edge)
-          );
-          box-shadow:
-            0 0 3px var(--neon),
-            0 0 8px var(--neon),
-            0 0 18px color-mix(in srgb, var(--neon) 60%, transparent);
-        }
 
         &:last-child {
           border-radius: 100px;
-
-          &::before {
-            inset-inline-end: 6px;
-          }
         }
       }
     }
