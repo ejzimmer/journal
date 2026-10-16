@@ -220,11 +220,13 @@ describe('AddAdventureForm', () => {
   });
 
   describe("when a mode's edit button is clicked", () => {
-    it('opens the mode form filled in with that mode', async () => {
+    it('replaces the new mode button with the mode form, filled in with that mode', async () => {
       const { user } = await openForm();
+      const newMode = screen.getByRole('button', { name: 'New mode' });
 
       await user.click(screen.getByRole('button', { name: 'Edit Cycling' }));
 
+      expect(newMode).not.toBeInTheDocument();
       expect(screen.getByRole('textbox', { name: 'Mode name' })).toHaveValue(
         'Cycling',
       );
@@ -232,15 +234,6 @@ describe('AddAdventureForm', () => {
         '🚲',
       );
       expect(screen.getByRole('radio', { name: 'Green' })).toBeChecked();
-    });
-
-    it('hides the new mode button', async () => {
-      const { user } = await openForm();
-      const newMode = screen.getByRole('button', { name: 'New mode' });
-
-      await user.click(screen.getByRole('button', { name: 'Edit Cycling' }));
-
-      expect(newMode).not.toBeInTheDocument();
     });
   });
 
