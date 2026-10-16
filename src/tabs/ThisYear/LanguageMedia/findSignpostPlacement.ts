@@ -2,7 +2,7 @@ import { OUTLINE_WIDTH, TreeLayout } from './treeLayout';
 
 export type SignpostPlacement = { side: 'left' | 'right'; offset: number };
 
-const SIGN_HEIGHT = 50;
+const SIGN_HEIGHT = 80;
 const MIN_OFFSET = 16;
 const GAP = 6;
 

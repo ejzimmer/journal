@@ -1,15 +1,14 @@
-import { CSSProperties } from 'react';
+import { CSSProperties, ReactNode } from 'react';
 import { SignpostPlacement } from './findSignpostPlacement';
 import { countSignposts } from './signposts';
 
 type SignpostProps = {
   name: string;
   placement: SignpostPlacement;
-  isOpen: boolean;
-  onClick: () => void;
+  children: ReactNode;
 };
 
-export function Signpost({ name, placement, isOpen, onClick }: SignpostProps) {
+export function Signpost({ name, placement, children }: SignpostProps) {
   const posts = countSignposts(name);
 
   return (
@@ -17,18 +16,14 @@ export function Signpost({ name, placement, isOpen, onClick }: SignpostProps) {
       className={`signpost on-${placement.side}`}
       style={{ '--sign-offset': `${placement.offset}px` } as CSSProperties}
     >
-      <button
-        type="button"
-        className="sign-board"
-        aria-expanded={isOpen}
-        onClick={onClick}
-      >
-        {name}
-      </button>
-      <div className="sign-posts">
-        {Array.from({ length: posts }, (_, index) => (
-          <div key={index} className="sign-post" />
-        ))}
+      <div className="sign-board">{name}</div>
+      <div className="sign-legs">
+        <div className="sign-posts">
+          {Array.from({ length: posts }, (_, index) => (
+            <div key={index} className="sign-post" />
+          ))}
+        </div>
+        <div className="sign-hangers">{children}</div>
       </div>
     </div>
   );
