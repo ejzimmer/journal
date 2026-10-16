@@ -12,24 +12,21 @@ type ModeFieldProps = {
   onSelectMode: (modeId: string) => void;
 };
 
-type ModeFormTarget = AdventureMode | 'new';
-
 export function ModeField({ modeId, onSelectMode }: ModeFieldProps) {
   const { modes, addMode, updateMode } = useAdventureStorage();
-  const [openFormTarget, setOpenFormTarget] = useState<ModeFormTarget>();
-  const formTarget = modes.length === 0 ? 'new' : openFormTarget;
-  const editingMode = formTarget === 'new' ? undefined : formTarget;
+  const [modeForm, setModeForm] = useState<{ mode?: AdventureMode }>();
+  const openModeForm = modes.length === 0 ? {} : modeForm;
 
   const saveMode = (mode: Omit<AdventureMode, 'id'>) => {
-    if (editingMode) {
-      updateMode({ ...editingMode, ...mode });
+    if (openModeForm?.mode) {
+      updateMode({ ...openModeForm.mode, ...mode });
     } else {
       const newModeId = addMode(mode);
       if (newModeId) {
         onSelectMode(newModeId);
       }
     }
-    setOpenFormTarget(undefined);
+    setModeForm(undefined);
   };
 
   return (
@@ -41,24 +38,24 @@ export function ModeField({ modeId, onSelectMode }: ModeFieldProps) {
             mode={mode}
             isSelected={modeId === mode.id}
             onSelect={() => onSelectMode(mode.id)}
-            onEdit={() => setOpenFormTarget(mode)}
+            onEdit={() => setModeForm({ mode })}
           />
         ))}
-        {!formTarget && (
+        {!openModeForm && (
           <button
             type="button"
             className="mode-option new-mode-option"
             aria-label="New mode"
-            onClick={() => setOpenFormTarget('new')}
+            onClick={() => setModeForm({})}
           >
             <PlusIcon width="14px" />
           </button>
         )}
       </div>
-      {formTarget && (
+      {openModeForm && (
         <ModeForm
-          key={editingMode?.id ?? 'new'}
-          mode={editingMode}
+          key={openModeForm.mode?.id ?? 'new'}
+          mode={openModeForm.mode}
           usedColours={modes.map(({ colour }) => colour)}
           onSave={saveMode}
         />
