@@ -2,9 +2,12 @@ import { useCallback, useEffect, useRef } from 'react';
 import { NavLink } from 'react-router-dom';
 import { TABS } from './tabConfig';
 import { AppUpdateButton } from './shared/AppUpdateButton';
+import { TabOverflowMenu } from './TabOverflowMenu';
+import { useVisibleTabCount } from './useVisibleTabCount';
 
 export function TopNav() {
   const navListRef = useRef<HTMLUListElement>(null);
+  const visibleTabCount = useVisibleTabCount(navListRef, TABS.length);
 
   const hideHighlight = useCallback(() => {
     if (!navListRef.current) return;
@@ -21,7 +24,9 @@ export function TopNav() {
       const mouseX = event.clientX;
       const hoveredTab = Array.from(tabElements).find((tab) => {
         const { x, width } = tab.getBoundingClientRect();
-        return x < mouseX && x + width >= mouseX;
+        return (
+          x < mouseX && x + width >= mouseX && !tab.classList.contains('unused')
+        );
       });
 
       moveHighlight(hoveredTab);
@@ -46,15 +51,19 @@ export function TopNav() {
   return (
     <nav className="tabs">
       <ul ref={navListRef} onBlur={hideHighlight}>
-        {TABS.map(({ path }) => (
+        {TABS.map(({ path }, index) => (
           <NavItem
             key={path}
             to={path}
+            isHidden={index >= visibleTabCount}
             onFocus={(event) => moveHighlight(event.target.parentElement)}
           >
             {path}
           </NavItem>
         ))}
+        <TabOverflowMenu
+          paths={TABS.slice(visibleTabCount).map(({ path }) => path)}
+        />
       </ul>
       <AppUpdateButton tabListRef={navListRef} />
     </nav>
@@ -63,15 +72,17 @@ export function TopNav() {
 
 function NavItem({
   to,
+  isHidden,
   onFocus,
   children,
 }: {
   to: string;
+  isHidden: boolean;
   onFocus: React.FocusEventHandler<HTMLAnchorElement> | undefined;
   children: React.ReactNode;
 }) {
   return (
-    <li>
+    <li hidden={isHidden}>
       <NavLink to={to} onFocus={onFocus}>
         {children}
       </NavLink>

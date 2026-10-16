@@ -6,7 +6,8 @@ import { WEEKLY_KEY, WeeklyTask } from '../../../shared/types';
 import { Combobox } from '../../../shared/controls/combobox/Combobox';
 import { CategoriesContext } from '..';
 import { ProgressIndicator } from './ProgressIndicator';
-import { getDateDaysAgo, getToday } from '../../../shared/dates';
+import { AddDoneMenu } from './AddDoneMenu';
+import { getToday } from '../../../shared/dates';
 import { useFormToggle } from '../../../shared/controls/useFormToggle';
 
 export function ThisWeekTask({ task }: { task: WeeklyTask }) {
@@ -67,22 +68,12 @@ export function ThisWeekTask({ task }: { task: WeeklyTask }) {
 
   const completedDates = task.completed ?? [];
 
-  const addDone = (event: React.MouseEvent) => {
-    const completedDate = event.ctrlKey ? getDateDaysAgo(1) : getToday();
-
-    onChange({ ...task, completed: [...completedDates, completedDate] });
+  const addDone = (date: string) => {
+    onChange({ ...task, completed: [...completedDates, date] });
   };
 
   const removeLastDone = () => {
     onChange({ ...task, completed: completedDates.slice(0, -1) });
-  };
-
-  const handleClick = (event: React.MouseEvent) => {
-    if (event.shiftKey) {
-      removeLastDone();
-    } else {
-      addDone(event);
-    }
   };
 
   const handleClose = ({ key }: React.KeyboardEvent<HTMLFormElement>) => {
@@ -129,9 +120,7 @@ export function ThisWeekTask({ task }: { task: WeeklyTask }) {
 
   return (
     <>
-      <button onClick={handleClick} className="icon subtle">
-        {task.category}
-      </button>
+      <AddDoneMenu category={task.category} onAdd={addDone} />
       <div style={{ flexGrow: 1 }}>
         <div
           ref={descriptionDisplayRef}
@@ -148,7 +137,7 @@ export function ThisWeekTask({ task }: { task: WeeklyTask }) {
         completed={task.completed}
         frequency={task.frequency}
         description={task.description}
-        onAdd={addDone}
+        onAdd={() => addDone(getToday())}
         onRemove={removeLastDone}
       />
     </>

@@ -39,7 +39,8 @@ nav ul {
     transition: all 2s;
     position: relative;
 
-    a {
+    > a,
+    &.tab-overflow > div > button {
       display: block;
       text-decoration: none;
       color: inherit;
@@ -54,7 +55,52 @@ nav ul {
       &:focus-visible,
       &:hover {
         color: white;
+        background: none;
         outline: none;
+      }
+    }
+
+    &.tab-overflow {
+      margin-inline: auto;
+
+      &.unused {
+        position: absolute;
+        visibility: hidden;
+      }
+
+      > div {
+        height: 100%;
+      }
+
+      > div > button {
+        display: flex;
+        align-items: center;
+        height: 100%;
+        padding-inline: 8px;
+        border: 0;
+        border-radius: 0;
+
+        svg {
+          display: block;
+          fill: currentColor;
+        }
+      }
+
+      .menu:popover-open {
+        left: auto;
+        right: anchor(right);
+        translate: 0 2px;
+        border-radius: 0 0 6px 6px;
+
+        [role='menuitem'] {
+          padding-inline: 16px;
+          padding-block: 10px;
+          text-decoration: none;
+
+          &.active {
+            color: var(--link-colour);
+          }
+        }
       }
     }
   }
