@@ -1,6 +1,7 @@
 type VolumeNameFieldProps = {
   name: string;
   label: string;
+  defaultValue?: string;
   isRequired?: boolean;
   isFocused?: boolean;
 };
@@ -8,6 +9,7 @@ type VolumeNameFieldProps = {
 export function VolumeNameField({
   name,
   label,
+  defaultValue,
   isRequired,
   isFocused,
 }: VolumeNameFieldProps) {
@@ -22,6 +24,7 @@ export function VolumeNameField({
       <input
         name={name}
         aria-label={label}
+        defaultValue={defaultValue}
         required={isRequired}
         autoFocus={isFocused}
       />
