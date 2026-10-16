@@ -48,6 +48,39 @@ function getReorderedIds(
 }
 
 describe('Books', () => {
+  describe('shelf order', () => {
+    describe('when single books and series are mixed', () => {
+      it('shelves them in the order they are stored', () => {
+        const mort: BookDetails = {
+          id: 'book-mort',
+          type: 'book',
+          title: 'Mort',
+        };
+        const nation: BookDetails = {
+          id: 'book-nation',
+          type: 'book',
+          title: 'Nation',
+        };
+        renderWithMediaStorage(<Books />, {
+          books: [mort, theWatchSeries, nation],
+          bookSeries: [theWatchSeries],
+        });
+
+        expect(
+          screen
+            .getAllByRole('button', { name: /, unread$/ })
+            .map((spine) => spine.getAttribute('aria-label')?.split(',')[0]),
+        ).toEqual([
+          'Mort',
+          'Guards! Guards!',
+          'Men at Arms',
+          'Feet of Clay',
+          'Nation',
+        ]);
+      });
+    });
+  });
+
   describe('reordering a series with the keyboard', () => {
     describe('when ArrowLeft is pressed on a book', () => {
       it('moves the book one place earlier', async () => {
