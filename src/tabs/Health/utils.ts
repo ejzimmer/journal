@@ -65,7 +65,6 @@ export const getWeeklyBalance = (balances: Balance[]): Required<Balance>[] => {
 };
 
 const OVER_BALANCE = 20000;
-const STEADY_BALANCE = 19000;
 const BAND_SIZE = 1000;
 
 export const getWeekClass = ({
@@ -82,7 +81,7 @@ export const getWeekClass = ({
   if (balance < lowestBalance + BAND_SIZE) {
     return `${className} week-lowest`;
   }
-  if (balance >= STEADY_BALANCE) {
+  if (balance >= OVER_BALANCE - BAND_SIZE) {
     return className;
   }
   return `${className} week-between`;
@@ -96,7 +95,7 @@ export const getWeekLowestShare = ({
   lowestBalance: number;
 }) => {
   const lowestBand = Math.floor((lowestBalance + BAND_SIZE) / BAND_SIZE);
-  const steadyBand = STEADY_BALANCE / BAND_SIZE;
+  const lightestBand = (OVER_BALANCE - BAND_SIZE) / BAND_SIZE;
   const band = Math.floor(balance / BAND_SIZE);
-  return (steadyBand - band) / (steadyBand - lowestBand + 1);
+  return (lightestBand - band) / (lightestBand - lowestBand + 1);
 };
