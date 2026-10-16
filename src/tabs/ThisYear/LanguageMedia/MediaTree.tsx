@@ -1,10 +1,12 @@
 import { CSSProperties, useMemo, useState } from 'react';
 import { ModalDialog } from '../../../shared/controls/ModalDialog';
+import { OpenBookIcon } from '../../../shared/icons/OpenBook';
 import { BranchNames } from './BranchNames';
 import { CloudFrame } from './CloudFrame';
 import { findCurrentVolume } from './findCurrentVolume';
 import { findSignpostPlacement } from './findSignpostPlacement';
 import { getItemsByNumber } from './lists';
+import { HangingSign } from './HangingSign';
 import { getBlooms } from './getBlooms';
 import { TreeBeetles } from './TreeBeetles';
 import { ProgressUpdateForm } from './ProgressUpdateForm';
@@ -58,12 +60,13 @@ export function MediaTree({ series }: { series: PrintSeries }) {
         )}
         <TreeBeetles hosts={volumes} shapes={grownShapes} />
       </svg>
-      <Signpost
-        name={series.name}
-        placement={findSignpostPlacement(layout)}
-        isOpen={isProgressUpdateFormOpen}
-        onClick={() => setIsProgressUpdateFormOpen((wasOpen) => !wasOpen)}
-      />
+      <Signpost name={series.name} placement={findSignpostPlacement(layout)}>
+        <HangingSign
+          label="Update"
+          icon={<OpenBookIcon width="18px" />}
+          onClick={() => setIsProgressUpdateFormOpen(true)}
+        />
+      </Signpost>
       <ModalDialog
         isOpen={isProgressUpdateFormOpen}
         className="progress-update-modal"

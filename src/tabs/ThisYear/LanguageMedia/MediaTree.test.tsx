@@ -46,7 +46,7 @@ describe('MediaTree', () => {
     });
   });
 
-  describe('clicking the signpost', () => {
+  describe('clicking the update sign', () => {
     it('opens a form to track the current volume', async () => {
       const user = userEvent.setup();
       renderWithLanguageMediaStorage(
@@ -55,7 +55,7 @@ describe('MediaTree', () => {
         />,
       );
 
-      await user.click(screen.getByRole('button', { name: 'Series' }));
+      await user.click(screen.getByRole('button', { name: 'Update' }));
 
       expect(
         screen.getByRole('form', { name: 'Track Cosette' }),
@@ -68,7 +68,7 @@ describe('MediaTree', () => {
         renderWithLanguageMediaStorage(
           <MediaTree series={createSeries('book')} />,
         );
-        await user.click(screen.getByRole('button', { name: 'Series' }));
+        await user.click(screen.getByRole('button', { name: 'Update' }));
         const form = screen.getByRole('form', { name: 'Track Fantine' });
 
         await user.type(
