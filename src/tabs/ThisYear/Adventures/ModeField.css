@@ -7,9 +7,9 @@
 .mode-option {
   display: flex;
   align-items: center;
-  gap: 5px;
-  padding-block: 5px;
-  padding-inline: 12px;
+  justify-content: center;
+  width: 46px;
+  height: 38px;
   line-height: 1.4;
   background: white;
   border: 1px solid var(--border-colour);
@@ -33,12 +33,21 @@
     outline: 2px solid black;
     outline-offset: 2px;
   }
+
+  .tooltip {
+    position-area: top;
+    margin-inline-start: 0;
+    margin-block-end: 6px;
+  }
+
+  &:hover .tooltip,
+  &:has(:focus-visible) .tooltip {
+    opacity: 1;
+  }
 }
 
 .new-mode-option {
-  height: auto;
-  padding-block: 8px;
-  padding-inline: 10px;
+  padding: 0;
   border: 1px dashed var(--border-colour);
   color: var(--body-colour-mid);
 }
