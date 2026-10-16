@@ -14,6 +14,7 @@ import { PrintSeries, Volume } from './types';
 
 export type ShapeGrowth =
   | { type: 'trunk'; levelEnds: number[] }
+  | { type: 'stem'; firstLevel: number; levelEnds: number[] }
   | { type: 'branch'; level: number; start: number; end: number };
 
 export type TreeShape = {

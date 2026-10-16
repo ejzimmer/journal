@@ -3,6 +3,7 @@ import { ComprehensionRecords } from './ComprehensionRecords';
 import { MediaCactus } from './MediaCactus';
 import { AddMediaButton } from './AddMediaButton';
 import { MediaTree } from './MediaTree';
+import { MediaVine } from './MediaVine';
 import { isPrintSeries } from './types';
 
 import './MediaGarden.css';
@@ -28,7 +29,11 @@ export function MediaGarden() {
             </li>
           );
         }
-        return null;
+        return (
+          <li key={item.id}>
+            <MediaVine series={item} />
+          </li>
+        );
       })}
       <li>
         <AddMediaButton />

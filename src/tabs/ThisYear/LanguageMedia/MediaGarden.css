@@ -325,3 +325,25 @@
     background: hsl(33 72% 76%);
   }
 }
+
+.pergola-wood,
+.post-fronts rect {
+  fill: hsl(33 50% 64%);
+}
+
+.pergola-wood {
+  stroke: hsl(28 45% 30%);
+  stroke-width: 1.4;
+}
+
+.post-fronts path {
+  fill: none;
+  stroke: hsl(28 45% 30%);
+  stroke-width: 1.4;
+}
+
+.lattice {
+  fill: none;
+  stroke: hsl(33 40% 82%);
+  stroke-width: 1.6;
+}

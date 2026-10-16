@@ -12,7 +12,7 @@ const lesMiserables: PrintSeries = {
 };
 
 describe('MediaGarden', () => {
-  it('grows a tree for each book and manga series and a cactus for each YouTube channel', () => {
+  it('grows a tree for each book and manga series, a cactus for each YouTube channel and a vine for each TV series', () => {
     renderWithLanguageMediaStorage(<MediaGarden />, {
       media: [lupin, yotsuba, hugo, lesMiserables],
     });
@@ -21,6 +21,6 @@ describe('MediaGarden', () => {
       screen
         .getAllByRole('img')
         .map((plant) => plant.getAttribute('aria-label')),
-    ).toEqual(['よつばと！', 'HugoDécrypte', 'Les Misérables']);
+    ).toEqual(['Lupin', 'よつばと！', 'HugoDécrypte', 'Les Misérables']);
   });
 });
