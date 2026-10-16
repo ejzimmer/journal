@@ -40,8 +40,17 @@ export function formatVolumeTitle(
   if (series.type === 'book' && name) {
     return name;
   }
-  return `${series.name} ${number}${name ? `: ${name}` : ''}`;
+  const volumeNumber =
+    series.language === 'japanese' ? toFullWidthDigits(number) : number;
+  return `${series.name} ${volumeNumber}${name ? `: ${name}` : ''}`;
 }
+
+const FULL_WIDTH_OFFSET = 0xfee0;
+
+const toFullWidthDigits = (number: number) =>
+  String(number).replace(/\d/g, (digit) =>
+    String.fromCharCode(digit.charCodeAt(0) + FULL_WIDTH_OFFSET),
+  );
 
 export function formatComprehension({
   lookups,
