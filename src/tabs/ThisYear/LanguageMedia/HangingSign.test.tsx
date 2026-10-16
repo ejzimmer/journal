@@ -3,7 +3,7 @@ import userEvent from '@testing-library/user-event';
 import { HangingSign } from './HangingSign';
 
 describe('HangingSign', () => {
-  describe('when tapped', () => {
+  describe('when clicked', () => {
     it('calls onClick', async () => {
       const user = userEvent.setup();
       const onClick = jest.fn();

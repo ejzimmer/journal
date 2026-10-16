@@ -46,7 +46,7 @@ describe('MediaTree', () => {
     });
   });
 
-  describe('tapping the update sign', () => {
+  describe('clicking the update sign', () => {
     it('opens a form to track the current volume', async () => {
       const user = userEvent.setup();
       renderWithLanguageMediaStorage(
