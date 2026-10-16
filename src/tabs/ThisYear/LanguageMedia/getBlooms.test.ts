@@ -33,15 +33,15 @@ describe('getBlooms', () => {
     const series = createSeries(
       [
         createVolume(1, [
-          createUpdate('r2', '2026-10-03T10:00:00Z', {
+          createUpdate('u2', '2026-10-03T10:00:00Z', {
             page: 100,
             understood: 55,
           }),
-          createUpdate('r1', '2026-10-01T10:00:00Z', {
+          createUpdate('u1', '2026-10-01T10:00:00Z', {
             page: 50,
             understood: 40,
           }),
-          createUpdate('r3', '2026-10-04T10:00:00Z', {
+          createUpdate('u3', '2026-10-04T10:00:00Z', {
             page: 120,
             lookups: 3,
           }),
@@ -52,8 +52,8 @@ describe('getBlooms', () => {
 
     it('grows a flower for each update that says how much was understood, at its page, in the order they were saved', () => {
       expect(getBlooms(series)).toEqual([
-        { key: 'r1', limbKey: 'vol1-limb', at: 0.25, understood: 40 },
-        { key: 'r2', limbKey: 'vol1-limb', at: 0.5, understood: 55 },
+        { key: 'u1', limbKey: 'vol1-limb', at: 0.25, understood: 40 },
+        { key: 'u2', limbKey: 'vol1-limb', at: 0.5, understood: 55 },
       ]);
     });
   });
@@ -63,7 +63,7 @@ describe('getBlooms', () => {
       const series = createSeries(
         [
           createVolume(1, [
-            createUpdate('r1', '2026-10-01T10:00:00Z', { understood: 40 }),
+            createUpdate('u1', '2026-10-01T10:00:00Z', { understood: 40 }),
           ]),
         ],
         { volume: 1, page: 120 },
@@ -78,7 +78,7 @@ describe('getBlooms', () => {
       const series = createSeries(
         [
           createVolume(1, [
-            createUpdate('r1', '2026-10-01T10:00:00Z', {
+            createUpdate('u1', '2026-10-01T10:00:00Z', {
               page: 180,
               understood: 40,
             }),
@@ -96,7 +96,7 @@ describe('getBlooms', () => {
       const series = createSeries(
         [
           createVolume(1, [
-            createUpdate('r1', '2026-10-01T10:00:00Z', {
+            createUpdate('u1', '2026-10-01T10:00:00Z', {
               page: 2,
               understood: 10,
             }),

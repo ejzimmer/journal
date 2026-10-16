@@ -7,12 +7,12 @@ describe('sumProgressUpdates', () => {
       id: 'vol1',
       number: 1,
       updates: {
-        r2: {
+        u2: {
           at: '2026-10-03T10:00:00Z',
           lookups: 2,
           aiQuestions: 0,
         },
-        r1: {
+        u1: {
           at: '2026-10-01T10:00:00Z',
           lookups: 3,
           aiQuestions: 1,

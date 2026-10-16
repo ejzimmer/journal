@@ -67,7 +67,7 @@ export const yotsuba: PrintSeries = {
       number: 1,
       pages: 220,
       updates: {
-        r1: {
+        u1: {
           at: '2026-09-20T09:00:00Z',
           page: 41,
           lookups: 20,

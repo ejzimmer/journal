@@ -464,14 +464,14 @@ const languageMedia: Record<string, LanguageMedia> = {
         number: 1,
         pages: 220,
         updates: {
-          r1: {
+          u1: {
             at: '2026-09-20T09:00:00Z',
             page: 20,
             lookups: 5,
             aiQuestions: 1,
             understood: 40,
           },
-          r2: {
+          u2: {
             at: '2026-09-22T09:00:00Z',
             page: 41,
             lookups: 3,
@@ -501,28 +501,28 @@ const languageMedia: Record<string, LanguageMedia> = {
         pages: 520,
         status: 'done',
         updates: {
-          r3: {
+          u3: {
             at: '2026-09-01T09:00:00Z',
             page: 90,
             lookups: 4,
             aiQuestions: 1,
             understood: 40,
           },
-          r4: {
+          u4: {
             at: '2026-09-02T09:00:00Z',
             page: 120,
             lookups: 2,
             aiQuestions: 0,
             understood: 50,
           },
-          r5: {
+          u5: {
             at: '2026-09-10T09:00:00Z',
             page: 330,
             lookups: 5,
             aiQuestions: 1,
             understood: 70,
           },
-          r6: {
+          u6: {
             at: '2026-09-15T09:00:00Z',
             page: 470,
             lookups: 3,
@@ -537,14 +537,14 @@ const languageMedia: Record<string, LanguageMedia> = {
         name: 'Cosette',
         pages: 480,
         updates: {
-          r7: {
+          u7: {
             at: '2026-09-25T09:00:00Z',
             page: 90,
             lookups: 3,
             aiQuestions: 1,
             understood: 20,
           },
-          r8: {
+          u8: {
             at: '2026-10-05T09:00:00Z',
             page: 200,
             lookups: 2,
