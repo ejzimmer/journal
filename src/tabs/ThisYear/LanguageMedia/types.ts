@@ -12,16 +12,8 @@ export type MediaType = (typeof MEDIA_TYPES)[number];
 export const STATUSES = ['not-started', 'in-progress', 'done'] as const;
 export type Status = (typeof STATUSES)[number];
 
-export type FieldChange = { from?: unknown; to?: unknown };
-
-export type ItemUpdate = {
-  at: string;
-  changes: Record<string, FieldChange>;
-};
-
 export type Timestamps = {
   createdAt?: string;
-  updates?: Record<string, ItemUpdate>;
 };
 
 export type Comprehension = {
@@ -71,14 +63,19 @@ export type YoutubeChannel = Timestamps & {
   videos?: Record<string, Video>;
 };
 
-export type Volume = Timestamps &
-  Comprehension & {
-    id: string;
-    number: number;
-    name?: string;
-    pages?: number;
-    status?: Status;
-  };
+export type ProgressUpdate = Comprehension & {
+  at: string;
+  page?: number;
+};
+
+export type Volume = Timestamps & {
+  id: string;
+  number: number;
+  name?: string;
+  pages?: number;
+  status?: Status;
+  updates?: Record<string, ProgressUpdate>;
+};
 
 export type PrintSeries = Timestamps & {
   id: string;

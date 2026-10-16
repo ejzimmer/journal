@@ -11,6 +11,7 @@ import { EditChannelForm } from './EditChannelForm';
 import { findSignpostPlacement } from './findSignpostPlacement';
 import { HangingSign } from './HangingSign';
 import { getItemsInAddedOrder } from './lists';
+import { placeBeetles } from './placeBeetles';
 import { Signpost } from './Signpost';
 import { TreeBeetles } from './TreeBeetles';
 import { getGrownShapes } from './treeGrowth';
@@ -53,7 +54,7 @@ export function MediaCactus({ channel }: { channel: YoutubeChannel }) {
         <TreeFill shapes={grownShapes} />
         <CactusRibs shapes={grownShapes} />
         <CactusCrowns channel={channel} shapes={grownShapes} />
-        <TreeBeetles hosts={videos} shapes={grownShapes} />
+        <TreeBeetles spots={placeBeetles(videos, grownShapes)} />
       </svg>
       <Signpost name={channel.name} placement={findSignpostPlacement(layout)}>
         <HangingSign

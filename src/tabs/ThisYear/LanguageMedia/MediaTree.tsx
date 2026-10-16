@@ -10,6 +10,7 @@ import { findSignpostPlacement } from './findSignpostPlacement';
 import { getItemsByNumber } from './lists';
 import { HangingSign } from './HangingSign';
 import { getBlooms } from './getBlooms';
+import { placeProgressBeetles } from './placeProgressBeetles';
 import { TreeBeetles } from './TreeBeetles';
 import { ProgressUpdateForm } from './ProgressUpdateForm';
 import { createTreeLayout } from './treeLayout';
@@ -61,7 +62,7 @@ export function MediaTree({ series }: { series: PrintSeries }) {
         {series.type === 'book' && (
           <BranchNames layout={layout} series={series} />
         )}
-        <TreeBeetles hosts={volumes} shapes={grownShapes} />
+        <TreeBeetles spots={placeProgressBeetles(series, grownShapes)} />
       </svg>
       <Signpost name={series.name} placement={findSignpostPlacement(layout)}>
         <HangingSign

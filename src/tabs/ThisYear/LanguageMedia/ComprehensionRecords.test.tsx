@@ -11,13 +11,12 @@ const series: PrintSeries = {
     vol1: {
       id: 'vol1',
       number: 1,
-      lookups: 5,
-      aiQuestions: 0,
-      understood: 70,
       updates: {
         u1: {
           at: '2026-10-03T09:00:00Z',
-          changes: { lookups: { from: 0, to: 5 }, understood: { to: 70 } },
+          lookups: 5,
+          aiQuestions: 0,
+          understood: 70,
         },
       },
     },
@@ -25,7 +24,7 @@ const series: PrintSeries = {
 };
 
 describe('ComprehensionRecords', () => {
-  it("shows each day's lookups and comprehension", () => {
+  it("shows each update's lookups and comprehension", () => {
     render(<ComprehensionRecords series={series} />);
 
     expect(

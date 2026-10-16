@@ -186,14 +186,8 @@ describe('LanguageMediaStorageContext', () => {
         });
 
         expect(volumeCalls).toEqual([
-          [
-            `${thisYearsPath}/new/volumes`,
-            { number: 1, lookups: 0, aiQuestions: 0, createdAt: NOW },
-          ],
-          [
-            `${thisYearsPath}/new/volumes`,
-            { number: 2, lookups: 0, aiQuestions: 0, createdAt: NOW },
-          ],
+          [`${thisYearsPath}/new/volumes`, { number: 1, createdAt: NOW }],
+          [`${thisYearsPath}/new/volumes`, { number: 2, createdAt: NOW }],
         ]);
       });
     });
@@ -213,8 +207,6 @@ describe('LanguageMediaStorageContext', () => {
             {
               number: 1,
               name: 'Astérix le Gaulois',
-              lookups: 0,
-              aiQuestions: 0,
               createdAt: NOW,
             },
           ],
@@ -223,8 +215,6 @@ describe('LanguageMediaStorageContext', () => {
             {
               number: 2,
               name: 'La Serpe d’or',
-              lookups: 0,
-              aiQuestions: 0,
               createdAt: NOW,
             },
           ],
@@ -280,30 +270,15 @@ describe('LanguageMediaStorageContext', () => {
         lookups: 4,
       });
 
-      expect(setValues).toHaveBeenCalledWith({
-        [`${episodePath}/lookups`]: 4,
-      });
-    });
-
-    it('records the update with its time and what it changed', () => {
-      const addItem = jest.fn();
-      const storage = createStorageWithLupin({ addItem });
-
-      storage.updateItem(['lupin', 'seasons', 's1', 'episodes', 'e1'], {
-        lookups: 4,
-      });
-
-      expect(addItem).toHaveBeenCalledWith(`${episodePath}/updates`, {
-        at: NOW,
-        changes: { lookups: { from: 3, to: 4 } },
-      });
+      expect(setValues).toHaveBeenCalledWith(
+        expect.objectContaining({ [`${episodePath}/lookups`]: 4 }),
+      );
     });
 
     describe('with some fields unchanged', () => {
-      it('saves and records only the ones that changed', () => {
+      it('saves only the ones that changed', () => {
         const setValues = jest.fn();
-        const addItem = jest.fn();
-        const storage = createStorageWithLupin({ setValues, addItem });
+        const storage = createStorageWithLupin({ setValues });
 
         storage.updateItem(['lupin', 'seasons', 's1', 'episodes', 'e1'], {
           lookups: 3,
@@ -314,25 +289,19 @@ describe('LanguageMediaStorageContext', () => {
         expect(setValues).toHaveBeenCalledWith({
           [`${episodePath}/understood`]: 90,
         });
-        expect(addItem).toHaveBeenCalledWith(`${episodePath}/updates`, {
-          at: NOW,
-          changes: { understood: { from: 80, to: 90 } },
-        });
       });
     });
 
     describe('with nothing changed', () => {
       it('saves nothing', () => {
         const setValues = jest.fn();
-        const addItem = jest.fn();
-        const storage = createStorageWithLupin({ setValues, addItem });
+        const storage = createStorageWithLupin({ setValues });
 
         storage.updateItem(['lupin'], {
           upTo: { timestampInSeconds: 600, episode: 1, season: 1 },
         });
 
         expect(setValues).not.toHaveBeenCalled();
-        expect(addItem).not.toHaveBeenCalled();
       });
     });
 
@@ -345,18 +314,6 @@ describe('LanguageMediaStorageContext', () => {
 
         expect(setValues).toHaveBeenCalledWith({
           [`${thisYearsPath}/lupin/upTo`]: null,
-        });
-      });
-
-      it('records what it was cleared from', () => {
-        const addItem = jest.fn();
-        const storage = createStorageWithLupin({ addItem });
-
-        storage.updateItem(['lupin'], { upTo: undefined });
-
-        expect(addItem).toHaveBeenCalledWith(`${thisYearsPath}/lupin/updates`, {
-          at: NOW,
-          changes: { upTo: { from: lupin.upTo } },
         });
       });
     });

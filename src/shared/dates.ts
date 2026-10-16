@@ -18,6 +18,12 @@ export const getDateDaysAgo = (days: number) =>
 export const getDateDaysAhead = (days: number) =>
   getTodaysPlainDate().add({ days }).toString();
 
+export const getLocalDate = (instant: string) =>
+  Temporal.Instant.from(instant)
+    .toZonedDateTimeISO(Temporal.Now.timeZoneId())
+    .toPlainDate()
+    .toString();
+
 export const isToday = (date: string) =>
   Temporal.PlainDate.compare(date, getToday()) === 0;
 

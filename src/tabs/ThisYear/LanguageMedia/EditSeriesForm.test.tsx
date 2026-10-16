@@ -16,8 +16,6 @@ const miserables: PrintSeries = {
       number: 1,
       name: 'Fantine',
       pages: 520,
-      lookups: 0,
-      aiQuestions: 0,
     },
   },
 };
@@ -28,7 +26,7 @@ const yotsuba: PrintSeries = {
   name: 'よつばと！',
   language: 'japanese',
   volumes: {
-    v1: { id: 'v1', number: 1, pages: 220, lookups: 0, aiQuestions: 0 },
+    v1: { id: 'v1', number: 1, pages: 220 },
   },
 };
 

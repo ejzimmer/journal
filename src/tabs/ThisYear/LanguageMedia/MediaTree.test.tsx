@@ -9,8 +9,6 @@ const createVolume = (number: number, name: string): Volume => ({
   number,
   name,
   pages: 200,
-  lookups: 0,
-  aiQuestions: 0,
 });
 
 const createSeries = (type: PrintSeries['type']): PrintSeries => ({

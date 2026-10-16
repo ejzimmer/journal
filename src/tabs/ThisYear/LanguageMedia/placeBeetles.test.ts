@@ -1,7 +1,7 @@
 import { placeBeetles } from './placeBeetles';
 import { EdgeSample } from './treeGeometry';
 import { GrownShape } from './treeGrowth';
-import { Volume } from './types';
+import { Comprehension } from './types';
 
 const createBranch = (key: string, amount: number): GrownShape => ({
   key,
@@ -25,9 +25,9 @@ const createTrunk = (amount: number): GrownShape => ({
   })),
 });
 
-const createVolume = (
-  questions: Pick<Volume, 'lookups' | 'aiQuestions'>,
-): Volume[] => [{ id: 'vol1', number: 1, pages: 200, ...questions }];
+const createHosts = (questions: Comprehension) => [
+  { id: 'vol1', ...questions },
+];
 
 const createLimb = (amount: number): GrownShape => {
   const limb = createBranch('vol1-limb', amount);
@@ -43,7 +43,7 @@ const createLimb = (amount: number): GrownShape => {
 
 describe('placeBeetles', () => {
   describe('for an item with look-ups and AI questions', () => {
-    const beetles = placeBeetles(createVolume({ lookups: 3, aiQuestions: 1 }), [
+    const beetles = placeBeetles(createHosts({ lookups: 3, aiQuestions: 1 }), [
       createBranch('vol1-limb', 1),
     ]);
 
@@ -71,7 +71,7 @@ describe('placeBeetles', () => {
   });
 
   describe('for an item with several grown branches', () => {
-    const beetles = placeBeetles(createVolume({ lookups: 3, aiQuestions: 0 }), [
+    const beetles = placeBeetles(createHosts({ lookups: 3, aiQuestions: 0 }), [
       createBranch('vol1-limb', 1),
       createBranch('vol1-twig-0', 0.5),
       createBranch('vol1-twig-1', 0.1),
@@ -94,7 +94,7 @@ describe('placeBeetles', () => {
   describe('for an item with more beetles than its branches have room for', () => {
     const limb = createLimb(0.5);
     const trunk = createTrunk(1);
-    const beetles = placeBeetles(createVolume({ lookups: 3, aiQuestions: 2 }), [
+    const beetles = placeBeetles(createHosts({ lookups: 3, aiQuestions: 2 }), [
       trunk,
       limb,
     ]);
@@ -121,7 +121,7 @@ describe('placeBeetles', () => {
 
   describe('for an item whose branch is too short to hold any beetles', () => {
     const trunk = createTrunk(1);
-    const beetles = placeBeetles(createVolume({ lookups: 2, aiQuestions: 1 }), [
+    const beetles = placeBeetles(createHosts({ lookups: 2, aiQuestions: 1 }), [
       trunk,
       createLimb(0.15),
     ]);

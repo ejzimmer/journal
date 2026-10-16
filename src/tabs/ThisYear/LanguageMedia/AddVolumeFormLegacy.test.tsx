@@ -10,7 +10,7 @@ describe('AddVolumeFormLegacy', () => {
       render(
         <AddVolumeFormLegacy
           volumes={{
-            vol1: { id: 'vol1', number: 1, lookups: 0, aiQuestions: 0 },
+            vol1: { id: 'vol1', number: 1 },
           }}
           isNameRequired={false}
           onAdd={onAdd}

@@ -5,8 +5,6 @@ const volume: Volume = {
   id: 'vol2',
   number: 2,
   pages: 200,
-  lookups: 0,
-  aiQuestions: 0,
 };
 
 const createSeries = (upTo?: PrintSeries['upTo']): PrintSeries => ({

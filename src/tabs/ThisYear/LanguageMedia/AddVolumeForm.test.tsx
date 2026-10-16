@@ -51,7 +51,7 @@ describe('AddVolumeForm', () => {
 
         expect(storageContext.addItem).toHaveBeenCalledWith(
           ['yotsuba', 'volumes'],
-          { number: 3, pages: 200, lookups: 0, aiQuestions: 0 },
+          { number: 3, pages: 200 },
         );
       });
 
@@ -100,8 +100,6 @@ describe('AddVolumeForm', () => {
             number: 1,
             name: 'Fantine',
             pages: 480,
-            lookups: 0,
-            aiQuestions: 0,
           },
         );
       });

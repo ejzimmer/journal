@@ -4,24 +4,54 @@ import { ModalContext } from '../../../shared/controls/Modal';
 import { ProgressUpdateForm } from './ProgressUpdateForm';
 import { renderWithLanguageMediaStorage } from './languageMediaStorageTestUtils';
 import { yotsuba } from './testMedia';
-import { PrintSeries } from './types';
+import { PrintSeries, ProgressUpdate, Volume } from './types';
 
 const volume = yotsuba.volumes!.vol1;
 
+const UPDATE_PATH = ['yotsuba', 'volumes', 'vol1', 'updates', 'new'];
+const NOW = '2026-10-16T09:00:00Z';
+
 const renderForm = (series: PrintSeries = yotsuba) => {
   const closeModal = jest.fn();
+  const renderVolume = (volumeNow: Volume) => (
+    <ModalContext.Provider value={{ closeModal }}>
+      <ProgressUpdateForm series={series} volume={volumeNow} />
+    </ModalContext.Provider>
+  );
+  const view = renderWithLanguageMediaStorage(
+    renderVolume(series.volumes!.vol1),
+  );
   return {
     user: userEvent.setup(),
     closeModal,
-    ...renderWithLanguageMediaStorage(
-      <ModalContext.Provider value={{ closeModal }}>
-        <ProgressUpdateForm series={series} volume={series.volumes!.vol1} />
-      </ModalContext.Provider>,
-    ),
+    ...view,
+    rerenderWithUpdate: (update: Partial<ProgressUpdate>) =>
+      view.rerender(
+        renderVolume({
+          ...volume,
+          updates: {
+            ...volume.updates,
+            new: { at: NOW, lookups: 0, aiQuestions: 0, ...update },
+          },
+        }),
+      ),
   };
 };
 
 describe('ProgressUpdateForm', () => {
+  beforeEach(() => {
+    jest
+      .spyOn(Temporal.Now, 'instant')
+      .mockReturnValue(Temporal.Instant.from(NOW));
+    jest
+      .spyOn(crypto, 'randomUUID')
+      .mockReturnValue('new' as ReturnType<typeof crypto.randomUUID>);
+  });
+
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
   describe('the title', () => {
     describe('for a manga', () => {
       describe('in Japanese', () => {
@@ -106,18 +136,52 @@ describe('ProgressUpdateForm', () => {
     });
   });
 
+  describe('the counters', () => {
+    it('start at zero, whatever earlier updates recorded', () => {
+      renderForm();
+
+      expect(screen.getByRole('spinbutton', { name: 'Looked up' })).toHaveValue(
+        0,
+      );
+      expect(screen.getByRole('spinbutton', { name: 'Asked AI' })).toHaveValue(
+        0,
+      );
+    });
+  });
+
   describe('adding one lookup', () => {
-    it('saves the new lookup count', async () => {
-      const { user, storageContext } = renderForm();
+    describe('before anything else is saved', () => {
+      it('starts an update with one lookup, at the page I am up to', async () => {
+        const { user, storageContext } = renderForm();
 
-      await user.click(
-        screen.getByRole('button', { name: 'Add a lookup to Volume 1' }),
-      );
+        await user.click(
+          screen.getByRole('button', { name: 'Add a lookup to Volume 1' }),
+        );
 
-      expect(storageContext.updateItem).toHaveBeenCalledWith(
-        ['yotsuba', 'volumes', 'vol1'],
-        { lookups: 21 },
-      );
+        expect(storageContext.updateItem).toHaveBeenCalledWith(UPDATE_PATH, {
+          at: NOW,
+          lookups: 1,
+          aiQuestions: 0,
+          page: 41,
+        });
+      });
+    });
+
+    describe('once the update is started', () => {
+      it('adds the lookup to that update', async () => {
+        const { user, storageContext, rerenderWithUpdate } = renderForm();
+        const addLookup = screen.getByRole('button', {
+          name: 'Add a lookup to Volume 1',
+        });
+
+        await user.click(addLookup);
+        rerenderWithUpdate({ lookups: 1 });
+        await user.click(addLookup);
+
+        expect(storageContext.updateItem).toHaveBeenCalledWith(UPDATE_PATH, {
+          lookups: 2,
+        });
+      });
     });
 
     it('keeps the form open', async () => {
@@ -132,23 +196,25 @@ describe('ProgressUpdateForm', () => {
   });
 
   describe('adding one AI question', () => {
-    it('saves the new AI question count', async () => {
+    it('starts an update with one AI question', async () => {
       const { user, storageContext } = renderForm();
 
       await user.click(
         screen.getByRole('button', { name: 'Add an AI question to Volume 1' }),
       );
 
-      expect(storageContext.updateItem).toHaveBeenCalledWith(
-        ['yotsuba', 'volumes', 'vol1'],
-        { aiQuestions: 4 },
-      );
+      expect(storageContext.updateItem).toHaveBeenCalledWith(UPDATE_PATH, {
+        at: NOW,
+        lookups: 0,
+        aiQuestions: 1,
+        page: 41,
+      });
     });
   });
 
   describe('clicking save', () => {
     describe('after moving the understood slider', () => {
-      it('saves how much I understood', async () => {
+      it('saves an update of how much I understood', async () => {
         const { user, storageContext } = renderForm();
 
         fireEvent.change(screen.getByRole('slider', { name: 'Understood' }), {
@@ -156,25 +222,44 @@ describe('ProgressUpdateForm', () => {
         });
         await user.click(screen.getByRole('button', { name: 'Save' }));
 
-        expect(storageContext.updateItem).toHaveBeenCalledWith(
-          ['yotsuba', 'volumes', 'vol1'],
-          { lookups: 20, aiQuestions: 3, understood: 85 },
-        );
+        expect(storageContext.updateItem).toHaveBeenCalledWith(UPDATE_PATH, {
+          at: NOW,
+          lookups: 0,
+          aiQuestions: 0,
+          understood: 85,
+          page: 41,
+        });
       });
     });
 
-    describe('when understood has never been set', () => {
-      it('leaves it unset', async () => {
-        const { user, storageContext } = renderForm({
-          ...yotsuba,
-          volumes: { vol1: { ...volume, understood: undefined } },
+    describe('after adding a lookup', () => {
+      it('finishes that update', async () => {
+        const { user, storageContext, rerenderWithUpdate } = renderForm();
+
+        await user.click(
+          screen.getByRole('button', { name: 'Add a lookup to Volume 1' }),
+        );
+        rerenderWithUpdate({ lookups: 1 });
+        await user.click(screen.getByRole('button', { name: 'Save' }));
+
+        expect(storageContext.updateItem).toHaveBeenCalledWith(UPDATE_PATH, {
+          lookups: 1,
+          aiQuestions: 0,
+          understood: undefined,
+          page: 41,
         });
+      });
+    });
+
+    describe('with nothing recorded', () => {
+      it('saves no update', async () => {
+        const { user, storageContext } = renderForm();
 
         await user.click(screen.getByRole('button', { name: 'Save' }));
 
-        expect(storageContext.updateItem).toHaveBeenCalledWith(
-          ['yotsuba', 'volumes', 'vol1'],
-          { lookups: 20, aiQuestions: 3, understood: undefined },
+        expect(storageContext.updateItem).not.toHaveBeenCalledWith(
+          UPDATE_PATH,
+          expect.anything(),
         );
       });
     });
@@ -189,29 +274,46 @@ describe('ProgressUpdateForm', () => {
   });
 
   describe('pressing enter in a field', () => {
-    it('saves the totals', async () => {
+    it('saves the update', async () => {
       const { user, storageContext } = renderForm();
       const askedAi = screen.getByRole('spinbutton', { name: 'Asked AI' });
 
       await user.clear(askedAi);
       await user.type(askedAi, '5{Enter}');
 
-      expect(storageContext.updateItem).toHaveBeenCalledWith(
-        ['yotsuba', 'volumes', 'vol1'],
-        { lookups: 20, aiQuestions: 5, understood: 60 },
-      );
+      expect(storageContext.updateItem).toHaveBeenCalledWith(UPDATE_PATH, {
+        at: NOW,
+        lookups: 0,
+        aiQuestions: 5,
+        page: 41,
+      });
     });
 
     describe('with a page', () => {
-      it('saves where I am up to', async () => {
-        const { user, storageContext } = renderForm();
+      const typePage = async () => {
+        const view = renderForm();
         const page = screen.getByRole('spinbutton', { name: 'Page' });
+        await view.user.clear(page);
+        await view.user.type(page, '60{Enter}');
+        return view;
+      };
 
-        await user.clear(page);
-        await user.type(page, '60{Enter}');
+      it('saves where I am up to', async () => {
+        const { storageContext } = await typePage();
 
         expect(storageContext.updateItem).toHaveBeenCalledWith(['yotsuba'], {
           upTo: { volume: 1, page: 60 },
+        });
+      });
+
+      it('saves an update at that page', async () => {
+        const { storageContext } = await typePage();
+
+        expect(storageContext.updateItem).toHaveBeenCalledWith(UPDATE_PATH, {
+          at: NOW,
+          lookups: 0,
+          aiQuestions: 0,
+          page: 60,
         });
       });
     });

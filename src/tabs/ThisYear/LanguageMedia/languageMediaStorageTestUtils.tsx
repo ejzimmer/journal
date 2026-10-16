@@ -1,4 +1,4 @@
-import { ReactElement } from 'react';
+import { ReactElement, ReactNode } from 'react';
 import { render } from '@testing-library/react';
 import {
   LanguageMediaStorageContext,
@@ -27,10 +27,12 @@ export function renderWithLanguageMediaStorage(
     selectYear: jest.fn(),
     getMediaYear: () => storageContext,
   };
-  const result = render(
-    <LanguageMediaStorageContext.Provider value={contextValue}>
-      {ui}
-    </LanguageMediaStorageContext.Provider>,
-  );
+  const result = render(ui, {
+    wrapper: ({ children }: { children: ReactNode }) => (
+      <LanguageMediaStorageContext.Provider value={contextValue}>
+        {children}
+      </LanguageMediaStorageContext.Provider>
+    ),
+  });
   return { ...result, storageContext };
 }
