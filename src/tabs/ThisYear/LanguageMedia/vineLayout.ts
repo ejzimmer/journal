@@ -120,6 +120,7 @@ function createTrunk(beamMid: number, beamBottom: number, right: number) {
 }
 
 function growShoot(
+  season: Season,
   episode: Episode,
   level: number,
   attach: Point,
@@ -135,7 +136,7 @@ function growShoot(
     y: attach.y + Math.sin(angle) * step,
   }));
   return {
-    key: `${episode.id}-shoot`,
+    key: `${season.id}-${episode.id}-shoot`,
     edges: traceTaperedEdges(points, SHOOT_WIDTHS),
     growth: { type: 'branch', level, start: 0, end: 1 },
   };
@@ -170,6 +171,7 @@ function growSeason(
     : DEFAULT_EPISODE_SECONDS;
   const shoots = episodes.map((episode, index) =>
     growShoot(
+      season,
       episode,
       firstLevel + index,
       findPointAtLength(points, attachLengths[index]),
