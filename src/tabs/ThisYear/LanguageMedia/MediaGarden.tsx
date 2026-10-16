@@ -1,6 +1,7 @@
 import { useLanguageMediaStorage } from './LanguageMediaStorageContext';
 import { ComprehensionRecords } from './ComprehensionRecords';
 import { MediaCactus } from './MediaCactus';
+import { AddMediaButton } from './AddMediaButton';
 import { MediaTree } from './MediaTree';
 import { isPrintSeries } from './types';
 
@@ -29,6 +30,9 @@ export function MediaGarden() {
         }
         return null;
       })}
+      <li>
+        <AddMediaButton />
+      </li>
     </ul>
   );
 }
