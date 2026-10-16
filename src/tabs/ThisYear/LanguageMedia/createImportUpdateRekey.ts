@@ -1,17 +1,17 @@
+import { isPlainTree } from '../../../shared/localFirst/pathTree';
 import { getLanguageMediaPath, StoredMediaByYear } from './types';
 
 export const IMPORT_UPDATE_KEY = 'migration';
-
-const isRecord = (value: unknown): value is Record<string, unknown> =>
-  typeof value === 'object' && value !== null;
 
 function findImportUpdates(
   node: unknown,
   path: string,
 ): [string, Record<string, unknown>][] {
-  if (!isRecord(node)) return [];
+  if (!isPlainTree(node)) return [];
   return Object.entries(node).flatMap(([key, child]) =>
-    key === 'updates' && isRecord(child) && isRecord(child[IMPORT_UPDATE_KEY])
+    key === 'updates' &&
+    isPlainTree(child) &&
+    isPlainTree(child[IMPORT_UPDATE_KEY])
       ? [[`${path}/updates`, child[IMPORT_UPDATE_KEY]]]
       : findImportUpdates(child, `${path}/${key}`),
   );

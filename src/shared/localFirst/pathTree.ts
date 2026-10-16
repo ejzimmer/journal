@@ -82,6 +82,6 @@ export function getChangedFields(
   return valuesAreEqual(current, next) ? [] : [[path, next]];
 }
 
-function isPlainTree(value: unknown): value is Tree {
+export function isPlainTree(value: unknown): value is Tree {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
 }

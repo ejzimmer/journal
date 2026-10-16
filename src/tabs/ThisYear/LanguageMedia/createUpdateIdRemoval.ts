@@ -1,14 +1,12 @@
+import { isPlainTree } from '../../../shared/localFirst/pathTree';
 import { getLanguageMediaPath, StoredMediaByYear } from './types';
 
-const isRecord = (value: unknown): value is Record<string, unknown> =>
-  typeof value === 'object' && value !== null;
-
 function findUpdateIdPaths(node: unknown, path: string): string[] {
-  if (!isRecord(node)) return [];
+  if (!isPlainTree(node)) return [];
   return Object.entries(node).flatMap(([key, child]) =>
-    key === 'updates' && isRecord(child)
+    key === 'updates' && isPlainTree(child)
       ? Object.entries(child)
-          .filter(([, update]) => isRecord(update) && 'id' in update)
+          .filter(([, update]) => isPlainTree(update) && 'id' in update)
           .map(([updateKey]) => `${path}/updates/${updateKey}/id`)
       : findUpdateIdPaths(child, `${path}/${key}`),
   );

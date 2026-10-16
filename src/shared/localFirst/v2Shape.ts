@@ -5,7 +5,7 @@ import {
 } from '../../tabs/Health/calories/PeriodIcons';
 import { WORK_KEY } from '../../tabs/Work/types';
 import { CLASSES_PATH, DAILY_PATH, WEEKLY_KEY } from '../types';
-import { getAtPath, Tree } from './pathTree';
+import { getAtPath, isPlainTree, Tree } from './pathTree';
 
 export const V2_ROOT = 'v2';
 export const APP_DATA_VERSION = 2;
@@ -125,7 +125,7 @@ function reshapeTree(
       : reshape.convertToV1(value);
   }
 
-  if (!isPlainObject(value) || !hasReshapeBelow(segments, direction)) {
+  if (!isPlainTree(value) || !hasReshapeBelow(segments, direction)) {
     return value;
   }
 
@@ -187,13 +187,9 @@ function splitPath(path: string): string[] {
   return path ? path.split('/') : [];
 }
 
-function isPlainObject(value: unknown): value is Tree {
-  return typeof value === 'object' && value !== null && !Array.isArray(value);
-}
-
 function getEntries(value: unknown): unknown[] {
   if (Array.isArray(value)) return value.filter((entry) => entry != null);
-  if (isPlainObject(value)) return Object.values(value);
+  if (isPlainTree(value)) return Object.values(value);
   return [];
 }
 
@@ -206,7 +202,7 @@ function createListOrNothing<T>(list: T[]): T[] | undefined {
 }
 
 function sortEntriesByKey(value: unknown): [string, unknown][] {
-  if (!isPlainObject(value)) return [];
+  if (!isPlainTree(value)) return [];
   return Object.entries(value).sort(([a], [b]) => (a < b ? -1 : 1));
 }
 
@@ -234,7 +230,7 @@ function convertTrackersToPeriod(value: unknown): unknown {
 }
 
 function convertPeriodToTrackers(value: unknown): unknown {
-  if (!isPlainObject(value)) return undefined;
+  if (!isPlainTree(value)) return undefined;
   const trackersByField = Object.fromEntries(
     Object.entries(PERIOD_FIELDS).map(([tracker, field]) => [field, tracker]),
   );
@@ -265,13 +261,13 @@ function convertBlocksToV2(value: unknown): unknown {
 }
 
 function convertBlocksToV1(value: unknown): unknown {
-  if (!isPlainObject(value)) return undefined;
+  if (!isPlainTree(value)) return undefined;
   const blocks = Object.values(value)
-    .filter(isPlainObject)
+    .filter(isPlainTree)
     .sort((a, b) => Number(a.position) - Number(b.position))
     .map(({ position, completed, ...rest }) => {
       const sessions = createListOrNothing(
-        Object.keys(isPlainObject(completed) ? completed : {})
+        Object.keys(isPlainTree(completed) ? completed : {})
           .map((key) => Number(key.slice(1)))
           .sort((a, b) => a - b),
       );
@@ -287,7 +283,7 @@ function convertLabelIdsToV2(value: unknown): unknown {
 }
 
 function convertLabelIdsToV1(value: unknown): unknown {
-  if (!isPlainObject(value)) return undefined;
+  if (!isPlainTree(value)) return undefined;
   return createListOrNothing(
     Object.entries(value)
       .sort(([idA, a], [idB, b]) =>
