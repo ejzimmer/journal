@@ -35,10 +35,6 @@
     }
   }
 
-  [role='menuitem']:not(:last-child, :has(+ .menu-divider)) {
-    border-block-end: 2px solid var(--border-colour);
-  }
-
   .menu-divider {
     margin: 0;
     border: none;
