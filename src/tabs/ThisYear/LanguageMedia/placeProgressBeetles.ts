@@ -7,7 +7,7 @@ import {
   Perch,
   placeOnPerch,
 } from './beetlePerches';
-import { findUpdatePosition } from './findUpdatePosition';
+import { calculateUpdatePosition } from './calculateUpdatePosition';
 import { getProgressUpdates } from './getProgressUpdates';
 import { LadyBeetleColour } from './LadyBeetle';
 import { getItemsByNumber } from './lists';
@@ -32,7 +32,7 @@ function createStretches(
   return getProgressUpdates(volume).map((update) => {
     const end = Math.min(
       limbEnd,
-      Math.max(start, findUpdatePosition(volume, update, progress)),
+      Math.max(start, calculateUpdatePosition(volume, update, progress)),
     );
     const stretch = {
       key: update.key,

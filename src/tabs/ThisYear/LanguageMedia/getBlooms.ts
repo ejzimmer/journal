@@ -1,4 +1,4 @@
-import { findUpdatePosition } from './findUpdatePosition';
+import { calculateUpdatePosition } from './calculateUpdatePosition';
 import { getItemsByNumber } from './lists';
 import { getProgressUpdates } from './getProgressUpdates';
 import { PrintSeries } from './types';
@@ -21,7 +21,7 @@ export function getBlooms(series: PrintSeries): Bloom[] {
             {
               key: update.key,
               limbKey: `${volume.id}-limb`,
-              at: findUpdatePosition(volume, update, progress),
+              at: calculateUpdatePosition(volume, update, progress),
               understood: update.understood,
             },
           ],

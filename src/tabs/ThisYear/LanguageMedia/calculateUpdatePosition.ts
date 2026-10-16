@@ -2,7 +2,7 @@ import { ProgressUpdate, Volume } from './types';
 
 const MIN_POSITION = 0.1;
 
-export function findUpdatePosition(
+export function calculateUpdatePosition(
   { pages }: Volume,
   { page }: ProgressUpdate,
   progress: number,
