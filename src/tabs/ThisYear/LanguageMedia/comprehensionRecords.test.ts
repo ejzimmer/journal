@@ -26,37 +26,47 @@ const createSeries = (volumes: Volume[]): PrintSeries => ({
 });
 
 describe('getComprehensionRecords', () => {
-  describe('with updates on the same day', () => {
-    it('adds up what was looked up and asked that day', () => {
+  describe('for each update', () => {
+    it('lists the date it was saved, with what was looked up, asked and understood', () => {
       const series = createSeries([
         createVolume(1, [
-          createUpdate('2026-10-03T09:00:00Z', { lookups: 1 }),
-          createUpdate('2026-10-03T10:00:00Z', { lookups: 4, aiQuestions: 2 }),
+          createUpdate('2026-10-03T09:00:00Z', {
+            lookups: 4,
+            aiQuestions: 2,
+            understood: 70,
+          }),
         ]),
       ]);
 
       expect(getComprehensionRecords(series)).toEqual([
-        { date: '2026-10-03', lookups: 5, aiQuestions: 2 },
-      ]);
-    });
-
-    it('keeps the last understood score that day', () => {
-      const series = createSeries([
-        createVolume(1, [
-          createUpdate('2026-10-03T11:00:00Z', { understood: 70 }),
-          createUpdate('2026-10-03T09:00:00Z', { understood: 60 }),
-          createUpdate('2026-10-03T12:00:00Z', { lookups: 1 }),
-        ]),
-      ]);
-
-      expect(getComprehensionRecords(series)).toEqual([
-        { date: '2026-10-03', lookups: 1, aiQuestions: 0, understood: 70 },
+        {
+          key: '2026-10-03T09:00:00Z',
+          date: '2026-10-03',
+          lookups: 4,
+          aiQuestions: 2,
+          understood: 70,
+        },
       ]);
     });
   });
 
-  describe('with updates across days and volumes', () => {
-    it('lists a record per day, oldest first', () => {
+  describe('with several updates on the same day', () => {
+    it('lists each of them', () => {
+      const series = createSeries([
+        createVolume(1, [
+          createUpdate('2026-10-03T09:00:00Z', { lookups: 1 }),
+          createUpdate('2026-10-03T10:00:00Z', { lookups: 4 }),
+        ]),
+      ]);
+
+      expect(
+        getComprehensionRecords(series).map(({ lookups }) => lookups),
+      ).toEqual([1, 4]);
+    });
+  });
+
+  describe('with updates across volumes', () => {
+    it('lists them oldest first', () => {
       const series = createSeries([
         createVolume(2, [createUpdate('2026-10-04T09:00:00Z')]),
         createVolume(1, [createUpdate('2026-10-02T09:00:00Z')]),

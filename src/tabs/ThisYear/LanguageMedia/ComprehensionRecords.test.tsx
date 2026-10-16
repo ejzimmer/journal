@@ -24,7 +24,7 @@ const series: PrintSeries = {
 };
 
 describe('ComprehensionRecords', () => {
-  it("shows each day's lookups and comprehension", () => {
+  it("shows each update's lookups and comprehension", () => {
     render(<ComprehensionRecords series={series} />);
 
     expect(

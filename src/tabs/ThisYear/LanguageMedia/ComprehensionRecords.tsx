@@ -23,7 +23,7 @@ export function ComprehensionRecords({ series }: { series: PrintSeries }) {
   return (
     <ul className="comprehension-records">
       {getComprehensionRecords(series).map((record) => (
-        <li key={record.date}>{formatRecord(record)}</li>
+        <li key={record.key}>{formatRecord(record)}</li>
       ))}
     </ul>
   );
