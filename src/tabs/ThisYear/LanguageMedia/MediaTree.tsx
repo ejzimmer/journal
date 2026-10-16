@@ -6,7 +6,6 @@ import { findCurrentVolume } from './findCurrentVolume';
 import { findSignpostPlacement } from './findSignpostPlacement';
 import { getItemsByNumber } from './lists';
 import { getBlooms } from './getBlooms';
-import { AddVolumeForm } from './AddVolumeForm';
 import { TreeBeetles } from './TreeBeetles';
 import { ProgressUpdateForm } from './ProgressUpdateForm';
 import { createTreeLayout } from './treeLayout';
@@ -16,6 +15,7 @@ import { getGrownShapes } from './treeGrowth';
 import { TreeOutline } from './TreeOutline';
 import { TreeShoots } from './TreeShoots';
 import { TreeSilhouette } from './TreeSilhouette';
+import { VolumeAdder } from './VolumeAdder';
 import { Signpost } from './Signpost';
 import { PrintSeries } from './types';
 import { readVolumeProgress } from './volumeProgress';
@@ -75,7 +75,7 @@ export function MediaTree({ series }: { series: PrintSeries }) {
           </CloudFrame>
         )}
       </ModalDialog>
-      <AddVolumeForm series={series} />
+      <VolumeAdder series={series} />
     </div>
   );
 }

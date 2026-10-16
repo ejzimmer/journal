@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { PlusIcon } from '../../../shared/icons/Plus';
+import { VolumeNameField } from './VolumeNameField';
 
 export function BookVolumeNames() {
   const [count, setCount] = useState(1);
@@ -7,19 +8,12 @@ export function BookVolumeNames() {
   return (
     <div className="book-volume-names">
       {Array.from({ length: count }, (_, index) => (
-        <div key={index} className="volume-name-row tooltip-container">
-          <span className="count-icon tooltip-anchor" aria-hidden="true">
-            📕
-          </span>
-          <div className="tooltip" aria-hidden="true">
-            Volume {index + 1}
-          </div>
-          <input
-            name="volumeName"
-            aria-label={`Volume ${index + 1}`}
-            autoFocus={index > 0}
-          />
-        </div>
+        <VolumeNameField
+          key={index}
+          name="volumeName"
+          label={`Volume ${index + 1}`}
+          isFocused={index > 0}
+        />
       ))}
       <div className="add-volume-name tooltip-container">
         <button

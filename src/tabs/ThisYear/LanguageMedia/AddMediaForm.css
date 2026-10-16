@@ -19,7 +19,8 @@
   }
 }
 
-.add-media-form {
+.add-media-form,
+.add-volume-form {
   .tooltip {
     position-area: top;
     margin-inline-start: 0;
@@ -102,7 +103,7 @@
   gap: 8px;
 }
 
-.volume-name-row {
+.volume-name-field {
   display: flex;
   align-items: center;
   gap: 6px;
@@ -123,7 +124,7 @@
   line-height: 1;
 }
 
-.volume-name-row input,
+.volume-name-field input,
 .count-field input {
   padding-inline: 2px;
   padding-block: 4px;
@@ -140,7 +141,7 @@
   }
 }
 
-.volume-name-row input {
+.volume-name-field input {
   flex: 1;
   min-width: 0;
 }
@@ -205,6 +206,35 @@
     }
   }
 
+  > .tooltip {
+    position-area: top;
+    margin-inline-start: 0;
+    margin-block-end: 4px;
+  }
+
+  &:has(> .tooltip-anchor:hover, > .tooltip-anchor:focus-visible) > .tooltip {
+    opacity: 1;
+  }
+}
+
+.add-volume-form {
+  padding-block-start: 30px;
+
+  .add-media-body {
+    padding-inline: 24px;
+  }
+
+  .volume-name-field {
+    flex: 1;
+    min-width: 0;
+  }
+}
+
+.new-volume-number {
+  color: var(--body-colour-light);
+}
+
+.add-volume {
   > .tooltip {
     position-area: top;
     margin-inline-start: 0;
