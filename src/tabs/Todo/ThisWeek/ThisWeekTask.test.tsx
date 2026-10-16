@@ -35,48 +35,77 @@ const expectToBeInViewMode = () => {
 
 describe('ThisWeekTask', () => {
   describe('in view mode', () => {
-    describe('when the user clicks the button', () => {
-      it('updates the list of times completed', async () => {
-        const user = userEvent.setup();
-        const updateItem = jest.fn();
+    describe('the emoji menu', () => {
+      const renderTask = (updateItem: jest.Mock) => {
         renderWithStorage(
           <CategoriesContext.Provider value={['🧘', '💪']}>
             <ThisWeekTask task={task} />
           </CategoriesContext.Provider>,
           { value: { useValue, updateItem } },
         );
+      };
 
+      const openMenu = async (user: ReturnType<typeof userEvent.setup>) => {
         await user.click(screen.getByRole('button', { name: task.category }));
+      };
 
-        expect(updateItem).toHaveBeenCalledWith(
-          expect.anything(),
-          expect.objectContaining({
-            completed: [...task.completed!, getToday()],
-          }),
-        );
+      describe('when the user picks add today', () => {
+        it('adds a done for today', async () => {
+          const user = userEvent.setup();
+          const updateItem = jest.fn();
+          renderTask(updateItem);
+
+          await openMenu(user);
+          await user.click(screen.getByRole('menuitem', { name: 'Add today' }));
+
+          expect(updateItem).toHaveBeenCalledWith(
+            expect.anything(),
+            expect.objectContaining({
+              completed: [...task.completed!, getToday()],
+            }),
+          );
+        });
       });
-    });
 
-    describe('when the user shift+clicks the button', () => {
-      it('removes the most recently completed item', async () => {
-        const user = userEvent.setup();
-        const updateItem = jest.fn();
-        renderWithStorage(
-          <CategoriesContext.Provider value={['🧘', '💪']}>
-            <ThisWeekTask task={task} />
-          </CategoriesContext.Provider>,
-          { value: { useValue, updateItem } },
-        );
+      describe('when the user picks add yesterday', () => {
+        it('adds a done for yesterday', async () => {
+          const user = userEvent.setup();
+          const updateItem = jest.fn();
+          renderTask(updateItem);
 
-        await user.keyboard('{Shift>}');
-        await user.click(screen.getByRole('button', { name: task.category }));
+          await openMenu(user);
+          await user.click(
+            screen.getByRole('menuitem', { name: 'Add yesterday' }),
+          );
 
-        expect(updateItem).toHaveBeenCalledWith(
-          expect.anything(),
-          expect.objectContaining({
-            completed: [task.completed?.[0]],
-          }),
-        );
+          expect(updateItem).toHaveBeenCalledWith(
+            expect.anything(),
+            expect.objectContaining({
+              completed: [...task.completed!, getDateDaysAgo(1)],
+            }),
+          );
+        });
+      });
+
+      describe('when the user adds a specific date', () => {
+        it('adds a done for that date', async () => {
+          const user = userEvent.setup();
+          const updateItem = jest.fn();
+          renderTask(updateItem);
+
+          await openMenu(user);
+          const dateInput = screen.getByLabelText('Date');
+          await user.clear(dateInput);
+          await user.type(dateInput, getDateDaysAgo(3));
+          await user.click(screen.getByRole('button', { name: 'Add' }));
+
+          expect(updateItem).toHaveBeenCalledWith(
+            expect.anything(),
+            expect.objectContaining({
+              completed: [...task.completed!, getDateDaysAgo(3)],
+            }),
+          );
+        });
       });
     });
 
@@ -99,25 +128,6 @@ describe('ThisWeekTask', () => {
             completed: [...task.completed!, getToday()],
           }),
         );
-      });
-    });
-
-    describe('when the user ctrl+clicks the unfilled part of the bar', () => {
-      it('adds a done for yesterday', async () => {
-        const user = userEvent.setup();
-        const updateItem = jest.fn();
-        renderWithStorage(
-          <CategoriesContext.Provider value={['🧘', '💪']}>
-            <ThisWeekTask task={task} />
-          </CategoriesContext.Provider>,
-          { value: { useValue, updateItem } },
-        );
-
-        await user.keyboard('{Control>}');
-        await user.click(screen.getByRole('button', { name: 'Mark done' }));
-
-        const [, updated] = updateItem.mock.calls[0];
-        expect(updated.completed.at(-1)).toBe(getDateDaysAgo(1));
       });
     });
 

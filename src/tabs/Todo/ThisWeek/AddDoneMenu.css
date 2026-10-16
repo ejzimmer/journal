@@ -1,0 +1,10 @@
+.menu .add-done-on-date {
+  display: flex;
+  flex-direction: row;
+  gap: 4px;
+  padding: 4px;
+
+  input {
+    flex-grow: 1;
+  }
+}
