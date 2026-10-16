@@ -39,8 +39,6 @@ button.stamp-trigger {
   width: 0;
   height: 0;
   position: absolute;
-  top: anchor(center);
-  left: anchor(center);
   translate: -50% -50%;
 
   &::before {
