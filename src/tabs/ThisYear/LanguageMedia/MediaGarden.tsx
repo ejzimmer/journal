@@ -1,7 +1,7 @@
 import { useLanguageMediaStorage } from './LanguageMediaStorageContext';
 import { ComprehensionRecords } from './ComprehensionRecords';
 import { MediaCactus } from './MediaCactus';
-import { MediaPlanter } from './MediaPlanter';
+import { AddMediaSeedling } from './AddMediaSeedling';
 import { MediaTree } from './MediaTree';
 import { isPrintSeries } from './types';
 
@@ -31,7 +31,7 @@ export function MediaGarden() {
         return null;
       })}
       <li>
-        <MediaPlanter />
+        <AddMediaSeedling />
       </li>
     </ul>
   );
