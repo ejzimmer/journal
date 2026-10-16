@@ -87,7 +87,7 @@ describe('ThisWeekTask', () => {
         });
       });
 
-      describe('when the user adds a specific date', () => {
+      describe('when the user enters a specific date', () => {
         it('adds a done for that date', async () => {
           const user = userEvent.setup();
           const updateItem = jest.fn();
@@ -97,7 +97,7 @@ describe('ThisWeekTask', () => {
           const dateInput = screen.getByLabelText('Date');
           await user.clear(dateInput);
           await user.type(dateInput, getDateDaysAgo(3));
-          await user.click(screen.getByRole('button', { name: 'Add' }));
+          await user.keyboard('{Enter}');
 
           expect(updateItem).toHaveBeenCalledWith(
             expect.anything(),

@@ -1,7 +1,6 @@
-import { SubmitEvent, useRef } from 'react';
+import { KeyboardEvent } from 'react';
 
 import './AddDoneMenu.css';
-import { PlusIcon } from '../../../shared/icons/Plus';
 import { Menu } from '../../../shared/controls/Menu';
 import { getDateDaysAgo, getToday } from '../../../shared/dates';
 
@@ -13,8 +12,6 @@ type AddDoneMenuProps = {
 };
 
 export function AddDoneMenu({ category, onAdd }: AddDoneMenuProps) {
-  const dateRef = useRef<HTMLInputElement>(null);
-
   return (
     <Menu
       trigger={(props) => (
@@ -29,10 +26,10 @@ export function AddDoneMenu({ category, onAdd }: AddDoneMenuProps) {
           onClose();
         };
 
-        const submitDate = (event: SubmitEvent) => {
-          event.preventDefault();
-          const date = dateRef.current?.value;
-          if (date) {
+        const addDoneOnEnter = (event: KeyboardEvent<HTMLInputElement>) => {
+          const date = event.currentTarget.value;
+          if (event.key === 'Enter' && date) {
+            event.preventDefault();
             addDoneOn(date);
           }
         };
@@ -45,19 +42,15 @@ export function AddDoneMenu({ category, onAdd }: AddDoneMenuProps) {
             <Menu.Action onClick={() => addDoneOn(getDateDaysAgo(1))}>
               Add yesterday
             </Menu.Action>
-            <form className="add-done-on-date" onSubmit={submitDate}>
-              <input
-                ref={dateRef}
-                type="date"
-                aria-label="Date"
-                defaultValue={getToday()}
-                min={getDateDaysAgo(OLDEST_TRACKED_DAYS_AGO)}
-                max={getToday()}
-              />
-              <button type="submit" className="icon subtle" aria-label="Add">
-                <PlusIcon width="16px" />
-              </button>
-            </form>
+            <input
+              className="add-done-on-date"
+              type="date"
+              aria-label="Date"
+              defaultValue={getToday()}
+              min={getDateDaysAgo(OLDEST_TRACKED_DAYS_AGO)}
+              max={getToday()}
+              onKeyDown={addDoneOnEnter}
+            />
           </>
         );
       }}
