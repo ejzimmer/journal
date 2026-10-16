@@ -50,7 +50,7 @@ function getReorderedIds(
 describe('Books', () => {
   describe('shelf order', () => {
     describe('when single books and series are mixed', () => {
-      it('shelves them in the order they are stored', () => {
+      it('shows them in the order they are stored', () => {
         const mort: BookDetails = {
           id: 'book-mort',
           type: 'book',
