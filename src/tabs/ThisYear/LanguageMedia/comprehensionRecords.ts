@@ -1,3 +1,4 @@
+import { getLocalDate } from '../../../shared/dates';
 import { getItemsByNumber } from './lists';
 import { getProgressUpdates } from './getProgressUpdates';
 import { PrintSeries } from './types';
@@ -9,12 +10,6 @@ export type ComprehensionRecord = {
   understood?: number;
 };
 
-export const readLocalDate = (instant: string) =>
-  Temporal.Instant.from(instant)
-    .toZonedDateTimeISO(Temporal.Now.timeZoneId())
-    .toPlainDate()
-    .toString();
-
 export function getComprehensionRecords(series: PrintSeries) {
   const updates = getItemsByNumber(series.volumes)
     .flatMap(getProgressUpdates)
@@ -22,7 +17,7 @@ export function getComprehensionRecords(series: PrintSeries) {
 
   const recordsByDate = new Map<string, ComprehensionRecord>();
   updates.forEach(({ at, lookups, aiQuestions, understood }) => {
-    const date = readLocalDate(at);
+    const date = getLocalDate(at);
     const record = recordsByDate.get(date) ?? {
       date,
       lookups: 0,

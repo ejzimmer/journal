@@ -1,4 +1,4 @@
-import { readLocalDate } from './comprehensionRecords';
+import { getLocalDate } from '../../../shared/dates';
 import { findUpToAt } from './findUpToAt';
 import { IMPORT_UPDATE_KEY } from './createImportUpdateRekey';
 import {
@@ -79,7 +79,7 @@ function groupUpdatesByDate(series: LegacySeries, volume: LegacyVolume) {
   ]
     .toSorted((a, b) => Temporal.Instant.compare(a.at, b.at))
     .forEach((update) => {
-      const date = readLocalDate(update.at);
+      const date = getLocalDate(update.at);
       groups.set(date, [...(groups.get(date) ?? []), update]);
     });
   return groups;

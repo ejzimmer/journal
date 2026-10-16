@@ -8,6 +8,7 @@ import {
   getMillisecondsUntilTomorrow,
   getDateDaysAgo,
   getDateDaysAhead,
+  getLocalDate,
   getDaysUntil,
   isThisWeek,
   getToday,
@@ -138,6 +139,16 @@ describe('dates', () => {
   describe('getDateDaysAhead', () => {
     it('counts forward from today', () => {
       expect(getDateDaysAhead(11)).toBe('2026-10-01');
+    });
+  });
+
+  describe('getLocalDate', () => {
+    it('is the date an instant falls on in the local time zone', () => {
+      const instant = Temporal.Instant.fromEpochMilliseconds(
+        atLocalTime(2026, 8, 20, 23, 30),
+      ).toString();
+
+      expect(getLocalDate(instant)).toBe('2026-09-20');
     });
   });
 
