@@ -5,7 +5,7 @@ import {
   AdventureStorageContext,
   AdventureStorageContextType,
 } from './AdventureStorageContext';
-import { AdventureMode } from './types';
+import { Adventure, AdventureMode } from './types';
 
 jest.mock('emoji-picker-react', () => ({
   __esModule: true,
@@ -34,10 +34,13 @@ const cycling: AdventureMode = {
   colour: '#2a9940',
 };
 
-async function openForm(modes: AdventureMode[] = [running, cycling]) {
+async function openForm(
+  modes: AdventureMode[] = [running, cycling],
+  adventures: Adventure[] = [],
+) {
   const user = userEvent.setup();
   const storage: AdventureStorageContextType = {
-    adventures: [],
+    adventures,
     modes,
     isLoading: false,
     addAdventure: jest.fn(),
@@ -45,14 +48,21 @@ async function openForm(modes: AdventureMode[] = [running, cycling]) {
     deleteAdventure: jest.fn(),
     addMode: jest.fn().mockReturnValue('kayaking'),
     updateMode: jest.fn(),
+    deleteMode: jest.fn(),
   };
-  render(
+  const { rerender } = render(
     <AdventureStorageContext.Provider value={storage}>
       <AddAdventureForm />
     </AdventureStorageContext.Provider>,
   );
+  const replaceModes = (newModes: AdventureMode[]) =>
+    rerender(
+      <AdventureStorageContext.Provider value={{ ...storage, modes: newModes }}>
+        <AddAdventureForm />
+      </AdventureStorageContext.Provider>,
+    );
   await user.click(screen.getByRole('button', { name: 'Add an adventure' }));
-  return { user, storage };
+  return { user, storage, replaceModes };
 }
 
 describe('AddAdventureForm', () => {
@@ -272,6 +282,100 @@ describe('AddAdventureForm', () => {
       const { modeName } = await renameCycling();
 
       expect(modeName).not.toBeInTheDocument();
+    });
+  });
+
+  describe('deleting a mode', () => {
+    describe('when an adventure uses one of the modes', () => {
+      it('only offers to delete the unused modes', async () => {
+        await openForm(
+          [running, cycling],
+          [
+            {
+              id: 'parkrun',
+              description: 'Plenty Gorge parkrun',
+              modeId: 'running',
+              isDone: false,
+            },
+          ],
+        );
+
+        expect(
+          screen
+            .getAllByRole('button', { name: /^Delete/ })
+            .map((button) => button.getAttribute('aria-label')),
+        ).toEqual(['Delete Cycling']);
+      });
+    });
+
+    describe('when the bin is clicked', () => {
+      it('asks for confirmation instead of deleting', async () => {
+        const { user, storage } = await openForm();
+
+        await user.click(
+          screen.getByRole('button', { name: 'Delete Cycling' }),
+        );
+
+        expect(
+          screen.getByRole('button', { name: 'Confirm delete Cycling' }),
+        ).toBeVisible();
+        expect(storage.deleteMode).not.toHaveBeenCalled();
+      });
+
+      describe('and clicked again', () => {
+        it('deletes the mode', async () => {
+          const { user, storage } = await openForm();
+
+          await user.click(
+            screen.getByRole('button', { name: 'Delete Cycling' }),
+          );
+          await user.click(
+            screen.getByRole('button', { name: 'Confirm delete Cycling' }),
+          );
+
+          expect(storage.deleteMode).toHaveBeenCalledWith(cycling);
+        });
+      });
+    });
+
+    describe('when it is being edited', () => {
+      it('closes the mode form', async () => {
+        const { user } = await openForm();
+        await user.click(screen.getByRole('button', { name: 'Edit Cycling' }));
+        const modeName = screen.getByRole('textbox', { name: 'Mode name' });
+
+        await user.click(
+          screen.getByRole('button', { name: 'Delete Cycling' }),
+        );
+        await user.click(
+          screen.getByRole('button', { name: 'Confirm delete Cycling' }),
+        );
+
+        expect(modeName).not.toBeInTheDocument();
+      });
+    });
+  });
+
+  describe('when the selected mode is deleted', () => {
+    it('selects another mode', async () => {
+      const { user, storage, replaceModes } = await openForm();
+      await user.type(
+        screen.getByRole('textbox', { name: 'Adventure' }),
+        'Ride to Hurstbridge',
+      );
+      await user.click(screen.getByRole('radio', { name: 'Cycling' }));
+
+      await user.click(screen.getByRole('button', { name: 'Delete Cycling' }));
+      await user.click(
+        screen.getByRole('button', { name: 'Confirm delete Cycling' }),
+      );
+      replaceModes([running]);
+      await user.click(screen.getByRole('button', { name: 'Add' }));
+
+      expect(storage.addAdventure).toHaveBeenCalledWith({
+        description: 'Ride to Hurstbridge',
+        modeId: 'running',
+      });
     });
   });
 

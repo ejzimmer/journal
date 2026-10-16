@@ -1,3 +1,4 @@
+import { DeleteWithConfirmation } from '../../../shared/controls/DeleteWithConfirmation';
 import { PencilIcon } from '../../../shared/icons/Pencil';
 import { AdventureMode } from './types';
 
@@ -6,6 +7,7 @@ type ModeOptionProps = {
   isSelected: boolean;
   onSelect: () => void;
   onEdit: () => void;
+  onDelete?: () => void;
 };
 
 export function ModeOption({
@@ -13,6 +15,7 @@ export function ModeOption({
   isSelected,
   onSelect,
   onEdit,
+  onDelete,
 }: ModeOptionProps) {
   return (
     <div
@@ -42,6 +45,14 @@ export function ModeOption({
       >
         <PencilIcon width="12px" />
       </button>
+      {onDelete && (
+        <DeleteWithConfirmation
+          className="mode-option-action"
+          label={`Delete ${mode.name}`}
+          confirmLabel={`Confirm delete ${mode.name}`}
+          onDelete={onDelete}
+        />
+      )}
     </div>
   );
 }

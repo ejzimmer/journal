@@ -67,6 +67,25 @@
     transition: opacity 0.15s;
   }
 
+  .delete {
+    top: auto;
+    bottom: -12px;
+
+    svg {
+      width: 12px;
+    }
+
+    &:hover {
+      color: var(--error-colour);
+    }
+
+    &.confirming {
+      color: white;
+      background: var(--error-colour);
+      border-color: var(--error-colour);
+    }
+  }
+
   &:hover .mode-option-action,
   &:focus-within .mode-option-action {
     opacity: 1;

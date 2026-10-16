@@ -38,6 +38,7 @@ const renderCard = (details: Partial<Adventure> = {}) => {
     deleteAdventure: jest.fn(),
     addMode: jest.fn(),
     updateMode: jest.fn(),
+    deleteMode: jest.fn(),
   };
   render(
     <AdventureStorageContext.Provider value={storage}>

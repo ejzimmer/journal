@@ -278,6 +278,17 @@ describe('AdventureStorageContext', () => {
         expect(storage.addMode(newRunningMode)).toBe('running');
       });
     });
+    describe('deleting a mode', () => {
+      it('removes it from the modes path', () => {
+        const deleteItem = jest.fn();
+        const storage = createAdventureStorage({ deleteItem });
+
+        storage.deleteMode(running);
+
+        expect(deleteItem).toHaveBeenCalledWith(ADVENTURE_MODES_PATH, running);
+      });
+    });
+
     describe('updating a mode', () => {
       it('saves it to the modes path', () => {
         const updateItem = jest.fn();

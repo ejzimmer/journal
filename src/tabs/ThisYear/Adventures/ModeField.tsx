@@ -15,7 +15,8 @@ type ModeFieldProps = {
 type ModeFormTarget = AdventureMode | 'new';
 
 export function ModeField({ modeId, onSelectMode }: ModeFieldProps) {
-  const { modes, addMode, updateMode } = useAdventureStorage();
+  const { adventures, modes, addMode, updateMode, deleteMode } =
+    useAdventureStorage();
   const [openFormTarget, setOpenFormTarget] = useState<ModeFormTarget>();
   const formTarget = modes.length === 0 ? 'new' : openFormTarget;
   const editingMode = formTarget === 'new' ? undefined : formTarget;
@@ -32,6 +33,20 @@ export function ModeField({ modeId, onSelectMode }: ModeFieldProps) {
     setOpenFormTarget(undefined);
   };
 
+  const isModeInUse = (mode: AdventureMode) =>
+    adventures.some(({ modeId }) => modeId === mode.id);
+
+  const removeMode = (mode: AdventureMode) => {
+    deleteMode(mode);
+    const otherMode = modes.find(({ id }) => id !== mode.id);
+    if (mode.id === modeId && otherMode) {
+      onSelectMode(otherMode.id);
+    }
+    if (editingMode?.id === mode.id) {
+      setOpenFormTarget(undefined);
+    }
+  };
+
   return (
     <>
       <div className="mode-options" role="radiogroup" aria-label="Mode">
@@ -42,6 +57,7 @@ export function ModeField({ modeId, onSelectMode }: ModeFieldProps) {
             isSelected={modeId === mode.id}
             onSelect={() => onSelectMode(mode.id)}
             onEdit={() => setOpenFormTarget(mode)}
+            onDelete={isModeInUse(mode) ? undefined : () => removeMode(mode)}
           />
         ))}
         {!formTarget && (
