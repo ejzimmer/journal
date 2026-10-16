@@ -1,22 +1,22 @@
 import { CSSProperties, useState } from 'react';
-import { TreeFlowerIcon } from './TreeFlowerIcon';
-import { PrintSeries } from './types';
+import { MediaTypeIcon } from './MediaTypeIcon';
+import { MediaType } from './types';
 
 export function UnderstoodTile({
-  seriesType,
+  mediaType,
   understood,
 }: {
-  seriesType: PrintSeries['type'];
+  mediaType: MediaType;
   understood?: number;
 }) {
   const [value, setValue] = useState(understood);
 
   return (
     <div
-      className={`progress-tile understood-tile ${seriesType} tooltip-container`}
+      className={`progress-tile understood-tile ${mediaType} tooltip-container`}
     >
       <span className="flower-icon tooltip-anchor">
-        <TreeFlowerIcon seriesType={seriesType} width="44px" />
+        <MediaTypeIcon type={mediaType} width="44px" />
       </span>
       <div className="tooltip" aria-hidden="true">
         Understood

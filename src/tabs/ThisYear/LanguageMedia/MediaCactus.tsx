@@ -1,15 +1,22 @@
-import { useMemo } from 'react';
+import { CSSProperties, useMemo, useState } from 'react';
+import { ModalDialog } from '../../../shared/controls/ModalDialog';
+import { PlayButtonIcon } from '../../../shared/icons/PlayButton';
 import { CactusCrowns } from './CactusCrowns';
 import { createCactusLayout } from './cactusLayout';
 import { CactusRibs } from './CactusRibs';
 import { CactusSpines } from './CactusSpines';
+import { CloudFrame } from './CloudFrame';
+import { findSignpostPlacement } from './findSignpostPlacement';
+import { HangingSign } from './HangingSign';
 import { getItemsInAddedOrder } from './lists';
+import { Signpost } from './Signpost';
 import { TreeBeetles } from './TreeBeetles';
 import { getGrownShapes } from './treeGrowth';
 import { TreeFill } from './TreeFill';
 import { TreeOutline } from './TreeOutline';
 import { TreeSilhouette } from './TreeSilhouette';
 import { YoutubeChannel } from './types';
+import { WatchedVideoForm } from './WatchedVideoForm';
 import { readVideoProgress } from './videoProgress';
 
 export function MediaCactus({ channel }: { channel: YoutubeChannel }) {
@@ -17,10 +24,19 @@ export function MediaCactus({ channel }: { channel: YoutubeChannel }) {
   const videos = getItemsInAddedOrder(channel.videos);
   const progress = videos.map(readVideoProgress);
   const grownShapes = getGrownShapes(layout, progress);
+  const [isVideoFormOpen, setIsVideoFormOpen] = useState(false);
   const { x, y, width, height } = layout.bounds;
 
   return (
-    <div className="media-tree media-cactus">
+    <div
+      className="media-tree media-cactus"
+      style={
+        {
+          '--ground': `${y + height}px`,
+          '--tree-width': `${width}px`,
+        } as CSSProperties
+      }
+    >
       <svg
         role="img"
         aria-label={channel.name}
@@ -36,6 +52,24 @@ export function MediaCactus({ channel }: { channel: YoutubeChannel }) {
         <CactusCrowns channel={channel} shapes={grownShapes} />
         <TreeBeetles hosts={videos} shapes={grownShapes} />
       </svg>
+      <Signpost name={channel.name} placement={findSignpostPlacement(layout)}>
+        <HangingSign
+          label="Add a watched video"
+          icon={<PlayButtonIcon width="16px" />}
+          onClick={() => setIsVideoFormOpen(true)}
+        />
+      </Signpost>
+      <ModalDialog
+        isOpen={isVideoFormOpen}
+        className="progress-update-modal"
+        onCancel={() => setIsVideoFormOpen(false)}
+      >
+        {isVideoFormOpen && (
+          <CloudFrame>
+            <WatchedVideoForm channel={channel} />
+          </CloudFrame>
+        )}
+      </ModalDialog>
     </div>
   );
 }

@@ -208,3 +208,64 @@ dialog.progress-update-modal {
     filter: brightness(1.08);
   }
 }
+
+.understood-tile.youtube {
+  --flower-colour: hsl(48 92% 58%);
+}
+
+.time-tile {
+  fieldset {
+    display: flex;
+    align-items: center;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    font-variant-numeric: tabular-nums;
+  }
+
+  legend {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  input {
+    width: 2.4ch;
+    padding-inline: 1px;
+    padding-block: 4px;
+    border: 0;
+    border-block-end: 2px solid var(--border-colour);
+    font: inherit;
+    color: inherit;
+    text-align: center;
+    background: transparent;
+
+    &:focus-visible {
+      outline: none;
+      border-color: var(--border-colour-hover);
+    }
+  }
+}
+
+.url-tile {
+  grid-column: 1 / -1;
+
+  input {
+    flex: 1;
+    min-width: 0;
+    padding-block: 4px;
+    border: 0;
+    border-block-end: 2px solid var(--border-colour);
+    font: inherit;
+    color: inherit;
+    background: transparent;
+
+    &:focus-visible {
+      outline: none;
+      border-color: var(--border-colour-hover);
+    }
+  }
+}

@@ -83,7 +83,7 @@ export function ProgressUpdateForm({
           />
           <PageTile page={pageUpTo} pages={volume.pages} />
           <UnderstoodTile
-            seriesType={series.type}
+            mediaType={series.type}
             understood={volume.understood}
           />
         </div>
