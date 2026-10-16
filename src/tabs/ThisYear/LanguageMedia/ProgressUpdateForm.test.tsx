@@ -54,25 +54,50 @@ describe('ProgressUpdateForm', () => {
 
   describe('the title', () => {
     describe('for a manga', () => {
-      describe('with an unnamed volume', () => {
-        it('shows the series and volume number', () => {
-          renderForm();
+      describe('in Japanese', () => {
+        describe('with an unnamed volume', () => {
+          it('shows the series and full-width volume number', () => {
+            renderForm();
 
-          expect(
-            screen.getByRole('heading', { name: 'よつばと！ 1' }),
-          ).toBeInTheDocument();
+            expect(
+              screen.getByRole('heading', { name: 'よつばと！ １' }),
+            ).toBeInTheDocument();
+          });
+        });
+
+        describe('with a volume numbered 10 or more', () => {
+          it('makes every digit full-width', () => {
+            renderForm({
+              ...yotsuba,
+              volumes: { vol1: { ...volume, number: 12 } },
+            });
+
+            expect(
+              screen.getByRole('heading', { name: 'よつばと！ １２' }),
+            ).toBeInTheDocument();
+          });
+        });
+
+        describe('with a named volume', () => {
+          it('adds the volume name', () => {
+            renderForm({
+              ...yotsuba,
+              volumes: { vol1: { ...volume, name: 'Cosette' } },
+            });
+
+            expect(
+              screen.getByRole('heading', { name: 'よつばと！ １: Cosette' }),
+            ).toBeInTheDocument();
+          });
         });
       });
 
-      describe('with a named volume', () => {
-        it('adds the volume name', () => {
-          renderForm({
-            ...yotsuba,
-            volumes: { vol1: { ...volume, name: 'Cosette' } },
-          });
+      describe('in French', () => {
+        it('shows the series and volume number', () => {
+          renderForm({ ...yotsuba, language: 'french', name: 'Astérix' });
 
           expect(
-            screen.getByRole('heading', { name: 'よつばと！ 1: Cosette' }),
+            screen.getByRole('heading', { name: 'Astérix 1' }),
           ).toBeInTheDocument();
         });
       });
@@ -82,6 +107,7 @@ describe('ProgressUpdateForm', () => {
       const archives: PrintSeries = {
         ...yotsuba,
         type: 'book',
+        language: 'french',
         name: 'Les Archives de Roshar',
       };
 

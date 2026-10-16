@@ -44,8 +44,10 @@ export function WorktreeMenu({ trigger: Trigger, options }: WorktreeMenuProps) {
 
     const onBeforeToggle = (event: Event) => {
       if ((event as ToggleEvent).newState !== 'open') return;
-      const { left } = anchor.getBoundingClientRect();
+      const { left, top, width, height } = anchor.getBoundingClientRect();
       setLayout(left < LEFT_EDGE_THRESHOLD_PX ? 'half' : 'full');
+      popover.style.top = `${top + height / 2 + window.scrollY}px`;
+      popover.style.left = `${left + width / 2 + window.scrollX}px`;
     };
 
     popover.addEventListener('beforetoggle', onBeforeToggle);

@@ -1,11 +1,13 @@
 import { CSSProperties, useMemo, useState } from 'react';
 import { ModalDialog } from '../../../shared/controls/ModalDialog';
+import { PencilIcon } from '../../../shared/icons/Pencil';
 import { PlayButtonIcon } from '../../../shared/icons/PlayButton';
 import { CactusCrowns } from './CactusCrowns';
 import { createCactusLayout } from './cactusLayout';
 import { CactusRibs } from './CactusRibs';
 import { CactusSpines } from './CactusSpines';
 import { CloudFrame } from './CloudFrame';
+import { EditChannelForm } from './EditChannelForm';
 import { findSignpostPlacement } from './findSignpostPlacement';
 import { HangingSign } from './HangingSign';
 import { getItemsInAddedOrder } from './lists';
@@ -26,6 +28,7 @@ export function MediaCactus({ channel }: { channel: YoutubeChannel }) {
   const progress = videos.map(readVideoProgress);
   const grownShapes = getGrownShapes(layout, progress);
   const [isVideoFormOpen, setIsVideoFormOpen] = useState(false);
+  const [isEditFormOpen, setIsEditFormOpen] = useState(false);
   const { x, y, width, height } = layout.bounds;
 
   return (
@@ -59,6 +62,11 @@ export function MediaCactus({ channel }: { channel: YoutubeChannel }) {
           icon={<PlayButtonIcon width="16px" />}
           onClick={() => setIsVideoFormOpen(true)}
         />
+        <HangingSign
+          label="Edit"
+          icon={<PencilIcon width="18px" />}
+          onClick={() => setIsEditFormOpen(true)}
+        />
       </Signpost>
       <ModalDialog
         isOpen={isVideoFormOpen}
@@ -68,6 +76,17 @@ export function MediaCactus({ channel }: { channel: YoutubeChannel }) {
         {isVideoFormOpen && (
           <CloudFrame>
             <WatchedVideoForm channel={channel} />
+          </CloudFrame>
+        )}
+      </ModalDialog>
+      <ModalDialog
+        isOpen={isEditFormOpen}
+        className="progress-update-modal edit-channel-modal"
+        onCancel={() => setIsEditFormOpen(false)}
+      >
+        {isEditFormOpen && (
+          <CloudFrame>
+            <EditChannelForm channel={channel} />
           </CloudFrame>
         )}
       </ModalDialog>
