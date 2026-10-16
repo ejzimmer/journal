@@ -1,13 +1,13 @@
 import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { AddMediaSeedling } from './AddMediaSeedling';
+import { AddMediaButton } from './AddMediaButton';
 import { renderWithLanguageMediaStorage } from './languageMediaStorageTestUtils';
 
-describe('AddMediaSeedling', () => {
+describe('AddMediaButton', () => {
   describe('clicking the seedling', () => {
     it('opens the form to add media', async () => {
       const user = userEvent.setup();
-      renderWithLanguageMediaStorage(<AddMediaSeedling />);
+      renderWithLanguageMediaStorage(<AddMediaButton />);
 
       await user.click(screen.getByRole('button', { name: 'Add media' }));
 
@@ -19,7 +19,7 @@ describe('AddMediaSeedling', () => {
     describe('when the form is submitted', () => {
       it('closes the form', async () => {
         const user = userEvent.setup();
-        renderWithLanguageMediaStorage(<AddMediaSeedling />);
+        renderWithLanguageMediaStorage(<AddMediaButton />);
         await user.click(screen.getByRole('button', { name: 'Add media' }));
         const form = screen.getByRole('form', { name: 'Add media' });
 
