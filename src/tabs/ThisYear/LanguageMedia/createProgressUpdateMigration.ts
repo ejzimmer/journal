@@ -2,32 +2,47 @@ import { readLocalDate } from './comprehensionRecords';
 import { findUpToAt } from './findUpToAt';
 import { IMPORT_UPDATE_KEY } from './createImportUpdateRekey';
 import {
-  Comprehension,
   FieldChange,
+  getLegacyUpdates,
+  isLegacyUpdate,
+  LegacyUpdate,
+  LegacyUpdates,
+} from './legacyUpdates';
+import {
+  Comprehension,
   getLanguageMediaPath,
   isPrintSeries,
-  ItemUpdate,
   PrintSeries,
-  Reading,
+  ProgressUpdate,
   StoredMediaByYear,
   Volume,
 } from './types';
 
-type LegacyVolume = Volume & Partial<Comprehension>;
-type MigratedReading = Omit<Reading, 'id'>;
+type LegacyVolume = Omit<Volume, 'updates'> &
+  Partial<Comprehension> &
+  LegacyUpdates;
+type LegacySeries = Omit<PrintSeries, 'volumes' | 'updates'> &
+  LegacyUpdates & { volumes?: Record<string, LegacyVolume> };
 
 const LEGACY_FIELDS = ['lookups', 'aiQuestions', 'understood'] as const;
 
-const isLegacyVolume = (volume: LegacyVolume) =>
+const hasLegacyFields = (volume: LegacyVolume) =>
   LEGACY_FIELDS.some((field) => field in volume);
 
-const isComprehensionUpdate = ({ changes }: ItemUpdate) =>
+const hasLegacyUpdates = (item: LegacyUpdates) =>
+  getLegacyUpdates(item).length > 0;
+
+const isComprehensionUpdate = ({ changes }: LegacyUpdate) =>
   LEGACY_FIELDS.some((field) => field in changes);
 
 const measureIncrease = (change?: FieldChange) =>
   change ? Number(change.to ?? 0) - Number(change.from ?? 0) : 0;
 
-function findPageAt(series: PrintSeries, volume: Volume, instant?: string) {
+function findPageAt(
+  series: LegacySeries,
+  volume: LegacyVolume,
+  instant?: string,
+) {
   const upTo = instant ? findUpToAt(series, instant) : series.upTo;
   if (volume.status === 'done' || (upTo && upTo.volume > volume.number)) {
     return volume.pages;
@@ -43,20 +58,23 @@ const findEndOfDay = (date: string) =>
     .subtract({ nanoseconds: 1 })
     .toString();
 
-function findPageSaves(series: PrintSeries, volume: Volume) {
+function findPageSaves(series: LegacySeries, volume: LegacyVolume) {
   return Object.entries(series.updates ?? {})
     .filter(
-      ([key, { changes }]) =>
-        key !== IMPORT_UPDATE_KEY &&
+      (entry): entry is [string, LegacyUpdate] =>
+        entry[0] !== IMPORT_UPDATE_KEY && isLegacyUpdate(entry[1]),
+    )
+    .filter(
+      ([, { changes }]) =>
         (changes.upTo?.to as PrintSeries['upTo'])?.volume === volume.number,
     )
     .map(([, update]) => update);
 }
 
-function groupUpdatesByDate(series: PrintSeries, volume: Volume) {
-  const groups = new Map<string, ItemUpdate[]>();
+function groupUpdatesByDate(series: LegacySeries, volume: LegacyVolume) {
+  const groups = new Map<string, LegacyUpdate[]>();
   [
-    ...Object.values(volume.updates ?? {}).filter(isComprehensionUpdate),
+    ...getLegacyUpdates(volume).filter(isComprehensionUpdate),
     ...findPageSaves(series, volume),
   ]
     .toSorted((a, b) => Temporal.Instant.compare(a.at, b.at))
@@ -67,12 +85,12 @@ function groupUpdatesByDate(series: PrintSeries, volume: Volume) {
   return groups;
 }
 
-function createDayReading(
-  series: PrintSeries,
-  volume: Volume,
+function createDayUpdate(
+  series: LegacySeries,
+  volume: LegacyVolume,
   date: string,
-  updates: ItemUpdate[],
-): MigratedReading {
+  updates: LegacyUpdate[],
+): ProgressUpdate {
   const lastAt = updates.at(-1)!.at;
   const understood = updates.findLast(
     ({ changes }) => changes.understood?.to !== undefined,
@@ -86,7 +104,7 @@ function createDayReading(
       ),
     );
   return {
-    createdAt: lastAt,
+    at: lastAt,
     lookups: sumIncreases('lookups'),
     aiQuestions: sumIncreases('aiQuestions'),
     ...(understood !== undefined && { understood: Number(understood) }),
@@ -94,68 +112,98 @@ function createDayReading(
   };
 }
 
-function createRemainderReading(
-  series: PrintSeries,
+function createRemainderUpdate(
+  series: LegacySeries,
   volume: LegacyVolume,
-  dayReadings: MigratedReading[],
+  dayUpdates: ProgressUpdate[],
   at: string,
-): MigratedReading | undefined {
+): ProgressUpdate | undefined {
   const sum = (field: 'lookups' | 'aiQuestions') =>
-    dayReadings.reduce((total, reading) => total + reading[field], 0);
+    dayUpdates.reduce((total, update) => total + update[field], 0);
   const lookups = Math.max(0, (volume.lookups ?? 0) - sum('lookups'));
   const aiQuestions = Math.max(
     0,
     (volume.aiQuestions ?? 0) - sum('aiQuestions'),
   );
   const hasOnlyUnderstood =
-    volume.understood !== undefined && dayReadings.length === 0;
+    volume.understood !== undefined && dayUpdates.length === 0;
   if (!lookups && !aiQuestions && !hasOnlyUnderstood) return undefined;
   return {
-    createdAt: at,
+    at,
     lookups,
     aiQuestions,
     page: findPageAt(series, volume),
   };
 }
 
-function fillUnderstood(readings: MigratedReading[], fallback?: number) {
+function fillUnderstood(updates: ProgressUpdate[], fallback?: number) {
   const firstKnown =
-    readings.find(({ understood }) => understood !== undefined)?.understood ??
+    updates.find(({ understood }) => understood !== undefined)?.understood ??
     fallback;
   let lastKnown = firstKnown;
-  return readings.map((reading) => {
-    lastKnown = reading.understood ?? lastKnown;
+  return updates.map((update) => {
+    lastKnown = update.understood ?? lastKnown;
     return lastKnown === undefined
-      ? reading
-      : { ...reading, understood: lastKnown };
+      ? update
+      : { ...update, understood: lastKnown };
   });
 }
 
 function migrateVolume(
-  series: PrintSeries,
+  series: LegacySeries,
   volume: LegacyVolume,
   path: string,
   at: string,
   createId: () => string,
 ) {
-  const dayReadings = [...groupUpdatesByDate(series, volume)].map(
-    ([date, updates]) => createDayReading(series, volume, date, updates),
+  const dayUpdates = [...groupUpdatesByDate(series, volume)].map(
+    ([date, updates]) => createDayUpdate(series, volume, date, updates),
   );
-  const remainder = createRemainderReading(series, volume, dayReadings, at);
-  const readings = fillUnderstood(
-    remainder ? [...dayReadings, remainder] : dayReadings,
+  const remainder = createRemainderUpdate(series, volume, dayUpdates, at);
+  const migrated = fillUnderstood(
+    remainder ? [...dayUpdates, remainder] : dayUpdates,
     volume.understood,
   );
+  const kept = Object.entries(volume.updates ?? {}).filter(
+    ([, update]) => !isLegacyUpdate(update),
+  );
+  const updates = [
+    ...kept,
+    ...migrated.map((update) => [createId(), update] as const),
+  ];
   return [
-    ...readings.map((reading) => {
-      const id = createId();
-      return [`${path}/readings/${id}`, { id, ...reading }];
-    }),
+    [`${path}/updates`, updates.length ? Object.fromEntries(updates) : null],
     ...LEGACY_FIELDS.map((field) => [`${path}/${field}`, null]),
   ];
 }
 
-export function createReadingsMigration(
+function migrateSeries(
+  series: LegacySeries,
+  path: string,
+  at: string,
+  createId: () => string,
+) {
+  const isLegacySeries = hasLegacyUpdates(series);
+  return [
+    ...Object.values(series.volumes ?? {})
+      .filter(
+        (volume) =>
+          isLegacySeries || hasLegacyFields(volume) || hasLegacyUpdates(volume),
+      )
+      .flatMap((volume) =>
+        migrateVolume(
+          series,
+          volume,
+          `${path}/volumes/${volume.id}`,
+          at,
+          createId,
+        ),
+      ),
+    ...(isLegacySeries ? [[`${path}/updates`, null]] : []),
+  ];
+}
+
+export function createProgressUpdateMigration(
   storedMediaByYear: StoredMediaByYear = {},
   at: string,
   createId: () => string,
@@ -165,17 +213,12 @@ export function createReadingsMigration(
       Object.values(mediaById)
         .filter(isPrintSeries)
         .flatMap((series) =>
-          Object.values(series.volumes ?? {})
-            .filter(isLegacyVolume)
-            .flatMap((volume) =>
-              migrateVolume(
-                series,
-                volume,
-                `${getLanguageMediaPath(Number(year))}/${series.id}/volumes/${volume.id}`,
-                at,
-                createId,
-              ),
-            ),
+          migrateSeries(
+            series as LegacySeries,
+            `${getLanguageMediaPath(Number(year))}/${series.id}`,
+            at,
+            createId,
+          ),
         ),
     ),
   );

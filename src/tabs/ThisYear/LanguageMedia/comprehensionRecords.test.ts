@@ -1,23 +1,20 @@
 import { getComprehensionRecords } from './comprehensionRecords';
-import { PrintSeries, Reading, Volume } from './types';
+import { PrintSeries, ProgressUpdate, Volume } from './types';
 
-const createReading = (
-  createdAt: string,
-  details: Partial<Reading> = {},
-): Reading => ({
-  id: createdAt,
-  createdAt,
+const createUpdate = (
+  at: string,
+  details: Partial<ProgressUpdate> = {},
+): ProgressUpdate => ({
+  at,
   lookups: 0,
   aiQuestions: 0,
   ...details,
 });
 
-const createVolume = (number: number, readings: Reading[]): Volume => ({
+const createVolume = (number: number, updates: ProgressUpdate[]): Volume => ({
   id: `vol${number}`,
   number,
-  readings: Object.fromEntries(
-    readings.map((reading) => [reading.id, reading]),
-  ),
+  updates: Object.fromEntries(updates.map((update) => [update.at, update])),
 });
 
 const createSeries = (volumes: Volume[]): PrintSeries => ({
@@ -29,12 +26,12 @@ const createSeries = (volumes: Volume[]): PrintSeries => ({
 });
 
 describe('getComprehensionRecords', () => {
-  describe('with readings on the same day', () => {
+  describe('with updates on the same day', () => {
     it('adds up what was looked up and asked that day', () => {
       const series = createSeries([
         createVolume(1, [
-          createReading('2026-10-03T09:00:00Z', { lookups: 1 }),
-          createReading('2026-10-03T10:00:00Z', { lookups: 4, aiQuestions: 2 }),
+          createUpdate('2026-10-03T09:00:00Z', { lookups: 1 }),
+          createUpdate('2026-10-03T10:00:00Z', { lookups: 4, aiQuestions: 2 }),
         ]),
       ]);
 
@@ -46,9 +43,9 @@ describe('getComprehensionRecords', () => {
     it('keeps the last understood score that day', () => {
       const series = createSeries([
         createVolume(1, [
-          createReading('2026-10-03T11:00:00Z', { understood: 70 }),
-          createReading('2026-10-03T09:00:00Z', { understood: 60 }),
-          createReading('2026-10-03T12:00:00Z', { lookups: 1 }),
+          createUpdate('2026-10-03T11:00:00Z', { understood: 70 }),
+          createUpdate('2026-10-03T09:00:00Z', { understood: 60 }),
+          createUpdate('2026-10-03T12:00:00Z', { lookups: 1 }),
         ]),
       ]);
 
@@ -58,11 +55,11 @@ describe('getComprehensionRecords', () => {
     });
   });
 
-  describe('with readings across days and volumes', () => {
+  describe('with updates across days and volumes', () => {
     it('lists a record per day, oldest first', () => {
       const series = createSeries([
-        createVolume(2, [createReading('2026-10-04T09:00:00Z')]),
-        createVolume(1, [createReading('2026-10-02T09:00:00Z')]),
+        createVolume(2, [createUpdate('2026-10-04T09:00:00Z')]),
+        createVolume(1, [createUpdate('2026-10-02T09:00:00Z')]),
       ]);
 
       expect(getComprehensionRecords(series).map(({ date }) => date)).toEqual([

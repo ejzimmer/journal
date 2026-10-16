@@ -11,10 +11,9 @@ const series: PrintSeries = {
     vol1: {
       id: 'vol1',
       number: 1,
-      readings: {
-        r1: {
-          id: 'r1',
-          createdAt: '2026-10-03T09:00:00Z',
+      updates: {
+        u1: {
+          at: '2026-10-03T09:00:00Z',
           lookups: 5,
           aiQuestions: 0,
           understood: 70,

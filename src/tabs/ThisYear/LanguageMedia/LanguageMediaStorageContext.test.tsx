@@ -64,9 +64,6 @@ describe('LanguageMediaStorageContext', () => {
     jest
       .spyOn(Temporal.Now, 'instant')
       .mockReturnValue(Temporal.Instant.from(NOW));
-    jest
-      .spyOn(crypto, 'randomUUID')
-      .mockReturnValue('0000-update' as ReturnType<typeof crypto.randomUUID>);
   });
 
   afterEach(() => {
@@ -278,26 +275,8 @@ describe('LanguageMediaStorageContext', () => {
       );
     });
 
-    it('records the update with its time and what it changed, in the same write', () => {
-      const setValues = jest.fn();
-      const storage = createStorageWithLupin({ setValues });
-
-      storage.updateItem(['lupin', 'seasons', 's1', 'episodes', 'e1'], {
-        lookups: 4,
-      });
-
-      expect(setValues).toHaveBeenCalledWith(
-        expect.objectContaining({
-          [`${episodePath}/updates/0000-update`]: {
-            at: NOW,
-            changes: { lookups: { from: 3, to: 4 } },
-          },
-        }),
-      );
-    });
-
     describe('with some fields unchanged', () => {
-      it('saves and records only the ones that changed', () => {
+      it('saves only the ones that changed', () => {
         const setValues = jest.fn();
         const storage = createStorageWithLupin({ setValues });
 
@@ -309,10 +288,6 @@ describe('LanguageMediaStorageContext', () => {
 
         expect(setValues).toHaveBeenCalledWith({
           [`${episodePath}/understood`]: 90,
-          [`${episodePath}/updates/0000-update`]: {
-            at: NOW,
-            changes: { understood: { from: 80, to: 90 } },
-          },
         });
       });
     });
@@ -337,25 +312,9 @@ describe('LanguageMediaStorageContext', () => {
 
         storage.updateItem(['lupin'], { upTo: undefined });
 
-        expect(setValues).toHaveBeenCalledWith(
-          expect.objectContaining({ [`${thisYearsPath}/lupin/upTo`]: null }),
-        );
-      });
-
-      it('records what it was cleared from', () => {
-        const setValues = jest.fn();
-        const storage = createStorageWithLupin({ setValues });
-
-        storage.updateItem(['lupin'], { upTo: undefined });
-
-        expect(setValues).toHaveBeenCalledWith(
-          expect.objectContaining({
-            [`${thisYearsPath}/lupin/updates/0000-update`]: {
-              at: NOW,
-              changes: { upTo: { from: lupin.upTo } },
-            },
-          }),
-        );
+        expect(setValues).toHaveBeenCalledWith({
+          [`${thisYearsPath}/lupin/upTo`]: null,
+        });
       });
     });
   });

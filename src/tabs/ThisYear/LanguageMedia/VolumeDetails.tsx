@@ -2,7 +2,7 @@ import { DeleteButton } from './DeleteButton';
 import { EditVolumeForm } from './EditVolumeForm';
 import { useLanguageMediaStorage } from './LanguageMediaStorageContext';
 import { StatusSelect } from './StatusSelect';
-import { sumReadings } from './sumReadings';
+import { sumProgressUpdates } from './sumProgressUpdates';
 import { formatComprehension, formatStatus, formatVolumeName } from './format';
 import { ItemPath, Volume } from './types';
 
@@ -22,7 +22,8 @@ export function VolumeDetails({
     <>
       {name}
       {volume.pages !== undefined && ` (${volume.pages} pages)`}
-      {formatStatus(volume.status)}: {formatComprehension(sumReadings(volume))}
+      {formatStatus(volume.status)}:{' '}
+      {formatComprehension(sumProgressUpdates(volume))}
       {volume.pages === undefined && (
         <StatusSelect
           name={name}

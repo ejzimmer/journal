@@ -1,10 +1,10 @@
-import { Reading, Volume } from './types';
+import { ProgressUpdate, Volume } from './types';
 
 const MIN_POSITION = 0.1;
 
-export function findReadingPosition(
+export function findUpdatePosition(
   { pages }: Volume,
-  { page }: Reading,
+  { page }: ProgressUpdate,
   progress: number,
 ) {
   const position =

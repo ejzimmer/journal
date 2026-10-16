@@ -1,5 +1,5 @@
 import { getItemsByNumber } from './lists';
-import { getReadings } from './getReadings';
+import { getProgressUpdates } from './getProgressUpdates';
 import { PrintSeries } from './types';
 
 export type ComprehensionRecord = {
@@ -16,13 +16,13 @@ export const readLocalDate = (instant: string) =>
     .toString();
 
 export function getComprehensionRecords(series: PrintSeries) {
-  const readings = getItemsByNumber(series.volumes)
-    .flatMap(getReadings)
-    .toSorted((a, b) => Temporal.Instant.compare(a.createdAt, b.createdAt));
+  const updates = getItemsByNumber(series.volumes)
+    .flatMap(getProgressUpdates)
+    .toSorted((a, b) => Temporal.Instant.compare(a.at, b.at));
 
   const recordsByDate = new Map<string, ComprehensionRecord>();
-  readings.forEach(({ createdAt, lookups, aiQuestions, understood }) => {
-    const date = readLocalDate(createdAt);
+  updates.forEach(({ at, lookups, aiQuestions, understood }) => {
+    const date = readLocalDate(at);
     const record = recordsByDate.get(date) ?? {
       date,
       lookups: 0,

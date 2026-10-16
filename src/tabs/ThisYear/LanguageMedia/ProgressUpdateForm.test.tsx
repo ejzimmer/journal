@@ -4,11 +4,12 @@ import { ModalContext } from '../../../shared/controls/Modal';
 import { ProgressUpdateForm } from './ProgressUpdateForm';
 import { renderWithLanguageMediaStorage } from './languageMediaStorageTestUtils';
 import { yotsuba } from './testMedia';
-import { PrintSeries, Reading, Volume } from './types';
+import { PrintSeries, ProgressUpdate, Volume } from './types';
 
 const volume = yotsuba.volumes!.vol1;
 
-const READINGS_PATH = ['yotsuba', 'volumes', 'vol1', 'readings'];
+const UPDATE_PATH = ['yotsuba', 'volumes', 'vol1', 'updates', 'new'];
+const NOW = '2026-10-16T09:00:00Z';
 
 const renderForm = (series: PrintSeries = yotsuba) => {
   const closeModal = jest.fn();
@@ -19,25 +20,18 @@ const renderForm = (series: PrintSeries = yotsuba) => {
   );
   const view = renderWithLanguageMediaStorage(
     renderVolume(series.volumes!.vol1),
-    { addItem: jest.fn().mockReturnValue('new') },
   );
   return {
     user: userEvent.setup(),
     closeModal,
     ...view,
-    rerenderWithReading: (reading: Partial<Reading>) =>
+    rerenderWithUpdate: (update: Partial<ProgressUpdate>) =>
       view.rerender(
         renderVolume({
           ...volume,
-          readings: {
-            ...volume.readings,
-            new: {
-              id: 'new',
-              createdAt: '2026-10-15T09:00:00Z',
-              lookups: 0,
-              aiQuestions: 0,
-              ...reading,
-            },
+          updates: {
+            ...volume.updates,
+            new: { at: NOW, lookups: 0, aiQuestions: 0, ...update },
           },
         }),
       ),
@@ -45,6 +39,19 @@ const renderForm = (series: PrintSeries = yotsuba) => {
 };
 
 describe('ProgressUpdateForm', () => {
+  beforeEach(() => {
+    jest
+      .spyOn(Temporal.Now, 'instant')
+      .mockReturnValue(Temporal.Instant.from(NOW));
+    jest
+      .spyOn(crypto, 'randomUUID')
+      .mockReturnValue('new' as ReturnType<typeof crypto.randomUUID>);
+  });
+
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
   describe('the title', () => {
     describe('for a manga', () => {
       describe('with an unnamed volume', () => {
@@ -104,7 +111,7 @@ describe('ProgressUpdateForm', () => {
   });
 
   describe('the counters', () => {
-    it('start at zero, whatever earlier readings recorded', () => {
+    it('start at zero, whatever earlier updates recorded', () => {
       renderForm();
 
       expect(screen.getByRole('spinbutton', { name: 'Looked up' })).toHaveValue(
@@ -118,14 +125,15 @@ describe('ProgressUpdateForm', () => {
 
   describe('adding one lookup', () => {
     describe('before anything else is saved', () => {
-      it('starts a reading with one lookup, at the page I am up to', async () => {
+      it('starts an update with one lookup, at the page I am up to', async () => {
         const { user, storageContext } = renderForm();
 
         await user.click(
           screen.getByRole('button', { name: 'Add a lookup to Volume 1' }),
         );
 
-        expect(storageContext.addItem).toHaveBeenCalledWith(READINGS_PATH, {
+        expect(storageContext.updateItem).toHaveBeenCalledWith(UPDATE_PATH, {
+          at: NOW,
           lookups: 1,
           aiQuestions: 0,
           page: 41,
@@ -133,21 +141,20 @@ describe('ProgressUpdateForm', () => {
       });
     });
 
-    describe('once the reading is started', () => {
-      it('adds the lookup to that reading', async () => {
-        const { user, storageContext, rerenderWithReading } = renderForm();
+    describe('once the update is started', () => {
+      it('adds the lookup to that update', async () => {
+        const { user, storageContext, rerenderWithUpdate } = renderForm();
         const addLookup = screen.getByRole('button', {
           name: 'Add a lookup to Volume 1',
         });
 
         await user.click(addLookup);
-        rerenderWithReading({ lookups: 1 });
+        rerenderWithUpdate({ lookups: 1 });
         await user.click(addLookup);
 
-        expect(storageContext.updateItem).toHaveBeenCalledWith(
-          [...READINGS_PATH, 'new'],
-          { lookups: 2 },
-        );
+        expect(storageContext.updateItem).toHaveBeenCalledWith(UPDATE_PATH, {
+          lookups: 2,
+        });
       });
     });
 
@@ -163,14 +170,15 @@ describe('ProgressUpdateForm', () => {
   });
 
   describe('adding one AI question', () => {
-    it('starts a reading with one AI question', async () => {
+    it('starts an update with one AI question', async () => {
       const { user, storageContext } = renderForm();
 
       await user.click(
         screen.getByRole('button', { name: 'Add an AI question to Volume 1' }),
       );
 
-      expect(storageContext.addItem).toHaveBeenCalledWith(READINGS_PATH, {
+      expect(storageContext.updateItem).toHaveBeenCalledWith(UPDATE_PATH, {
+        at: NOW,
         lookups: 0,
         aiQuestions: 1,
         page: 41,
@@ -180,7 +188,7 @@ describe('ProgressUpdateForm', () => {
 
   describe('clicking save', () => {
     describe('after moving the understood slider', () => {
-      it('saves a reading of how much I understood', async () => {
+      it('saves an update of how much I understood', async () => {
         const { user, storageContext } = renderForm();
 
         fireEvent.change(screen.getByRole('slider', { name: 'Understood' }), {
@@ -188,7 +196,8 @@ describe('ProgressUpdateForm', () => {
         });
         await user.click(screen.getByRole('button', { name: 'Save' }));
 
-        expect(storageContext.addItem).toHaveBeenCalledWith(READINGS_PATH, {
+        expect(storageContext.updateItem).toHaveBeenCalledWith(UPDATE_PATH, {
+          at: NOW,
           lookups: 0,
           aiQuestions: 0,
           understood: 85,
@@ -198,29 +207,34 @@ describe('ProgressUpdateForm', () => {
     });
 
     describe('after adding a lookup', () => {
-      it('finishes that reading', async () => {
-        const { user, storageContext, rerenderWithReading } = renderForm();
+      it('finishes that update', async () => {
+        const { user, storageContext, rerenderWithUpdate } = renderForm();
 
         await user.click(
           screen.getByRole('button', { name: 'Add a lookup to Volume 1' }),
         );
-        rerenderWithReading({ lookups: 1 });
+        rerenderWithUpdate({ lookups: 1 });
         await user.click(screen.getByRole('button', { name: 'Save' }));
 
-        expect(storageContext.updateItem).toHaveBeenCalledWith(
-          [...READINGS_PATH, 'new'],
-          { lookups: 1, aiQuestions: 0, understood: undefined, page: 41 },
-        );
+        expect(storageContext.updateItem).toHaveBeenCalledWith(UPDATE_PATH, {
+          lookups: 1,
+          aiQuestions: 0,
+          understood: undefined,
+          page: 41,
+        });
       });
     });
 
     describe('with nothing recorded', () => {
-      it('saves no reading', async () => {
+      it('saves no update', async () => {
         const { user, storageContext } = renderForm();
 
         await user.click(screen.getByRole('button', { name: 'Save' }));
 
-        expect(storageContext.addItem).not.toHaveBeenCalled();
+        expect(storageContext.updateItem).not.toHaveBeenCalledWith(
+          UPDATE_PATH,
+          expect.anything(),
+        );
       });
     });
 
@@ -234,14 +248,15 @@ describe('ProgressUpdateForm', () => {
   });
 
   describe('pressing enter in a field', () => {
-    it('saves the reading', async () => {
+    it('saves the update', async () => {
       const { user, storageContext } = renderForm();
       const askedAi = screen.getByRole('spinbutton', { name: 'Asked AI' });
 
       await user.clear(askedAi);
       await user.type(askedAi, '5{Enter}');
 
-      expect(storageContext.addItem).toHaveBeenCalledWith(READINGS_PATH, {
+      expect(storageContext.updateItem).toHaveBeenCalledWith(UPDATE_PATH, {
+        at: NOW,
         lookups: 0,
         aiQuestions: 5,
         page: 41,
@@ -265,10 +280,11 @@ describe('ProgressUpdateForm', () => {
         });
       });
 
-      it('saves a reading at that page', async () => {
+      it('saves an update at that page', async () => {
         const { storageContext } = await typePage();
 
-        expect(storageContext.addItem).toHaveBeenCalledWith(READINGS_PATH, {
+        expect(storageContext.updateItem).toHaveBeenCalledWith(UPDATE_PATH, {
+          at: NOW,
           lookups: 0,
           aiQuestions: 0,
           page: 60,

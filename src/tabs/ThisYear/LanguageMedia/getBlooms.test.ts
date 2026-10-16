@@ -1,19 +1,19 @@
 import { getBlooms } from './getBlooms';
-import { PrintSeries, Reading, Volume } from './types';
+import { PrintSeries, ProgressUpdate, Volume } from './types';
 
-const createReading = (
-  id: string,
-  createdAt: string,
-  details: Partial<Reading>,
-): Reading => ({ id, createdAt, lookups: 0, aiQuestions: 0, ...details });
+type KeyedUpdate = [string, ProgressUpdate];
 
-const createVolume = (number: number, readings: Reading[]): Volume => ({
+const createUpdate = (
+  key: string,
+  at: string,
+  details: Partial<ProgressUpdate>,
+): KeyedUpdate => [key, { at, lookups: 0, aiQuestions: 0, ...details }];
+
+const createVolume = (number: number, updates: KeyedUpdate[]): Volume => ({
   id: `vol${number}`,
   number,
   pages: 200,
-  readings: Object.fromEntries(
-    readings.map((reading) => [reading.id, reading]),
-  ),
+  updates: Object.fromEntries(updates),
 });
 
 const createSeries = (
@@ -29,19 +29,19 @@ const createSeries = (
 });
 
 describe('getBlooms', () => {
-  describe('for a volume with readings', () => {
+  describe('for a volume with updates', () => {
     const series = createSeries(
       [
         createVolume(1, [
-          createReading('r2', '2026-10-03T10:00:00Z', {
+          createUpdate('r2', '2026-10-03T10:00:00Z', {
             page: 100,
             understood: 55,
           }),
-          createReading('r1', '2026-10-01T10:00:00Z', {
+          createUpdate('r1', '2026-10-01T10:00:00Z', {
             page: 50,
             understood: 40,
           }),
-          createReading('r3', '2026-10-04T10:00:00Z', {
+          createUpdate('r3', '2026-10-04T10:00:00Z', {
             page: 120,
             lookups: 3,
           }),
@@ -50,7 +50,7 @@ describe('getBlooms', () => {
       { volume: 1, page: 150 },
     );
 
-    it('grows a flower for each reading that says how much was understood, at its page, in the order they were saved', () => {
+    it('grows a flower for each update that says how much was understood, at its page, in the order they were saved', () => {
       expect(getBlooms(series)).toEqual([
         { key: 'r1', limbKey: 'vol1-limb', at: 0.25, understood: 40 },
         { key: 'r2', limbKey: 'vol1-limb', at: 0.5, understood: 55 },
@@ -58,12 +58,12 @@ describe('getBlooms', () => {
     });
   });
 
-  describe('for a reading with no page', () => {
+  describe('for an update with no page', () => {
     it('puts the flower where reading is up to now', () => {
       const series = createSeries(
         [
           createVolume(1, [
-            createReading('r1', '2026-10-01T10:00:00Z', { understood: 40 }),
+            createUpdate('r1', '2026-10-01T10:00:00Z', { understood: 40 }),
           ]),
         ],
         { volume: 1, page: 120 },
@@ -73,12 +73,12 @@ describe('getBlooms', () => {
     });
   });
 
-  describe('for a reading past where the volume is up to now', () => {
+  describe('for an update past where the volume is up to now', () => {
     it('keeps the flower on the grown part of the branch', () => {
       const series = createSeries(
         [
           createVolume(1, [
-            createReading('r1', '2026-10-01T10:00:00Z', {
+            createUpdate('r1', '2026-10-01T10:00:00Z', {
               page: 180,
               understood: 40,
             }),
@@ -96,7 +96,7 @@ describe('getBlooms', () => {
       const series = createSeries(
         [
           createVolume(1, [
-            createReading('r1', '2026-10-01T10:00:00Z', {
+            createUpdate('r1', '2026-10-01T10:00:00Z', {
               page: 2,
               understood: 10,
             }),

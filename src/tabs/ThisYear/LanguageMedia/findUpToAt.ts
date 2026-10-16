@@ -1,13 +1,17 @@
-import { ItemUpdate, PrintSeries } from './types';
+import { getLegacyUpdates, LegacyUpdate, LegacyUpdates } from './legacyUpdates';
+import { PrintSeries } from './types';
 
-const compareUpdates = (a: ItemUpdate, b: ItemUpdate) =>
+const compareUpdates = (a: LegacyUpdate, b: LegacyUpdate) =>
   Temporal.Instant.compare(a.at, b.at);
 
-export function findUpToAt(series: PrintSeries, instant: string) {
-  const upToUpdates = Object.values(series.updates ?? {})
+export function findUpToAt(
+  series: Pick<PrintSeries, 'upTo'> & LegacyUpdates,
+  instant: string,
+) {
+  const upToUpdates = getLegacyUpdates(series)
     .filter(({ changes }) => 'upTo' in changes)
     .toSorted(compareUpdates);
-  const isAfter = ({ at }: ItemUpdate) =>
+  const isAfter = ({ at }: LegacyUpdate) =>
     Temporal.Instant.compare(at, instant) > 0;
   const next = upToUpdates.find(isAfter);
   const previous = upToUpdates.findLast((update) => !isAfter(update));

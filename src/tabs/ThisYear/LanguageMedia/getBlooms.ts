@@ -1,6 +1,6 @@
-import { findReadingPosition } from './findReadingPosition';
+import { findUpdatePosition } from './findUpdatePosition';
 import { getItemsByNumber } from './lists';
-import { getReadings } from './getReadings';
+import { getProgressUpdates } from './getProgressUpdates';
 import { PrintSeries } from './types';
 import { readVolumeProgress } from './volumeProgress';
 
@@ -14,15 +14,15 @@ export type Bloom = {
 export function getBlooms(series: PrintSeries): Bloom[] {
   return getItemsByNumber(series.volumes).flatMap((volume) => {
     const progress = readVolumeProgress(series, volume);
-    return getReadings(volume).flatMap((reading) =>
-      reading.understood === undefined
+    return getProgressUpdates(volume).flatMap((update) =>
+      update.understood === undefined
         ? []
         : [
             {
-              key: reading.id,
+              key: update.key,
               limbKey: `${volume.id}-limb`,
-              at: findReadingPosition(volume, reading, progress),
-              understood: reading.understood,
+              at: findUpdatePosition(volume, update, progress),
+              understood: update.understood,
             },
           ],
     );

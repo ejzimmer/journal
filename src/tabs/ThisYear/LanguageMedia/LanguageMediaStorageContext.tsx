@@ -116,26 +116,14 @@ export function LanguageMediaStorageProvider({
           );
           if (changedFields.length === 0) return;
 
-          setValues({
-            ...Object.fromEntries(
+          setValues(
+            Object.fromEntries(
               changedFields.map(([field, value]) => [
                 toPath([...itemPath, field]),
                 value ?? null,
               ]),
             ),
-            [toPath([...itemPath, 'updates', crypto.randomUUID()])]: {
-              at: getCurrentTime(),
-              changes: Object.fromEntries(
-                changedFields.map(([field, value]) => [
-                  field,
-                  removeUndefinedFields({
-                    from: storedItem?.[field],
-                    to: value,
-                  }),
-                ]),
-              ),
-            },
-          });
+          );
         },
         deleteItem: (itemPath) =>
           deleteItem(toPath(itemPath.slice(0, -1)), { id: itemPath.at(-1)! }),

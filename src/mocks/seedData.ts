@@ -463,18 +463,16 @@ const languageMedia: Record<string, LanguageMedia> = {
         id: 'vol1',
         number: 1,
         pages: 220,
-        readings: {
+        updates: {
           r1: {
-            id: 'r1',
-            createdAt: '2026-09-20T09:00:00Z',
+            at: '2026-09-20T09:00:00Z',
             page: 20,
             lookups: 5,
             aiQuestions: 1,
             understood: 40,
           },
           r2: {
-            id: 'r2',
-            createdAt: '2026-09-22T09:00:00Z',
+            at: '2026-09-22T09:00:00Z',
             page: 41,
             lookups: 3,
             aiQuestions: 0,
@@ -489,18 +487,6 @@ const languageMedia: Record<string, LanguageMedia> = {
       },
     },
     upTo: { volume: 1, page: 41 },
-    updates: {
-      p1: {
-        at: '2026-09-20T08:59:59Z',
-        changes: { upTo: { to: { volume: 1, page: 20 } } },
-      },
-      p2: {
-        at: '2026-09-22T08:59:59Z',
-        changes: {
-          upTo: { from: { volume: 1, page: 20 }, to: { volume: 1, page: 41 } },
-        },
-      },
-    },
   },
   lesmis: {
     id: 'lesmis',
@@ -514,34 +500,30 @@ const languageMedia: Record<string, LanguageMedia> = {
         name: 'Fantine',
         pages: 520,
         status: 'done',
-        readings: {
+        updates: {
           r3: {
-            id: 'r3',
-            createdAt: '2026-09-01T09:00:00Z',
+            at: '2026-09-01T09:00:00Z',
             page: 90,
             lookups: 4,
             aiQuestions: 1,
             understood: 40,
           },
           r4: {
-            id: 'r4',
-            createdAt: '2026-09-02T09:00:00Z',
+            at: '2026-09-02T09:00:00Z',
             page: 120,
             lookups: 2,
             aiQuestions: 0,
             understood: 50,
           },
           r5: {
-            id: 'r5',
-            createdAt: '2026-09-10T09:00:00Z',
+            at: '2026-09-10T09:00:00Z',
             page: 330,
             lookups: 5,
             aiQuestions: 1,
             understood: 70,
           },
           r6: {
-            id: 'r6',
-            createdAt: '2026-09-15T09:00:00Z',
+            at: '2026-09-15T09:00:00Z',
             page: 470,
             lookups: 3,
             aiQuestions: 1,
@@ -554,18 +536,16 @@ const languageMedia: Record<string, LanguageMedia> = {
         number: 2,
         name: 'Cosette',
         pages: 480,
-        readings: {
+        updates: {
           r7: {
-            id: 'r7',
-            createdAt: '2026-09-25T09:00:00Z',
+            at: '2026-09-25T09:00:00Z',
             page: 90,
             lookups: 3,
             aiQuestions: 1,
             understood: 20,
           },
           r8: {
-            id: 'r8',
-            createdAt: '2026-10-05T09:00:00Z',
+            at: '2026-10-05T09:00:00Z',
             page: 200,
             lookups: 2,
             aiQuestions: 0,
@@ -581,48 +561,6 @@ const languageMedia: Record<string, LanguageMedia> = {
       },
     },
     upTo: { volume: 2, page: 210 },
-    updates: {
-      p1: {
-        at: '2026-09-01T08:59:59Z',
-        changes: { upTo: { to: { volume: 1, page: 90 } } },
-      },
-      p2: {
-        at: '2026-09-02T08:59:59Z',
-        changes: {
-          upTo: { from: { volume: 1, page: 90 }, to: { volume: 1, page: 120 } },
-        },
-      },
-      p3: {
-        at: '2026-09-10T08:59:59Z',
-        changes: {
-          upTo: {
-            from: { volume: 1, page: 120 },
-            to: { volume: 1, page: 330 },
-          },
-        },
-      },
-      p4: {
-        at: '2026-09-15T08:59:59Z',
-        changes: {
-          upTo: {
-            from: { volume: 1, page: 330 },
-            to: { volume: 1, page: 470 },
-          },
-        },
-      },
-      p5: {
-        at: '2026-09-25T08:59:59Z',
-        changes: {
-          upTo: { from: { volume: 1, page: 470 }, to: { volume: 2, page: 90 } },
-        },
-      },
-      p6: {
-        at: '2026-10-05T08:59:59Z',
-        changes: {
-          upTo: { from: { volume: 2, page: 90 }, to: { volume: 2, page: 200 } },
-        },
-      },
-    },
   },
 };
 

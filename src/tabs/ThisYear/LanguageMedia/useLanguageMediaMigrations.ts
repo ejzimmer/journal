@@ -1,8 +1,9 @@
 import { useEffect } from 'react';
 import { useStorageContext } from '../../../shared/FirebaseContext';
 import { createImportUpdateRekey } from './createImportUpdateRekey';
-import { createReadingsMigration } from './createReadingsMigration';
+import { createProgressUpdateMigration } from './createProgressUpdateMigration';
 import { createUpdateIdRemoval } from './createUpdateIdRemoval';
+import { omitPrintSeries } from './omitPrintSeries';
 import { LANGUAGE_MEDIA_PATH, StoredMediaByYear } from './types';
 
 export function useLanguageMediaMigrations() {
@@ -12,10 +13,11 @@ export function useLanguageMediaMigrations() {
 
   useEffect(() => {
     const createId = () => crypto.randomUUID();
+    const otherMedia = omitPrintSeries(storedMediaByYear);
     const updates = {
-      ...createUpdateIdRemoval(storedMediaByYear),
-      ...createImportUpdateRekey(storedMediaByYear, createId),
-      ...createReadingsMigration(
+      ...createUpdateIdRemoval(otherMedia),
+      ...createImportUpdateRekey(otherMedia, createId),
+      ...createProgressUpdateMigration(
         storedMediaByYear,
         Temporal.Now.instant().toString(),
         createId,

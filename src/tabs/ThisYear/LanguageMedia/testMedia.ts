@@ -66,10 +66,9 @@ export const yotsuba: PrintSeries = {
       id: 'vol1',
       number: 1,
       pages: 220,
-      readings: {
+      updates: {
         r1: {
-          id: 'r1',
-          createdAt: '2026-09-20T09:00:00Z',
+          at: '2026-09-20T09:00:00Z',
           page: 41,
           lookups: 20,
           aiQuestions: 3,
