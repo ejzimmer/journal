@@ -47,8 +47,12 @@ describe('placeVineLeaves', () => {
     const leaves = placeLeaves([1, 1, 0, 0, 0]);
 
     it('grows leaves on the watched shoots', () => {
-      expect(leaves.some(({ key }) => key.startsWith('e1-shoot'))).toBe(true);
-      expect(leaves.some(({ key }) => key.startsWith('e2-shoot'))).toBe(true);
+      expect(leaves.some(({ key }) => key.startsWith('s1-e1-shoot'))).toBe(
+        true,
+      );
+      expect(leaves.some(({ key }) => key.startsWith('s1-e2-shoot'))).toBe(
+        true,
+      );
     });
 
     it('grows leaves along the first season’s branch', () => {
