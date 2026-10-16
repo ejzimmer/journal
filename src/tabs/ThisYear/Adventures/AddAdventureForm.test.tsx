@@ -291,32 +291,18 @@ describe('AddAdventureForm', () => {
     });
 
     describe('when the bin is clicked', () => {
-      it('asks for confirmation instead of deleting', async () => {
+      it('asks for confirmation, then deletes the mode when clicked again', async () => {
         const { user, storage } = await openForm();
 
         await user.click(
           screen.getByRole('button', { name: 'Delete Cycling' }),
         );
-
-        expect(
-          screen.getByRole('button', { name: 'Confirm delete Cycling' }),
-        ).toBeVisible();
         expect(storage.deleteMode).not.toHaveBeenCalled();
-      });
 
-      describe('and clicked again', () => {
-        it('deletes the mode', async () => {
-          const { user, storage } = await openForm();
-
-          await user.click(
-            screen.getByRole('button', { name: 'Delete Cycling' }),
-          );
-          await user.click(
-            screen.getByRole('button', { name: 'Confirm delete Cycling' }),
-          );
-
-          expect(storage.deleteMode).toHaveBeenCalledWith(cycling);
-        });
+        await user.click(
+          screen.getByRole('button', { name: 'Confirm delete Cycling' }),
+        );
+        expect(storage.deleteMode).toHaveBeenCalledWith(cycling);
       });
     });
 
