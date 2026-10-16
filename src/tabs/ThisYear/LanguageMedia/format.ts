@@ -33,10 +33,15 @@ export const formatEpisodeName = ({ number, name }: Episode) =>
 export const formatVolumeName = ({ number, name }: Volume) =>
   name || `Volume ${number}`;
 
-export const formatVolumeTitle = (
+export function formatVolumeTitle(
   series: PrintSeries,
   { number, name }: Volume,
-) => `${series.name} ${number}${name ? `: ${name}` : ''}`;
+) {
+  if (series.type === 'book' && name) {
+    return name;
+  }
+  return `${series.name} ${number}${name ? `: ${name}` : ''}`;
+}
 
 export function formatComprehension({
   lookups,

@@ -61,7 +61,7 @@ describe('WeeklyCalorieTracker', () => {
     });
 
     describe('when a week is between 19,000 and 20,000', () => {
-      it('shows it as the regular green', () => {
+      it('shows it as the lightest green', () => {
         const [bottom, top] = renderWeeks([19000, 20000, 15000]);
         [bottom, top].forEach((week) => {
           expect(week).toHaveClass('week hovertext-anchor', { exact: true });
@@ -70,7 +70,7 @@ describe('WeeklyCalorieTracker', () => {
     });
 
     describe('when a week is between the lowest week and 19,000', () => {
-      it('shades it between the darkest and regular greens', () => {
+      it('shades it between the darkest and lightest greens', () => {
         const [, between] = renderWeeks([15000, 17000, 19000]);
         expect(between).toHaveClass('week-between');
         expect(between).toHaveStyle({ '--lowest-share': '50%' });

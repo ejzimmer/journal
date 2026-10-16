@@ -3,6 +3,7 @@ import {
   GameDetails,
   GameStatus,
   getGameStatus,
+  isSeries,
   SeriesDetails,
 } from '../types';
 import { getCoverHue } from '../coverHue';
@@ -71,14 +72,8 @@ function GameMediaList({
 export function Games() {
   const { games, updateMediaSeries } = useMediaStorage();
   const formConfig = useGameFormConfig();
-  const {
-    years,
-    selectedYear,
-    selectYear,
-    isThisYearSelected,
-    seriesInYear,
-    singlesInYear,
-  } = useMediaYears(games);
+  const { years, selectedYear, selectYear, isThisYearSelected, entriesInYear } =
+    useMediaYears(games);
 
   return (
     <div className="games">
@@ -89,20 +84,21 @@ export function Games() {
         onSelectYear={selectYear}
       >
         <div className="shelves">
-          {seriesInYear.map((series) => (
-            <Shelf
-              key={series.id}
-              label={series.name}
-              onRenameLabel={(name) => updateMediaSeries(series, name)}
-            >
-              <GameMediaList games={series.items} series={series} />
-            </Shelf>
-          ))}
-          {singlesInYear.map((game) => (
-            <Shelf key={game.id} single>
-              <GameMediaList games={{ [game.id]: game }} />
-            </Shelf>
-          ))}
+          {entriesInYear.map((entry) =>
+            isSeries(entry) ? (
+              <Shelf
+                key={entry.id}
+                label={entry.name}
+                onRenameLabel={(name) => updateMediaSeries(entry, name)}
+              >
+                <GameMediaList games={entry.items} series={entry} />
+              </Shelf>
+            ) : (
+              <Shelf key={entry.id} single>
+                <GameMediaList games={{ [entry.id]: entry }} />
+              </Shelf>
+            ),
+          )}
         </div>
       </YearTabs>
       {isThisYearSelected && (

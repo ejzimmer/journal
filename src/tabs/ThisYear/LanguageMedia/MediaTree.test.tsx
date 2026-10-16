@@ -78,4 +78,19 @@ describe('MediaTree', () => {
       });
     });
   });
+
+  describe('clicking the edit sign', () => {
+    it('opens a form to edit the series', async () => {
+      const user = userEvent.setup();
+      renderWithLanguageMediaStorage(
+        <MediaTree series={createSeries('book')} />,
+      );
+
+      await user.click(screen.getByRole('button', { name: 'Edit' }));
+
+      expect(
+        screen.getByRole('form', { name: 'Edit Series' }),
+      ).toBeInTheDocument();
+    });
+  });
 });

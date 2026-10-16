@@ -107,7 +107,7 @@ export function ProgressUpdateForm({
             }
           />
           <PageTile page={pageUpTo} pages={volume.pages} />
-          <UnderstoodTile seriesType={series.type} />
+          <UnderstoodTile mediaType={series.type} />
         </div>
         <button
           type="submit"

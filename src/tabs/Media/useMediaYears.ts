@@ -32,15 +32,9 @@ export function useMediaYears<T extends MediaDetails>(
     isEntryComplete,
     getEntryCompletionYear,
   );
-  const entriesInYear = entries.filter(itemYears.isInSelectedYear);
 
   return {
     ...itemYears,
-    seriesInYear: entriesInYear.filter((entry): entry is SeriesDetails<T> =>
-      isSeries(entry),
-    ),
-    singlesInYear: entriesInYear.filter(
-      (entry): entry is T => !isSeries(entry),
-    ),
+    entriesInYear: entries.filter(itemYears.isInSelectedYear),
   };
 }
