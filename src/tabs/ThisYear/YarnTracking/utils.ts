@@ -3,8 +3,8 @@ import { YarnTypeId } from './types';
 export const GRAMS_PER_BALL = 200;
 
 export const YARN_COLOURS: Record<YarnTypeId, string> = {
-  wool: 'hsl(205 90% 76%)',
-  cotton: 'hsl(275 64% 73%)',
+  wool: 'hsl(275 64% 73%)',
+  cotton: 'hsl(205 90% 76%)',
   acrylic: 'hsl(335 88% 76%)',
   'sock yarn': 'hsl(170 50% 72%)',
 };
