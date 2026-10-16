@@ -17,16 +17,16 @@ const renderForm = (series: PrintSeries = yotsuba) => {
       <ProgressUpdateForm series={series} volume={volumeNow} />
     </ModalContext.Provider>
   );
-  const rendered = renderWithLanguageMediaStorage(
+  const view = renderWithLanguageMediaStorage(
     renderVolume(series.volumes!.vol1),
     { addItem: jest.fn().mockReturnValue('new') },
   );
   return {
     user: userEvent.setup(),
     closeModal,
-    ...rendered,
+    ...view,
     rerenderWithReading: (reading: Partial<Reading>) =>
-      rendered.rerender(
+      view.rerender(
         renderVolume({
           ...volume,
           readings: {
@@ -217,11 +217,11 @@ describe('ProgressUpdateForm', () => {
 
     describe('with a page', () => {
       const typePage = async () => {
-        const rendered = renderForm();
+        const view = renderForm();
         const page = screen.getByRole('spinbutton', { name: 'Page' });
-        await rendered.user.clear(page);
-        await rendered.user.type(page, '60{Enter}');
-        return rendered;
+        await view.user.clear(page);
+        await view.user.type(page, '60{Enter}');
+        return view;
       };
 
       it('saves where I am up to', async () => {
