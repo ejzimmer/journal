@@ -4,11 +4,11 @@ import { AddMediaForm } from './AddMediaForm';
 import { CloudFrame } from './CloudFrame';
 import { SeedlingIcon } from './SeedlingIcon';
 
-export function AddMediaSeedling() {
+export function AddMediaButton() {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <div className="add-media-seedling tooltip-container">
+    <div className="add-media-button tooltip-container">
       <button
         type="button"
         className="tooltip-anchor"
