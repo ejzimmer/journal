@@ -81,14 +81,14 @@ describe('createVineLayout', () => {
           growth.type === 'branch' ? [[key, growth.level]] : [],
         ),
       ).toEqual([
-        ['e1-shoot', 0],
-        ['e2-shoot', 1],
-        ['e3-shoot', 2],
-        ['e4-shoot', 3],
-        ['e5-shoot', 4],
-        ['e1-shoot', 5],
-        ['e2-shoot', 6],
-        ['e3-shoot', 7],
+        ['s1-e1-shoot', 0],
+        ['s1-e2-shoot', 1],
+        ['s1-e3-shoot', 2],
+        ['s1-e4-shoot', 3],
+        ['s1-e5-shoot', 4],
+        ['s2-e1-shoot', 5],
+        ['s2-e2-shoot', 6],
+        ['s2-e3-shoot', 7],
       ]);
     });
   });
@@ -141,8 +141,8 @@ describe('createVineLayout', () => {
     ]);
 
     it('is longer for a longer episode', () => {
-      expect(measureSpan(series, 'e2-shoot').height).toBeGreaterThan(
-        measureSpan(series, 'e1-shoot').height,
+      expect(measureSpan(series, 's1-e2-shoot').height).toBeGreaterThan(
+        measureSpan(series, 's1-e1-shoot').height,
       );
     });
   });
