@@ -1,10 +1,11 @@
-import { useLayoutEffect, useMemo, useRef } from 'react';
+import { CSSProperties, useLayoutEffect, useMemo, useRef } from 'react';
 
 import './WeeklyCalorieTracker.css';
 import {
   Balance,
   STARTING_BALANCE,
   getWeekClass,
+  getWeekLowestShare,
   getWeeklyBalance,
 } from '../utils';
 
@@ -33,8 +34,16 @@ export function WeeklyCalorieTracker({ days }: WeeklyCalorieTrackerProps) {
       {weeklyBalances.map((balance, index) => (
         <div className="week-container" key={index}>
           <div
-            className={getWeekClass({ balance, highestBalance, lowestBalance })}
-            style={{ height: (balance.balance / heightScale) * 100 + '%' }}
+            className={getWeekClass({
+              balance: balance.balance,
+              lowestBalance,
+            })}
+            style={
+              {
+                height: (balance.balance / heightScale) * 100 + '%',
+                '--lowest-share': `${getWeekLowestShare({ balance: balance.balance, lowestBalance }) * 100}%`,
+              } as CSSProperties
+            }
             role="img"
             aria-label={`${balance.day} ${balance.month}: ${balance.balance.toLocaleString()}`}
           />

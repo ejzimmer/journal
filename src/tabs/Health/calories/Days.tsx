@@ -61,8 +61,11 @@ export function Days({ days, onSelectDay }: DaysProps) {
   );
 }
 
+const DARKEST_DEFICIT = 370;
+
 function getDayColour(diff: number, maxDiff: number) {
-  const intensity = maxDiff === 0 ? 1 : Math.min(Math.abs(diff) / maxDiff, 1);
+  const scale = diff > 0 ? DARKEST_DEFICIT : maxDiff;
+  const intensity = scale === 0 ? 1 : Math.min(Math.abs(diff) / scale, 1);
   const hue = diff < 0 ? 77 : 104;
 
   // Linear interpolation between white (intensity 0) and the full colour (intensity 1).
