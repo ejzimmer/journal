@@ -30,6 +30,7 @@ const renderNoticeboard = (adventures: Adventure[]) =>
         deleteAdventure: jest.fn(),
         addMode: jest.fn(),
         updateMode: jest.fn(),
+        deleteMode: jest.fn(),
       }}
     >
       <Noticeboard />
@@ -68,6 +69,7 @@ describe('Noticeboard', () => {
         deleteAdventure: jest.fn(),
         addMode: jest.fn(),
         updateMode: jest.fn(),
+        deleteMode: jest.fn(),
       };
 
       render(
