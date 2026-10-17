@@ -59,6 +59,14 @@ const thinPoints = (points: Point[], spacing: number) => [
   ...(points.length % spacing === 1 ? [] : [points[points.length - 1]]),
 ];
 
+const findNearestPoint = (points: Point[], target: Point) =>
+  points.reduce((nearest, point) =>
+    Math.hypot(point.x - target.x, point.y - target.y) <
+    Math.hypot(nearest.x - target.x, nearest.y - target.y)
+      ? point
+      : nearest,
+  );
+
 function findPointAtLength(points: Point[], length: number) {
   let travelled = 0;
   for (let index = 1; index < points.length; index++) {
@@ -78,7 +86,7 @@ function findPointAtLength(points: Point[], length: number) {
 }
 
 const measureBranchLength = (episodeCount: number) =>
-  episodeCount * EPISODE_SPACING + BRANCH_LEAD;
+  Math.max(1, episodeCount) * EPISODE_SPACING + BRANCH_LEAD;
 
 const findAttachLengths = (episodeCount: number, length: number) =>
   Array.from(
@@ -226,11 +234,11 @@ export function createVineLayout(series: TvSeries): VineLayout {
 
   let firstLevel = 0;
   const seasonShapes = seasons.flatMap(({ season, episodes }, bay) => {
-    if (!episodes.length) return [];
-    const points = plans[bay].points.map(({ x, y }) => ({
+    const [start, ...rest] = plans[bay].points.map(({ x, y }) => ({
       x,
       y: y + beamMid,
     }));
+    const points = [findNearestPoint(trunk.points, start), ...rest];
     const shapes = growSeason(season, episodes, firstLevel, points);
     firstLevel += episodes.length;
     return shapes;
