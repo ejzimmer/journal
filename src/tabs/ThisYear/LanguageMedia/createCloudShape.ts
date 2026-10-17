@@ -43,7 +43,7 @@ export function createCloudShape(width: number, height: number) {
     [width * 0.7, outerTopRadius - 16, outerTopRadius],
   ];
 
-  const hull: Point[] = [
+  const body: Point[] = [
     [topLeftX, 60],
     ...topPuffs.map(([cx, cy]): Point => [cx, cy]),
     [topRightX, 60],
@@ -60,5 +60,5 @@ export function createCloudShape(width: number, height: number) {
     ...topPuffs,
   ];
 
-  return { hull, puffs };
+  return { body, puffs };
 }

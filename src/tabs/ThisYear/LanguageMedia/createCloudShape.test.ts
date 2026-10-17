@@ -9,18 +9,18 @@ const getLeftEdges = () =>
     .filter(([, cy]) => cy >= 100)
     .map(([cx, cy, radius]) => ({ y: cy, edge: cx - radius }));
 
-const isInsideHull = (hull: [number, number][], x: number, y: number) =>
-  hull.reduce((inside, [x1, y1], index) => {
-    const [x2, y2] = hull[(index + 1) % hull.length];
+const isInsideBody = (body: [number, number][], x: number, y: number) =>
+  body.reduce((inside, [x1, y1], index) => {
+    const [x2, y2] = body[(index + 1) % body.length];
     const crosses =
       y1 > y !== y2 > y && x < x1 + ((y - y1) / (y2 - y1)) * (x2 - x1);
     return crosses ? !inside : inside;
   }, false);
 
 const findHoles = (cloudWidth: number, depth: number) => {
-  const { hull, puffs } = createCloudShape(cloudWidth, height);
+  const { body, puffs } = createCloudShape(cloudWidth, height);
   const isInside = (x: number, y: number) =>
-    isInsideHull(hull, x, y) ||
+    isInsideBody(body, x, y) ||
     puffs.some(([cx, cy, radius]) => Math.hypot(x - cx, y - cy) <= radius);
 
   const key = (x: number, y: number) => `${x},${y}`;
@@ -77,8 +77,8 @@ describe('createCloudShape', () => {
 
   describe('the bottom', () => {
     it('lies flat along the bottom of the box', () => {
-      const { hull } = createCloudShape(width, height);
-      const bottom = hull.filter(([, y]) => y === height);
+      const { body } = createCloudShape(width, height);
+      const bottom = body.filter(([, y]) => y === height);
 
       expect(bottom).toHaveLength(2);
     });

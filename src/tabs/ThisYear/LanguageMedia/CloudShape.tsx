@@ -10,7 +10,7 @@ export function CloudShape({
 }) {
   const shadeId = useId();
   const outlineId = useId();
-  const { hull, puffs } = createCloudShape(width, height);
+  const { body, puffs } = createCloudShape(width, height);
 
   return (
     <svg
@@ -47,7 +47,7 @@ export function CloudShape({
         </filter>
       </defs>
       <g fill={`url(#${shadeId})`} filter={`url(#${outlineId})`}>
-        <polygon points={hull.map((point) => point.join(',')).join(' ')} />
+        <polygon points={body.map((point) => point.join(',')).join(' ')} />
         {puffs.map(([cx, cy, radius]) => (
           <circle key={`${cx},${cy}`} cx={cx} cy={cy} r={radius} />
         ))}
