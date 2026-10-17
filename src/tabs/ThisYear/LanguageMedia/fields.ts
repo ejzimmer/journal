@@ -29,9 +29,3 @@ export type FieldProps<T> = {
   defaultValue?: T;
   isRequired?: boolean;
 };
-
-export const readRequiredNumber = (
-  data: FormData,
-  name: string,
-  fallback: number,
-) => readNumber(data, name) ?? fallback;

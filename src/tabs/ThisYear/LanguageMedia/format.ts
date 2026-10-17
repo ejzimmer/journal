@@ -1,12 +1,4 @@
-import {
-  Comprehension,
-  Episode,
-  PrintSeries,
-  Season,
-  Status,
-  TvSeries,
-  Volume,
-} from './types';
+import { Episode, PrintSeries, Season, TvSeries, Volume } from './types';
 
 const minutesAndSecondsFormat = new Intl.DurationFormat(undefined, {
   style: 'digital',
@@ -20,15 +12,6 @@ const toDuration = (totalSeconds: number) =>
 
 export const formatMinutesAndSeconds = (totalSeconds: number) =>
   minutesAndSecondsFormat.format(toDuration(totalSeconds));
-
-export const STATUS_NAMES: Record<Status, string> = {
-  'not-started': 'Not started',
-  'in-progress': 'In progress',
-  done: 'Done',
-};
-
-export const formatEpisodeName = ({ number, name }: Episode) =>
-  name || `Episode ${number}`;
 
 export const formatEpisodeTitle = (
   series: TvSeries,
@@ -57,17 +40,3 @@ const toFullWidthDigits = (number: number) =>
   String(number).replace(/\d/g, (digit) =>
     String.fromCharCode(digit.charCodeAt(0) + FULL_WIDTH_OFFSET),
   );
-
-export function formatComprehension({
-  lookups,
-  aiQuestions,
-  understood,
-}: Comprehension) {
-  const counts = `${lookups} looked up, ${aiQuestions} asked AI`;
-  return understood === undefined
-    ? counts
-    : `${counts}, ${understood}% understood`;
-}
-
-export const formatStatus = (status?: Status) =>
-  status && `, ${STATUS_NAMES[status]}`;
