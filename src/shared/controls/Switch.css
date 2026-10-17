@@ -46,15 +46,12 @@
     height: 100%;
     z-index: -1;
     position: absolute;
-    transition-property: left, box-shadow, border-radius, background;
+    --light: var(--action-colour);
+    --dark: var(--action-colour-dark);
+    background: linear-gradient(var(--dark), var(--light) 5%, var(--dark) 95%);
+    box-shadow: inset 2px 2px 8px var(--dark);
+    transition-property: left, box-shadow, border-radius;
     transition-duration: 0.2s;
     transition-timing-function: ease-out;
   }
-}
-
-:where([role='radiogroup'].switch .indicator) {
-  --light: var(--action-colour);
-  --dark: var(--action-colour-dark);
-  background: linear-gradient(var(--dark), var(--light) 5%, var(--dark) 95%);
-  box-shadow: inset 2px 2px 8px var(--dark);
 }

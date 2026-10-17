@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { LedSwitch } from '../../../shared/controls/LedSwitch';
+import { LedSwitch } from '../LedSwitch';
 import { AddTaskForm } from '../AddTaskForm';
 import { DailyTaskDetails, DAILY_KEY } from '../../../shared/types';
 import { getToday } from '../../../shared/dates';
