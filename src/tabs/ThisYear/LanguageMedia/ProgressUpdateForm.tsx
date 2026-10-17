@@ -1,4 +1,5 @@
 import { KeyboardEvent, FormEvent, useState } from 'react';
+import { DeleteWithConfirmation } from '../../../shared/controls/DeleteWithConfirmation';
 import { useModal } from '../../../shared/controls/Modal';
 import { TickIcon } from '../../../shared/icons/Tick';
 import { CountTile } from './CountTile';
@@ -8,6 +9,7 @@ import { UnderstoodTile } from './UnderstoodTile';
 import { useLanguageMediaStorage } from './LanguageMediaStorageContext';
 import { parseNumber } from './fields';
 import { formatVolumeName, formatVolumeTitle } from './format';
+import { getPagedUpdates } from './getPagedUpdates';
 import { PrintSeries, ProgressUpdate, Volume } from './types';
 
 import './ProgressUpdateForm.css';
@@ -15,18 +17,26 @@ import './ProgressUpdateForm.css';
 type ProgressUpdateFormProps = {
   series: PrintSeries;
   volume: Volume;
+  updateKey?: string;
 };
 
 export function ProgressUpdateForm({
   series,
   volume,
+  updateKey: existingUpdateKey,
 }: ProgressUpdateFormProps) {
-  const { updateItem } = useLanguageMediaStorage();
+  const { updateItem, deleteItem } = useLanguageMediaStorage();
   const { closeModal } = useModal();
-  const [updateKey] = useState(() => crypto.randomUUID());
+  const [newUpdateKey] = useState(() => crypto.randomUUID());
+  const updateKey = existingUpdateKey ?? newUpdateKey;
   const updatePath = [series.id, 'volumes', volume.id, 'updates', updateKey];
   const update = volume.updates?.[updateKey];
   const name = formatVolumeName(volume);
+  const pagedUpdates = getPagedUpdates(series);
+  const latestPagedUpdate = pagedUpdates.at(-1);
+  const isLatestPagedUpdate =
+    latestPagedUpdate?.volume.id === volume.id &&
+    latestPagedUpdate.key === updateKey;
 
   const submitOnEnter = (event: KeyboardEvent<HTMLFormElement>) => {
     if (event.key === 'Enter' && event.target instanceof HTMLInputElement) {
@@ -35,8 +45,11 @@ export function ProgressUpdateForm({
     }
   };
 
-  const pageUpTo =
-    series.upTo?.volume === volume.number ? series.upTo.page : undefined;
+  const startingPage = existingUpdateKey
+    ? update?.page
+    : series.upTo?.volume === volume.number
+      ? series.upTo.page
+      : undefined;
 
   const saveUpdate = (changes: Partial<ProgressUpdate>) =>
     updateItem(
@@ -47,7 +60,7 @@ export function ProgressUpdateForm({
             at: Temporal.Now.instant().toString(),
             lookups: 0,
             aiQuestions: 0,
-            page: pageUpTo,
+            page: startingPage,
             ...changes,
           },
     );
@@ -56,7 +69,7 @@ export function ProgressUpdateForm({
     event.preventDefault();
     const data = new FormData(event.currentTarget);
     const page = parseNumber(data, 'page');
-    if (page !== undefined) {
+    if (page !== undefined && (!existingUpdateKey || isLatestPagedUpdate)) {
       updateItem([series.id], { upTo: { volume: volume.number, page } });
     }
     const changes = {
@@ -68,9 +81,23 @@ export function ProgressUpdateForm({
       changes.lookups > 0 ||
       changes.aiQuestions > 0 ||
       changes.understood !== undefined ||
-      (page !== undefined && page !== pageUpTo);
+      (page !== undefined && page !== startingPage);
     if (update || hasProgress) {
-      saveUpdate({ ...changes, page: page ?? pageUpTo });
+      saveUpdate({ ...changes, page: page ?? startingPage });
+    }
+    closeModal();
+  };
+
+  const deleteUpdate = () => {
+    deleteItem(updatePath);
+    if (isLatestPagedUpdate) {
+      const previous = pagedUpdates.at(-2);
+      updateItem([series.id], {
+        upTo: previous && {
+          volume: previous.volume.number,
+          page: previous.page,
+        },
+      });
     }
     closeModal();
   };
@@ -105,16 +132,27 @@ export function ProgressUpdateForm({
               saveUpdate({ aiQuestions: (update?.aiQuestions ?? 0) + 1 })
             }
           />
-          <PageTile page={pageUpTo} pages={volume.pages} />
-          <UnderstoodTile mediaType={series.type} />
+          <PageTile page={startingPage} pages={volume.pages} />
+          <UnderstoodTile
+            mediaType={series.type}
+            defaultValue={update?.understood}
+          />
         </div>
-        <button
-          type="submit"
-          className="progress-update-save"
-          aria-label="Save"
-        >
-          <TickIcon width="20px" strokeWidth="2.6" />
-        </button>
+        <div className="progress-update-actions">
+          {existingUpdateKey && (
+            <DeleteWithConfirmation
+              className="progress-update-delete"
+              onDelete={deleteUpdate}
+            />
+          )}
+          <button
+            type="submit"
+            className="progress-update-save"
+            aria-label="Save"
+          >
+            <TickIcon width="20px" strokeWidth="2.6" />
+          </button>
+        </div>
       </div>
     </form>
   );

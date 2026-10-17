@@ -209,6 +209,40 @@ dialog.progress-update-modal {
   }
 }
 
+.progress-update-actions {
+  flex: none;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.progress-update-delete {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: white;
+  color: var(--error-colour);
+  transition: background 0.15s;
+
+  svg {
+    width: 18px;
+  }
+
+  &:hover,
+  &:focus-visible {
+    background: hsl(350 55% 92%);
+  }
+
+  &.confirming {
+    background: var(--error-colour);
+    color: white;
+  }
+}
+
 .understood-tile.youtube {
   --flower-colour: hsl(48 92% 58%);
 }

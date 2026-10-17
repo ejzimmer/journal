@@ -395,3 +395,17 @@
     fill: hsl(52 85% 70%);
   }
 }
+
+.update-stretch {
+  fill: transparent;
+  stroke: transparent;
+  stroke-width: 8;
+  cursor: pointer;
+  outline: none;
+  transition: fill 0.15s;
+
+  &:hover,
+  &:focus-visible {
+    fill: hsl(95 40% 46%);
+  }
+}

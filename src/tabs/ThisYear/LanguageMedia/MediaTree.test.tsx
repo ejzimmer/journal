@@ -93,4 +93,44 @@ describe('MediaTree', () => {
       ).toBeInTheDocument();
     });
   });
+
+  describe('clicking the stretch of branch an update grew', () => {
+    it('opens that update in the update form', async () => {
+      const user = userEvent.setup();
+      const series = createSeries('book');
+      renderWithLanguageMediaStorage(
+        <MediaTree
+          series={{
+            ...series,
+            volumes: {
+              ...series.volumes,
+              vol1: {
+                ...series.volumes!.vol1,
+                updates: {
+                  u1: {
+                    at: '2026-10-01T09:00:00Z',
+                    page: 50,
+                    lookups: 4,
+                    aiQuestions: 0,
+                  },
+                },
+              },
+            },
+            upTo: { volume: 1, page: 50 },
+          }}
+        />,
+      );
+
+      await user.click(
+        screen.getByRole('button', { name: 'Edit update to Fantine' }),
+      );
+
+      expect(
+        screen.getByRole('form', { name: 'Track Fantine' }),
+      ).toBeInTheDocument();
+      expect(screen.getByRole('spinbutton', { name: 'Looked up' })).toHaveValue(
+        4,
+      );
+    });
+  });
 });
