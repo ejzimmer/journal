@@ -13,6 +13,9 @@ const toDuration = (totalSeconds: number) =>
 export const formatMinutesAndSeconds = (totalSeconds: number) =>
   minutesAndSecondsFormat.format(toDuration(totalSeconds));
 
+export const formatEpisodeName = ({ number, name }: Episode) =>
+  name || `Episode ${number}`;
+
 export const formatEpisodeTitle = (
   series: TvSeries,
   season: Season,
