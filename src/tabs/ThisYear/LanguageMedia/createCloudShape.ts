@@ -6,6 +6,8 @@ const SIDE_SPACING = 60;
 const TOP_EDGE_INSET = 14;
 const BOTTOM_EDGE_OVERHANG = 40;
 const CORNER_RADIUS = 40;
+const NARROW_CLOUD_WIDTH = 480;
+const TOP_PUFF_GROWTH = 1 / 5;
 
 export function createCloudShape(width: number, height: number) {
   const sidesBottom = height - CORNER_RADIUS;
@@ -33,8 +35,17 @@ export function createCloudShape(width: number, height: number) {
   const [bottomLeftX] = left[left.length - 1];
   const [bottomRightX] = right[right.length - 1];
 
-  const hull: Point[] = [
+  const outerTopRadius =
+    60 + Math.max(0, width - NARROW_CLOUD_WIDTH) * TOP_PUFF_GROWTH;
+  const topPuffs: Puff[] = [
+    [width * 0.3, outerTopRadius - 14, outerTopRadius],
+    [width / 2, 24, 72],
+    [width * 0.7, outerTopRadius - 16, outerTopRadius],
+  ];
+
+  const body: Point[] = [
     [topLeftX, 60],
+    ...topPuffs.map(([cx, cy]): Point => [cx, cy]),
     [topRightX, 60],
     [bottomRightX, sidesBottom],
     [bottomRightX, height],
@@ -46,10 +57,8 @@ export function createCloudShape(width: number, height: number) {
     ...right,
     [70, 86, 52],
     [width - 72, 82, 54],
-    [width * 0.3, 46, 60],
-    [width / 2, 24, 72],
-    [width * 0.7, 44, 60],
+    ...topPuffs,
   ];
 
-  return { hull, puffs };
+  return { body, puffs };
 }

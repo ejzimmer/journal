@@ -9,11 +9,76 @@ const getLeftEdges = () =>
     .filter(([, cy]) => cy >= 100)
     .map(([cx, cy, radius]) => ({ y: cy, edge: cx - radius }));
 
+const isInsideBody = (body: [number, number][], x: number, y: number) =>
+  body.reduce((inside, [x1, y1], index) => {
+    const [x2, y2] = body[(index + 1) % body.length];
+    const crosses =
+      y1 > y !== y2 > y && x < x1 + ((y - y1) / (y2 - y1)) * (x2 - x1);
+    return crosses ? !inside : inside;
+  }, false);
+
+const findHoles = (cloudWidth: number, depth: number) => {
+  const { body, puffs } = createCloudShape(cloudWidth, height);
+  const isInside = (x: number, y: number) =>
+    isInsideBody(body, x, y) ||
+    puffs.some(([cx, cy, radius]) => Math.hypot(x - cx, y - cy) <= radius);
+
+  const key = (x: number, y: number) => `${x},${y}`;
+  const outside = new Set<string>();
+  const queue: [number, number][] = [];
+  const visit = (x: number, y: number) => {
+    if (x < 0 || x > cloudWidth || y < 0 || y > depth) return;
+    if (outside.has(key(x, y)) || isInside(x, y)) return;
+    outside.add(key(x, y));
+    queue.push([x, y]);
+  };
+
+  for (let x = 0; x <= cloudWidth; x++) visit(x, 0);
+  for (let y = 0; y <= depth; y++) {
+    visit(0, y);
+    visit(cloudWidth, y);
+  }
+  while (queue.length) {
+    const [x, y] = queue.pop()!;
+    visit(x + 1, y);
+    visit(x - 1, y);
+    visit(x, y + 1);
+    visit(x, y - 1);
+  }
+
+  const holes: [number, number][] = [];
+  for (let x = 0; x <= cloudWidth; x++) {
+    for (let y = 0; y <= depth; y++) {
+      if (!outside.has(key(x, y)) && !isInside(x, y)) holes.push([x, y]);
+    }
+  }
+  return holes;
+};
+
 describe('createCloudShape', () => {
+  describe.each([480, 640])('the top of a %ipx cloud', (cloudWidth) => {
+    it('has no holes in it', () => {
+      expect(findHoles(cloudWidth, 100)).toEqual([]);
+    });
+
+    it('has each puff overlapping the next one along', () => {
+      const topPuffs = createCloudShape(cloudWidth, height)
+        .puffs.filter(([, cy]) => cy < 100)
+        .sort(([a], [b]) => a - b);
+
+      topPuffs.slice(1).forEach(([cx, cy, radius], index) => {
+        const [previousX, previousY, previousRadius] = topPuffs[index];
+        const gap =
+          Math.hypot(cx - previousX, cy - previousY) - radius - previousRadius;
+        expect(gap).toBeLessThan(-20);
+      });
+    });
+  });
+
   describe('the bottom', () => {
     it('lies flat along the bottom of the box', () => {
-      const { hull } = createCloudShape(width, height);
-      const bottom = hull.filter(([, y]) => y === height);
+      const { body } = createCloudShape(width, height);
+      const bottom = body.filter(([, y]) => y === height);
 
       expect(bottom).toHaveLength(2);
     });
