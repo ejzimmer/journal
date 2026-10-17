@@ -26,9 +26,10 @@ export function cutEdges(edges: EdgeSample[], amount: number) {
 
 const formatPoint = ({ x, y }: Point) => `${x} ${y}`;
 
-const formatLine = (points: Point[]) => `L${points.map(formatPoint).join(' ')}`;
+export const formatLine = (points: Point[]) =>
+  `L${points.map(formatPoint).join(' ')}`;
 
-const formatCap = ({ left, right }: EdgeSample, to: Point) => {
+export const formatCap = ({ left, right }: EdgeSample, to: Point) => {
   const radius = roundCoordinate(
     Math.hypot(left.x - right.x, left.y - right.y) / 2,
   );
@@ -37,7 +38,7 @@ const formatCap = ({ left, right }: EdgeSample, to: Point) => {
 
 type ShapeOutline = Pick<TreeShape, 'edges' | 'growth'>;
 
-const formatMove = (point: Point) => `M${formatPoint(point)}`;
+export const formatMove = (point: Point) => `M${formatPoint(point)}`;
 
 export function drawShapeOutline(
   { edges, growth }: ShapeOutline,

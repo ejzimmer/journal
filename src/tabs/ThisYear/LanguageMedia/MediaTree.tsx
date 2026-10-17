@@ -22,7 +22,8 @@ import { TreeShoots } from './TreeShoots';
 import { TreeSilhouette } from './TreeSilhouette';
 import { VolumeAdder } from './VolumeAdder';
 import { Signpost } from './Signpost';
-import { PrintSeries } from './types';
+import { PrintSeries, Volume } from './types';
+import { UpdateStretches } from './UpdateStretches';
 import { readVolumeProgress } from './volumeProgress';
 
 export function MediaTree({ series }: { series: PrintSeries }) {
@@ -34,6 +35,10 @@ export function MediaTree({ series }: { series: PrintSeries }) {
   const [isProgressUpdateFormOpen, setIsProgressUpdateFormOpen] =
     useState(false);
   const [isEditFormOpen, setIsEditFormOpen] = useState(false);
+  const [editedUpdate, setEditedUpdate] = useState<{
+    volume: Volume;
+    updateKey: string;
+  }>();
   const currentVolume = findCurrentVolume(series);
   const { x, y, width, height } = layout.bounds;
 
@@ -63,6 +68,13 @@ export function MediaTree({ series }: { series: PrintSeries }) {
           <BranchNames layout={layout} series={series} />
         )}
         <TreeBeetles spots={placeProgressBeetles(series, grownShapes)} />
+        <UpdateStretches
+          series={series}
+          shapes={grownShapes}
+          onSelect={(volume, updateKey) =>
+            setEditedUpdate({ volume, updateKey })
+          }
+        />
       </svg>
       <Signpost name={series.name} placement={findSignpostPlacement(layout)}>
         <HangingSign
@@ -95,6 +107,21 @@ export function MediaTree({ series }: { series: PrintSeries }) {
         {isEditFormOpen && (
           <CloudFrame>
             <EditSeriesForm series={series} />
+          </CloudFrame>
+        )}
+      </ModalDialog>
+      <ModalDialog
+        isOpen={!!editedUpdate}
+        className="progress-update-modal"
+        onCancel={() => setEditedUpdate(undefined)}
+      >
+        {editedUpdate && (
+          <CloudFrame>
+            <ProgressUpdateForm
+              series={series}
+              volume={editedUpdate.volume}
+              updateKey={editedUpdate.updateKey}
+            />
           </CloudFrame>
         )}
       </ModalDialog>

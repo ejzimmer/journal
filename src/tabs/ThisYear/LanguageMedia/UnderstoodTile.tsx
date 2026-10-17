@@ -2,8 +2,16 @@ import { CSSProperties, useState } from 'react';
 import { MediaTypeIcon } from './MediaTypeIcon';
 import { MediaType } from './types';
 
-export function UnderstoodTile({ mediaType }: { mediaType: MediaType }) {
-  const [value, setValue] = useState<number>();
+type UnderstoodTileProps = {
+  mediaType: MediaType;
+  defaultValue?: number;
+};
+
+export function UnderstoodTile({
+  mediaType,
+  defaultValue,
+}: UnderstoodTileProps) {
+  const [value, setValue] = useState(defaultValue);
 
   return (
     <div

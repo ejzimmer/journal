@@ -329,4 +329,172 @@ describe('ProgressUpdateForm', () => {
       expect(closeModal).toHaveBeenCalled();
     });
   });
+
+  describe('editing an existing update', () => {
+    const EXISTING_PATH = ['yotsuba', 'volumes', 'vol1', 'updates', 'u1'];
+    const earlierUpdate: ProgressUpdate = {
+      at: '2026-09-10T09:00:00Z',
+      page: 12,
+      lookups: 2,
+      aiQuestions: 0,
+    };
+    const withEarlierUpdate: PrintSeries = {
+      ...yotsuba,
+      volumes: {
+        ...yotsuba.volumes,
+        vol1: {
+          ...volume,
+          updates: { u0: earlierUpdate, ...volume.updates },
+        },
+      },
+    };
+
+    const renderEditForm = (series: PrintSeries, updateKey: string) => {
+      const closeModal = jest.fn();
+      const view = renderWithLanguageMediaStorage(
+        <ModalContext.Provider value={{ closeModal }}>
+          <ProgressUpdateForm
+            series={series}
+            volume={series.volumes!.vol1}
+            updateKey={updateKey}
+          />
+        </ModalContext.Provider>,
+      );
+      return { user: userEvent.setup(), closeModal, ...view };
+    };
+
+    it('shows what that update recorded', () => {
+      renderEditForm(yotsuba, 'u1');
+
+      expect(screen.getByRole('spinbutton', { name: 'Looked up' })).toHaveValue(
+        20,
+      );
+      expect(screen.getByRole('spinbutton', { name: 'Asked AI' })).toHaveValue(
+        3,
+      );
+      expect(screen.getByRole('spinbutton', { name: 'Page' })).toHaveValue(41);
+      expect(screen.getByRole('slider', { name: 'Understood' })).toHaveValue(
+        '60',
+      );
+    });
+
+    describe('clicking save', () => {
+      const changePage = async (series: PrintSeries, updateKey: string) => {
+        const view = renderEditForm(series, updateKey);
+        const page = screen.getByRole('spinbutton', { name: 'Page' });
+        await view.user.clear(page);
+        await view.user.type(page, '50');
+        await view.user.click(screen.getByRole('button', { name: 'Save' }));
+        return view;
+      };
+
+      it('saves the changes to that update', async () => {
+        const { storageContext } = await changePage(yotsuba, 'u1');
+
+        expect(storageContext.updateItem).toHaveBeenCalledWith(EXISTING_PATH, {
+          lookups: 20,
+          aiQuestions: 3,
+          understood: 60,
+          page: 50,
+        });
+      });
+
+      describe('when it is the latest update with a page', () => {
+        it('moves where I am up to', async () => {
+          const { storageContext } = await changePage(yotsuba, 'u1');
+
+          expect(storageContext.updateItem).toHaveBeenCalledWith(['yotsuba'], {
+            upTo: { volume: 1, page: 50 },
+          });
+        });
+      });
+
+      describe('when a later update has a page', () => {
+        it('leaves where I am up to', async () => {
+          const { storageContext } = await changePage(withEarlierUpdate, 'u0');
+
+          expect(storageContext.updateItem).not.toHaveBeenCalledWith(
+            ['yotsuba'],
+            expect.anything(),
+          );
+        });
+      });
+    });
+
+    describe('clicking delete', () => {
+      describe('once', () => {
+        it('asks me to confirm', async () => {
+          const { user, storageContext } = renderEditForm(yotsuba, 'u1');
+
+          await user.click(screen.getByRole('button', { name: 'Delete' }));
+
+          expect(
+            screen.getByRole('button', { name: 'Confirm delete' }),
+          ).toBeInTheDocument();
+          expect(storageContext.deleteItem).not.toHaveBeenCalled();
+        });
+      });
+
+      describe('twice', () => {
+        const deleteUpdate = async (series: PrintSeries, updateKey: string) => {
+          const view = renderEditForm(series, updateKey);
+          await view.user.click(screen.getByRole('button', { name: 'Delete' }));
+          await view.user.click(
+            screen.getByRole('button', { name: 'Confirm delete' }),
+          );
+          return view;
+        };
+
+        it('deletes that update', async () => {
+          const { storageContext } = await deleteUpdate(yotsuba, 'u1');
+
+          expect(storageContext.deleteItem).toHaveBeenCalledWith(EXISTING_PATH);
+        });
+
+        it('closes the form', async () => {
+          const { closeModal } = await deleteUpdate(yotsuba, 'u1');
+
+          expect(closeModal).toHaveBeenCalled();
+        });
+
+        describe('when it is the latest update with a page', () => {
+          describe('and an earlier update has a page', () => {
+            it('moves where I am up to back to that page', async () => {
+              const { storageContext } = await deleteUpdate(
+                withEarlierUpdate,
+                'u1',
+              );
+
+              expect(storageContext.updateItem).toHaveBeenCalledWith(
+                ['yotsuba'],
+                { upTo: { volume: 1, page: 12 } },
+              );
+            });
+          });
+
+          describe('and no earlier update has a page', () => {
+            it('clears where I am up to', async () => {
+              const { storageContext } = await deleteUpdate(yotsuba, 'u1');
+
+              expect(storageContext.updateItem).toHaveBeenCalledWith(
+                ['yotsuba'],
+                { upTo: undefined },
+              );
+            });
+          });
+        });
+
+        describe('when a later update has a page', () => {
+          it('leaves where I am up to', async () => {
+            const { storageContext } = await deleteUpdate(
+              withEarlierUpdate,
+              'u0',
+            );
+
+            expect(storageContext.updateItem).not.toHaveBeenCalled();
+          });
+        });
+      });
+    });
+  });
 });
