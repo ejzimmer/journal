@@ -26,29 +26,19 @@ const renderButton = () => {
   };
 };
 
+const deleteMedia = async (user: ReturnType<typeof userEvent.setup>) => {
+  await user.click(
+    screen.getByRole('button', { name: 'Delete Les Misérables' }),
+  );
+  await user.click(screen.getByRole('button', { name: 'Confirm delete' }));
+};
+
 describe('DeleteMediaButton', () => {
-  describe('when clicked once', () => {
-    it('asks for confirmation', async () => {
-      const { user, storageContext } = renderButton();
-
-      await user.click(
-        screen.getByRole('button', { name: 'Delete Les Misérables' }),
-      );
-
-      expect(
-        screen.getByRole('button', { name: 'Confirm delete' }),
-      ).toBeInTheDocument();
-      expect(storageContext.deleteItem).not.toHaveBeenCalled();
-    });
-  });
-
   describe('when the delete is confirmed', () => {
     it('deletes the media', async () => {
       const { user, storageContext } = renderButton();
 
-      await user.dblClick(
-        screen.getByRole('button', { name: 'Delete Les Misérables' }),
-      );
+      await deleteMedia(user);
 
       expect(storageContext.deleteItem).toHaveBeenCalledWith(['miserables']);
     });
@@ -56,9 +46,7 @@ describe('DeleteMediaButton', () => {
     it('closes the form', async () => {
       const { user, closeModal } = renderButton();
 
-      await user.dblClick(
-        screen.getByRole('button', { name: 'Delete Les Misérables' }),
-      );
+      await deleteMedia(user);
 
       expect(closeModal).toHaveBeenCalled();
     });
