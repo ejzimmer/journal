@@ -60,6 +60,19 @@ describe('createCloudShape', () => {
     it('has no holes in it', () => {
       expect(findHoles(cloudWidth, 100)).toEqual([]);
     });
+
+    it('has each puff overlapping the next one along', () => {
+      const topPuffs = createCloudShape(cloudWidth, height)
+        .puffs.filter(([, cy]) => cy < 100)
+        .sort(([a], [b]) => a - b);
+
+      topPuffs.slice(1).forEach(([cx, cy, radius], index) => {
+        const [previousX, previousY, previousRadius] = topPuffs[index];
+        const gap =
+          Math.hypot(cx - previousX, cy - previousY) - radius - previousRadius;
+        expect(gap).toBeLessThan(-20);
+      });
+    });
   });
 
   describe('the bottom', () => {
