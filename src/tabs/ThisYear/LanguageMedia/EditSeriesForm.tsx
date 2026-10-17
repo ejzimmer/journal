@@ -1,10 +1,10 @@
 import { FormEvent, useState } from 'react';
+import { DeleteWithConfirmation } from '../../../shared/controls/DeleteWithConfirmation';
 import { useModal } from '../../../shared/controls/Modal';
 import { Switch } from '../../../shared/controls/Switch';
 import { TickIcon } from '../../../shared/icons/Tick';
 import { BookVolumeRow } from './BookVolumeRow';
 import { parseNumber, readText } from './fields';
-import { DeleteMediaButton } from './DeleteMediaButton';
 import { LanguageOption } from './LanguageOption';
 import { useLanguageMediaStorage } from './LanguageMediaStorageContext';
 import { getItemsByNumber } from './lists';
@@ -16,7 +16,7 @@ import './AddMediaForm.css';
 import './GardenEditForms.css';
 
 export function EditSeriesForm({ series }: { series: PrintSeries }) {
-  const { updateItem } = useLanguageMediaStorage();
+  const { updateItem, deleteItem } = useLanguageMediaStorage();
   const { closeModal } = useModal();
   const [language, setLanguage] = useState<Language>(series.language);
   const volumes = getItemsByNumber(series.volumes);
@@ -36,6 +36,11 @@ export function EditSeriesForm({ series }: { series: PrintSeries }) {
         pages: parseNumber(data, `pages-${volume.id}`),
       }),
     );
+    closeModal();
+  };
+
+  const deleteSeries = () => {
+    deleteItem([series.id]);
     closeModal();
   };
 
@@ -76,7 +81,11 @@ export function EditSeriesForm({ series }: { series: PrintSeries }) {
         </div>
       )}
       <div className="edit-media-actions">
-        <DeleteMediaButton media={series} />
+        <DeleteWithConfirmation
+          className="progress-update-delete"
+          label={`Delete ${series.name}`}
+          onDelete={deleteSeries}
+        />
         <button
           type="submit"
           className="progress-update-save"

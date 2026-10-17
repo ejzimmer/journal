@@ -5,6 +5,20 @@ import { EditChannelForm } from './EditChannelForm';
 import { renderWithLanguageMediaStorage } from './languageMediaStorageTestUtils';
 import { YoutubeChannel } from './types';
 
+jest.mock('../../../shared/controls/DeleteWithConfirmation', () => ({
+  DeleteWithConfirmation: ({
+    label,
+    onDelete,
+  }: {
+    label: string;
+    onDelete: () => void;
+  }) => (
+    <button type="button" onClick={onDelete}>
+      {label}
+    </button>
+  ),
+}));
+
 const hugo: YoutubeChannel = {
   id: 'hugo',
   type: 'youtube',
@@ -126,6 +140,28 @@ describe('EditChannelForm', () => {
           );
         });
       });
+    });
+  });
+
+  describe('when deleted', () => {
+    it('deletes the channel', async () => {
+      const { user, storageContext } = renderForm();
+
+      await user.click(
+        screen.getByRole('button', { name: 'Delete HugoDécrypte' }),
+      );
+
+      expect(storageContext.deleteItem).toHaveBeenCalledWith(['hugo']);
+    });
+
+    it('closes the form', async () => {
+      const { user, closeModal } = renderForm();
+
+      await user.click(
+        screen.getByRole('button', { name: 'Delete HugoDécrypte' }),
+      );
+
+      expect(closeModal).toHaveBeenCalled();
     });
   });
 });

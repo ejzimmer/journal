@@ -5,6 +5,20 @@ import { EditSeriesForm } from './EditSeriesForm';
 import { renderWithLanguageMediaStorage } from './languageMediaStorageTestUtils';
 import { PrintSeries } from './types';
 
+jest.mock('../../../shared/controls/DeleteWithConfirmation', () => ({
+  DeleteWithConfirmation: ({
+    label,
+    onDelete,
+  }: {
+    label: string;
+    onDelete: () => void;
+  }) => (
+    <button type="button" onClick={onDelete}>
+      {label}
+    </button>
+  ),
+}));
+
 const miserables: PrintSeries = {
   id: 'miserables',
   type: 'book',
@@ -120,6 +134,28 @@ describe('EditSeriesForm', () => {
           { pages: 224 },
         );
       });
+    });
+  });
+
+  describe('when deleted', () => {
+    it('deletes the series', async () => {
+      const { user, storageContext } = renderForm(miserables);
+
+      await user.click(
+        screen.getByRole('button', { name: 'Delete Les Misérables' }),
+      );
+
+      expect(storageContext.deleteItem).toHaveBeenCalledWith(['miserables']);
+    });
+
+    it('closes the form', async () => {
+      const { user, closeModal } = renderForm(miserables);
+
+      await user.click(
+        screen.getByRole('button', { name: 'Delete Les Misérables' }),
+      );
+
+      expect(closeModal).toHaveBeenCalled();
     });
   });
 });
