@@ -5,6 +5,20 @@ import { DeleteMediaButton } from './DeleteMediaButton';
 import { renderWithLanguageMediaStorage } from './languageMediaStorageTestUtils';
 import { PrintSeries } from './types';
 
+jest.mock('../../../shared/controls/DeleteWithConfirmation', () => ({
+  DeleteWithConfirmation: ({
+    label,
+    onDelete,
+  }: {
+    label: string;
+    onDelete: () => void;
+  }) => (
+    <button type="button" onClick={onDelete}>
+      {label}
+    </button>
+  ),
+}));
+
 const miserables: PrintSeries = {
   id: 'miserables',
   type: 'book',
@@ -26,19 +40,14 @@ const renderButton = () => {
   };
 };
 
-const deleteMedia = async (user: ReturnType<typeof userEvent.setup>) => {
-  await user.click(
-    screen.getByRole('button', { name: 'Delete Les Misérables' }),
-  );
-  await user.click(screen.getByRole('button', { name: 'Confirm delete' }));
-};
-
 describe('DeleteMediaButton', () => {
-  describe('when the delete is confirmed', () => {
+  describe('when deleted', () => {
     it('deletes the media', async () => {
       const { user, storageContext } = renderButton();
 
-      await deleteMedia(user);
+      await user.click(
+        screen.getByRole('button', { name: 'Delete Les Misérables' }),
+      );
 
       expect(storageContext.deleteItem).toHaveBeenCalledWith(['miserables']);
     });
@@ -46,7 +55,9 @@ describe('DeleteMediaButton', () => {
     it('closes the form', async () => {
       const { user, closeModal } = renderButton();
 
-      await deleteMedia(user);
+      await user.click(
+        screen.getByRole('button', { name: 'Delete Les Misérables' }),
+      );
 
       expect(closeModal).toHaveBeenCalled();
     });
