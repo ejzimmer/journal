@@ -1,5 +1,5 @@
 import { calculateEpisodeUpdatePosition } from './calculateEpisodeUpdatePosition';
-import { readEpisodeProgress } from './episodeProgress';
+import { calculateEpisodeProgress } from './calculateEpisodeProgress';
 import { getEpisodeUpdates } from './getEpisodeUpdates';
 import { TvSeries } from './types';
 import { getVineEpisodes } from './vineLayout';
@@ -14,7 +14,7 @@ export type Raceme = {
 export function getRacemes(series: TvSeries): Raceme[] {
   return getVineEpisodes(series).flatMap(({ season, episodes }) =>
     episodes.flatMap((episode) => {
-      const progress = readEpisodeProgress(series, season, episode);
+      const progress = calculateEpisodeProgress(series, season, episode);
       if (!progress) return [];
       return getEpisodeUpdates(episode).flatMap((update) =>
         update.understood === undefined
