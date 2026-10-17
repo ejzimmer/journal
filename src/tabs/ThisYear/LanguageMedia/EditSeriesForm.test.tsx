@@ -5,20 +5,6 @@ import { EditSeriesForm } from './EditSeriesForm';
 import { renderWithLanguageMediaStorage } from './languageMediaStorageTestUtils';
 import { PrintSeries } from './types';
 
-jest.mock('../../../shared/controls/DeleteWithConfirmation', () => ({
-  DeleteWithConfirmation: ({
-    label,
-    onDelete,
-  }: {
-    label: string;
-    onDelete: () => void;
-  }) => (
-    <button type="button" onClick={onDelete}>
-      {label}
-    </button>
-  ),
-}));
-
 const miserables: PrintSeries = {
   id: 'miserables',
   type: 'book',
@@ -144,6 +130,7 @@ describe('EditSeriesForm', () => {
       await user.click(
         screen.getByRole('button', { name: 'Delete Les Misérables' }),
       );
+      await user.click(screen.getByRole('button', { name: 'Confirm delete' }));
 
       expect(storageContext.deleteItem).toHaveBeenCalledWith(['miserables']);
     });
@@ -154,6 +141,7 @@ describe('EditSeriesForm', () => {
       await user.click(
         screen.getByRole('button', { name: 'Delete Les Misérables' }),
       );
+      await user.click(screen.getByRole('button', { name: 'Confirm delete' }));
 
       expect(closeModal).toHaveBeenCalled();
     });

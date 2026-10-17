@@ -5,20 +5,6 @@ import { EditChannelForm } from './EditChannelForm';
 import { renderWithLanguageMediaStorage } from './languageMediaStorageTestUtils';
 import { YoutubeChannel } from './types';
 
-jest.mock('../../../shared/controls/DeleteWithConfirmation', () => ({
-  DeleteWithConfirmation: ({
-    label,
-    onDelete,
-  }: {
-    label: string;
-    onDelete: () => void;
-  }) => (
-    <button type="button" onClick={onDelete}>
-      {label}
-    </button>
-  ),
-}));
-
 const hugo: YoutubeChannel = {
   id: 'hugo',
   type: 'youtube',
@@ -150,6 +136,7 @@ describe('EditChannelForm', () => {
       await user.click(
         screen.getByRole('button', { name: 'Delete HugoDécrypte' }),
       );
+      await user.click(screen.getByRole('button', { name: 'Confirm delete' }));
 
       expect(storageContext.deleteItem).toHaveBeenCalledWith(['hugo']);
     });
@@ -160,6 +147,7 @@ describe('EditChannelForm', () => {
       await user.click(
         screen.getByRole('button', { name: 'Delete HugoDécrypte' }),
       );
+      await user.click(screen.getByRole('button', { name: 'Confirm delete' }));
 
       expect(closeModal).toHaveBeenCalled();
     });
