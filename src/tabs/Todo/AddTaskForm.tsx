@@ -116,7 +116,7 @@ export function AddTaskForm<T>({
         <div className="buttons">
           <button
             type="submit"
-            className="icon primary-clear"
+            className="icon led-button led"
             aria-label="Create"
           >
             <TickIcon width="20px" />

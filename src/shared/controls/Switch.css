@@ -54,31 +54,4 @@
     transition-duration: 0.2s;
     transition-timing-function: ease-out;
   }
-
-  &.glow {
-    --led: hsl(200 100% 55%);
-    --led-core: hsl(190 100% 92%);
-    --led-edge: hsl(215 100% 42%);
-    border-radius: 999px;
-
-    label:has(input:checked) {
-      text-shadow: 0 0 4px var(--led-edge);
-    }
-
-    .indicator {
-      background-color: color-mix(in srgb, var(--led) 60%, white);
-      background-image:
-        linear-gradient(hsl(0 0% 100% / 0.7), hsl(0 0% 100% / 0) 40%),
-        radial-gradient(
-          ellipse 32px 20px,
-          var(--led-core),
-          var(--led) 35%,
-          transparent
-        );
-      box-shadow:
-        0 0 6px var(--led),
-        0 0 16px color-mix(in srgb, var(--led) 60%, transparent);
-      transition-property: left, box-shadow, border-radius, background;
-    }
-  }
 }
