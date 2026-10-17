@@ -41,4 +41,34 @@ describe('findBeetlePose', () => {
       expect(findBeetlePose(createBranch(-1), 0.5, true).y).toBeCloseTo(-1.6);
     });
   });
+
+  describe('on a branch that bends from growing left to growing up', () => {
+    const branch: EdgeSample[] = [
+      ...Array.from({ length: 6 }, (_, index) => ({
+        at: index / 10,
+        left: { x: -index * 10, y: 2 },
+        right: { x: -index * 10, y: -2 },
+      })),
+      ...Array.from({ length: 5 }, (_, index) => ({
+        at: (index + 6) / 10,
+        left: { x: -48, y: -(index + 1) * 10 },
+        right: { x: -52, y: -(index + 1) * 10 },
+      })),
+    ];
+
+    describe('when the beetle walks out along the branch', () => {
+      const along = findBeetlePose(branch, 0.3, true);
+      const up = findBeetlePose(branch, 0.8, true);
+
+      it('keeps it on the side that was on top, facing the trunk', () => {
+        expect(along.y).toBeCloseTo(-1.6);
+        expect(up.x).toBeCloseTo(-48.4);
+      });
+
+      it('keeps its feet against the branch', () => {
+        expect(along.isUpsideDown).toBe(true);
+        expect(up.isUpsideDown).toBe(true);
+      });
+    });
+  });
 });
