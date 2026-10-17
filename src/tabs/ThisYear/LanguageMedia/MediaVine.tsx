@@ -1,4 +1,10 @@
-import { CSSProperties, useMemo } from 'react';
+import { CSSProperties, useMemo, useState } from 'react';
+import { ModalDialog } from '../../../shared/controls/ModalDialog';
+import { TelevisionIcon } from '../../../shared/icons/Television';
+import { CloudFrame } from './CloudFrame';
+import { EpisodeUpdateForm } from './EpisodeUpdateForm';
+import { findCurrentEpisode } from './findCurrentEpisode';
+import { HangingSign } from './HangingSign';
 import { calculateEpisodeProgress } from './calculateEpisodeProgress';
 import { getRacemes } from './getRacemes';
 import { placeEpisodeBeetles } from './placeEpisodeBeetles';
@@ -28,6 +34,8 @@ export function MediaVine({ series }: { series: TvSeries }) {
   );
   const grownShapes = getGrownShapes(layout, progress);
   const { x, y, width, height } = layout.bounds;
+  const [isUpdateFormOpen, setIsUpdateFormOpen] = useState(false);
+  const currentEpisode = findCurrentEpisode(series);
 
   return (
     <div
@@ -60,7 +68,28 @@ export function MediaVine({ series }: { series: TvSeries }) {
       <Signpost
         name={series.name}
         placement={{ side: 'left', offset: x + width / 2 + SIGN_GAP }}
-      />
+      >
+        <HangingSign
+          label="Update"
+          icon={<TelevisionIcon width="18px" />}
+          onClick={() => setIsUpdateFormOpen(true)}
+        />
+      </Signpost>
+      <ModalDialog
+        isOpen={isUpdateFormOpen}
+        className="progress-update-modal episode-update-modal"
+        onCancel={() => setIsUpdateFormOpen(false)}
+      >
+        {isUpdateFormOpen && currentEpisode && (
+          <CloudFrame>
+            <EpisodeUpdateForm
+              series={series}
+              season={currentEpisode.season}
+              episode={currentEpisode.episode}
+            />
+          </CloudFrame>
+        )}
+      </ModalDialog>
     </div>
   );
 }

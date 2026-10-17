@@ -1,4 +1,12 @@
-import { Comprehension, Episode, PrintSeries, Status, Volume } from './types';
+import {
+  Comprehension,
+  Episode,
+  PrintSeries,
+  Season,
+  Status,
+  TvSeries,
+  Volume,
+} from './types';
 
 const minutesAndSecondsFormat = new Intl.DurationFormat(undefined, {
   style: 'digital',
@@ -29,6 +37,12 @@ export const STATUS_NAMES: Record<Status, string> = {
 
 export const formatEpisodeName = ({ number, name }: Episode) =>
   name || `Episode ${number}`;
+
+export const formatEpisodeTitle = (
+  series: TvSeries,
+  season: Season,
+  episode: Episode,
+) => episode.name || `${series.name} ${season.number}-${episode.number}`;
 
 export const formatVolumeName = ({ number, name }: Volume) =>
   name || `Volume ${number}`;
