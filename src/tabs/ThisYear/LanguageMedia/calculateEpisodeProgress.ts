@@ -1,6 +1,6 @@
 import { Episode, Season, TvSeries } from './types';
 
-export function readEpisodeProgress(
+export function calculateEpisodeProgress(
   { upTo }: TvSeries,
   season: Season,
   { number, lengthInSeconds, status }: Episode,

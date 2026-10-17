@@ -1,5 +1,5 @@
 import { CSSProperties, useMemo } from 'react';
-import { readEpisodeProgress } from './episodeProgress';
+import { calculateEpisodeProgress } from './calculateEpisodeProgress';
 import { Pergola } from './Pergola';
 import { placeVineLeaves } from './placeVineLeaves';
 import { PostFronts } from './PostFronts';
@@ -18,7 +18,9 @@ const SIGN_GAP = 18;
 export function MediaVine({ series }: { series: TvSeries }) {
   const layout = useMemo(() => createVineLayout(series), [series]);
   const progress = getVineEpisodes(series).flatMap(({ season, episodes }) =>
-    episodes.map((episode) => readEpisodeProgress(series, season, episode)),
+    episodes.map((episode) =>
+      calculateEpisodeProgress(series, season, episode),
+    ),
   );
   const grownShapes = getGrownShapes(layout, progress);
   const { x, y, width, height } = layout.bounds;
