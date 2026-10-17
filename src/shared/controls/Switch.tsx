@@ -9,6 +9,7 @@ type SwitchProps<T extends string> = {
   name: string;
   Option?: React.FC<{ value: T }>;
   className?: string;
+  led?: boolean;
 };
 
 export function Switch<T extends string>({
@@ -18,6 +19,7 @@ export function Switch<T extends string>({
   name,
   Option,
   className,
+  led,
 }: SwitchProps<T>) {
   const radioGroupRef = useRef<HTMLDivElement>(null);
   const [width, setWidth] = useState<number>();
@@ -59,7 +61,9 @@ export function Switch<T extends string>({
     <div
       ref={radioGroupRef}
       role="radiogroup"
-      className={`switch ${className ?? ''}`.trim()}
+      className={['switch', led && 'led-switch', className]
+        .filter(Boolean)
+        .join(' ')}
     >
       {options.map((option) => {
         return (
@@ -76,7 +80,7 @@ export function Switch<T extends string>({
         );
       })}
       <div
-        className="indicator"
+        className={led ? 'indicator led' : 'indicator'}
         style={{
           width,
           left,

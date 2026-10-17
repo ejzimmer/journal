@@ -15,9 +15,6 @@
     position: relative;
 
     .progress-bar {
-      --led: var(--led-green);
-      --led-core: var(--led-green-core);
-      --led-edge: var(--led-green-edge);
       --segment: calc(100% / var(--segments));
       position: relative;
       display: flex;
@@ -52,9 +49,7 @@
       }
 
       &.done-today {
-        --led: var(--led-blue);
-        --led-core: var(--led-blue-core);
-        --led-edge: var(--led-blue-edge);
+        --led-colour: var(--led-blue);
       }
 
       &:hover ~ .dates-popover {
@@ -67,12 +62,12 @@
         height: 100%;
         padding: 0;
         border: none;
-        background-color: transparent;
         cursor: pointer;
       }
 
       .not-done {
         flex-grow: 1;
+        background-color: transparent;
         border-start-end-radius: 100px;
         border-end-end-radius: 100px;
       }
@@ -81,17 +76,7 @@
         --led-width: calc(100% / var(--lit-segments));
         border-start-start-radius: 100px;
         border-end-start-radius: 100px;
-        background-color: color-mix(in srgb, var(--led) 60%, white);
-        background-image: radial-gradient(
-          ellipse 32px 20px,
-          var(--led-core),
-          var(--led) 35%,
-          transparent
-        );
         background-size: var(--led-width) 100%;
-        box-shadow:
-          0 0 6px var(--led),
-          0 0 16px color-mix(in srgb, var(--led) 60%, transparent);
         opacity: var(--fill-opacity, 1);
 
         &:last-child {

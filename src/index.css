@@ -27,13 +27,27 @@ body {
   --error-colour: hsl(10, 89%, 41%);
 
   --led-green: hsl(115 100% 50%);
-  --led-green-core: hsl(100 100% 90%);
-  --led-green-edge: hsl(125 90% 36%);
   --led-blue: hsl(200 100% 55%);
-  --led-blue-core: hsl(190 100% 92%);
-  --led-blue-edge: hsl(215 100% 42%);
 
   color: var(--body-colour);
+}
+
+.led {
+  --led-lit: var(--led-colour, var(--led-green));
+  --led-core: color-mix(in srgb, var(--led-lit) 20%, white);
+  --led-edge: color-mix(in srgb, var(--led-lit) 75%, black);
+  background-color: color-mix(in srgb, var(--led-lit) 60%, white);
+  background-image:
+    linear-gradient(hsl(0 0% 100% / 0.7), hsl(0 0% 100% / 0) 40%),
+    radial-gradient(
+      ellipse 32px 20px,
+      var(--led-core),
+      var(--led-lit) 35%,
+      transparent
+    );
+  box-shadow:
+    0 0 6px var(--led-lit),
+    0 0 16px color-mix(in srgb, var(--led-lit) 60%, transparent);
 }
 
 *,
@@ -56,8 +70,8 @@ button {
   border-radius: 6px;
   background: transparent;
   border: 2px solid;
-  &:hover,
-  &:focus-visible {
+  &:not(.led):hover,
+  &:not(.led):focus-visible {
     background: var(--border-colour);
   }
   &:focus-visible {
@@ -83,49 +97,31 @@ button {
   }
 
   &.primary-clear {
-    --led: var(--led-green);
-    --led-core: var(--led-green-core);
-    --led-edge: var(--led-green-edge);
     color: var(--success-colour);
     border: 1px solid hsl(210 12% 72%);
-    background-color: hsl(210 20% 94%);
-    background-image: linear-gradient(
-      hsl(0 0% 100% / 0.85),
-      hsl(0 0% 100% / 0) 45%
-    );
-    box-shadow:
-      0 1px 2px hsl(0 0 0 / 0.25),
-      inset 0 -2px 2px hsl(0 0% 100% / 0.7);
     transition:
       background 0.2s ease,
       box-shadow 0.2s ease,
       color 0.2s ease;
 
+    &:not(:hover, :focus-visible) {
+      background-color: hsl(210 20% 94%);
+      background-image: linear-gradient(
+        hsl(0 0% 100% / 0.85),
+        hsl(0 0% 100% / 0) 45%
+      );
+      box-shadow:
+        0 1px 2px hsl(0 0 0 / 0.25),
+        inset 0 -2px 2px hsl(0 0% 100% / 0.7);
+    }
+
     &:hover,
     &:focus-visible {
       color: white;
-      background-color: color-mix(in srgb, var(--led) 60%, white);
-      background-image:
-        linear-gradient(hsl(0 0% 100% / 0.7), hsl(0 0% 100% / 0) 40%),
-        radial-gradient(
-          ellipse 32px 20px,
-          var(--led-core),
-          var(--led) 35%,
-          transparent
-        );
-      box-shadow:
-        0 0 6px var(--led),
-        0 0 16px color-mix(in srgb, var(--led) 60%, transparent);
 
       svg {
         filter: drop-shadow(0 0 3px var(--led-edge));
       }
-    }
-
-    &:active {
-      box-shadow:
-        0 0 3px var(--led),
-        0 0 8px color-mix(in srgb, var(--led) 60%, transparent);
     }
   }
 

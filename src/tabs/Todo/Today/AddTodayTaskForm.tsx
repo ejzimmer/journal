@@ -27,7 +27,7 @@ export function AddTodayTaskForm() {
           value={taskType}
           onChange={setTaskType}
           name="task-type"
-          className="glow"
+          led
         />
       </fieldset>
     </AddTaskForm>

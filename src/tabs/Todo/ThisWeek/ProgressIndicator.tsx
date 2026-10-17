@@ -50,7 +50,7 @@ export function ProgressIndicator({
       >
         {filledSegments > 0 && (
           <button
-            className="done"
+            className="done led"
             aria-label="Undo"
             onClick={onRemove}
             style={

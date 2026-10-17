@@ -46,38 +46,24 @@
     height: 100%;
     z-index: -1;
     position: absolute;
+  }
+
+  .indicator:not(.led) {
     --light: var(--action-colour);
     --dark: var(--action-colour-dark);
     background: linear-gradient(var(--dark), var(--light) 5%, var(--dark) 95%);
     box-shadow: inset 2px 2px 8px var(--dark);
-    transition-property: left, box-shadow, border-radius;
-    transition-duration: 0.2s;
-    transition-timing-function: ease-out;
   }
 
-  &.glow {
-    --led: var(--led-blue);
-    --led-core: var(--led-blue-core);
-    --led-edge: var(--led-blue-edge);
+  &.led-switch {
+    --led-colour: var(--led-blue);
     border-radius: 999px;
 
     label:has(input:checked) {
-      text-shadow: 0 0 4px var(--led-edge);
+      text-shadow: 0 0 4px color-mix(in srgb, var(--led-colour) 75%, black);
     }
 
-    .indicator {
-      background-color: color-mix(in srgb, var(--led) 60%, white);
-      background-image:
-        linear-gradient(hsl(0 0% 100% / 0.7), hsl(0 0% 100% / 0) 40%),
-        radial-gradient(
-          ellipse 32px 20px,
-          var(--led-core),
-          var(--led) 35%,
-          transparent
-        );
-      box-shadow:
-        0 0 6px var(--led),
-        0 0 16px color-mix(in srgb, var(--led) 60%, transparent);
+    .indicator.led {
       transition-property: left, box-shadow, border-radius, background;
     }
   }
