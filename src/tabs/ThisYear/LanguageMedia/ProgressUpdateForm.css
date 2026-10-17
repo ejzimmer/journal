@@ -1,5 +1,9 @@
 dialog.progress-update-modal {
   width: 480px;
+
+  &.episode-update-modal {
+    width: 520px;
+  }
   padding: 0;
   overflow: visible;
   background: none;
@@ -245,6 +249,10 @@ dialog.progress-update-modal {
 
 .understood-tile.youtube {
   --flower-colour: hsl(48 92% 58%);
+}
+
+.understood-tile.tv {
+  --flower-colour: hsl(268 50% 64%);
 }
 
 .time-tile {
