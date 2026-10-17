@@ -1,13 +1,15 @@
-import { DurationField } from './DurationField';
+import { DURATION_UNITS, DurationField } from './DurationField';
 
 type VideoLengthTileProps = {
   name?: string;
   defaultValue?: number;
+  durationFormat?: keyof typeof DURATION_UNITS;
 };
 
 export function VideoLengthTile({
   name = 'length',
   defaultValue,
+  durationFormat = 'hh:mm:ss',
 }: VideoLengthTileProps) {
   return (
     <div className="progress-tile time-tile tooltip-container">
@@ -21,7 +23,7 @@ export function VideoLengthTile({
         label="Length"
         name={name}
         defaultValue={defaultValue}
-        durationFormat="hh:mm:ss"
+        durationFormat={durationFormat}
       />
     </div>
   );
