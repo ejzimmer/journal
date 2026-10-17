@@ -18,7 +18,8 @@ import { getGrownShapes } from './treeGrowth';
 import { TreeFill } from './TreeFill';
 import { TreeOutline } from './TreeOutline';
 import { TreeSilhouette } from './TreeSilhouette';
-import { YoutubeChannel } from './types';
+import { Video, YoutubeChannel } from './types';
+import { VideoArms } from './VideoArms';
 import { WatchedVideoForm } from './WatchedVideoForm';
 import { readVideoProgress } from './videoProgress';
 
@@ -29,6 +30,7 @@ export function MediaCactus({ channel }: { channel: YoutubeChannel }) {
   const grownShapes = getGrownShapes(layout, progress);
   const [isVideoFormOpen, setIsVideoFormOpen] = useState(false);
   const [isEditFormOpen, setIsEditFormOpen] = useState(false);
+  const [editedVideo, setEditedVideo] = useState<Video>();
   const { x, y, width, height } = layout.bounds;
 
   return (
@@ -55,6 +57,11 @@ export function MediaCactus({ channel }: { channel: YoutubeChannel }) {
         <CactusRibs shapes={grownShapes} />
         <CactusCrowns channel={channel} shapes={grownShapes} />
         <TreeBeetles spots={placeBeetles(videos, grownShapes)} />
+        <VideoArms
+          channel={channel}
+          shapes={grownShapes}
+          onSelect={setEditedVideo}
+        />
       </svg>
       <Signpost name={channel.name} placement={findSignpostPlacement(layout)}>
         <HangingSign
@@ -87,6 +94,17 @@ export function MediaCactus({ channel }: { channel: YoutubeChannel }) {
         {isEditFormOpen && (
           <CloudFrame>
             <EditChannelForm channel={channel} />
+          </CloudFrame>
+        )}
+      </ModalDialog>
+      <ModalDialog
+        isOpen={!!editedVideo}
+        className="progress-update-modal"
+        onCancel={() => setEditedVideo(undefined)}
+      >
+        {editedVideo && (
+          <CloudFrame>
+            <WatchedVideoForm channel={channel} video={editedVideo} />
           </CloudFrame>
         )}
       </ModalDialog>

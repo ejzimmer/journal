@@ -409,3 +409,10 @@
     fill: hsl(95 40% 46%);
   }
 }
+
+.media-cactus .update-stretch {
+  &:hover,
+  &:focus-visible {
+    fill: hsl(88 50% 58%);
+  }
+}

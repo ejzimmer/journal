@@ -1,4 +1,5 @@
 import { FormEvent, KeyboardEvent, useState } from 'react';
+import { DeleteWithConfirmation } from '../../../shared/controls/DeleteWithConfirmation';
 import { useModal } from '../../../shared/controls/Modal';
 import { TickIcon } from '../../../shared/icons/Tick';
 import { CountTile } from './CountTile';
@@ -8,15 +9,20 @@ import { useLanguageMediaStorage } from './LanguageMediaStorageContext';
 import { VideoLengthTile } from './VideoLengthTile';
 import { VideoUrlTile } from './VideoUrlTile';
 import { parseNumber, readDuration, readText } from './fields';
-import { YoutubeChannel } from './types';
+import { Video, YoutubeChannel } from './types';
 
 import './ProgressUpdateForm.css';
 
-export function WatchedVideoForm({ channel }: { channel: YoutubeChannel }) {
-  const { addItem } = useLanguageMediaStorage();
+type WatchedVideoFormProps = {
+  channel: YoutubeChannel;
+  video?: Video;
+};
+
+export function WatchedVideoForm({ channel, video }: WatchedVideoFormProps) {
+  const { addItem, updateItem, deleteItem } = useLanguageMediaStorage();
   const { closeModal } = useModal();
-  const [lookups, setLookups] = useState(0);
-  const [aiQuestions, setAiQuestions] = useState(0);
+  const [lookups, setLookups] = useState(video?.lookups ?? 0);
+  const [aiQuestions, setAiQuestions] = useState(video?.aiQuestions ?? 0);
 
   const submitOnEnter = (event: KeyboardEvent<HTMLFormElement>) => {
     if (event.key === 'Enter' && event.target instanceof HTMLInputElement) {
@@ -25,33 +31,50 @@ export function WatchedVideoForm({ channel }: { channel: YoutubeChannel }) {
     }
   };
 
-  const addWatchedVideo = (event: FormEvent<HTMLFormElement>) => {
+  const saveWatchedVideo = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
     const lengthInSeconds = readDuration(data, 'length');
-    addItem([channel.id, 'videos'], {
+    const watchedVideo = {
       url: readText(data, 'url'),
       lengthInSeconds,
-      upToInSeconds: lengthInSeconds,
-      status: 'done',
       lookups: parseNumber(data, 'lookups') ?? 0,
       aiQuestions: parseNumber(data, 'aiQuestions') ?? 0,
       understood: parseNumber(data, 'understood'),
-    });
+    };
+    if (video) {
+      updateItem([channel.id, 'videos', video.id], {
+        ...watchedVideo,
+        ...(video.status === 'done' && { upToInSeconds: lengthInSeconds }),
+      });
+    } else {
+      addItem([channel.id, 'videos'], {
+        ...watchedVideo,
+        upToInSeconds: lengthInSeconds,
+        status: 'done',
+      });
+    }
+    closeModal();
+  };
+
+  const deleteVideo = ({ id }: Video) => {
+    deleteItem([channel.id, 'videos', id]);
     closeModal();
   };
 
   return (
     <form
       className="progress-update-form"
-      aria-label={`Add a watched video to ${channel.name}`}
+      aria-label={
+        video ? `Edit ${video.url}` : `Add a watched video to ${channel.name}`
+      }
       onKeyDown={submitOnEnter}
-      onSubmit={addWatchedVideo}
+      onSubmit={saveWatchedVideo}
     >
       <h2 className="progress-update-title">{channel.name}</h2>
       <div className="progress-update-body">
         <div className="progress-tiles">
-          <VideoUrlTile />
+          <VideoUrlTile defaultValue={video?.url} />
           <CountTile
             name="lookups"
             label="Looked up"
@@ -68,16 +91,27 @@ export function WatchedVideoForm({ channel }: { channel: YoutubeChannel }) {
             count={aiQuestions}
             onAdd={() => setAiQuestions((count) => count + 1)}
           />
-          <VideoLengthTile />
-          <UnderstoodTile mediaType="youtube" />
+          <VideoLengthTile defaultValue={video?.lengthInSeconds} />
+          <UnderstoodTile
+            mediaType="youtube"
+            defaultValue={video?.understood}
+          />
         </div>
-        <button
-          type="submit"
-          className="progress-update-save"
-          aria-label="Save"
-        >
-          <TickIcon width="20px" strokeWidth="2.6" />
-        </button>
+        <div className="progress-update-actions">
+          {video && (
+            <DeleteWithConfirmation
+              className="progress-update-delete"
+              onDelete={() => deleteVideo(video)}
+            />
+          )}
+          <button
+            type="submit"
+            className="progress-update-save"
+            aria-label="Save"
+          >
+            <TickIcon width="20px" strokeWidth="2.6" />
+          </button>
+        </div>
       </div>
     </form>
   );
