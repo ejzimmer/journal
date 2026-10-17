@@ -9,6 +9,7 @@ type WisteriaRacemeProps = {
   seed: string;
   base: Point;
   understood: number;
+  className?: string;
 };
 
 function createFlorets(seed: string, understood: number) {
@@ -39,12 +40,13 @@ export function WisteriaRaceme({
   seed,
   base,
   understood,
+  className,
 }: WisteriaRacemeProps) {
   const { florets, length, sway, scale } = createFlorets(seed, understood);
 
   return (
     <g
-      className="wisteria-raceme"
+      className={['wisteria-raceme', className].filter(Boolean).join(' ')}
       data-testid="wisteria-raceme"
       transform={`translate(${base.x} ${base.y}) scale(${scale})`}
     >
