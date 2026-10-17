@@ -1,6 +1,7 @@
 import { CSSProperties, useMemo } from 'react';
 import { calculateEpisodeProgress } from './calculateEpisodeProgress';
 import { Pergola } from './Pergola';
+import { placeVineLeaves } from './placeVineLeaves';
 import { PostFronts } from './PostFronts';
 import { Signpost } from './Signpost';
 import { TreeFill } from './TreeFill';
@@ -8,6 +9,7 @@ import { getGrownShapes } from './treeGrowth';
 import { TreeOutline } from './TreeOutline';
 import { TreeSilhouette } from './TreeSilhouette';
 import { TvSeries } from './types';
+import { VineLeaves } from './VineLeaves';
 import { createVineLayout, getVineEpisodes } from './vineLayout';
 
 const OUTLINE_WIDTH = 1;
@@ -45,6 +47,9 @@ export function MediaVine({ series }: { series: TvSeries }) {
         <TreeSilhouette layout={layout} />
         <TreeFill shapes={grownShapes} />
         <PostFronts pergola={layout.pergola} />
+        <VineLeaves
+          leaves={placeVineLeaves(grownShapes, layout.pergola.beamBottom)}
+        />
       </svg>
       <Signpost
         name={series.name}

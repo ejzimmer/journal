@@ -347,3 +347,21 @@
   stroke: hsl(33 40% 82%);
   stroke-width: 1.6;
 }
+
+.wisteria-leaf {
+  path {
+    fill: hsl(92 42% 46%);
+    stroke: hsl(98 40% 28%);
+    stroke-width: 0.4;
+  }
+
+  &.young path:not(.rachis) {
+    fill: hsl(80 55% 60%);
+  }
+
+  .rachis {
+    fill: none;
+    stroke: hsl(95 38% 32%);
+    stroke-width: 0.7;
+  }
+}
