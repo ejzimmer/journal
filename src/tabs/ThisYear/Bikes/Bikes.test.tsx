@@ -124,25 +124,4 @@ describe('Bikes', () => {
       });
     });
   });
-
-  describe('when the bikes are still kept with the 2026 goals', () => {
-    it('moves them to 2026', () => {
-      const context = createMockFirebaseContext({
-        '2026': {
-          other_goals: { '-Nx3kQ': { id: '-Nx3kQ', bikes: [diverge] } },
-        },
-      });
-      const setValues = jest.spyOn(context, 'setValues');
-      render(
-        <FirebaseContext.Provider value={context}>
-          <Bikes />
-        </FirebaseContext.Provider>,
-      );
-
-      expect(setValues).toHaveBeenCalledWith({
-        'bikes/2026': [diverge],
-        '2026/other_goals': null,
-      });
-    });
-  });
 });

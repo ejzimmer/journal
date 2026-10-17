@@ -3,12 +3,10 @@ import { getThisYear } from '../../../shared/dates';
 import { YearTabs } from '../../../shared/controls/YearTabs';
 import { BikeGrid } from './BikeGrid';
 import { useBikeYears } from './useBikeYears';
-import { useBikesMigration } from './useBikesMigration';
 
 import './Bikes.css';
 
 export function Bikes() {
-  useBikesMigration();
   const { years, getBikes, setBikeDone } = useBikeYears();
   const [selectedYear, selectYear] = useState(getThisYear);
 
