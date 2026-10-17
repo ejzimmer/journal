@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Switch } from '../../../shared/controls/Switch';
+import { LedSwitch } from '../../../shared/controls/LedSwitch';
 import { AddTaskForm } from '../AddTaskForm';
 import { DailyTaskDetails, DAILY_KEY } from '../../../shared/types';
 import { getToday } from '../../../shared/dates';
@@ -22,12 +22,11 @@ export function AddTodayTaskForm() {
     >
       <fieldset>
         <legend className="label">Type</legend>
-        <Switch
+        <LedSwitch
           options={['一度', '毎日']}
           value={taskType}
           onChange={setTaskType}
           name="task-type"
-          led
         />
       </fieldset>
     </AddTaskForm>

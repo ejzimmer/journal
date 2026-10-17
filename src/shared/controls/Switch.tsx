@@ -2,14 +2,14 @@ import { useEffect, useRef, useState } from 'react';
 
 import './Switch.css';
 
-type SwitchProps<T extends string> = {
+export type SwitchProps<T extends string> = {
   options: T[];
   value: T;
   onChange: (value: T) => void;
   name: string;
   Option?: React.FC<{ value: T }>;
   className?: string;
-  led?: boolean;
+  indicatorClassName?: string;
 };
 
 export function Switch<T extends string>({
@@ -19,7 +19,7 @@ export function Switch<T extends string>({
   name,
   Option,
   className,
-  led,
+  indicatorClassName,
 }: SwitchProps<T>) {
   const radioGroupRef = useRef<HTMLDivElement>(null);
   const [width, setWidth] = useState<number>();
@@ -61,9 +61,7 @@ export function Switch<T extends string>({
     <div
       ref={radioGroupRef}
       role="radiogroup"
-      className={['switch', led && 'led-switch', className]
-        .filter(Boolean)
-        .join(' ')}
+      className={['switch', className].filter(Boolean).join(' ')}
     >
       {options.map((option) => {
         return (
@@ -80,7 +78,7 @@ export function Switch<T extends string>({
         );
       })}
       <div
-        className={led ? 'indicator led' : 'indicator'}
+        className={['indicator', indicatorClassName].filter(Boolean).join(' ')}
         style={{
           width,
           left,
