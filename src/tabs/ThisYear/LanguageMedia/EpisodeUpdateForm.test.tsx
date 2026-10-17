@@ -259,4 +259,153 @@ describe('EpisodeUpdateForm', () => {
       expect(closeModal).toHaveBeenCalled();
     });
   });
+
+  describe('editing an existing update', () => {
+    const EXISTING_PATH = [
+      'lupin',
+      'seasons',
+      's1',
+      'episodes',
+      'e2',
+      'updates',
+      'u2',
+    ];
+    const createUpdate = (
+      day: number,
+      timestampInSeconds: number,
+    ): EpisodeUpdate => ({
+      at: `2026-10-0${day}T09:00:00Z`,
+      timestampInSeconds,
+      lookups: 3,
+      aiQuestions: 1,
+      understood: 60,
+    });
+    const series: TvSeries = {
+      ...lupin,
+      seasons: {
+        s1: {
+          ...lupin.seasons!.s1,
+          episodes: {
+            ...lupin.seasons!.s1.episodes,
+            e2: {
+              ...lupin.seasons!.s1.episodes!.e2,
+              updates: { u1: createUpdate(1, 300), u2: createUpdate(2, 754) },
+            },
+          },
+        },
+      },
+    };
+
+    const renderEditForm = (updateKey: string) => {
+      const closeModal = jest.fn();
+      const view = renderWithLanguageMediaStorage(
+        <ModalContext.Provider value={{ closeModal }}>
+          <EpisodeUpdateForm
+            series={series}
+            season={series.seasons!.s1}
+            episode={series.seasons!.s1.episodes!.e2}
+            updateKey={updateKey}
+          />
+        </ModalContext.Provider>,
+      );
+      return { user: userEvent.setup(), closeModal, ...view };
+    };
+
+    it('shows what that update recorded', () => {
+      renderEditForm('u1');
+
+      expect(screen.getByRole('spinbutton', { name: 'Looked up' })).toHaveValue(
+        3,
+      );
+      expect(screen.getByRole('spinbutton', { name: 'Asked AI' })).toHaveValue(
+        1,
+      );
+      expect(screen.getByRole('textbox', { name: 'Minutes' })).toHaveValue(
+        '05',
+      );
+      expect(screen.getByRole('slider', { name: 'Understood' })).toHaveValue(
+        '60',
+      );
+    });
+
+    describe('clicking save after changing the time', () => {
+      const changeTime = async (updateKey: string) => {
+        const view = renderEditForm(updateKey);
+        const minutes = screen.getByRole('textbox', { name: 'Minutes' });
+        await view.user.clear(minutes);
+        await view.user.type(minutes, '20');
+        await view.user.click(screen.getByRole('button', { name: 'Save' }));
+        return view;
+      };
+
+      it('saves the changes to that update', async () => {
+        const { storageContext } = await changeTime('u2');
+
+        expect(storageContext.updateItem).toHaveBeenCalledWith(EXISTING_PATH, {
+          lookups: 3,
+          aiQuestions: 1,
+          understood: 60,
+          timestampInSeconds: 1234,
+        });
+      });
+
+      describe('when it is the latest update with a time', () => {
+        it('moves where I am up to', async () => {
+          const { storageContext } = await changeTime('u2');
+
+          expect(storageContext.updateItem).toHaveBeenCalledWith(['lupin'], {
+            upTo: { season: 1, episode: 2, timestampInSeconds: 1234 },
+          });
+        });
+      });
+
+      describe('when a later update has a time', () => {
+        it('leaves where I am up to', async () => {
+          const { storageContext } = await changeTime('u1');
+
+          expect(storageContext.updateItem).not.toHaveBeenCalledWith(
+            ['lupin'],
+            expect.anything(),
+          );
+        });
+      });
+    });
+
+    describe('deleting it', () => {
+      const deleteUpdate = async (updateKey: string) => {
+        const view = renderEditForm(updateKey);
+        await view.user.click(screen.getByRole('button', { name: 'Delete' }));
+        await view.user.click(
+          screen.getByRole('button', { name: 'Confirm delete' }),
+        );
+        return view;
+      };
+
+      it('deletes that update and closes the form', async () => {
+        const { storageContext, closeModal } = await deleteUpdate('u2');
+
+        expect(storageContext.deleteItem).toHaveBeenCalledWith(EXISTING_PATH);
+        expect(closeModal).toHaveBeenCalled();
+      });
+
+      describe('when it is the latest update with a time', () => {
+        it('moves where I am up to back to the update before it', async () => {
+          const { storageContext } = await deleteUpdate('u2');
+
+          expect(storageContext.updateItem).toHaveBeenCalledWith(['lupin'], {
+            upTo: { season: 1, episode: 2, timestampInSeconds: 300 },
+          });
+        });
+      });
+
+      describe('when a later update has a time', () => {
+        it('leaves where I am up to', async () => {
+          const { storageContext } = await deleteUpdate('u1');
+
+          expect(storageContext.deleteItem).toHaveBeenCalled();
+          expect(storageContext.updateItem).not.toHaveBeenCalled();
+        });
+      });
+    });
+  });
 });

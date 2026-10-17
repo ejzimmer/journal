@@ -70,9 +70,10 @@ describe('getRacemes', () => {
       },
     });
 
-    it('hangs racemes only for the updates that record one', () => {
-      expect(getRacemes(createSeries(episode)).map(({ key }) => key)).toEqual([
-        'counted',
+    it('leaves the understood amount off that update’s raceme', () => {
+      expect(getRacemes(createSeries(episode))).toEqual([
+        { key: 'quiet', shootKey: 's1-e1-shoot', at: 0.25 },
+        { key: 'counted', shootKey: 's1-e1-shoot', at: 0.5, understood: 70 },
       ]);
     });
   });

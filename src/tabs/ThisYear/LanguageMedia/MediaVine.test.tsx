@@ -3,6 +3,7 @@ import userEvent from '@testing-library/user-event';
 import { renderWithLanguageMediaStorage } from './languageMediaStorageTestUtils';
 import { MediaVine } from './MediaVine';
 import { lupin } from './testMedia';
+import { TvSeries } from './types';
 
 describe('MediaVine', () => {
   it('names the vine after the series', () => {
@@ -42,6 +43,86 @@ describe('MediaVine', () => {
         );
 
         expect(form).not.toBeInTheDocument();
+      });
+    });
+  });
+
+  describe('an episode with updates', () => {
+    const episode = lupin.seasons!.s1.episodes!.e1;
+    const series: TvSeries = {
+      ...lupin,
+      seasons: {
+        s1: {
+          ...lupin.seasons!.s1,
+          episodes: {
+            ...lupin.seasons!.s1.episodes,
+            e1: {
+              ...episode,
+              updates: {
+                flowering: {
+                  at: '2026-10-01T09:00:00Z',
+                  timestampInSeconds: 1000,
+                  lookups: 4,
+                  aiQuestions: 0,
+                  understood: 70,
+                },
+                bare: {
+                  at: '2026-10-02T09:00:00Z',
+                  timestampInSeconds: 2000,
+                  lookups: 1,
+                  aiQuestions: 0,
+                },
+              },
+            },
+          },
+        },
+      },
+    };
+    const getStretches = () =>
+      screen.getAllByRole('button', { name: 'Edit update to Chapitre 1' });
+
+    describe('clicking the stretch of shoot an update grew', () => {
+      it('opens that update in the update form', async () => {
+        const user = userEvent.setup();
+        renderWithLanguageMediaStorage(<MediaVine series={series} />);
+
+        await user.click(getStretches()[0]);
+
+        expect(
+          screen.getByRole('form', { name: 'Track Chapitre 1' }),
+        ).toBeInTheDocument();
+        expect(
+          screen.getByRole('spinbutton', { name: 'Looked up' }),
+        ).toHaveValue(4);
+      });
+    });
+
+    describe('hovering the stretch of shoot an update grew', () => {
+      describe('when the update has flowers', () => {
+        it('highlights them', async () => {
+          const user = userEvent.setup();
+          renderWithLanguageMediaStorage(<MediaVine series={series} />);
+          const raceme = screen.getByTestId('wisteria-raceme');
+
+          await user.hover(getStretches()[0]);
+
+          expect(raceme).toHaveClass('highlighted');
+        });
+      });
+
+      describe('when the update has no flowers', () => {
+        it('shows a ghost of them', async () => {
+          const user = userEvent.setup();
+          renderWithLanguageMediaStorage(<MediaVine series={series} />);
+
+          await user.hover(getStretches()[1]);
+
+          expect(
+            screen
+              .getAllByTestId('wisteria-raceme')
+              .filter((raceme) => raceme.classList.contains('ghost')),
+          ).toHaveLength(1);
+        });
       });
     });
   });

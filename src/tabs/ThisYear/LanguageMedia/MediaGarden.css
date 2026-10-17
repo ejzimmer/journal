@@ -396,6 +396,28 @@
   }
 }
 
+.wisteria-raceme.ghost {
+  opacity: 0.55;
+  pointer-events: none;
+}
+
+.wisteria-raceme.highlighted {
+  .wisteria-floret .standard {
+    fill: hsl(345 80% 88%);
+    stroke: hsl(345 45% 60%);
+  }
+
+  .wisteria-floret .keel {
+    fill: hsl(345 70% 78%);
+    stroke: hsl(345 45% 52%);
+  }
+
+  .wisteria-bud {
+    fill: hsl(345 70% 90%);
+    stroke: hsl(345 40% 62%);
+  }
+}
+
 .update-stretch {
   fill: transparent;
   stroke: transparent;

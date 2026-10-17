@@ -8,7 +8,7 @@ export type Raceme = {
   key: string;
   shootKey: string;
   at: number;
-  understood: number;
+  understood?: number;
 };
 
 export function getRacemes(series: TvSeries): Raceme[] {
@@ -16,18 +16,12 @@ export function getRacemes(series: TvSeries): Raceme[] {
     episodes.flatMap((episode) => {
       const progress = calculateEpisodeProgress(series, season, episode);
       if (!progress) return [];
-      return getEpisodeUpdates(episode).flatMap((update) =>
-        update.understood === undefined
-          ? []
-          : [
-              {
-                key: update.key,
-                shootKey: `${season.id}-${episode.id}-shoot`,
-                at: calculateEpisodeUpdatePosition(episode, update, progress),
-                understood: update.understood,
-              },
-            ],
-      );
+      return getEpisodeUpdates(episode).map((update) => ({
+        key: update.key,
+        shootKey: `${season.id}-${episode.id}-shoot`,
+        at: calculateEpisodeUpdatePosition(episode, update, progress),
+        understood: update.understood,
+      }));
     }),
   );
 }

@@ -1,13 +1,11 @@
 import { calculateUpdatePosition } from './calculateUpdatePosition';
 import { getProgressUpdates } from './getProgressUpdates';
 import { getItemsByNumber } from './lists';
-import { sliceEdges } from './sliceEdges';
+import { sliceIntoStretches } from './sliceIntoStretches';
 import { EdgeSample } from './treeGeometry';
 import { GrownShape } from './treeGrowth';
 import { PrintSeries, Volume } from './types';
 import { readVolumeProgress } from './volumeProgress';
-
-const MIN_STRETCH = 0.02;
 
 export type UpdateStretch = {
   key: string;
@@ -27,13 +25,9 @@ export function getUpdateStretches(
       key: update.key,
       at: calculateUpdatePosition(volume, update, progress),
     }));
-    return ends.map(({ key, at }, index) => {
-      const from = index === 0 ? 0 : ends[index - 1].at;
-      return {
-        key,
-        volume,
-        edges: sliceEdges(limb.edges, from, Math.max(at, from + MIN_STRETCH)),
-      };
-    });
+    return sliceIntoStretches(limb.edges, ends).map((stretch) => ({
+      ...stretch,
+      volume,
+    }));
   });
 }

@@ -1,4 +1,5 @@
 import { FormEvent, KeyboardEvent, useState } from 'react';
+import { DeleteWithConfirmation } from '../../../shared/controls/DeleteWithConfirmation';
 import { useModal } from '../../../shared/controls/Modal';
 import { TickIcon } from '../../../shared/icons/Tick';
 import { CountTile } from './CountTile';
@@ -8,6 +9,7 @@ import { UnderstoodTile } from './UnderstoodTile';
 import { useLanguageMediaStorage } from './LanguageMediaStorageContext';
 import { parseNumber, readDuration } from './fields';
 import { formatEpisodeTitle } from './format';
+import { getTimedEpisodeUpdates } from './getTimedEpisodeUpdates';
 import { Episode, EpisodeUpdate, Season, TvSeries } from './types';
 
 import './ProgressUpdateForm.css';
@@ -16,16 +18,19 @@ type EpisodeUpdateFormProps = {
   series: TvSeries;
   season: Season;
   episode: Episode;
+  updateKey?: string;
 };
 
 export function EpisodeUpdateForm({
   series,
   season,
   episode,
+  updateKey: existingUpdateKey,
 }: EpisodeUpdateFormProps) {
-  const { updateItem } = useLanguageMediaStorage();
+  const { updateItem, deleteItem } = useLanguageMediaStorage();
   const { closeModal } = useModal();
-  const [updateKey] = useState(() => crypto.randomUUID());
+  const [newUpdateKey] = useState(() => crypto.randomUUID());
+  const updateKey = existingUpdateKey ?? newUpdateKey;
   const updatePath = [
     series.id,
     'seasons',
@@ -38,10 +43,16 @@ export function EpisodeUpdateForm({
   const update = episode.updates?.[updateKey];
   const name = formatEpisodeTitle(series, season, episode);
   const { upTo } = series;
-  const startingTimestamp =
-    upTo?.season === season.number && upTo.episode === episode.number
+  const startingTimestamp = existingUpdateKey
+    ? update?.timestampInSeconds
+    : upTo?.season === season.number && upTo.episode === episode.number
       ? upTo.timestampInSeconds
       : undefined;
+  const timedUpdates = getTimedEpisodeUpdates(series);
+  const latestTimedUpdate = timedUpdates.at(-1);
+  const isLatestTimedUpdate =
+    latestTimedUpdate?.episode.id === episode.id &&
+    latestTimedUpdate.key === updateKey;
 
   const submitOnEnter = (event: KeyboardEvent<HTMLFormElement>) => {
     if (event.key === 'Enter' && event.target instanceof HTMLInputElement) {
@@ -68,7 +79,10 @@ export function EpisodeUpdateForm({
     event.preventDefault();
     const data = new FormData(event.currentTarget);
     const timestampInSeconds = readDuration(data, 'timestamp');
-    if (timestampInSeconds !== undefined) {
+    if (
+      timestampInSeconds !== undefined &&
+      (!existingUpdateKey || isLatestTimedUpdate)
+    ) {
       updateItem([series.id], {
         upTo: {
           season: season.number,
@@ -92,6 +106,21 @@ export function EpisodeUpdateForm({
       saveUpdate({
         ...changes,
         timestampInSeconds: timestampInSeconds ?? startingTimestamp,
+      });
+    }
+    closeModal();
+  };
+
+  const deleteUpdate = () => {
+    deleteItem(updatePath);
+    if (isLatestTimedUpdate) {
+      const previous = timedUpdates.at(-2);
+      updateItem([series.id], {
+        upTo: previous && {
+          season: previous.season.number,
+          episode: previous.episode.number,
+          timestampInSeconds: previous.timestampInSeconds,
+        },
       });
     }
     closeModal();
@@ -129,9 +158,15 @@ export function EpisodeUpdateForm({
             timestampInSeconds={startingTimestamp}
             lengthInSeconds={episode.lengthInSeconds}
           />
-          <UnderstoodTile mediaType="tv" />
+          <UnderstoodTile mediaType="tv" defaultValue={update?.understood} />
         </div>
         <div className="progress-update-actions">
+          {existingUpdateKey && (
+            <DeleteWithConfirmation
+              className="progress-update-delete"
+              onDelete={deleteUpdate}
+            />
+          )}
           <button
             type="submit"
             className="progress-update-save"

@@ -3,6 +3,7 @@ import { ModalDialog } from '../../../shared/controls/ModalDialog';
 import { TelevisionIcon } from '../../../shared/icons/Television';
 import { CloudFrame } from './CloudFrame';
 import { EpisodeUpdateForm } from './EpisodeUpdateForm';
+import { EpisodeUpdateStretches } from './EpisodeUpdateStretches';
 import { findCurrentEpisode } from './findCurrentEpisode';
 import { HangingSign } from './HangingSign';
 import { calculateEpisodeProgress } from './calculateEpisodeProgress';
@@ -17,7 +18,7 @@ import { TreeFill } from './TreeFill';
 import { getGrownShapes } from './treeGrowth';
 import { TreeOutline } from './TreeOutline';
 import { TreeSilhouette } from './TreeSilhouette';
-import { TvSeries } from './types';
+import { Episode, Season, TvSeries } from './types';
 import { VineLeaves } from './VineLeaves';
 import { VineRacemes } from './VineRacemes';
 import { createVineLayout, getVineEpisodes } from './vineLayout';
@@ -35,6 +36,12 @@ export function MediaVine({ series }: { series: TvSeries }) {
   const grownShapes = getGrownShapes(layout, progress);
   const { x, y, width, height } = layout.bounds;
   const [isUpdateFormOpen, setIsUpdateFormOpen] = useState(false);
+  const [editedUpdate, setEditedUpdate] = useState<{
+    season: Season;
+    episode: Episode;
+    updateKey: string;
+  }>();
+  const [highlightedUpdateKey, setHighlightedUpdateKey] = useState<string>();
   const currentEpisode = findCurrentEpisode(series);
 
   return (
@@ -62,8 +69,20 @@ export function MediaVine({ series }: { series: TvSeries }) {
         <VineLeaves
           leaves={placeVineLeaves(grownShapes, layout.pergola.beamBottom)}
         />
-        <VineRacemes layout={layout} racemes={getRacemes(series)} />
+        <VineRacemes
+          layout={layout}
+          racemes={getRacemes(series)}
+          highlightedKey={highlightedUpdateKey}
+        />
         <TreeBeetles spots={placeEpisodeBeetles(series, grownShapes)} />
+        <EpisodeUpdateStretches
+          series={series}
+          shapes={grownShapes}
+          onSelect={(season, episode, updateKey) =>
+            setEditedUpdate({ season, episode, updateKey })
+          }
+          onHighlight={setHighlightedUpdateKey}
+        />
       </svg>
       <Signpost
         name={series.name}
@@ -86,6 +105,22 @@ export function MediaVine({ series }: { series: TvSeries }) {
               series={series}
               season={currentEpisode.season}
               episode={currentEpisode.episode}
+            />
+          </CloudFrame>
+        )}
+      </ModalDialog>
+      <ModalDialog
+        isOpen={!!editedUpdate}
+        className="progress-update-modal episode-update-modal"
+        onCancel={() => setEditedUpdate(undefined)}
+      >
+        {editedUpdate && (
+          <CloudFrame>
+            <EpisodeUpdateForm
+              series={series}
+              season={editedUpdate.season}
+              episode={editedUpdate.episode}
+              updateKey={editedUpdate.updateKey}
             />
           </CloudFrame>
         )}
