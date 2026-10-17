@@ -15,9 +15,9 @@
     position: relative;
 
     .progress-bar {
-      --led: hsl(115 100% 50%);
-      --led-core: hsl(100 100% 90%);
-      --led-edge: hsl(125 90% 36%);
+      --led: var(--led-green);
+      --led-core: var(--led-green-core);
+      --led-edge: var(--led-green-edge);
       --segment: calc(100% / var(--segments));
       position: relative;
       display: flex;
@@ -52,9 +52,9 @@
       }
 
       &.done-today {
-        --led: hsl(200 100% 55%);
-        --led-core: hsl(190 100% 92%);
-        --led-edge: hsl(215 100% 42%);
+        --led: var(--led-blue);
+        --led-core: var(--led-blue-core);
+        --led-edge: var(--led-blue-edge);
       }
 
       &:hover ~ .dates-popover {

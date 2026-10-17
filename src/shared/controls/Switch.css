@@ -56,9 +56,9 @@
   }
 
   &.glow {
-    --led: hsl(200 100% 55%);
-    --led-core: hsl(190 100% 92%);
-    --led-edge: hsl(215 100% 42%);
+    --led: var(--led-blue);
+    --led-core: var(--led-blue-core);
+    --led-edge: var(--led-blue-edge);
     border-radius: 999px;
 
     label:has(input:checked) {
