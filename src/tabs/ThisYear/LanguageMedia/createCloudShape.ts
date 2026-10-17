@@ -33,8 +33,15 @@ export function createCloudShape(width: number, height: number) {
   const [bottomLeftX] = left[left.length - 1];
   const [bottomRightX] = right[right.length - 1];
 
+  const topPuffs: Puff[] = [
+    [width * 0.3, 46, 60],
+    [width / 2, 24, 72],
+    [width * 0.7, 44, 60],
+  ];
+
   const hull: Point[] = [
     [topLeftX, 60],
+    ...topPuffs.map(([cx, cy]): Point => [cx, cy]),
     [topRightX, 60],
     [bottomRightX, sidesBottom],
     [bottomRightX, height],
@@ -46,9 +53,7 @@ export function createCloudShape(width: number, height: number) {
     ...right,
     [70, 86, 52],
     [width - 72, 82, 54],
-    [width * 0.3, 46, 60],
-    [width / 2, 24, 72],
-    [width * 0.7, 44, 60],
+    ...topPuffs,
   ];
 
   return { hull, puffs };

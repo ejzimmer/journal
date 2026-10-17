@@ -9,7 +9,59 @@ const getLeftEdges = () =>
     .filter(([, cy]) => cy >= 100)
     .map(([cx, cy, radius]) => ({ y: cy, edge: cx - radius }));
 
+const isInsideHull = (hull: [number, number][], x: number, y: number) =>
+  hull.reduce((inside, [x1, y1], index) => {
+    const [x2, y2] = hull[(index + 1) % hull.length];
+    const crosses =
+      y1 > y !== y2 > y && x < x1 + ((y - y1) / (y2 - y1)) * (x2 - x1);
+    return crosses ? !inside : inside;
+  }, false);
+
+const findHoles = (cloudWidth: number, depth: number) => {
+  const { hull, puffs } = createCloudShape(cloudWidth, height);
+  const isInside = (x: number, y: number) =>
+    isInsideHull(hull, x, y) ||
+    puffs.some(([cx, cy, radius]) => Math.hypot(x - cx, y - cy) <= radius);
+
+  const key = (x: number, y: number) => `${x},${y}`;
+  const outside = new Set<string>();
+  const queue: [number, number][] = [];
+  const visit = (x: number, y: number) => {
+    if (x < 0 || x > cloudWidth || y < 0 || y > depth) return;
+    if (outside.has(key(x, y)) || isInside(x, y)) return;
+    outside.add(key(x, y));
+    queue.push([x, y]);
+  };
+
+  for (let x = 0; x <= cloudWidth; x++) visit(x, 0);
+  for (let y = 0; y <= depth; y++) {
+    visit(0, y);
+    visit(cloudWidth, y);
+  }
+  while (queue.length) {
+    const [x, y] = queue.pop()!;
+    visit(x + 1, y);
+    visit(x - 1, y);
+    visit(x, y + 1);
+    visit(x, y - 1);
+  }
+
+  const holes: [number, number][] = [];
+  for (let x = 0; x <= cloudWidth; x++) {
+    for (let y = 0; y <= depth; y++) {
+      if (!outside.has(key(x, y)) && !isInside(x, y)) holes.push([x, y]);
+    }
+  }
+  return holes;
+};
+
 describe('createCloudShape', () => {
+  describe.each([480, 640])('the top of a %ipx cloud', (cloudWidth) => {
+    it('has no holes in it', () => {
+      expect(findHoles(cloudWidth, 100)).toEqual([]);
+    });
+  });
+
   describe('the bottom', () => {
     it('lies flat along the bottom of the box', () => {
       const { hull } = createCloudShape(width, height);
