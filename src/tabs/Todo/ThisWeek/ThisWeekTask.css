@@ -15,9 +15,9 @@
     position: relative;
 
     .progress-bar {
-      --neon: hsl(115 100% 50%);
-      --neon-core: hsl(100 100% 90%);
-      --neon-edge: hsl(125 90% 36%);
+      --led: hsl(115 100% 50%);
+      --led-core: hsl(100 100% 90%);
+      --led-edge: hsl(125 90% 36%);
       --segment: calc(100% / var(--segments));
       position: relative;
       display: flex;
@@ -52,9 +52,9 @@
       }
 
       &.done-today {
-        --neon: hsl(200 100% 55%);
-        --neon-core: hsl(190 100% 92%);
-        --neon-edge: hsl(215 100% 42%);
+        --led: hsl(200 100% 55%);
+        --led-core: hsl(190 100% 92%);
+        --led-edge: hsl(215 100% 42%);
       }
 
       &:hover ~ .dates-popover {
@@ -81,17 +81,17 @@
         --led-width: calc(100% / var(--lit-segments));
         border-start-start-radius: 100px;
         border-end-start-radius: 100px;
-        background-color: color-mix(in srgb, var(--neon) 60%, white);
+        background-color: color-mix(in srgb, var(--led) 60%, white);
         background-image: radial-gradient(
           ellipse 32px 20px,
-          var(--neon-core),
-          var(--neon) 35%,
+          var(--led-core),
+          var(--led) 35%,
           transparent
         );
         background-size: var(--led-width) 100%;
         box-shadow:
-          0 0 6px var(--neon),
-          0 0 16px color-mix(in srgb, var(--neon) 60%, transparent);
+          0 0 6px var(--led),
+          0 0 16px color-mix(in srgb, var(--led) 60%, transparent);
         opacity: var(--fill-opacity, 1);
 
         &:last-child {
