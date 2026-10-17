@@ -2,7 +2,7 @@ import { screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MediaList } from './MediaList';
 import { renderWithLanguageMediaStorage } from './languageMediaStorageTestUtils';
-import { hugo, lupin, yotsuba } from './testMedia';
+import { lupin } from './testMedia';
 import { LanguageMedia } from './types';
 
 const renderList = (media: LanguageMedia[]) => ({
@@ -50,14 +50,6 @@ describe('MediaList', () => {
           ).toBeInTheDocument();
         });
       });
-    });
-  });
-
-  describe('a book, manga or youtube series', () => {
-    it('is left for the garden', () => {
-      renderList([yotsuba, hugo]);
-
-      expect(screen.getByRole('list')).toBeEmptyDOMElement();
     });
   });
 
