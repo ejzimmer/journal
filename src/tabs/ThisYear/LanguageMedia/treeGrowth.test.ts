@@ -50,4 +50,24 @@ describe('measureShapeGrowth', () => {
       });
     });
   });
+
+  describe('for a stem', () => {
+    const stem: ShapeGrowth = {
+      type: 'stem',
+      firstLevel: 2,
+      levelEnds: [0.2, 0.5, 0.8],
+    };
+
+    describe('when one of its episodes has started', () => {
+      it('grows up to the last started episode', () => {
+        expect(measureShapeGrowth(stem, [1, 1, 1, 0.3, 0])).toBe(0.5);
+      });
+    });
+
+    describe('when only episodes on other stems have started', () => {
+      it('has not grown', () => {
+        expect(measureShapeGrowth(stem, [1, 1, 0, 0, 0, 1])).toBe(0);
+      });
+    });
+  });
 });

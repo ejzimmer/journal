@@ -5,7 +5,7 @@ import { countSignposts } from './signposts';
 type SignpostProps = {
   name: string;
   placement: SignpostPlacement;
-  children: ReactNode;
+  children?: ReactNode;
 };
 
 export function Signpost({ name, placement, children }: SignpostProps) {

@@ -7,6 +7,13 @@ export function measureShapeGrowth(growth: ShapeGrowth, progress: number[]) {
     const lastStarted = progress.findLastIndex((amount) => amount > 0);
     return lastStarted === -1 ? 0 : growth.levelEnds[lastStarted];
   }
+  if (growth.type === 'stem') {
+    const { firstLevel, levelEnds } = growth;
+    const lastStarted = progress
+      .slice(firstLevel, firstLevel + levelEnds.length)
+      .findLastIndex((amount) => amount > 0);
+    return lastStarted === -1 ? 0 : levelEnds[lastStarted];
+  }
   const { level, start, end } = growth;
   return clampFraction(((progress[level] ?? 0) - start) / (end - start));
 }
