@@ -777,25 +777,22 @@ export const seedData = {
   [HEALTH_PATH]: { exercises, classes, pistolBox: pistolBoxLevel, deadHang },
   yarn: { '2026': yarn },
   language_media: { '2026': languageMedia },
+  bikes: {
+    '2026': [
+      { name: 'BB-8', icon: '🤖', isDone: true },
+      { name: 'Chiner Niner', icon: '🇨🇳', isDone: false },
+      { name: 'Cyclocross', icon: '❌', isDone: false },
+      { name: 'Dambala', icon: '👹', isDone: true },
+      { name: 'Diverge', icon: '🚲', isDone: true },
+      { name: 'Melburn Monster', icon: '🤡', isDone: false },
+      { name: 'Moonraker', icon: '🚀', isDone: true },
+      { name: 'Niner', icon: '🚵‍♀️', isDone: false },
+      { name: 'ss road bike', icon: '🍺', isDone: true },
+      { name: 'Uterus', icon: '📦', isDone: false },
+    ],
+  },
   '2026': {
     adventures,
-    other_goals: {
-      bikes: {
-        id: 'bikes',
-        bikes: [
-          { name: 'BB-8', icon: '🤖', isDone: true },
-          { name: 'Chiner Niner', icon: '🇨🇳', isDone: false },
-          { name: 'Cyclocross', icon: '❌', isDone: false },
-          { name: 'Dambala', icon: '👹', isDone: true },
-          { name: 'Diverge', icon: '🚲', isDone: true },
-          { name: 'Melburn Monster', icon: '🤡', isDone: false },
-          { name: 'Moonraker', icon: '🚀', isDone: true },
-          { name: 'Niner', icon: '🚵‍♀️', isDone: false },
-          { name: 'ss road bike', icon: '🍺', isDone: true },
-          { name: 'Uterus', icon: '📦', isDone: false },
-        ],
-      },
-    },
   },
   adventure_modes: adventureModes,
 };

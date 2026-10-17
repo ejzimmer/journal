@@ -1,6 +1,6 @@
 import { Adventures } from './Adventures';
 import { LanguageMediaGoals } from './LanguageMedia';
-import { OtherGoals } from './OtherGoals';
+import { Bikes } from './Bikes';
 import { StationRunning } from './StationRunning/StationRunning';
 import { WaniKani } from './WaniKani';
 import { YarnTracking } from './YarnTracking';
@@ -15,7 +15,7 @@ export function ThisYear() {
         <Adventures />
       </div>
       <StationRunning />
-      <OtherGoals />
+      <Bikes />
       <WaniKani />
       <LanguageMediaGoals />
     </div>
