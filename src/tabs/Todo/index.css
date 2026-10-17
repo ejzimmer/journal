@@ -168,3 +168,16 @@ button.led:is(:hover, :focus-visible),
     }
   }
 }
+
+[role='radiogroup'].switch.led-switch {
+  --led-colour: var(--led-blue);
+  border-radius: 999px;
+
+  label:has(input:checked) {
+    text-shadow: 0 0 4px color-mix(in srgb, var(--led-colour) 75%, black);
+  }
+
+  .indicator {
+    transition-property: left, box-shadow, border-radius, background;
+  }
+}

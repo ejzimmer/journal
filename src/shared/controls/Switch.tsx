@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 
 import './Switch.css';
 
-export type SwitchProps<T extends string> = {
+type SwitchProps<T extends string> = {
   options: T[];
   value: T;
   onChange: (value: T) => void;
