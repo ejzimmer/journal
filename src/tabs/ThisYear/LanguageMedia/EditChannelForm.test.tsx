@@ -130,8 +130,8 @@ describe('EditChannelForm', () => {
   });
 
   describe('when deleted', () => {
-    it('deletes the channel', async () => {
-      const { user, storageContext } = renderForm();
+    it('deletes the channel and closes the form', async () => {
+      const { user, storageContext, closeModal } = renderForm();
 
       await user.click(
         screen.getByRole('button', { name: 'Delete HugoDécrypte' }),
@@ -139,16 +139,6 @@ describe('EditChannelForm', () => {
       await user.click(screen.getByRole('button', { name: 'Confirm delete' }));
 
       expect(storageContext.deleteItem).toHaveBeenCalledWith(['hugo']);
-    });
-
-    it('closes the form', async () => {
-      const { user, closeModal } = renderForm();
-
-      await user.click(
-        screen.getByRole('button', { name: 'Delete HugoDécrypte' }),
-      );
-      await user.click(screen.getByRole('button', { name: 'Confirm delete' }));
-
       expect(closeModal).toHaveBeenCalled();
     });
   });

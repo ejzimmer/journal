@@ -124,8 +124,8 @@ describe('EditSeriesForm', () => {
   });
 
   describe('when deleted', () => {
-    it('deletes the series', async () => {
-      const { user, storageContext } = renderForm(miserables);
+    it('deletes the series and closes the form', async () => {
+      const { user, storageContext, closeModal } = renderForm(miserables);
 
       await user.click(
         screen.getByRole('button', { name: 'Delete Les Misérables' }),
@@ -133,16 +133,6 @@ describe('EditSeriesForm', () => {
       await user.click(screen.getByRole('button', { name: 'Confirm delete' }));
 
       expect(storageContext.deleteItem).toHaveBeenCalledWith(['miserables']);
-    });
-
-    it('closes the form', async () => {
-      const { user, closeModal } = renderForm(miserables);
-
-      await user.click(
-        screen.getByRole('button', { name: 'Delete Les Misérables' }),
-      );
-      await user.click(screen.getByRole('button', { name: 'Confirm delete' }));
-
       expect(closeModal).toHaveBeenCalled();
     });
   });
