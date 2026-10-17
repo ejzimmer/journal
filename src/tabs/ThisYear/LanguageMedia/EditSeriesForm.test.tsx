@@ -122,4 +122,18 @@ describe('EditSeriesForm', () => {
       });
     });
   });
+
+  describe('when deleted', () => {
+    it('deletes the series and closes the form', async () => {
+      const { user, storageContext, closeModal } = renderForm(miserables);
+
+      await user.click(
+        screen.getByRole('button', { name: 'Delete Les Misérables' }),
+      );
+      await user.click(screen.getByRole('button', { name: 'Confirm delete' }));
+
+      expect(storageContext.deleteItem).toHaveBeenCalledWith(['miserables']);
+      expect(closeModal).toHaveBeenCalled();
+    });
+  });
 });

@@ -1,4 +1,5 @@
 import { FormEvent, useState } from 'react';
+import { DeleteWithConfirmation } from '../../../shared/controls/DeleteWithConfirmation';
 import { useModal } from '../../../shared/controls/Modal';
 import { Switch } from '../../../shared/controls/Switch';
 import { TickIcon } from '../../../shared/icons/Tick';
@@ -23,7 +24,7 @@ const readVideoChanges = (data: FormData, video: Video) => {
 };
 
 export function EditChannelForm({ channel }: { channel: YoutubeChannel }) {
-  const { updateItem } = useLanguageMediaStorage();
+  const { updateItem, deleteItem } = useLanguageMediaStorage();
   const { closeModal } = useModal();
   const [language, setLanguage] = useState<Language>(channel.language);
   const videos = getItemsInAddedOrder(channel.videos);
@@ -41,6 +42,11 @@ export function EditChannelForm({ channel }: { channel: YoutubeChannel }) {
         readVideoChanges(data, video),
       ),
     );
+    closeModal();
+  };
+
+  const deleteChannel = () => {
+    deleteItem([channel.id]);
     closeModal();
   };
 
@@ -72,9 +78,20 @@ export function EditChannelForm({ channel }: { channel: YoutubeChannel }) {
           <VideoRow key={video.id} video={video} />
         ))}
       </div>
-      <button type="submit" className="progress-update-save" aria-label="Save">
-        <TickIcon width="20px" strokeWidth="2.6" />
-      </button>
+      <div className="edit-media-actions">
+        <DeleteWithConfirmation
+          className="progress-update-delete"
+          label={`Delete ${channel.name}`}
+          onDelete={deleteChannel}
+        />
+        <button
+          type="submit"
+          className="progress-update-save"
+          aria-label="Save"
+        >
+          <TickIcon width="20px" strokeWidth="2.6" />
+        </button>
+      </div>
     </form>
   );
 }

@@ -128,4 +128,18 @@ describe('EditChannelForm', () => {
       });
     });
   });
+
+  describe('when deleted', () => {
+    it('deletes the channel and closes the form', async () => {
+      const { user, storageContext, closeModal } = renderForm();
+
+      await user.click(
+        screen.getByRole('button', { name: 'Delete HugoDécrypte' }),
+      );
+      await user.click(screen.getByRole('button', { name: 'Confirm delete' }));
+
+      expect(storageContext.deleteItem).toHaveBeenCalledWith(['hugo']);
+      expect(closeModal).toHaveBeenCalled();
+    });
+  });
 });
