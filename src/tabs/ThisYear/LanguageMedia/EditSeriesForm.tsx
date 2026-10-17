@@ -4,6 +4,7 @@ import { Switch } from '../../../shared/controls/Switch';
 import { TickIcon } from '../../../shared/icons/Tick';
 import { BookVolumeRow } from './BookVolumeRow';
 import { parseNumber, readText } from './fields';
+import { DeleteMediaButton } from './DeleteMediaButton';
 import { LanguageOption } from './LanguageOption';
 import { useLanguageMediaStorage } from './LanguageMediaStorageContext';
 import { getItemsByNumber } from './lists';
@@ -74,9 +75,16 @@ export function EditSeriesForm({ series }: { series: PrintSeries }) {
           ))}
         </div>
       )}
-      <button type="submit" className="progress-update-save" aria-label="Save">
-        <TickIcon width="20px" strokeWidth="2.6" />
-      </button>
+      <div className="edit-media-actions">
+        <DeleteMediaButton media={series} />
+        <button
+          type="submit"
+          className="progress-update-save"
+          aria-label="Save"
+        >
+          <TickIcon width="20px" strokeWidth="2.6" />
+        </button>
+      </div>
     </form>
   );
 }

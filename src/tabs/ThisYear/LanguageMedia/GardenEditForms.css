@@ -93,3 +93,8 @@ dialog.progress-update-modal.edit-channel-modal {
 dialog.edit-channel-modal .add-media-name {
   margin-block-start: 56px;
 }
+
+.edit-media-actions {
+  display: flex;
+  gap: 10px;
+}

@@ -3,6 +3,7 @@ import { useModal } from '../../../shared/controls/Modal';
 import { Switch } from '../../../shared/controls/Switch';
 import { TickIcon } from '../../../shared/icons/Tick';
 import { readDuration, readText } from './fields';
+import { DeleteMediaButton } from './DeleteMediaButton';
 import { LanguageOption } from './LanguageOption';
 import { useLanguageMediaStorage } from './LanguageMediaStorageContext';
 import { getItemsInAddedOrder } from './lists';
@@ -72,9 +73,16 @@ export function EditChannelForm({ channel }: { channel: YoutubeChannel }) {
           <VideoRow key={video.id} video={video} />
         ))}
       </div>
-      <button type="submit" className="progress-update-save" aria-label="Save">
-        <TickIcon width="20px" strokeWidth="2.6" />
-      </button>
+      <div className="edit-media-actions">
+        <DeleteMediaButton media={channel} />
+        <button
+          type="submit"
+          className="progress-update-save"
+          aria-label="Save"
+        >
+          <TickIcon width="20px" strokeWidth="2.6" />
+        </button>
+      </div>
     </form>
   );
 }
