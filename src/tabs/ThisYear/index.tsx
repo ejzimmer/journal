@@ -1,7 +1,11 @@
 import { Adventures } from './Adventures';
 import { LanguageMediaGoals } from './LanguageMedia';
 import { Bikes } from './Bikes';
-import { StationRunning } from './StationRunning/StationRunning';
+import { getThisYear } from '../../shared/dates';
+import {
+  STATION_RUNNING_YEAR,
+  StationRunning,
+} from './StationRunning/StationRunning';
 import { WaniKani } from './WaniKani';
 import { YarnTracking } from './YarnTracking';
 
@@ -14,7 +18,7 @@ export function ThisYear() {
         <YarnTracking />
         <Adventures />
       </div>
-      <StationRunning />
+      {getThisYear() === STATION_RUNNING_YEAR && <StationRunning />}
       <Bikes />
       <WaniKani />
       <LanguageMediaGoals />
