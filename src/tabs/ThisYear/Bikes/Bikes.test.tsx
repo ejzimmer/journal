@@ -76,6 +76,55 @@ describe('Bikes', () => {
     });
   });
 
+  describe('when an earlier year has bikes', () => {
+    const seed = {
+      bikes: {
+        '2026': [diverge, uterus],
+        '2027': [{ ...diverge, isDone: false }, uterus],
+      },
+    };
+
+    it('shows a tab for each year, newest first, with this year selected', () => {
+      renderBikes(seed);
+
+      expect(screen.getAllByRole('tab').map((tab) => tab.textContent)).toEqual([
+        '2027',
+        '2026',
+      ]);
+      expect(screen.getByRole('tab', { name: '2027' })).toHaveAttribute(
+        'aria-selected',
+        'true',
+      );
+    });
+
+    describe('and that year is selected', () => {
+      it('shows the bikes ridden that year', async () => {
+        const { user } = renderBikes(seed);
+
+        await user.click(screen.getByRole('tab', { name: '2026' }));
+
+        expect(screen.getByRole('checkbox', { name: 'Diverge' })).toBeChecked();
+      });
+
+      describe('and a bike is ticked', () => {
+        it('rides it in that year only', async () => {
+          const { user } = renderBikes(seed);
+          await user.click(screen.getByRole('tab', { name: '2026' }));
+
+          await user.click(screen.getByRole('checkbox', { name: 'Uterus' }));
+          expect(
+            screen.getByRole('checkbox', { name: 'Uterus' }),
+          ).toBeChecked();
+
+          await user.click(screen.getByRole('tab', { name: '2027' }));
+          expect(
+            screen.getByRole('checkbox', { name: 'Uterus' }),
+          ).not.toBeChecked();
+        });
+      });
+    });
+  });
+
   describe('when the bikes are still kept with the 2026 goals', () => {
     it('moves them to 2026', () => {
       const context = createMockFirebaseContext({
