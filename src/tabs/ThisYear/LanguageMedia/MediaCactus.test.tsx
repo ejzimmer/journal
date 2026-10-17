@@ -54,4 +54,22 @@ describe('MediaCactus', () => {
       ).toBeInTheDocument();
     });
   });
+
+  describe('clicking an arm', () => {
+    it('opens that video in the watched video form', async () => {
+      const user = userEvent.setup();
+      renderWithLanguageMediaStorage(<MediaCactus channel={hugo} />);
+
+      await user.click(
+        screen.getByRole('button', { name: 'Edit https://youtu.be/1' }),
+      );
+
+      expect(
+        screen.getByRole('form', { name: 'Edit https://youtu.be/1' }),
+      ).toBeInTheDocument();
+      expect(screen.getByRole('spinbutton', { name: 'Looked up' })).toHaveValue(
+        7,
+      );
+    });
+  });
 });

@@ -3,6 +3,7 @@ import userEvent from '@testing-library/user-event';
 import { ModalContext } from '../../../shared/controls/Modal';
 import { renderWithLanguageMediaStorage } from './languageMediaStorageTestUtils';
 import { hugo } from './testMedia';
+import { Video } from './types';
 import { WatchedVideoForm } from './WatchedVideoForm';
 
 const renderForm = () => {
@@ -99,6 +100,141 @@ describe('WatchedVideoForm', () => {
           ['hugo', 'videos'],
           expect.objectContaining({ understood: undefined }),
         );
+      });
+    });
+  });
+
+  describe('editing a video', () => {
+    const watchedVideo: Video = {
+      id: 'v3',
+      url: 'https://youtu.be/3',
+      lengthInSeconds: 1470,
+      upToInSeconds: 1470,
+      status: 'done',
+      lookups: 2,
+      aiQuestions: 1,
+      understood: 70,
+    };
+    const VIDEO_PATH = ['hugo', 'videos', 'v3'];
+
+    const renderEditForm = (video: Video) => {
+      const closeModal = jest.fn();
+      return {
+        user: userEvent.setup(),
+        closeModal,
+        ...renderWithLanguageMediaStorage(
+          <ModalContext.Provider value={{ closeModal }}>
+            <WatchedVideoForm channel={hugo} video={video} />
+          </ModalContext.Provider>,
+        ),
+      };
+    };
+
+    it('shows what was recorded for it', () => {
+      renderEditForm(watchedVideo);
+
+      expect(screen.getByRole('textbox', { name: 'URL' })).toHaveValue(
+        'https://youtu.be/3',
+      );
+      expect(screen.getByRole('spinbutton', { name: 'Looked up' })).toHaveValue(
+        2,
+      );
+      expect(screen.getByRole('spinbutton', { name: 'Asked AI' })).toHaveValue(
+        1,
+      );
+      expect(screen.getByRole('textbox', { name: 'Minutes' })).toHaveValue(
+        '24',
+      );
+      expect(screen.getByRole('slider', { name: 'Understood' })).toHaveValue(
+        '70',
+      );
+    });
+
+    describe('clicking save', () => {
+      const addLookupAndSave = async (video: Video) => {
+        const view = renderEditForm(video);
+        await view.user.click(
+          screen.getByRole('button', { name: 'Add a lookup' }),
+        );
+        await view.user.click(screen.getByRole('button', { name: 'Save' }));
+        return view;
+      };
+
+      describe('for a video watched to the end', () => {
+        it('saves the changes, still watched to the end', async () => {
+          const { storageContext } = await addLookupAndSave(watchedVideo);
+
+          expect(storageContext.updateItem).toHaveBeenCalledWith(VIDEO_PATH, {
+            url: 'https://youtu.be/3',
+            lengthInSeconds: 1470,
+            upToInSeconds: 1470,
+            lookups: 3,
+            aiQuestions: 1,
+            understood: 70,
+          });
+        });
+      });
+
+      describe('for a video watched part way', () => {
+        it('saves the changes, keeping how far I got', async () => {
+          const { storageContext } = await addLookupAndSave({
+            ...watchedVideo,
+            status: 'in-progress',
+            upToInSeconds: 600,
+          });
+
+          expect(storageContext.updateItem).toHaveBeenCalledWith(VIDEO_PATH, {
+            url: 'https://youtu.be/3',
+            lengthInSeconds: 1470,
+            lookups: 3,
+            aiQuestions: 1,
+            understood: 70,
+          });
+        });
+      });
+
+      it('closes the form', async () => {
+        const { closeModal } = await addLookupAndSave(watchedVideo);
+
+        expect(closeModal).toHaveBeenCalled();
+      });
+    });
+
+    describe('clicking delete', () => {
+      describe('once', () => {
+        it('asks me to confirm', async () => {
+          const { user, storageContext } = renderEditForm(watchedVideo);
+
+          await user.click(screen.getByRole('button', { name: 'Delete' }));
+
+          expect(
+            screen.getByRole('button', { name: 'Confirm delete' }),
+          ).toBeInTheDocument();
+          expect(storageContext.deleteItem).not.toHaveBeenCalled();
+        });
+      });
+
+      describe('twice', () => {
+        const deleteVideo = async () => {
+          const view = renderEditForm(watchedVideo);
+          await view.user.click(screen.getByRole('button', { name: 'Delete' }));
+          await view.user.click(
+            screen.getByRole('button', { name: 'Confirm delete' }),
+          );
+          return view;
+        };
+
+        it('deletes the video', async () => {
+          const { storageContext } = await deleteVideo();
+
+          expect(storageContext.deleteItem).toHaveBeenCalledWith(VIDEO_PATH);
+        });
+
+        it('closes the form', async () => {
+          const { closeModal } = await deleteVideo();
+
+          expect(closeModal).toHaveBeenCalled();
+        });
       });
     });
   });
