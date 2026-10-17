@@ -365,3 +365,33 @@
     stroke-width: 0.7;
   }
 }
+
+.raceme-stalk {
+  fill: none;
+  stroke: hsl(95 30% 34%);
+  stroke-width: 0.8;
+}
+
+.wisteria-bud {
+  fill: hsl(268 30% 80%);
+  stroke: hsl(268 22% 52%);
+  stroke-width: 0.4;
+}
+
+.wisteria-floret {
+  .standard {
+    fill: hsl(268 58% 72%);
+    stroke: hsl(270 40% 42%);
+    stroke-width: 0.45;
+  }
+
+  .keel {
+    fill: hsl(272 55% 56%);
+    stroke: hsl(272 40% 36%);
+    stroke-width: 0.4;
+  }
+
+  .blotch {
+    fill: hsl(52 85% 70%);
+  }
+}

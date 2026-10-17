@@ -395,6 +395,29 @@ const languageMedia: Record<string, LanguageMedia> = {
             lookups: 3,
             aiQuestions: 1,
             understood: 70,
+            updates: {
+              'lupin-s1e1-1': {
+                at: '2026-09-01T20:00:00Z',
+                timestampInSeconds: 900,
+                lookups: 1,
+                aiQuestions: 0,
+                understood: 65,
+              },
+              'lupin-s1e1-2': {
+                at: '2026-09-02T20:00:00Z',
+                timestampInSeconds: 1900,
+                lookups: 1,
+                aiQuestions: 1,
+                understood: 70,
+              },
+              'lupin-s1e1-3': {
+                at: '2026-09-03T20:00:00Z',
+                timestampInSeconds: 2826,
+                lookups: 1,
+                aiQuestions: 0,
+                understood: 75,
+              },
+            },
           },
           e2: {
             id: 'e2',
@@ -403,6 +426,22 @@ const languageMedia: Record<string, LanguageMedia> = {
             lookups: 1,
             aiQuestions: 0,
             understood: 60,
+            updates: {
+              'lupin-s1e2-1': {
+                at: '2026-09-04T20:00:00Z',
+                timestampInSeconds: 1300,
+                lookups: 0,
+                aiQuestions: 0,
+                understood: 55,
+              },
+              'lupin-s1e2-2': {
+                at: '2026-09-05T20:00:00Z',
+                timestampInSeconds: 2700,
+                lookups: 1,
+                aiQuestions: 0,
+                understood: 60,
+              },
+            },
           },
           e3: {
             id: 'e3',
@@ -411,6 +450,29 @@ const languageMedia: Record<string, LanguageMedia> = {
             lookups: 2,
             aiQuestions: 0,
             understood: 75,
+            updates: {
+              'lupin-s1e3-1': {
+                at: '2026-09-06T20:00:00Z',
+                timestampInSeconds: 1000,
+                lookups: 1,
+                aiQuestions: 0,
+                understood: 70,
+              },
+              'lupin-s1e3-2': {
+                at: '2026-09-07T20:00:00Z',
+                timestampInSeconds: 2000,
+                lookups: 0,
+                aiQuestions: 0,
+                understood: 75,
+              },
+              'lupin-s1e3-3': {
+                at: '2026-09-08T20:00:00Z',
+                timestampInSeconds: 2880,
+                lookups: 1,
+                aiQuestions: 0,
+                understood: 80,
+              },
+            },
           },
           e4: {
             id: 'e4',
@@ -419,6 +481,22 @@ const languageMedia: Record<string, LanguageMedia> = {
             lookups: 0,
             aiQuestions: 1,
             understood: 55,
+            updates: {
+              'lupin-s1e4-1': {
+                at: '2026-09-09T20:00:00Z',
+                timestampInSeconds: 1500,
+                lookups: 0,
+                aiQuestions: 1,
+                understood: 50,
+              },
+              'lupin-s1e4-2': {
+                at: '2026-09-10T20:00:00Z',
+                timestampInSeconds: 2640,
+                lookups: 0,
+                aiQuestions: 0,
+                understood: 55,
+              },
+            },
           },
           e5: {
             id: 'e5',
@@ -427,6 +505,36 @@ const languageMedia: Record<string, LanguageMedia> = {
             lookups: 2,
             aiQuestions: 0,
             understood: 85,
+            updates: {
+              'lupin-s1e5-1': {
+                at: '2026-09-11T20:00:00Z',
+                timestampInSeconds: 800,
+                lookups: 1,
+                aiQuestions: 0,
+                understood: 80,
+              },
+              'lupin-s1e5-2': {
+                at: '2026-09-12T20:00:00Z',
+                timestampInSeconds: 1700,
+                lookups: 0,
+                aiQuestions: 0,
+                understood: 85,
+              },
+              'lupin-s1e5-3': {
+                at: '2026-09-13T20:00:00Z',
+                timestampInSeconds: 2400,
+                lookups: 1,
+                aiQuestions: 0,
+                understood: 85,
+              },
+              'lupin-s1e5-4': {
+                at: '2026-09-14T20:00:00Z',
+                timestampInSeconds: 2950,
+                lookups: 0,
+                aiQuestions: 0,
+                understood: 90,
+              },
+            },
           },
         },
       },
@@ -441,6 +549,22 @@ const languageMedia: Record<string, LanguageMedia> = {
             lookups: 2,
             aiQuestions: 1,
             understood: 65,
+            updates: {
+              'lupin-s2e1-1': {
+                at: '2026-09-15T20:00:00Z',
+                timestampInSeconds: 1400,
+                lookups: 1,
+                aiQuestions: 1,
+                understood: 60,
+              },
+              'lupin-s2e1-2': {
+                at: '2026-09-16T20:00:00Z',
+                timestampInSeconds: 2900,
+                lookups: 1,
+                aiQuestions: 0,
+                understood: 65,
+              },
+            },
           },
           e2: {
             id: 'e2',
@@ -449,6 +573,29 @@ const languageMedia: Record<string, LanguageMedia> = {
             lookups: 3,
             aiQuestions: 0,
             understood: 45,
+            updates: {
+              'lupin-s2e2-1': {
+                at: '2026-09-17T20:00:00Z',
+                timestampInSeconds: 900,
+                lookups: 1,
+                aiQuestions: 0,
+                understood: 40,
+              },
+              'lupin-s2e2-2': {
+                at: '2026-09-18T20:00:00Z',
+                timestampInSeconds: 1800,
+                lookups: 1,
+                aiQuestions: 0,
+                understood: 45,
+              },
+              'lupin-s2e2-3': {
+                at: '2026-09-19T20:00:00Z',
+                timestampInSeconds: 2750,
+                lookups: 1,
+                aiQuestions: 0,
+                understood: 50,
+              },
+            },
           },
           e3: {
             id: 'e3',
@@ -456,6 +603,15 @@ const languageMedia: Record<string, LanguageMedia> = {
             lengthInSeconds: 2800,
             lookups: 1,
             aiQuestions: 0,
+            updates: {
+              'lupin-s2e3-1': {
+                at: '2026-09-20T20:00:00Z',
+                timestampInSeconds: 1100,
+                lookups: 1,
+                aiQuestions: 0,
+                understood: 55,
+              },
+            },
           },
           e4: {
             id: 'e4',
