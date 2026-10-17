@@ -2,13 +2,21 @@
   display: flex;
   flex-wrap: wrap;
   align-items: flex-end;
-  gap: 24px;
+  row-gap: 24px;
   list-style-type: none;
   padding: 0;
+  padding-block-start: 96px;
+  background:
+    url('./garden-sky.svg') top right / 360px 120px no-repeat,
+    linear-gradient(hsl(199 72% 70%), hsl(160 50% 92%));
 
   > li {
+    flex-grow: 1;
     display: flex;
     align-items: flex-end;
+    padding-inline: 12px;
+    padding-block-end: 12px;
+    background: url('./garden-ground.svg') bottom / 100% 80px no-repeat;
   }
 }
 
