@@ -53,7 +53,12 @@ export function ProgressIndicator({
             className="done"
             aria-label="Undo"
             onClick={onRemove}
-            style={{ width: `${(filledSegments / frequency) * 100}%` }}
+            style={
+              {
+                width: `${(filledSegments / frequency) * 100}%`,
+                '--lit-segments': filledSegments,
+              } as CSSProperties
+            }
           />
         )}
         {filledSegments < frequency && (

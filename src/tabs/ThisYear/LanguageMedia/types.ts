@@ -22,6 +22,11 @@ export type Comprehension = {
   understood?: number;
 };
 
+export type EpisodeUpdate = Comprehension & {
+  at: string;
+  timestampInSeconds?: number;
+};
+
 export type Episode = Timestamps &
   Comprehension & {
     id: string;
@@ -29,6 +34,7 @@ export type Episode = Timestamps &
     name?: string;
     lengthInSeconds?: number;
     status?: Status;
+    updates?: Record<string, EpisodeUpdate>;
   };
 
 export type Season = Timestamps & {
