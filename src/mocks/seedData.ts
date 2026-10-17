@@ -1,4 +1,4 @@
-import { getToday } from '../shared/dates';
+import { getDateDaysAgo, getToday } from '../shared/dates';
 import {
   LABELS_KEY,
   StoredLabel,
@@ -14,6 +14,9 @@ import {
   ProjectDetails,
   ProjectSubtask,
   PROJECTS_KEY,
+  TODO_KEY,
+  WEEKLY_KEY,
+  WeeklyTask,
 } from '../shared/types';
 import { StoredYarn } from '../tabs/ThisYear/YarnTracking/types';
 import { LanguageMedia } from '../tabs/ThisYear/LanguageMedia/types';
@@ -875,6 +878,33 @@ const adventures: Record<string, Adventure> = {
   },
 };
 
+function createWeeklyTask(
+  id: string,
+  description: string,
+  category: string,
+  frequency: number,
+  daysAgoCompleted: number[],
+  position: number,
+): WeeklyTask {
+  return {
+    id,
+    description,
+    category,
+    frequency,
+    completed: daysAgoCompleted.map((days) => getDateDaysAgo(days)),
+    parentId: WEEKLY_KEY,
+    position,
+  };
+}
+
+const weeklyTasks = indexById([
+  createWeeklyTask('weekly-run', 'Go for a run', '🏃‍♀️', 3, [0, 2], 0),
+  createWeeklyTask('weekly-piano', 'Practise piano', '🎹', 5, [1, 3, 4], 1),
+  createWeeklyTask('weekly-plants', 'Water the plants', '🪴', 2, [4], 2),
+  createWeeklyTask('weekly-call', 'Call home', '📞', 1, [1], 3),
+  createWeeklyTask('weekly-yoga', 'Yoga', '🧘', 4, [], 4),
+]);
+
 export const seedData = {
   [WORK_KEY]: {
     [backlog.id]: { ...backlog, items: { [backlogTask.id]: backlogTask } },
@@ -929,6 +959,7 @@ export const seedData = {
       },
     },
   },
+  [TODO_KEY]: { 週: weeklyTasks },
   [PROJECTS_KEY]: projects,
   [HEALTH_PATH]: { exercises, classes, pistolBox: pistolBoxLevel, deadHang },
   yarn: { '2026': yarn },
