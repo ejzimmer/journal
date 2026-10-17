@@ -1,4 +1,4 @@
-import { readEpisodeProgress } from './episodeProgress';
+import { calculateEpisodeProgress } from './calculateEpisodeProgress';
 import { Episode, Season, TvSeries } from './types';
 
 const season: Season = { id: 's2', number: 2 };
@@ -20,11 +20,11 @@ const createSeries = (upTo?: TvSeries['upTo']): TvSeries => ({
   upTo,
 });
 
-describe('readEpisodeProgress', () => {
+describe('calculateEpisodeProgress', () => {
   describe('when the episode is marked done', () => {
     it('is fully watched', () => {
       expect(
-        readEpisodeProgress(
+        calculateEpisodeProgress(
           createSeries(),
           season,
           createEpisode({ status: 'done' }),
@@ -36,7 +36,7 @@ describe('readEpisodeProgress', () => {
   describe('when the series is up to a later season', () => {
     it('is fully watched', () => {
       expect(
-        readEpisodeProgress(
+        calculateEpisodeProgress(
           createSeries({ season: 3, episode: 1, timestampInSeconds: 0 }),
           season,
           createEpisode(),
@@ -48,7 +48,7 @@ describe('readEpisodeProgress', () => {
   describe('when the series is up to a later episode in the same season', () => {
     it('is fully watched', () => {
       expect(
-        readEpisodeProgress(
+        calculateEpisodeProgress(
           createSeries({ season: 2, episode: 4, timestampInSeconds: 0 }),
           season,
           createEpisode(),
@@ -60,7 +60,7 @@ describe('readEpisodeProgress', () => {
   describe('when the series is up to this episode', () => {
     it('is watched up to the timestamp', () => {
       expect(
-        readEpisodeProgress(
+        calculateEpisodeProgress(
           createSeries({ season: 2, episode: 3, timestampInSeconds: 500 }),
           season,
           createEpisode(),
@@ -72,7 +72,7 @@ describe('readEpisodeProgress', () => {
   describe('when the series is up to an earlier episode', () => {
     it('is not watched', () => {
       expect(
-        readEpisodeProgress(
+        calculateEpisodeProgress(
           createSeries({ season: 2, episode: 1, timestampInSeconds: 900 }),
           season,
           createEpisode(),
@@ -84,7 +84,7 @@ describe('readEpisodeProgress', () => {
   describe('when the episode is marked not started', () => {
     it('is not watched, even when the series is up to a later season', () => {
       expect(
-        readEpisodeProgress(
+        calculateEpisodeProgress(
           createSeries({ season: 3, episode: 1, timestampInSeconds: 0 }),
           season,
           createEpisode({ status: 'not-started' }),
