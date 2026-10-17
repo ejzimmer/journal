@@ -13,11 +13,6 @@ const minutesAndSecondsFormat = new Intl.DurationFormat(undefined, {
   hoursDisplay: 'auto',
 });
 
-const hoursMinutesAndSecondsFormat = new Intl.DurationFormat(undefined, {
-  style: 'digital',
-  hours: '2-digit',
-});
-
 const toDuration = (totalSeconds: number) =>
   Temporal.Duration.from({ seconds: totalSeconds }).round({
     largestUnit: 'hours',
@@ -25,9 +20,6 @@ const toDuration = (totalSeconds: number) =>
 
 export const formatMinutesAndSeconds = (totalSeconds: number) =>
   minutesAndSecondsFormat.format(toDuration(totalSeconds));
-
-export const formatHoursMinutesAndSeconds = (totalSeconds: number) =>
-  hoursMinutesAndSecondsFormat.format(toDuration(totalSeconds));
 
 export const STATUS_NAMES: Record<Status, string> = {
   'not-started': 'Not started',

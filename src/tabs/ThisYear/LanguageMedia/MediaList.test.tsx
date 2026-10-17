@@ -2,7 +2,7 @@ import { screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MediaList } from './MediaList';
 import { renderWithLanguageMediaStorage } from './languageMediaStorageTestUtils';
-import { hugo, lupin, yotsuba } from './testMedia';
+import { lupin } from './testMedia';
 import { LanguageMedia } from './types';
 
 const renderList = (media: LanguageMedia[]) => ({
@@ -53,40 +53,6 @@ describe('MediaList', () => {
     });
   });
 
-  describe('a manga or book series', () => {
-    it('is left for the garden', () => {
-      renderList([yotsuba]);
-
-      expect(screen.getByRole('list')).toBeEmptyDOMElement();
-    });
-  });
-
-  describe('a youtube channel', () => {
-    describe('a video', () => {
-      it('shows its url, length, where I am up to and comprehension', () => {
-        renderList([hugo]);
-
-        expect(
-          screen.getByText(
-            'https://youtu.be/1 (01:02:05), up to 00:20:00: 7 looked up, 1 asked AI',
-          ),
-        ).toBeInTheDocument();
-      });
-
-      describe('without a length', () => {
-        it('shows its status', () => {
-          renderList([hugo]);
-
-          expect(
-            screen.getByText(
-              'https://youtu.be/2, Done: 0 looked up, 0 asked AI',
-            ),
-          ).toBeInTheDocument();
-        });
-      });
-    });
-  });
-
   describe('deleting', () => {
     describe('a series', () => {
       it('deletes it from storage', async () => {
@@ -128,22 +94,6 @@ describe('MediaList', () => {
           's1',
           'episodes',
           'e1',
-        ]);
-      });
-    });
-
-    describe('a video', () => {
-      it('deletes it from storage', async () => {
-        const { user, storageContext } = renderList([hugo]);
-
-        await user.click(
-          screen.getByRole('button', { name: 'Delete https://youtu.be/1' }),
-        );
-
-        expect(storageContext.deleteItem).toHaveBeenCalledWith([
-          'hugo',
-          'videos',
-          'v1',
         ]);
       });
     });
@@ -193,26 +143,6 @@ describe('MediaList', () => {
         );
       });
     });
-
-    describe('a video', () => {
-      it('adds it to the channel', async () => {
-        const { user, storageContext } = renderList([hugo]);
-
-        await user.type(
-          within(screen.getByRole('form', { name: 'Add video' })).getByRole(
-            'textbox',
-            { name: 'URL' },
-          ),
-          'https://youtu.be/3',
-        );
-        await user.click(screen.getByRole('button', { name: 'Add video' }));
-
-        expect(storageContext.addItem).toHaveBeenCalledWith(
-          ['hugo', 'videos'],
-          { url: 'https://youtu.be/3', lookups: 0, aiQuestions: 0 },
-        );
-      });
-    });
   });
 
   describe('editing', () => {
@@ -253,27 +183,6 @@ describe('MediaList', () => {
         expect(storageContext.updateItem).toHaveBeenCalledWith(
           ['lupin', 'seasons', 's1', 'episodes', 'e1'],
           { number: 1, name: 'Pilote', lengthInSeconds: 2826 },
-        );
-      });
-    });
-
-    describe('a video', () => {
-      it('saves the changed details to the video', async () => {
-        const { user, storageContext } = renderList([hugo]);
-        await user.click(screen.getByLabelText('Edit https://youtu.be/2'));
-        const form = screen.getByRole('form', {
-          name: 'Edit https://youtu.be/2',
-        });
-
-        await user.type(
-          within(form).getByRole('textbox', { name: 'Minutes' }),
-          '10',
-        );
-        await user.click(within(form).getByRole('button', { name: 'Save' }));
-
-        expect(storageContext.updateItem).toHaveBeenCalledWith(
-          ['hugo', 'videos', 'v2'],
-          { url: 'https://youtu.be/2', lengthInSeconds: 600 },
         );
       });
     });
@@ -328,43 +237,6 @@ describe('MediaList', () => {
         );
       });
     });
-
-    describe('of a video with a length', () => {
-      it('saves where I am up to in it', async () => {
-        const { user, storageContext } = renderList([hugo]);
-
-        await saveIn(
-          user,
-          "Update where I'm up to in https://youtu.be/1",
-          'textbox',
-          'Minutes',
-          '30',
-        );
-
-        expect(storageContext.updateItem).toHaveBeenCalledWith(
-          ['hugo', 'videos', 'v1'],
-          { upToInSeconds: 1800 },
-        );
-      });
-    });
-
-    describe('of a video without a length', () => {
-      it('saves its status', async () => {
-        const { user, storageContext } = renderList([hugo]);
-
-        await user.selectOptions(
-          screen.getByRole('combobox', {
-            name: 'Status of https://youtu.be/2',
-          }),
-          'In progress',
-        );
-
-        expect(storageContext.updateItem).toHaveBeenCalledWith(
-          ['hugo', 'videos', 'v2'],
-          { status: 'in-progress' },
-        );
-      });
-    });
   });
 
   describe('counting', () => {
@@ -379,23 +251,6 @@ describe('MediaList', () => {
         expect(storageContext.updateItem).toHaveBeenCalledWith(
           ['lupin', 'seasons', 's1', 'episodes', 'e1'],
           { lookups: 13 },
-        );
-      });
-    });
-
-    describe('an AI question about a video', () => {
-      it("saves only the video's new AI question count", async () => {
-        const { user, storageContext } = renderList([hugo]);
-
-        await user.click(
-          screen.getByRole('button', {
-            name: 'Add an AI question to https://youtu.be/1',
-          }),
-        );
-
-        expect(storageContext.updateItem).toHaveBeenCalledWith(
-          ['hugo', 'videos', 'v1'],
-          { aiQuestions: 2 },
         );
       });
     });

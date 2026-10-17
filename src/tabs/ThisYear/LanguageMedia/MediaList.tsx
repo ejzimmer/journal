@@ -1,15 +1,16 @@
 import { useLanguageMediaStorage } from './LanguageMediaStorageContext';
 import { MediaDetails } from './MediaDetails';
-import { isPrintSeries, LanguageMedia } from './types';
+import { LanguageMedia, TvSeries } from './types';
 
-const isUnplanted = (media: LanguageMedia) => !isPrintSeries(media);
+const isTvSeries = (media: LanguageMedia): media is TvSeries =>
+  media.type === 'tv';
 
 export function MediaList() {
   const { media } = useLanguageMediaStorage();
 
   return (
     <ul>
-      {media.filter(isUnplanted).map((item) => (
+      {media.filter(isTvSeries).map((item) => (
         <li key={item.id}>
           <MediaDetails media={item} path={[item.id]} />
         </li>
