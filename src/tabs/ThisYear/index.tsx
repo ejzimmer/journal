@@ -1,6 +1,6 @@
 import { Adventures } from './Adventures';
 import { LanguageMediaGoals } from './LanguageMedia';
-import { OtherGoals } from './OtherGoals';
+import { Bikes } from './Bikes';
 import { getThisYear } from '../../shared/dates';
 import {
   STATION_RUNNING_YEAR,
@@ -19,7 +19,7 @@ export function ThisYear() {
         <Adventures />
       </div>
       {getThisYear() === STATION_RUNNING_YEAR && <StationRunning />}
-      <OtherGoals />
+      <Bikes />
       <WaniKani />
       <LanguageMediaGoals />
     </div>
