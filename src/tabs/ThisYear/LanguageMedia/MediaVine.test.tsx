@@ -47,6 +47,21 @@ describe('MediaVine', () => {
     });
   });
 
+  describe('clicking a season’s branch', () => {
+    it('opens a form to add an episode to that season', async () => {
+      const user = userEvent.setup();
+      renderWithLanguageMediaStorage(<MediaVine series={lupin} />);
+
+      await user.click(
+        screen.getByRole('button', { name: 'Add an episode to season 1' }),
+      );
+
+      expect(
+        screen.getByRole('form', { name: 'Add an episode to Lupin season 1' }),
+      ).toBeInTheDocument();
+    });
+  });
+
   describe('an episode with updates', () => {
     const episode = lupin.seasons!.s1.episodes!.e1;
     const series: TvSeries = {
