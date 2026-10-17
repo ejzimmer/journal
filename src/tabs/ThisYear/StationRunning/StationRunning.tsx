@@ -1,7 +1,8 @@
 import { useStorageContext } from '../../../shared/FirebaseContext';
 import './StationRunning.css';
 
-const KEY = '2026/stations';
+export const STATION_RUNNING_YEAR = 2026;
+const KEY = `${STATION_RUNNING_YEAR}/stations`;
 
 type StationDetails = {
   id: string;
