@@ -1,4 +1,6 @@
+import { useState } from 'react';
 import { getThisYear } from '../../../shared/dates';
+import { YearTabs } from '../../../shared/controls/YearTabs';
 import { BikeGrid } from './BikeGrid';
 import { useBikeYears } from './useBikeYears';
 import { useBikesMigration } from './useBikesMigration';
@@ -7,15 +9,24 @@ import './Bikes.css';
 
 export function Bikes() {
   useBikesMigration();
-  const { getBikes, setBikeDone } = useBikeYears();
-  const thisYear = getThisYear();
+  const { years, getBikes, setBikeDone } = useBikeYears();
+  const [selectedYear, selectYear] = useState(getThisYear);
 
   return (
     <section className="bikes" aria-label="Bikes">
-      <BikeGrid
-        bikes={getBikes(thisYear)}
-        onBikeChange={(index, isDone) => setBikeDone(thisYear, index, isDone)}
-      />
+      <YearTabs
+        years={years}
+        selectedYear={selectedYear}
+        onSelectYear={selectYear}
+        className="bike-year-tabs"
+      >
+        <BikeGrid
+          bikes={getBikes(selectedYear)}
+          onBikeChange={(index, isDone) =>
+            setBikeDone(selectedYear, index, isDone)
+          }
+        />
+      </YearTabs>
     </section>
   );
 }

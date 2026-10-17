@@ -65,3 +65,7 @@ ul.bike-grid {
     opacity: 0.8;
   }
 }
+
+.bike-year-tabs {
+  width: fit-content;
+}
