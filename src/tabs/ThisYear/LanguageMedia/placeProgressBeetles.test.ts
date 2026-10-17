@@ -94,24 +94,45 @@ describe('placeProgressBeetles', () => {
   });
 
   describe('when an update has no room for its beetles', () => {
-    const trunk = createTrunk();
-    const beetles = placeProgressBeetles(
-      createSeries([createUpdate(1, 26, 2, 1), createUpdate(2, 60, 1)]),
-      [trunk, createLimb(1)],
-    );
-    const onTrunk = beetles.filter(({ edges }) => edges === trunk.edges);
+    describe('and the rest of the branch has room', () => {
+      const trunk = createTrunk();
+      const beetles = placeProgressBeetles(
+        createSeries([createUpdate(1, 100, 1), createUpdate(2, 102, 2, 1)]),
+        [trunk, createLimb(1)],
+      );
 
-    it('sends them to climb the trunk', () => {
-      expect(onTrunk.map(({ colour }) => colour)).toEqual([
-        'red',
-        'yellow',
-        'red',
-      ]);
+      it('moves them onto the nearest stretch of the branch with room', () => {
+        expect(beetles.map(({ key, at }) => [key, at])).toEqual([
+          ['u1-beetle-0', expect.closeTo(0.12 + 0.38 / 8)],
+          ['u2-beetle-0', expect.closeTo(0.12 + (3 * 0.38) / 8)],
+          ['u2-beetle-1', expect.closeTo(0.12 + (5 * 0.38) / 8)],
+          ['u2-beetle-2', expect.closeTo(0.12 + (7 * 0.38) / 8)],
+        ]);
+      });
     });
 
-    it('keeps the beetles of updates that fit on the branch', () => {
-      const [onBranch] = beetles.filter(({ edges }) => edges !== trunk.edges);
-      expect(onBranch.key).toBe('u2-beetle-0');
+    describe('and the whole branch is full', () => {
+      const trunk = createTrunk();
+      const beetles = placeProgressBeetles(
+        createSeries([createUpdate(1, 26, 2, 1), createUpdate(2, 60, 1)]),
+        [trunk, createLimb(0.32)],
+      );
+
+      it('fills the branch', () => {
+        expect(
+          beetles
+            .filter(({ edges }) => edges !== trunk.edges)
+            .map(({ key }) => key),
+        ).toEqual(['u1-beetle-0', 'u1-beetle-1', 'u2-beetle-0']);
+      });
+
+      it('sends the rest to climb the trunk', () => {
+        expect(
+          beetles
+            .filter(({ edges }) => edges === trunk.edges)
+            .map(({ key }) => key),
+        ).toEqual(['u1-beetle-2']);
+      });
     });
   });
 });
