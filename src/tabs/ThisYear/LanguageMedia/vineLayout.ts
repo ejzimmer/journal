@@ -1,6 +1,6 @@
 import { createZigzagPoints } from './createZigzagPoints';
 import { getItemsByNumber } from './lists';
-import { Point, traceTaperedEdges } from './treeGeometry';
+import { Point, traceEdges, traceTaperedEdges } from './treeGeometry';
 import { TreeLayout, TreeShape } from './treeLayout';
 import { Episode, Season, TvSeries } from './types';
 
@@ -29,13 +29,20 @@ export const EPISODE_SPACING = 24;
 const BRANCH_LEAD = 14;
 const SHOOT_LENGTH = 24;
 const DEFAULT_EPISODE_SECONDS = 45 * 60;
-const TRUNK_WIDTHS: [number, number] = [3.5, 0.2];
+const TRUNK_WIDTH = 3.5;
 const BRANCH_WIDTHS: [number, number] = [3.4, 2.6];
 const SHOOT_WIDTHS: [number, number] = [2, 1.4];
 const TRUNK_SAMPLE_SPACING = 2;
 const BRANCH_SAMPLE_SPACING = 6;
 const MARGIN = 2;
 const LEAF_ROOM = 10;
+
+const measureTrunkWidth =
+  (taperFrom: number, end: number) =>
+  (_at: number, { x }: Point) =>
+    x <= taperFrom
+      ? TRUNK_WIDTH
+      : (TRUNK_WIDTH * Math.max(0, end - x)) / (end - taperFrom);
 
 const measureLength = (points: Point[]) =>
   points
@@ -206,10 +213,14 @@ export function createVineLayout(series: TvSeries): VineLayout {
     0,
   );
 
-  const trunk = createTrunk(beamMid, beamBottom, posts[bays] + POST_INSET);
+  const trunkEnd = posts[bays] + POST_INSET;
+  const trunk = createTrunk(beamMid, beamBottom, trunkEnd);
   const trunkShape: TreeShape = {
     key: 'trunk',
-    edges: traceTaperedEdges(trunk.points, TRUNK_WIDTHS),
+    edges: traceEdges(
+      trunk.points,
+      measureTrunkWidth(posts[bays - 1] + POST_INSET, trunkEnd),
+    ),
     growth: { type: 'trunk', levelEnds: Array(episodeCount).fill(1) },
   };
 

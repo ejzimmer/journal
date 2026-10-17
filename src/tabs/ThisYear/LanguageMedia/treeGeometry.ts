@@ -122,9 +122,9 @@ const roundPoint = ({ x, y }: Point) => ({
   y: roundCoordinate(y),
 });
 
-export function traceTaperedEdges(
+export function traceEdges(
   points: Point[],
-  [startWidth, endWidth]: [number, number],
+  measureWidth: (at: number, point: Point) => number,
 ): EdgeSample[] {
   const samples = sampleSmoothPath(points);
   const distances = samples.reduce<number[]>(
@@ -143,7 +143,7 @@ export function traceTaperedEdges(
   const total = distances[distances.length - 1];
   return samples.map(({ point, tangent }, index) => {
     const at = distances[index] / total;
-    const halfWidth = (startWidth + (endWidth - startWidth) * at) / 2;
+    const halfWidth = measureWidth(at, point) / 2;
     return {
       at,
       left: roundPoint({
@@ -157,3 +157,8 @@ export function traceTaperedEdges(
     };
   });
 }
+
+export const traceTaperedEdges = (
+  points: Point[],
+  [startWidth, endWidth]: [number, number],
+) => traceEdges(points, (at) => startWidth + (endWidth - startWidth) * at);
