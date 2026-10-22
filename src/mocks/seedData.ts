@@ -1,4 +1,4 @@
-import { getDateDaysAgo, getToday } from '../shared/dates';
+import { getDateDaysAgo, getDateDaysAhead, getToday } from '../shared/dates';
 import {
   LABELS_KEY,
   StoredLabel,
@@ -6,6 +6,8 @@ import {
   WORK_KEY,
 } from '../tabs/Work/types';
 import {
+  CALENDAR_KEY,
+  CalendarTask,
   Category,
   Exercise,
   DeadHangSession,
@@ -905,6 +907,46 @@ const weeklyTasks = indexById([
   createWeeklyTask('weekly-yoga', 'Yoga', '🧘', 4, [], 4),
 ]);
 
+function createCalendarTask(
+  id: string,
+  description: string,
+  category: string,
+  daysUntilDue: number,
+  status: CalendarTask['status'],
+  position: number,
+): CalendarTask {
+  return {
+    id,
+    description,
+    category,
+    dueDate: getDateDaysAhead(daysUntilDue),
+    status,
+    statusUpdateDate: getToday(),
+    parentId: CALENDAR_KEY,
+    position,
+  };
+}
+
+const calendarTasks = indexById([
+  createCalendarTask('calendar-tax', 'Lodge tax return', '🧾', 0, 'ready', 0),
+  createCalendarTask(
+    'calendar-dentist',
+    'Book the dentist',
+    '🦷',
+    3,
+    'paused',
+    1,
+  ),
+  createCalendarTask(
+    'calendar-rego',
+    'Renew car rego',
+    '🚗',
+    12,
+    'finished',
+    2,
+  ),
+]);
+
 export const seedData = {
   [WORK_KEY]: {
     [backlog.id]: { ...backlog, items: { [backlogTask.id]: backlogTask } },
@@ -959,7 +1001,7 @@ export const seedData = {
       },
     },
   },
-  [TODO_KEY]: { 週: weeklyTasks },
+  [TODO_KEY]: { 週: weeklyTasks, 暦: calendarTasks },
   [PROJECTS_KEY]: projects,
   [HEALTH_PATH]: { exercises, classes, pistolBox: pistolBoxLevel, deadHang },
   yarn: { '2026': yarn },

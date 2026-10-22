@@ -49,10 +49,10 @@
   }
 
   .switch {
+    --led-colour: orange;
     font-size: 0.6em;
     border-radius: 100px;
     color: var(--body-colour-mid);
-    overflow: hidden;
 
     label {
       padding-block: 4px;
@@ -79,11 +79,6 @@
 
     svg {
       overflow: visible;
-    }
-
-    .indicator {
-      --light: orange;
-      --dark: red;
     }
   }
 }

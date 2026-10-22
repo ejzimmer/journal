@@ -89,6 +89,7 @@ export function DueDateTask({ task }: { task: CalendarTask }) {
         onChange={onStatusChange}
         name={task.id}
         Option={StatusOption}
+        className="led-switch"
       />
     </>
   );
