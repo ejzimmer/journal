@@ -32,6 +32,12 @@ const createSeries = (seasons: Season[]): TvSeries => ({
 const findShape = (series: TvSeries, key: string) =>
   createVineLayout(series).shapes.find((shape) => shape.key === key)!;
 
+const findCentres = (series: TvSeries, key: string) =>
+  findShape(series, key).edges.map(({ left, right }) => ({
+    x: (left.x + right.x) / 2,
+    y: (left.y + right.y) / 2,
+  }));
+
 const measureSpan = (series: TvSeries, key: string) => {
   const points = findShape(series, key).edges.flatMap(({ left, right }) => [
     left,
@@ -108,10 +114,38 @@ describe('createVineLayout', () => {
       });
     });
 
+    it('starts on the trunk', () => {
+      const [base] = findCentres(series, 's1-branch');
+      const distances = findCentres(series, 'trunk').map(({ x, y }) =>
+        Math.hypot(x - base.x, y - base.y),
+      );
+
+      expect(Math.min(...distances)).toBeLessThan(0.5);
+    });
+
     describe('when none of its episodes has started', () => {
       it('has not grown', () => {
         expect(measureShapeGrowth(growth, [0, 0, 0, 0, 0])).toBe(0);
       });
+    });
+  });
+
+  describe('a season with no episodes yet', () => {
+    const series = createSeries([
+      createSeason(1, createEpisodes(2)),
+      createSeason(2, []),
+    ]);
+    const { growth } = findShape(series, 's2-branch');
+
+    it('has a short branch in its bay', () => {
+      const { left, right } = measureSpan(series, 's2-branch');
+
+      expect(left).toBeGreaterThan(BAY_WIDTH);
+      expect(right).toBeLessThan(BAY_WIDTH * 2);
+    });
+
+    it('has not grown, even once every episode before it is watched', () => {
+      expect(measureShapeGrowth(growth, [1, 1])).toBe(0);
     });
   });
 
