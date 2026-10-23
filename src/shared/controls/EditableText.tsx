@@ -7,7 +7,6 @@ import {
   useState,
 } from 'react';
 import { useFormToggle } from './useFormToggle';
-import { useAutoHeight } from './useAutoHeight';
 import './EditableText.css';
 
 export type EditableTextHandle = {
@@ -42,7 +41,6 @@ export function EditableText({
   } = useFormToggle<HTMLDivElement>();
   const [text, setText] = useState(value);
   const inputRef = useRef<HTMLTextAreaElement>(null);
-  useAutoHeight(inputRef);
 
   useImperativeHandle(ref, () => ({
     focus: () => displayRef.current?.focus(),
@@ -68,7 +66,6 @@ export function EditableText({
     <textarea
       className={`editable-text ${className}`}
       ref={inputRef}
-      rows={1}
       onKeyDown={(event) => {
         if (event.key === 'Enter') {
           handleSubmit();

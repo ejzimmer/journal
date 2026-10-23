@@ -8,6 +8,7 @@ textarea.editable-text {
   height: unset;
   min-width: 0;
   field-sizing: content;
+  overflow: hidden;
   padding-block: 4px;
   padding-inline: 2px;
   border-radius: 4px;
@@ -15,11 +16,6 @@ textarea.editable-text {
 
   &:focus-visible {
     outline: none;
-  }
-
-  @supports not (field-sizing: content) {
-    flex: 1;
-    width: 100%;
   }
 }
 
