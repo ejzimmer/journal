@@ -110,10 +110,22 @@
   background: hsl(46 100% 68%);
 }
 
-.moon {
+.moon-body {
   --body-size: 44px;
+}
 
-  box-shadow: inset -12px 4px 0 0 hsl(52 60% 88%);
+.moon {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.moon-dark {
+  fill: hsl(230 25% 45% / 0.35);
+}
+
+.moon-lit {
+  fill: hsl(52 60% 88%);
 }
 
 .sky-cloud {

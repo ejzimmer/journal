@@ -1,8 +1,19 @@
+import SunCalc from 'suncalc';
+import { GardenLocation } from './gardenLocation';
+
 export type TimeOfDay = 'night' | 'dawn' | 'day' | 'dusk';
 
-export function findTimeOfDay(hour: number): TimeOfDay {
-  if (hour < 5 || hour >= 20) return 'night';
-  if (hour < 7) return 'dawn';
-  if (hour < 18) return 'day';
+export function findTimeOfDay(
+  now: number,
+  { latitude, longitude }: GardenLocation,
+): TimeOfDay {
+  const { dawn, goldenHourEnd, goldenHour, dusk } = SunCalc.getTimes(
+    new Date(now),
+    latitude,
+    longitude,
+  );
+  if (now < dawn.getTime() || now >= dusk.getTime()) return 'night';
+  if (now < goldenHourEnd.getTime()) return 'dawn';
+  if (now < goldenHour.getTime()) return 'day';
   return 'dusk';
 }
