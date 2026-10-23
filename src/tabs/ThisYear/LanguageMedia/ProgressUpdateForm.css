@@ -14,8 +14,9 @@ dialog.progress-update-modal {
 
   .close-button {
     position: absolute;
-    inset-block-start: 52px;
-    inset-inline-end: -26px;
+    inset-block-start: 12px;
+    inset-inline-start: calc(70% + 4px);
+    z-index: 1;
     margin: 0;
   }
 }
