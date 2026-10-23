@@ -3,7 +3,7 @@ import { LevelBadge } from './LevelBadge';
 import { LevelRings } from './LevelRings';
 import { predictDaysToFinish } from './levelPrediction';
 import { calculateLevelProgress } from './levelProgress';
-import { WaniKaniData } from './types';
+import { MAX_LEVEL, WaniKaniData } from './types';
 
 export function CurrentLevel({ data }: { data: WaniKaniData }) {
   const { radical, kanji } = calculateLevelProgress(
@@ -25,7 +25,12 @@ export function CurrentLevel({ data }: { data: WaniKaniData }) {
       </div>
       {daysToFinish !== undefined && (
         <div className="days-remaining">
-          <StopWatchIcon width="16px" role="img" aria-label="Days remaining" />
+          <StopWatchIcon
+            width="16px"
+            role="img"
+            aria-label="Days remaining"
+            handAngleDegrees={((data.level - 1) / MAX_LEVEL) * 360}
+          />
           {daysToFinish}
         </div>
       )}
