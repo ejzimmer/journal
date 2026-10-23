@@ -51,12 +51,8 @@ export function Popover<T extends OptionType>({
       data-placement={placement}
       style={
         {
-          // The popover UA stylesheet defaults inset to 0, so the side we're
-          // not positioning from must be set to "auto" explicitly -
-          // otherwise that leftover 0 wins over the side we do set, once
-          // height ends up over-constrained between the two.
-          top: top !== undefined ? `${top}px` : 'auto',
-          bottom: bottom !== undefined ? `${bottom}px` : 'auto',
+          top: top !== undefined ? `${top}px` : undefined,
+          bottom: bottom !== undefined ? `${bottom}px` : undefined,
           left: `${left}px`,
           minWidth: `${minWidth}px`,
           maxHeight: `${maxHeight}px`,

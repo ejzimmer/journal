@@ -11,12 +11,15 @@ export const CategoriesContext = createContext<string[] | undefined>(undefined);
 
 export function Todo() {
   const { useValue } = useStorageContext();
-  const { value: lists } = useValue<Record<string, TodoTask[]>>(TODO_KEY);
+  const { value: lists } =
+    useValue<Record<string, Record<string, TodoTask> | string>>(TODO_KEY);
   if (!lists) {
     return null;
   }
 
-  const tasks = Object.values(lists).flatMap((list) => Object.values(list));
+  const tasks = Object.values(lists)
+    .filter((list) => typeof list === 'object')
+    .flatMap((list) => Object.values(list));
   const categories = new Set(tasks.map((task) => task.category));
 
   return (
