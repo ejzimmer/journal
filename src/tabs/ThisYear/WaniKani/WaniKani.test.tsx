@@ -270,6 +270,25 @@ describe('WaniKani', () => {
         expect(screen.getByRole('tooltip')).toHaveTextContent('1 apprentice');
       });
 
+      it('shows the expected finish date on the days remaining', async () => {
+        jest.useFakeTimers({
+          now: new Date('2026-09-15T00:00:00Z'),
+          doNotFake: ['setTimeout', 'setInterval', 'queueMicrotask'],
+        });
+        const user = userEvent.setup({
+          advanceTimers: jest.advanceTimersByTime,
+        });
+        renderWaniKani('my-key');
+        const level = await screen.findByRole('region', { name: 'Level 2' });
+        const stopwatch = within(level).getByRole('img', {
+          name: 'Days remaining',
+        });
+
+        await user.hover(stopwatch);
+
+        expect(screen.getByRole('tooltip')).toHaveTextContent('23 Apr 2028');
+      });
+
       it('hides the tooltip when the pointer moves away', async () => {
         const user = userEvent.setup();
         renderWaniKani('my-key');

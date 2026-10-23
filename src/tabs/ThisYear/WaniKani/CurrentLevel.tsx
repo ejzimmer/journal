@@ -1,7 +1,8 @@
 import { StopWatchIcon } from '../../../shared/icons/StopWatch';
+import { useTooltip } from '../../../shared/useTooltip';
 import { LevelBadge } from './LevelBadge';
 import { LevelRings } from './LevelRings';
-import { predictDaysToFinish } from './levelPrediction';
+import { formatFinishDate, predictDaysToFinish } from './levelPrediction';
 import { calculateLevelProgress } from './levelProgress';
 import { MAX_LEVEL, WaniKaniData } from './types';
 
@@ -13,6 +14,7 @@ export function CurrentLevel({ data }: { data: WaniKaniData }) {
   );
 
   const daysToFinish = predictDaysToFinish(data.levelProgressions, data.level);
+  const { createTooltipHandlers, tooltip } = useTooltip();
 
   return (
     <section className="current-level" aria-label={`Level ${data.level}`}>
@@ -24,7 +26,10 @@ export function CurrentLevel({ data }: { data: WaniKaniData }) {
         </div>
       </div>
       {daysToFinish !== undefined && (
-        <div className="days-remaining">
+        <div
+          className="days-remaining"
+          {...createTooltipHandlers(formatFinishDate(daysToFinish))}
+        >
           <StopWatchIcon
             width="16px"
             role="img"
@@ -34,6 +39,7 @@ export function CurrentLevel({ data }: { data: WaniKaniData }) {
           {daysToFinish}
         </div>
       )}
+      {tooltip}
     </section>
   );
 }

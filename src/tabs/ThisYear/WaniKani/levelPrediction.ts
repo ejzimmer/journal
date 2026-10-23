@@ -71,3 +71,13 @@ export function predictDaysToFinish(
     daysLeftOnCurrentLevel + averageDuration * (MAX_LEVEL - currentLevel),
   );
 }
+
+export function formatFinishDate(daysToFinish: number) {
+  return Temporal.Now.plainDateISO()
+    .add({ days: daysToFinish })
+    .toLocaleString('en-AU', {
+      day: 'numeric',
+      month: 'short',
+      year: 'numeric',
+    });
+}
