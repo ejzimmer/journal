@@ -3,8 +3,11 @@ import {
   createTrunkPerch,
   interleaveColours,
   placeOnPerch,
+  Perch,
   shareColours,
 } from './beetlePerches';
+import { findUpSide } from './findBeetlePose';
+import { findBranchPoint } from './findBranchPoint';
 import { LadyBeetleColour } from './LadyBeetle';
 import { EdgeSample } from './treeGeometry';
 import { GrownShape } from './treeGrowth';
@@ -22,6 +25,15 @@ export type BeetleSpot = {
 };
 
 type BeetleHost = Comprehension & { id: string };
+
+function findSideOfTrunk({ shape, range }: Perch, branch: GrownShape) {
+  const point = findBranchPoint(shape.edges, range[1]);
+  const angle = (point.angle * Math.PI) / 180;
+  const { left, right } = branch.edges[0];
+  const dx = (left.x + right.x) / 2 - point.x;
+  const dy = (left.y + right.y) / 2 - point.y;
+  return -Math.sin(angle) * dx + Math.cos(angle) * dy > 0 ? 1 : -1;
+}
 
 export function placeBeetles(
   hosts: BeetleHost[],
@@ -51,7 +63,12 @@ export function placeBeetles(
         })),
       ),
       ...trunkPerches.flatMap((perch) =>
-        placeOnPerch(perch, `${host.id}-trunk-beetle`),
+        placeOnPerch(perch, `${host.id}-trunk-beetle`).map((spot) => ({
+          ...spot,
+          isUnderside:
+            findSideOfTrunk(perch, hostShapes[0]) !==
+            findUpSide(perch.shape.edges),
+        })),
       ),
     ];
   });
