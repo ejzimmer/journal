@@ -22,10 +22,14 @@ function createList(
   };
 }
 
-function createTask(parentListId: string, labelIds?: string[]): WorkTask {
+function createTask(
+  parentListId: string,
+  labelIds?: string[],
+  description = 'Fix contrast',
+): WorkTask {
   return {
     id: 'task-1',
-    description: 'Fix contrast',
+    description,
     status: 'not_started',
     parentId: `work/${parentListId}/items`,
     lastStatusUpdate: '2026-01-01',
@@ -40,7 +44,8 @@ const a11y = createList('list-a11y', 'a11y', 2, { labelIds: ['label-a11y'] });
 const design = createList('list-design', 'Design', 3, {
   labelIds: ['label-design'],
 });
-const allLists = [backlog, today, a11y, design];
+const featureGates = createList('list-feature-gates', 'Feature gates', 4);
+const allLists = [backlog, today, a11y, design, featureGates];
 
 function showMenuItems(currentList: WorkTask, task: WorkTask) {
   const storageContext = createWorkStorageContext();
@@ -56,15 +61,19 @@ function showMenuItems(currentList: WorkTask, task: WorkTask) {
   return storageContext;
 }
 
-function expectDividerAfter(name: string) {
+function expectDividerAfter(...names: string[]) {
   const separator = screen.getByRole('separator');
-  const [first, second] = screen.getAllByRole('menuitem');
+  const items = screen.getAllByRole('menuitem');
+  const lastPriority = items[names.length - 1];
+  const firstRemaining = items[names.length];
 
-  expect(first).toHaveAccessibleName(name);
-  expect(first.compareDocumentPosition(separator)).toBe(
+  expect(items.slice(0, names.length).map((item) => item.textContent)).toEqual(
+    names,
+  );
+  expect(lastPriority.compareDocumentPosition(separator)).toBe(
     Node.DOCUMENT_POSITION_FOLLOWING,
   );
-  expect(separator.compareDocumentPosition(second)).toBe(
+  expect(separator.compareDocumentPosition(firstRemaining)).toBe(
     Node.DOCUMENT_POSITION_FOLLOWING,
   );
 }
@@ -95,7 +104,12 @@ describe('MoveToOtherLists', () => {
     it('puts Today at the top, followed by the other lists in order', () => {
       showMenuItems(backlog, createTask(backlog.id, ['label-design']));
 
-      expect(getMenuItemNames()).toEqual(['Today', 'a11y', 'Design']);
+      expect(getMenuItemNames()).toEqual([
+        'Today',
+        'a11y',
+        'Design',
+        'Feature gates',
+      ]);
     });
 
     it('separates Today from the other lists with a divider', () => {
@@ -110,7 +124,12 @@ describe('MoveToOtherLists', () => {
       it('puts that list at the top, followed by the other lists in order', () => {
         showMenuItems(today, createTask(today.id, ['label-design']));
 
-        expect(getMenuItemNames()).toEqual(['Design', 'Backlog', 'a11y']);
+        expect(getMenuItemNames()).toEqual([
+          'Design',
+          'Backlog',
+          'a11y',
+          'Feature gates',
+        ]);
       });
 
       it('separates that list from the other lists with a divider', () => {
@@ -124,7 +143,55 @@ describe('MoveToOtherLists', () => {
       it('lists the other lists in order', () => {
         showMenuItems(today, createTask(today.id, ['label-other']));
 
-        expect(getMenuItemNames()).toEqual(['Backlog', 'a11y', 'Design']);
+        expect(getMenuItemNames()).toEqual([
+          'Backlog',
+          'a11y',
+          'Design',
+          'Feature gates',
+        ]);
+      });
+    });
+
+    describe('and is named like a feature gate', () => {
+      const featureGateTask = (labelIds?: string[]) =>
+        createTask(today.id, labelIds, 'new-checkout-2');
+
+      it('puts Feature gates at the top, followed by the other lists in order', () => {
+        showMenuItems(today, featureGateTask());
+
+        expect(getMenuItemNames()).toEqual([
+          'Feature gates',
+          'Backlog',
+          'a11y',
+          'Design',
+        ]);
+      });
+
+      it('separates Feature gates from the other lists with a divider', () => {
+        showMenuItems(today, featureGateTask());
+
+        expectDividerAfter('Feature gates');
+      });
+
+      describe('and has a label belonging to another list', () => {
+        it('puts that list then Feature gates above the divider', () => {
+          showMenuItems(today, featureGateTask(['label-design']));
+
+          expectDividerAfter('Design', 'Feature gates');
+        });
+      });
+    });
+
+    describe('and has a name with capitals or spaces', () => {
+      it('lists Feature gates in order with the other lists', () => {
+        showMenuItems(today, createTask(today.id, [], 'New checkout'));
+
+        expect(getMenuItemNames()).toEqual([
+          'Backlog',
+          'a11y',
+          'Design',
+          'Feature gates',
+        ]);
       });
     });
   });
