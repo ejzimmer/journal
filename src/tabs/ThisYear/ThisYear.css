@@ -7,3 +7,9 @@
     flex: 1 1 480px;
   }
 }
+
+.yarn-and-bikes {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}

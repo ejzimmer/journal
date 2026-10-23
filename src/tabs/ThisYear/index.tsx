@@ -15,11 +15,13 @@ export function ThisYear() {
   return (
     <div style={{ display: 'grid', gap: '36px', maxWidth: '100vw' }}>
       <div className="yarn-and-adventures">
-        <YarnTracking />
+        <div className="yarn-and-bikes">
+          <YarnTracking />
+          <Bikes />
+        </div>
         <Adventures />
       </div>
       {getThisYear() === STATION_RUNNING_YEAR && <StationRunning />}
-      <Bikes />
       <WaniKani />
       <LanguageMediaGoals />
     </div>
