@@ -1,7 +1,7 @@
 import { Fragment } from 'react';
 import { FieldProps } from './fields';
 
-const DURATION_UNITS = {
+export const DURATION_UNITS = {
   'mm:ss': ['minutes', 'seconds'],
   'hh:mm:ss': ['hours', 'minutes', 'seconds'],
 } as const;

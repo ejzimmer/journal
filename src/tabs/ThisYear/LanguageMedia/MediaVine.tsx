@@ -1,6 +1,7 @@
 import { CSSProperties, useMemo, useState } from 'react';
 import { ModalDialog } from '../../../shared/controls/ModalDialog';
 import { TelevisionIcon } from '../../../shared/icons/Television';
+import { AddEpisodeForm } from './AddEpisodeForm';
 import { CloudFrame } from './CloudFrame';
 import { EpisodeUpdateForm } from './EpisodeUpdateForm';
 import { EpisodeUpdateStretches } from './EpisodeUpdateStretches';
@@ -12,6 +13,7 @@ import { placeEpisodeBeetles } from './placeEpisodeBeetles';
 import { Pergola } from './Pergola';
 import { placeVineLeaves } from './placeVineLeaves';
 import { PostFronts } from './PostFronts';
+import { SeasonBranches } from './SeasonBranches';
 import { Signpost } from './Signpost';
 import { TreeBeetles } from './TreeBeetles';
 import { TreeFill } from './TreeFill';
@@ -41,6 +43,7 @@ export function MediaVine({ series }: { series: TvSeries }) {
     episode: Episode;
     updateKey: string;
   }>();
+  const [seasonForNewEpisode, setSeasonForNewEpisode] = useState<Season>();
   const [highlightedUpdateKey, setHighlightedUpdateKey] = useState<string>();
   const currentEpisode = findCurrentEpisode(series);
 
@@ -75,6 +78,11 @@ export function MediaVine({ series }: { series: TvSeries }) {
           highlightedKey={highlightedUpdateKey}
         />
         <TreeBeetles spots={placeEpisodeBeetles(series, grownShapes)} />
+        <SeasonBranches
+          series={series}
+          layout={layout}
+          onSelect={setSeasonForNewEpisode}
+        />
         <EpisodeUpdateStretches
           series={series}
           shapes={grownShapes}
@@ -122,6 +130,17 @@ export function MediaVine({ series }: { series: TvSeries }) {
               episode={editedUpdate.episode}
               updateKey={editedUpdate.updateKey}
             />
+          </CloudFrame>
+        )}
+      </ModalDialog>
+      <ModalDialog
+        isOpen={!!seasonForNewEpisode}
+        className="progress-update-modal episode-update-modal"
+        onCancel={() => setSeasonForNewEpisode(undefined)}
+      >
+        {seasonForNewEpisode && (
+          <CloudFrame>
+            <AddEpisodeForm series={series} season={seasonForNewEpisode} />
           </CloudFrame>
         )}
       </ModalDialog>
