@@ -125,16 +125,6 @@ ol.work-lists > li {
       opacity: 0.4;
     }
 
-    .worktree-marker {
-      position: absolute;
-      right: calc(100% + 4px);
-      top: 50%;
-      translate: 0 -50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
     .drag-handle {
       opacity: 0;
     }
@@ -156,11 +146,6 @@ ol.work-lists > li {
 
     &:has(form.subtasks.editing:focus-within) .add-metadata {
       opacity: 0.4;
-    }
-
-    /* the drag handle clutters the fanned-out menu, so hide it while one is open */
-    &:has(.worktree-menu:popover-open) .drag-handle {
-      opacity: 0;
     }
 
     .task-content {
@@ -265,10 +250,6 @@ ol.work-lists > li {
       display: inline-flex;
       align-items: center;
       justify-content: center;
-    }
-
-    .worktree-marker button.add-metadata {
-      margin-inline-start: 0;
     }
 
     button.add-metadata[aria-label='Add label'] {

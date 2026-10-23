@@ -13,9 +13,6 @@ import {
   EditableText,
   EditableTextHandle,
 } from '../../../shared/controls/EditableText';
-import { WorktreeStamp } from './WorktreeStamp';
-import { AddWorktree } from './AddWorktree';
-import { Worktree } from '../types';
 import { Subtasks } from './Subtasks';
 import { getToday } from '../../../shared/dates';
 
@@ -36,15 +33,6 @@ export function Task({
 }: TaskProps) {
   const { updateTask, deleteTask, addLabel, removeLabel } = useWorkStorage();
   const hasLabels = (task.labelIds?.length ?? 0) > 0;
-
-  const onChangeWorktree = (newWorktree?: Worktree) => {
-    if (newWorktree) {
-      updateTask(listId, { ...task, worktree: newWorktree });
-    } else {
-      const { worktree, ...taskWithoutWorktree } = task;
-      updateTask(listId, taskWithoutWorktree);
-    }
-  };
 
   const onChangeDueDate = (date?: string) => {
     const { dueDate, ...taskWithoutDueDate } = task;
@@ -68,13 +56,6 @@ export function Task({
       className={`task status-${task.status}`}
       dragHandle={dragHandle}
     >
-      <div className="worktree-marker">
-        {task.worktree ? (
-          <WorktreeStamp worktree={task.worktree} onChange={onChangeWorktree} />
-        ) : (
-          <AddWorktree onChange={onChangeWorktree} />
-        )}
-      </div>
       <div className="checkbox-container">
         <Checkbox
           isChecked={task.status === 'done'}

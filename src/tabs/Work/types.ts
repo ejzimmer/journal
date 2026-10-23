@@ -24,9 +24,6 @@ export const LABELS_KEY = 'work-labels';
 export const STATUS_KEYS = ['not_started', 'done'] as const;
 export type StatusKey = (typeof STATUS_KEYS)[number];
 
-export const WORKTREES = ['wt1', 'wt2', 'wt3', 'wt4'] as const;
-export type Worktree = (typeof WORKTREES)[number];
-
 export type Subtask = {
   id: string;
   description: string;
@@ -43,7 +40,6 @@ export type WorkTask = {
   dueDate?: string;
   position: number;
   labelIds?: string[];
-  worktree?: Worktree;
   subtasks?: Record<string, Subtask>;
 };
 
