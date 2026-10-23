@@ -21,9 +21,19 @@ export function OrderConflictChoice({
     <li className="conflict" aria-label={caption}>
       <div className="conflict-caption">{caption}</div>
       <ol className="conflict-order">
-        {describeOrderConflict(conflicts).map(({ id, name, moved }) => (
-          <li key={id}>{moved ? <ins>{name}</ins> : name}</li>
-        ))}
+        {describeOrderConflict(conflicts).map(
+          ({ id, kind, position, name }) => (
+            <li key={`${kind}-${id}`} value={position + 1}>
+              {kind === 'added' ? (
+                <ins>{name}</ins>
+              ) : kind === 'removed' ? (
+                <del>{name}</del>
+              ) : (
+                name
+              )}
+            </li>
+          ),
+        )}
       </ol>
       <ChangeChoices
         discardLabel="Discard"

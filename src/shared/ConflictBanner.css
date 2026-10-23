@@ -31,12 +31,12 @@
 .conflict-diff {
   margin-block: 4px;
   overflow-wrap: anywhere;
+}
 
-  del {
-    color: var(--danger-colour-dark);
-    background: color-mix(in srgb, var(--error-colour) 12%, white);
-    border-radius: 2px;
-  }
+.conflict del {
+  color: var(--danger-colour-dark);
+  background: color-mix(in srgb, var(--error-colour) 12%, white);
+  border-radius: 2px;
 }
 
 .conflict ins {

@@ -1,23 +1,24 @@
 import { Conflict } from '../localFirst/editTimes';
 import { findPositionItemId } from '../localFirst/listOrder';
 import { findName } from './describeConflict';
-import { findMovedIds } from './findMovedIds';
+import { diffOrders, OrderChange } from './diffOrders';
 
-type ListItem = { id: string; name: string; moved: boolean };
+type ListChange = OrderChange & { name: string };
 
 type Positions = Map<string, number>;
 
-export function describeOrderConflict(conflicts: Conflict[]): ListItem[] {
+export function describeOrderConflict(conflicts: Conflict[]): ListChange[] {
   const listItems = findListItems(conflicts);
-  const myPositions = readPositions(listItems, conflicts, 'mine');
-  const theirPositions = readPositions(listItems, conflicts, 'theirs');
-  const myOrder = sortIdsByPosition(myPositions);
-  const movedIds = findMovedIds(myOrder, sortIdsByPosition(theirPositions));
+  const myOrder = sortIdsByPosition(
+    readPositions(listItems, conflicts, 'mine'),
+  );
+  const theirOrder = sortIdsByPosition(
+    readPositions(listItems, conflicts, 'theirs'),
+  );
 
-  return myOrder.map((id) => ({
-    id,
-    name: findName(listItems[id]) ?? '',
-    moved: movedIds.has(id),
+  return diffOrders(myOrder, theirOrder).map((change) => ({
+    ...change,
+    name: findName(listItems[change.id]) ?? '',
   }));
 }
 

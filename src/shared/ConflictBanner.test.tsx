@@ -186,33 +186,48 @@ describe('ConflictBanner', () => {
         );
       });
 
-      it('shows the list in your order', async () => {
-        renderBanner(journalMovedToTop);
+      describe('when opened', () => {
+        async function openReorder() {
+          renderBanner(journalMovedToTop);
+          await openConflicts();
+          return screen.getByRole('listitem', { name: 'Order · Today' });
+        }
 
-        await openConflicts();
+        it('shows the moved item at both its new and old positions', async () => {
+          const conflict = await openReorder();
 
-        const list = within(
-          screen.getByRole('listitem', { name: 'Order · Today' }),
-        ).getByRole('list');
-        expect(
-          within(list)
-            .getAllByRole('listitem')
-            .map((item) => item.textContent),
-        ).toEqual(['Write journal', 'Wash up', 'Stretch', 'Laundry']);
-      });
-
-      it('highlights only the item you moved', async () => {
-        renderBanner(journalMovedToTop);
-
-        await openConflicts();
-
-        const conflict = screen.getByRole('listitem', {
-          name: 'Order · Today',
+          expect(
+            within(within(conflict).getByRole('list'))
+              .getAllByRole('listitem')
+              .map((item) => item.textContent),
+          ).toEqual([
+            'Write journal',
+            'Wash up',
+            'Stretch',
+            'Write journal',
+            'Laundry',
+          ]);
         });
-        expect(within(conflict).getAllByRole('insertion')).toHaveLength(1);
-        expect(within(conflict).getByRole('insertion')).toHaveTextContent(
-          'Write journal',
-        );
+
+        it('highlights its new position as added', async () => {
+          const conflict = await openReorder();
+
+          expect(within(conflict).getByRole('insertion')).toHaveTextContent(
+            'Write journal',
+          );
+        });
+
+        it('strikes out its old position, numbered as it was', async () => {
+          const conflict = await openReorder();
+
+          const oldPosition = within(
+            within(conflict).getByRole('list'),
+          ).getAllByRole('listitem')[3];
+          expect(within(oldPosition).getByRole('deletion')).toHaveTextContent(
+            'Write journal',
+          );
+          expect(oldPosition).toHaveAttribute('value', '3');
+        });
       });
 
       it('keeps every position in your order when asked', async () => {
