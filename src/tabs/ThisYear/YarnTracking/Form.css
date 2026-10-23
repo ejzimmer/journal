@@ -9,6 +9,8 @@
     gap: 6px;
     font-size: 20px;
     padding: 6px 12px;
+    background: transparent;
+    border: 2px solid var(--border-colour);
   }
 
   .yarn-tracking-fields {
@@ -135,7 +137,6 @@
     }
   }
 
-  .yarn-tracking-trigger,
   .footer button,
   select,
   input,
