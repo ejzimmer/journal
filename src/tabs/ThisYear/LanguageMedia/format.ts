@@ -43,15 +43,3 @@ const toFullWidthDigits = (number: number) =>
   String(number).replace(/\d/g, (digit) =>
     String.fromCharCode(digit.charCodeAt(0) + FULL_WIDTH_OFFSET),
   );
-
-const dayAndMonthFormat = new Intl.DateTimeFormat('en-AU', {
-  day: 'numeric',
-  month: 'short',
-});
-
-export const formatDayAndMonth = (instant: string) =>
-  dayAndMonthFormat.format(
-    Temporal.Instant.from(instant)
-      .toZonedDateTimeISO(Temporal.Now.timeZoneId())
-      .toPlainDate(),
-  );

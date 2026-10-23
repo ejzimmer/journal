@@ -1,11 +1,11 @@
-import { formatDayAndMonth } from './format';
+import { formatDayAndMonth, getLocalDate } from '../../../shared/dates';
 
 type UpdateDateProps = { instant: string };
 
 export function UpdateDate({ instant }: UpdateDateProps) {
   return (
     <time className="progress-update-date" dateTime={instant}>
-      {formatDayAndMonth(instant)}
+      {formatDayAndMonth(getLocalDate(instant))}
     </time>
   );
 }

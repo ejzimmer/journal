@@ -366,7 +366,7 @@ describe('ProgressUpdateForm', () => {
     it('shows the date of that update', () => {
       renderEditForm(yotsuba, 'u1');
 
-      expect(screen.getByText('20 Sept')).toBeInTheDocument();
+      expect(screen.getByText('20 Sep')).toBeInTheDocument();
     });
 
     it('shows what that update recorded', () => {

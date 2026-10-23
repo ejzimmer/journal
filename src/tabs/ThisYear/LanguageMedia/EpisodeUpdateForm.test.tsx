@@ -314,7 +314,7 @@ describe('EpisodeUpdateForm', () => {
     it('shows the date of that update', () => {
       renderEditForm('u2');
 
-      expect(screen.getByText('2 Oct')).toBeInTheDocument();
+      expect(screen.getByText('02 Oct')).toBeInTheDocument();
     });
 
     it('shows what that update recorded', () => {
