@@ -59,6 +59,7 @@ export type ExerciseUpdate = {
 export type Exercise = {
   id: string;
   name: string;
+  position?: number;
   updates?: Record<string, ExerciseUpdate>;
 };
 

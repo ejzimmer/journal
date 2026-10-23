@@ -39,6 +39,14 @@ export const HealthStorageContext = createContext<
   HealthStorageContextType | undefined
 >(undefined);
 
+const sortExercisesByPosition = (exercises: Record<string, Exercise> = {}) =>
+  Object.values(exercises).toSorted(
+    (a, b) => (a.position ?? -1) - (b.position ?? -1),
+  );
+
+const getNextExercisePosition = (exercises: Exercise[]) =>
+  Math.max(-1, ...exercises.map(({ position }) => position ?? -1)) + 1;
+
 export function HealthStorageProvider({ children }: { children: ReactNode }) {
   const { addItem, updateItem, deleteItem, setValue, useValue } =
     useStorageContext();
@@ -55,7 +63,7 @@ export function HealthStorageProvider({ children }: { children: ReactNode }) {
     useValue<DeadHangSession>(DEAD_HANG_PATH);
 
   const exercises = useMemo(
-    () => Object.values(storedExercises ?? {}),
+    () => sortExercisesByPosition(storedExercises),
     [storedExercises],
   );
   const classes = useMemo(
@@ -78,7 +86,10 @@ export function HealthStorageProvider({ children }: { children: ReactNode }) {
 
     updateDay: (day) => updateItem<DayData>(DAILY_PATH, day),
     addExercise: (name) => {
-      addItem<Exercise>(EXERCISES_PATH, { name });
+      addItem<Exercise>(EXERCISES_PATH, {
+        name,
+        position: getNextExercisePosition(exercises),
+      });
     },
     recordExercise: (exerciseId, update) => {
       addItem<ExerciseUpdate>(

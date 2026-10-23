@@ -69,14 +69,44 @@ describe('HealthStorageContext', () => {
       expect(health.exercises).toEqual([squat]);
     });
 
-    it('adds an exercise by name', () => {
-      const addItem = jest.fn();
-      const health = createHealthStorage({ addItem });
+    describe('with exercises stored out of order', () => {
+      const plank = { id: 'a-plank', name: 'Plank', position: 1 };
+      const deadlift = { id: 'b-deadlift', name: 'Deadlift', position: 0 };
+      const lunge = { id: 'c-lunge', name: 'Lunge' };
+      const useValue = storeValues({
+        [EXERCISES_PATH]: { plank, deadlift, lunge },
+      });
 
-      health.addExercise('Goblet squat');
+      it('lists unpositioned exercises first, then the rest by position', () => {
+        const health = createHealthStorage({ useValue });
 
-      expect(addItem).toHaveBeenCalledWith(EXERCISES_PATH, {
-        name: 'Goblet squat',
+        expect(health.exercises).toEqual([lunge, deadlift, plank]);
+      });
+
+      it('adds a new exercise after the last position', () => {
+        const addItem = jest.fn();
+        const health = createHealthStorage({ addItem, useValue });
+
+        health.addExercise('Goblet squat');
+
+        expect(addItem).toHaveBeenCalledWith(EXERCISES_PATH, {
+          name: 'Goblet squat',
+          position: 2,
+        });
+      });
+    });
+
+    describe('with no exercises stored', () => {
+      it('adds an exercise at the first position', () => {
+        const addItem = jest.fn();
+        const health = createHealthStorage({ addItem });
+
+        health.addExercise('Goblet squat');
+
+        expect(addItem).toHaveBeenCalledWith(EXERCISES_PATH, {
+          name: 'Goblet squat',
+          position: 0,
+        });
       });
     });
 
