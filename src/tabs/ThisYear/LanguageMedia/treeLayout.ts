@@ -9,6 +9,7 @@ import {
   traceTaperedEdges,
   walkPath,
 } from './treeGeometry';
+import { findNextNumber } from './newItems';
 import { TREE_SPECIES, TreeSpecies } from './treeSpecies';
 import { PrintSeries, Volume } from './types';
 
@@ -27,6 +28,10 @@ export type TreeLayout = {
   shapes: TreeShape[];
   bounds: { x: number; y: number; width: number; height: number };
 };
+
+export type PrintTreeLayout = TreeLayout & { nextVolumeShapes: TreeShape[] };
+
+type BranchVolume = Pick<Volume, 'id' | 'pages' | 'branchSeed'>;
 
 const CROWN_HEIGHT = 26;
 const DEFAULT_PAGES = 200;
@@ -70,9 +75,11 @@ function createTrunk(
   return { key: 'trunk', edges, growth: { type: 'trunk', levelEnds } };
 }
 
+export const createBranchSeed = (number: number) => `volume-${number}`;
+
 function growBranch(
   species: TreeSpecies,
-  volume: Volume,
+  volume: BranchVolume,
   level: number,
   attach: Point,
   side: number,
@@ -143,15 +150,21 @@ export function measureBounds(shapes: TreeShape[]) {
   };
 }
 
-export function createTreeLayout(series: PrintSeries): TreeLayout {
+export function createTreeLayout(series: PrintSeries): PrintTreeLayout {
   const species = TREE_SPECIES[series.type];
-  const volumes = getItemsByNumber(series.volumes);
+  const nextBranchSeed = createBranchSeed(findNextNumber(series.volumes));
+  const volumes: BranchVolume[] = [
+    ...getItemsByNumber(series.volumes),
+    { id: nextBranchSeed, branchSeed: nextBranchSeed },
+  ];
   const random = createSeededRandom(series.id);
   let side = random() < 0.5 ? -1 : 1;
   const trunkPoints = createTrunkPoints(species, volumes.length, random);
 
-  const branches = volumes.flatMap((volume, level) => {
-    const branchRandom = createSeededRandom(`${series.id}-${volume.id}`);
+  const branches = volumes.map((volume, level) => {
+    const branchRandom = createSeededRandom(
+      `${series.id}-${volume.branchSeed ?? volume.id}`,
+    );
     side = level === 0 || branchRandom() < 0.8 ? -side : side;
     return growBranch(
       species,
@@ -165,8 +178,12 @@ export function createTreeLayout(series: PrintSeries): TreeLayout {
 
   const shapes = [
     createTrunk(species, trunkPoints, volumes.length),
-    ...branches,
+    ...branches.flat(),
   ];
 
-  return { shapes, bounds: measureBounds(shapes) };
+  return {
+    shapes,
+    nextVolumeShapes: branches[branches.length - 1],
+    bounds: measureBounds(shapes),
+  };
 }

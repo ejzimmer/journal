@@ -51,7 +51,7 @@ describe('AddVolumeForm', () => {
 
         expect(storageContext.addItem).toHaveBeenCalledWith(
           ['yotsuba', 'volumes'],
-          { number: 3, pages: 200 },
+          { number: 3, branchSeed: 'volume-3', pages: 200 },
         );
       });
 
@@ -98,6 +98,7 @@ describe('AddVolumeForm', () => {
           ['miserables', 'volumes'],
           {
             number: 1,
+            branchSeed: 'volume-1',
             name: 'Fantine',
             pages: 480,
           },

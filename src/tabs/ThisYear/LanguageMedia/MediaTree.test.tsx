@@ -94,6 +94,43 @@ describe('MediaTree', () => {
     });
   });
 
+  describe('clicking the next volume branch', () => {
+    it('opens a form to add the next volume', async () => {
+      const user = userEvent.setup();
+      renderWithLanguageMediaStorage(
+        <MediaTree series={createSeries('book')} />,
+      );
+
+      await user.click(
+        screen.getByRole('button', { name: 'Add a volume to Series' }),
+      );
+
+      expect(
+        screen.getByRole('form', { name: 'Add volume' }),
+      ).toHaveTextContent('Series 3');
+    });
+
+    describe('when the form is submitted', () => {
+      it('closes the form', async () => {
+        const user = userEvent.setup();
+        renderWithLanguageMediaStorage(
+          <MediaTree series={createSeries('manga')} />,
+        );
+        await user.click(
+          screen.getByRole('button', { name: 'Add a volume to Series' }),
+        );
+        const form = screen.getByRole('form', { name: 'Add volume' });
+
+        await user.type(
+          screen.getByRole('spinbutton', { name: 'Pages' }),
+          '200{Enter}',
+        );
+
+        expect(form).not.toBeInTheDocument();
+      });
+    });
+  });
+
   describe('a volume with an update', () => {
     const series = createSeries('book');
     const seriesWithUpdate: PrintSeries = {

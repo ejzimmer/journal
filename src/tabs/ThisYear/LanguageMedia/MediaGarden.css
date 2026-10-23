@@ -419,17 +419,6 @@
   }
 }
 
-.add-volume {
-  position: absolute;
-  inset-block-end: 0;
-  inset-inline-start: 0;
-}
-
-.media-tree:has(.signpost.on-left) .add-volume {
-  inset-inline-start: auto;
-  inset-inline-end: 0;
-}
-
 .signpost {
   position: relative;
   z-index: 1;
@@ -740,5 +729,12 @@
 @keyframes tiny-cloud-fade-in {
   from {
     opacity: 0;
+  }
+}
+
+.next-volume-branch .update-stretch {
+  &:hover,
+  &:focus-visible {
+    fill: hsl(28 45% 72%);
   }
 }

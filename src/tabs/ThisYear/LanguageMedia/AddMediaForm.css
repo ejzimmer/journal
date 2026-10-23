@@ -233,15 +233,3 @@
 .new-volume-number {
   color: var(--body-colour-light);
 }
-
-.add-volume {
-  > .tooltip {
-    position-area: top;
-    margin-inline-start: 0;
-    margin-block-end: 4px;
-  }
-
-  &:has(> .tooltip-anchor:hover, > .tooltip-anchor:focus-visible) > .tooltip {
-    opacity: 1;
-  }
-}
