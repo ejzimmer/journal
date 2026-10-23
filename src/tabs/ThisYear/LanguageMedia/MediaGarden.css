@@ -248,7 +248,8 @@
 }
 
 .tree-silhouette {
-  fill: hsl(80 16% 86%);
+  fill: hsl(80 16% 92%);
+  opacity: 0.4;
 }
 
 .tree-fill {
