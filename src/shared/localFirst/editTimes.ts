@@ -1,3 +1,4 @@
+import { valuesAreEqual } from './pathTree';
 import { V2_ROOT } from './v2Shape';
 
 export const EDITED_ROOT = `${V2_ROOT}/_edited`;
@@ -8,6 +9,7 @@ export type Conflict = {
   mine: unknown;
   theirs: unknown;
   item?: unknown;
+  list?: unknown;
 };
 
 type ReadServerPath = (path: string) => Promise<unknown>;
@@ -50,7 +52,9 @@ export async function separateConflicts(
   );
   const conflictsByPath = new Map(
     results.flatMap(({ conflict }) =>
-      conflict ? [[conflict.path, conflict] as const] : [],
+      conflict && !valuesAreEqual(conflict.mine, conflict.theirs)
+        ? [[conflict.path, conflict] as const]
+        : [],
     ),
   );
   return { kept, conflicts: [...conflictsByPath.values()] };

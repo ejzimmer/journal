@@ -7,6 +7,7 @@ import {
   createEditTimeUpdates,
   separateConflicts,
 } from './editTimes';
+import { findOrderedListPath } from './listOrder';
 import { createLocalStore } from './localStore';
 import { createOutbox, StoredOutboxOp } from './outbox';
 import {
@@ -127,17 +128,27 @@ export function createLocalFirstContext(
       (path) => op.itemCopies?.[path] ?? localStore.readPath(path),
     );
     if (conflicts.length > 0) {
+      const recordedConflicts = conflicts.map((conflict) =>
+        recordConflict(conflict, op.itemCopies ?? {}),
+      );
       conflicts.forEach(({ path, theirs }) =>
         localStore.writePath(path, theirs),
       );
-      await conflictStore.add(
-        conflicts.map((conflict) => ({
-          ...conflict,
-          item: findItemCopy(op.itemCopies ?? {}, conflict.path),
-        })),
-      );
+      await conflictStore.add(recordedConflicts);
     }
     return { ...kept, ...createEditTimeUpdates(kept, op.editedAt) };
+  }
+
+  function recordConflict(
+    conflict: Conflict,
+    itemCopies: Record<string, unknown>,
+  ): Conflict {
+    const listPath = findOrderedListPath(conflict.path);
+    return {
+      ...conflict,
+      item: findItemCopy(itemCopies, conflict.path),
+      ...(listPath && { list: localStore.readPath(listPath) }),
+    };
   }
 
   function commit(changes: [string, unknown][]) {

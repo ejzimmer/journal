@@ -692,6 +692,34 @@ describe('createLocalFirstContext', () => {
       });
     });
 
+    describe('when another device moved the same item later', () => {
+      it('lists the clash with the list it was moved in', async () => {
+        const { context, conflictStatus } = await setUpWithStoredGarden();
+        const fence = { id: 'fence', description: 'Fence', position: 1 };
+        context.updateItem('projects', fence);
+        await flushMicrotasks();
+        mockServerData = {
+          v2: {
+            projects: { garden: { ...garden, position: 2 }, fence },
+            _edited: { projects: { garden: { position: { _at: 2000 } } } },
+          },
+        };
+
+        editAt(1000, () =>
+          context.updateItem('projects', { ...garden, position: 3 }),
+        );
+
+        await waitFor(() =>
+          expect(conflictStatus.listConflicts()).toEqual([
+            expect.objectContaining({
+              path: 'v2/projects/garden/position',
+              list: { garden: { ...garden, position: 3 }, fence },
+            }),
+          ]),
+        );
+      });
+    });
+
     describe('when another device deleted the item later', () => {
       it('offers this whole item back', async () => {
         const { context, conflictStatus } = await setUpWithStoredGarden();
