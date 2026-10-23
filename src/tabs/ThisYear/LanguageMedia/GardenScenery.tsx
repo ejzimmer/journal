@@ -1,5 +1,6 @@
 import { CSSProperties } from 'react';
 import SunCalc from 'suncalc';
+import { Dinosaur } from './Dinosaur';
 import { GardenHills } from './GardenHills';
 import { Moon } from './Moon';
 import { SkyBody } from './SkyBody';
@@ -40,6 +41,7 @@ export function GardenScenery({ horizon, now, location }: GardenSceneryProps) {
         <SkyCloud y="34%" scale={0.7} drift={0.45} />
         <SkyCloud y="22%" scale={0.85} drift={0.8} />
         <GardenHills />
+        <Dinosaur />
       </div>
       <div className="meadow" />
     </div>

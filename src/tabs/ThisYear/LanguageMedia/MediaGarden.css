@@ -160,6 +160,72 @@
   height: 50px;
 }
 
+.dinosaur {
+  position: absolute;
+  inset-block-end: 0;
+  stroke: hsl(170 40% 20%);
+  stroke-width: 1.4;
+  animation: walk-across 180s linear 20s infinite backwards;
+
+  .dinosaur-skin,
+  rect {
+    fill: hsl(168 42% 52%);
+  }
+
+  .far-legs rect {
+    fill: hsl(168 38% 40%);
+  }
+
+  .dinosaur-spot {
+    fill: hsl(168 40% 40%);
+    stroke: none;
+  }
+
+  .dinosaur-eye {
+    fill: hsl(170 40% 15%);
+    stroke: none;
+  }
+
+  .near-legs,
+  .far-legs {
+    animation: step-legs 0.6s steps(1) infinite;
+  }
+
+  .far-legs {
+    animation-delay: -0.3s;
+  }
+
+  rect {
+    transform-box: fill-box;
+    transform-origin: top;
+  }
+}
+
+@keyframes walk-across {
+  from {
+    inset-inline-start: -80px;
+  }
+  15%,
+  to {
+    inset-inline-start: 100%;
+  }
+}
+
+@keyframes step-legs {
+  0% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-2px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dinosaur {
+    display: none;
+  }
+}
+
 .far-hills {
   fill: var(--far-hills);
 }
