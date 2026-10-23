@@ -68,6 +68,7 @@ export function Beetle({ spot }: { spot: BeetleSpot }) {
     spot.edges,
     position.at,
     position.forward,
+    spot.isUnderside,
   );
 
   return (

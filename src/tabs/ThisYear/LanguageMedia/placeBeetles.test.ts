@@ -68,6 +68,10 @@ describe('placeBeetles', () => {
     it('measures the length of the branch each beetle is on', () => {
       expect(beetles[0].length).toBe(100);
     });
+
+    it('puts the beetles on the underside of the branch', () => {
+      expect(beetles.every(({ isUnderside }) => isUnderside)).toBe(true);
+    });
   });
 
   describe('for an item with several grown branches', () => {

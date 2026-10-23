@@ -14,15 +14,16 @@ export function findBeetlePose(
   edges: EdgeSample[],
   at: number,
   forward: boolean,
+  isUnderside = false,
 ) {
   const point = findBranchPoint(edges, at);
   const angle = toRadians(point.angle);
-  const upSide = findUpSide(edges);
-  const lift = (point.width / 2 - FOOT_SINK) * upSide;
+  const side = isUnderside ? -findUpSide(edges) : findUpSide(edges);
+  const lift = (point.width / 2 - FOOT_SINK) * side;
   return {
     x: point.x - Math.sin(angle) * lift,
     y: point.y + Math.cos(angle) * lift,
     heading: forward ? point.angle : point.angle + 180,
-    isUpsideDown: forward ? upSide === 1 : upSide === -1,
+    isUpsideDown: forward ? side === 1 : side === -1,
   };
 }

@@ -18,6 +18,7 @@ export type BeetleSpot = {
   range: [number, number];
   at: number;
   forward: boolean;
+  isUnderside?: boolean;
 };
 
 type BeetleHost = Comprehension & { id: string };
@@ -44,7 +45,10 @@ export function placeBeetles(
 
     return [
       ...perches.flatMap((perch) =>
-        placeOnPerch(perch, `${perch.shape.key}-beetle`),
+        placeOnPerch(perch, `${perch.shape.key}-beetle`).map((spot) => ({
+          ...spot,
+          isUnderside: true,
+        })),
       ),
       ...trunkPerches.flatMap((perch) =>
         placeOnPerch(perch, `${host.id}-trunk-beetle`),
