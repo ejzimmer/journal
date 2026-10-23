@@ -595,3 +595,10 @@
     fill: hsl(88 50% 58%);
   }
 }
+
+.season-branches .update-stretch {
+  &:hover,
+  &:focus-visible {
+    fill: hsl(345 80% 80%);
+  }
+}
