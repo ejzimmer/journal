@@ -1,12 +1,12 @@
 import { IconProps } from './types';
 
 type StopWatchIconProps = IconProps & {
-  handTurns?: number;
+  handAngleDegrees?: number;
 };
 
 export function StopWatchIcon({
   colour = 'currentColor',
-  handTurns = 0,
+  handAngleDegrees = 0,
   ...props
 }: StopWatchIconProps) {
   return (
@@ -24,7 +24,7 @@ export function StopWatchIcon({
         y1="10"
         x2="10"
         y2="2"
-        transform={`rotate(${handTurns * 360} 10 10)`}
+        transform={`rotate(${handAngleDegrees} 10 10)`}
       />
     </svg>
   );

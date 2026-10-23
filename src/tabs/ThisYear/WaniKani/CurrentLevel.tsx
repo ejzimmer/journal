@@ -29,7 +29,7 @@ export function CurrentLevel({ data }: { data: WaniKaniData }) {
             width="16px"
             role="img"
             aria-label="Days remaining"
-            handTurns={(data.level - 1) / MAX_LEVEL}
+            handAngleDegrees={((data.level - 1) / MAX_LEVEL) * 360}
           />
           {daysToFinish}
         </div>
