@@ -11,18 +11,12 @@
     align-items: center;
     font-size: 18px;
 
-    &.status-paused > :not(.switch) {
-      opacity: 0.6;
+    &.status-paused .description [role='button'] {
+      font-style: italic;
     }
 
-    &.status-finished {
-      & > :not(.switch) {
-        opacity: 0.4;
-      }
-
-      .description .text {
-        text-decoration: line-through;
-      }
+    &.status-finished .description [role='button'] {
+      text-decoration: line-through;
     }
   }
 
@@ -48,6 +42,10 @@
   .description {
     display: flex;
     gap: 4px;
+
+    .editable-description {
+      align-items: center;
+    }
   }
 
   .switch {
