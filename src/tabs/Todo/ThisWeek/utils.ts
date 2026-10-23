@@ -1,3 +1,4 @@
+import { getDaysSince } from '../../../shared/dates';
 import { WeeklyTask } from '../../../shared/types';
 
 const dateFormatter = Intl.DateTimeFormat('en-AU', {
@@ -27,4 +28,11 @@ export const compareLastCompleted = (a: WeeklyTask, b: WeeklyTask) => {
   if (!bLast) return 1;
 
   return Temporal.PlainDate.compare(aLast, bLast);
+};
+
+export const isTaskDue = (lastDone: string | undefined, frequency: number) => {
+  if (!lastDone) return true;
+
+  const daysBetweenDones = Math.floor(7 / frequency);
+  return getDaysSince(lastDone) >= daysBetweenDones;
 };
