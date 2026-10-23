@@ -30,9 +30,14 @@ export const compareLastCompleted = (a: WeeklyTask, b: WeeklyTask) => {
   return Temporal.PlainDate.compare(aLast, bLast);
 };
 
+const MAX_DAYS_BETWEEN_DONES = 5;
+
 export const isTaskDue = (lastDone: string | undefined, frequency: number) => {
   if (!lastDone) return true;
 
-  const daysBetweenDones = Math.floor(7 / frequency);
+  const daysBetweenDones = Math.min(
+    Math.floor(7 / frequency),
+    MAX_DAYS_BETWEEN_DONES,
+  );
   return getDaysSince(lastDone) >= daysBetweenDones;
 };

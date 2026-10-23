@@ -51,9 +51,15 @@ describe('isTaskDue', () => {
   });
 
   describe('when the task needs doing once a week', () => {
-    describe('and it was last done 6 days ago', () => {
+    describe('and it was last done 4 days ago', () => {
       it('is not due', () => {
-        expect(isTaskDue(getDateDaysAgo(6), 1)).toBe(false);
+        expect(isTaskDue(getDateDaysAgo(4), 1)).toBe(false);
+      });
+    });
+
+    describe('and it was last done 5 days ago', () => {
+      it('is due', () => {
+        expect(isTaskDue(getDateDaysAgo(5), 1)).toBe(true);
       });
     });
   });
