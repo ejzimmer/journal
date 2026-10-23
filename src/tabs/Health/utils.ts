@@ -75,6 +75,9 @@ export const getWeekClass = ({
   lowestBalance: number;
 }) => {
   const className = 'week hovertext-anchor';
+  if (balance === lowestBalance) {
+    return `${className} week-min`;
+  }
   if (balance > OVER_BALANCE) {
     return `${className} week-over`;
   }
