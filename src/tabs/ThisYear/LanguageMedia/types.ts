@@ -77,6 +77,7 @@ export type ProgressUpdate = Comprehension & {
 export type Volume = Timestamps & {
   id: string;
   number: number;
+  branchSeed?: string;
   name?: string;
   pages?: number;
   status?: Status;

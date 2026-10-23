@@ -2,6 +2,7 @@ import { CSSProperties, useMemo, useState } from 'react';
 import { ModalDialog } from '../../../shared/controls/ModalDialog';
 import { OpenBookIcon } from '../../../shared/icons/OpenBook';
 import { PencilIcon } from '../../../shared/icons/Pencil';
+import { AddVolumeForm } from './AddVolumeForm';
 import { BranchNames } from './BranchNames';
 import { CloudFrame } from './CloudFrame';
 import { EditSeriesForm } from './EditSeriesForm';
@@ -20,7 +21,7 @@ import { getGrownShapes } from './treeGrowth';
 import { TreeOutline } from './TreeOutline';
 import { TreeShoots } from './TreeShoots';
 import { TreeSilhouette } from './TreeSilhouette';
-import { VolumeAdder } from './VolumeAdder';
+import { NextVolumeBranch } from './NextVolumeBranch';
 import { Signpost } from './Signpost';
 import { PrintSeries, Volume } from './types';
 import { UpdateStretches } from './UpdateStretches';
@@ -35,6 +36,7 @@ export function MediaTree({ series }: { series: PrintSeries }) {
   const [isProgressUpdateFormOpen, setIsProgressUpdateFormOpen] =
     useState(false);
   const [isEditFormOpen, setIsEditFormOpen] = useState(false);
+  const [isAddVolumeFormOpen, setIsAddVolumeFormOpen] = useState(false);
   const [editedUpdate, setEditedUpdate] = useState<{
     volume: Volume;
     updateKey: string;
@@ -74,6 +76,11 @@ export function MediaTree({ series }: { series: PrintSeries }) {
           onSelect={(volume, updateKey) =>
             setEditedUpdate({ volume, updateKey })
           }
+        />
+        <NextVolumeBranch
+          seriesName={series.name}
+          shapes={layout.nextVolumeShapes}
+          onClick={() => setIsAddVolumeFormOpen(true)}
         />
       </svg>
       <Signpost name={series.name} placement={findSignpostPlacement(layout)}>
@@ -125,7 +132,17 @@ export function MediaTree({ series }: { series: PrintSeries }) {
           </CloudFrame>
         )}
       </ModalDialog>
-      <VolumeAdder series={series} />
+      <ModalDialog
+        isOpen={isAddVolumeFormOpen}
+        className="progress-update-modal add-volume-modal"
+        onCancel={() => setIsAddVolumeFormOpen(false)}
+      >
+        {isAddVolumeFormOpen && (
+          <CloudFrame>
+            <AddVolumeForm series={series} />
+          </CloudFrame>
+        )}
+      </ModalDialog>
     </div>
   );
 }

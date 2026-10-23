@@ -41,8 +41,16 @@ describe('createTreeLayout', () => {
       createVolume(3, 200),
     ]);
 
-    it('grows a branch for each volume, in volume order', () => {
-      expect([...new Set(getBranchLevels(series))]).toEqual([0, 1, 2]);
+    it('grows a branch for each volume, in volume order, then one for the next volume', () => {
+      expect([...new Set(getBranchLevels(series))]).toEqual([0, 1, 2, 3]);
+    });
+
+    it('grows the next volume branch on the level above the last volume', () => {
+      const { nextVolumeShapes } = createTreeLayout(series);
+
+      expect(nextVolumeShapes.map(({ growth }) => growth)).toEqual(
+        nextVolumeShapes.map(() => expect.objectContaining({ level: 3 })),
+      );
     });
 
     it('grows the same tree every time', () => {
@@ -62,12 +70,31 @@ describe('createTreeLayout', () => {
       ]);
 
       it('keeps the existing branches where they were', () => {
-        const branchesOf = ({ shapes }: ReturnType<typeof createTreeLayout>) =>
-          shapes.filter(({ growth }) => growth.type === 'branch');
+        const branchesOf = ({
+          shapes,
+          nextVolumeShapes,
+        }: ReturnType<typeof createTreeLayout>) =>
+          shapes.filter(
+            (shape) =>
+              shape.growth.type === 'branch' &&
+              !nextVolumeShapes.includes(shape),
+          );
 
         expect(branchesOf(createTreeLayout(grown))).toEqual(
           expect.arrayContaining(branchesOf(createTreeLayout(series))),
         );
+      });
+
+      describe('with the branch seed of the next volume', () => {
+        it('grows it the branch the next volume had', () => {
+          const nextLimb = createTreeLayout(series).nextVolumeShapes[0];
+          const added = createSeries([
+            ...Object.values(series.volumes!),
+            { ...createVolume(4, 200), branchSeed: 'volume-4' },
+          ]);
+
+          expect(findShape(added, 'vol4-limb').edges).toEqual(nextLimb.edges);
+        });
       });
     });
   });
@@ -108,11 +135,17 @@ describe('createTreeLayout', () => {
   });
 
   describe('with no volumes', () => {
-    it('grows just a trunk from the ground', () => {
+    it('grows a trunk from the ground', () => {
       const { shapes } = createTreeLayout(createSeries([]));
 
-      expect(shapes.map(({ key }) => key)).toEqual(['trunk']);
+      expect(shapes[0].key).toBe('trunk');
       expect(findMiddle(shapes[0].edges[0])).toEqual({ x: 0, y: 0 });
+    });
+
+    it('grows only the branch for the first volume', () => {
+      const { shapes, nextVolumeShapes } = createTreeLayout(createSeries([]));
+
+      expect(shapes.slice(1)).toEqual(nextVolumeShapes);
     });
   });
 });

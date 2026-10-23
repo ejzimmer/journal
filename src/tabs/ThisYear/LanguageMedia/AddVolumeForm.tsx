@@ -5,6 +5,7 @@ import { CountField } from './CountField';
 import { readNumber, readText } from './fields';
 import { useLanguageMediaStorage } from './LanguageMediaStorageContext';
 import { findNextNumber } from './newItems';
+import { createBranchSeed } from './treeLayout';
 import { PrintSeries } from './types';
 import { VolumeNameField } from './VolumeNameField';
 
@@ -20,6 +21,7 @@ export function AddVolumeForm({ series }: { series: PrintSeries }) {
     const data = new FormData(event.currentTarget);
     addItem([series.id, 'volumes'], {
       number,
+      branchSeed: createBranchSeed(number),
       name: readText(data, 'name'),
       pages: readNumber(data, 'pages'),
     });
