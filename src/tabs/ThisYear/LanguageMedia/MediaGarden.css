@@ -13,6 +13,9 @@
   --drift-duration: 400s;
 
   position: relative;
+  margin-inline: calc(-1 * var(--page-padding-inline));
+  margin-block-end: calc(-1 * var(--page-padding-block));
+  padding-inline: var(--page-padding-inline);
 
   &[data-time-of-day='dawn'] {
     --sky-top: hsl(225 45% 62%);
