@@ -94,43 +94,69 @@ describe('MediaTree', () => {
     });
   });
 
-  describe('clicking the stretch of branch an update grew', () => {
-    it('opens that update in the update form', async () => {
-      const user = userEvent.setup();
-      const series = createSeries('book');
-      renderWithLanguageMediaStorage(
-        <MediaTree
-          series={{
-            ...series,
-            volumes: {
-              ...series.volumes,
-              vol1: {
-                ...series.volumes!.vol1,
-                updates: {
-                  u1: {
-                    at: '2026-10-01T09:00:00Z',
-                    page: 50,
-                    lookups: 4,
-                    aiQuestions: 0,
-                  },
-                },
-              },
+  describe('a volume with an update', () => {
+    const series = createSeries('book');
+    const seriesWithUpdate: PrintSeries = {
+      ...series,
+      volumes: {
+        ...series.volumes,
+        vol1: {
+          ...series.volumes!.vol1,
+          updates: {
+            u1: {
+              at: '2026-10-01T09:00:00Z',
+              page: 50,
+              lookups: 4,
+              aiQuestions: 0,
             },
-            upTo: { volume: 1, page: 50 },
-          }}
-        />,
-      );
+          },
+        },
+      },
+      upTo: { volume: 1, page: 50 },
+    };
+    const getStretch = () =>
+      screen.getByRole('button', { name: 'Edit update to Fantine' });
 
-      await user.click(
-        screen.getByRole('button', { name: 'Edit update to Fantine' }),
-      );
+    describe('clicking the stretch of branch the update grew', () => {
+      it('opens that update in the update form', async () => {
+        const user = userEvent.setup();
+        renderWithLanguageMediaStorage(<MediaTree series={seriesWithUpdate} />);
 
-      expect(
-        screen.getByRole('form', { name: 'Track Fantine' }),
-      ).toBeInTheDocument();
-      expect(screen.getByRole('spinbutton', { name: 'Looked up' })).toHaveValue(
-        4,
-      );
+        await user.click(getStretch());
+
+        expect(
+          screen.getByRole('form', { name: 'Track Fantine' }),
+        ).toBeInTheDocument();
+        expect(
+          screen.getByRole('spinbutton', { name: 'Looked up' }),
+        ).toHaveValue(4);
+      });
+    });
+
+    describe('hovering the stretch of branch the update grew', () => {
+      it('shows the date of the update', async () => {
+        const user = userEvent.setup();
+        renderWithLanguageMediaStorage(<MediaTree series={seriesWithUpdate} />);
+
+        await user.hover(getStretch());
+
+        expect(screen.getByRole('tooltip')).toHaveTextContent('1 Oct');
+      });
+
+      describe('then moving away', () => {
+        it('hides the date', async () => {
+          const user = userEvent.setup();
+          renderWithLanguageMediaStorage(
+            <MediaTree series={seriesWithUpdate} />,
+          );
+          await user.hover(getStretch());
+          const date = screen.getByRole('tooltip');
+
+          await user.unhover(getStretch());
+
+          expect(date).not.toBeInTheDocument();
+        });
+      });
     });
   });
 });

@@ -47,6 +47,18 @@ dialog.progress-update-modal {
   text-wrap: balance;
 }
 
+.progress-update-title:has(+ .progress-update-date) {
+  margin-block-end: 0;
+}
+
+.progress-update-date {
+  display: block;
+  margin-block: -4px 14px;
+  color: var(--body-colour-mid);
+  font-size: 14px;
+  text-align: center;
+}
+
 .progress-update-body {
   display: flex;
   align-items: center;

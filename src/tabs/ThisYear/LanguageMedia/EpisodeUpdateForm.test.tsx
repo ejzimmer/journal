@@ -311,6 +311,12 @@ describe('EpisodeUpdateForm', () => {
       return { user: userEvent.setup(), closeModal, ...view };
     };
 
+    it('shows the date of that update', () => {
+      renderEditForm('u2');
+
+      expect(screen.getByText('2 Oct')).toBeInTheDocument();
+    });
+
     it('shows what that update recorded', () => {
       renderEditForm('u1');
 

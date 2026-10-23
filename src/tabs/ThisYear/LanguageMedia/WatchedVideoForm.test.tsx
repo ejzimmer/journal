@@ -150,6 +150,14 @@ describe('WatchedVideoForm', () => {
       );
     });
 
+    describe('for a video with an added date', () => {
+      it('shows that date', () => {
+        renderEditForm({ ...watchedVideo, createdAt: '2026-10-12T09:00:00Z' });
+
+        expect(screen.getByText('12 Oct')).toBeInTheDocument();
+      });
+    });
+
     describe('clicking save', () => {
       const addLookupAndSave = async (video: Video) => {
         const view = renderEditForm(video);

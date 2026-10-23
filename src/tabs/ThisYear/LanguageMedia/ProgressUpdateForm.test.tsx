@@ -363,6 +363,12 @@ describe('ProgressUpdateForm', () => {
       return { user: userEvent.setup(), closeModal, ...view };
     };
 
+    it('shows the date of that update', () => {
+      renderEditForm(yotsuba, 'u1');
+
+      expect(screen.getByText('20 Sept')).toBeInTheDocument();
+    });
+
     it('shows what that update recorded', () => {
       renderEditForm(yotsuba, 'u1');
 

@@ -10,6 +10,7 @@ import { readVolumeProgress } from './volumeProgress';
 export type UpdateStretch = {
   key: string;
   volume: Volume;
+  date: string;
   edges: EdgeSample[];
 };
 
@@ -21,13 +22,15 @@ export function getUpdateStretches(
     const limb = shapes.find(({ key }) => key === `${volume.id}-limb`);
     if (!limb) return [];
     const progress = readVolumeProgress(series, volume);
-    const ends = getProgressUpdates(volume).map((update) => ({
+    const updates = getProgressUpdates(volume);
+    const ends = updates.map((update) => ({
       key: update.key,
       at: calculateUpdatePosition(volume, update, progress),
     }));
-    return sliceIntoStretches(limb.edges, ends).map((stretch) => ({
+    return sliceIntoStretches(limb.edges, ends).map((stretch, index) => ({
       ...stretch,
       volume,
+      date: updates[index].at,
     }));
   });
 }

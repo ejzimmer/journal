@@ -700,6 +700,7 @@ const languageMedia: Record<string, LanguageMedia> = {
     videos: {
       v1: {
         id: 'v1',
+        createdAt: '2026-10-12T09:30:00Z',
         url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
         lengthInSeconds: 1500,
         upToInSeconds: 1500,
