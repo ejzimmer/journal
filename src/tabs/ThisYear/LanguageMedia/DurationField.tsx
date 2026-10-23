@@ -16,6 +16,15 @@ const padSegment = (event: React.FocusEvent<HTMLInputElement>) => {
   if (input.value) input.value = padToTwoDigits(input.value);
 };
 
+const focusNextSegment = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const input = event.currentTarget;
+  const nextSegment = input.nextElementSibling;
+  if (input.value.length >= 2 && nextSegment instanceof HTMLInputElement) {
+    nextSegment.focus();
+    nextSegment.select();
+  }
+};
+
 const splitIntoUnits = (
   totalSeconds: number,
   largestUnit: 'hours' | 'minutes',
@@ -49,6 +58,7 @@ export function DurationField({
               defaultDuration && padToTwoDigits(defaultDuration[unit])
             }
             onBlur={padSegment}
+            onChange={focusNextSegment}
           />
         </Fragment>
       ))}
