@@ -1,4 +1,5 @@
-import { placeBeetles } from './placeBeetles';
+import { findBeetlePose } from './findBeetlePose';
+import { BeetleSpot, placeBeetles } from './placeBeetles';
 import { EdgeSample } from './treeGeometry';
 import { GrownShape } from './treeGrowth';
 import { Comprehension } from './types';
@@ -134,6 +135,36 @@ describe('placeBeetles', () => {
       expect(beetles.map(({ edges }) => edges)).toEqual(
         Array(3).fill(trunk.edges),
       );
+    });
+  });
+
+  describe('for items overflowing from branches on either side of the trunk', () => {
+    const createSideLimb = (key: string, direction: 1 | -1): GrownShape => ({
+      key,
+      amount: 0.15,
+      growth: { type: 'branch', level: 0, start: 0, end: 1 },
+      edges: Array.from({ length: 11 }, (_, index): EdgeSample => ({
+        at: index / 10,
+        left: { x: (4 + index * 10) * direction, y: -98 },
+        right: { x: (4 + index * 10) * direction, y: -102 },
+      })),
+    });
+    const trunk = createTrunk(1);
+    const beetles = placeBeetles(
+      [
+        { id: 'left', lookups: 1, aiQuestions: 0 },
+        { id: 'right', lookups: 1, aiQuestions: 0 },
+      ],
+      [trunk, createSideLimb('left-arm', -1), createSideLimb('right-arm', 1)],
+    );
+    const findX = ({ edges, at, forward, isUnderside }: BeetleSpot) =>
+      findBeetlePose(edges, at, forward, isUnderside).x;
+
+    it('climbs each on the side of the trunk its branch grows from', () => {
+      expect(beetles.map(findX)).toEqual([
+        expect.closeTo(-3.6),
+        expect.closeTo(3.6),
+      ]);
     });
   });
 });

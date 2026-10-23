@@ -5,7 +5,7 @@ const toRadians = (degrees: number) => (degrees * Math.PI) / 180;
 
 const FOOT_SINK = 0.4;
 
-function findUpSide(edges: EdgeSample[]) {
+export function findUpSide(edges: EdgeSample[]) {
   const { angle } = findBranchPoint(edges, 0);
   return Math.cos(toRadians(angle)) > 0 ? -1 : 1;
 }
