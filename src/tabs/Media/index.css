@@ -62,9 +62,8 @@
     --media-accent-dark: hsl(196 90% 28%);
   }
 
-  & > .wind-waker {
-    grid-column: 1 / -1;
-    justify-self: center;
+  [role='tab']:not(.game-tab) + .game-tab {
+    margin-inline-start: auto;
   }
 
   .shelves {

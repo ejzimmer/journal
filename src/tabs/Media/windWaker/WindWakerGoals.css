@@ -7,11 +7,11 @@
   --ww-gold-dim: hsl(44 40% 40% / 0.55);
 
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 24px;
-  width: min(900px, calc(100vw - 64px));
+  grid-template-columns: minmax(0, 1fr);
+  gap: 16px;
   box-sizing: border-box;
-  padding: 20px;
+  margin-block-start: 16px;
+  padding: 14px;
   border-radius: 18px;
   color: white;
   border: 3px solid hsl(44 55% 42%);
@@ -24,12 +24,6 @@
     var(--ww-menu-mid),
     var(--ww-menu-deep) 70%
   );
-}
-
-@media (width < 640px) {
-  .windwaker {
-    grid-template-columns: minmax(0, 1fr);
-  }
 }
 
 .windwaker ul {

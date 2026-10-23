@@ -1,4 +1,4 @@
-.year-tabs [role='tablist'] {
+.tabs [role='tablist'] {
   display: flex;
   gap: 4px;
   border-bottom: 1px solid var(--border-colour);
