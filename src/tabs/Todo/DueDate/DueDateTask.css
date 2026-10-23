@@ -49,8 +49,16 @@
   }
 
   .switch {
-    --led-colour: orange;
+    --led-colour: var(--led-blue);
     font-size: 0.6em;
+
+    &:has(input[value='paused']:checked) {
+      --led-colour: orange;
+    }
+
+    &:has(input[value='finished']:checked) {
+      --led-colour: var(--led-green);
+    }
     border-radius: 100px;
     color: var(--body-colour-mid);
 
