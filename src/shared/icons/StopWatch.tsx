@@ -1,11 +1,14 @@
 import { IconProps } from './types';
 
-import './StopWatch.css';
+type StopWatchIconProps = IconProps & {
+  handTurns?: number;
+};
 
 export function StopWatchIcon({
   colour = 'currentColor',
+  handTurns = 0,
   ...props
-}: IconProps) {
+}: StopWatchIconProps) {
   return (
     <svg
       viewBox="0 0 20 20"
@@ -16,7 +19,13 @@ export function StopWatchIcon({
       {...props}
     >
       <circle cx="10" cy="10" r="9" />
-      <line className="watch-hand" x1="10" y1="10" x2="10" y2="2" />
+      <line
+        x1="10"
+        y1="10"
+        x2="10"
+        y2="2"
+        transform={`rotate(${handTurns * 360} 10 10)`}
+      />
     </svg>
   );
 }
