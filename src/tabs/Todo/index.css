@@ -1,6 +1,7 @@
 .today {
   --led-green: hsl(115 100% 50%);
-  --led-blue: hsl(200 100% 55%);
+  --led-blue: hsl(195 100% 50%);
+  --led-orange: hsl(34 100% 50%);
   display: grid;
   gap: 40px;
   grid-template-areas: 'today' 'week' 'dates';
