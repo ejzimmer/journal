@@ -52,10 +52,31 @@ describe('WeeklyCalorieTracker', () => {
       });
     });
 
+    describe('when a week is the lowest week', () => {
+      it('shows it as blue', () => {
+        const [, lowest] = renderWeeks([17000, 15000, 19000]);
+        expect(lowest).toHaveClass('week-min');
+      });
+
+      describe('and it is over 20,000', () => {
+        it('still shows it as blue', () => {
+          const [lowest] = renderWeeks([20500, 21000, 22000]);
+          expect(lowest).toHaveClass('week-min');
+        });
+      });
+
+      describe('and another week ties it', () => {
+        it('shows both as blue', () => {
+          const [first, , second] = renderWeeks([15000, 18000, 15000]);
+          expect(first).toHaveClass('week-min');
+          expect(second).toHaveClass('week-min');
+        });
+      });
+    });
+
     describe('when a week is within 1,000 of the lowest week', () => {
       it('shows it as the darkest green', () => {
-        const [lowest, nearLowest] = renderWeeks([15000, 15999, 19000]);
-        expect(lowest).toHaveClass('week-lowest');
+        const [, nearLowest] = renderWeeks([15000, 15999, 19000]);
         expect(nearLowest).toHaveClass('week-lowest');
       });
     });
