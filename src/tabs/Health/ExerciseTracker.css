@@ -254,7 +254,8 @@
         width: 36px;
         height: 30px;
         padding: 0;
-        align-content: center;
+        display: grid;
+        place-items: center;
         border-radius: 999px;
         color: var(--switch-icon);
 
@@ -285,7 +286,6 @@
 
         svg {
           display: block;
-          justify-self: center;
           width: 18px;
           height: 18px;
         }
