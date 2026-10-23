@@ -1,3 +1,4 @@
+import { formatDayAndMonth } from './format';
 import { getItemsInAddedOrder } from './lists';
 import { GrownShape } from './treeGrowth';
 import { drawShapeFill } from './treeShapePaths';
@@ -21,6 +22,7 @@ export function VideoArms({ channel, shapes, onSelect }: VideoArmsProps) {
             key={video.id}
             label={`Edit ${video.url}`}
             path={drawShapeFill(arm.edges, arm.amount)}
+            hoverText={video.createdAt && formatDayAndMonth(video.createdAt)}
             onClick={() => onSelect(video)}
           />
         );

@@ -6,6 +6,7 @@ import { CountTile } from './CountTile';
 import { LadyBeetleIcon } from './LadyBeetleIcon';
 import { PageTile } from './PageTile';
 import { UnderstoodTile } from './UnderstoodTile';
+import { UpdateDate } from './UpdateDate';
 import { useLanguageMediaStorage } from './LanguageMediaStorageContext';
 import { parseNumber } from './fields';
 import { formatVolumeName, formatVolumeTitle } from './format';
@@ -112,6 +113,7 @@ export function ProgressUpdateForm({
       <h2 className="progress-update-title">
         {formatVolumeTitle(series, volume)}
       </h2>
+      {update && <UpdateDate instant={update.at} />}
       <div className="progress-update-body">
         <div className="progress-tiles">
           <CountTile

@@ -6,6 +6,7 @@ import { CountTile } from './CountTile';
 import { EpisodeTimeTile } from './EpisodeTimeTile';
 import { LadyBeetleIcon } from './LadyBeetleIcon';
 import { UnderstoodTile } from './UnderstoodTile';
+import { UpdateDate } from './UpdateDate';
 import { useLanguageMediaStorage } from './LanguageMediaStorageContext';
 import { parseNumber, readDuration } from './fields';
 import { formatEpisodeTitle } from './format';
@@ -134,6 +135,7 @@ export function EpisodeUpdateForm({
       onSubmit={saveProgress}
     >
       <h2 className="progress-update-title">{name}</h2>
+      {update && <UpdateDate instant={update.at} />}
       <div className="progress-update-body">
         <div className="progress-tiles">
           <CountTile

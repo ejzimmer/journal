@@ -11,6 +11,7 @@ export type EpisodeUpdateStretch = {
   key: string;
   season: Season;
   episode: Episode;
+  date: string;
   edges: EdgeSample[];
 };
 
@@ -25,14 +26,16 @@ export function getEpisodeUpdateStretches(
       );
       if (!shoot) return [];
       const progress = calculateEpisodeProgress(series, season, episode);
-      const ends = getEpisodeUpdates(episode).map((update) => ({
+      const updates = getEpisodeUpdates(episode);
+      const ends = updates.map((update) => ({
         key: update.key,
         at: calculateEpisodeUpdatePosition(episode, update, progress),
       }));
-      return sliceIntoStretches(shoot.edges, ends).map((stretch) => ({
+      return sliceIntoStretches(shoot.edges, ends).map((stretch, index) => ({
         ...stretch,
         season,
         episode,
+        date: updates[index].at,
       }));
     }),
   );

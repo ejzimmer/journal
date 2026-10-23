@@ -139,6 +139,15 @@ describe('MediaVine', () => {
           ).toHaveLength(1);
         });
       });
+
+      it('shows the date of the update', async () => {
+        const user = userEvent.setup();
+        renderWithLanguageMediaStorage(<MediaVine series={series} />);
+
+        await user.hover(getStretches()[1]);
+
+        expect(screen.getByRole('tooltip')).toHaveTextContent('2 Oct');
+      });
     });
   });
 });

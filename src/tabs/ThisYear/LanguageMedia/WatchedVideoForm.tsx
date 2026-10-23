@@ -5,6 +5,7 @@ import { TickIcon } from '../../../shared/icons/Tick';
 import { CountTile } from './CountTile';
 import { LadyBeetleIcon } from './LadyBeetleIcon';
 import { UnderstoodTile } from './UnderstoodTile';
+import { UpdateDate } from './UpdateDate';
 import { useLanguageMediaStorage } from './LanguageMediaStorageContext';
 import { VideoLengthTile } from './VideoLengthTile';
 import { VideoUrlTile } from './VideoUrlTile';
@@ -72,6 +73,7 @@ export function WatchedVideoForm({ channel, video }: WatchedVideoFormProps) {
       onSubmit={saveWatchedVideo}
     >
       <h2 className="progress-update-title">{channel.name}</h2>
+      {video?.createdAt && <UpdateDate instant={video.createdAt} />}
       <div className="progress-update-body">
         <div className="progress-tiles">
           <VideoUrlTile defaultValue={video?.url} />

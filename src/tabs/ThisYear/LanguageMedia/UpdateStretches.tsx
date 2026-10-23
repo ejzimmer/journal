@@ -1,5 +1,5 @@
 import { drawEdgeBand } from './drawEdgeBand';
-import { formatVolumeName } from './format';
+import { formatDayAndMonth, formatVolumeName } from './format';
 import { getUpdateStretches } from './getUpdateStretches';
 import { GrownShape } from './treeGrowth';
 import { PrintSeries, Volume } from './types';
@@ -18,14 +18,17 @@ export function UpdateStretches({
 }: UpdateStretchesProps) {
   return (
     <g className="update-stretches">
-      {getUpdateStretches(series, shapes).map(({ key, volume, edges }) => (
-        <UpdateStretchButton
-          key={key}
-          label={`Edit update to ${formatVolumeName(volume)}`}
-          path={drawEdgeBand(edges)}
-          onClick={() => onSelect(volume, key)}
-        />
-      ))}
+      {getUpdateStretches(series, shapes).map(
+        ({ key, volume, date, edges }) => (
+          <UpdateStretchButton
+            key={key}
+            label={`Edit update to ${formatVolumeName(volume)}`}
+            path={drawEdgeBand(edges)}
+            hoverText={formatDayAndMonth(date)}
+            onClick={() => onSelect(volume, key)}
+          />
+        ),
+      )}
     </g>
   );
 }

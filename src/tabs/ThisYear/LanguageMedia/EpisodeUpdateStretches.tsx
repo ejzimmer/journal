@@ -1,5 +1,5 @@
 import { drawEdgeBand } from './drawEdgeBand';
-import { formatEpisodeName } from './format';
+import { formatDayAndMonth, formatEpisodeName } from './format';
 import { getEpisodeUpdateStretches } from './getEpisodeUpdateStretches';
 import { GrownShape } from './treeGrowth';
 import { Episode, Season, TvSeries } from './types';
@@ -21,11 +21,12 @@ export function EpisodeUpdateStretches({
   return (
     <g className="update-stretches">
       {getEpisodeUpdateStretches(series, shapes).map(
-        ({ key, season, episode, edges }) => (
+        ({ key, season, episode, date, edges }) => (
           <UpdateStretchButton
             key={key}
             label={`Edit update to ${formatEpisodeName(episode)}`}
             path={drawEdgeBand(edges)}
+            hoverText={formatDayAndMonth(date)}
             onClick={() => onSelect(season, episode, key)}
             onHighlight={(isHighlighted) =>
               onHighlight(isHighlighted ? key : undefined)
