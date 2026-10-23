@@ -1,5 +1,6 @@
+import { formatDayAndMonth, getLocalDate } from '../../../shared/dates';
 import { drawEdgeBand } from './drawEdgeBand';
-import { formatDayAndMonth, formatEpisodeName } from './format';
+import { formatEpisodeName } from './format';
 import { getEpisodeUpdateStretches } from './getEpisodeUpdateStretches';
 import { GrownShape } from './treeGrowth';
 import { Episode, Season, TvSeries } from './types';
@@ -26,7 +27,7 @@ export function EpisodeUpdateStretches({
             key={key}
             label={`Edit update to ${formatEpisodeName(episode)}`}
             path={drawEdgeBand(edges)}
-            hoverText={formatDayAndMonth(date)}
+            hoverText={formatDayAndMonth(getLocalDate(date))}
             onClick={() => onSelect(season, episode, key)}
             onHighlight={(isHighlighted) =>
               onHighlight(isHighlighted ? key : undefined)

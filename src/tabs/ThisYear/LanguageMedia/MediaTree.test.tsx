@@ -140,7 +140,7 @@ describe('MediaTree', () => {
 
         await user.hover(getStretch());
 
-        expect(screen.getByRole('tooltip')).toHaveTextContent('1 Oct');
+        expect(screen.getByRole('tooltip')).toHaveTextContent('01 Oct');
       });
 
       describe('then moving away', () => {

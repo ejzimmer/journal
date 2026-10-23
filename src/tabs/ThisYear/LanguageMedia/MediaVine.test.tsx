@@ -146,7 +146,7 @@ describe('MediaVine', () => {
 
         await user.hover(getStretches()[1]);
 
-        expect(screen.getByRole('tooltip')).toHaveTextContent('2 Oct');
+        expect(screen.getByRole('tooltip')).toHaveTextContent('02 Oct');
       });
     });
   });

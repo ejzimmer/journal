@@ -1,5 +1,6 @@
+import { formatDayAndMonth, getLocalDate } from '../../../shared/dates';
 import { drawEdgeBand } from './drawEdgeBand';
-import { formatDayAndMonth, formatVolumeName } from './format';
+import { formatVolumeName } from './format';
 import { getUpdateStretches } from './getUpdateStretches';
 import { GrownShape } from './treeGrowth';
 import { PrintSeries, Volume } from './types';
@@ -24,7 +25,7 @@ export function UpdateStretches({
             key={key}
             label={`Edit update to ${formatVolumeName(volume)}`}
             path={drawEdgeBand(edges)}
-            hoverText={formatDayAndMonth(date)}
+            hoverText={formatDayAndMonth(getLocalDate(date))}
             onClick={() => onSelect(volume, key)}
           />
         ),
