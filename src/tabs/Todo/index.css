@@ -122,6 +122,7 @@
 
 .led,
 button.led:is(:hover, :focus-visible),
+input.led-push-button:checked,
 [role='radiogroup'].switch.led-switch .indicator {
   --led-lit: var(--led-colour, var(--led-green));
   --led-core: color-mix(in srgb, var(--led-lit) 20%, white);
@@ -136,28 +137,47 @@ button.led:is(:hover, :focus-visible),
       transparent
     );
   box-shadow:
+    var(--led-press, 0 0 transparent),
     0 0 6px var(--led-lit),
     0 0 16px color-mix(in srgb, var(--led-lit) 60%, transparent);
 }
 
-.led-button {
-  color: var(--success-colour);
+.led-button,
+input.led-push-button {
   border: 1px solid hsl(210 12% 72%);
   transition:
     background 0.2s ease,
     box-shadow 0.2s ease,
-    color 0.2s ease;
+    color 0.2s ease,
+    translate 0.1s ease;
+}
 
-  &:not(:hover, :focus-visible) {
-    background-color: hsl(210 20% 94%);
-    background-image: linear-gradient(
-      hsl(0 0% 100% / 0.85),
-      hsl(0 0% 100% / 0) 45%
-    );
-    box-shadow:
-      0 1px 2px hsl(0 0 0 / 0.25),
-      inset 0 -2px 2px hsl(0 0% 100% / 0.7);
+.led-button:not(:hover, :focus-visible),
+input.led-push-button:not(:checked) {
+  background-color: hsl(210 20% 94%);
+  background-image: linear-gradient(
+    hsl(0 0% 100% / 0.85),
+    hsl(0 0% 100% / 0) 45%
+  );
+  box-shadow:
+    0 1px 2px hsl(0 0 0 / 0.25),
+    inset 0 -2px 2px hsl(0 0% 100% / 0.7);
+}
+
+input.led-push-button {
+  appearance: none;
+  margin: 0;
+  cursor: pointer;
+
+  &:checked {
+    --led-press: inset 0 2px 3px var(--led-edge);
+    border-color: var(--led-edge);
+    translate: 0 1px;
   }
+}
+
+.led-button {
+  color: var(--success-colour);
 
   &:hover,
   &:focus-visible {
