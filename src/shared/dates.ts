@@ -74,6 +74,12 @@ export const formatDayAndMonth = (date: string) => {
   return `${plainDate.day.toString().padStart(2, '0')} ${formatMonth(plainDate)}`;
 };
 
+export const formatDayMonthAndYear = (date: string) => {
+  const plainDate = Temporal.PlainDate.from(date);
+
+  return `${plainDate.day} ${formatMonth(plainDate)} ${plainDate.year}`;
+};
+
 export const formatWeekdayDayAndMonth = (date: string) => {
   const plainDate = Temporal.PlainDate.from(date);
 
