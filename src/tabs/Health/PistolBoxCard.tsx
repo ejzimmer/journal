@@ -1,5 +1,6 @@
 import { useEffect, useId } from 'react';
 import { TickIcon } from '../../shared/icons/Tick';
+import { isEditing, isUndoShortcut } from '../../shared/keyboard';
 import { useHealthStorage } from './HealthStorageContext';
 import {
   isBoxCleared,
@@ -62,21 +63,5 @@ export function PistolBoxCard() {
         </button>
       )}
     </li>
-  );
-}
-
-function isUndoShortcut(event: KeyboardEvent) {
-  return (
-    (event.ctrlKey || event.metaKey) &&
-    !event.shiftKey &&
-    event.key.toLowerCase() === 'z'
-  );
-}
-
-function isEditing(target: EventTarget | null) {
-  return (
-    target instanceof HTMLElement &&
-    (target.isContentEditable ||
-      ['INPUT', 'TEXTAREA', 'SELECT'].includes(target.tagName))
   );
 }

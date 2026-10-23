@@ -248,6 +248,73 @@ describe('WorkStorageContext', () => {
     );
   });
 
+  describe('restoreLastDeletedSubtask', () => {
+    const subtask = { id: 'sub-1', description: 'Write tests', position: 0 };
+    const otherSubtask = { id: 'sub-2', description: 'Review', position: 1 };
+
+    describe('after subtasks have been deleted', () => {
+      it('writes the most recently deleted subtask back to its task', () => {
+        const firebaseContext = createFirebaseContext({ [list.id]: list });
+        const workStorage = getWorkStorage(firebaseContext);
+        workStorage?.deleteSubtask(list.id, task.id, subtask);
+        workStorage?.deleteSubtask(list.id, task.id, otherSubtask);
+
+        const restored = workStorage?.restoreLastDeletedSubtask();
+
+        expect(restored).toBe(true);
+        expect(firebaseContext.updateItem).toHaveBeenCalledTimes(1);
+        expect(firebaseContext.updateItem).toHaveBeenCalledWith(
+          'work/list-1/items/task-1/subtasks',
+          otherSubtask,
+        );
+      });
+
+      it('works back through earlier deletions on each call', () => {
+        const firebaseContext = createFirebaseContext({ [list.id]: list });
+        const workStorage = getWorkStorage(firebaseContext);
+        workStorage?.deleteSubtask(list.id, task.id, subtask);
+        workStorage?.deleteSubtask(list.id, task.id, otherSubtask);
+
+        workStorage?.restoreLastDeletedSubtask();
+        workStorage?.restoreLastDeletedSubtask();
+
+        expect(firebaseContext.updateItem).toHaveBeenLastCalledWith(
+          'work/list-1/items/task-1/subtasks',
+          subtask,
+        );
+      });
+
+      describe('when the task has since been deleted', () => {
+        it('skips to the latest subtask whose task still exists', () => {
+          const firebaseContext = createFirebaseContext({ [list.id]: list });
+          const workStorage = getWorkStorage(firebaseContext);
+          workStorage?.deleteSubtask(list.id, task.id, subtask);
+          workStorage?.deleteSubtask(list.id, 'gone-task', otherSubtask);
+
+          workStorage?.restoreLastDeletedSubtask();
+
+          expect(firebaseContext.updateItem).toHaveBeenCalledTimes(1);
+          expect(firebaseContext.updateItem).toHaveBeenCalledWith(
+            'work/list-1/items/task-1/subtasks',
+            subtask,
+          );
+        });
+      });
+    });
+
+    describe('once every deletion has been restored', () => {
+      it('reports that there was nothing to restore', () => {
+        const firebaseContext = createFirebaseContext({ [list.id]: list });
+        const workStorage = getWorkStorage(firebaseContext);
+        workStorage?.deleteSubtask(list.id, task.id, subtask);
+        workStorage?.restoreLastDeletedSubtask();
+
+        expect(workStorage?.restoreLastDeletedSubtask()).toBe(false);
+        expect(firebaseContext.updateItem).toHaveBeenCalledTimes(1);
+      });
+    });
+  });
+
   it('getList and getTask look up entries from the loaded lists', () => {
     const firebaseContext = createFirebaseContext({ [list.id]: list });
     const workStorage = getWorkStorage(firebaseContext);

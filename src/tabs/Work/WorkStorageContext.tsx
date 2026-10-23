@@ -21,6 +21,12 @@ import {
 
 const STALE_AFTER_MS = 7 * 24 * 60 * 60 * 1000;
 
+type DeletedSubtask = {
+  listId: string;
+  taskId: string;
+  subtask: Subtask;
+};
+
 export type WorkStorageContextType = {
   lists?: Record<string, WorkTask>;
   isLoading: boolean;
@@ -46,6 +52,7 @@ export type WorkStorageContextType = {
   reorderTasks: <T extends { id: string }>(listId: string, tasks: T[]) => void;
 
   deleteSubtask: (listId: string, taskId: string, subtask: Subtask) => void;
+  restoreLastDeletedSubtask: () => boolean;
   updateSubtasksList: (
     listId: string,
     taskId: string,
@@ -103,6 +110,8 @@ export function WorkStorageProvider({ children }: { children: ReactNode }) {
     });
     return normalized;
   }, [rawLists]);
+
+  const deletedSubtasks = useRef<DeletedSubtask[]>([]);
 
   const { value: storedLabelsById, synced: labelsSynced } =
     useValue<Record<string, StoredLabel>>(LABELS_KEY);
@@ -272,6 +281,18 @@ export function WorkStorageProvider({ children }: { children: ReactNode }) {
 
     deleteSubtask: (listId, taskId, subtask) => {
       deleteItem(`${WORK_KEY}/${listId}/items/${taskId}/subtasks`, subtask);
+      deletedSubtasks.current.push({ listId, taskId, subtask });
+    },
+    restoreLastDeletedSubtask: () => {
+      let deleted = deletedSubtasks.current.pop();
+      while (deleted && !lists?.[deleted.listId]?.items?.[deleted.taskId]) {
+        deleted = deletedSubtasks.current.pop();
+      }
+      if (!deleted) return false;
+
+      const { listId, taskId, subtask } = deleted;
+      updateItem(`${WORK_KEY}/${listId}/items/${taskId}/subtasks`, subtask);
+      return true;
     },
     updateSubtasksList: (listId, taskId, subtasks) => {
       updateItemsList(
