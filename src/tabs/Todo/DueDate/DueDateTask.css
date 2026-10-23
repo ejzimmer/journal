@@ -11,12 +11,14 @@
     align-items: center;
     font-size: 18px;
 
-    &.status-paused {
+    &.status-paused > :not(.switch) {
       opacity: 0.6;
     }
 
     &.status-finished {
-      opacity: 0.4;
+      & > :not(.switch) {
+        opacity: 0.4;
+      }
 
       .description .text {
         text-decoration: line-through;
