@@ -171,6 +171,7 @@ input.led-push-button {
 
   &:checked {
     --led-press: inset 0 2px 3px var(--led-edge);
+    border-color: var(--led-edge);
     translate: 0 1px;
   }
 }

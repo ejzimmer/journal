@@ -96,12 +96,17 @@
     grid-column: 1 / -1;
   }
 
+  .repeats {
+    align-items: center;
+  }
+
   .repeats .box {
     position: relative;
     width: 36px;
     height: 36px;
 
     input {
+      --led-colour: var(--led-blue);
       width: 100%;
       height: 100%;
       border-radius: 50%;
@@ -120,7 +125,7 @@
     input:checked + svg {
       color: white;
       translate: 0 1px;
-      filter: drop-shadow(0 0 3px var(--led-green));
+      filter: drop-shadow(0 0 3px var(--led-blue));
     }
   }
 }
