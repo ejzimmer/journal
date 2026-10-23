@@ -45,10 +45,6 @@
     --meadow-bottom: hsl(140 28% 14%);
     --edge: hsl(150 30% 10%);
     --star-opacity: 1;
-
-    .comprehension-records {
-      color: hsl(230 30% 88%);
-    }
   }
 }
 

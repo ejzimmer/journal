@@ -1,6 +1,5 @@
 import { useRef } from 'react';
 import { useLanguageMediaStorage } from './LanguageMediaStorageContext';
-import { ComprehensionRecords } from './ComprehensionRecords';
 import { MediaCactus } from './MediaCactus';
 import { AddMediaButton } from './AddMediaButton';
 import { MediaTree } from './MediaTree';
@@ -32,7 +31,6 @@ export function MediaGarden() {
             return (
               <li key={item.id}>
                 <MediaTree series={item} />
-                <ComprehensionRecords series={item} />
               </li>
             );
           }
