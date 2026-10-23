@@ -56,7 +56,7 @@ describe('findBeetlePose', () => {
       })),
     ];
 
-    describe('when the beetle walks out along the branch', () => {
+    describe('when the beetle walks out along the top', () => {
       const along = findBeetlePose(branch, 0.3, true);
       const up = findBeetlePose(branch, 0.8, true);
 
@@ -68,6 +68,21 @@ describe('findBeetlePose', () => {
       it('keeps its feet against the branch', () => {
         expect(along.isUpsideDown).toBe(true);
         expect(up.isUpsideDown).toBe(true);
+      });
+    });
+
+    describe('when the beetle walks out along the underside', () => {
+      const along = findBeetlePose(branch, 0.3, true, true);
+      const up = findBeetlePose(branch, 0.8, true, true);
+
+      it('keeps it on the side that was underneath, facing away from the trunk', () => {
+        expect(along.y).toBeCloseTo(1.6);
+        expect(up.x).toBeCloseTo(-51.6);
+      });
+
+      it('keeps its feet against the branch', () => {
+        expect(along.isUpsideDown).toBe(false);
+        expect(up.isUpsideDown).toBe(false);
       });
     });
   });
