@@ -14,6 +14,7 @@ import { MoveToOtherLists } from './MoveToOtherLists';
 import { getAppendPosition } from './taskPosition';
 import { ListDestination, getDestinationListIndex } from './listDestination';
 import { getToday } from '../../shared/dates';
+import { useUndoSubtaskDeleteShortcut } from './useUndoSubtaskDeleteShortcut';
 
 export function Work() {
   return (
@@ -31,6 +32,7 @@ function WorkContent() {
     addList,
     moveTask,
   } = useWorkStorage();
+  useUndoSubtaskDeleteShortcut();
 
   const doneList = useMemo(() => {
     return (
