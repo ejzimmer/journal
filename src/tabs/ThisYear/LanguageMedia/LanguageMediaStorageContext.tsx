@@ -2,6 +2,7 @@ import { createContext, ReactNode, useContext, useMemo, useState } from 'react';
 import { useStorageContext } from '../../../shared/FirebaseContext';
 import { getThisYear } from '../../../shared/dates';
 import { createInitialChildren, createMediaDetails } from './createMedia';
+import { getItemsInAddedOrder } from './lists';
 import {
   getLanguageMediaPath,
   ItemPath,
@@ -93,7 +94,7 @@ export function LanguageMediaStorageProvider({
 
       return {
         year,
-        media: Object.values(storedMediaByYear?.[year] ?? {}),
+        media: getItemsInAddedOrder(storedMediaByYear?.[year]),
 
         addMedia: (newMedia) => {
           const id = addMediaItem([], createMediaDetails(newMedia));

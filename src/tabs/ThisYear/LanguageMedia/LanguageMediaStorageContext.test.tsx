@@ -90,6 +90,38 @@ describe('LanguageMediaStorageContext', () => {
       expect(storage.media).toEqual([lupin]);
     });
 
+    describe('when there are several', () => {
+      const addedAt = (createdAt?: string): LanguageMedia => ({
+        ...lupin,
+        id: createdAt ?? 'untimed',
+        createdAt,
+      });
+      const first = addedAt('2026-03-01T09:00:00Z');
+      const second = addedAt('2026-03-01T09:00:00.5Z');
+      const third = addedAt('2026-08-15T21:30:00Z');
+
+      it('lists them in the order they were added', () => {
+        const useValue = storeMedia({ [thisYear]: { third, first, second } });
+
+        const storage = createLanguageMediaStorage({ useValue });
+
+        expect(storage.media).toEqual([first, second, third]);
+      });
+
+      describe('and one has no added time', () => {
+        it('lists that one first', () => {
+          const untimed = addedAt();
+          const useValue = storeMedia({
+            [thisYear]: { second, untimed, first },
+          });
+
+          const storage = createLanguageMediaStorage({ useValue });
+
+          expect(storage.media).toEqual([untimed, first, second]);
+        });
+      });
+    });
+
     describe('when there is none stored', () => {
       it('lists no media', () => {
         const storage = createLanguageMediaStorage();
