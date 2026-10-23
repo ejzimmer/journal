@@ -1,8 +1,9 @@
 import { StopWatchIcon } from '../../../shared/icons/StopWatch';
 import { useTooltip } from '../../../shared/useTooltip';
+import { formatDayMonthAndYear, getDateDaysAhead } from '../../../shared/dates';
 import { LevelBadge } from './LevelBadge';
 import { LevelRings } from './LevelRings';
-import { formatFinishDate, predictDaysToFinish } from './levelPrediction';
+import { predictDaysToFinish } from './levelPrediction';
 import { calculateLevelProgress } from './levelProgress';
 import { MAX_LEVEL, WaniKaniData } from './types';
 
@@ -28,7 +29,9 @@ export function CurrentLevel({ data }: { data: WaniKaniData }) {
       {daysToFinish !== undefined && (
         <div
           className="days-remaining"
-          {...createTooltipHandlers(formatFinishDate(daysToFinish))}
+          {...createTooltipHandlers(
+            formatDayMonthAndYear(getDateDaysAhead(daysToFinish)),
+          )}
         >
           <StopWatchIcon
             width="16px"
