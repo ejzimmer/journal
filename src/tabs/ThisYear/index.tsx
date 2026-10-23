@@ -13,14 +13,16 @@ import './ThisYear.css';
 
 export function ThisYear() {
   return (
-    <div style={{ display: 'grid', gap: '36px', maxWidth: '100vw' }}>
-      <div className="yarn-and-adventures">
-        <YarnTracking />
-        <Adventures />
+    <div className="this-year">
+      <div className="above-garden">
+        <div className="yarn-and-adventures">
+          <YarnTracking />
+          <Adventures />
+        </div>
+        {getThisYear() === STATION_RUNNING_YEAR && <StationRunning />}
+        <Bikes />
+        <WaniKani />
       </div>
-      {getThisYear() === STATION_RUNNING_YEAR && <StationRunning />}
-      <Bikes />
-      <WaniKani />
       <LanguageMediaGoals />
     </div>
   );
