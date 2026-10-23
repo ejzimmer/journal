@@ -35,6 +35,7 @@ export function AddDueDateTaskForm() {
           <input
             id={repeatsId}
             type="checkbox"
+            className="led-push-button"
             checked={repeats}
             onChange={(event) => setRepeats(event.target.checked)}
           />
