@@ -13,6 +13,10 @@ let mockRemoteData: Record<string, unknown> = {};
 jest.mock('firebase/database', () => ({
   ref: (_database: unknown, path?: string) => ({ path }),
   update: jest.fn().mockResolvedValue(undefined),
+  runTransaction: async (
+    _reference: unknown,
+    applyUpdate: (current: unknown) => unknown,
+  ) => ({ committed: applyUpdate(null) !== undefined }),
   onValue: (
     reference: { path: string },
     callback: (snapshot: { val: () => unknown }) => void,

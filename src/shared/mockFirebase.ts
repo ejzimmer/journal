@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { ContextType } from './FirebaseContext';
+import { hasAlreadyRun } from './dailyJobs/hasAlreadyRun';
 
 function getAtPath(root: Record<string, unknown>, path: string): unknown {
   return path
@@ -138,6 +139,15 @@ export function createMockFirebaseContext(
     setValues(updates: Record<string, unknown>) {
       Object.entries(updates).forEach(([path, value]) => write(path, value));
       Object.keys(updates).forEach((path) => notify(path));
+    },
+    async claimDailyRun(lastRunKey: string, day: string) {
+      const lastRun = getAtPath(data, lastRunKey);
+      if (hasAlreadyRun(lastRun, day)) {
+        return false;
+      }
+      write(lastRunKey, day);
+      notify(lastRunKey);
+      return true;
     },
     moveItemBetweenLists<T extends { id: string; position: number }>({
       movedItem,

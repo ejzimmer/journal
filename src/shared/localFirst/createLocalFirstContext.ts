@@ -1,4 +1,4 @@
-import { Database, get, onValue, ref } from 'firebase/database';
+import { Database, get, onValue, ref, runTransaction } from 'firebase/database';
 import { useEffect, useMemo, useSyncExternalStore } from 'react';
 import { ContextType } from '../FirebaseContext';
 import { createConflictStore } from './conflictStore';
@@ -25,6 +25,7 @@ import {
   MINIMUM_APP_VERSION_PATH,
   V2_ROOT,
 } from './v2Shape';
+import { hasAlreadyRun } from '../dailyJobs/hasAlreadyRun';
 
 export type SaveState = 'saving' | 'failing' | 'outdated';
 
@@ -238,6 +239,15 @@ export function createLocalFirstContext(
       write({ [path]: value });
     },
     setValues: write,
+    claimDailyRun: async (lastRunKey, day) => {
+      const path = findV2ReadPath(lastRunKey);
+      const { committed } = await runTransaction(
+        ref(database, path),
+        (lastRun) => (hasAlreadyRun(lastRun, day) ? undefined : day),
+      );
+      if (committed) localStore.writePath(path, day);
+      return committed;
+    },
     moveItemBetweenLists: ({
       movedItem,
       sourceListId,

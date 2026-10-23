@@ -45,17 +45,17 @@ function indexById(items: WorkTask[]) {
   return Object.fromEntries(items.map((item) => [item.id, item]));
 }
 
-function cleanUpLists(lists: WorkTask[]) {
+async function cleanUpLists(lists: WorkTask[]) {
   const storage = createDailyJobsStorage({ [WORK_KEY]: indexById(lists) });
-  renderDailyJob(useDoneTaskCleanup, storage);
+  await renderDailyJob(useDoneTaskCleanup, storage);
 
   return storage;
 }
 
 describe('cleaning up done work tasks', () => {
   describe('a task done on an earlier day', () => {
-    it('moves to the done list', () => {
-      const storage = cleanUpLists([
+    it('moves to the done list', async () => {
+      const storage = await cleanUpLists([
         createList('today', 'Today', 0, [
           createDoneTask('today', 'fix-the-thing', getDateDaysAgo(1)),
         ]),
@@ -71,8 +71,8 @@ describe('cleaning up done work tasks', () => {
       );
     });
 
-    it('goes after the tasks already in the done list', () => {
-      const storage = cleanUpLists([
+    it('goes after the tasks already in the done list', async () => {
+      const storage = await cleanUpLists([
         createList('today', 'Today', 0, [
           createDoneTask('today', 'fix-the-thing', getDateDaysAgo(1)),
           createTask('today', 'ship-the-thing', {
@@ -96,8 +96,8 @@ describe('cleaning up done work tasks', () => {
       );
     });
 
-    it('leaves the list it came from', () => {
-      const storage = cleanUpLists([
+    it('leaves the list it came from', async () => {
+      const storage = await cleanUpLists([
         createList('today', 'Today', 0, [
           createDoneTask('today', 'fix-the-thing', getDateDaysAgo(1)),
         ]),
@@ -112,8 +112,8 @@ describe('cleaning up done work tasks', () => {
   });
 
   describe('a task done today', () => {
-    it('stays where it is', () => {
-      const storage = cleanUpLists([
+    it('stays where it is', async () => {
+      const storage = await cleanUpLists([
         createList('today', 'Today', 0, [
           createDoneTask('today', 'fix-the-thing', getToday()),
         ]),
@@ -126,8 +126,8 @@ describe('cleaning up done work tasks', () => {
   });
 
   describe('a list whose positions have gaps in them', () => {
-    it('is renumbered', () => {
-      const storage = cleanUpLists([
+    it('is renumbered', async () => {
+      const storage = await cleanUpLists([
         createList('today', 'Today', 0, [
           createTask('today', 'fix-the-thing', { position: 7 }),
           createTask('today', 'another-thing', { position: 9 }),
@@ -152,8 +152,8 @@ describe('cleaning up done work tasks', () => {
   });
 
   describe('a list whose positions are already in order', () => {
-    it("isn't written back", () => {
-      const storage = cleanUpLists([
+    it("isn't written back", async () => {
+      const storage = await cleanUpLists([
         createList('today', 'Today', 0, [
           createTask('today', 'fix-the-thing', { position: 0 }),
           createTask('today', 'another-thing', { position: 1 }),
@@ -166,8 +166,8 @@ describe('cleaning up done work tasks', () => {
   });
 
   describe("when there's no done list", () => {
-    it('cleans up nothing', () => {
-      const storage = cleanUpLists([
+    it('cleans up nothing', async () => {
+      const storage = await cleanUpLists([
         createList('today', 'Today', 0, [
           createDoneTask('today', 'fix-the-thing', getDateDaysAgo(1)),
         ]),
@@ -179,20 +179,20 @@ describe('cleaning up done work tasks', () => {
   });
 
   describe("when the lists haven't arrived yet", () => {
-    it('cleans up nothing', () => {
+    it('cleans up nothing', async () => {
       const storage = createDailyJobsStorage({});
 
-      renderDailyJob(useDoneTaskCleanup, storage);
+      await renderDailyJob(useDoneTaskCleanup, storage);
 
       expect(storage.addItem).not.toHaveBeenCalled();
       expect(storage.updateList).not.toHaveBeenCalled();
     });
 
-    it('cleans them up once they arrive', () => {
+    it('cleans them up once they arrive', async () => {
       const storedValues: Record<string, unknown> = {};
       const storage = createDailyJobsStorage(storedValues);
 
-      const { rerender } = renderDailyJob(useDoneTaskCleanup, storage);
+      const { rerender } = await renderDailyJob(useDoneTaskCleanup, storage);
 
       storedValues[WORK_KEY] = indexById([
         createList('today', 'Today', 0, [
@@ -200,7 +200,7 @@ describe('cleaning up done work tasks', () => {
         ]),
         createList('done', 'Done', 1),
       ]);
-      rerender();
+      await rerender();
 
       expect(storage.addItem).toHaveBeenCalledWith(
         `${WORK_KEY}/done/items`,

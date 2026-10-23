@@ -22,6 +22,23 @@ jest.mock('firebase/database', () => ({
           mockServerData,
         ) ?? null,
   }),
+  runTransaction: async (
+    reference: { path: string },
+    applyUpdate: (current: unknown) => unknown,
+  ) => {
+    const segments = reference.path.split('/');
+    const parent = segments
+      .slice(0, -1)
+      .reduce<Record<string, unknown>>(
+        (node, segment) => (node[segment] ??= {}) as Record<string, unknown>,
+        mockServerData,
+      );
+    const key = segments[segments.length - 1];
+    const next = applyUpdate(parent[key] ?? null);
+    if (next === undefined) return { committed: false };
+    parent[key] = next;
+    return { committed: true };
+  },
   onValue: (
     reference: { path: string },
     callback: (snapshot: { val: () => unknown }) => void,
@@ -726,6 +743,50 @@ describe('createLocalFirstContext', () => {
         expect(getSentData()).not.toContainEqual({
           'v2/projects/garden': null,
         });
+      });
+    });
+  });
+
+  describe('claiming a daily run', () => {
+    describe('when no device has run the job today', () => {
+      it('claims today on the server', async () => {
+        const context = await setUpContext();
+        mockServerData = { v2: { today: { dailyReset: '2026-10-22' } } };
+
+        const claimed = await context.claimDailyRun(
+          'today/dailyReset',
+          '2026-10-23',
+        );
+
+        expect(claimed).toBe(true);
+        expect(mockServerData).toEqual({
+          v2: { today: { dailyReset: '2026-10-23' } },
+        });
+      });
+
+      it('reads back the claimed day', async () => {
+        const context = await setUpContext();
+
+        await context.claimDailyRun('today/dailyReset', '2026-10-23');
+
+        const { result } = renderHook(() =>
+          context.useValue<string>('today/dailyReset'),
+        );
+        expect(result.current.value).toBe('2026-10-23');
+      });
+    });
+
+    describe('when another device has already run the job today', () => {
+      it("doesn't claim it", async () => {
+        const context = await setUpContext();
+        mockServerData = { v2: { today: { dailyReset: '2026-10-23' } } };
+
+        const claimed = await context.claimDailyRun(
+          'today/dailyReset',
+          '2026-10-23',
+        );
+
+        expect(claimed).toBe(false);
       });
     });
   });

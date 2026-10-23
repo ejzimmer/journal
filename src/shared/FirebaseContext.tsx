@@ -7,8 +7,10 @@ import {
   remove,
   get,
   update,
+  runTransaction,
 } from 'firebase/database';
 import { createContext, useContext, useEffect, useState } from 'react';
+import { hasAlreadyRun } from './dailyJobs/hasAlreadyRun';
 
 type Item = { id: string };
 
@@ -24,6 +26,7 @@ export interface ContextType {
   updateList: <T extends Item>(listName: string, list: T[]) => void;
   setValue: <T>(path: string, value: T) => void;
   setValues: (updates: Record<string, unknown>) => void;
+  claimDailyRun: (lastRunKey: string, day: string) => Promise<boolean>;
   useValue: <T>(key?: string) => {
     value?: T;
     loading: boolean;
@@ -102,6 +105,13 @@ export function createFirebaseContext(database: Database): ContextType {
       update(ref(database), updates).catch((error) => {
         console.error('setValues failed', updates, error);
       });
+    },
+    claimDailyRun: async (lastRunKey, day) => {
+      const { committed } = await runTransaction(
+        ref(database, lastRunKey),
+        (lastRun) => (hasAlreadyRun(lastRun, day) ? undefined : day),
+      );
+      return committed;
     },
     moveItemBetweenLists: ({
       movedItem,
