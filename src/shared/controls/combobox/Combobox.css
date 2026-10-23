@@ -9,6 +9,8 @@
 
   [popover] {
     position: fixed;
+    inset: auto;
+    margin: 0;
     overflow-y: auto;
     padding: 0;
     border: none;

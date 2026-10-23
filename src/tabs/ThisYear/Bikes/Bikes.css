@@ -1,10 +1,7 @@
-.bikes {
-  margin-block-end: 100px;
-}
-
 ul.bike-grid {
-  display: grid;
-  grid-template-columns: repeat(8, 24px);
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
   list-style-type: none;
   margin: 0;
   padding: 0;
@@ -12,16 +9,10 @@ ul.bike-grid {
   li {
     anchor-scope: --bike-name;
     position: relative;
-    grid-column-end: span 2;
     display: flex;
     gap: 12px;
     align-items: center;
     justify-content: center;
-  }
-
-  li:nth-child(1),
-  li:nth-child(8) {
-    grid-column-start: 2;
   }
 
   label {
@@ -67,5 +58,5 @@ ul.bike-grid {
 }
 
 .bike-year-tabs {
-  width: fit-content;
+  width: 100%;
 }

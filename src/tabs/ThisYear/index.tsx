@@ -16,11 +16,13 @@ export function ThisYear() {
     <div className="this-year">
       <div className="above-garden">
         <div className="yarn-and-adventures">
-          <YarnTracking />
+          <div className="yarn-and-bikes">
+            <YarnTracking />
+            <Bikes />
+          </div>
           <Adventures />
         </div>
         {getThisYear() === STATION_RUNNING_YEAR && <StationRunning />}
-        <Bikes />
         <WaniKani />
       </div>
       <LanguageMediaGoals />
