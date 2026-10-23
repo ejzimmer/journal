@@ -68,4 +68,59 @@ describe('DurationField', () => {
       expect(seconds).toHaveValue('06');
     });
   });
+
+  describe('when two digits are typed', () => {
+    describe('in the hours', () => {
+      it('moves focus to the minutes', async () => {
+        const user = userEvent.setup();
+        render(
+          <DurationField
+            label="Length"
+            name="length"
+            durationFormat="hh:mm:ss"
+          />,
+        );
+
+        await user.type(screen.getByRole('textbox', { name: 'Hours' }), '01');
+
+        expect(screen.getByRole('textbox', { name: 'Minutes' })).toHaveFocus();
+      });
+    });
+
+    describe('in the minutes', () => {
+      it('moves focus to the seconds', async () => {
+        const user = userEvent.setup();
+        render(
+          <DurationField label="Length" name="length" durationFormat="mm:ss" />,
+        );
+
+        await user.type(screen.getByRole('textbox', { name: 'Minutes' }), '12');
+
+        expect(screen.getByRole('textbox', { name: 'Seconds' })).toHaveFocus();
+      });
+
+      describe('when the seconds already have a value', () => {
+        it('replaces it with what is typed next', async () => {
+          const user = userEvent.setup();
+          render(
+            <DurationField
+              label="Length"
+              name="length"
+              defaultValue={5}
+              durationFormat="mm:ss"
+            />,
+          );
+          const minutes = screen.getByRole('textbox', { name: 'Minutes' });
+
+          await user.clear(minutes);
+          await user.type(minutes, '12');
+          await user.keyboard('34');
+
+          expect(screen.getByRole('textbox', { name: 'Seconds' })).toHaveValue(
+            '34',
+          );
+        });
+      });
+    });
+  });
 });
