@@ -26,17 +26,17 @@ const createTask = (
 const indexById = (tasks: DailyTask[]) =>
   Object.fromEntries(tasks.map((task) => [task.id, task]));
 
-function resetTasks(tasks: DailyTask[]) {
+async function resetTasks(tasks: DailyTask[]) {
   const storage = createDailyJobsStorage({ [DAILY_KEY]: indexById(tasks) });
-  renderDailyJob(useDailyReset, storage);
+  await renderDailyJob(useDailyReset, storage);
 
   return storage;
 }
 
 describe('resetting daily tasks', () => {
   describe('a task done on an earlier day', () => {
-    it('is ready again', () => {
-      const storage = resetTasks([
+    it('is ready again', async () => {
+      const storage = await resetTasks([
         createTask('washing-up', { status: 'done', position: 0 }),
         createTask('exercise', { status: 'ready', position: 1 }),
       ]);
@@ -49,8 +49,8 @@ describe('resetting daily tasks', () => {
   });
 
   describe('a one-off task finished on an earlier day', () => {
-    it('is removed', () => {
-      const storage = resetTasks([
+    it('is removed', async () => {
+      const storage = await resetTasks([
         createTask('book-flights', { type: '一度', status: 'finished' }),
         createTask('exercise', { position: 1 }),
       ]);
@@ -60,8 +60,8 @@ describe('resetting daily tasks', () => {
       ]);
     });
 
-    it('leaves no gap in the positions behind it', () => {
-      const storage = resetTasks([
+    it('leaves no gap in the positions behind it', async () => {
+      const storage = await resetTasks([
         createTask('book-flights', { type: '一度', status: 'finished' }),
         createTask('exercise', { position: 1 }),
         createTask('washing-up', { position: 2 }),
@@ -75,8 +75,8 @@ describe('resetting daily tasks', () => {
   });
 
   describe('a one-off task finished today', () => {
-    it('is left alone', () => {
-      const storage = resetTasks([
+    it('is left alone', async () => {
+      const storage = await resetTasks([
         createTask('book-flights', {
           type: '一度',
           status: 'finished',
@@ -91,24 +91,24 @@ describe('resetting daily tasks', () => {
   });
 
   describe("when the tasks haven't arrived yet", () => {
-    it('resets nothing', () => {
+    it('resets nothing', async () => {
       const storage = createDailyJobsStorage({});
 
-      renderDailyJob(useDailyReset, storage);
+      await renderDailyJob(useDailyReset, storage);
 
       expect(storage.updateList).not.toHaveBeenCalled();
     });
 
-    it('resets them once they arrive', () => {
+    it('resets them once they arrive', async () => {
       const storedValues: Record<string, unknown> = {};
       const storage = createDailyJobsStorage(storedValues);
 
-      const { rerender } = renderDailyJob(useDailyReset, storage);
+      const { rerender } = await renderDailyJob(useDailyReset, storage);
 
       storedValues[DAILY_KEY] = indexById([
         createTask('washing-up', { status: 'done' }),
       ]);
-      rerender();
+      await rerender();
 
       expect(storage.updateList).toHaveBeenCalledWith(DAILY_KEY, [
         expect.objectContaining({ id: 'washing-up', status: 'ready' }),
@@ -117,7 +117,7 @@ describe('resetting daily tasks', () => {
   });
 
   describe('when the tasks are cached locally but not yet synced from the server', () => {
-    it('waits for the server copy and resets that', () => {
+    it('waits for the server copy and resets that', async () => {
       let synced = false;
       const storedValues: Record<string, unknown> = {
         [DAILY_KEY]: indexById([createTask('stale', { status: 'done' })]),
@@ -130,13 +130,13 @@ describe('resetting daily tasks', () => {
         }),
       });
 
-      const { rerender } = renderDailyJob(useDailyReset, storage);
+      const { rerender } = await renderDailyJob(useDailyReset, storage);
 
       storedValues[DAILY_KEY] = indexById([
         createTask('current', { status: 'done' }),
       ]);
       synced = true;
-      rerender();
+      await rerender();
 
       expect(storage.updateList).toHaveBeenCalledTimes(1);
       expect(storage.updateList).toHaveBeenCalledWith(DAILY_KEY, [

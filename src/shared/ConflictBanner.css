@@ -31,19 +31,19 @@
 .conflict-diff {
   margin-block: 4px;
   overflow-wrap: anywhere;
+}
 
-  del {
-    color: var(--danger-colour-dark);
-    background: color-mix(in srgb, var(--error-colour) 12%, white);
-    border-radius: 2px;
-  }
+.conflict del {
+  color: var(--danger-colour-dark);
+  background: color-mix(in srgb, var(--error-colour) 12%, white);
+  border-radius: 2px;
+}
 
-  ins {
-    text-decoration: none;
-    color: hsl(108 81% 24%);
-    background: color-mix(in srgb, var(--success-colour) 16%, white);
-    border-radius: 2px;
-  }
+.conflict ins {
+  text-decoration: none;
+  color: hsl(108 81% 24%);
+  background: color-mix(in srgb, var(--success-colour) 16%, white);
+  border-radius: 2px;
 }
 
 .conflict-note {
@@ -89,4 +89,9 @@
   justify-content: end;
   margin-block-start: 32px;
   font-size: 1rem;
+}
+
+.conflict-order {
+  margin-block: 4px;
+  padding-inline-start: 24px;
 }

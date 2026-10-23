@@ -9,6 +9,7 @@ import {
 } from 'react';
 import { getMillisecondsUntilTomorrow, getToday } from '../dates';
 import { useStorageContext } from '../FirebaseContext';
+import { hasAlreadyRun } from './hasAlreadyRun';
 
 export type DailyJob = {
   lastRunKey: string;
@@ -67,22 +68,20 @@ export function DailyJobsProvider({ children }: { children: ReactNode }) {
 }
 
 function DailyJobRunner({ job, today }: { job: ScheduledJob; today: string }) {
-  const { useValue, setValue } = useStorageContext();
+  const { useValue, claimDailyRun } = useStorageContext();
   const { value: lastRun, synced } = useValue<string>(job.lastRunKey);
   const dayRunInThisSession = useRef<string>(undefined);
 
   useEffect(() => {
     if (!synced) return;
-
-    const alreadyRunThisSession = dayRunInThisSession.current === today;
-    const alreadyRunToday =
-      lastRun !== undefined && Temporal.PlainDate.compare(lastRun, today) >= 0;
-    if (alreadyRunThisSession || alreadyRunToday) return;
+    if (dayRunInThisSession.current === today || hasAlreadyRun(lastRun, today))
+      return;
 
     dayRunInThisSession.current = today;
-    job.run();
-    setValue(job.lastRunKey, today);
-  }, [job, today, lastRun, synced, setValue]);
+    void claimDailyRun(job.lastRunKey, today).then((claimed) => {
+      if (claimed) job.run();
+    });
+  }, [job, today, lastRun, synced, claimDailyRun]);
 
   return null;
 }

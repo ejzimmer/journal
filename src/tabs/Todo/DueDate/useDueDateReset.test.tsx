@@ -28,28 +28,28 @@ const createTask = (
 const indexById = (tasks: CalendarTask[]) =>
   Object.fromEntries(tasks.map((task) => [task.id, task]));
 
-function resetTasks(tasks: CalendarTask[]) {
+async function resetTasks(tasks: CalendarTask[]) {
   const storage = createDailyJobsStorage({ [CALENDAR_KEY]: indexById(tasks) });
-  renderDailyJob(useDueDateReset, storage);
+  await renderDailyJob(useDueDateReset, storage);
 
   return storage;
 }
 
 describe('resetting due date tasks', () => {
   describe('a finished task', () => {
-    it("is deleted once it's been finished since an earlier day", () => {
+    it("is deleted once it's been finished since an earlier day", async () => {
       const task = createTask('renew-passport', {
         status: 'finished',
         dueDate: getDateDaysAgo(2),
         statusUpdateDate: getDateDaysAgo(1),
       });
-      const storage = resetTasks([task]);
+      const storage = await resetTasks([task]);
 
       expect(storage.deleteItem).toHaveBeenCalledWith(CALENDAR_KEY, task);
     });
 
-    it('is kept if it was finished today', () => {
-      const storage = resetTasks([
+    it('is kept if it was finished today', async () => {
+      const storage = await resetTasks([
         createTask('renew-passport', {
           status: 'finished',
           dueDate: getDateDaysAgo(2),
@@ -61,8 +61,8 @@ describe('resetting due date tasks', () => {
   });
 
   describe('a paused task', () => {
-    it("wakes up on the day it's due", () => {
-      const storage = resetTasks([
+    it("wakes up on the day it's due", async () => {
+      const storage = await resetTasks([
         createTask('pay-rates', { status: 'paused' }),
       ]);
 
@@ -72,8 +72,8 @@ describe('resetting due date tasks', () => {
       );
     });
 
-    it("stays paused while it isn't due yet", () => {
-      const storage = resetTasks([
+    it("stays paused while it isn't due yet", async () => {
+      const storage = await resetTasks([
         createTask('pay-rates', {
           status: 'paused',
           dueDate: getDateDaysAhead(3),
@@ -85,25 +85,25 @@ describe('resetting due date tasks', () => {
   });
 
   describe("when the tasks haven't arrived yet", () => {
-    it('resets nothing', () => {
+    it('resets nothing', async () => {
       const storage = createDailyJobsStorage({});
 
-      renderDailyJob(useDueDateReset, storage);
+      await renderDailyJob(useDueDateReset, storage);
 
       expect(storage.updateItem).not.toHaveBeenCalled();
       expect(storage.deleteItem).not.toHaveBeenCalled();
     });
 
-    it('resets them once they arrive', () => {
+    it('resets them once they arrive', async () => {
       const storedValues: Record<string, unknown> = {};
       const storage = createDailyJobsStorage(storedValues);
 
-      const { rerender } = renderDailyJob(useDueDateReset, storage);
+      const { rerender } = await renderDailyJob(useDueDateReset, storage);
 
       storedValues[CALENDAR_KEY] = indexById([
         createTask('pay-rates', { status: 'paused' }),
       ]);
-      rerender();
+      await rerender();
 
       expect(storage.updateItem).toHaveBeenCalledWith(
         CALENDAR_KEY,

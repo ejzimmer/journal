@@ -22,6 +22,23 @@ jest.mock('firebase/database', () => ({
           mockServerData,
         ) ?? null,
   }),
+  runTransaction: async (
+    reference: { path: string },
+    applyUpdate: (current: unknown) => unknown,
+  ) => {
+    const segments = reference.path.split('/');
+    const parent = segments
+      .slice(0, -1)
+      .reduce<Record<string, unknown>>(
+        (node, segment) => (node[segment] ??= {}) as Record<string, unknown>,
+        mockServerData,
+      );
+    const key = segments[segments.length - 1];
+    const next = applyUpdate(parent[key] ?? null);
+    if (next === undefined) return { committed: false };
+    parent[key] = next;
+    return { committed: true };
+  },
   onValue: (
     reference: { path: string },
     callback: (snapshot: { val: () => unknown }) => void,
@@ -675,6 +692,34 @@ describe('createLocalFirstContext', () => {
       });
     });
 
+    describe('when another device moved the same item later', () => {
+      it('lists the clash with the list it was moved in', async () => {
+        const { context, conflictStatus } = await setUpWithStoredGarden();
+        const fence = { id: 'fence', description: 'Fence', position: 1 };
+        context.updateItem('projects', fence);
+        await flushMicrotasks();
+        mockServerData = {
+          v2: {
+            projects: { garden: { ...garden, position: 2 }, fence },
+            _edited: { projects: { garden: { position: { _at: 2000 } } } },
+          },
+        };
+
+        editAt(1000, () =>
+          context.updateItem('projects', { ...garden, position: 3 }),
+        );
+
+        await waitFor(() =>
+          expect(conflictStatus.listConflicts()).toEqual([
+            expect.objectContaining({
+              path: 'v2/projects/garden/position',
+              list: { garden: { ...garden, position: 3 }, fence },
+            }),
+          ]),
+        );
+      });
+    });
+
     describe('when another device deleted the item later', () => {
       it('offers this whole item back', async () => {
         const { context, conflictStatus } = await setUpWithStoredGarden();
@@ -726,6 +771,50 @@ describe('createLocalFirstContext', () => {
         expect(getSentData()).not.toContainEqual({
           'v2/projects/garden': null,
         });
+      });
+    });
+  });
+
+  describe('claiming a daily run', () => {
+    describe('when no device has run the job today', () => {
+      it('claims today on the server', async () => {
+        const context = await setUpContext();
+        mockServerData = { v2: { today: { dailyReset: '2026-10-22' } } };
+
+        const claimed = await context.claimDailyRun(
+          'today/dailyReset',
+          '2026-10-23',
+        );
+
+        expect(claimed).toBe(true);
+        expect(mockServerData).toEqual({
+          v2: { today: { dailyReset: '2026-10-23' } },
+        });
+      });
+
+      it('reads back the claimed day', async () => {
+        const context = await setUpContext();
+
+        await context.claimDailyRun('today/dailyReset', '2026-10-23');
+
+        const { result } = renderHook(() =>
+          context.useValue<string>('today/dailyReset'),
+        );
+        expect(result.current.value).toBe('2026-10-23');
+      });
+    });
+
+    describe('when another device has already run the job today', () => {
+      it("doesn't claim it", async () => {
+        const context = await setUpContext();
+        mockServerData = { v2: { today: { dailyReset: '2026-10-23' } } };
+
+        const claimed = await context.claimDailyRun(
+          'today/dailyReset',
+          '2026-10-23',
+        );
+
+        expect(claimed).toBe(false);
       });
     });
   });

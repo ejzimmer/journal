@@ -85,6 +85,19 @@ describe('separateConflicts', () => {
           ],
         });
       });
+
+      describe('to the same value as mine', () => {
+        it('drops the update without a conflict', async () => {
+          expect(
+            await separateConflicts(
+              { 'v2/work/t1/description': 'theirs', 'v2/work/t2/done': true },
+              10,
+              server,
+              noCopy,
+            ),
+          ).toEqual({ kept: { 'v2/work/t2/done': true }, conflicts: [] });
+        });
+      });
     });
   });
 
