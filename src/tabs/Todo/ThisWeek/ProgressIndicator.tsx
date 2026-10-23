@@ -1,7 +1,7 @@
 import { CSSProperties } from 'react';
-import { getDaysSince, isToday } from '../../../shared/dates';
+import { getDaysSince } from '../../../shared/dates';
 import { WeeklyTask } from '../../../shared/types';
-import { dateToWeekday } from './utils';
+import { dateToWeekday, isTaskDue } from './utils';
 
 type ProgressIndicatorProps = Pick<
   WeeklyTask,
@@ -30,7 +30,7 @@ export function ProgressIndicator({
         : latest,
     undefined,
   );
-  const doneToday = !!mostRecentlyDone && isToday(mostRecentlyDone);
+  const isDue = isTaskDue(mostRecentlyDone, frequency);
   const daysSinceDone = mostRecentlyDone ? getDaysSince(mostRecentlyDone) : 0;
   const fillOpacity =
     daysSinceDone > 2 ? Math.max(0, 1 - 0.2 * (daysSinceDone - 2)) : 1;
@@ -40,7 +40,7 @@ export function ProgressIndicator({
       <div
         role="group"
         aria-label={`${description}: ${numberDone} of ${frequency} done`}
-        className={`progress-bar ${doneToday ? 'done-today' : ''}`}
+        className={`progress-bar ${isDue ? '' : 'not-due'}`}
         style={
           {
             '--segments': frequency,
