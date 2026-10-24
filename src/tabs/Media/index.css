@@ -14,6 +14,8 @@
 
   & > .books,
   & > .games {
+    --media-accent: hsl(28 45% 34%);
+    --media-accent-dark: hsl(28 45% 24%);
     display: flex;
     flex-direction: column;
     padding-inline: 24px;
@@ -50,16 +52,6 @@
         background: var(--media-accent-dark);
       }
     }
-  }
-
-  & > .books {
-    --media-accent: hsl(24 96% 52%);
-    --media-accent-dark: hsl(18 90% 38%);
-  }
-
-  & > .games {
-    --media-accent: hsl(188 88% 40%);
-    --media-accent-dark: hsl(196 90% 28%);
   }
 
   [role='tab']:not(.game-tab) + .game-tab {
