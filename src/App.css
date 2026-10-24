@@ -16,7 +16,8 @@ nav.tabs {
   --nav-ink: var(--body-colour-mid);
   --nav-ink-active: var(--body-colour);
   --nav-rule: var(--border-colour);
-  --nav-hover: hsl(0 0% 0% / 0.05);
+  --nav-hover: var(--link-colour);
+  --nav-hover-ink: white;
   background: var(--nav-bg);
 }
 
@@ -60,7 +61,7 @@ nav ul {
 
       &:focus-visible,
       &:hover {
-        color: var(--nav-ink-active);
+        color: var(--nav-hover-ink);
         background: none;
         outline: none;
       }
