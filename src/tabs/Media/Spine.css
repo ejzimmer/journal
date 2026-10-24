@@ -92,7 +92,7 @@
   font-weight: 400;
   opacity: 0.75;
   font-style: italic;
-  margin-block-start: 4px;
+  line-height: 1.1;
 }
 
 .spine .stamp {
