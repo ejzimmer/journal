@@ -7,9 +7,8 @@ import { ModalDialog } from '../../shared/controls/ModalDialog';
 import { TickIcon } from '../../shared/icons/Tick';
 import { RubbishBinIcon } from '../../shared/icons/RubbishBin';
 import { PlusIcon } from '../../shared/icons/Plus';
-import { BandColourPicker } from './BandColourPicker';
 import { useMediaStorage } from './MediaStorageContext';
-import { MediaDetails, MediaSeries, NewMedia, SeriesDetails } from './types';
+import { MediaDetails, NewMedia, SeriesDetails } from './types';
 
 import './MediaForm.css';
 
@@ -35,14 +34,8 @@ export function MediaForm<T extends MediaDetails>({
     existingAuthor ? { id: existingAuthor, label: existingAuthor } : undefined,
   );
 
-  const {
-    addMedia,
-    addMediaSeries,
-    updateMedia,
-    updateMediaSeries,
-    moveMedia,
-    deleteMedia,
-  } = useMediaStorage();
+  const { addMedia, addMediaSeries, updateMedia, moveMedia, deleteMedia } =
+    useMediaStorage();
   const { closeModal } = useModal();
 
   const currentSeries = item
@@ -54,26 +47,6 @@ export function MediaForm<T extends MediaDetails>({
       ? { id: currentSeries.id, label: currentSeries.name }
       : undefined,
   );
-  const [bandHue, setBandHue] = useState(currentSeries?.bandHue);
-
-  const changeSeries = (value?: OptionType) => {
-    setSeries(value);
-    const matchedSeries =
-      value && config.seriesList.find((s) => s.id === value.id);
-    setBandHue(matchedSeries?.bandHue);
-  };
-
-  const updateSeriesBandHue = (target: SeriesDetails<T> | undefined) => {
-    if (target && bandHue !== undefined && bandHue !== target.bandHue) {
-      updateMediaSeries(target as MediaSeries, target.name, bandHue);
-    }
-  };
-
-  const resetSeriesBand = () => {
-    setSeries(undefined);
-    setBandHue(undefined);
-  };
-
   const seriesOptions = config.seriesList.map((s) => ({
     id: s.id,
     label: s.name,
@@ -94,31 +67,26 @@ export function MediaForm<T extends MediaDetails>({
       const updatedItem = config.buildUpdated(item, title, author?.label);
 
       if (series && series.id === '') {
-        moveMedia(updatedItem, { name: series.label, bandHue });
+        moveMedia(updatedItem, { name: series.label });
       } else if (series?.id !== currentSeries?.id) {
         moveMedia(updatedItem, series && { id: series.id });
-        const target =
-          series && config.seriesList.find((s) => s.id === series.id);
-        updateSeriesBandHue(target);
       } else {
         updateMedia(updatedItem);
-        updateSeriesBandHue(currentSeries);
       }
     } else {
       const newItem = config.buildNew(title, author?.label) as NewMedia;
 
       if (series && series.id === '') {
-        addMediaSeries(series.label, newItem, bandHue);
+        addMediaSeries(series.label, newItem);
       } else if (series) {
         addMedia(newItem, series.id);
-        updateSeriesBandHue(config.seriesList.find((s) => s.id === series.id));
       } else {
         addMedia(newItem);
       }
 
       if (titleRef.current) titleRef.current.value = '';
       setAuthor(undefined);
-      resetSeriesBand();
+      setSeries(undefined);
     }
 
     closeModal();
@@ -151,15 +119,8 @@ export function MediaForm<T extends MediaDetails>({
             value={series}
             options={seriesOptions}
             createOption={(label) => ({ id: '', label })}
-            onChange={changeSeries}
+            onChange={setSeries}
           />
-          {series && (
-            <BandColourPicker
-              label={`${series.label} band colour`}
-              value={bandHue}
-              onChange={setBandHue}
-            />
-          )}
         </div>
       </Modal.Body>
       <Modal.Footer>

@@ -98,11 +98,10 @@ describe('AddMediaForm', () => {
       );
       await user.click(screen.getByRole('button', { name: 'Save' }));
 
-      expect(addMediaSeries).toHaveBeenCalledWith(
-        'The Locked Tomb',
-        { type: 'book', title: 'Gideon the Ninth' },
-        undefined,
-      );
+      expect(addMediaSeries).toHaveBeenCalledWith('The Locked Tomb', {
+        type: 'book',
+        title: 'Gideon the Ninth',
+      });
     });
   });
 

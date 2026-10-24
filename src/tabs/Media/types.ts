@@ -5,7 +5,6 @@ export type SeriesDetails<T extends BookDetails | GameDetails> = {
   id: string;
   type: 'series';
   name: string;
-  bandHue?: number;
   items?: Record<string, T>;
 };
 

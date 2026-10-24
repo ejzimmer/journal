@@ -131,7 +131,7 @@
 }
 
 .spine.done .stamp {
-  color: oklch(35% 0.15 var(--band-hue, var(--hue)));
+  color: oklch(35% 0.15 var(--hue));
   font-size: 17px;
   font-weight: 700;
 }
@@ -140,8 +140,8 @@
   position: absolute;
   inset-inline: 0;
   height: 9px;
-  background: oklch(58% 0.2 var(--band-hue));
-  border-block: 2.5px solid var(--ink);
+  background: oklch(52% 0.17 var(--hue));
+  border-block: 1px solid var(--ink);
 }
 
 .spine .series-band-head {
@@ -153,7 +153,7 @@
 }
 
 .spine.todo .series-band {
-  background: oklch(80% 0.1 var(--band-hue));
+  background: oklch(72% 0.12 var(--hue));
 }
 
 .spine-item {
