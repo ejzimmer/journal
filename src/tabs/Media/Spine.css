@@ -131,7 +131,7 @@
 }
 
 .spine.done .stamp {
-  color: oklch(35% 0.15 var(--band-hue, var(--hue)));
+  color: oklch(35% 0.15 var(--hue));
   font-size: 17px;
   font-weight: 700;
 }

@@ -25,7 +25,6 @@ const theWatchSeries: SeriesDetails<BookDetails> = {
   id: 'series-watch',
   type: 'series',
   name: 'City Watch',
-  bandHue: 40,
   items: {
     [guardsGuards.id]: guardsGuards,
     [menAtArms.id]: menAtArms,

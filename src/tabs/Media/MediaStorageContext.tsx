@@ -26,17 +26,13 @@ export type MediaStorageContextType = {
   isLoading: boolean;
 
   addMedia: (media: NewMedia, seriesId?: string) => void;
-  addMediaSeries: (name: string, media: NewMedia, bandHue?: number) => void;
+  addMediaSeries: (name: string, media: NewMedia) => void;
   updateMedia: (media: MediaDetails) => void;
-  updateMediaSeries: (
-    series: MediaSeries,
-    name: string,
-    bandHue?: number,
-  ) => void;
+  updateMediaSeries: (series: MediaSeries, name: string) => void;
   deleteMedia: (media: MediaDetails) => void;
   moveMedia: (
     media: MediaDetails,
-    destination?: { id: string } | { name: string; bandHue?: number },
+    destination?: { id: string } | { name: string },
   ) => void;
   reorderSeries: (series: MediaSeries, items: { id: string }[]) => void;
   getSeriesItemsPath: (series: MediaSeries) => string;
@@ -135,13 +131,12 @@ export function MediaStorageProvider({ children }: { children: ReactNode }) {
         seriesId ? appendToSeries(media, seriesId) : media,
       );
     },
-    addMediaSeries: (name, newMedia, bandHue) => {
+    addMediaSeries: (name, newMedia) => {
       const media = updateCompletionDate(newMedia, isMediaComplete(newMedia));
       const key = getMediaKey(media.type);
       const seriesId = addItem<MediaSeries>(key, {
         type: 'series',
         name,
-        ...(bandHue !== undefined && { bandHue }),
       });
       addItem(`${key}/${seriesId}/items`, { ...media, position: 0 });
     },
@@ -152,12 +147,8 @@ export function MediaStorageProvider({ children }: { children: ReactNode }) {
         updateCompletionDate(media, isMediaComplete(media)),
       );
     },
-    updateMediaSeries: (series, name, bandHue) => {
-      updateItem(getSeriesKey(series), {
-        ...series,
-        name,
-        ...(bandHue !== undefined && { bandHue }),
-      });
+    updateMediaSeries: (series, name) => {
+      updateItem(getSeriesKey(series), { ...series, name });
     },
     deleteMedia: (media) => {
       const series = findSeriesContaining(media);
@@ -177,9 +168,6 @@ export function MediaStorageProvider({ children }: { children: ReactNode }) {
         const seriesId = addItem<MediaSeries>(key, {
           type: 'series',
           name: destination.name,
-          ...(destination.bandHue !== undefined && {
-            bandHue: destination.bandHue,
-          }),
         });
         moveMediaToSeriesId(media, seriesId ?? undefined);
       } else {

@@ -73,7 +73,7 @@ function GameMediaList({
     <MediaList
       items={games}
       listId={series && getSeriesItemsPath(series)}
-      bandHue={series?.bandHue}
+      hasBand={!!series}
       onReorder={series && ((items) => reorderSeries(series, items))}
       hue={(game) => getCoverHue(series?.id ?? game.title)}
       config={GAME_CONFIG}

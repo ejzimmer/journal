@@ -5,7 +5,7 @@ import './Spine.css';
 export type SpineAppearance = {
   status: 'todo' | 'active' | 'done';
   hue: number;
-  bandHue?: number;
+  hasBand: boolean;
   minHeight: number;
   title: string;
   author?: string;
@@ -15,7 +15,7 @@ export type SpineAppearance = {
 export function Spine({
   status,
   hue,
-  bandHue,
+  hasBand,
   minHeight,
   title,
   author,
@@ -39,17 +39,9 @@ export function Spine({
   return (
     <div
       className={`spine ${status}`}
-      style={
-        {
-          '--hue': hue,
-          ...(bandHue !== undefined && { '--band-hue': bandHue }),
-          minHeight,
-        } as CSSProperties
-      }
+      style={{ '--hue': hue, minHeight } as CSSProperties}
     >
-      {bandHue !== undefined && (
-        <span className="series-band series-band-head" />
-      )}
+      {hasBand && <span className="series-band series-band-head" />}
 
       <button
         ref={titleRef}
@@ -73,9 +65,7 @@ export function Spine({
         {glyph}
       </button>
 
-      {bandHue !== undefined && (
-        <span className="series-band series-band-tail" />
-      )}
+      {hasBand && <span className="series-band series-band-tail" />}
     </div>
   );
 }
