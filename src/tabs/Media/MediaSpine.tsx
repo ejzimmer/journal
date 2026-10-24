@@ -53,7 +53,7 @@ function getSpineHeight(title: string) {
 
 export function MediaSpine<T extends MediaDetails, S extends string>({
   item,
-  hasBand,
+  bandHue,
   hue,
   config,
   EditForm,
@@ -64,7 +64,7 @@ export function MediaSpine<T extends MediaDetails, S extends string>({
   onMove,
 }: {
   item: T;
-  hasBand: boolean;
+  bandHue?: number;
   hue: number;
   config: StatusConfig<T, S>;
   EditForm: ComponentType<MediaEditFormProps<T>>;
@@ -105,7 +105,7 @@ export function MediaSpine<T extends MediaDetails, S extends string>({
   const appearance: SpineAppearance = {
     status: config.spineStatus[status],
     hue,
-    hasBand,
+    bandHue,
     minHeight: getSpineHeight(item.title),
     title: item.title,
     author,

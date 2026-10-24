@@ -7,6 +7,7 @@ import {
   SeriesDetails,
 } from '../types';
 import { getCoverHue } from '../coverHue';
+import { getSeriesBandKey } from './getSeriesBandKey';
 import { MediaList } from '../MediaList';
 import { MediaEditFormProps, StatusConfig } from '../MediaSpine';
 import { AddMediaForm, EditMediaForm } from '../MediaForm';
@@ -63,7 +64,7 @@ function BookMediaList({
     <MediaList
       items={books}
       listId={series && getSeriesItemsPath(series)}
-      hasBand={!!series}
+      bandHue={series && getCoverHue(getSeriesBandKey(series))}
       onReorder={series && ((items) => reorderSeries(series, items))}
       hue={(book) => getCoverHue(book.author ?? book.title)}
       config={BOOK_CONFIG}

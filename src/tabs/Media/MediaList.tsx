@@ -9,7 +9,7 @@ import { SeriesDragAndDrop } from './SeriesDragAndDrop';
 export function MediaList<T extends MediaDetails, S extends string>({
   items,
   listId,
-  hasBand,
+  bandHue,
   hue,
   config,
   EditForm,
@@ -17,7 +17,7 @@ export function MediaList<T extends MediaDetails, S extends string>({
 }: {
   items?: Record<string, T>;
   listId?: string;
-  hasBand: boolean;
+  bandHue?: number;
   hue: (item: T) => number;
   config: StatusConfig<T, S>;
   EditForm: ComponentType<MediaEditFormProps<T>>;
@@ -51,7 +51,7 @@ export function MediaList<T extends MediaDetails, S extends string>({
             <MediaSpine
               key={item.id}
               item={item}
-              hasBand={hasBand}
+              bandHue={bandHue}
               hue={hue(item)}
               config={config}
               EditForm={EditForm}

@@ -21,7 +21,7 @@
   );
   --ink: oklch(28% 0.09 var(--hue));
   position: relative;
-  padding-inline: 6px;
+  padding-inline: 9px;
   padding-block-start: 22px;
   padding-block-end: 56px;
   border: 2.5px solid var(--ink);
@@ -92,7 +92,7 @@
   font-weight: 400;
   opacity: 0.75;
   font-style: italic;
-  margin-block-start: 4px;
+  line-height: 1.1;
 }
 
 .spine .stamp {
@@ -137,10 +137,28 @@
 }
 
 .spine .series-band {
+  --band-lightness: 52;
+  --band-chroma: 0.17;
+  --band: oklch(
+    calc(var(--band-lightness) * 1%) var(--band-chroma) var(--band-hue)
+  );
+  --band-highlight: oklch(
+    calc((var(--band-lightness) + 6) * 1%) calc(var(--band-chroma) * 0.8)
+      var(--band-hue)
+  );
+  --band-shadow: oklch(
+    calc((var(--band-lightness) - 8) * 1%) var(--band-chroma) var(--band-hue)
+  );
   position: absolute;
   inset-inline: 0;
   height: 9px;
-  background: oklch(52% 0.17 var(--hue));
+  background: linear-gradient(
+    to right,
+    var(--band) 0 3px,
+    var(--band-highlight) 3px 7px,
+    var(--band) 7px calc(100% - 7px),
+    var(--band-shadow) calc(100% - 7px)
+  );
   border-block: 1px solid var(--ink);
 }
 
@@ -153,7 +171,8 @@
 }
 
 .spine.todo .series-band {
-  background: oklch(72% 0.12 var(--hue));
+  --band-lightness: 72;
+  --band-chroma: 0.12;
 }
 
 .spine-item {
