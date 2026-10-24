@@ -30,7 +30,8 @@ body:has(.today) {
     --nav-ink: hsl(0 0% 60%);
     --nav-ink-active: hsl(0 0% 92%);
     --nav-rule: hsl(0 0% 18%);
-    --nav-hover: hsl(0 0% 100% / 0.06);
+    --nav-hover: hsl(0 0% 92%);
+    --nav-hover-ink: hsl(150 12% 5%);
   }
 }
 
