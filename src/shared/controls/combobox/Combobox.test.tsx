@@ -54,6 +54,20 @@ describe('Combobox', () => {
         expect(popover.showPopover).toHaveBeenCalled();
       });
     });
+
+    describe('and the user clicks the arrow', () => {
+      it('focuses the input & opens the popout', async () => {
+        const user = userEvent.setup();
+        render(<Combobox {...commonProps} value={options[0]} />);
+        const popover = screen.getByTestId('popover');
+        jest.spyOn(popover, 'showPopover');
+
+        await user.click(screen.getByTestId('arrow'));
+
+        expect(screen.getByRole('combobox')).toHaveFocus();
+        expect(popover.showPopover).toHaveBeenCalled();
+      });
+    });
   });
 
   describe('when the input loses focus', () => {

@@ -21,6 +21,12 @@ export function SingleValueInput<T extends OptionType>({
         onChange={onChangeSearchTerm}
         {...searchInputProps}
       />
+      <label
+        className="arrow"
+        htmlFor={searchInputProps.id}
+        aria-hidden
+        data-testid="arrow"
+      />
       {isShowingValue && (
         <div className="value">{children ?? value?.label}</div>
       )}
