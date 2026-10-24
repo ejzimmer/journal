@@ -18,12 +18,7 @@ body:has(.today) {
 
   color-scheme: dark;
   min-height: 100vh;
-  background: radial-gradient(
-      ellipse at 50% 40%,
-      hsl(150 25% 7%),
-      hsl(150 30% 3%) 75%
-    )
-    fixed;
+  background: linear-gradient(hsl(150 4% 10%), hsl(150 4% 6%)) fixed;
 
   nav.tabs {
     --nav-bg: hsl(150 12% 5%);
@@ -45,19 +40,6 @@ body:has(.today) {
   padding-block-start: 20px;
   font-family: ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
 
-  &::after {
-    content: '';
-    position: fixed;
-    inset: var(--tab-bar-height) 0 0;
-    z-index: 10;
-    pointer-events: none;
-    background: repeating-linear-gradient(
-      hsl(0 0% 0% / 0.22) 0 1px,
-      transparent 1px 3px
-    );
-    box-shadow: inset 0 0 120px hsl(0 0% 0% / 0.85);
-  }
-
   @media (width > 880px) {
     grid-template-areas: 'today week' 'today dates';
     grid-template-rows: auto 1fr;
@@ -68,31 +50,22 @@ body:has(.today) {
   }
 }
 
+.task-screen {
+  margin-block: 3px;
+  padding: 4px 10px;
+  border: 1px solid hsl(0 0% 0%);
+  border-radius: 4px;
+  background:
+    repeating-linear-gradient(hsl(0 0% 0% / 0.22) 0 1px, transparent 1px 3px),
+    radial-gradient(ellipse at 50% 40%, hsl(150 30% 10%), hsl(150 35% 4%) 90%);
+  box-shadow:
+    inset 0 0 12px hsl(0 0% 0% / 0.8),
+    0 0 0 1px hsl(150 4% 18%);
+  text-shadow: 0 0 5px var(--crt-glow);
+}
+
 .today-panel {
-  position: relative;
-  padding: 30px 20px 20px;
-  border: 1px solid var(--crt-rule);
-  border-radius: 2px;
-
-  &::before {
-    content: '[ ' attr(data-label) ' ]';
-    position: absolute;
-    top: -9px;
-    left: 14px;
-    padding-inline: 8px;
-    background: hsl(150 30% 5%);
-    font-size: 13px;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    color: var(--crt-dim);
-  }
-
-  li.item,
-  .calendar li {
-    text-shadow: 0 0 5px var(--crt-glow);
-  }
-
-  input,
+  input:not(.led-push-button),
   .single-value-container {
     background: var(--crt-bg);
     color: var(--crt-green);
