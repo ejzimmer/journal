@@ -80,7 +80,7 @@ body:has(.today) {
     text-shadow: 0 0 5px var(--crt-glow);
   }
 
-  input,
+  input:not(.led-push-button),
   .single-value-container {
     background: var(--crt-bg);
     color: var(--crt-green);
