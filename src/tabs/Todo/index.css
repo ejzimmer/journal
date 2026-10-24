@@ -26,6 +26,7 @@ body:has(.today) {
     fixed;
 
   nav.tabs {
+    z-index: 3;
     --nav-bg: hsl(150 12% 5%);
     --nav-ink: hsl(0 0% 60%);
     --nav-ink-active: hsl(0 0% 92%);
@@ -49,7 +50,7 @@ body:has(.today) {
     content: '';
     position: fixed;
     inset: var(--tab-bar-height) 0 0;
-    z-index: 10;
+    z-index: 1;
     pointer-events: none;
     background: repeating-linear-gradient(
       hsl(0 0% 0% / 0.22) 0 1px,
@@ -70,22 +71,9 @@ body:has(.today) {
 
 .today-panel {
   position: relative;
-  padding: 30px 20px 20px;
+  padding: 20px;
   border: 1px solid var(--crt-rule);
   border-radius: 2px;
-
-  &::before {
-    content: '[ ' attr(data-label) ' ]';
-    position: absolute;
-    top: -9px;
-    left: 14px;
-    padding-inline: 8px;
-    background: hsl(150 30% 5%);
-    font-size: 13px;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    color: var(--crt-dim);
-  }
 
   li.item,
   .calendar li {
@@ -301,6 +289,14 @@ input.led-push-button:checked,
     var(--led-press, 0 0 transparent),
     0 0 6px var(--led-lit),
     0 0 16px color-mix(in srgb, var(--led-lit) 60%, transparent);
+}
+
+.progress-bar,
+.led-button,
+.repeats .box,
+[role='radiogroup'].switch.led-switch {
+  position: relative;
+  z-index: 2;
 }
 
 .led-button,
