@@ -38,4 +38,15 @@ describe('getSeriesBandKey', () => {
       expect(getSeriesBandKey(series)).toBe('Emily St. John Mandel');
     });
   });
+
+  describe('when books in the series have different authors', () => {
+    it('uses the author of the earliest book in the series', () => {
+      const series = createSeries(
+        { ...glassHotel, author: 'Second Author', position: 1 },
+        { ...stationEleven, author: 'First Author', position: 0 },
+      );
+
+      expect(getSeriesBandKey(series)).toBe('First Author');
+    });
+  });
 });
