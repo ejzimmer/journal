@@ -1,3 +1,39 @@
+body:has(.today) {
+  --crt-green: hsl(120 70% 72%);
+  --crt-dim: hsl(120 35% 45%);
+  --crt-unlit: hsl(120 20% 33%);
+  --crt-glow: hsl(120 100% 50% / 0.55);
+  --crt-bg: hsl(150 30% 4%);
+  --crt-rule: hsl(120 40% 18%);
+  --crt-tick: hsl(120 30% 13%);
+  --crt-red: hsl(10 90% 60%);
+
+  --body-colour: var(--crt-green);
+  --body-colour-mid: var(--crt-dim);
+  --body-colour-light: var(--crt-unlit);
+  --border-colour: var(--crt-rule);
+  --border-colour-hover: var(--crt-dim);
+  --highlight-colour: hsl(120 60% 40% / 0.25);
+  --error-colour: var(--crt-red);
+
+  color-scheme: dark;
+  min-height: 100vh;
+  background: radial-gradient(
+      ellipse at 50% 40%,
+      hsl(150 25% 7%),
+      hsl(150 30% 3%) 75%
+    )
+    fixed;
+
+  nav.tabs {
+    --nav-bg: hsl(150 12% 5%);
+    --nav-ink: hsl(0 0% 60%);
+    --nav-ink-active: hsl(0 0% 92%);
+    --nav-rule: hsl(0 0% 18%);
+    --nav-hover: hsl(0 0% 100% / 0.06);
+  }
+}
+
 .today {
   --led-green: hsl(115 100% 50%);
   --led-blue: hsl(195 100% 50%);
@@ -6,6 +42,20 @@
   gap: 40px;
   grid-template-areas: 'today' 'week' 'dates';
   padding-block-start: 20px;
+  font-family: ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
+
+  &::after {
+    content: '';
+    position: fixed;
+    inset: var(--tab-bar-height) 0 0;
+    z-index: 10;
+    pointer-events: none;
+    background: repeating-linear-gradient(
+      hsl(0 0% 0% / 0.22) 0 1px,
+      transparent 1px 3px
+    );
+    box-shadow: inset 0 0 120px hsl(0 0% 0% / 0.85);
+  }
 
   @media (width > 880px) {
     grid-template-areas: 'today week' 'today dates';
@@ -14,6 +64,115 @@
 
   @media (width > 1360px) {
     grid-template-areas: 'today week dates';
+  }
+}
+
+.today-panel {
+  position: relative;
+  padding: 30px 20px 20px;
+  border: 1px solid var(--crt-rule);
+  border-radius: 2px;
+
+  &::before {
+    content: '[ ' attr(data-label) ' ]';
+    position: absolute;
+    top: -9px;
+    left: 14px;
+    padding-inline: 8px;
+    background: hsl(150 30% 5%);
+    font-size: 13px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--crt-dim);
+  }
+
+  li.item,
+  .calendar li {
+    text-shadow: 0 0 5px var(--crt-glow);
+  }
+
+  input,
+  .single-value-container {
+    background: var(--crt-bg);
+    color: var(--crt-green);
+    border: 1px solid var(--crt-rule);
+    font-family: inherit;
+    caret-color: var(--crt-green);
+
+    &:focus-within {
+      outline: 1px solid var(--crt-green);
+      box-shadow: 0 0 8px var(--crt-glow);
+    }
+  }
+
+  .single-value-container input {
+    border: 0;
+  }
+
+  :is(.form-control label, .label, legend) {
+    color: var(--crt-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    font-size: 12px;
+    font-weight: normal;
+  }
+
+  .combobox [popover],
+  .menu:popover-open {
+    background: var(--crt-bg);
+    color: var(--crt-green);
+    border-radius: 2px;
+    box-shadow:
+      0 0 0 1px var(--crt-rule),
+      0 8px 24px hsl(0 0% 0% / 0.7);
+  }
+
+  .combobox ul.options li {
+    &[aria-selected='true'] {
+      background: var(--crt-green);
+      color: var(--crt-bg);
+    }
+
+    &:is(.highlighted, :hover):not([aria-selected='true']) {
+      color: var(--crt-green);
+    }
+  }
+
+  .menu [role='menuitem']:is(:hover, :focus-visible) {
+    background: var(--highlight-colour);
+  }
+
+  button {
+    font-family: inherit;
+  }
+
+  button:focus-visible {
+    outline: 1px solid var(--crt-green);
+    outline-offset: 2px;
+  }
+
+  button.icon.secondary {
+    opacity: 1;
+    border: 1px solid var(--crt-rule);
+    background: var(--crt-bg);
+    box-shadow: inset 0 2px 3px hsl(0 0% 0% / 0.8);
+
+    svg {
+      opacity: 0.6;
+      transition:
+        opacity 0.2s,
+        filter 0.2s;
+    }
+
+    &:is(:hover, :focus-visible) {
+      background: hsl(10 60% 12%);
+      border-color: hsl(10 70% 35%);
+
+      svg {
+        opacity: 1;
+        filter: drop-shadow(0 0 4px hsl(10 100% 55%));
+      }
+    }
   }
 }
 
@@ -145,7 +304,7 @@ input.led-push-button:checked,
 
 .led-button,
 input.led-push-button {
-  border: 1px solid hsl(210 12% 72%);
+  border: 1px solid var(--crt-rule);
   transition:
     background 0.2s ease,
     box-shadow 0.2s ease,
@@ -155,14 +314,8 @@ input.led-push-button {
 
 .led-button:not(:hover, :focus-visible),
 input.led-push-button:not(:checked) {
-  background-color: hsl(210 20% 94%);
-  background-image: linear-gradient(
-    hsl(0 0% 100% / 0.85),
-    hsl(0 0% 100% / 0) 45%
-  );
-  box-shadow:
-    0 1px 2px hsl(0 0 0 / 0.25),
-    inset 0 -2px 2px hsl(0 0% 100% / 0.7);
+  background: var(--crt-bg);
+  box-shadow: inset 0 2px 3px hsl(0 0% 0% / 0.8);
 }
 
 input.led-push-button {
@@ -178,7 +331,7 @@ input.led-push-button {
 }
 
 .led-button {
-  color: var(--success-colour);
+  color: var(--crt-green);
 
   &:hover,
   &:focus-visible {
@@ -192,7 +345,23 @@ input.led-push-button {
 
 [role='radiogroup'].switch.led-switch {
   --led-colour: var(--led-blue);
+  isolation: isolate;
+  border-color: var(--crt-rule);
   border-radius: 999px;
+  background: var(--crt-bg);
+
+  &:focus-within {
+    outline-color: var(--crt-green);
+  }
+
+  label:not(:last-of-type) {
+    border-color: var(--crt-tick);
+  }
+
+  label:has(input:not(:checked)) {
+    box-shadow: none;
+    color: var(--crt-dim);
+  }
 
   label:has(input:checked) {
     text-shadow: 0 0 4px color-mix(in srgb, var(--led-colour) 75%, black);

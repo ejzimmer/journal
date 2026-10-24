@@ -25,13 +25,25 @@ export function Todo() {
   return (
     <CategoriesContext.Provider value={Array.from(categories)}>
       <div className="today">
-        <div style={{ gridArea: 'today' }}>
+        <div
+          className="today-panel"
+          data-label="daily"
+          style={{ gridArea: 'today' }}
+        >
           <TodayList />
         </div>
-        <div style={{ gridArea: 'week', marginInlineEnd: '30px' }}>
+        <div
+          className="today-panel"
+          data-label="weekly"
+          style={{ gridArea: 'week' }}
+        >
           <ThisWeekList />
         </div>
-        <div style={{ gridArea: 'dates' }}>
+        <div
+          className="today-panel"
+          data-label="due"
+          style={{ gridArea: 'dates' }}
+        >
           <DueDateList />
         </div>
       </div>

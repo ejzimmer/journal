@@ -12,7 +12,12 @@ nav.tabs {
   top: 0;
   z-index: 2;
   block-size: var(--tab-bar-height);
-  background: white;
+  --nav-bg: white;
+  --nav-ink: var(--body-colour-mid);
+  --nav-ink-active: var(--body-colour);
+  --nav-rule: var(--border-colour);
+  --nav-hover: hsl(0 0% 0% / 0.05);
+  background: var(--nav-bg);
 }
 
 nav ul {
@@ -20,13 +25,13 @@ nav ul {
   display: flex;
   margin: 0;
   padding: 0;
-  border-block-end: 2px solid var(--border-colour);
+  border-block-end: 1px solid var(--nav-rule);
   position: relative;
 
   &::before {
     content: '';
     height: 100%;
-    background: var(--link-colour);
+    background: var(--nav-hover);
     position: absolute;
     left: var(--hover-left, 0);
     width: var(--hover-width);
@@ -35,26 +40,27 @@ nav ul {
 
   li {
     padding: 0;
-    margin-block-end: -2px;
+    margin-block-end: -1px;
     transition: all 2s;
     position: relative;
 
     > a,
     &.tab-overflow > div > button {
       display: block;
+      position: relative;
       text-decoration: none;
-      color: inherit;
+      color: var(--nav-ink);
       padding-inline: 16px;
       padding-block: 8px;
 
       &.active {
-        color: var(--link-colour);
+        color: var(--nav-ink-active);
         border-block-end: 2px solid currentColor;
       }
 
       &:focus-visible,
       &:hover {
-        color: white;
+        color: var(--nav-ink-active);
         background: none;
         outline: none;
       }
@@ -98,7 +104,7 @@ nav ul {
           text-decoration: none;
 
           &.active {
-            color: var(--link-colour);
+            color: var(--nav-ink-active);
           }
         }
       }

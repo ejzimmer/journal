@@ -15,28 +15,40 @@
       font-style: italic;
     }
 
-    &.status-finished .description [role='button'] {
-      text-decoration: line-through;
-      opacity: 0.8;
+    &.status-finished .description {
+      [role='button'] {
+        color: var(--crt-unlit);
+        text-shadow: none;
+      }
+
+      .emoji-checkbox {
+        filter: grayscale(1) brightness(0.6);
+      }
     }
   }
 
   .due-date {
-    border: 2px solid;
+    border: 1px solid;
     font-weight: bold;
     font-size: 0.8em;
     padding: 4px;
+    color: var(--crt-unlit);
+    text-shadow: none;
 
     &.now {
-      border-color: var(--action-colour);
-      background: var(--action-colour);
-      color: white;
+      border-color: var(--crt-green);
+      background: var(--crt-green);
+      color: var(--crt-bg);
+      box-shadow: 0 0 10px var(--crt-glow);
     }
     &.past {
-      color: var(--error-colour);
+      color: var(--crt-red);
+      text-shadow: 0 0 5px hsl(10 90% 50% / 0.6);
     }
     &.this-week {
-      color: var(--action-colour);
+      color: var(--crt-green);
+      text-shadow: 0 0 5px var(--crt-glow);
+      box-shadow: 0 0 6px hsl(120 100% 50% / 0.25);
     }
   }
 
@@ -120,7 +132,7 @@
       position: absolute;
       inset: 8px;
       pointer-events: none;
-      color: hsl(210 10% 70%);
+      color: var(--crt-dim);
       transition:
         color 0.2s ease,
         translate 0.1s ease;

@@ -1,10 +1,13 @@
 .today-task {
   &.status-done,
   &.status-finished {
-    opacity: 0.4;
-
     .editable-description > div {
-      text-decoration: line-through;
+      color: var(--crt-unlit);
+      text-shadow: none;
+    }
+
+    .emoji-checkbox {
+      filter: grayscale(1) brightness(0.6);
     }
   }
 

@@ -20,20 +20,15 @@
       display: flex;
       width: 160px;
       height: 25px;
-      border: 1px solid hsl(210 12% 72%);
+      border: 1px solid var(--crt-rule);
       border-radius: 100px;
-      background-color: hsl(210 20% 94%);
-      background-image:
-        repeating-linear-gradient(
-          to right,
-          transparent 0 calc(var(--segment) - 1px),
-          hsl(210 10% 78%) calc(var(--segment) - 1px) var(--segment)
-        ),
-        linear-gradient(hsl(210 25% 98%), hsl(210 15% 86%));
-      box-shadow:
-        0 1px 2px hsl(0 0 0 / 0.25),
-        inset 0 2px 3px hsl(0 0 0 / 0.12),
-        inset 0 -2px 2px hsl(0 0% 100% / 0.7);
+      background-color: var(--crt-bg);
+      background-image: repeating-linear-gradient(
+        to right,
+        transparent 0 calc(var(--segment) - 1px),
+        var(--crt-tick) calc(var(--segment) - 1px) var(--segment)
+      );
+      box-shadow: inset 0 2px 4px hsl(0 0% 0% / 0.8);
 
       &::after {
         content: '';
@@ -42,7 +37,7 @@
         height: 35%;
         border-radius: 100px;
         background-image: linear-gradient(
-          hsl(0 0% 100% / 0.85),
+          hsl(0 0% 100% / 0.1),
           hsl(0 0% 100% / 0)
         );
         pointer-events: none;
@@ -88,10 +83,11 @@
 
   .dates-popover {
     font-size: 0.8em;
-    background: hsl(55, 86%, 80%);
+    background: var(--crt-bg);
+    border: 1px solid var(--crt-rule);
     width: fit-content;
     padding: 8px;
-    box-shadow: 2px 2px 8px hsl(0 0 0/0.2);
+    box-shadow: 0 8px 24px hsl(0 0% 0% / 0.7);
     position: absolute;
     top: 50%;
     right: -40px;
