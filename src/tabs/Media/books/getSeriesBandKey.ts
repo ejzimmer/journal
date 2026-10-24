@@ -1,11 +1,6 @@
 import { BookDetails, SeriesDetails } from '../types';
 
-export function getBookCoverKey(
-  book: BookDetails,
-  series?: SeriesDetails<BookDetails>,
-) {
-  if (!series) return book.author ?? book.title;
-
+export function getSeriesBandKey(series: SeriesDetails<BookDetails>) {
   const seriesAuthor = Object.values(series.items ?? {}).find(
     ({ author }) => author,
   )?.author;
