@@ -58,17 +58,24 @@
       pointer-events: none;
     }
 
-    &::after {
-      content: '';
+    .arrow {
       position: absolute;
-      top: 50%;
-      right: 10px;
-      width: 0;
-      height: 0;
-      border: 5px solid transparent;
-      border-top-color: var(--border-colour-hover);
-      transform: translateY(-25%);
-      pointer-events: none;
+      inset-block: 0;
+      right: 0;
+      width: 28px;
+      cursor: pointer;
+
+      &::after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        right: 10px;
+        width: 0;
+        height: 0;
+        border: 5px solid transparent;
+        border-top-color: var(--border-colour-hover);
+        transform: translateY(-25%);
+      }
     }
 
     &.showing-value input[role='combobox'] {
