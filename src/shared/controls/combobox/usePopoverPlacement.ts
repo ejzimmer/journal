@@ -39,7 +39,6 @@ export function usePopoverPlacement(
 
       const anchorRect = anchorEl.getBoundingClientRect();
 
-      // Close the popover when the anchor is scrolled out of view
       if (anchorRect.bottom <= 0 || anchorRect.top >= window.innerHeight) {
         onAnchorHidden();
         return;
@@ -52,11 +51,6 @@ export function usePopoverPlacement(
 
       const shared = { left: anchorRect.left, minWidth: anchorRect.width };
 
-      // Sets top/bottom as plain numbers rather than CSS anchor positioning:
-      // browsers vary in whether position-area's block-axis placement
-      // updates reliably when the chosen side changes. Scroll/resize already
-      // trigger a full re-measure here regardless, so anchor positioning's
-      // live tracking isn't needed on top of that.
       if (contentHeight <= spaceBelow || spaceBelow >= spaceAbove) {
         setPosition({
           ...shared,

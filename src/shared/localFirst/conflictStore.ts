@@ -1,7 +1,7 @@
 import { createStore, del, entries, set } from 'idb-keyval';
 import { Conflict } from './editTimes';
 
-export type ConflictStore = {
+type ConflictStore = {
   hydrate: () => Promise<void>;
   list: () => Conflict[];
   add: (conflicts: Conflict[]) => Promise<void>;

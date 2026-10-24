@@ -160,7 +160,6 @@ describe('AddMediaForm', () => {
       expect(screen.getByRole('textbox', { name: 'Item title' })).toHaveValue(
         '',
       );
-      // Just the option, not the selected value
       expect(screen.getAllByText('Discworld')).toHaveLength(1);
     });
   });

@@ -353,11 +353,9 @@ describe('DragHandle keyboard shortcuts', () => {
       const user = userEvent.setup();
       render(<ReorderableList initialList={list} />);
 
-      // "b" starts at index 1
       screen.getAllByRole('button', { name: 'drag menu' })[1].focus();
       await user.keyboard('{ArrowDown}');
 
-      // "b" is now at index 2
       const handlesAfter = screen.getAllByRole('button', { name: 'drag menu' });
       expect(handlesAfter[2]).toHaveFocus();
     });
@@ -366,11 +364,9 @@ describe('DragHandle keyboard shortcuts', () => {
       const user = userEvent.setup();
       render(<ReorderableList initialList={list} />);
 
-      // "c" starts at index 2
       screen.getAllByRole('button', { name: 'drag menu' })[2].focus();
       await user.keyboard('{Shift>}{ArrowUp}{/Shift}');
 
-      // "c" is now at index 0
       const handlesAfter = screen.getAllByRole('button', { name: 'drag menu' });
       expect(handlesAfter[0]).toHaveFocus();
     });
@@ -379,12 +375,10 @@ describe('DragHandle keyboard shortcuts', () => {
       const user = userEvent.setup();
       render(<ReorderableList initialList={list} />);
 
-      // "a" starts at index 0
       screen.getAllByRole('button', { name: 'drag menu' })[0].focus();
       await user.keyboard('{ArrowDown}');
       await user.keyboard('{ArrowDown}');
 
-      // "a" is now at index 2, and still focused throughout
       const handlesAfter = screen.getAllByRole('button', { name: 'drag menu' });
       expect(handlesAfter[2]).toHaveFocus();
     });

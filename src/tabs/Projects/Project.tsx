@@ -50,9 +50,7 @@ function setProjectOpen(projectId: string, isOpen: boolean) {
       OPEN_PROJECTS_STORAGE_KEY,
       JSON.stringify([...openProjectIds]),
     );
-  } catch {
-    // Ignore storage errors, e.g. private browsing or a full quota
-  }
+  } catch {}
 }
 
 export function Project({

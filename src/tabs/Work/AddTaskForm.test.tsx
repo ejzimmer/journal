@@ -23,7 +23,6 @@ const enterDueDate = async (
 ) => {
   await user.click(screen.getByRole('button', { name: '📅' }));
   await user.click(screen.getByRole('button', { name: /^Due date/ }));
-  // Testing library doesn't handle date inputs well
   fireEvent.change(screen.getByLabelText('Due date'), {
     target: { value: date },
   });

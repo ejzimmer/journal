@@ -12,8 +12,6 @@ clientsClaim();
 
 precacheAndRoute(self.__WB_MANIFEST);
 
-// Serve the app shell for any same-origin navigation that isn't a request
-// for a build asset, so client-side routes resolve while offline.
 const fileExtensionRegexp = /\/[^/?]+\.[^/]+$/;
 registerRoute(
   ({ request, url }) => {

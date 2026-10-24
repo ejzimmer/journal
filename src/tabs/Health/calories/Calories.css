@@ -90,7 +90,6 @@
     opacity: 1;
     pointer-events: auto;
     visibility: visible;
-    /* enter transition is handled by contents instead of container */
     transition: none;
   }
 }
@@ -117,9 +116,6 @@
   padding: 0;
   box-shadow: 2px 2px 12px hsl(0 0% 0% / 0.25);
 
-  /* the UA stylesheet hides a closed popover via a non-!important display:
-     none, so anything that sets display here must stay scoped to the open
-     state - otherwise this rule would win the cascade and defeat it */
   &:popover-open {
     display: flex;
     flex-direction: column;

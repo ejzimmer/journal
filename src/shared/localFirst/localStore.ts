@@ -3,7 +3,7 @@ import { getAtPath, pathsAreRelated, setAtPath, Tree } from './pathTree';
 
 const ROOT_KEY = 'tree';
 
-export type LocalStore = {
+type LocalStore = {
   hydrate: () => Promise<void>;
   readPath: <T>(path: string) => T | undefined;
   writePath: (path: string, value: unknown) => void;

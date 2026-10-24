@@ -8,7 +8,7 @@ import { Menu, MenuHandle } from '../controls/Menu';
 import { Destination, SortableItem } from './types';
 import { getPosition, onChangePosition } from './utils';
 
-export type DragHandleActions = {
+type DragHandleActions = {
   menuItems?: React.ReactNode;
   onKeyDown?: (event: React.KeyboardEvent<HTMLDivElement>) => void;
 };
@@ -37,12 +37,6 @@ export function DragHandle({
 
   const buttonRef = useRef<HTMLButtonElement>(null);
   const menuRef = useRef<MenuHandle>(null);
-  // React keeps this same component instance across a reorder (the list
-  // is keyed by item id one level up), so a plain ref survives the move.
-  // Reordering can otherwise drop focus and desync the popover's anchored
-  // position, so after every move we explicitly restore focus - and, if
-  // requested, reopen the menu fresh at its new position - rather than
-  // relying on the browser to carry that state across the move on its own.
   const pendingFocusRef = useRef<{ reopenMenu: boolean } | null>(null);
 
   useEffect(() => {

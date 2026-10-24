@@ -2,7 +2,6 @@
   position: relative;
 }
 
-/* Wraps the drag handle so native draggable attaches here, not the whole row (preserves text selection in inputs). */
 .drag-handle-mount {
   display: inline-flex;
   align-items: center;
@@ -15,9 +14,6 @@
   --terminal-radius: 4px;
   --line-offset: -5px;
   --terminal-diameter: calc(var(--terminal-radius) * 2);
-  --terminal-offset: calc(
-    (var(--terminal-radius) + (var(--stroke-size) / 2)) * -1
-  );
   position: absolute;
   background-color: var(--action-colour);
   pointer-events: none;

@@ -382,9 +382,6 @@ describe('WorkStorageContext labels', () => {
     ...overrides,
   });
 
-  // The plain task/list pairing most tests below start from; only build a
-  // different one when a test actually needs different labelIds, status, or
-  // list membership.
   const task = makeTask('list-1');
   const list = makeList('list-1', { items: { [task.id]: task } });
 

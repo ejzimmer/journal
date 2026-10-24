@@ -1,7 +1,7 @@
 import { valuesAreEqual } from './pathTree';
 import { V2_ROOT } from './v2Shape';
 
-export const EDITED_ROOT = `${V2_ROOT}/_edited`;
+const EDITED_ROOT = `${V2_ROOT}/_edited`;
 const EDIT_TIME_KEY = '_at';
 
 export type Conflict = {

@@ -53,6 +53,7 @@ module.exports = tseslint.config(
       'no-dupe-class-members': 'warn',
       'no-dupe-keys': 'warn',
       'no-duplicate-case': 'warn',
+      'no-empty': ['error', { allowEmptyCatch: true }],
       'no-empty-character-class': 'warn',
       'no-empty-pattern': 'warn',
       'no-eval': 'warn',

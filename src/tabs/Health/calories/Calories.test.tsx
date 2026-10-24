@@ -10,7 +10,6 @@ import { renderWithHealthStorage } from '../healthStorageTestUtils';
 describe('Calories', () => {
   beforeEach(() => {
     jest.useFakeTimers();
-    // yesterday is 6 Jan
     jest.setSystemTime(new Date('2026-01-07'));
   });
 

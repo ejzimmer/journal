@@ -1,7 +1,3 @@
-// jest-dom adds custom jest matchers for asserting on DOM nodes.
-// allows you to do things like:
-// expect(element).toHaveTextContent(/react/i)
-// learn more: https://github.com/testing-library/jest-dom
 import '@testing-library/jest-dom';
 import { TextEncoder } from 'util';
 
@@ -56,7 +52,6 @@ Element.prototype.matches = function mock(
   return originalMatches.call(this, selector);
 } as typeof Element.prototype.matches;
 
-// Ensure pop-ups are hidden when first rendered
 const popoverDefaultApplied = new WeakSet<Element>();
 const originalSetAttribute = Element.prototype.setAttribute;
 Element.prototype.setAttribute = function mock(
@@ -98,20 +93,13 @@ HTMLCanvasElement.prototype.getContext = function mock() {
   return null;
 } as typeof HTMLCanvasElement.prototype.getContext;
 
-// jsdom doesn't implement scrollIntoView.
 Element.prototype.scrollIntoView = function mock() {};
 
-// jsdom doesn't implement structuredClone, which fake-indexeddb relies on.
-// A JSON round-trip is an adequate stand-in for the plain data this app
-// stores (no Dates, Maps, or other structured-clone-only types).
 if (typeof structuredClone === 'undefined') {
   (globalThis as { structuredClone?: typeof structuredClone }).structuredClone =
     (value: unknown) => JSON.parse(JSON.stringify(value));
 }
 
-// jsdom doesn't do layout, so every element reports a zero rect at the
-// origin. Return a plausible on-screen rect instead so code that measures
-// element position (e.g. popover placement) behaves sensibly in tests.
 Element.prototype.getBoundingClientRect = function mock(this: Element) {
   return {
     x: 0,

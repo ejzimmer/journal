@@ -105,8 +105,6 @@ describe('StandardChecklistButton', () => {
 
   it('writes the same result when clicked twice in a row, instead of duplicating', async () => {
     const user = userEvent.setup();
-    // subtasks stays the same across both clicks, simulating a second click
-    // landing before the first click's write has synced back down.
     const storageContext = renderWithContext(undefined);
 
     const button = screen.getByRole('button', {

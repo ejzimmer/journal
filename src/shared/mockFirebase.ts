@@ -45,9 +45,6 @@ function setAtPath(
     node[last] = value;
   }
 
-  // Firebase's Realtime Database doesn't store empty nodes: an object left
-  // with no children after a delete disappears too, same as its parents,
-  // all the way up.
   for (let i = segments.length - 1; i >= 0; i--) {
     const parent = { ...chain[i] };
     if (isDelete && Object.keys(node).length === 0) {
@@ -182,8 +179,6 @@ export function createMockFirebaseContext(
         loading: true,
         synced: false,
       });
-      // Real Firebase's onValue only invokes its callback when the resolved
-      // value actually differs from what it last delivered.
       const lastDelivered = useRef<{ initialized: boolean; json?: string }>({
         initialized: false,
       });

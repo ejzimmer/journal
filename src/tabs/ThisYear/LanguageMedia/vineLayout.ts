@@ -13,7 +13,7 @@ export type Pergola = {
   trunkCrossings: [top: number, bottom: number][];
 };
 
-export type VineLayout = TreeLayout & { pergola: Pergola };
+type VineLayout = TreeLayout & { pergola: Pergola };
 
 export const BAY_WIDTH = 132;
 export const BEAM_HEIGHT = 12;
@@ -22,10 +22,10 @@ const BEAM_OVERHANG = 22;
 const POST_INSET = 10;
 const TWIST_WIDTH = 8.5;
 const TWIST_LENGTH = 58;
-export const ROW_GAP = 46;
+const ROW_GAP = 46;
 const FIRST_ROW_DROP = 14;
 const HANG_ROOM = 56;
-export const EPISODE_SPACING = 24;
+const EPISODE_SPACING = 24;
 const BRANCH_LEAD = 14;
 const SHOOT_LENGTH = 24;
 const DEFAULT_EPISODE_SECONDS = 45 * 60;

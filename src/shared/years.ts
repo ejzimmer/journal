@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import { getThisYear, getToday } from './dates';
 
-export const FIRST_TRACKED_YEAR = 2026;
+const FIRST_TRACKED_YEAR = 2026;
 
-export type Completable = { completedAt?: string };
+type Completable = { completedAt?: string };
 
 export const getCompletionYear = ({ completedAt }: Completable) =>
   completedAt ? Temporal.PlainDate.from(completedAt).year : FIRST_TRACKED_YEAR;

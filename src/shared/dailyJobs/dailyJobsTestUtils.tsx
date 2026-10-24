@@ -45,4 +45,4 @@ export async function renderDailyJob(useJob: () => void, storage: ContextType) {
   };
 }
 
-export const settleClaims = () => act(async () => {});
+const settleClaims = () => act(async () => {});
