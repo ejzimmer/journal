@@ -1,4 +1,8 @@
 .today-task {
+  .task-screen {
+    flex-grow: 1;
+  }
+
   &.status-done,
   &.status-finished {
     .editable-description > div {

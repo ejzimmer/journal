@@ -28,7 +28,10 @@ export function Todo() {
         <div className="today-panel" style={{ gridArea: 'today' }}>
           <TodayList />
         </div>
-        <div className="today-panel" style={{ gridArea: 'week' }}>
+        <div
+          className="today-panel"
+          style={{ gridArea: 'week', marginInlineEnd: '30px' }}
+        >
           <ThisWeekList />
         </div>
         <div className="today-panel" style={{ gridArea: 'dates' }}>

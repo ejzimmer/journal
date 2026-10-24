@@ -21,7 +21,6 @@ body:has(.today) {
   background: linear-gradient(hsl(150 4% 10%), hsl(150 4% 6%)) fixed;
 
   nav.tabs {
-    z-index: 3;
     --nav-bg: hsl(150 12% 5%);
     --nav-ink: hsl(0 0% 60%);
     --nav-ink-active: hsl(0 0% 92%);
@@ -51,39 +50,21 @@ body:has(.today) {
   }
 }
 
-.today-panel {
-  position: relative;
-  padding: 20px;
+.task-screen {
+  margin-block: 3px;
+  padding: 4px 10px;
   border: 1px solid hsl(0 0% 0%);
-  border-radius: 10px;
-  background: radial-gradient(
-    ellipse at 50% 40%,
-    hsl(150 30% 9%),
-    hsl(150 35% 4%) 85%
-  );
+  border-radius: 4px;
+  background:
+    repeating-linear-gradient(hsl(0 0% 0% / 0.22) 0 1px, transparent 1px 3px),
+    radial-gradient(ellipse at 50% 40%, hsl(150 30% 10%), hsl(150 35% 4%) 90%);
   box-shadow:
-    0 0 0 1px hsl(150 4% 18%),
-    0 2px 6px hsl(0 0% 0% / 0.6);
+    inset 0 0 12px hsl(0 0% 0% / 0.8),
+    0 0 0 1px hsl(150 4% 18%);
+  text-shadow: 0 0 5px var(--crt-glow);
+}
 
-  &::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    z-index: 1;
-    border-radius: inherit;
-    pointer-events: none;
-    background: repeating-linear-gradient(
-      hsl(0 0% 0% / 0.22) 0 1px,
-      transparent 1px 3px
-    );
-    box-shadow: inset 0 0 40px hsl(0 0% 0% / 0.75);
-  }
-
-  li.item,
-  .calendar li {
-    text-shadow: 0 0 5px var(--crt-glow);
-  }
-
+.today-panel {
   input:not(.led-push-button),
   .single-value-container {
     background: var(--crt-bg);
@@ -293,14 +274,6 @@ input.led-push-button:checked,
     var(--led-press, 0 0 transparent),
     0 0 6px var(--led-lit),
     0 0 16px color-mix(in srgb, var(--led-lit) 60%, transparent);
-}
-
-.progress-bar,
-.led-button,
-.repeats .box,
-[role='radiogroup'].switch.led-switch {
-  position: relative;
-  z-index: 2;
 }
 
 .led-button,

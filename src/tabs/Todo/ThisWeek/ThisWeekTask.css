@@ -1,5 +1,17 @@
 .todo-task-list.weekly {
   max-width: 600px;
+
+  .task-screen {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-grow: 1;
+
+    [role='button'] {
+      flex-grow: 1;
+    }
+  }
+
   .remainder {
     position: absolute;
     font-size: 0.8em;
@@ -91,7 +103,7 @@
     position: absolute;
     top: 50%;
     right: -40px;
-    z-index: 2;
+    z-index: 1;
     opacity: 0;
     pointer-events: none;
     transition: opacity 0.4s;
