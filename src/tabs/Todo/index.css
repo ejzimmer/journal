@@ -105,10 +105,20 @@ button.category-button,
   &:active,
   &:has(input:checked) {
     translate: 0 2px;
-    background: linear-gradient(hsl(150 4% 13%), hsl(150 4% 19%));
+    background: linear-gradient(hsl(150 4% 11%), hsl(150 4% 18%));
     box-shadow:
-      inset 0 2px 3px hsl(0 0% 0% / 0.7),
+      inset 0 3px 5px hsl(0 0% 0% / 0.85),
+      inset 0 -1px 0 hsl(0 0% 100% / 0.06),
       0 0 0 hsl(0 0% 0% / 0.7);
+  }
+}
+
+.todo-task-list .emoji-checkbox {
+  border-radius: 50%;
+
+  .done-tick {
+    background: none;
+    color: hsl(150 4% 58%);
   }
 }
 
