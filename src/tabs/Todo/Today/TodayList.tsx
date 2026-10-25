@@ -9,7 +9,7 @@ import {
   draggableTypeKey,
   SortableItem,
 } from '../../../shared/drag-and-drop/types';
-import { DragPreview } from '../DragPreview';
+import { DragPreview } from '../../../shared/drag-and-drop/DragPreview';
 import { DragHandle } from '../../../shared/drag-and-drop/DragHandle';
 import { useDropTarget } from '../../../shared/drag-and-drop/useDropTarget';
 import { useDraggableList } from '../../../shared/drag-and-drop/useDraggableList';
@@ -51,7 +51,7 @@ export function TodayList() {
                 id: task.id,
                 parentId: DAILY_KEY,
               })}
-              dragPreview={<DragPreview task={task} />}
+              dragPreview={<DragPreview>{task.description}</DragPreview>}
               isDroppable={(data) => data[draggableTypeKey] === '日'}
               allowedEdges={['bottom', 'top']}
               dragHandle={

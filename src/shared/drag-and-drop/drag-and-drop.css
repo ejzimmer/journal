@@ -68,3 +68,14 @@
   outline: none;
   background: var(--card-colour, var(--border-colour));
 }
+
+.drag-preview {
+  border: 1px solid;
+  padding-inline: 20px;
+  padding-block: 5px 10px;
+
+  ol {
+    padding: 0;
+    margin-inline: 10px;
+  }
+}

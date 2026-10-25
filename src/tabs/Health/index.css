@@ -1,3 +1,97 @@
+.health {
+  --green: hsl(110 61% 42%);
+  --green-dark: hsl(110 61% 34%);
+  --leaf: hsl(105 56% 51%);
+  --orange: hsl(28 100% 56%);
+  --orange-glow: hsl(28 100% 56% / 0.35);
+  --yellow: hsl(42 100% 60%);
+  --yellow-glow: hsl(40 100% 50% / 0.45);
+  --brown: hsl(47 100% 15%);
+  --olive: hsl(76 21% 45%);
+  --olive-mid: hsl(73 25% 72%);
+  --olive-light: hsl(73 33% 85%);
+  --olive-wash: hsl(73 49% 91%);
+  --olive-pale: hsl(71 49% 93%);
+  --olive-white: hsl(70 60% 98%);
+
+  --focus: var(--orange);
+  --switch-background: var(--olive-wash);
+  --switch-knob: var(--yellow);
+  --switch-knob-shadow: var(--yellow-glow);
+  --switch-icon: var(--olive);
+  --switch-icon-selected: var(--brown);
+
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+[role='radiogroup'].switch.health-switch {
+  isolation: isolate;
+  border: none;
+  border-radius: 999px;
+  padding: 2px;
+  background: var(--switch-background);
+
+  &:focus-within {
+    outline: none;
+  }
+
+  &:has(input:focus-visible) {
+    outline: 2px solid var(--focus);
+    outline-offset: 2px;
+  }
+
+  label {
+    width: var(--health-switch-option-width, 36px);
+    height: var(--health-switch-option-height, 30px);
+    padding: 0;
+    display: grid;
+    place-items: center;
+    border-radius: 999px;
+    color: var(--switch-icon);
+
+    &:not(:last-of-type) {
+      border-inline-end: none;
+    }
+
+    &:has(input:not(:checked)) {
+      box-shadow: none;
+
+      &:hover {
+        color: var(--switch-knob);
+
+        svg {
+          filter: drop-shadow(0 0 2px var(--switch-knob))
+            drop-shadow(0 0 4px var(--switch-knob-shadow));
+        }
+      }
+    }
+
+    &:has(input:checked) {
+      color: var(--switch-icon-selected);
+
+      &:hover {
+        color: white;
+      }
+    }
+
+    svg {
+      display: block;
+      width: 18px;
+      height: 18px;
+    }
+  }
+
+  .indicator {
+    top: 2px;
+    height: calc(100% - 4px);
+    border-radius: 999px;
+    background: var(--switch-knob);
+    box-shadow: 0 2px 6px var(--switch-knob-shadow);
+  }
+}
+
 .hovertext-anchor {
   anchor-name: --label-text;
 }

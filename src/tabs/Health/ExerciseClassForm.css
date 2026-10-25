@@ -1,15 +1,10 @@
 .exercise-class-form {
   --form-background: white;
   --form-shadow: 0 1px 2px hsl(0 0% 0% / 0.08);
-  --field-background: hsl(70 60% 98%);
-  --field-border: hsl(73 33% 85%);
+  --field-background: var(--olive-white);
+  --field-border: var(--olive-light);
   --label: hsl(143 4% 43%);
-  --save: hsl(110 61% 42%);
-  --switch-background: hsl(73 49% 91%);
-  --switch-knob: hsl(42 100% 60%);
-  --switch-knob-shadow: hsl(40 100% 50% / 0.45);
-  --switch-icon: hsl(76 21% 45%);
-  --switch-icon-selected: hsl(47 100% 15%);
+  --save: var(--green);
 
   display: grid;
   gap: 10px;
