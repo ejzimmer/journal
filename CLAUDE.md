@@ -10,9 +10,9 @@ Don't commit screenshots into the repo to get them into a PR - GitHub's API does
 
 Don't reach for a `let` at module scope to pass ephemeral state between component instances (e.g. "which item should regain focus after the next render"). It's invisible to React's data flow and got flagged in review. Reach for a hook instead - often a plain `useRef` inside the component already does the job: React preserves a component instance (and its refs/state) across a re-render as long as its `key` doesn't change, even if it moves position within a keyed list, so state that only needs to survive "this instance, across its own re-render" doesn't need to live outside the component at all. Only use React Context (with a Provider mounted above the components that need to share it) for state that genuinely must be shared _across_ different component instances.
 
-## Don't write code comments unless asked
+## Only comment what the code can't say
 
-Default to no comments at all. Write code that reads on its own - name things well, keep functions small - and leave the explanation out. A comment that feels necessary is usually a sign the code needs rewriting rather than annotating. This applies to every language and file type here, scripts and config included. The reasoning behind a change belongs in the commit message or the PR description, where it has room and context; the file itself should just be the code. Only add a comment when explicitly asked for one.
+Write code that reads on its own - name things well, keep functions small - and only add a comment when it explains something a reader couldn't work out by looking at the code: a browser or library quirk, a constraint from outside the file (data written by older versions, how real Firebase behaves), a test fixture fact like which weekday a date falls on, or why the obvious approach would break. A comment that restates what the code does, labels a section, or leaves code commented out doesn't earn its place. This applies to every language and file type here, scripts and config included. The reasoning behind a change belongs in the commit message or the PR description.
 
 ## Function names describe what the function does
 

@@ -1,6 +1,6 @@
 import { Episode, EpisodeUpdate } from './types';
 
-export type KeyedEpisodeUpdate = EpisodeUpdate & { key: string };
+type KeyedEpisodeUpdate = EpisodeUpdate & { key: string };
 
 export const getEpisodeUpdates = (episode: Episode): KeyedEpisodeUpdate[] =>
   Object.entries(episode.updates ?? {})

@@ -6,7 +6,6 @@ body {
   font-family: var(--body-font);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  --input-height: 28px;
   --tab-bar-height: 38px;
 
   --body-colour: hsl(0 0% 20%);
@@ -23,7 +22,6 @@ body {
   --action-colour: hsl(211 81% 46%);
   --action-colour-dark: hsl(211 81% 36%);
   --success-colour: hsl(108, 81%, 36%);
-  --warning-colour: hsla(41, 94%, 50%);
   --error-colour: hsl(10, 89%, 41%);
 
   color: var(--body-colour);
@@ -75,52 +73,6 @@ button {
     border-color: var(--border-colour);
   }
 
-  &.primary-clear {
-    color: var(--success-colour);
-    border-color: color-mix(in srgb, var(--success-colour) 22%, transparent);
-    background: linear-gradient(
-      to bottom,
-      color-mix(in srgb, var(--success-colour) 14%, transparent) 0%,
-      color-mix(in srgb, var(--success-colour) 4%, transparent) 50%,
-      color-mix(in srgb, var(--success-colour) 11%, transparent) 100%
-    );
-    box-shadow:
-      inset 0 1px 1px color-mix(in srgb, white 65%, transparent),
-      inset 0 -2px 3px
-        color-mix(in srgb, var(--success-colour) 28%, transparent),
-      0 0 6px color-mix(in srgb, var(--success-colour) 12%, transparent);
-    backdrop-filter: blur(6px);
-    transition:
-      background 0.2s ease,
-      border-color 0.2s ease,
-      box-shadow 0.2s ease,
-      color 0.2s ease;
-
-    &:hover,
-    &:focus-visible {
-      color: white;
-      background: color-mix(in srgb, var(--success-colour) 30%, transparent);
-      box-shadow:
-        inset 0 1px 1px color-mix(in srgb, white 65%, transparent),
-        inset 0 -2px 3px
-          color-mix(in srgb, var(--success-colour) 28%, transparent),
-        0 0 10px color-mix(in srgb, var(--success-colour) 30%, transparent);
-      text-shadow: 1px 1px 4px var(--success-colour);
-
-      svg {
-        filter: drop-shadow(1px 1px 4px var(--success-colour));
-      }
-    }
-
-    &:active {
-      box-shadow:
-        inset 0 1px 1px color-mix(in srgb, white 65%, transparent),
-        inset 0 3px -2px
-          color-mix(in srgb, var(--success-colour) 28%, transparent),
-        0 0 6px color-mix(in srgb, var(--success-colour) 12%, transparent);
-    }
-  }
-
   &.secondary {
     border: 0;
     background: none;
@@ -130,26 +82,6 @@ button {
     &:focus-visible {
       opacity: 1;
       background: none;
-    }
-  }
-
-  &.secondary-clear {
-    border: 0;
-    background: none;
-    opacity: 0.6;
-    text-shadow: 1px 1px 2px currentColor;
-    svg {
-      filter: drop-shadow(1px 1px 2px currentColor);
-    }
-
-    &:hover,
-    &:focus-visible {
-      opacity: 1;
-      text-shadow: 1px 1px 4px currentColor;
-
-      svg {
-        filter: drop-shadow(1px 1px 4px currentColor);
-      }
     }
   }
 
@@ -219,11 +151,6 @@ button {
     &:focus-visible {
       background: var(--border-colour);
     }
-  }
-
-  &.icon {
-    padding: 0;
-    aspect-ratio: 1;
   }
 }
 

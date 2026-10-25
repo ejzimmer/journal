@@ -1,4 +1,3 @@
-import { ChangeEvent } from 'react';
 import { DoneTick } from './DoneTick';
 import './EmojiCheckbox.css';
 

@@ -70,7 +70,7 @@ export function convertPathToV2(v1Path: string): string {
   return segments.join('/');
 }
 
-export function findReshapedAncestor(v1Path: string): string | undefined {
+function findReshapedAncestor(v1Path: string): string | undefined {
   const segments = splitPath(v1Path);
   const reshape = RESHAPES.find(({ v1Pattern }) =>
     patternCoversPath(v1Pattern, segments),

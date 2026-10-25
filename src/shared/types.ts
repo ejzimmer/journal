@@ -36,8 +36,6 @@ export type CalendarTaskDetails = {
 };
 export type CalendarTask = CalendarTaskDetails & TodoTask;
 
-export const THIS_YEAR_PATH = '2026';
-
 export const HEALTH_PATH = 'health';
 
 export const DAILY_PATH = `${HEALTH_PATH}/daily`;

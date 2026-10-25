@@ -13,7 +13,7 @@ export type EditableTextHandle = {
   focus: () => void;
 };
 
-export type EditableTextProps = {
+type EditableTextProps = {
   ref?: Ref<EditableTextHandle>;
   value: string;
   onChange: (text: string) => void;

@@ -1,7 +1,7 @@
 import { WorkTask } from './types';
 
 export const TODAY_LIST_NAME = 'Today';
-export const FEATURE_GATES_LIST_NAME = 'Feature gates';
+const FEATURE_GATES_LIST_NAME = 'Feature gates';
 
 const FEATURE_GATE_NAME = /^[a-z0-9-]+$/;
 
