@@ -1,3 +1,4 @@
+import { toRadians } from '../toRadians';
 export const BALL_RADIUS = 8;
 export const BALL_CENTRE = 10;
 const STRAND_SPACING = 1.6;
@@ -6,7 +7,6 @@ const WIND_TILT = (9 * Math.PI) / 180;
 const TURN = Math.PI * 2;
 
 const round = (value: number) => Number(value.toFixed(2));
-const toRadians = (degrees: number) => (degrees * Math.PI) / 180;
 
 type WindingSpec = {
   angle: number;
@@ -66,21 +66,21 @@ function getStrandArc(position: number): StrandArc | null {
   };
 }
 
-const arcAcross = (arc: StrandArc, to: number, sweep: number) =>
+const drawArcAcross = (arc: StrandArc, to: number, sweep: number) =>
   `A${arc.rx} ${arc.ry} 0 ${arc.sweepsPastHalf ? 1 : 0} ${sweep} ${to} ${arc.y}`;
 
 const drawStrand = (arc: StrandArc) =>
-  `M${arc.left} ${arc.y}${arcAcross(arc, arc.right, 1)}`;
+  `M${arc.left} ${arc.y}${drawArcAcross(arc, arc.right, 1)}`;
 
 function drawWindingFill({ from, to }: WindingSpec) {
   const top = getStrandArc(from);
   const bottom = getStrandArc(to);
 
   const acrossTheTop = top
-    ? `L${top.left} ${top.y}${arcAcross(top, top.right, 1)}L24 ${top.y}`
+    ? `L${top.left} ${top.y}${drawArcAcross(top, top.right, 1)}L24 ${top.y}`
     : `L24 ${from}`;
   const backAlongTheBottom = bottom
-    ? `L${bottom.right} ${bottom.y}${arcAcross(bottom, bottom.left, 0)}L-4 ${bottom.y}`
+    ? `L${bottom.right} ${bottom.y}${drawArcAcross(bottom, bottom.left, 0)}L-4 ${bottom.y}`
     : `L-4 ${to}`;
 
   return `M-4 ${top?.y ?? from}${acrossTheTop}L24 ${bottom?.y ?? to}${backAlongTheBottom}Z`;
@@ -175,7 +175,7 @@ function getRimSegments() {
   return segments;
 }
 
-const pointOnRim = (heading: number) =>
+const findPointOnRim = (heading: number) =>
   `${round(BALL_CENTRE + BALL_RADIUS * Math.cos(heading))} ${round(
     BALL_CENTRE + BALL_RADIUS * Math.sin(heading),
   )}`;
@@ -188,10 +188,10 @@ function drawBallOutline() {
     const bulge = Math.min(chord, STRAND_SPACING) * STRAND_BULGE;
     const radius = round((chord ** 2 / 4 + bulge ** 2) / (2 * bulge));
 
-    return `A${radius} ${radius} 0 0 1 ${pointOnRim(end)}`;
+    return `A${radius} ${radius} 0 0 1 ${findPointOnRim(end)}`;
   });
 
-  return `M${pointOnRim(segments[0].start)}${scallops.join('')}Z`;
+  return `M${findPointOnRim(segments[0].start)}${scallops.join('')}Z`;
 }
 
 export const BALL_OUTLINE = drawBallOutline();

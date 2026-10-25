@@ -159,6 +159,7 @@ export function SubtaskList({ projectId, isVisible }: SubtasksProps) {
         <button
           ref={triggerRef}
           className={`icon ghost show-form ${isFormOpen ? 'form-visible' : ''}`}
+          aria-label="Add subtask"
           onClick={toggleForm}
           style={{ alignSelf: 'baseline' }}
         >

@@ -6,7 +6,7 @@ import {
 import { DAILY_KEY, DailyTask } from '../../../shared/types';
 import { useDailyReset } from './useDailyReset';
 
-const yesterday = () => getDateDaysAgo(1);
+const getYesterday = () => getDateDaysAgo(1);
 
 const createTask = (
   id: string,
@@ -19,7 +19,7 @@ const createTask = (
   position: 0,
   type: '毎日',
   status: 'ready',
-  lastCompleted: yesterday(),
+  lastCompleted: getYesterday(),
   ...overrides,
 });
 

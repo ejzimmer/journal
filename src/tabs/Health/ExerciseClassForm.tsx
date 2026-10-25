@@ -35,7 +35,7 @@ export function ExerciseClassForm({
     onSubmit({ description: name.trim(), blocks });
   };
 
-  const rowProps = (rowKind: ClassKind) => ({
+  const getRowProps = (rowKind: ClassKind) => ({
     kind: rowKind,
     isSelected: kind === rowKind,
     onSelect: setKind,
@@ -59,7 +59,7 @@ export function ExerciseClassForm({
       </label>
       <div className="class-kinds">
         <ClassKindSwitch value={kind} onChange={setKind} />
-        <ClassKindRow {...rowProps('set')}>
+        <ClassKindRow {...getRowProps('set')}>
           <ClassCountInput
             label="Classes"
             value={total}
@@ -68,7 +68,7 @@ export function ExerciseClassForm({
           />
           <span>classes</span>
         </ClassKindRow>
-        <ClassKindRow {...rowProps('weekly')}>
+        <ClassKindRow {...getRowProps('weekly')}>
           <ClassCountInput
             label="Weeks"
             value={weeks}

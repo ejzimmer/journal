@@ -46,7 +46,7 @@ export type WorkTask = {
 export const WORK_KEY = 'work';
 export const WORK_CLEANUP_KEY = 'work-daily-cleanup';
 
-const idFor = (description: string) =>
+const createStandardId = (description: string) =>
   `standard-${description.toLowerCase().replace(/\s+/g, '-')}`;
 
 export const STANDARD_CHECKLIST = new Map(
@@ -59,5 +59,5 @@ export const STANDARD_CHECKLIST = new Map(
     'mark PR ready',
     'approvals',
     'FG',
-  ].map((description) => [idFor(description), description]),
+  ].map((description) => [createStandardId(description), description]),
 );

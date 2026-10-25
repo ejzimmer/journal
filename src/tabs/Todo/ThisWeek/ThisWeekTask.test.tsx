@@ -23,13 +23,17 @@ const useValue: ContextType['useValue'] = () => ({
   synced: true,
 });
 
-const expectToBeInViewMode = () => {
-  expect(screen.queryByRole('combobox')).not.toBeInTheDocument();
+const getEditControls = () => [
+  screen.getByRole('combobox'),
+  screen.getByRole('textbox', { name: 'Description' }),
+  screen.getByRole('spinbutton', { name: 'Frequency' }),
+];
+
+const expectToBeInViewMode = (editControls: HTMLElement[]) => {
+  editControls.forEach((control) => expect(control).not.toBeInTheDocument());
   expect(
     screen.getByRole('button', { name: task.category }),
   ).toBeInTheDocument();
-  expect(screen.queryByRole('textbox')).not.toBeInTheDocument();
-  expect(screen.queryByRole('spinbutton')).not.toBeInTheDocument();
   expect(screen.getByRole('group')).toBeInTheDocument();
 };
 
@@ -201,22 +205,26 @@ describe('ThisWeekTask', () => {
           { value: { useValue } },
         );
 
-        await user.click(screen.getByText(task.description));
+        const categoryButton = screen.getByRole('button', {
+          name: task.category,
+        });
+        const description = screen.getByText(task.description);
+        const progress = screen.getByRole('group');
 
-        expect(
-          screen.queryByRole('button', { name: task.category }),
-        ).not.toBeInTheDocument();
+        await user.click(description);
+
+        expect(categoryButton).not.toBeInTheDocument();
         expect(
           screen.getByRole('option', { name: task.category, hidden: true }),
         ).toHaveAttribute('aria-selected', 'true');
 
-        expect(screen.queryByText(task.description)).not.toBeInTheDocument();
+        expect(description).not.toBeInTheDocument();
         const descriptionInput = screen.getByRole('textbox', {
           name: 'Description',
         });
         expect(descriptionInput).toHaveValue(task.description);
 
-        expect(screen.queryByRole('group')).not.toBeInTheDocument();
+        expect(progress).not.toBeInTheDocument();
         const frequencyInput = screen.getByRole('spinbutton', {
           name: 'Frequency',
         });
@@ -279,6 +287,7 @@ describe('ThisWeekTask', () => {
         );
 
         await user.click(screen.getByText(task.description));
+        const editControls = getEditControls();
 
         await user.click(screen.getByRole('combobox'));
         await user.click(screen.getByRole('option', { name: '🧘' }));
@@ -287,7 +296,7 @@ describe('ThisWeekTask', () => {
           expect.anything(),
           expect.objectContaining({ category: '🧘' }),
         );
-        expectToBeInViewMode();
+        expectToBeInViewMode(editControls);
       });
     });
 
@@ -303,6 +312,7 @@ describe('ThisWeekTask', () => {
         );
 
         await user.click(screen.getByText(task.description));
+        const editControls = getEditControls();
 
         const descriptionInput = screen.getByRole('textbox', {
           name: 'Description',
@@ -323,7 +333,7 @@ describe('ThisWeekTask', () => {
             frequency: 4,
           }),
         );
-        expectToBeInViewMode();
+        expectToBeInViewMode(editControls);
       });
     });
 
@@ -363,6 +373,7 @@ describe('ThisWeekTask', () => {
         );
 
         await user.click(screen.getByText(task.description));
+        const editControls = getEditControls();
 
         await user.clear(
           screen.getByRole('spinbutton', {
@@ -373,7 +384,7 @@ describe('ThisWeekTask', () => {
 
         expect(onChange).not.toHaveBeenCalled();
         expect(onDelete).not.toHaveBeenCalled();
-        expectToBeInViewMode();
+        expectToBeInViewMode(editControls);
         expect(
           screen.getByRole('group', {
             name: `${task.description}: 2 of ${task.frequency} done`,
@@ -394,6 +405,7 @@ describe('ThisWeekTask', () => {
         );
 
         await user.click(screen.getByText(task.description));
+        const editControls = getEditControls();
 
         const descriptionInput = screen.getByRole('textbox', {
           name: 'Description',
@@ -408,7 +420,7 @@ describe('ThisWeekTask', () => {
         await user.keyboard('{Escape}');
 
         expect(onChange).not.toHaveBeenCalled();
-        expectToBeInViewMode();
+        expectToBeInViewMode(editControls);
       });
     });
   });

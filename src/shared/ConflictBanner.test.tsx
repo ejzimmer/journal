@@ -66,16 +66,20 @@ const pushIdDeletedThere = {
   theirs: null,
 };
 
-const dailyTask = (id: string, description: string, position: number) => ({
+const createDailyTask = (
+  id: string,
+  description: string,
+  position: number,
+) => ({
   id,
   description,
   position,
 });
 const dailyList = {
-  'wash-up': dailyTask('wash-up', 'Wash up', 1),
-  stretch: dailyTask('stretch', 'Stretch', 2),
-  journal: dailyTask('journal', 'Write journal', 0),
-  laundry: dailyTask('laundry', 'Laundry', 3),
+  'wash-up': createDailyTask('wash-up', 'Wash up', 1),
+  stretch: createDailyTask('stretch', 'Stretch', 2),
+  journal: createDailyTask('journal', 'Write journal', 0),
+  laundry: createDailyTask('laundry', 'Laundry', 3),
 };
 const moveClash = (id: string, mine: number, theirs: number) => ({
   path: `v2/today/日/${id}/position`,

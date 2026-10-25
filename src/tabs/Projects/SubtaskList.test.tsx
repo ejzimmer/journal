@@ -34,7 +34,7 @@ function renderSubtasks(subtasks: ProjectSubtask[]) {
   const addItem = jest.fn();
   const updateItem = jest.fn();
 
-  const result = renderWithStorage(
+  const view = renderWithStorage(
     <SubtaskList projectId={projectId} isVisible />,
     {
       value: {
@@ -53,10 +53,10 @@ function renderSubtasks(subtasks: ProjectSubtask[]) {
     },
   );
 
-  return { ...result, addItem, updateItem };
+  return { ...view, addItem, updateItem };
 }
 
-const subtaskDescriptions = () =>
+const getSubtaskDescriptions = () =>
   screen
     .getAllByRole('listitem')
     .map((item) =>
@@ -71,7 +71,7 @@ describe('SubtaskList', () => {
       makeSubtask('middle', 4),
     ]);
 
-    expect(subtaskDescriptions()).toEqual([
+    expect(getSubtaskDescriptions()).toEqual([
       'first ready',
       'middle ready',
       'last ready',
@@ -95,12 +95,12 @@ describe('SubtaskList', () => {
 
   it('adds a new subtask past the end when positions have gaps', async () => {
     const user = userEvent.setup();
-    const { addItem, container } = renderSubtasks([
+    const { addItem } = renderSubtasks([
       makeSubtask('first', 0),
       makeSubtask('last', 7),
     ]);
 
-    await user.click(container.querySelector('.show-form')!);
+    await user.click(screen.getByRole('button', { name: 'Add subtask' }));
     await user.type(screen.getByRole('textbox'), 'new task{Enter}');
 
     expect(addItem).toHaveBeenCalledWith(subtasksKey, {

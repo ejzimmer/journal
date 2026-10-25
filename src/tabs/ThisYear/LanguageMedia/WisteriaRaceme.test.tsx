@@ -12,9 +12,7 @@ const renderRaceme = (understood: number) =>
     </svg>,
   );
 
-const countFlorets = () =>
-  screen.getByTestId('wisteria-raceme').querySelectorAll('.wisteria-floret')
-    .length;
+const countFlorets = () => screen.queryAllByTestId('wisteria-floret').length;
 
 describe('WisteriaRaceme', () => {
   describe('when everything was understood', () => {

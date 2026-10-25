@@ -13,7 +13,7 @@ function createServer(data: Record<string, unknown>) {
       ) ?? null;
 }
 
-const noCopy = () => undefined;
+const copyNothing = () => undefined;
 
 describe('createEditTimeUpdates', () => {
   describe('for a changed field', () => {
@@ -45,7 +45,7 @@ describe('separateConflicts', () => {
       const updates = { 'v2/work/t1/description': 'mine' };
 
       expect(
-        await separateConflicts(updates, 10, createServer({}), noCopy),
+        await separateConflicts(updates, 10, createServer({}), copyNothing),
       ).toEqual({ kept: updates, conflicts: [] });
     });
   });
@@ -62,7 +62,9 @@ describe('separateConflicts', () => {
       it('keeps the update', async () => {
         const updates = { 'v2/work/t1/description': 'mine' };
 
-        expect(await separateConflicts(updates, 30, server, noCopy)).toEqual({
+        expect(
+          await separateConflicts(updates, 30, server, copyNothing),
+        ).toEqual({
           kept: updates,
           conflicts: [],
         });
@@ -76,7 +78,7 @@ describe('separateConflicts', () => {
             { 'v2/work/t1/description': 'mine', 'v2/work/t2/done': true },
             10,
             server,
-            noCopy,
+            copyNothing,
           ),
         ).toEqual({
           kept: { 'v2/work/t2/done': true },
@@ -93,7 +95,7 @@ describe('separateConflicts', () => {
               { 'v2/work/t1/description': 'theirs', 'v2/work/t2/done': true },
               10,
               server,
-              noCopy,
+              copyNothing,
             ),
           ).toEqual({ kept: { 'v2/work/t2/done': true }, conflicts: [] });
         });
@@ -134,7 +136,12 @@ describe('separateConflicts', () => {
     describe('that was edited elsewhere afterwards', () => {
       it('sets the delete aside', async () => {
         expect(
-          await separateConflicts({ 'v2/work/t1': null }, 10, server, noCopy),
+          await separateConflicts(
+            { 'v2/work/t1': null },
+            10,
+            server,
+            copyNothing,
+          ),
         ).toEqual({
           kept: {},
           conflicts: [{ path: 'v2/work/t1', mine: null, theirs: item }],
@@ -145,7 +152,12 @@ describe('separateConflicts', () => {
     describe('that was edited elsewhere before', () => {
       it('keeps the delete', async () => {
         expect(
-          await separateConflicts({ 'v2/work/t1': null }, 30, server, noCopy),
+          await separateConflicts(
+            { 'v2/work/t1': null },
+            30,
+            server,
+            copyNothing,
+          ),
         ).toEqual({ kept: { 'v2/work/t1': null }, conflicts: [] });
       });
     });

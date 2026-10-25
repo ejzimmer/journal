@@ -5,11 +5,10 @@ import { findShootBase } from './growShoots';
 import { SakuraFlower } from './SakuraFlower';
 import { TreeLayout } from './treeLayout';
 import { PrintSeries } from './types';
+import { toRadians } from '../../../shared/toRadians';
 
 const CALLISTEMON_TURNS = [60, 30];
 const SAKURA_TURN = 55;
-
-const toRadians = (degrees: number) => (degrees * Math.PI) / 180;
 
 type TreeFlowersProps = {
   layout: TreeLayout;
