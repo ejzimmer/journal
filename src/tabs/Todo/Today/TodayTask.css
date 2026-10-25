@@ -1,5 +1,6 @@
 .today-task {
-  .editable-description {
+  .today-task-description {
+    display: flex;
     flex-grow: 1;
     gap: 10px;
     align-items: center;
@@ -11,13 +12,13 @@
 
   &.status-done,
   &.status-finished {
-    .editable-description > div {
+    .today-task-description > div {
       color: var(--crt-unlit);
       text-shadow: none;
     }
   }
 
-  &.type-毎日 .editable-description > :last-child {
+  &.type-毎日 .today-task-description > :last-child {
     font-style: italic;
   }
 }

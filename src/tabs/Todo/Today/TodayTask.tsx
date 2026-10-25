@@ -2,7 +2,7 @@ import { useStorageContext } from '../../../shared/FirebaseContext';
 
 import './TodayTask.css';
 import { DailyTask, DAILY_KEY, ProjectSubtask } from '../../../shared/types';
-import { EditableDescription } from '../../../shared/controls/EditableDescription';
+import { TodayTaskDescription } from './TodayTaskDescription';
 import { getToday } from '../../../shared/dates';
 
 export function TodayTask({
@@ -43,11 +43,10 @@ export function TodayTask({
   };
 
   return (
-    <EditableDescription
+    <TodayTaskDescription
       category={task.category}
       description={task.description}
       isChecked={task.status !== 'ready'}
-      useTickForDone
       onChange={(change) => {
         if ('isChecked' in change) {
           handleStatusChange();

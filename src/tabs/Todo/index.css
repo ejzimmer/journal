@@ -51,7 +51,7 @@ body:has(.today) {
 }
 
 .task-screen,
-.todo-task-list .editable-description > [role='button'] {
+.today-task-description > [role='button'] {
   margin-block: 3px;
   padding: 4px 10px;
   border: 1px solid hsl(0 0% 0%);
@@ -124,6 +124,7 @@ button.category-button,
 
 .today-panel {
   input:not(.led-push-button),
+  textarea.editable-text,
   .single-value-container {
     background: var(--crt-bg);
     color: var(--crt-green);

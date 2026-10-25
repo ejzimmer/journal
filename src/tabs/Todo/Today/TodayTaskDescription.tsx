@@ -1,38 +1,25 @@
-import {
-  ReactNode,
-  useContext,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
-import { EmojiCheckbox } from './EmojiCheckbox';
-import { CategoriesContext } from '../../tabs/Todo';
-import { Combobox } from './combobox/Combobox';
-import { useFormToggle } from './useFormToggle';
-
-import './EditableDescription.css';
+import { useContext, useEffect, useMemo, useRef, useState } from 'react';
+import { EmojiCheckbox } from '../../../shared/controls/EmojiCheckbox';
+import { CategoriesContext } from '..';
+import { Combobox } from '../../../shared/controls/combobox/Combobox';
+import { useFormToggle } from '../../../shared/controls/useFormToggle';
 
 type Change =
   { isChecked: boolean } | { category: string } | { description: string };
 
-export type EditableDescriptionProps = {
+type TodayTaskDescriptionProps = {
   category: string;
   description: string;
   isChecked: boolean;
   onChange: (change: Change) => void;
-  useTickForDone?: boolean;
-  categoryControl?: ReactNode;
 };
 
-export function EditableDescription({
+export function TodayTaskDescription({
   category,
   description,
   isChecked,
   onChange,
-  useTickForDone,
-  categoryControl,
-}: EditableDescriptionProps) {
+}: TodayTaskDescriptionProps) {
   const inputRef = useRef<HTMLInputElement>(null);
   const {
     isFormOpen: inEditMode,
@@ -61,7 +48,7 @@ export function EditableDescription({
   if (inEditMode) {
     return (
       <div
-        className="editable-description"
+        className="today-task-description"
         onKeyDown={({ key }) => {
           if (key === 'Enter' && inputValue !== description) {
             onChange({ description: inputValue });
@@ -96,16 +83,14 @@ export function EditableDescription({
   }
 
   return (
-    <div className="editable-description">
-      {categoryControl ?? (
-        <EmojiCheckbox
-          emoji={category}
-          isChecked={isChecked}
-          label={`${description} done`}
-          onChange={() => onChange({ isChecked: !isChecked })}
-          useTickForDone={useTickForDone}
-        />
-      )}
+    <div className="today-task-description">
+      <EmojiCheckbox
+        emoji={category}
+        isChecked={isChecked}
+        label={`${description} done`}
+        onChange={() => onChange({ isChecked: !isChecked })}
+        useTickForDone
+      />
       <div
         ref={displayRef}
         role="button"
