@@ -6,7 +6,9 @@ const STAMEN_TIPS = Array.from({ length: 10 }, (_, index) => {
   return [Math.cos(angle) * 5, Math.sin(angle) * 5];
 });
 
-export function SakuraFlowerIcon({ width }: { width?: string }) {
+type SakuraFlowerIconProps = { width?: string };
+
+export function SakuraFlowerIcon({ width }: SakuraFlowerIconProps) {
   return (
     <svg viewBox="-16 -16 32 32" width={width} aria-hidden="true">
       <g

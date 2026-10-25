@@ -6,7 +6,9 @@ import {
 import { LevelGemCluster } from './LevelGemCluster';
 import { MAX_LEVEL, WaniKaniData } from './types';
 
-export function LevelGems({ data }: { data: WaniKaniData }) {
+type LevelGemsProps = { data: WaniKaniData };
+
+export function LevelGems({ data }: LevelGemsProps) {
   const levels = calculatePercentsByLevel(
     data.subjects,
     data.assignments,

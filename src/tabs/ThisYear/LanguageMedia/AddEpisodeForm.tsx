@@ -1,5 +1,5 @@
 import { FormEvent, KeyboardEvent, useState } from 'react';
-import { useModal } from '../../../shared/controls/Modal';
+import { useModal } from '../../../shared/controls/ModalContext';
 import { TickIcon } from '../../../shared/icons/Tick';
 import { CountTile } from './CountTile';
 import { EpisodeNameTile } from './EpisodeNameTile';

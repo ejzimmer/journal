@@ -1,7 +1,9 @@
 import { VineLeaf } from './placeVineLeaves';
 import { WisteriaLeaf } from './WisteriaLeaf';
 
-export function VineLeaves({ leaves }: { leaves: VineLeaf[] }) {
+type VineLeavesProps = { leaves: VineLeaf[] };
+
+export function VineLeaves({ leaves }: VineLeavesProps) {
   return (
     <g className="vine-leaves">
       {leaves.map((leaf) => (

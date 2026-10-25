@@ -3,15 +3,17 @@ import { COLOURS, Colour } from '../types';
 import { ColourWheelIcon } from '../../../shared/icons/ColourWheel';
 import { useClickOutside } from '../../../shared/controls/combobox/useClickOutside';
 
+type LabelColourPickerProps = {
+  label: string;
+  colour: Colour;
+  onChange: (colour: Colour) => void;
+};
+
 export function LabelColourPicker({
   label,
   colour,
   onChange,
-}: {
-  label: string;
-  colour: Colour;
-  onChange: (colour: Colour) => void;
-}) {
+}: LabelColourPickerProps) {
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 

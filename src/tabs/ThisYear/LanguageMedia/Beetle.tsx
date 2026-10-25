@@ -14,7 +14,9 @@ const LEG_BEAT = 35;
 const easeInOut = (t: number) =>
   t < 0.5 ? 2 * t * t : 1 - (-2 * t + 2) ** 2 / 2;
 
-export function Beetle({ spot }: { spot: BeetleSpot }) {
+type BeetleProps = { spot: BeetleSpot };
+
+export function Beetle({ spot }: BeetleProps) {
   const [position, setPosition] = useState({
     at: spot.at,
     forward: spot.forward,

@@ -8,11 +8,13 @@ const LEAFLET_PAIRS = [0, 1, 2, 3].map((pair) => ({
 }));
 const YOUNG_SIZE = 0.85;
 
+type WisteriaLeafProps = {
+  leaf: VineLeaf;
+};
+
 export function WisteriaLeaf({
   leaf: { x, y, angle, size },
-}: {
-  leaf: VineLeaf;
-}) {
+}: WisteriaLeafProps) {
   return (
     <g
       className={size < YOUNG_SIZE ? 'wisteria-leaf young' : 'wisteria-leaf'}

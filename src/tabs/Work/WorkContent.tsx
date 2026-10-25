@@ -1,0 +1,169 @@
+import { useCallback, useMemo, useRef } from 'react';
+import { NewListModal } from './NewListModal';
+import { TaskList } from './TaskList';
+import { Skeleton } from '../../shared/controls/Skeleton';
+import { draggableTypeKey } from '../../shared/drag-and-drop/types';
+import { WorkTask, WORK_KEY } from './types';
+import { useDraggableList } from '../../shared/drag-and-drop/useDraggableList';
+import { isDraggable, sortByPosition } from '../../shared/drag-and-drop/utils';
+import { useDropTarget } from '../../shared/drag-and-drop/useDropTarget';
+import { useWorkStorage } from './WorkStorageContext';
+import { MoveToOtherLists } from './MoveToOtherLists';
+import { getAppendPosition } from './taskPosition';
+import { ListDestination, getDestinationListIndex } from './listDestination';
+import { getToday } from '../../shared/dates';
+import { useUndoSubtaskDeleteShortcut } from './useUndoSubtaskDeleteShortcut';
+
+export function WorkContent() {
+  const dropTargetRef = useRef<HTMLOListElement>(null);
+  const {
+    lists,
+    isLoading: listsLoading,
+    addList,
+    moveTask,
+  } = useWorkStorage();
+  useUndoSubtaskDeleteShortcut();
+
+  const doneList = useMemo(() => {
+    return (
+      lists && Object.values(lists).find((list) => list.description === 'Done')
+    );
+  }, [lists]);
+
+  const orderedLists = useMemo(
+    () =>
+      (lists ? sortByPosition(Object.values(lists)) : []).filter(
+        (list) => list.id !== doneList?.id,
+      ),
+    [lists, doneList],
+  );
+
+  const moveTaskToList = useCallback(
+    (task: WorkTask, currentListId: string, destination: ListDestination) => {
+      const currentIndex = orderedLists.findIndex(
+        (list) => list.id === currentListId,
+      );
+      if (currentIndex === -1) {
+        return;
+      }
+
+      const targetIndex = getDestinationListIndex(
+        currentIndex,
+        orderedLists.length,
+        destination,
+      );
+
+      const targetList = orderedLists[targetIndex];
+      if (!targetList || targetList.id === currentListId) {
+        return;
+      }
+
+      moveTask({
+        task,
+        movedItem: {
+          ...task,
+          position: getAppendPosition(targetList),
+          lastStatusUpdate: getToday(),
+        },
+        sourceListId: `${WORK_KEY}/${currentListId}/items`,
+        targetListId: `${WORK_KEY}/${targetList.id}/items`,
+      });
+    },
+    [orderedLists, moveTask],
+  );
+
+  useDropTarget({
+    dropTargetRef,
+    canDrop: ({ source }) => isDraggable(source.data),
+    getData: () => ({ id: WORK_KEY }),
+  });
+  useDraggableList<WorkTask>({
+    listId: WORK_KEY,
+    canDropSourceOnTarget: (source, target) => {
+      if (!isDraggable(target)) {
+        return source[draggableTypeKey] === 'list';
+      }
+
+      if (source[draggableTypeKey] === target[draggableTypeKey]) {
+        return true;
+      }
+
+      if (
+        source[draggableTypeKey] === 'task' &&
+        target[draggableTypeKey] === 'list'
+      ) {
+        return true;
+      }
+
+      return false;
+    },
+    getTargetListId: (source, target) => {
+      if (!isDraggable(target)) {
+        return WORK_KEY;
+      }
+
+      if (source[draggableTypeKey] === target[draggableTypeKey]) {
+        return target.parentId;
+      }
+
+      return `${WORK_KEY}/${target.id}/items`;
+    },
+    getAxis: (source) => {
+      return source[draggableTypeKey] === 'task' ? 'vertical' : 'horizontal';
+    },
+    moveItemBetweenLists: ({
+      item,
+      movedItem,
+      sourceListId,
+      targetListId,
+      targetListItems,
+    }) =>
+      moveTask({
+        task: item,
+        movedItem,
+        sourceListId,
+        targetListId,
+        targetListItems,
+      }),
+  });
+
+  if (listsLoading) {
+    return <Skeleton numRows={3} />;
+  }
+
+  return (
+    <>
+      <div className="new-list-modal-container">
+        <NewListModal onCreate={addList} />
+      </div>
+      {lists ? (
+        <ol ref={dropTargetRef} className="work-lists">
+          {orderedLists.map(
+            (list) =>
+              list !== doneList && (
+                <TaskList
+                  key={list.id}
+                  listId={list.id}
+                  index={list.position}
+                  parentListId={WORK_KEY}
+                  additionalMoveDestinations={(task: WorkTask) => (
+                    <MoveToOtherLists
+                      allLists={orderedLists}
+                      currentListId={list.id}
+                      doneListId={doneList?.id}
+                      task={task}
+                    />
+                  )}
+                  onMoveTaskToList={(task, destination) =>
+                    moveTaskToList(task, list.id, destination)
+                  }
+                />
+              ),
+          )}
+        </ol>
+      ) : (
+        <div style={{ marginInlineEnd: '30px' }}>No lists found.</div>
+      )}
+    </>
+  );
+}

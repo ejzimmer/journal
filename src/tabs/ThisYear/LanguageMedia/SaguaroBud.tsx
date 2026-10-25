@@ -1,4 +1,6 @@
-export function SaguaroBud({ x, y }: { x: number; y: number }) {
+type SaguaroBudProps = { x: number; y: number };
+
+export function SaguaroBud({ x, y }: SaguaroBudProps) {
   return (
     <g className="saguaro-bud" data-testid="saguaro-bud">
       <ellipse cx={x} cy={y} rx={2.2} ry={2.6} />

@@ -10,7 +10,9 @@ import { AddDoneMenu } from './AddDoneMenu';
 import { getToday } from '../../../shared/dates';
 import { useFormToggle } from '../../../shared/controls/useFormToggle';
 
-export function ThisWeekTask({ task }: { task: WeeklyTask }) {
+type ThisWeekTaskProps = { task: WeeklyTask };
+
+export function ThisWeekTask({ task }: ThisWeekTaskProps) {
   const {
     isFormOpen: inEditMode,
     triggerRef: descriptionDisplayRef,

@@ -13,7 +13,9 @@ const STAMEN_TIPS = SPIKE_YS.flatMap((y) => {
   });
 });
 
-export function CallistemonFlowerIcon({ width }: { width?: string }) {
+type CallistemonFlowerIconProps = { width?: string };
+
+export function CallistemonFlowerIcon({ width }: CallistemonFlowerIconProps) {
   return (
     <svg viewBox="0 0 32 32" width={width} aria-hidden="true">
       <path

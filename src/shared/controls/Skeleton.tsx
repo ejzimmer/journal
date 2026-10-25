@@ -1,6 +1,8 @@
 import './Skeleton.css';
 
-export function Skeleton({ numRows }: { numRows: number }) {
+type SkeletonProps = { numRows: number };
+
+export function Skeleton({ numRows }: SkeletonProps) {
   const rows = Array.from({ length: numRows });
 
   return (

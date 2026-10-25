@@ -7,7 +7,9 @@ export const LIGHT_FLOW = '🟤';
 export const HEAVY_FLOW = '🔴';
 export const OVARY_PAIN = '🥚';
 
-export function PeriodIcons({ trackers }: { trackers?: string[] }) {
+type PeriodIconsProps = { trackers?: string[] };
+
+export function PeriodIcons({ trackers }: PeriodIconsProps) {
   if (!trackers?.length) {
     return null;
   }

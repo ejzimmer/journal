@@ -47,7 +47,11 @@ const sortExercisesByPosition = (exercises: Record<string, Exercise> = {}) =>
 const getNextExercisePosition = (exercises: Exercise[]) =>
   Math.max(-1, ...exercises.map(({ position }) => position ?? -1)) + 1;
 
-export function HealthStorageProvider({ children }: { children: ReactNode }) {
+type HealthStorageProviderProps = { children: ReactNode };
+
+export function HealthStorageProvider({
+  children,
+}: HealthStorageProviderProps) {
   const { addItem, updateItem, deleteItem, setValue, useValue } =
     useStorageContext();
 

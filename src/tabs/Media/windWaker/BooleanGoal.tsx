@@ -3,17 +3,19 @@ import { EmojiCheckbox } from '../../../shared/controls/EmojiCheckbox';
 
 import './ItemSlot.css';
 
+type BooleanGoalProps = {
+  icon: string | ReactElement;
+  isChecked: boolean;
+  label: string;
+  onChange: (isChecked: boolean) => void;
+};
+
 export function BooleanGoal({
   icon,
   isChecked,
   label,
   onChange,
-}: {
-  icon: string | ReactElement;
-  isChecked: boolean;
-  label: string;
-  onChange: (isChecked: boolean) => void;
-}) {
+}: BooleanGoalProps) {
   return (
     <li className="tooltip-container">
       <div className={`item-slot tooltip-anchor ${isChecked ? 'done' : 'off'}`}>

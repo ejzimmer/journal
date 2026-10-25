@@ -1,17 +1,14 @@
 import { ReactNode } from 'react';
 import { EditableText } from '../../shared/controls/EditableText';
 
-export function Shelf({
-  label,
-  onRenameLabel,
-  single,
-  children,
-}: {
+type ShelfProps = {
   label?: string;
   onRenameLabel?: (name: string) => void;
   single?: boolean;
   children: ReactNode;
-}) {
+};
+
+export function Shelf({ label, onRenameLabel, single, children }: ShelfProps) {
   return (
     <div className={`shelf${single ? ' shelf-single' : ''}`}>
       <div className="spines">{children}</div>

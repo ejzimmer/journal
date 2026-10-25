@@ -1,11 +1,4 @@
-import {
-  useState,
-  MouseEvent,
-  useMemo,
-  JSX,
-  useRef,
-  useEffect,
-} from 'react';
+import { useState, MouseEvent, useMemo, JSX, useRef, useEffect } from 'react';
 import {
   EditableText,
   EditableTextHandle,
@@ -19,7 +12,7 @@ import { DragHandle } from '../../shared/drag-and-drop/DragHandle';
 import { draggableTypeKey } from '../../shared/drag-and-drop/types';
 import { DraggableListItem } from '../../shared/drag-and-drop/DraggableListItem';
 import { ListDestination } from './listDestination';
-import { PostitModalDialog } from './PostitModal';
+import { PostitModalDialog } from './PostitModalDialog';
 import { WorkTask } from './types';
 import { useWorkStorage } from './WorkStorageContext';
 import { useDropTarget } from '../../shared/drag-and-drop/useDropTarget';
@@ -40,19 +33,21 @@ function getListData(list: WorkTask, parentId: string) {
   };
 }
 
+type TaskListProps = {
+  index: number;
+  listId: string;
+  parentListId: string;
+  additionalMoveDestinations: (task: WorkTask) => JSX.Element;
+  onMoveTaskToList?: (task: WorkTask, destination: ListDestination) => void;
+};
+
 export function TaskList({
   index,
   listId,
   parentListId,
   additionalMoveDestinations,
   onMoveTaskToList,
-}: {
-  index: number;
-  listId: string;
-  parentListId: string;
-  additionalMoveDestinations: (task: WorkTask) => JSX.Element;
-  onMoveTaskToList?: (task: WorkTask, destination: ListDestination) => void;
-}) {
+}: TaskListProps) {
   const [confirmDeleteModalOpen, setConfirmDeleteModalOpen] = useState(false);
   const [editingLabel, setEditingLabel] = useState(false);
 

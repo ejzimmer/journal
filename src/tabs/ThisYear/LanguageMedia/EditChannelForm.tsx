@@ -1,6 +1,6 @@
 import { FormEvent, useState } from 'react';
 import { DeleteWithConfirmation } from '../../../shared/controls/DeleteWithConfirmation';
-import { useModal } from '../../../shared/controls/Modal';
+import { useModal } from '../../../shared/controls/ModalContext';
 import { Switch } from '../../../shared/controls/Switch';
 import { TickIcon } from '../../../shared/icons/Tick';
 import { readDuration, readText } from './fields';
@@ -23,7 +23,9 @@ const readVideoChanges = (data: FormData, video: Video) => {
   };
 };
 
-export function EditChannelForm({ channel }: { channel: YoutubeChannel }) {
+type EditChannelFormProps = { channel: YoutubeChannel };
+
+export function EditChannelForm({ channel }: EditChannelFormProps) {
   const { updateItem, deleteItem } = useLanguageMediaStorage();
   const { closeModal } = useModal();
   const [language, setLanguage] = useState<Language>(channel.language);

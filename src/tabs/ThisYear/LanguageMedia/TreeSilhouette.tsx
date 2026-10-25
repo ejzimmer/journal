@@ -1,7 +1,9 @@
 import { TreeLayout } from './treeLayout';
 import { drawShapeFill } from './treeShapePaths';
 
-export function TreeSilhouette({ layout }: { layout: TreeLayout }) {
+type TreeSilhouetteProps = { layout: TreeLayout };
+
+export function TreeSilhouette({ layout }: TreeSilhouetteProps) {
   return (
     <g className="tree-silhouette">
       {layout.shapes.map((shape) => (

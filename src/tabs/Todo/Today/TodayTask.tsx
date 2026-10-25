@@ -5,13 +5,12 @@ import { DailyTask, DAILY_KEY, ProjectSubtask } from '../../../shared/types';
 import { EditableDescription } from '../../../shared/controls/EditableDescription';
 import { getToday } from '../../../shared/dates';
 
-export function TodayTask({
-  task,
-  onChange,
-}: {
+type TodayTaskProps = {
   task: DailyTask;
   onChange: (task: DailyTask) => void;
-}) {
+};
+
+export function TodayTask({ task, onChange }: TodayTaskProps) {
   const { useValue, updateItem, deleteItem } = useStorageContext();
 
   const { value: linkedTask } = useValue<ProjectSubtask>(task?.linkedTask);

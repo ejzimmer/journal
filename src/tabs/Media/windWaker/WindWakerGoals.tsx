@@ -12,13 +12,12 @@ import { SeaChart } from './SeaChart';
 
 import './WindWakerGoals.css';
 
-export function WindWakerGoals({
-  goals,
-  updateGoal,
-}: {
+type WindWakerGoalsProps = {
   goals: Record<string, any>;
   updateGoal: (key: string, value: any) => void;
-}) {
+};
+
+export function WindWakerGoals({ goals, updateGoal }: WindWakerGoalsProps) {
   const {
     arrowCapacity,
     blueChuJellies,

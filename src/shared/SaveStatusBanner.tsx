@@ -2,7 +2,9 @@ import { useSyncExternalStore } from 'react';
 import { SaveStatus } from './localFirst/createLocalFirstContext';
 import './AppUpdateBanner.css';
 
-export function SaveStatusBanner({ saveStatus }: { saveStatus: SaveStatus }) {
+type SaveStatusBannerProps = { saveStatus: SaveStatus };
+
+export function SaveStatusBanner({ saveStatus }: SaveStatusBannerProps) {
   const saveState = useSyncExternalStore(
     saveStatus.subscribe,
     saveStatus.getSaveState,

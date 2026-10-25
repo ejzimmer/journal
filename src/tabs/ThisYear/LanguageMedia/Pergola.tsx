@@ -9,7 +9,9 @@ const POST_WIDTH = 10;
 const RAFTER_WIDTH = 9;
 const RAFTER_SPACING = 41;
 
-export function Pergola({ pergola }: { pergola: PergolaFrame }) {
+type PergolaProps = { pergola: PergolaFrame };
+
+export function Pergola({ pergola }: PergolaProps) {
   const { posts, beamTop, beamBottom, left, right } = pergola;
   const rafters = [];
   for (let x = left + 12; x < right - RAFTER_WIDTH; x += RAFTER_SPACING) {

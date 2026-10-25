@@ -50,7 +50,9 @@ export const convertToYarnType = (
     .sort((a, b) => Temporal.PlainYearMonth.compare(a.month, b.month)),
 });
 
-export function YarnStorageProvider({ children }: { children: ReactNode }) {
+type YarnStorageProviderProps = { children: ReactNode };
+
+export function YarnStorageProvider({ children }: YarnStorageProviderProps) {
   const { useValue, setValue } = useStorageContext();
   const { value: storedYarnByYear, loading } =
     useValue<StoredYarnByYear>(YARN_PATH);

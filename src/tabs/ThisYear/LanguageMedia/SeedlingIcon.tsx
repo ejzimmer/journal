@@ -1,4 +1,6 @@
-export function SeedlingIcon({ width }: { width?: string }) {
+type SeedlingIconProps = { width?: string };
+
+export function SeedlingIcon({ width }: SeedlingIconProps) {
   return (
     <svg viewBox="0 0 48 48" width={width} aria-hidden="true">
       <path

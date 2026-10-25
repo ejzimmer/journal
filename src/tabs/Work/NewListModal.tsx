@@ -4,11 +4,11 @@ import { FormControl } from '../../shared/controls/FormControl';
 import { LabelsControl } from './LabelsControl';
 import { Label } from './types';
 
-export function NewListModal({
-  onCreate,
-}: {
+type NewListModalProps = {
   onCreate: (listName: string, label?: Label) => void;
-}) {
+};
+
+export function NewListModal({ onCreate }: NewListModalProps) {
   const [showError, setShowError] = useState(false);
   const [listName, setListName] = useState('');
   const [label, setLabel] = useState<Label | undefined>(undefined);

@@ -2,11 +2,10 @@ import { FormEvent, useRef, useState } from 'react';
 import { FormControl } from '../../shared/controls/FormControl';
 import { Combobox } from '../../shared/controls/combobox/Combobox';
 import { OptionType } from '../../shared/controls/combobox/types';
-import { Modal, useModal } from '../../shared/controls/Modal';
-import { ModalDialog } from '../../shared/controls/ModalDialog';
+import { Modal } from '../../shared/controls/Modal';
+import { useModal } from '../../shared/controls/ModalContext';
 import { TickIcon } from '../../shared/icons/Tick';
 import { RubbishBinIcon } from '../../shared/icons/RubbishBin';
-import { PlusIcon } from '../../shared/icons/Plus';
 import { useMediaStorage } from './MediaStorageContext';
 import { MediaDetails, NewMedia, SeriesDetails } from './types';
 
@@ -21,13 +20,15 @@ export type MediaFormConfig<T extends MediaDetails> = {
   buildUpdated: (item: T, title: string, author?: string) => T;
 };
 
+type MediaFormProps<T extends MediaDetails> = {
+  item?: T;
+  config: MediaFormConfig<T>;
+};
+
 export function MediaForm<T extends MediaDetails>({
   item,
   config,
-}: {
-  item?: T;
-  config: MediaFormConfig<T>;
-}) {
+}: MediaFormProps<T>) {
   const titleRef = useRef<HTMLInputElement>(null);
   const existingAuthor = item && config.getAuthor?.(item);
   const [author, setAuthor] = useState<OptionType | undefined>(
@@ -138,43 +139,5 @@ export function MediaForm<T extends MediaDetails>({
         </button>
       </Modal.Footer>
     </form>
-  );
-}
-
-export function AddMediaForm<T extends MediaDetails>({
-  ariaLabel,
-  config,
-}: {
-  ariaLabel: string;
-  config: MediaFormConfig<T>;
-}) {
-  return (
-    <Modal
-      trigger={(props) => (
-        <button {...props} className="outline icon" aria-label={ariaLabel}>
-          <PlusIcon width="26" strokeWidth="3.5" />
-        </button>
-      )}
-    >
-      <MediaForm config={config} />
-    </Modal>
-  );
-}
-
-export function EditMediaForm<T extends MediaDetails>({
-  item,
-  isOpen,
-  onCancel,
-  config,
-}: {
-  item: T;
-  isOpen: boolean;
-  onCancel: () => void;
-  config: MediaFormConfig<T>;
-}) {
-  return (
-    <ModalDialog isOpen={isOpen} onCancel={onCancel}>
-      {isOpen && <MediaForm item={item} config={config} />}
-    </ModalDialog>
   );
 }

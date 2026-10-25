@@ -1,7 +1,9 @@
 import { CountField } from './CountField';
 import { Volume } from './types';
 
-export function MangaVolumePages({ volume }: { volume: Volume }) {
+type MangaVolumePagesProps = { volume: Volume };
+
+export function MangaVolumePages({ volume }: MangaVolumePagesProps) {
   return (
     <div className="manga-volume-pages">
       <span className="edit-volume-number">{volume.number}</span>

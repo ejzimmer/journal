@@ -1,6 +1,8 @@
 import { ReactNode } from 'react';
 
-export function BikePicture({ children }: { children: ReactNode }) {
+type BikePictureProps = { children: ReactNode };
+
+export function BikePicture({ children }: BikePictureProps) {
   return (
     <svg
       viewBox="0 0 48 48"

@@ -58,7 +58,9 @@ export const MediaStorageContext = createContext<
   MediaStorageContextType | undefined
 >(undefined);
 
-export function MediaStorageProvider({ children }: { children: ReactNode }) {
+type MediaStorageProviderProps = { children: ReactNode };
+
+export function MediaStorageProvider({ children }: MediaStorageProviderProps) {
   const { addItem, updateItem, deleteItem, setValues, useValue } =
     useStorageContext();
 

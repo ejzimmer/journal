@@ -11,13 +11,12 @@ const MIDRIB_LENGTHS: Record<PrintSeries['type'], number> = {
   manga: 6.8,
 };
 
-export function TreeLeaf({
-  leaf: { x, y, angle },
-  type,
-}: {
+type TreeLeafProps = {
   leaf: Leaf;
   type: PrintSeries['type'];
-}) {
+};
+
+export function TreeLeaf({ leaf: { x, y, angle }, type }: TreeLeafProps) {
   return (
     <g
       className={`tree-leaf ${type}`}

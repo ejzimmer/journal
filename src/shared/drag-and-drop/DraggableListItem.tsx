@@ -184,6 +184,8 @@ export function DraggableListItem({
   );
 }
 
-function DropIndicator({ edge }: { edge: Edge }) {
+type DropIndicatorProps = { edge: Edge };
+
+function DropIndicator({ edge }: DropIndicatorProps) {
   return <div className={`drop-indicator ${edge}`} />;
 }

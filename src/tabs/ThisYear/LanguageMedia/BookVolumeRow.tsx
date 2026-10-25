@@ -3,7 +3,9 @@ import { formatVolumeName } from './format';
 import { Volume } from './types';
 import { VolumeNameField } from './VolumeNameField';
 
-export function BookVolumeRow({ volume }: { volume: Volume }) {
+type BookVolumeRowProps = { volume: Volume };
+
+export function BookVolumeRow({ volume }: BookVolumeRowProps) {
   return (
     <div className="edit-volume-row">
       <VolumeNameField

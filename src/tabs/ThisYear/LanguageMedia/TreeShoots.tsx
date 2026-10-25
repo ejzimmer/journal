@@ -5,15 +5,13 @@ import { TreeShoot } from './TreeShoot';
 import { TREE_SPECIES } from './treeSpecies';
 import { PrintSeries } from './types';
 
-export function TreeShoots({
-  shapes,
-  blooms,
-  type,
-}: {
+type TreeShootsProps = {
   shapes: GrownShape[];
   blooms: Bloom[];
   type: PrintSeries['type'];
-}) {
+};
+
+export function TreeShoots({ shapes, blooms, type }: TreeShootsProps) {
   const shoots = shapes
     .filter(({ growth }) => growth.type === 'branch')
     .flatMap((shape) =>

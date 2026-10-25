@@ -3,15 +3,17 @@ import { useDraggableList } from '../../shared/drag-and-drop/useDraggableList';
 import { useDropTarget } from '../../shared/drag-and-drop/useDropTarget';
 import { isDraggable } from '../../shared/drag-and-drop/utils';
 
+type SeriesDragAndDropProps = {
+  listId: string;
+  listRef: RefObject<HTMLOListElement | null>;
+  onReorder: (items: { id: string }[]) => void;
+};
+
 export function SeriesDragAndDrop({
   listId,
   listRef,
   onReorder,
-}: {
-  listId: string;
-  listRef: RefObject<HTMLOListElement | null>;
-  onReorder: (items: { id: string }[]) => void;
-}) {
+}: SeriesDragAndDropProps) {
   useDropTarget({
     dropTargetRef: listRef,
     canDrop: ({ source }) =>

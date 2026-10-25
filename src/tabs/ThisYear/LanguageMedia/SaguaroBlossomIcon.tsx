@@ -1,6 +1,8 @@
 const PETALS = 9;
 
-export function SaguaroBlossomIcon({ width }: { width?: string }) {
+type SaguaroBlossomIconProps = { width?: string };
+
+export function SaguaroBlossomIcon({ width }: SaguaroBlossomIconProps) {
   return (
     <svg viewBox="-8 -8 16 16" width={width} aria-hidden="true">
       {Array.from({ length: PETALS }, (_, petal) => (

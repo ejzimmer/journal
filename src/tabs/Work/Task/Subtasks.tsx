@@ -1,16 +1,10 @@
-import {
-  Fragment,
-  FormEvent,
-  KeyboardEvent,
-  ReactNode,
-  RefObject,
-  useRef,
-} from 'react';
+import { Fragment, FormEvent, KeyboardEvent, useRef } from 'react';
 import { sortByPosition } from '../../../shared/drag-and-drop/utils';
 import { useWorkStorage } from '../WorkStorageContext';
 import { Subtask } from '../types';
 import { BracketsIcon } from '../../../shared/icons/Brackets';
 import { StandardChecklistButton } from './StandardChecklistButton';
+import { EditSubtasksButton } from './EditSubtasksButton';
 import { useFormToggle } from '../../../shared/controls/useFormToggle';
 
 type SubtasksProps = {
@@ -126,27 +120,5 @@ export function Subtasks({ subtasks, listId, taskId }: SubtasksProps) {
       )}
       <StandardChecklistButton listId={listId} taskId={taskId} />
     </>
-  );
-}
-
-function EditSubtasksButton({
-  ref,
-  onClick,
-  children,
-}: {
-  ref?: RefObject<HTMLButtonElement | null>;
-  onClick: () => void;
-  children: ReactNode;
-}) {
-  return (
-    <button
-      ref={ref}
-      type="button"
-      className="edit-subtasks"
-      aria-label="Edit subtasks"
-      onClick={onClick}
-    >
-      {children}
-    </button>
   );
 }

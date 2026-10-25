@@ -7,7 +7,9 @@ import { predictDaysToFinish } from './levelPrediction';
 import { calculateLevelProgress } from './levelProgress';
 import { MAX_LEVEL, WaniKaniData } from './types';
 
-export function CurrentLevel({ data }: { data: WaniKaniData }) {
+type CurrentLevelProps = { data: WaniKaniData };
+
+export function CurrentLevel({ data }: CurrentLevelProps) {
   const { radical, kanji } = calculateLevelProgress(
     data.subjects,
     data.assignments,

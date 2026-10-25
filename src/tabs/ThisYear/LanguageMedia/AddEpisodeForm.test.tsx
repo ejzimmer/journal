@@ -1,6 +1,6 @@
 import { fireEvent, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { ModalContext } from '../../../shared/controls/Modal';
+import { ModalContext } from '../../../shared/controls/ModalContext';
 import { AddEpisodeForm } from './AddEpisodeForm';
 import { renderWithLanguageMediaStorage } from './languageMediaStorageTestUtils';
 import { lupin } from './testMedia';

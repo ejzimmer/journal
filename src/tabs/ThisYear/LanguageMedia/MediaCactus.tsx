@@ -23,7 +23,9 @@ import { VideoArms } from './VideoArms';
 import { WatchedVideoForm } from './WatchedVideoForm';
 import { readVideoProgress } from './videoProgress';
 
-export function MediaCactus({ channel }: { channel: YoutubeChannel }) {
+type MediaCactusProps = { channel: YoutubeChannel };
+
+export function MediaCactus({ channel }: MediaCactusProps) {
   const layout = useMemo(() => createCactusLayout(channel), [channel]);
   const videos = getItemsInAddedOrder(channel.videos);
   const progress = videos.map(readVideoProgress);

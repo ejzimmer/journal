@@ -1,7 +1,9 @@
 import { GrownShape } from './treeGrowth';
 import { drawShapeFill } from './treeShapePaths';
 
-export function TreeFill({ shapes }: { shapes: GrownShape[] }) {
+type TreeFillProps = { shapes: GrownShape[] };
+
+export function TreeFill({ shapes }: TreeFillProps) {
   return (
     <g className="tree-fill">
       {shapes.map((shape) => (

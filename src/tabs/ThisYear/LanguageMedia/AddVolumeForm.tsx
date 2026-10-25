@@ -1,5 +1,5 @@
 import { FormEvent } from 'react';
-import { useModal } from '../../../shared/controls/Modal';
+import { useModal } from '../../../shared/controls/ModalContext';
 import { TickIcon } from '../../../shared/icons/Tick';
 import { CountField } from './CountField';
 import { readNumber, readText } from './fields';
@@ -11,7 +11,9 @@ import { VolumeNameField } from './VolumeNameField';
 
 import './AddMediaForm.css';
 
-export function AddVolumeForm({ series }: { series: PrintSeries }) {
+type AddVolumeFormProps = { series: PrintSeries };
+
+export function AddVolumeForm({ series }: AddVolumeFormProps) {
   const { addItem } = useLanguageMediaStorage();
   const { closeModal } = useModal();
   const number = findNextNumber(series.volumes);

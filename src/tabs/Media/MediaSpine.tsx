@@ -51,6 +51,19 @@ function getSpineHeight(title: string) {
   return 178 + Math.min(34, Math.round(title.length * 1.5));
 }
 
+type MediaSpineProps<T extends MediaDetails, S extends string> = {
+  item: T;
+  bandHue?: number;
+  hue: number;
+  config: StatusConfig<T, S>;
+  EditForm: ComponentType<MediaEditFormProps<T>>;
+  listId?: string;
+  isDraggable: boolean;
+  isFirst: boolean;
+  isLast: boolean;
+  onMove: (destination: Destination) => void;
+};
+
 export function MediaSpine<T extends MediaDetails, S extends string>({
   item,
   bandHue,
@@ -62,18 +75,7 @@ export function MediaSpine<T extends MediaDetails, S extends string>({
   isFirst,
   isLast,
   onMove,
-}: {
-  item: T;
-  bandHue?: number;
-  hue: number;
-  config: StatusConfig<T, S>;
-  EditForm: ComponentType<MediaEditFormProps<T>>;
-  listId?: string;
-  isDraggable: boolean;
-  isFirst: boolean;
-  isLast: boolean;
-  onMove: (destination: Destination) => void;
-}) {
+}: MediaSpineProps<T, S>) {
   const { updateMedia } = useMediaStorage();
   const { isFormOpen, triggerRef, openForm, closeForm } = useFormToggle();
   const refocusAfterMoveRef = useRef(false);

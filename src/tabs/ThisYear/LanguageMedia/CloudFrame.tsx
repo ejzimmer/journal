@@ -1,7 +1,9 @@
 import { ReactNode, useEffect, useRef, useState } from 'react';
 import { CloudShape } from './CloudShape';
 
-export function CloudFrame({ children }: { children: ReactNode }) {
+type CloudFrameProps = { children: ReactNode };
+
+export function CloudFrame({ children }: CloudFrameProps) {
   const ref = useRef<HTMLDivElement>(null);
   const [size, setSize] = useState<{ width: number; height: number }>();
 

@@ -35,7 +35,9 @@ const createNextOccurrence = ({
   status: 'ready',
 });
 
-export function DueDateTask({ task }: { task: CalendarTask }) {
+type DueDateTaskProps = { task: CalendarTask };
+
+export function DueDateTask({ task }: DueDateTaskProps) {
   const { addItem, updateItem, deleteItem } = useStorageContext();
 
   const onChange = (task: CalendarTask) => updateItem(CALENDAR_KEY, task);
@@ -103,7 +105,9 @@ const statusIconMapping: Record<CalendarTask['status'], React.FC<IconProps>> = {
   finished: TickIcon,
 };
 
-function StatusOption({ value }: { value: CalendarTask['status'] }) {
+type StatusOptionProps = { value: CalendarTask['status'] };
+
+function StatusOption({ value }: StatusOptionProps) {
   const Icon = statusIconMapping[value];
   return <Icon colour="currentColor" width="12px" />;
 }

@@ -74,7 +74,9 @@ export const WorkStorageContext = createContext<
   WorkStorageContextType | undefined
 >(undefined);
 
-export function WorkStorageProvider({ children }: { children: ReactNode }) {
+type WorkStorageProviderProps = { children: ReactNode };
+
+export function WorkStorageProvider({ children }: WorkStorageProviderProps) {
   const {
     addItem,
     updateItem,
