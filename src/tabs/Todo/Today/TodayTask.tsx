@@ -43,22 +43,20 @@ export function TodayTask({
   };
 
   return (
-    <div className="task-screen">
-      <EditableDescription
-        category={task.category}
-        description={task.description}
-        isChecked={task.status !== 'ready'}
-        useTickForDone
-        onChange={(change) => {
-          if ('isChecked' in change) {
-            handleStatusChange();
-          } else if ('description' in change && change.description === '') {
-            deleteItem<DailyTask>(DAILY_KEY, task);
-          } else {
-            onChange({ ...task, ...change });
-          }
-        }}
-      />
-    </div>
+    <EditableDescription
+      category={task.category}
+      description={task.description}
+      isChecked={task.status !== 'ready'}
+      useTickForDone
+      onChange={(change) => {
+        if ('isChecked' in change) {
+          handleStatusChange();
+        } else if ('description' in change && change.description === '') {
+          deleteItem<DailyTask>(DAILY_KEY, task);
+        } else {
+          onChange({ ...task, ...change });
+        }
+      }}
+    />
   );
 }

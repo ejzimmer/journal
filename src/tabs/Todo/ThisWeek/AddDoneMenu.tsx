@@ -15,7 +15,7 @@ export function AddDoneMenu({ category, onAdd }: AddDoneMenuProps) {
   return (
     <Menu
       trigger={(props) => (
-        <button {...props} className="icon subtle">
+        <button {...props} className="category-button">
           {category}
         </button>
       )}

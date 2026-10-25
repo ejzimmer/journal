@@ -15,15 +15,9 @@
       font-style: italic;
     }
 
-    &.status-finished .description {
-      [role='button'] {
-        color: var(--crt-unlit);
-        text-shadow: none;
-      }
-
-      .emoji-checkbox {
-        filter: grayscale(1) brightness(0.6);
-      }
+    &.status-finished .description [role='button'] {
+      color: var(--crt-unlit);
+      text-shadow: none;
     }
   }
 
@@ -58,6 +52,7 @@
 
     .editable-description {
       align-items: center;
+      gap: 10px;
     }
   }
 

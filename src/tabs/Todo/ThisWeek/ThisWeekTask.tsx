@@ -120,8 +120,8 @@ export function ThisWeekTask({ task }: { task: WeeklyTask }) {
 
   return (
     <>
+      <AddDoneMenu category={task.category} onAdd={addDone} />
       <div className="task-screen">
-        <AddDoneMenu category={task.category} onAdd={addDone} />
         <div
           ref={descriptionDisplayRef}
           role="button"

@@ -8,6 +8,7 @@ import { PauseButtonIcon } from '../../../shared/icons/PauseButton';
 import { TickIcon } from '../../../shared/icons/Tick';
 import { IconProps } from '../../../shared/icons/types';
 import { EditableDescription } from '../../../shared/controls/EditableDescription';
+import { CategoryPicker } from './CategoryPicker';
 
 const getDateClass = (task: CalendarTask) => {
   const daysUntilDue = getDaysUntil(task.dueDate);
@@ -67,23 +68,27 @@ export function DueDateTask({ task }: { task: CalendarTask }) {
         }}
         className={`due-date ${getDateClass(task)}`}
       />
-      <div className="task-screen">
-        <div className="description">
-          <EditableDescription
-            category={task.category}
-            description={task.description}
-            isChecked={false}
-            onChange={(change) => {
-              if ('description' in change && change.description === '') {
-                onDelete();
-              } else if ('description' in change) {
-                onChange({ ...task, description: change.description });
-              } else if ('category' in change) {
-                onChange({ ...task, category: change.category });
-              }
-            }}
-          />
-        </div>
+      <div className="description">
+        <EditableDescription
+          category={task.category}
+          description={task.description}
+          isChecked={false}
+          categoryControl={
+            <CategoryPicker
+              category={task.category}
+              onChange={(category) => onChange({ ...task, category })}
+            />
+          }
+          onChange={(change) => {
+            if ('description' in change && change.description === '') {
+              onDelete();
+            } else if ('description' in change) {
+              onChange({ ...task, description: change.description });
+            } else if ('category' in change) {
+              onChange({ ...task, category: change.category });
+            }
+          }}
+        />
       </div>
       <Switch
         options={[...STATUSES]}

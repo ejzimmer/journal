@@ -1,4 +1,11 @@
-import { useContext, useEffect, useMemo, useRef, useState } from 'react';
+import {
+  ReactNode,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { EmojiCheckbox } from './EmojiCheckbox';
 import { CategoriesContext } from '../../tabs/Todo';
 import { Combobox } from './combobox/Combobox';
@@ -15,6 +22,7 @@ export type EditableDescriptionProps = {
   isChecked: boolean;
   onChange: (change: Change) => void;
   useTickForDone?: boolean;
+  categoryControl?: ReactNode;
 };
 
 export function EditableDescription({
@@ -23,6 +31,7 @@ export function EditableDescription({
   isChecked,
   onChange,
   useTickForDone,
+  categoryControl,
 }: EditableDescriptionProps) {
   const inputRef = useRef<HTMLInputElement>(null);
   const {
@@ -88,13 +97,15 @@ export function EditableDescription({
 
   return (
     <div className="editable-description">
-      <EmojiCheckbox
-        emoji={category}
-        isChecked={isChecked}
-        label={`${description} done`}
-        onChange={() => onChange({ isChecked: !isChecked })}
-        useTickForDone={useTickForDone}
-      />
+      {categoryControl ?? (
+        <EmojiCheckbox
+          emoji={category}
+          isChecked={isChecked}
+          label={`${description} done`}
+          onChange={() => onChange({ isChecked: !isChecked })}
+          useTickForDone={useTickForDone}
+        />
+      )}
       <div
         ref={displayRef}
         role="button"

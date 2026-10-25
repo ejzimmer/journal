@@ -1,6 +1,12 @@
 .today-task {
-  .task-screen {
+  .editable-description {
     flex-grow: 1;
+    gap: 10px;
+    align-items: center;
+
+    > [role='button'] {
+      flex-grow: 1;
+    }
   }
 
   &.status-done,
@@ -8,10 +14,6 @@
     .editable-description > div {
       color: var(--crt-unlit);
       text-shadow: none;
-    }
-
-    .emoji-checkbox {
-      filter: grayscale(1) brightness(0.6);
     }
   }
 
