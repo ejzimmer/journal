@@ -29,6 +29,10 @@ const MenuBase = forwardRef<MenuHandle, MenuProps>(function Menu(
 ) {
   const id = useId();
   const dialogRef = useRef<HTMLDivElement>(null);
+  // A popover is only implicitly anchored to its popovertarget button when
+  // a real click or keypress opens it. reopen() opens it programmatically
+  // after a keyboard reorder, so the anchor name is set explicitly to keep
+  // `anchor()` in Menu.css working either way.
   const anchorName = `--menu-anchor-${id.replace(/[^a-zA-Z0-9]/g, '')}`;
 
   const closeMenu = () => {
@@ -38,6 +42,8 @@ const MenuBase = forwardRef<MenuHandle, MenuProps>(function Menu(
   useImperativeHandle(ref, () => ({
     isOpen: () => dialogRef.current?.matches(':popover-open') ?? false,
     reopen: () => {
+      // Hiding and showing again makes the browser recompute the anchored
+      // position against the trigger's new place in the list.
       dialogRef.current?.hidePopover();
       dialogRef.current?.showPopover();
     },

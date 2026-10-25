@@ -87,6 +87,9 @@ export function WorkStorageProvider({ children }: { children: ReactNode }) {
   const { value: rawLists, loading: isLoading } =
     useValue<Record<string, WorkTask>>(WORK_KEY);
 
+  // Backfills parentId onto lists/tasks written before addList/addTask
+  // started setting it, so addLabel/removeLabel can rely on it always
+  // being there.
   const lists = useMemo(() => {
     if (!rawLists) return rawLists;
     const normalized: Record<string, WorkTask> = {};
@@ -118,6 +121,8 @@ export function WorkStorageProvider({ children }: { children: ReactNode }) {
     [storedLabelsById],
   );
 
+  // One-off sweep when the label store first loads: labels unused for more
+  // than a week (lastRemoved set long enough ago) are purged for good.
   const hasSweptStaleLabels = useRef(false);
   useEffect(() => {
     if (!labelsSynced || hasSweptStaleLabels.current) return;

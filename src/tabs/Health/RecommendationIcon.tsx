@@ -26,6 +26,8 @@ export function RecommendationIcon({
 
   return (
     <span className="recommendation">
+      {/* The icon is drawn twice, a thicker white copy under the coloured one,
+          to give it an outline. */}
       <Icon width="24px" colour="white" strokeWidth="6" />
       <Icon
         role="img"

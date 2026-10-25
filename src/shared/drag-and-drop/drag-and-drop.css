@@ -2,6 +2,7 @@
   position: relative;
 }
 
+/* Wraps the drag handle so native draggable attaches here, not the whole row (preserves text selection in inputs). */
 .drag-handle-mount {
   display: inline-flex;
   align-items: center;

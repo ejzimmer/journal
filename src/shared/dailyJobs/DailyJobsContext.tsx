@@ -97,6 +97,9 @@ function useRegisterJob(): RegisterJob {
 
 export function useDailyJob({ lastRunKey, isReady = true, run }: DailyJob) {
   const registerJob = useRegisterJob();
+  // run belongs in the effect's deps, but it isn't memoised, so depending on
+  // it would re-register the job on every render. The ref keeps it out of the
+  // deps without the effect closing over a stale version
   const runWithCurrentData = useRef(run);
   runWithCurrentData.current = run;
 

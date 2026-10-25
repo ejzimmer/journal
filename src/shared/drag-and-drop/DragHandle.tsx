@@ -37,6 +37,10 @@ export function DragHandle({
 
   const buttonRef = useRef<HTMLButtonElement>(null);
   const menuRef = useRef<MenuHandle>(null);
+  // React keeps this component instance across a reorder (the list is keyed
+  // by item id one level up), so a plain ref survives the move. A reorder can
+  // drop focus and leave the menu anchored to the old position, so after each
+  // move focus is restored and, if requested, the menu is reopened.
   const pendingFocusRef = useRef<{ reopenMenu: boolean } | null>(null);
 
   useEffect(() => {

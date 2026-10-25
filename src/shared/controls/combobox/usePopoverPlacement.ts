@@ -51,6 +51,9 @@ export function usePopoverPlacement(
 
       const shared = { left: anchorRect.left, minWidth: anchorRect.width };
 
+      // top/bottom are set as plain numbers: browsers vary in whether
+      // position-area's block-axis placement updates when the chosen side
+      // changes.
       if (contentHeight <= spaceBelow || spaceBelow >= spaceAbove) {
         setPosition({
           ...shared,
