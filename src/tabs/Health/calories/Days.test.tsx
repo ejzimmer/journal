@@ -22,6 +22,7 @@ describe('Days', () => {
 
     expect(screen.getAllByRole('listitem')).toHaveLength(20);
 
+    // 1 Jan 2026 is a Thursday
     expect(screen.getByRole('list', { name: 'by day' })).toHaveStyle({
       '--starting-index': '4',
     });

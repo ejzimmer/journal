@@ -18,6 +18,8 @@ function fakeDatabase() {
   return {} as import('firebase/database').Database;
 }
 
+// idb-keyval uses an implementation of setImmediate which doesn't work with
+// Jest fakeTimer utils, so we need to do this the old fashioned way
 async function flushMicrotasks() {
   for (let i = 0; i < 10; i++) {
     await new Promise((resolve) => setTimeout(resolve, 0));

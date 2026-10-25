@@ -123,6 +123,7 @@ describe('Combobox', () => {
       const value = options[2];
       render(<Combobox {...commonProps} value={value} />);
 
+      // One for the value & one in the options
       expect(screen.getAllByText(value.label)).toHaveLength(2);
 
       options.forEach((option) => {
@@ -179,7 +180,7 @@ describe('Combobox', () => {
           const popover = screen.getByTestId('popover');
           jest.spyOn(popover, 'hidePopover');
           await user.tab();
-          await user.type(input, ' ');
+          await user.type(input, ' '); // open popover
 
           await user.type(input, '{ArrowDown}{ArrowDown}');
 
@@ -339,7 +340,7 @@ describe('Combobox', () => {
           const popover = screen.getByTestId('popover');
           jest.spyOn(popover, 'hidePopover');
           await user.tab();
-          await user.type(input, ' ');
+          await user.type(input, ' '); // open popover
 
           await user.type(input, '{ArrowDown}{ArrowDown}');
 
@@ -600,6 +601,7 @@ describe('Combobox', () => {
         render(<Combobox {...commonProps} onChange={onChange} />);
         const input = screen.getByRole('combobox');
 
+        // Grape is highlighted
         await user.type(input, '{ArrowDown}{ArrowDown}{ArrowDown}');
         await user.type(input, 'g');
 
@@ -617,6 +619,7 @@ describe('Combobox', () => {
         render(<Combobox {...commonProps} onChange={onChange} />);
         const input = screen.getByRole('combobox');
 
+        // Orange is highlighted
         await user.type(input, '{ArrowDown}{ArrowDown}');
         await user.type(input, 'gr');
 
