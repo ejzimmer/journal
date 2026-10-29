@@ -21,8 +21,7 @@ export type StoredLabel = Label & {
 
 export const LABELS_KEY = 'work-labels';
 
-export const STATUS_KEYS = ['not_started', 'done'] as const;
-export type StatusKey = (typeof STATUS_KEYS)[number];
+export type StatusKey = 'not_started' | 'done';
 
 export type Subtask = {
   id: string;

@@ -29,7 +29,7 @@ export type TreeLayout = {
   bounds: { x: number; y: number; width: number; height: number };
 };
 
-export type PrintTreeLayout = TreeLayout & { nextVolumeShapes: TreeShape[] };
+type PrintTreeLayout = TreeLayout & { nextVolumeShapes: TreeShape[] };
 
 type BranchVolume = Pick<Volume, 'id' | 'pages' | 'branchSeed'>;
 

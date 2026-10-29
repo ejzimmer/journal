@@ -2,7 +2,7 @@ import { XIcon } from '../../shared/icons/X';
 import { LabelColourPicker } from './Task/LabelColourPicker';
 import { Colour } from './types';
 
-export type LabelTag = {
+type LabelTag = {
   id: string;
   value: string;
   colour: Colour;

@@ -7,13 +7,13 @@ type MenuChildrenProps = {
   onClose: () => void;
 };
 
-export type MenuProps = {
+type MenuProps = {
   trigger: (props: MenuTriggerProps) => JSX.Element;
   children: (props: MenuChildrenProps) => React.ReactNode;
   onKeyDown?: (event: React.KeyboardEvent<HTMLDivElement>) => void;
 };
 
-export type MenuTriggerProps = {
+type MenuTriggerProps = {
   popoverTarget: string;
   style: React.CSSProperties;
 };
@@ -29,13 +29,10 @@ const MenuBase = forwardRef<MenuHandle, MenuProps>(function Menu(
 ) {
   const id = useId();
   const dialogRef = useRef<HTMLDivElement>(null);
-  // Anchor positioning (`anchor()` in Menu.css) normally links a popover
-  // to its trigger implicitly, but only when the popover is opened via a
-  // genuine user click/keypress on the popovertarget button. reopen()
-  // below opens it programmatically (needed to keep the menu positioned
-  // correctly after a keyboard-driven reorder), which does not establish
-  // that implicit link - so the anchor is wired explicitly instead,
-  // making it work the same way regardless of how the popover was shown.
+  // A popover is only implicitly anchored to its popovertarget button when
+  // a real click or keypress opens it. reopen() opens it programmatically
+  // after a keyboard reorder, so the anchor name is set explicitly to keep
+  // `anchor()` in Menu.css working either way.
   const anchorName = `--menu-anchor-${id.replace(/[^a-zA-Z0-9]/g, '')}`;
 
   const closeMenu = () => {
@@ -45,10 +42,8 @@ const MenuBase = forwardRef<MenuHandle, MenuProps>(function Menu(
   useImperativeHandle(ref, () => ({
     isOpen: () => dialogRef.current?.matches(':popover-open') ?? false,
     reopen: () => {
-      // Force a fresh show so the anchored position is recomputed against
-      // the element's current (post-move) location, rather than trusting
-      // a popover that may already be open but stale, or was closed by
-      // the move, to reposition or reappear on its own.
+      // Hiding and showing again makes the browser recompute the anchored
+      // position against the trigger's new place in the list.
       dialogRef.current?.hidePopover();
       dialogRef.current?.showPopover();
     },

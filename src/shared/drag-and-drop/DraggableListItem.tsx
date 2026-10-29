@@ -128,8 +128,6 @@ export function DraggableListItem({
         onDrag({ self, source }) {
           const closestEdge = extractClosestEdge(self.data);
 
-          // Only need to update react state if something has changed.
-          // Prevents re-rendering.
           setDraggingState((current) => {
             if (
               current.type === 'is-dragging-over' &&

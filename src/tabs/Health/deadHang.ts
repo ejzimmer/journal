@@ -3,7 +3,7 @@ import { isToday } from '../../shared/dates';
 
 export const SESSION_GOAL_SECONDS = 60;
 export const HANG_GOAL_SECONDS = 30;
-export const MOUNTING_MS = 1000;
+const MOUNTING_MS = 1000;
 
 export function getTodaysHangs(session?: DeadHangSession) {
   return session && isToday(session.date) ? (session.hangs ?? []) : [];

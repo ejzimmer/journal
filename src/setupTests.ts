@@ -1,7 +1,3 @@
-// jest-dom adds custom jest matchers for asserting on DOM nodes.
-// allows you to do things like:
-// expect(element).toHaveTextContent(/react/i)
-// learn more: https://github.com/testing-library/jest-dom
 import '@testing-library/jest-dom';
 import { TextEncoder } from 'util';
 
@@ -110,8 +106,8 @@ if (typeof structuredClone === 'undefined') {
 }
 
 // jsdom doesn't do layout, so every element reports a zero rect at the
-// origin. Return a plausible on-screen rect instead so code that measures
-// element position (e.g. popover placement) behaves sensibly in tests.
+// origin. Return a plausible on-screen rect so code that measures element
+// position (e.g. popover placement) behaves sensibly in tests.
 Element.prototype.getBoundingClientRect = function mock(this: Element) {
   return {
     x: 0,

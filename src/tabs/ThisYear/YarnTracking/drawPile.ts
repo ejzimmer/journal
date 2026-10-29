@@ -56,7 +56,7 @@ function applyBallEffects(
   context.filter = `grayscale(${greyness * (0.3 + 0.7 * fade)}) blur(${greyness * (1.5 + 4 * fade) * pixelRatio}px)`;
 }
 
-export type BallSprites = {
+type BallSprites = {
   windings: Record<YarnTypeId, HTMLCanvasElement>;
   shading: HTMLCanvasElement;
 };

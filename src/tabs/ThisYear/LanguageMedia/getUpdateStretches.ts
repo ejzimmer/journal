@@ -7,7 +7,7 @@ import { GrownShape } from './treeGrowth';
 import { PrintSeries, Volume } from './types';
 import { readVolumeProgress } from './volumeProgress';
 
-export type UpdateStretch = {
+type UpdateStretch = {
   key: string;
   volume: Volume;
   date: string;
