@@ -39,7 +39,7 @@ export function SakuraFlower({
   const tip = findBranchPoint(spur.edges, 1);
 
   return (
-    <g className="sakura-flower">
+    <g className="sakura-flower" data-testid="sakura-flower">
       <TreeShoot shoot={spur} type="manga" />
       <SakuraCluster
         x={tip.x}

@@ -12,6 +12,7 @@ export type CrownSpot = {
   y: number;
   angle: number;
   understood: number;
+  date?: string;
 };
 
 const toRadians = (degrees: number) => (degrees * Math.PI) / 180;
@@ -32,6 +33,7 @@ export function placeCrowns(
         y: roundCoordinate(tip.y + Math.sin(toRadians(tip.angle)) * reach),
         angle: roundCoordinate(tip.angle),
         understood: video.understood,
+        date: video.createdAt,
       },
     ];
   });

@@ -45,8 +45,20 @@ describe('getRacemes', () => {
 
     it('hangs a raceme on the episode’s shoot for each update, in the order they were made', () => {
       expect(getRacemes(createSeries(episode))).toEqual([
-        { key: 'earlier', shootKey: 's1-e1-shoot', at: 0.25, understood: 60 },
-        { key: 'later', shootKey: 's1-e1-shoot', at: 0.75, understood: 80 },
+        {
+          key: 'earlier',
+          shootKey: 's1-e1-shoot',
+          at: 0.25,
+          understood: 60,
+          date: '2026-09-01T20:00:00Z',
+        },
+        {
+          key: 'later',
+          shootKey: 's1-e1-shoot',
+          at: 0.75,
+          understood: 80,
+          date: '2026-09-02T20:00:00Z',
+        },
       ]);
     });
   });
@@ -72,8 +84,19 @@ describe('getRacemes', () => {
 
     it('leaves the understood amount off that update’s raceme', () => {
       expect(getRacemes(createSeries(episode))).toEqual([
-        { key: 'quiet', shootKey: 's1-e1-shoot', at: 0.25 },
-        { key: 'counted', shootKey: 's1-e1-shoot', at: 0.5, understood: 70 },
+        {
+          key: 'quiet',
+          shootKey: 's1-e1-shoot',
+          at: 0.25,
+          date: '2026-09-01T20:00:00Z',
+        },
+        {
+          key: 'counted',
+          shootKey: 's1-e1-shoot',
+          at: 0.5,
+          understood: 70,
+          date: '2026-09-02T20:00:00Z',
+        },
       ]);
     });
   });

@@ -1,3 +1,5 @@
+import { formatDayAndMonth, getLocalDate } from '../../../shared/dates';
+import { HoverCloud } from './HoverCloud';
 import { placeCrowns } from './placeCrowns';
 import { SaguaroCrown } from './SaguaroCrown';
 import { GrownShape } from './treeGrowth';
@@ -9,7 +11,12 @@ export function CactusCrowns({ channel, shapes }: CactusCrownsProps) {
   return (
     <g className="cactus-crowns">
       {placeCrowns(channel, shapes).map((spot) => (
-        <SaguaroCrown key={spot.key} spot={spot} />
+        <HoverCloud
+          key={spot.key}
+          text={spot.date && formatDayAndMonth(getLocalDate(spot.date))}
+        >
+          <SaguaroCrown spot={spot} />
+        </HoverCloud>
       ))}
     </g>
   );

@@ -1,7 +1,9 @@
+import { formatDayAndMonth, getLocalDate } from '../../../shared/dates';
 import { CallistemonFlower } from './CallistemonFlower';
 import { findBranchPoint } from './findBranchPoint';
 import { Bloom } from './getBlooms';
 import { findShootBase } from './growShoots';
+import { HoverCloud } from './HoverCloud';
 import { SakuraFlower } from './SakuraFlower';
 import { TreeLayout } from './treeLayout';
 import { PrintSeries } from './types';
@@ -26,27 +28,30 @@ export function TreeFlowers({ layout, blooms, type }: TreeFlowersProps) {
         const point = findBranchPoint(limb.edges, bloom.at);
         const downSide = Math.cos(toRadians(point.angle)) >= 0 ? 1 : -1;
 
-        if (type === 'book') {
-          return (
-            <CallistemonFlower
-              key={bloom.key}
-              seed={bloom.key}
-              base={findShootBase(point, downSide)}
-              angle={point.angle + CALLISTEMON_TURNS[index % 2] * downSide}
-              side={downSide}
-              understood={bloom.understood}
-            />
-          );
-        }
         const side = index % 2 ? -downSide : downSide;
+
         return (
-          <SakuraFlower
+          <HoverCloud
             key={bloom.key}
-            seed={bloom.key}
-            base={findShootBase(point, side)}
-            angle={point.angle + SAKURA_TURN * side}
-            understood={bloom.understood}
-          />
+            text={formatDayAndMonth(getLocalDate(bloom.date))}
+          >
+            {type === 'book' ? (
+              <CallistemonFlower
+                seed={bloom.key}
+                base={findShootBase(point, downSide)}
+                angle={point.angle + CALLISTEMON_TURNS[index % 2] * downSide}
+                side={downSide}
+                understood={bloom.understood}
+              />
+            ) : (
+              <SakuraFlower
+                seed={bloom.key}
+                base={findShootBase(point, side)}
+                angle={point.angle + SAKURA_TURN * side}
+                understood={bloom.understood}
+              />
+            )}
+          </HoverCloud>
         );
       })}
     </g>

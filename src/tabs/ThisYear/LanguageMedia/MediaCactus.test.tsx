@@ -93,4 +93,25 @@ describe('MediaCactus', () => {
       expect(screen.getByRole('tooltip')).toHaveTextContent('12 Oct');
     });
   });
+
+  describe('hovering a crown of flowers', () => {
+    it('shows the date its video was added', async () => {
+      const user = userEvent.setup();
+      const channel: YoutubeChannel = {
+        ...hugo,
+        videos: {
+          v1: {
+            ...hugo.videos!.v1,
+            understood: 60,
+            createdAt: '2026-10-12T09:00:00Z',
+          },
+        },
+      };
+      renderWithLanguageMediaStorage(<MediaCactus channel={channel} />);
+
+      await user.hover(screen.getAllByTestId('saguaro-blossom')[0]);
+
+      expect(screen.getByRole('tooltip')).toHaveTextContent('12 Oct');
+    });
+  });
 });
