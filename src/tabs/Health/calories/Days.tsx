@@ -68,7 +68,6 @@ function getDayColour(diff: number, maxDiff: number) {
   const intensity = scale === 0 ? 1 : Math.min(Math.abs(diff) / scale, 1);
   const hue = diff < 0 ? 77 : 104;
 
-  // Linear interpolation between white (intensity 0) and the full colour (intensity 1).
   const lightness = intensity * 78 + (1 - intensity) * 100;
   const chroma = intensity * 230;
 

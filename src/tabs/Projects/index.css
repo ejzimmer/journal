@@ -1,7 +1,6 @@
 .projects-container {
   --shelf-gap: 9px;
   --small-h: 47px;
-  --big-h: calc(var(--small-h) * 2 + var(--shelf-gap));
   --grid-unit: 8px;
   display: flex;
   flex-direction: column;

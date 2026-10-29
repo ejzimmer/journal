@@ -36,7 +36,7 @@ export const YarnStorageContext = createContext<
   YarnStorageContextType | undefined
 >(undefined);
 
-export const convertToYarnType = (
+const convertToYarnType = (
   { id, history }: StoredYarnType,
   year: number,
 ): YarnType => ({

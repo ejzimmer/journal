@@ -9,7 +9,7 @@ import './EditableDescription.css';
 type Change =
   { isChecked: boolean } | { category: string } | { description: string };
 
-export type EditableDescriptionProps = {
+type EditableDescriptionProps = {
   category: string;
   description: string;
   isChecked: boolean;

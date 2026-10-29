@@ -9,7 +9,6 @@ export type LabelsControlProps = {
   onChange: (value: Label[]) => void;
   label: string;
   ariaLabel?: string;
-  hideLabel?: boolean;
   isMulti?: boolean;
   autoFocus?: boolean;
   onDismiss?: () => void;

@@ -26,7 +26,6 @@ export function App() {
   const login = () => {
     const provider = new GoogleAuthProvider();
     signInWithPopup(auth, provider);
-    // signInWithRedirect(auth, provider)
   };
 
   if (isLoading) {

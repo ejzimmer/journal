@@ -1,9 +1,4 @@
-import { Edge } from '@atlaskit/pragmatic-drag-and-drop-hitbox/types';
-
-import {
-  Destination,
-  draggableTypeKey,
-} from '../../shared/drag-and-drop/types';
+import { draggableTypeKey } from '../../shared/drag-and-drop/types';
 
 export function isTask(data: any): boolean {
   return draggableTypeKey in data && data[draggableTypeKey] === 'task';
@@ -12,43 +7,3 @@ export function isTask(data: any): boolean {
 export function isList(data: any): boolean {
   return draggableTypeKey in data && data[draggableTypeKey] === 'list';
 }
-export function isDroppable(data: any): boolean {
-  return draggableTypeKey in data;
-}
-
-export function getPosition(index: number, listLength: number) {
-  if (index === 0) {
-    return 'start';
-  }
-  if (index === listLength - 1) {
-    return 'end';
-  }
-
-  return 'middle';
-}
-
-export const getTarget = (
-  originIndex: number,
-  destination: Destination,
-  listLength: number,
-): {
-  indexOfTarget: number;
-  closestEdgeOfTarget: Edge;
-} => {
-  switch (destination) {
-    case 'start':
-      return { indexOfTarget: 0, closestEdgeOfTarget: 'top' };
-    case 'previous':
-      return { indexOfTarget: originIndex - 1, closestEdgeOfTarget: 'top' };
-    case 'next':
-      return {
-        indexOfTarget: originIndex + 1,
-        closestEdgeOfTarget: 'bottom',
-      };
-    case 'end':
-      return {
-        indexOfTarget: listLength - 1,
-        closestEdgeOfTarget: 'bottom',
-      };
-  }
-};

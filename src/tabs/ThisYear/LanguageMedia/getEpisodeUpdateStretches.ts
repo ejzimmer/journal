@@ -7,7 +7,7 @@ import { GrownShape } from './treeGrowth';
 import { Episode, Season, TvSeries } from './types';
 import { getVineEpisodes } from './vineLayout';
 
-export type EpisodeUpdateStretch = {
+type EpisodeUpdateStretch = {
   key: string;
   season: Season;
   episode: Episode;

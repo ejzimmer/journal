@@ -1,6 +1,5 @@
 import { Edge } from '@atlaskit/pragmatic-drag-and-drop-hitbox/types';
 
-export type Position = 'start' | 'middle' | 'end';
 export type Destination = 'start' | 'previous' | 'next' | 'end';
 
 export type DraggingState =
@@ -36,5 +35,3 @@ export type DropTarget = {
   id: string;
   axis: 'horizontal' | 'vertical';
 };
-
-export type DragState = 'idle' | 'is-dragging-over';
