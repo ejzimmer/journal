@@ -900,6 +900,18 @@ function createWeeklyTask(
   };
 }
 
+const stations = indexById(
+  [
+    { name: 'Heidelberg', distance: 8, isDone: true },
+    { name: 'Rosanna', distance: 4.5, isDone: true },
+    { name: 'Macleod', distance: 3, isDone: true },
+    { name: 'Watsonia', distance: 0, isDone: true },
+    { name: 'Greensborough', distance: 2, isDone: false },
+    { name: 'Montmorency', distance: 5, isDone: false },
+    { name: 'Eltham', distance: 8, isDone: false },
+  ].map((station) => ({ id: station.name.toLowerCase(), ...station })),
+);
+
 const weeklyTasks = indexById([
   createWeeklyTask('weekly-run', 'Go for a run', '🏃‍♀️', 3, [0, 2], 0),
   createWeeklyTask('weekly-piano', 'Practise piano', '🎹', 5, [1, 3, 4], 1),
@@ -1023,6 +1035,7 @@ export const seedData = {
   },
   '2026': {
     adventures,
+    stations,
   },
   adventure_modes: adventureModes,
 };
