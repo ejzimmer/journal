@@ -1,6 +1,4 @@
-import { useContext, useMemo } from 'react';
-import { CategoriesContext } from '..';
-import { Combobox } from '../../../shared/controls/combobox/Combobox';
+import { CategoryCombobox } from '../CategoryCombobox';
 import { useFormToggle } from '../../../shared/controls/useFormToggle';
 
 type CategoryPickerProps = {
@@ -17,27 +15,16 @@ export function CategoryPicker({ category, onChange }: CategoryPickerProps) {
     closeFormOnEscape,
   } = useFormToggle();
 
-  const categories = useContext(CategoriesContext);
-  const categoryOptions = useMemo(
-    () =>
-      (categories ?? []).map((category) => ({ id: category, label: category })),
-    [categories],
-  );
-
   if (isPicking) {
     return (
       <div onKeyDown={closeFormOnEscape}>
-        <Combobox
-          value={{ id: category, label: category }}
-          options={categoryOptions}
-          createOption={(value) => ({ id: value, label: value })}
-          onChange={(value) => {
-            onChange(value.id);
+        <CategoryCombobox
+          value={category}
+          onChange={(category) => {
+            onChange(category);
             stopPicking();
           }}
           onDismiss={stopPicking}
-          inputSize={1}
-          ariaLabel="Category"
           autoFocus
         />
       </div>

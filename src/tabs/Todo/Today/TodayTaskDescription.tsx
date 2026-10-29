@@ -1,7 +1,6 @@
-import { useContext, useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { EmojiCheckbox } from '../../../shared/controls/EmojiCheckbox';
-import { CategoriesContext } from '..';
-import { Combobox } from '../../../shared/controls/combobox/Combobox';
+import { CategoryCombobox } from '../CategoryCombobox';
 import { useFormToggle } from '../../../shared/controls/useFormToggle';
 
 type Change =
@@ -30,15 +29,6 @@ export function TodayTaskDescription({
   } = useFormToggle<HTMLDivElement>();
   const [inputValue, setInputValue] = useState(description);
 
-  const categories = useContext(CategoriesContext);
-  if (!categories) {
-    throw new Error('Missing categories context provider');
-  }
-  const categoryOptions = useMemo(
-    () => categories.map((category) => ({ id: category, label: category })),
-    [categories],
-  );
-
   useEffect(() => {
     if (inputRef.current && inEditMode) {
       inputRef.current.focus();
@@ -59,16 +49,12 @@ export function TodayTaskDescription({
           }
         }}
       >
-        <Combobox
-          value={{ id: category, label: category }}
-          options={categoryOptions}
-          createOption={(value) => ({ id: value, label: value })}
-          onChange={(value) => {
-            onChange({ category: value.id });
+        <CategoryCombobox
+          value={category}
+          onChange={(category) => {
+            onChange({ category });
             stopEditing();
           }}
-          inputSize={1}
-          ariaLabel="Category"
         />
         <input
           className="subtle"
