@@ -3,13 +3,15 @@ import { PlusIcon } from '../../shared/icons/Plus';
 import { MediaForm, MediaFormConfig } from './MediaForm';
 import { MediaDetails } from './types';
 
+type AddMediaFormProps<T extends MediaDetails> = {
+  ariaLabel: string;
+  config: MediaFormConfig<T>;
+};
+
 export function AddMediaForm<T extends MediaDetails>({
   ariaLabel,
   config,
-}: {
-  ariaLabel: string;
-  config: MediaFormConfig<T>;
-}) {
+}: AddMediaFormProps<T>) {
   return (
     <Modal
       trigger={(props) => (

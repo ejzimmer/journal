@@ -31,13 +31,12 @@ const BOOK_CONFIG: StatusConfig<BookDetails, BookStatus> = {
   getAuthor: (book) => book.author,
 };
 
-export function BookMediaList({
-  books,
-  series,
-}: {
+type BookMediaListProps = {
   books?: Record<string, BookDetails>;
   series?: SeriesDetails<BookDetails>;
-}) {
+};
+
+export function BookMediaList({ books, series }: BookMediaListProps) {
   const { reorderSeries, getSeriesItemsPath } = useMediaStorage();
 
   return (

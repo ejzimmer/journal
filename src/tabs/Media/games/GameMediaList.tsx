@@ -27,13 +27,12 @@ const GAME_CONFIG: StatusConfig<GameDetails, GameStatus> = {
   setStatus: (game, status) => ({ ...game, status }),
 };
 
-export function GameMediaList({
-  games,
-  series,
-}: {
+type GameMediaListProps = {
   games?: Record<string, GameDetails>;
   series?: SeriesDetails<GameDetails>;
-}) {
+};
+
+export function GameMediaList({ games, series }: GameMediaListProps) {
   const { reorderSeries, getSeriesItemsPath } = useMediaStorage();
 
   return (
