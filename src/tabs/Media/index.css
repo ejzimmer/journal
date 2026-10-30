@@ -32,9 +32,20 @@
       letter-spacing: 0.02em;
     }
 
-    > button {
+    .media-heading {
       --size: 44px;
-      align-self: end;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      min-height: var(--size);
+      margin-block-start: 20px;
+
+      h2 {
+        margin-block: 0;
+      }
+    }
+
+    .media-heading > button {
       width: var(--size);
       height: var(--size);
       padding: 0;

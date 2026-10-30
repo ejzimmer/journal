@@ -103,7 +103,12 @@ export function Games() {
 
   return (
     <div className="games">
-      <h2>Games</h2>
+      <div className="media-heading">
+        <h2>Games</h2>
+        {isThisYearSelected && !isShowingWindWaker && (
+          <AddMediaForm ariaLabel="Add a game" config={formConfig} />
+        )}
+      </div>
       <Tabs
         tabs={tabs}
         selectedTab={isShowingWindWaker ? WIND_WAKER_TAB : selectedYear}
@@ -132,9 +137,6 @@ export function Games() {
           </div>
         )}
       </Tabs>
-      {isThisYearSelected && !isShowingWindWaker && (
-        <AddMediaForm ariaLabel="Add a game" config={formConfig} />
-      )}
     </div>
   );
 }
