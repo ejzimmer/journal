@@ -22,10 +22,10 @@ body:has(.today) {
 
   nav.tabs {
     --nav-bg: hsl(150 12% 5%);
-    --nav-ink: hsl(0 0% 60%);
-    --nav-ink-active: hsl(0 0% 92%);
+    --nav-ink: var(--crt-dim);
+    --nav-ink-active: var(--crt-green);
     --nav-rule: hsl(0 0% 18%);
-    --nav-hover: hsl(0 0% 92%);
+    --nav-hover: var(--crt-green);
     --nav-hover-ink: hsl(150 12% 5%);
   }
 }
