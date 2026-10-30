@@ -1,11 +1,12 @@
 import { calculateUpdatePosition } from './calculateUpdatePosition';
 import { getItemsByNumber } from './lists';
 import { getProgressUpdates } from './getProgressUpdates';
-import { PrintSeries } from './types';
+import { PrintSeries, Volume } from './types';
 import { readVolumeProgress } from './volumeProgress';
 
 export type Bloom = {
   key: string;
+  volume: Volume;
   limbKey: string;
   at: number;
   understood: number;
@@ -21,6 +22,7 @@ export function getBlooms(series: PrintSeries): Bloom[] {
         : [
             {
               key: update.key,
+              volume,
               limbKey: `${volume.id}-limb`,
               at: calculateUpdatePosition(volume, update, progress),
               understood: update.understood,

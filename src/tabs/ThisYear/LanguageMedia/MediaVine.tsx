@@ -78,6 +78,9 @@ export function MediaVine({ series }: MediaVineProps) {
           layout={layout}
           racemes={getRacemes(series)}
           highlightedKey={highlightedUpdateKey}
+          onSelect={(season, episode, updateKey) =>
+            setEditedUpdate({ season, episode, updateKey })
+          }
         />
         <TreeBeetles spots={placeEpisodeBeetles(series, grownShapes)} />
         <SeasonBranches

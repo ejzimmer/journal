@@ -1,11 +1,19 @@
 import { render, screen } from '@testing-library/react';
 import { SaguaroCrown } from './SaguaroCrown';
+import { Video } from './types';
+
+const video: Video = {
+  id: 'v1',
+  url: 'https://youtu.be/v1',
+  lookups: 0,
+  aiQuestions: 0,
+};
 
 const renderCrown = (understood: number) =>
   render(
     <svg>
       <SaguaroCrown
-        spot={{ key: 'v1-crown', x: 0, y: 0, angle: -90, understood }}
+        spot={{ key: 'v1-crown', video, x: 0, y: 0, angle: -90, understood }}
       />
     </svg>,
   );

@@ -3,6 +3,7 @@ import { findBranchPoint } from './findBranchPoint';
 import { HoverCloud } from './HoverCloud';
 import { Raceme } from './getRacemes';
 import { TreeLayout } from './treeLayout';
+import { Episode, Season } from './types';
 import { WisteriaRaceme } from './WisteriaRaceme';
 
 const SIDE_OFFSET = 2.5;
@@ -11,12 +12,14 @@ type VineRacemesProps = {
   layout: TreeLayout;
   racemes: Raceme[];
   highlightedKey?: string;
+  onSelect: (season: Season, episode: Episode, updateKey: string) => void;
 };
 
 export function VineRacemes({
   layout,
   racemes,
   highlightedKey,
+  onSelect,
 }: VineRacemesProps) {
   const findRacemeBase = (raceme: Raceme, side: number) => {
     const shoot = layout.shapes.find(({ key }) => key === raceme.shootKey);
@@ -41,6 +44,7 @@ export function VineRacemes({
           <HoverCloud
             key={raceme.key}
             text={formatDayAndMonth(getLocalDate(raceme.date))}
+            onClick={() => onSelect(raceme.season, raceme.episode, raceme.key)}
           >
             <WisteriaRaceme
               seed={raceme.key}

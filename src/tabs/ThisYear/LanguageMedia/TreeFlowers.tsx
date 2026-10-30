@@ -6,7 +6,7 @@ import { findShootBase } from './growShoots';
 import { HoverCloud } from './HoverCloud';
 import { SakuraFlower } from './SakuraFlower';
 import { TreeLayout } from './treeLayout';
-import { PrintSeries } from './types';
+import { PrintSeries, Volume } from './types';
 import { toRadians } from '../../../shared/toRadians';
 
 const CALLISTEMON_TURNS = [60, 30];
@@ -16,9 +16,15 @@ type TreeFlowersProps = {
   layout: TreeLayout;
   blooms: Bloom[];
   type: PrintSeries['type'];
+  onSelect: (volume: Volume, updateKey: string) => void;
 };
 
-export function TreeFlowers({ layout, blooms, type }: TreeFlowersProps) {
+export function TreeFlowers({
+  layout,
+  blooms,
+  type,
+  onSelect,
+}: TreeFlowersProps) {
   return (
     <g className="tree-flowers">
       {blooms.map((bloom, index) => {
@@ -33,6 +39,7 @@ export function TreeFlowers({ layout, blooms, type }: TreeFlowersProps) {
           <HoverCloud
             key={bloom.key}
             text={formatDayAndMonth(getLocalDate(bloom.date))}
+            onClick={() => onSelect(bloom.volume, bloom.key)}
           >
             {type === 'book' ? (
               <CallistemonFlower

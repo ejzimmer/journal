@@ -1,11 +1,13 @@
 import { calculateEpisodeUpdatePosition } from './calculateEpisodeUpdatePosition';
 import { calculateEpisodeProgress } from './calculateEpisodeProgress';
 import { getEpisodeUpdates } from './getEpisodeUpdates';
-import { TvSeries } from './types';
+import { Episode, Season, TvSeries } from './types';
 import { getVineEpisodes } from './vineLayout';
 
 export type Raceme = {
   key: string;
+  season: Season;
+  episode: Episode;
   shootKey: string;
   at: number;
   understood?: number;
@@ -19,6 +21,8 @@ export function getRacemes(series: TvSeries): Raceme[] {
       if (!progress) return [];
       return getEpisodeUpdates(episode).map((update) => ({
         key: update.key,
+        season,
+        episode,
         shootKey: `${season.id}-${episode.id}-shoot`,
         at: calculateEpisodeUpdatePosition(episode, update, progress),
         understood: update.understood,

@@ -67,7 +67,14 @@ export function MediaTree({ series }: MediaTreeProps) {
         <TreeOutline shapes={grownShapes} />
         <TreeSilhouette layout={layout} />
         <TreeFill shapes={grownShapes} />
-        <TreeFlowers layout={layout} blooms={blooms} type={series.type} />
+        <TreeFlowers
+          layout={layout}
+          blooms={blooms}
+          type={series.type}
+          onSelect={(volume, updateKey) =>
+            setEditedUpdate({ volume, updateKey })
+          }
+        />
         {series.type === 'book' && (
           <BranchNames layout={layout} series={series} />
         )}
