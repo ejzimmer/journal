@@ -26,9 +26,6 @@ export type StatusKey = 'not_started' | 'done';
 export const BLOCKERS = ['merge_queue', 'build', 'human', 'time'] as const;
 export type Blocker = (typeof BLOCKERS)[number];
 
-export type Blocked =
-  { on: Exclude<Blocker, 'time'> } | { on: 'time'; until: string };
-
 export type Subtask = {
   id: string;
   description: string;
@@ -45,7 +42,7 @@ export type WorkTask = {
   dueDate?: string;
   position: number;
   labelIds?: string[];
-  blocked?: Blocked;
+  blockedOn?: Blocker;
   subtasks?: Record<string, Subtask>;
 };
 

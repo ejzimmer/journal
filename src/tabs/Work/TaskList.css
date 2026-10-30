@@ -139,20 +139,6 @@ ol.work-lists > li {
       }
     }
 
-    .blocked-until-form {
-      position: absolute;
-      left: calc(100% + 4px);
-      z-index: 1;
-      flex-direction: row;
-      align-items: center;
-      gap: 4px;
-      padding: 4px;
-      font-size: 1rem;
-      background: white;
-      border: 1px solid var(--border-colour);
-      border-radius: 4px;
-    }
-
     .drag-handle {
       opacity: 0;
     }

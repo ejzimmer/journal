@@ -1,41 +1,31 @@
-import { useState } from 'react';
 import { RubbishBinIcon } from '../../../shared/icons/RubbishBin';
-import { Blocked, Blocker, BLOCKERS } from '../types';
-import {
-  BLOCKER_LABELS,
-  describeBlocked,
-  formatBlockedUntil,
-} from './blockedLabels';
-import { BlockedUntilForm } from './BlockedUntilForm';
+import { Blocker, BLOCKERS } from '../types';
 import { Stamp } from './Stamp';
 import { StampMenu, StampMenuOption } from './StampMenu';
 
-type BlockedMarkerProps = {
-  blocked?: Blocked;
-  onChange: (blocked?: Blocked) => void;
+const BLOCKER_LABELS: Record<Blocker, string> = {
+  merge_queue: 'Blocked on merge queue',
+  build: 'Blocked on build',
+  human: 'Blocked on human',
+  time: 'Blocked on time',
 };
 
-export function BlockedMarker({ blocked, onChange }: BlockedMarkerProps) {
-  const [isPickingTime, setIsPickingTime] = useState(false);
+type BlockedMarkerProps = {
+  blockedOn?: Blocker;
+  onChange: (blockedOn?: Blocker) => void;
+};
 
-  const selectBlocker = (blocker: Blocker) => {
-    if (blocker === 'time') {
-      setIsPickingTime(true);
-    } else {
-      onChange({ on: blocker });
-    }
-  };
-
+export function BlockedMarker({ blockedOn, onChange }: BlockedMarkerProps) {
   const blockerOptions = BLOCKERS.filter(
-    (blocker) => blocker !== blocked?.on || blocker === 'time',
+    (blocker) => blocker !== blockedOn,
   ).map((blocker): StampMenuOption => ({
     key: blocker,
     label: BLOCKER_LABELS[blocker],
     content: <Stamp blocker={blocker} />,
-    onSelect: () => selectBlocker(blocker),
+    onSelect: () => onChange(blocker),
   }));
 
-  const options: StampMenuOption[] = blocked
+  const options: StampMenuOption[] = blockedOn
     ? [
         ...blockerOptions,
         {
@@ -48,33 +38,22 @@ export function BlockedMarker({ blocked, onChange }: BlockedMarkerProps) {
       ]
     : blockerOptions;
 
-  const until = blocked?.on === 'time' ? blocked.until : undefined;
-
   return (
     <div className="blocked-marker">
       <StampMenu
         trigger={(props) => (
           <button
             {...props}
-            className={`${props.className} ${blocked ? '' : 'add-metadata'}`}
-            aria-label={blocked ? describeBlocked(blocked) : 'Mark as blocked'}
-            title={until && formatBlockedUntil(until)}
+            className={`${props.className} ${blockedOn ? '' : 'add-metadata'}`}
+            aria-label={
+              blockedOn ? BLOCKER_LABELS[blockedOn] : 'Mark as blocked'
+            }
           >
-            <Stamp blocker={blocked?.on} />
+            <Stamp blocker={blockedOn} />
           </button>
         )}
         options={options}
       />
-      {isPickingTime && (
-        <BlockedUntilForm
-          until={until}
-          onSubmit={(newUntil) => {
-            onChange({ on: 'time', until: newUntil });
-            setIsPickingTime(false);
-          }}
-          onCancel={() => setIsPickingTime(false)}
-        />
-      )}
     </div>
   );
 }

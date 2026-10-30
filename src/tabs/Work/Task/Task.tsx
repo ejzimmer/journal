@@ -5,7 +5,7 @@ import { DraggableListItem } from '../../../shared/drag-and-drop/DraggableListIt
 import { DragPreview } from '../../../shared/drag-and-drop/DragPreview';
 import { draggableTypeKey } from '../../../shared/drag-and-drop/types';
 import { Checkbox } from '../../../shared/controls/Checkbox';
-import { Blocked, WorkTask, WORK_KEY } from '../types';
+import { Blocker, WorkTask, WORK_KEY } from '../types';
 import { useWorkStorage } from '../WorkStorageContext';
 import { Labels } from './Labels';
 import { UpdateLabels } from './UpdateLabels';
@@ -45,10 +45,10 @@ export function Task({
     }
   };
 
-  const onChangeBlocked = (newBlocked?: Blocked) => {
-    const { blocked, ...taskWithoutBlocked } = task;
-    if (newBlocked) {
-      updateTask(listId, { ...task, blocked: newBlocked });
+  const onChangeBlockedOn = (blocker?: Blocker) => {
+    const { blockedOn, ...taskWithoutBlocked } = task;
+    if (blocker) {
+      updateTask(listId, { ...task, blockedOn: blocker });
     } else {
       updateTask(listId, taskWithoutBlocked);
     }
@@ -67,7 +67,7 @@ export function Task({
       className={`task status-${task.status}`}
       dragHandle={dragHandle}
     >
-      <BlockedMarker blocked={task.blocked} onChange={onChangeBlocked} />
+      <BlockedMarker blockedOn={task.blockedOn} onChange={onChangeBlockedOn} />
       <div className="checkbox-container">
         <Checkbox
           isChecked={task.status === 'done'}

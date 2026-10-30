@@ -10,7 +10,7 @@ import './StampMenu.css';
 
 // Starting tilt for each item (by position), so they don't all fly out
 // from the same angle when the menu opens.
-const JITTER_DEGREES = [-6, 4, -3, 8, -5];
+const JITTER_DEGREES = [-6, 4, -3, 8];
 
 // Below this much space to the left, the full circle would spill off the
 // page, so the menu switches to a half-circle on the right instead.
@@ -36,8 +36,6 @@ export function StampMenu({ trigger: Trigger, options }: StampMenuProps) {
   const [layout, setLayout] = useState<'full' | 'half'>('full');
 
   const close = () => popoverRef.current?.hidePopover();
-  const angleStep =
-    layout === 'full' ? 360 / options.length : 180 / (options.length - 1);
 
   useEffect(() => {
     const popover = popoverRef.current;
@@ -63,7 +61,7 @@ export function StampMenu({ trigger: Trigger, options }: StampMenuProps) {
         id={id}
         ref={popoverRef}
         className="stamp-menu"
-        style={{ '--angle-step': `${angleStep}deg` } as CSSProperties}
+        data-layout={layout}
         popover="auto"
       >
         {options.map(({ key, label, content, className, onSelect }, index) => (
