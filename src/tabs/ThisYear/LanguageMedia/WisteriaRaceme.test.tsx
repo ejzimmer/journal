@@ -21,12 +21,12 @@ describe('WisteriaRaceme', () => {
     });
   });
 
-  describe('when about half was understood', () => {
-    it('opens the top rows and leaves the rest in bud', () => {
-      renderRaceme(50);
+  describe('when 90% was understood', () => {
+    it('opens the top nine rows and leaves the rest in bud', () => {
+      renderRaceme(90);
 
-      expect(screen.getAllByTestId('wisteria-floret')).toHaveLength(21);
-      expect(screen.getAllByTestId('wisteria-bud')).toHaveLength(15);
+      expect(screen.getAllByTestId('wisteria-floret')).toHaveLength(27);
+      expect(screen.getAllByTestId('wisteria-bud')).toHaveLength(9);
     });
   });
 });

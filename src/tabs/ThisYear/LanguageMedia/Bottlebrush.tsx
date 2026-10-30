@@ -1,3 +1,4 @@
+import { calculateBloomFraction } from './calculateBloomFraction';
 import { EdgeSample } from './treeGeometry';
 import { findBranchPoint } from './findBranchPoint';
 import { toRadians } from '../../../shared/toRadians';
@@ -39,7 +40,7 @@ export function Bottlebrush({
 }: BottlebrushProps) {
   const lastRowAt = endAt - TIP_GAP / length;
   const firstRowAt = Math.max(0.02, lastRowAt - SPAN / length);
-  const opened = understood / 100;
+  const opened = calculateBloomFraction(understood);
 
   const rows = Array.from({ length: BUD_ROWS }, (_, row) => {
     const point = findBranchPoint(

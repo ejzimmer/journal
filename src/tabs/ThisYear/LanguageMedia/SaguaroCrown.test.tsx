@@ -11,17 +11,17 @@ const renderCrown = (understood: number) =>
   );
 
 describe('SaguaroCrown', () => {
-  describe('at 40% understood', () => {
-    it('opens 40% of the buds into flowers', () => {
-      renderCrown(40);
+  describe('at 90% understood', () => {
+    it('opens 11 of the 20 buds into flowers', () => {
+      renderCrown(90);
 
-      expect(screen.getAllByTestId('saguaro-blossom')).toHaveLength(8);
+      expect(screen.getAllByTestId('saguaro-blossom')).toHaveLength(11);
     });
 
     it('leaves the rest as buds', () => {
-      renderCrown(40);
+      renderCrown(90);
 
-      expect(screen.getAllByTestId('saguaro-bud')).toHaveLength(12);
+      expect(screen.getAllByTestId('saguaro-bud')).toHaveLength(9);
     });
   });
 
