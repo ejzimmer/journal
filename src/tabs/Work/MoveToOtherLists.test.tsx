@@ -180,6 +180,35 @@ describe('MoveToOtherLists', () => {
           expectDividerAfter('Design', 'Feature gates');
         });
       });
+
+      describe('with surrounding spaces or a trailing [hhmm] timestamp', () => {
+        it.each([
+          '  new-checkout-2  ',
+          'new-checkout-2[0930]',
+          'new-checkout-2 [0930]',
+          ' new-checkout-2 [0930] ',
+        ])('puts Feature gates at the top for "%s"', (description) => {
+          showMenuItems(today, createTask(today.id, [], description));
+
+          expect(getMenuItemNames()[0]).toBe('Feature gates');
+        });
+      });
+    });
+
+    describe('and has a timestamp that is not in [hhmm] form', () => {
+      it.each(['new-checkout-2 [930]', 'new-checkout-2 0930'])(
+        'lists Feature gates in order with the other lists for "%s"',
+        (description) => {
+          showMenuItems(today, createTask(today.id, [], description));
+
+          expect(getMenuItemNames()).toEqual([
+            'Backlog',
+            'a11y',
+            'Design',
+            'Feature gates',
+          ]);
+        },
+      );
     });
 
     describe('and has a name with capitals or spaces', () => {

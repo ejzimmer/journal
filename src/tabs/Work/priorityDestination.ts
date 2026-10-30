@@ -3,7 +3,7 @@ import { WorkTask } from './types';
 export const TODAY_LIST_NAME = 'Today';
 const FEATURE_GATES_LIST_NAME = 'Feature gates';
 
-const FEATURE_GATE_NAME = /^[a-z0-9-]+$/;
+const FEATURE_GATE_NAME = /^\s*[a-z0-9-]+\s*(\[\d{4}\])?\s*$/;
 
 export function findPriorityDestinations(
   destinations: WorkTask[],
