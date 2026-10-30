@@ -5,7 +5,7 @@ import { createLocalFirstContext } from '../../shared/localFirst/createLocalFirs
 import { DailyJobsProvider } from '../../shared/dailyJobs/DailyJobsContext';
 import { Work } from './index';
 import { WorkTask } from './types';
-import { useDoneTaskCleanup } from './useDoneTaskCleanup';
+import { useWorkDailyUpdate } from './useWorkDailyUpdate';
 import { convertTreeToV2 } from '../../shared/localFirst/v2Shape';
 
 let mockRemoteData: Record<string, unknown> = {};
@@ -63,8 +63,8 @@ const createTask = (
   lastStatusUpdate: now,
 });
 
-function DoneTaskCleanup() {
-  useDoneTaskCleanup();
+function WorkDailyUpdate() {
+  useWorkDailyUpdate();
   return null;
 }
 
@@ -93,7 +93,7 @@ async function renderWork(lists: Record<string, unknown>) {
   render(
     <FirebaseContext.Provider value={context}>
       <DailyJobsProvider>
-        <DoneTaskCleanup />
+        <WorkDailyUpdate />
         <Work />
         <TaskPositions context={context} />
       </DailyJobsProvider>
