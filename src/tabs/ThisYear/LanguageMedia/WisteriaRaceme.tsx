@@ -1,3 +1,4 @@
+import { calculateBloomFraction } from './calculateBloomFraction';
 import { createSeededRandom } from './seededRandom';
 import { Point } from './treeGeometry';
 import { WisteriaFloret } from './WisteriaFloret';
@@ -16,7 +17,7 @@ function createFlorets(seed: string, understood: number) {
   const random = createSeededRandom(seed);
   const length = 46 + random() * 10;
   const sway = (random() - 0.5) * 8;
-  const openRows = Math.round((understood / 100) * ROWS);
+  const openRows = Math.round(calculateBloomFraction(understood) * ROWS);
   const florets = Array.from({ length: ROWS }, (_, row) => {
     const t = row / (ROWS - 1);
     const centre = sway * t * t;

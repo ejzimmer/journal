@@ -1,9 +1,11 @@
+import { calculateBloomFraction } from './calculateBloomFraction';
 import { SakuraBlossom } from './SakuraBlossom';
 import { toRadians } from '../../../shared/toRadians';
 
 const BLOSSOM_COUNT = 5;
 const OPENING_ORDER = [2, 0, 4, 1, 3];
 const FAN = 34;
+const BLOOM_EXPONENT = 6;
 
 const clampFraction = (value: number) => Math.min(1, Math.max(0, value));
 
@@ -33,7 +35,10 @@ export function SakuraCluster({
       tipY: y + Math.sin(direction) * reach,
       bendX: x + Math.cos(direction) * reach * 0.5 + 1,
       bendY: y + Math.sin(direction) * reach * 0.5 - 1,
-      openness: clampFraction((understood / 100) * BLOSSOM_COUNT - order),
+      openness: clampFraction(
+        calculateBloomFraction(understood, BLOOM_EXPONENT) * BLOSSOM_COUNT -
+          order,
+      ),
     };
   });
 

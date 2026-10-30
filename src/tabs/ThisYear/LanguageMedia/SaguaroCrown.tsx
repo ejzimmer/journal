@@ -1,7 +1,10 @@
+import { calculateBloomFraction } from './calculateBloomFraction';
 import { SaguaroBlossom } from './SaguaroBlossom';
 import { SaguaroBud } from './SaguaroBud';
 import { createSeededRandom } from './seededRandom';
 import { CrownSpot } from './placeCrowns';
+
+const BLOOM_EXPONENT = 6;
 
 const BUD_SPOTS = [
   { x: -11, y: 2.5 },
@@ -31,7 +34,9 @@ function pickOpenBuds(seed: string, understood: number) {
   const order = BUD_SPOTS.map((_, index) => ({ index, rank: random() }))
     .sort((a, b) => a.rank - b.rank)
     .map(({ index }) => index);
-  const openCount = Math.round((understood / 100) * BUD_SPOTS.length);
+  const openCount = Math.round(
+    calculateBloomFraction(understood, BLOOM_EXPONENT) * BUD_SPOTS.length,
+  );
   return new Set(order.slice(0, openCount));
 }
 
