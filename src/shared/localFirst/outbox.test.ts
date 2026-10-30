@@ -1,13 +1,13 @@
 import 'fake-indexeddb/auto';
 import { createOutbox } from './outbox';
 
-function uniqueDbName() {
+function createUniqueDbName() {
   return `outbox-test-${Math.random()}`;
 }
 
 describe('createOutbox', () => {
   it('lists enqueued ops in FIFO order', async () => {
-    const outbox = createOutbox(uniqueDbName());
+    const outbox = createOutbox(createUniqueDbName());
 
     await outbox.enqueue({ updates: { a: 1 } });
     await outbox.enqueue({ updates: { b: 2 } });
@@ -18,7 +18,7 @@ describe('createOutbox', () => {
   });
 
   it('removes an op by id', async () => {
-    const outbox = createOutbox(uniqueDbName());
+    const outbox = createOutbox(createUniqueDbName());
     await outbox.enqueue({ updates: { a: 1 } });
     await outbox.enqueue({ updates: { b: 2 } });
 
@@ -30,7 +30,7 @@ describe('createOutbox', () => {
   });
 
   it('persists across separate outbox instances for the same db name', async () => {
-    const dbName = uniqueDbName();
+    const dbName = createUniqueDbName();
     const outbox1 = createOutbox(dbName);
     await outbox1.enqueue({ updates: { a: 1 } });
 
@@ -40,7 +40,7 @@ describe('createOutbox', () => {
   });
 
   it('enqueues and lists an atomic multi-path update', async () => {
-    const outbox = createOutbox(uniqueDbName());
+    const outbox = createOutbox(createUniqueDbName());
     const updates = { 'work/list1/task1': null, 'work/list2/task1': {} };
 
     await outbox.enqueue({ updates });
@@ -50,7 +50,7 @@ describe('createOutbox', () => {
   });
 
   it('peekFront returns the oldest op without removing it', async () => {
-    const outbox = createOutbox(uniqueDbName());
+    const outbox = createOutbox(createUniqueDbName());
     await outbox.enqueue({ updates: { a: 1 } });
     await outbox.enqueue({ updates: { b: 2 } });
 
@@ -64,13 +64,13 @@ describe('createOutbox', () => {
   });
 
   it('peekFront returns undefined for an empty outbox', async () => {
-    const outbox = createOutbox(uniqueDbName());
+    const outbox = createOutbox(createUniqueDbName());
     expect(await outbox.peekFront()).toBeUndefined();
   });
 
   describe('when ops are enqueued without waiting for each other', () => {
     it('keeps every op, in the order they were enqueued', async () => {
-      const outbox = createOutbox(uniqueDbName());
+      const outbox = createOutbox(createUniqueDbName());
 
       await Promise.all([
         outbox.enqueue({ updates: { a: 1 } }),
@@ -90,7 +90,7 @@ describe('createOutbox', () => {
   describe('keepOnlyPathsUnder', () => {
     describe('given ops that save inside and outside the root', () => {
       it('keeps only the saves inside it, in the same order', async () => {
-        const outbox = createOutbox(uniqueDbName());
+        const outbox = createOutbox(createUniqueDbName());
         await outbox.enqueue({ updates: { 'v2/a': 1, a: 1 } });
         await outbox.enqueue({ updates: { b: 2 } });
         await outbox.enqueue({ updates: { 'v2/c': 3 } });

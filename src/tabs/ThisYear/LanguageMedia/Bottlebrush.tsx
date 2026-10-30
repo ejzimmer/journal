@@ -1,5 +1,6 @@
 import { EdgeSample } from './treeGeometry';
 import { findBranchPoint } from './findBranchPoint';
+import { toRadians } from '../../../shared/toRadians';
 
 const BUD_ROWS = 9;
 const SPAN = 30;
@@ -13,8 +14,6 @@ const ANTHER_FANS = [-32, 0, 32];
 const FRONT_STAMENS = [-1, 0, 1];
 const CLOSED_BUD = [92, 42, 46];
 const OPEN_BUD = [54, 72, 62];
-
-const toRadians = (degrees: number) => (degrees * Math.PI) / 180;
 
 const clampFraction = (value: number) => Math.min(1, Math.max(0, value));
 

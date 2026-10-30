@@ -1,5 +1,5 @@
 import { createRef } from 'react';
-import { render } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import { Menu, MenuHandle } from './Menu';
 
 function renderMenu(ref: React.RefObject<MenuHandle | null>) {
@@ -28,9 +28,9 @@ describe('Menu imperative handle', () => {
 
   it('reopen hides then shows the popover', () => {
     const ref = createRef<MenuHandle>();
-    const { container } = renderMenu(ref);
+    renderMenu(ref);
 
-    const popover = container.querySelector('.menu') as HTMLElement;
+    const popover = screen.getByRole('menu', { hidden: true });
     const hideSpy = jest.spyOn(popover, 'hidePopover');
     const showSpy = jest.spyOn(popover, 'showPopover');
 

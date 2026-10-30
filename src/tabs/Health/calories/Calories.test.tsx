@@ -61,11 +61,11 @@ describe('Calories', () => {
       const updateDay = jest.fn();
       renderWithHealthStorage(<Calories />, { updateDay });
 
+      const input = screen.getByRole('textbox', { name: 'In' });
+
       await user.click(screen.getByRole('button', { name: 'dismiss' }));
 
-      expect(
-        screen.queryByRole('textbox', { name: 'In' }),
-      ).not.toBeInTheDocument();
+      expect(input).not.toBeInTheDocument();
       expect(updateDay).not.toHaveBeenCalled();
     });
 
@@ -81,15 +81,14 @@ describe('Calories', () => {
         </FirebaseContext.Provider>,
       );
 
-      await user.type(screen.getByRole('textbox', { name: 'In' }), '1800');
+      const input = screen.getByRole('textbox', { name: 'In' });
+      await user.type(input, '1800');
       await user.type(
         screen.getByRole('textbox', { name: 'Out' }),
         '2200{Enter}',
       );
 
-      expect(
-        screen.queryByRole('textbox', { name: 'In' }),
-      ).not.toBeInTheDocument();
+      expect(input).not.toBeInTheDocument();
     });
   });
 
@@ -142,9 +141,7 @@ describe('Calories', () => {
       await user.click(screen.getByRole('radio', { name: 'by day' }));
       await user.click(screen.getByRole('button', { name: 'update 2 Jan' }));
 
-      expect(
-        screen.getByRole('heading', { name: '2 Jan' }),
-      ).toBeInTheDocument();
+      const firstHeading = screen.getByRole('heading', { name: '2 Jan' });
       expect(screen.getByRole('textbox', { name: 'In' })).toHaveValue('1200');
 
       await user.click(screen.getByRole('button', { name: 'update 4 Jan' }));
@@ -152,9 +149,7 @@ describe('Calories', () => {
       expect(
         screen.getByRole('heading', { name: '4 Jan' }),
       ).toBeInTheDocument();
-      expect(
-        screen.queryByRole('heading', { name: '2 Jan' }),
-      ).not.toBeInTheDocument();
+      expect(firstHeading).not.toBeVisible();
       expect(screen.getByRole('textbox', { name: 'In' })).toHaveValue('');
     });
   });

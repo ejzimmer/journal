@@ -1,7 +1,6 @@
 import { findBranchPoint } from './findBranchPoint';
 import { EdgeSample } from './treeGeometry';
-
-const toRadians = (degrees: number) => (degrees * Math.PI) / 180;
+import { toRadians } from '../../../shared/toRadians';
 
 const FOOT_SINK = 0.4;
 

@@ -48,10 +48,11 @@ describe('modal', () => {
       );
 
       await user.click(screen.getByRole('button', { name: 'trigger' }));
+      const dialog = screen.getByRole('dialog');
       await user.click(screen.getByRole('button', { name: 'submit' }));
 
       expect(onSubmit).toHaveBeenCalled();
-      expect(screen.queryByRole('checkbox')).not.toBeInTheDocument();
+      expect(dialog).not.toHaveAttribute('open');
     });
   });
 
@@ -72,10 +73,11 @@ describe('modal', () => {
       );
 
       await user.click(screen.getByRole('button', { name: 'trigger' }));
+      const dialog = screen.getByRole('dialog');
       await user.click(screen.getByRole('button', { name: 'Cancel' }));
 
       expect(onSubmit).not.toHaveBeenCalled();
-      expect(screen.queryByRole('checkbox')).not.toBeInTheDocument();
+      expect(dialog).not.toHaveAttribute('open');
     });
   });
 });

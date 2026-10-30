@@ -30,7 +30,9 @@ describe('EmojiPicker', () => {
         const picker = await openPickerWithTriggerAt(100);
 
         expect(picker).toHaveStyle({ height: '360px' });
-        expect(picker.parentElement).not.toHaveClass('above');
+        expect(screen.getByTestId('emoji-picker-popover')).not.toHaveClass(
+          'above',
+        );
       });
     });
 
@@ -39,7 +41,9 @@ describe('EmojiPicker', () => {
         const picker = await openPickerWithTriggerAt(450);
 
         expect(picker).toHaveStyle({ height: '288px' });
-        expect(picker.parentElement).not.toHaveClass('above');
+        expect(screen.getByTestId('emoji-picker-popover')).not.toHaveClass(
+          'above',
+        );
       });
     });
 
@@ -48,7 +52,7 @@ describe('EmojiPicker', () => {
         const picker = await openPickerWithTriggerAt(300, 450);
 
         expect(picker).toHaveStyle({ height: '278px' });
-        expect(picker.parentElement).toHaveClass('above');
+        expect(screen.getByTestId('emoji-picker-popover')).toHaveClass('above');
       });
     });
   });

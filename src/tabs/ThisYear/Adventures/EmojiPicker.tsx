@@ -70,6 +70,7 @@ export function EmojiPicker({
       {isOpen && (
         <div
           className={`emoji-picker-popover${layout.isAbove ? ' above' : ''}`}
+          data-testid="emoji-picker-popover"
         >
           <Picker
             emojiStyle={EmojiStyle.NATIVE}

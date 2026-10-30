@@ -6,8 +6,6 @@ import {
 import { DAILY_KEY, DailyTask } from '../../../shared/types';
 import { useDailyReset } from './useDailyReset';
 
-const yesterday = () => getDateDaysAgo(1);
-
 const createTask = (
   id: string,
   overrides: Partial<DailyTask> = {},
@@ -19,7 +17,7 @@ const createTask = (
   position: 0,
   type: '毎日',
   status: 'ready',
-  lastCompleted: yesterday(),
+  lastCompleted: getDateDaysAgo(1),
   ...overrides,
 });
 

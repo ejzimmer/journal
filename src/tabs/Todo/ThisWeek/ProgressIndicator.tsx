@@ -1,7 +1,7 @@
 import { CSSProperties } from 'react';
 import { getDaysSince } from '../../../shared/dates';
 import { WeeklyTask } from '../../../shared/types';
-import { dateToWeekday, isTaskDue } from './utils';
+import { formatWeekday, isTaskDue } from './utils';
 
 type ProgressIndicatorProps = Pick<
   WeeklyTask,
@@ -69,7 +69,7 @@ export function ProgressIndicator({
       {numberDone > 0 && (
         <ol className="dates-popover">
           {completedDates.map((date) => (
-            <li key={date}>{dateToWeekday(date)}</li>
+            <li key={date}>{formatWeekday(date)}</li>
           ))}
         </ol>
       )}

@@ -320,12 +320,10 @@ describe('DragHandle keyboard shortcuts', () => {
 
   it("doesn't close the menu after a keyboard move", async () => {
     const user = userEvent.setup();
-    const { container } = render(
-      <DragHandle list={list} index={2} onReorder={jest.fn()} />,
-    );
+    render(<DragHandle list={list} index={2} onReorder={jest.fn()} />);
 
     await user.click(screen.getByRole('button', { name: 'drag menu' }));
-    const popover = container.querySelector('.menu') as HTMLElement;
+    const popover = screen.getByRole('menu', { hidden: true });
     const hideSpy = jest.spyOn(popover, 'hidePopover');
 
     focusHandle();

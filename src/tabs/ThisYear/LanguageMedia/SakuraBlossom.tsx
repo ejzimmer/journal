@@ -1,3 +1,4 @@
+import { toRadians } from '../../../shared/toRadians';
 const PETAL =
   'M0 0 C-6.5 -3.5 -8 -11 -3.6 -14.4 L0 -12 L3.6 -14.4 C8 -11 6.5 -3.5 0 0 Z';
 const PETAL_COUNT = 5;
@@ -5,8 +6,6 @@ const BUD_STAGE = 0.4;
 const TIGHT_BUD = [-12, 55, 42];
 const PLUMP_BUD = [-20, 75, 76];
 const STAMEN_ANGLES = Array.from({ length: 8 }, (_, index) => index * 45 + 22);
-
-const toRadians = (degrees: number) => (degrees * Math.PI) / 180;
 
 const mixColour = (amount: number) => {
   const [hue, saturation, lightness] = TIGHT_BUD.map(
