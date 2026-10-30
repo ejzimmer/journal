@@ -12,14 +12,12 @@ const renderRaceme = (understood: number) =>
     </svg>,
   );
 
-const countFlorets = () => screen.queryAllByTestId('wisteria-floret').length;
-
 describe('WisteriaRaceme', () => {
   describe('when everything was understood', () => {
     it('has opened every bud', () => {
       renderRaceme(100);
 
-      expect(countFlorets()).toBe(36);
+      expect(screen.getAllByTestId('wisteria-floret')).toHaveLength(36);
     });
   });
 
@@ -27,7 +25,7 @@ describe('WisteriaRaceme', () => {
     it('opens the top rows and leaves the rest in bud', () => {
       renderRaceme(50);
 
-      expect(countFlorets()).toBe(21);
+      expect(screen.getAllByTestId('wisteria-floret')).toHaveLength(21);
       expect(screen.getAllByTestId('wisteria-bud')).toHaveLength(15);
     });
   });
