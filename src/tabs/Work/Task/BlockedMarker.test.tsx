@@ -4,7 +4,7 @@ import { BlockedMarker } from './BlockedMarker';
 
 describe('BlockedMarker', () => {
   describe('when the task is not blocked', () => {
-    it('sets the blocker to the chosen stamp', async () => {
+    it('blocks the task on time when the clock stamp is picked', async () => {
       const user = userEvent.setup();
       const onChange = jest.fn();
       render(<BlockedMarker onChange={onChange} />);
@@ -19,7 +19,7 @@ describe('BlockedMarker', () => {
   });
 
   describe('when the task is blocked', () => {
-    it('describes what it is blocked on', () => {
+    it('labels the stamp with what the task is blocked on', () => {
       render(<BlockedMarker blockedOn="human" onChange={jest.fn()} />);
 
       expect(
@@ -27,7 +27,7 @@ describe('BlockedMarker', () => {
       ).toBeInTheDocument();
     });
 
-    it('changes the blocker to the chosen stamp', async () => {
+    it('switches the task to the merge queue when the merge stamp is picked', async () => {
       const user = userEvent.setup();
       const onChange = jest.fn();
       render(<BlockedMarker blockedOn="human" onChange={onChange} />);
@@ -45,7 +45,7 @@ describe('BlockedMarker', () => {
       expect(onChange).toHaveBeenCalledWith('merge_queue');
     });
 
-    it('unblocks it', async () => {
+    it('unblocks the task when the bin is picked', async () => {
       const user = userEvent.setup();
       const onChange = jest.fn();
       render(<BlockedMarker blockedOn="human" onChange={onChange} />);
