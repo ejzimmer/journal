@@ -1,9 +1,9 @@
 .dead-hang {
-  --track: hsl(73 33% 85%);
-  --hang: hsl(105 56% 51%);
+  --track: var(--olive-light);
+  --hang: var(--leaf);
   --live: hsl(105 56% 51% / 0.45);
-  --longest: hsl(42 100% 60%);
-  --current: hsl(28 100% 56%);
+  --longest: var(--yellow);
+  --current: var(--orange);
 
   .rings {
     display: grid;

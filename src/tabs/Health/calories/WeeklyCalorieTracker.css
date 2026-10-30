@@ -1,6 +1,6 @@
 .weekly-calories {
   --week: hsl(95 61% 64%);
-  --week-lowest: hsl(110 61% 42%);
+  --week-lowest: var(--green);
   --week-over: hsl(29 100% 63%);
   --week-min: hsl(208 90% 56%);
   --axis: hsl(72 40% 84%);

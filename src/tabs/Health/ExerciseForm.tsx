@@ -93,6 +93,7 @@ export function ExerciseForm({
             onChange={setRecommendation}
             name={recommendationName}
             Option={RecommendationIcon}
+            className="health-switch"
           />
         </fieldset>
       </div>

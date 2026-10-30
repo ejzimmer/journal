@@ -61,15 +61,14 @@ export function Calories() {
 
   return (
     <div className="calories">
-      <div className="tracker-switch">
-        <Switch
-          options={['week', 'day']}
-          value={view}
-          onChange={setView}
-          name="tracker-view"
-          Option={ViewIcon}
-        />
-      </div>
+      <Switch
+        options={['week', 'day']}
+        value={view}
+        onChange={setView}
+        name="tracker-view"
+        Option={ViewIcon}
+        className="health-switch calories-switch"
+      />
       <div className="tracker-stage">
         <div
           className={`tracker-pane ${view === 'day' ? 'active' : ''}`}
