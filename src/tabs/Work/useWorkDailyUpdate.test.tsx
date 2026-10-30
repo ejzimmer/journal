@@ -237,28 +237,6 @@ describe('the daily work update', () => {
       });
     });
 
-    describe('in several lists', () => {
-      it('keeps the order of the lists they came from', async () => {
-        const storage = await updateLists([
-          createList('today', 'Today', 0),
-          createList('later', 'Later', 2, [dueToday('later', 'later-thing')]),
-          createList('backlog', 'Backlog', 1, [
-            dueToday('backlog', 'second-backlog-thing', 1),
-            dueToday('backlog', 'first-backlog-thing', 0),
-          ]),
-        ]);
-
-        expect(storage.updateList).toHaveBeenCalledWith(
-          `${WORK_KEY}/today/items`,
-          [
-            expect.objectContaining({ id: 'first-backlog-thing' }),
-            expect.objectContaining({ id: 'second-backlog-thing' }),
-            expect.objectContaining({ id: 'later-thing' }),
-          ],
-        );
-      });
-    });
-
     describe('already in the Today list', () => {
       it('moves to the top of it', async () => {
         const storage = await updateLists([
@@ -315,6 +293,33 @@ describe('the daily work update', () => {
 
         expect(storage.updateList).not.toHaveBeenCalled();
       });
+    });
+  });
+
+  describe('tasks due today in different lists', () => {
+    it('keeps the order of the lists they came from', async () => {
+      const storage = await updateLists([
+        createList('today', 'Today', 0),
+        createList('later', 'Later', 2, [
+          createTask('later', 'later-thing', { dueDate: getToday() }),
+        ]),
+        createList('backlog', 'Backlog', 1, [
+          createTask('backlog', 'second-backlog-thing', {
+            dueDate: getToday(),
+            position: 1,
+          }),
+          createTask('backlog', 'first-backlog-thing', { dueDate: getToday() }),
+        ]),
+      ]);
+
+      expect(storage.updateList).toHaveBeenCalledWith(
+        `${WORK_KEY}/today/items`,
+        [
+          expect.objectContaining({ id: 'first-backlog-thing' }),
+          expect.objectContaining({ id: 'second-backlog-thing' }),
+          expect.objectContaining({ id: 'later-thing' }),
+        ],
+      );
     });
   });
 
