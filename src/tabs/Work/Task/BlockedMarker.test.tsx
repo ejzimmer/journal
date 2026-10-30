@@ -4,7 +4,7 @@ import { BlockedMarker } from './BlockedMarker';
 
 describe('BlockedMarker', () => {
   describe('when the task is not blocked', () => {
-    it('blocks it on the chosen stamp', async () => {
+    it('sets the blocker to the chosen stamp', async () => {
       const user = userEvent.setup();
       const onChange = jest.fn();
       render(<BlockedMarker onChange={onChange} />);
@@ -27,7 +27,7 @@ describe('BlockedMarker', () => {
       ).toBeInTheDocument();
     });
 
-    it('moves it to another stamp', async () => {
+    it('changes the blocker to the chosen stamp', async () => {
       const user = userEvent.setup();
       const onChange = jest.fn();
       render(<BlockedMarker blockedOn="human" onChange={onChange} />);
