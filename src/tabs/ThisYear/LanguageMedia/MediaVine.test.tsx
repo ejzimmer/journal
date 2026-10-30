@@ -150,6 +150,22 @@ describe('MediaVine', () => {
       });
     });
 
+    describe('clicking the flowers an update grew', () => {
+      it('opens that update in the update form', async () => {
+        const user = userEvent.setup();
+        renderWithLanguageMediaStorage(<MediaVine series={series} />);
+
+        await user.click(screen.getByTestId('wisteria-raceme'));
+
+        expect(
+          screen.getByRole('form', { name: 'Track Chapitre 1' }),
+        ).toBeInTheDocument();
+        expect(
+          screen.getByRole('spinbutton', { name: 'Looked up' }),
+        ).toHaveValue(4);
+      });
+    });
+
     describe('hovering the flowers an update grew', () => {
       it('shows the date of the update', async () => {
         const user = userEvent.setup();

@@ -197,6 +197,22 @@ describe('MediaTree', () => {
       });
     });
 
+    describe('clicking the flower the update grew', () => {
+      it('opens that update in the update form', async () => {
+        const user = userEvent.setup();
+        renderWithLanguageMediaStorage(<MediaTree series={seriesWithUpdate} />);
+
+        await user.click(screen.getByTestId('callistemon-flower'));
+
+        expect(
+          screen.getByRole('form', { name: 'Track Fantine' }),
+        ).toBeInTheDocument();
+        expect(
+          screen.getByRole('spinbutton', { name: 'Looked up' }),
+        ).toHaveValue(4);
+      });
+    });
+
     describe('hovering the flower the update grew', () => {
       it('shows the date of the update', async () => {
         const user = userEvent.setup();

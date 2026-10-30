@@ -94,6 +94,26 @@ describe('MediaCactus', () => {
     });
   });
 
+  describe('clicking a crown of flowers', () => {
+    it('opens its video in the watched video form', async () => {
+      const user = userEvent.setup();
+      const channel: YoutubeChannel = {
+        ...hugo,
+        videos: { v1: { ...hugo.videos!.v1, understood: 60 } },
+      };
+      renderWithLanguageMediaStorage(<MediaCactus channel={channel} />);
+
+      await user.click(screen.getAllByTestId('saguaro-blossom')[0]);
+
+      expect(
+        screen.getByRole('form', { name: 'Edit https://youtu.be/1' }),
+      ).toBeInTheDocument();
+      expect(screen.getByRole('spinbutton', { name: 'Looked up' })).toHaveValue(
+        7,
+      );
+    });
+  });
+
   describe('hovering a crown of flowers', () => {
     it('shows the date its video was added', async () => {
       const user = userEvent.setup();

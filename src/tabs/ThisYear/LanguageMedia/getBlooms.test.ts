@@ -54,6 +54,7 @@ describe('getBlooms', () => {
       expect(getBlooms(series)).toEqual([
         {
           key: 'u1',
+          volume: series.volumes!.vol1,
           limbKey: 'vol1-limb',
           at: 0.25,
           understood: 40,
@@ -61,6 +62,7 @@ describe('getBlooms', () => {
         },
         {
           key: 'u2',
+          volume: series.volumes!.vol1,
           limbKey: 'vol1-limb',
           at: 0.5,
           understood: 55,

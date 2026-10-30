@@ -57,7 +57,11 @@ export function MediaCactus({ channel }: MediaCactusProps) {
         <TreeSilhouette layout={layout} />
         <TreeFill shapes={grownShapes} />
         <CactusRibs shapes={grownShapes} />
-        <CactusCrowns channel={channel} shapes={grownShapes} />
+        <CactusCrowns
+          channel={channel}
+          shapes={grownShapes}
+          onSelect={setEditedVideo}
+        />
         <TreeBeetles spots={placeBeetles(videos, grownShapes)} />
         <VideoArms
           channel={channel}

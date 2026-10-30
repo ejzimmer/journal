@@ -2,13 +2,14 @@ import { findBranchPoint } from './findBranchPoint';
 import { getItemsInAddedOrder } from './lists';
 import { roundCoordinate } from './treeGeometry';
 import { GrownShape } from './treeGrowth';
-import { YoutubeChannel } from './types';
+import { Video, YoutubeChannel } from './types';
 import { toRadians } from '../../../shared/toRadians';
 
 const SINK = 2;
 
 export type CrownSpot = {
   key: string;
+  video: Video;
   x: number;
   y: number;
   angle: number;
@@ -28,6 +29,7 @@ export function placeCrowns(
     return [
       {
         key: `${video.id}-crown`,
+        video,
         x: roundCoordinate(tip.x + Math.cos(toRadians(tip.angle)) * reach),
         y: roundCoordinate(tip.y + Math.sin(toRadians(tip.angle)) * reach),
         angle: roundCoordinate(tip.angle),

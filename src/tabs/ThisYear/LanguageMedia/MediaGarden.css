@@ -659,6 +659,10 @@
   }
 }
 
+.media-tree .clickable {
+  cursor: pointer;
+}
+
 .media-cactus .update-stretch {
   &:hover,
   &:focus-visible {

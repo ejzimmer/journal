@@ -32,13 +32,14 @@ const createChannel = (videos: Video[]): YoutubeChannel => ({
 
 describe('placeCrowns', () => {
   describe('for a video I have said how much of I understood', () => {
-    const crowns = placeCrowns(createChannel([createVideo('v1', 40)]), [
+    const video = createVideo('v1', 40);
+    const crowns = placeCrowns(createChannel([video]), [
       createArm('v1-arm', 0.5),
     ]);
 
     it('puts a crown on the grown tip of its arm', () => {
       expect(crowns).toEqual([
-        { key: 'v1-crown', x: 0, y: -58, angle: -90, understood: 40 },
+        { key: 'v1-crown', video, x: 0, y: -58, angle: -90, understood: 40 },
       ]);
     });
   });

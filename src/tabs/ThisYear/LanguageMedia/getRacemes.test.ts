@@ -44,9 +44,12 @@ describe('getRacemes', () => {
     });
 
     it('hangs a raceme on the episode’s shoot for each update, in the order they were made', () => {
-      expect(getRacemes(createSeries(episode))).toEqual([
+      const series = createSeries(episode);
+      expect(getRacemes(series)).toEqual([
         {
           key: 'earlier',
+          season: series.seasons!.s1,
+          episode,
           shootKey: 's1-e1-shoot',
           at: 0.25,
           understood: 60,
@@ -54,6 +57,8 @@ describe('getRacemes', () => {
         },
         {
           key: 'later',
+          season: series.seasons!.s1,
+          episode,
           shootKey: 's1-e1-shoot',
           at: 0.75,
           understood: 80,
@@ -83,15 +88,20 @@ describe('getRacemes', () => {
     });
 
     it('leaves the understood amount off that update’s raceme', () => {
-      expect(getRacemes(createSeries(episode))).toEqual([
+      const series = createSeries(episode);
+      expect(getRacemes(series)).toEqual([
         {
           key: 'quiet',
+          season: series.seasons!.s1,
+          episode,
           shootKey: 's1-e1-shoot',
           at: 0.25,
           date: '2026-09-01T20:00:00Z',
         },
         {
           key: 'counted',
+          season: series.seasons!.s1,
+          episode,
           shootKey: 's1-e1-shoot',
           at: 0.5,
           understood: 70,
