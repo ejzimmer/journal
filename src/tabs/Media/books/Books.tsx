@@ -15,7 +15,12 @@ export function Books() {
 
   return (
     <div className="books">
-      <h2>Books</h2>
+      <div className="media-heading">
+        <h2>Books</h2>
+        {isThisYearSelected && (
+          <AddMediaForm ariaLabel="Add a book" config={formConfig} />
+        )}
+      </div>
       <YearTabs
         years={years}
         selectedYear={selectedYear}
@@ -39,9 +44,6 @@ export function Books() {
           )}
         </div>
       </YearTabs>
-      {isThisYearSelected && (
-        <AddMediaForm ariaLabel="Add a book" config={formConfig} />
-      )}
     </div>
   );
 }
