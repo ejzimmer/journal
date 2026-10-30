@@ -1,8 +1,11 @@
-import React, { createContext, useContext } from 'react';
+import React from 'react';
 import { JSX, useRef } from 'react';
 
 import './Modal.css';
-import { XIcon } from '../icons/X';
+import { ModalContext } from './ModalContext';
+import { ModalCloseButton } from './ModalCloseButton';
+import { ModalAction } from './ModalAction';
+import { ModalCancel } from './ModalCancel';
 
 export type ModalProps = {
   trigger: (props: ModalTriggerProps) => JSX.Element;
@@ -13,10 +16,6 @@ export type ModalProps = {
 export type ModalTriggerProps = {
   onClick: () => void;
 };
-
-export const ModalContext = createContext<
-  { closeModal: () => void } | undefined
->(undefined);
 
 function Modal({ trigger: Trigger, onClose, children }: ModalProps) {
   const dialogRef = useRef<HTMLDialogElement>(null);
@@ -40,7 +39,7 @@ function Modal({ trigger: Trigger, onClose, children }: ModalProps) {
       >
         <ModalContext.Provider value={{ closeModal }}>
           <div className="close-button">
-            <CloseButton />
+            <ModalCloseButton />
           </div>
           {children}
         </ModalContext.Provider>
@@ -49,71 +48,20 @@ function Modal({ trigger: Trigger, onClose, children }: ModalProps) {
   );
 }
 
-export function useModal() {
-  const context = useContext(ModalContext);
+type ModalSectionProps = { children: React.ReactNode };
 
-  if (!context) {
-    throw new Error('Tried to access modal context outside of modal');
-  }
-
-  return context;
-}
-
-function CloseButton() {
-  const { closeModal } = useModal();
-
-  return (
-    <button
-      className="ghost"
-      style={{
-        color: 'inherit',
-      }}
-      aria-label="close modal"
-      onClick={closeModal}
-    >
-      <XIcon width="16px" />
-    </button>
-  );
-}
-
-function Body({ children }: { children: React.ReactNode }) {
+function Body({ children }: ModalSectionProps) {
   return <div>{children}</div>;
 }
 
-function Footer({ children }: { children: React.ReactNode }) {
+function Footer({ children }: ModalSectionProps) {
   return <div className="footer">{children}</div>;
-}
-
-function Action({
-  onClick,
-  ...props
-}: React.HTMLAttributes<HTMLButtonElement>) {
-  const { closeModal } = useModal();
-
-  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-    if (onClick) {
-      event.preventDefault();
-      onClick(event);
-      closeModal();
-    }
-  };
-  return <button {...props} onClick={handleClick} />;
-}
-
-function Cancel({ children }: { children: React.ReactNode }) {
-  const { closeModal } = useModal();
-
-  return (
-    <button className="outline" onClick={closeModal} type="button">
-      {children}
-    </button>
-  );
 }
 
 Modal.Body = Body;
 Modal.Footer = Footer;
-Modal.Action = Action;
-Modal.Cancel = Cancel;
-Modal.CloseButton = CloseButton;
+Modal.Action = ModalAction;
+Modal.Cancel = ModalCancel;
+Modal.CloseButton = ModalCloseButton;
 
 export { Modal };

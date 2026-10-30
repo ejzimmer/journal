@@ -3,7 +3,9 @@ import { Pergola } from './vineLayout';
 const HALF_WIDTH = 5;
 const GAP = 3;
 
-export function PostFronts({ pergola }: { pergola: Pergola }) {
+type PostFrontsProps = { pergola: Pergola };
+
+export function PostFronts({ pergola }: PostFrontsProps) {
   return (
     <g className="post-fronts">
       {pergola.trunkCrossings.map(([top, bottom]) => {

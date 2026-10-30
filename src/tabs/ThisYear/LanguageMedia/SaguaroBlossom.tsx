@@ -1,6 +1,8 @@
 const PETALS = 9;
 
-export function SaguaroBlossom({ x, y }: { x: number; y: number }) {
+type SaguaroBlossomProps = { x: number; y: number };
+
+export function SaguaroBlossom({ x, y }: SaguaroBlossomProps) {
   return (
     <g className="saguaro-blossom" data-testid="saguaro-blossom">
       <path className="saguaro-stalk" d={`M${x} ${y + 2} L${x} ${y - 1}`} />

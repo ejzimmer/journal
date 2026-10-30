@@ -19,13 +19,15 @@ export function createStorageContext(
   };
 }
 
+type StorageContextWrapperProps = {
+  value?: Partial<ContextType>;
+  children: ReactNode;
+};
+
 export function StorageContextWrapper({
   value,
   children,
-}: {
-  value?: Partial<ContextType>;
-  children: ReactNode;
-}) {
+}: StorageContextWrapperProps) {
   return (
     <FirebaseContext.Provider value={createStorageContext(value)}>
       {children}

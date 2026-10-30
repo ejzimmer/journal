@@ -1,5 +1,6 @@
-import { ReactNode, useMemo } from 'react';
+import { useMemo } from 'react';
 import { COLOURS, Colour, Label } from './types';
+import { LabelOption, LabelOptionTag } from './LabelOptionTag';
 import { Combobox } from '../../shared/controls/combobox/Combobox';
 import { useWorkStorage } from './WorkStorageContext';
 
@@ -11,12 +12,6 @@ export type LabelsControlProps = {
   isMulti?: boolean;
   autoFocus?: boolean;
   onDismiss?: () => void;
-};
-
-type LabelOption = {
-  id: string;
-  label: string;
-  colour: Colour;
 };
 
 const isColour = (text?: string): text is Colour =>
@@ -94,25 +89,11 @@ export function LabelsControl({
       ariaLabel={ariaLabel}
       options={options}
       createOption={createOption}
-      Option={Option}
-      Value={Option}
+      Option={LabelOptionTag}
+      Value={LabelOptionTag}
       hideSelectedOptions
       autoFocus={autoFocus}
       onDismiss={onDismiss}
     />
-  );
-}
-
-function Option({
-  value,
-  children,
-}: {
-  value: LabelOption;
-  children?: ReactNode;
-}) {
-  return (
-    <div className={`label-tag ${value.colour}`}>
-      {value.label} {children}
-    </div>
   );
 }

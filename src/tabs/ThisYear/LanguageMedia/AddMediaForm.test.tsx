@@ -1,6 +1,6 @@
 import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { ModalContext } from '../../../shared/controls/Modal';
+import { ModalContext } from '../../../shared/controls/ModalContext';
 import { AddMediaForm } from './AddMediaForm';
 import { renderWithLanguageMediaStorage } from './languageMediaStorageTestUtils';
 

@@ -1,6 +1,6 @@
 import { screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { ModalContext } from '../../../shared/controls/Modal';
+import { ModalContext } from '../../../shared/controls/ModalContext';
 import { EditChannelForm } from './EditChannelForm';
 import { renderWithLanguageMediaStorage } from './languageMediaStorageTestUtils';
 import { YoutubeChannel } from './types';

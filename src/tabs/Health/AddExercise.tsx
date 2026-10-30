@@ -2,7 +2,9 @@ import { FormEvent, useState } from 'react';
 import { PlusIcon } from '../../shared/icons/Plus';
 import { useFormToggle } from '../../shared/controls/useFormToggle';
 
-export function AddExercise({ onAdd }: { onAdd: (name: string) => void }) {
+type AddExerciseProps = { onAdd: (name: string) => void };
+
+export function AddExercise({ onAdd }: AddExerciseProps) {
   const { isFormOpen, triggerRef, openForm, closeForm } = useFormToggle();
   const [name, setName] = useState('');
 

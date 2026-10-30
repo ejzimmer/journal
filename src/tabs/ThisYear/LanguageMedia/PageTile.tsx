@@ -1,4 +1,6 @@
-export function PageTile({ page, pages }: { page?: number; pages?: number }) {
+type PageTileProps = { page?: number; pages?: number };
+
+export function PageTile({ page, pages }: PageTileProps) {
   return (
     <div className="progress-tile tooltip-container">
       <span className="page-icon tooltip-anchor" aria-hidden="true">

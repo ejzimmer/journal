@@ -3,13 +3,15 @@ import { useFormToggle } from '../../../shared/controls/useFormToggle';
 import { LabelsControl } from '../LabelsControl';
 import { Label } from '../types';
 
+type UpdateLabelsProps = {
+  labels?: Label[];
+  onChangeLabels: (labels: Label[]) => void;
+};
+
 export function UpdateLabels({
   labels = [],
   onChangeLabels,
-}: {
-  labels?: Label[];
-  onChangeLabels: (labels: Label[]) => void;
-}) {
+}: UpdateLabelsProps) {
   const { isFormOpen, triggerRef, openForm, closeForm } = useFormToggle();
 
   return isFormOpen ? (

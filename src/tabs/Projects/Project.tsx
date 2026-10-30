@@ -5,6 +5,7 @@ import './Project.css';
 import { EmojiCheckbox } from '../../shared/controls/EmojiCheckbox';
 import { ChevronDownIcon } from '../../shared/icons/ChevronDown';
 import { SubtaskList } from './SubtaskList';
+import { SubtaskProgress } from './SubtaskProgress';
 import {
   ProjectDetails,
   PROJECT_COLOURS,
@@ -202,31 +203,6 @@ export function Project({
       {hasOpenedSubtasks && (
         <SubtaskList projectId={project.id} isVisible={subtasksVisible} />
       )}
-    </div>
-  );
-}
-
-type SubtaskProgressProps = {
-  done: number;
-  total: number;
-};
-
-function SubtaskProgress({ done, total }: SubtaskProgressProps) {
-  if (total === 0) return null;
-
-  const donePercentage = (done / total) * 100;
-
-  return (
-    <div className="subtasks-progress">
-      <div className="subtasks-progress-track" aria-hidden="true">
-        <div
-          className="subtasks-progress-fill"
-          style={{ width: `${donePercentage}%` }}
-        />
-      </div>
-      <span className="subtasks-progress-count">
-        {done} of {total}
-      </span>
     </div>
   );
 }

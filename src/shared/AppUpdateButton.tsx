@@ -4,11 +4,11 @@ import { RestartArrowIcon } from './icons/RestartArrow';
 import { useIsOverlapping } from './useIsOverlapping';
 import './AppUpdateButton.css';
 
-export function AppUpdateButton({
-  tabListRef,
-}: {
+type AppUpdateButtonProps = {
   tabListRef: RefObject<HTMLUListElement | null>;
-}) {
+};
+
+export function AppUpdateButton({ tabListRef }: AppUpdateButtonProps) {
   const buttonRef = useRef<HTMLButtonElement>(null);
   const isOverlappingTabs = useIsOverlapping(buttonRef, tabListRef);
   const waitingRegistration = useSyncExternalStore(

@@ -1,11 +1,4 @@
-import {
-  CSSProperties,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useStorageContext } from '../../shared/FirebaseContext';
 
 import './index.css';
@@ -30,7 +23,7 @@ import {
   moveProjectToStart,
   reorderProjects,
 } from './utils';
-import { useGridColumnSpan } from './useGridColumnSpan';
+import { FilteredProject } from './FilteredProject';
 import { ProjectsSkeleton } from './ProjectsSkeleton';
 import { YearTabs } from '../../shared/controls/YearTabs';
 import { getCompletionYear, useItemYears } from '../../shared/years';
@@ -179,31 +172,5 @@ export function Projects() {
       </YearTabs>
       {isThisYearSelected && <AddProjectForm />}
     </div>
-  );
-}
-
-function FilteredProject({
-  filter: categories,
-  project,
-  children,
-}: {
-  filter: Category[];
-  project: ProjectDetails;
-  children: React.ReactNode;
-}) {
-  const itemRef = useRef<HTMLLIElement>(null);
-  const isVisible = !categories.length || categories.includes(project.category);
-  const rowSpan = (project.status ?? 'ready') === 'in_progress' ? 2 : 1;
-
-  useGridColumnSpan(itemRef, project, isVisible);
-
-  return (
-    <li
-      ref={itemRef}
-      className={`project-item ${isVisible ? '' : 'filtered-out'}`}
-      style={{ '--row-span': rowSpan } as CSSProperties}
-    >
-      {children}
-    </li>
   );
 }

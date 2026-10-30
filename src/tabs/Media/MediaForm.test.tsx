@@ -1,6 +1,8 @@
 import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { AddMediaForm, EditMediaForm, MediaFormConfig } from './MediaForm';
+import { AddMediaForm } from './AddMediaForm';
+import { EditMediaForm } from './EditMediaForm';
+import { MediaFormConfig } from './MediaForm';
 import { BookDetails, SeriesDetails } from './types';
 import { renderWithMediaStorage } from './mediaStorageTestUtils';
 

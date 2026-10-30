@@ -1,13 +1,12 @@
 import { useId } from 'react';
 import { createCloudShape } from './createCloudShape';
 
-export function CloudShape({
-  width,
-  height,
-}: {
+type CloudShapeProps = {
   width: number;
   height: number;
-}) {
+};
+
+export function CloudShape({ width, height }: CloudShapeProps) {
   const shadeId = useId();
   const outlineId = useId();
   const { body, puffs } = createCloudShape(width, height);

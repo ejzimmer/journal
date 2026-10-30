@@ -1,11 +1,13 @@
 import { IconProps } from './types';
 import './RubbishBin.css';
 
+type RubbishBinIconProps = IconProps & { shouldAnimate?: boolean };
+
 export function RubbishBinIcon({
   colour = 'currentColor',
   shouldAnimate,
   ...props
-}: IconProps & { shouldAnimate?: boolean }) {
+}: RubbishBinIconProps) {
   return (
     <svg
       viewBox="0 0 20 24"

@@ -30,12 +30,16 @@ const splitIntoUnits = (
   largestUnit: 'hours' | 'minutes',
 ) => Temporal.Duration.from({ seconds: totalSeconds }).round({ largestUnit });
 
+type DurationFieldProps = FieldProps<number> & {
+  durationFormat: keyof typeof DURATION_UNITS;
+};
+
 export function DurationField({
   label,
   name,
   defaultValue,
   durationFormat,
-}: FieldProps<number> & { durationFormat: keyof typeof DURATION_UNITS }) {
+}: DurationFieldProps) {
   const units = DURATION_UNITS[durationFormat];
   const defaultDuration =
     defaultValue === undefined

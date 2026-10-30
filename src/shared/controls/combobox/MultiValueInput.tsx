@@ -1,6 +1,7 @@
-import { ReactNode, useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { XIcon } from '../../icons/X';
 import { SearchInput } from './SearchInput';
+import { DefaultValue } from './DefaultValue';
 import { MultiValueInputProps, OptionType } from './types';
 
 export function MultiValueInput<T extends OptionType>({
@@ -57,19 +58,5 @@ export function MultiValueInput<T extends OptionType>({
         </button>
       </div>
     </div>
-  );
-}
-
-export function DefaultValue<T extends OptionType>({
-  value,
-  children,
-}: {
-  value: T;
-  children?: ReactNode;
-}) {
-  return (
-    <>
-      {value.label} {children}
-    </>
   );
 }

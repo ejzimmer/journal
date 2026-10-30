@@ -1,17 +1,20 @@
 import { ReactNode, useEffect, useRef } from 'react';
-import { Modal, ModalContext } from './Modal';
+import { Modal } from './Modal';
+import { ModalContext } from './ModalContext';
+
+type ModalDialogProps = {
+  isOpen: boolean;
+  onCancel: () => void;
+  className?: string;
+  children: ReactNode;
+};
 
 export function ModalDialog({
   isOpen,
   onCancel,
   className,
   children,
-}: {
-  isOpen: boolean;
-  onCancel: () => void;
-  className?: string;
-  children: ReactNode;
-}) {
+}: ModalDialogProps) {
   const modalState = useRef<'open' | 'closed'>('closed');
   const dialogRef = useRef<HTMLDialogElement>(null);
 

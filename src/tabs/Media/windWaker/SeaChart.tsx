@@ -3,13 +3,12 @@ import './SeaChart.css';
 const ROWS = ['A', 'B', 'C', 'D', 'E', 'F', 'G'];
 const COLUMNS = [1, 2, 3, 4, 5, 6, 7];
 
-export function SeaChart({
-  revealedSquares,
-  onChange,
-}: {
+type SeaChartProps = {
   revealedSquares: number[];
   onChange: (revealedSquares: number[]) => void;
-}) {
+};
+
+export function SeaChart({ revealedSquares, onChange }: SeaChartProps) {
   const toggleSquare = (square: number) =>
     onChange(
       revealedSquares.includes(square)

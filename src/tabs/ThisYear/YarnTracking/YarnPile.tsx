@@ -117,7 +117,9 @@ function placeBowlScene(
   };
 }
 
-export function YarnPile({ balls }: { balls: PileBall[] }) {
+type YarnPileProps = { balls: PileBall[] };
+
+export function YarnPile({ balls }: YarnPileProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const width = useElementWidth(containerRef);
   const [world] = useState(() =>

@@ -16,7 +16,9 @@ type View = 'week' | 'day';
 const isPastDay = () => true;
 const getDayYear = ({ year }: Balance) => year;
 
-function ViewIcon({ value }: { value: View }) {
+type ViewIconProps = { value: View };
+
+function ViewIcon({ value }: ViewIconProps) {
   return value === 'week' ? (
     <BarChartIcon role="img" aria-label="by week" />
   ) : (

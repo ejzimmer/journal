@@ -1,7 +1,5 @@
 import {
   ConfirmationModal,
-  ConfirmationModalDialog,
-  ConfirmationModalDialogProps,
   ConfirmationModalProps,
 } from '../../shared/controls/ConfirmationModal';
 
@@ -11,18 +9,6 @@ export function PostitModal(props: ConfirmationModalProps) {
   return (
     <div className="post-it">
       <ConfirmationModal
-        {...props}
-        confirmButtonText="Yes"
-        cancelButtonText="No"
-      />
-    </div>
-  );
-}
-
-export function PostitModalDialog(props: ConfirmationModalDialogProps) {
-  return (
-    <div className="post-it">
-      <ConfirmationModalDialog
         {...props}
         confirmButtonText="Yes"
         cancelButtonText="No"

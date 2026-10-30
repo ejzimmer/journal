@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef } from 'react';
-import { NavLink } from 'react-router-dom';
 import { TABS } from './tabConfig';
+import { NavItem } from './NavItem';
 import { AppUpdateButton } from './shared/AppUpdateButton';
 import { TabOverflowMenu } from './TabOverflowMenu';
 import { useVisibleTabCount } from './useVisibleTabCount';
@@ -67,25 +67,5 @@ export function TopNav() {
       </ul>
       <AppUpdateButton tabListRef={navListRef} />
     </nav>
-  );
-}
-
-function NavItem({
-  to,
-  isHidden,
-  onFocus,
-  children,
-}: {
-  to: string;
-  isHidden: boolean;
-  onFocus: React.FocusEventHandler<HTMLAnchorElement> | undefined;
-  children: React.ReactNode;
-}) {
-  return (
-    <li hidden={isHidden}>
-      <NavLink to={to} onFocus={onFocus}>
-        {children}
-      </NavLink>
-    </li>
   );
 }

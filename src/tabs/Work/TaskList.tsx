@@ -13,7 +13,7 @@ import { draggableTypeKey } from '../../shared/drag-and-drop/types';
 import { DraggableListItem } from '../../shared/drag-and-drop/DraggableListItem';
 import { DragPreview } from '../../shared/drag-and-drop/DragPreview';
 import { ListDestination } from './listDestination';
-import { PostitModalDialog } from './PostitModal';
+import { PostitModalDialog } from './PostitModalDialog';
 import { WorkTask } from './types';
 import { useWorkStorage } from './WorkStorageContext';
 import { useDropTarget } from '../../shared/drag-and-drop/useDropTarget';
@@ -34,19 +34,21 @@ function getListData(list: WorkTask, parentId: string) {
   };
 }
 
+type TaskListProps = {
+  index: number;
+  listId: string;
+  parentListId: string;
+  additionalMoveDestinations: (task: WorkTask) => JSX.Element;
+  onMoveTaskToList?: (task: WorkTask, destination: ListDestination) => void;
+};
+
 export function TaskList({
   index,
   listId,
   parentListId,
   additionalMoveDestinations,
   onMoveTaskToList,
-}: {
-  index: number;
-  listId: string;
-  parentListId: string;
-  additionalMoveDestinations: (task: WorkTask) => JSX.Element;
-  onMoveTaskToList?: (task: WorkTask, destination: ListDestination) => void;
-}) {
+}: TaskListProps) {
   const [confirmDeleteModalOpen, setConfirmDeleteModalOpen] = useState(false);
   const [editingLabel, setEditingLabel] = useState(false);
 

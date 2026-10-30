@@ -1,39 +1,14 @@
 import { useState } from 'react';
-import {
-  GAME_STATUS_ORDER,
-  GameDetails,
-  GameStatus,
-  getGameStatus,
-  isSeries,
-  SeriesDetails,
-} from '../types';
-import { getCoverHue } from '../coverHue';
-import { MediaList } from '../MediaList';
-import { MediaEditFormProps, StatusConfig } from '../MediaSpine';
-import { AddMediaForm, EditMediaForm } from '../MediaForm';
+import { isSeries } from '../types';
+import { AddMediaForm } from '../AddMediaForm';
 import { useGameFormConfig } from './gameFormConfig';
+import { GameMediaList } from './GameMediaList';
 import { Shelf } from '../Shelf';
 import { useMediaStorage } from '../MediaStorageContext';
 import { useMediaYears } from '../useMediaYears';
 import { Tab, Tabs } from '../../../shared/controls/Tabs';
 import { useWindWakerGoals } from '../windWaker/useWindWakerGoals';
 import { WindWakerGoals } from '../windWaker/WindWakerGoals';
-
-const GAME_CONFIG: StatusConfig<GameDetails, GameStatus> = {
-  order: GAME_STATUS_ORDER,
-  spineStatus: {
-    unplayed: 'todo',
-    playing: 'active',
-    played: 'done',
-  },
-  glyph: {
-    unplayed: '🎮',
-    playing: '🎮',
-    played: '✓',
-  },
-  getStatus: getGameStatus,
-  setStatus: (game, status) => ({ ...game, status }),
-};
 
 const WIND_WAKER_TAB = 'wind-waker';
 
@@ -44,43 +19,6 @@ const WIND_WAKER: Tab<GamesTab> = {
   label: 'Wind Waker',
   className: 'game-tab',
 };
-
-function EditGameForm({
-  item,
-  isOpen,
-  onCancel,
-}: MediaEditFormProps<GameDetails>) {
-  return (
-    <EditMediaForm
-      item={item}
-      isOpen={isOpen}
-      onCancel={onCancel}
-      config={useGameFormConfig()}
-    />
-  );
-}
-
-function GameMediaList({
-  games,
-  series,
-}: {
-  games?: Record<string, GameDetails>;
-  series?: SeriesDetails<GameDetails>;
-}) {
-  const { reorderSeries, getSeriesItemsPath } = useMediaStorage();
-
-  return (
-    <MediaList
-      items={games}
-      listId={series && getSeriesItemsPath(series)}
-      bandHue={series && getCoverHue(series.id)}
-      onReorder={series && ((items) => reorderSeries(series, items))}
-      hue={(game) => getCoverHue(series?.id ?? game.title)}
-      config={GAME_CONFIG}
-      EditForm={EditGameForm}
-    />
-  );
-}
 
 export function Games() {
   const { games, updateMediaSeries } = useMediaStorage();

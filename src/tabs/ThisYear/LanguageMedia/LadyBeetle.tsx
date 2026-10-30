@@ -37,13 +37,12 @@ const BEETLES: Record<LadyBeetleColour, { shell: string; spots: Spot[] }> = {
   },
 };
 
-export function LadyBeetle({
-  colour,
-  legSwing = 0,
-}: {
+type LadyBeetleProps = {
   colour: LadyBeetleColour;
   legSwing?: number;
-}) {
+};
+
+export function LadyBeetle({ colour, legSwing = 0 }: LadyBeetleProps) {
   const clipId = useId();
   const { shell, spots } = BEETLES[colour];
 

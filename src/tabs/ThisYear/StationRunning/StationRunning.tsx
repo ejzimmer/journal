@@ -1,15 +1,9 @@
 import { useStorageContext } from '../../../shared/FirebaseContext';
 import './StationRunning.css';
+import { Station, StationDetails } from './Station';
 
 export const STATION_RUNNING_YEAR = 2026;
 const KEY = `${STATION_RUNNING_YEAR}/stations`;
-
-type StationDetails = {
-  id: string;
-  name: string;
-  distance: number;
-  isDone: boolean;
-};
 
 export function StationRunning() {
   const { useValue, updateItem } = useStorageContext();
@@ -41,24 +35,5 @@ export function StationRunning() {
         ))}
       </ol>
     </div>
-  );
-}
-
-function Station({
-  onChange,
-  ...station
-}: StationDetails & { onChange: (station: StationDetails) => void }) {
-  return (
-    <label className={`station ${station.isDone ? 'done' : ''}`}>
-      <div className="name">
-        <b>{station.name}</b>{' '}
-        <span className="distance">{station.distance}km</span>
-        <input
-          type="checkbox"
-          checked={station.isDone}
-          onChange={() => onChange({ ...station, isDone: !station.isDone })}
-        />
-      </div>
-    </label>
   );
 }

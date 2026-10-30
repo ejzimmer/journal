@@ -12,13 +12,12 @@ const findUrgencyClass = (date: string) => {
   return '';
 };
 
-export function PlannedDate({
-  date,
-  isDone,
-}: {
+type PlannedDateProps = {
   date: string;
   isDone: boolean;
-}) {
+};
+
+export function PlannedDate({ date, isDone }: PlannedDateProps) {
   return (
     <span className={`planned-date ${isDone ? '' : findUrgencyClass(date)}`}>
       {formatWeekdayDayAndMonth(date)}

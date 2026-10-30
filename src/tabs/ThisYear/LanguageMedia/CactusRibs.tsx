@@ -4,7 +4,9 @@ import { GrownShape } from './treeGrowth';
 const formatLine = (points: { x: number; y: number }[]) =>
   `M${points.map(({ x, y }) => `${x} ${y}`).join(' L')}`;
 
-export function CactusRibs({ shapes }: { shapes: GrownShape[] }) {
+type CactusRibsProps = { shapes: GrownShape[] };
+
+export function CactusRibs({ shapes }: CactusRibsProps) {
   const ribs = shapes.flatMap(traceRibs).filter((rib) => rib.length > 1);
 
   return (

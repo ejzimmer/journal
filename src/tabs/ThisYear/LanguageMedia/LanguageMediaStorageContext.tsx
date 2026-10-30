@@ -70,11 +70,13 @@ const sortYearsByNewest = (
     ...new Set([thisYear, ...Object.keys(storedMediaByYear ?? {}).map(Number)]),
   ].sort((a, b) => b - a);
 
+type LanguageMediaStorageProviderProps = {
+  children: ReactNode;
+};
+
 export function LanguageMediaStorageProvider({
   children,
-}: {
-  children: ReactNode;
-}) {
+}: LanguageMediaStorageProviderProps) {
   const { addItem, deleteItem, setValues, useValue } = useStorageContext();
   const { value: storedMediaByYear, loading } =
     useValue<StoredMediaByYear>(LANGUAGE_MEDIA_PATH);

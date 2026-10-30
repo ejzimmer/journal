@@ -2,6 +2,7 @@ import React, { useId } from 'react';
 import { forwardRef, JSX, useImperativeHandle, useRef } from 'react';
 
 import './Menu.css';
+import { MenuAction } from './MenuAction';
 
 type MenuChildrenProps = {
   onClose: () => void;
@@ -69,28 +70,10 @@ const MenuBase = forwardRef<MenuHandle, MenuProps>(function Menu(
   );
 });
 
-function Action({
-  isDisabled,
-  children,
-  ...props
-}: Omit<
-  React.ButtonHTMLAttributes<HTMLButtonElement>,
-  'disabled' | 'onClick'
-> & {
-  isDisabled?: boolean;
-  onClick: (event: React.MouseEvent) => void;
-}) {
-  return (
-    <button {...props} role="menuitem" disabled={isDisabled}>
-      {children}
-    </button>
-  );
-}
-
 function Divider() {
   return <hr className="menu-divider" />;
 }
 
-const Menu = Object.assign(MenuBase, { Action, Divider });
+const Menu = Object.assign(MenuBase, { Action: MenuAction, Divider });
 
 export { Menu };

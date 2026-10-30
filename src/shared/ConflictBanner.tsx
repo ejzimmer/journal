@@ -8,11 +8,11 @@ import { OrderConflictChoice } from './conflicts/OrderConflictChoice';
 import './AppUpdateBanner.css';
 import './ConflictBanner.css';
 
-export function ConflictBanner({
-  conflictStatus,
-}: {
+type ConflictBannerProps = {
   conflictStatus: ConflictStatus;
-}) {
+};
+
+export function ConflictBanner({ conflictStatus }: ConflictBannerProps) {
   const conflicts = useSyncExternalStore(
     conflictStatus.subscribe,
     conflictStatus.listConflicts,

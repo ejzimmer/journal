@@ -11,13 +11,12 @@ const ICONS = {
   tv: WisteriaRacemeIcon,
 };
 
-export function MediaTypeIcon({
-  type,
-  width,
-}: {
+type MediaTypeIconProps = {
   type: MediaType;
   width?: string;
-}) {
+};
+
+export function MediaTypeIcon({ type, width }: MediaTypeIconProps) {
   const Icon = ICONS[type];
   return <Icon width={width} />;
 }

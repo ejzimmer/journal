@@ -6,6 +6,16 @@ import { MediaEditFormProps, MediaSpine, StatusConfig } from './MediaSpine';
 import { sortSeriesItems } from './seriesOrder';
 import { SeriesDragAndDrop } from './SeriesDragAndDrop';
 
+type MediaListProps<T extends MediaDetails, S extends string> = {
+  items?: Record<string, T>;
+  listId?: string;
+  bandHue?: number;
+  hue: (item: T) => number;
+  config: StatusConfig<T, S>;
+  EditForm: ComponentType<MediaEditFormProps<T>>;
+  onReorder?: (items: { id: string }[]) => void;
+};
+
 export function MediaList<T extends MediaDetails, S extends string>({
   items,
   listId,
@@ -14,15 +24,7 @@ export function MediaList<T extends MediaDetails, S extends string>({
   config,
   EditForm,
   onReorder,
-}: {
-  items?: Record<string, T>;
-  listId?: string;
-  bandHue?: number;
-  hue: (item: T) => number;
-  config: StatusConfig<T, S>;
-  EditForm: ComponentType<MediaEditFormProps<T>>;
-  onReorder?: (items: { id: string }[]) => void;
-}) {
+}: MediaListProps<T, S>) {
   const listRef = useRef<HTMLOListElement>(null);
   const sortedItems = sortSeriesItems(items);
   const isDraggable = !!listId && !!onReorder && sortedItems.length > 1;

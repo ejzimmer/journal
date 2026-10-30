@@ -2,7 +2,9 @@ import { LANGUAGE_FLAGS, LANGUAGE_NAMES } from './names';
 import { TooltipOption } from './TooltipOption';
 import { Language } from './types';
 
-export function LanguageOption({ value }: { value: Language }) {
+type LanguageOptionProps = { value: Language };
+
+export function LanguageOption({ value }: LanguageOptionProps) {
   return (
     <TooltipOption
       icon={

@@ -8,8 +8,7 @@ import {
   useState,
 } from 'react';
 import { getMillisecondsUntilTomorrow, getToday } from '../dates';
-import { useStorageContext } from '../FirebaseContext';
-import { hasAlreadyRun } from './hasAlreadyRun';
+import { DailyJobRunner } from './DailyJobRunner';
 
 export type DailyJob = {
   lastRunKey: string;
@@ -17,7 +16,7 @@ export type DailyJob = {
   run: () => void;
 };
 
-type ScheduledJob = Omit<DailyJob, 'isReady'>;
+export type ScheduledJob = Omit<DailyJob, 'isReady'>;
 
 type RegisterJob = (job: ScheduledJob) => () => void;
 
@@ -41,7 +40,9 @@ function useToday() {
   return today;
 }
 
-export function DailyJobsProvider({ children }: { children: ReactNode }) {
+type DailyJobsProviderProps = { children: ReactNode };
+
+export function DailyJobsProvider({ children }: DailyJobsProviderProps) {
   const [jobs, setJobs] = useState<ScheduledJob[]>([]);
   const today = useToday();
 
@@ -65,25 +66,6 @@ export function DailyJobsProvider({ children }: { children: ReactNode }) {
       {children}
     </DailyJobsContext.Provider>
   );
-}
-
-function DailyJobRunner({ job, today }: { job: ScheduledJob; today: string }) {
-  const { useValue, claimDailyRun } = useStorageContext();
-  const { value: lastRun, synced } = useValue<string>(job.lastRunKey);
-  const dayRunInThisSession = useRef<string>(undefined);
-
-  useEffect(() => {
-    if (!synced) return;
-    if (dayRunInThisSession.current === today || hasAlreadyRun(lastRun, today))
-      return;
-
-    dayRunInThisSession.current = today;
-    void claimDailyRun(job.lastRunKey, today).then((claimed) => {
-      if (claimed) job.run();
-    });
-  }, [job, today, lastRun, synced, claimDailyRun]);
-
-  return null;
 }
 
 function useRegisterJob(): RegisterJob {

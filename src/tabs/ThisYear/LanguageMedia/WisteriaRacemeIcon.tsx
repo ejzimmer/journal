@@ -11,7 +11,9 @@ const FLORETS: [x: number, y: number, size: number][] = [
   [-0.6, 8.2, 0.5],
 ];
 
-export function WisteriaRacemeIcon({ width }: { width?: string }) {
+type WisteriaRacemeIconProps = { width?: string };
+
+export function WisteriaRacemeIcon({ width }: WisteriaRacemeIconProps) {
   return (
     <svg viewBox="-8 -9 16 19" width={width} aria-hidden="true">
       <path

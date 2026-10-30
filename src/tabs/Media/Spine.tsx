@@ -12,6 +12,16 @@ export type SpineAppearance = {
   glyph: string;
 };
 
+type SpineProps = SpineAppearance & {
+  titleAriaLabel: string;
+  stampAriaLabel: string;
+  titleRef?: RefObject<HTMLButtonElement | null>;
+  onTitleClick: () => void;
+  onStampClick: () => void;
+  onTitleKeyDown?: KeyboardEventHandler<HTMLButtonElement>;
+  titleKeyShortcuts?: string;
+};
+
 export function Spine({
   status,
   hue,
@@ -27,15 +37,7 @@ export function Spine({
   onStampClick,
   onTitleKeyDown,
   titleKeyShortcuts,
-}: SpineAppearance & {
-  titleAriaLabel: string;
-  stampAriaLabel: string;
-  titleRef?: RefObject<HTMLButtonElement | null>;
-  onTitleClick: () => void;
-  onStampClick: () => void;
-  onTitleKeyDown?: KeyboardEventHandler<HTMLButtonElement>;
-  titleKeyShortcuts?: string;
-}) {
+}: SpineProps) {
   return (
     <div
       className={`spine ${status}`}

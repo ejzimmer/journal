@@ -17,11 +17,13 @@ const recommendationColours: Record<Recommendation, string> = {
   decrease: 'var(--decrease)',
 };
 
+type RecommendationIconProps = {
+  recommendation: Recommendation;
+};
+
 export function RecommendationIcon({
   recommendation,
-}: {
-  recommendation: Recommendation;
-}) {
+}: RecommendationIconProps) {
   const Icon = recommendationIcons[recommendation];
 
   return (

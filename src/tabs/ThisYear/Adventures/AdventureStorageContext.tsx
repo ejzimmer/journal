@@ -40,11 +40,13 @@ const getNextPosition = (items: Positioned[]) =>
 const removeClearedPlannedDate = ({ plannedDate, ...adventure }: Adventure) =>
   plannedDate ? { ...adventure, plannedDate } : adventure;
 
+type AdventureStorageProviderProps = {
+  children: ReactNode;
+};
+
 export function AdventureStorageProvider({
   children,
-}: {
-  children: ReactNode;
-}) {
+}: AdventureStorageProviderProps) {
   const { addItem, updateItem, deleteItem, useValue } = useStorageContext();
 
   const { value: storedAdventures, loading: adventuresLoading } =

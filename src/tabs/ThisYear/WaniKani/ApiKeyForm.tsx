@@ -2,11 +2,11 @@ import { useState } from 'react';
 import { FormControl } from '../../../shared/controls/FormControl';
 import { TickIcon } from '../../../shared/icons/Tick';
 
-export function ApiKeyForm({
-  onSubmit,
-}: {
+type ApiKeyFormProps = {
   onSubmit: (apiKey: string) => void;
-}) {
+};
+
+export function ApiKeyForm({ onSubmit }: ApiKeyFormProps) {
   const [apiKey, setApiKey] = useState('');
 
   return (

@@ -1,6 +1,6 @@
 import { FormEvent, useState } from 'react';
 import { DeleteWithConfirmation } from '../../../shared/controls/DeleteWithConfirmation';
-import { useModal } from '../../../shared/controls/Modal';
+import { useModal } from '../../../shared/controls/ModalContext';
 import { Switch } from '../../../shared/controls/Switch';
 import { TickIcon } from '../../../shared/icons/Tick';
 import { BookVolumeRow } from './BookVolumeRow';
@@ -15,7 +15,9 @@ import './ProgressUpdateForm.css';
 import './AddMediaForm.css';
 import './GardenEditForms.css';
 
-export function EditSeriesForm({ series }: { series: PrintSeries }) {
+type EditSeriesFormProps = { series: PrintSeries };
+
+export function EditSeriesForm({ series }: EditSeriesFormProps) {
   const { updateItem, deleteItem } = useLanguageMediaStorage();
   const { closeModal } = useModal();
   const [language, setLanguage] = useState<Language>(series.language);

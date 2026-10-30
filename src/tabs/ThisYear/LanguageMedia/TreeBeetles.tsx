@@ -1,7 +1,9 @@
 import { Beetle } from './Beetle';
 import { BeetleSpot } from './placeBeetles';
 
-export function TreeBeetles({ spots }: { spots: BeetleSpot[] }) {
+type TreeBeetlesProps = { spots: BeetleSpot[] };
+
+export function TreeBeetles({ spots }: TreeBeetlesProps) {
   return (
     <g className="tree-beetles">
       {spots.map((spot) => (

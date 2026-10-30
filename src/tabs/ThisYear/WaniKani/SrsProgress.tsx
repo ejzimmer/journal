@@ -3,7 +3,9 @@ import { SrsVial } from './SrsVial';
 import { SUBJECT_TYPES, WaniKaniData } from './types';
 import { VialDefs } from './VialDefs';
 
-export function SrsProgress({ data }: { data: WaniKaniData }) {
+type SrsProgressProps = { data: WaniKaniData };
+
+export function SrsProgress({ data }: SrsProgressProps) {
   const subjectCounts = countSubjectsBySrsGroup(
     data.subjects,
     data.assignments,

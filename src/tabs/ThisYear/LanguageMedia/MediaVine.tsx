@@ -28,7 +28,9 @@ import { createVineLayout, getVineEpisodes } from './vineLayout';
 const OUTLINE_WIDTH = 1;
 const SIGN_GAP = 18;
 
-export function MediaVine({ series }: { series: TvSeries }) {
+type MediaVineProps = { series: TvSeries };
+
+export function MediaVine({ series }: MediaVineProps) {
   const layout = useMemo(() => createVineLayout(series), [series]);
   const progress = getVineEpisodes(series).flatMap(({ season, episodes }) =>
     episodes.map((episode) =>

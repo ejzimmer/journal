@@ -2,7 +2,9 @@ import { Video } from './types';
 import { VideoLengthTile } from './VideoLengthTile';
 import { VideoUrlTile } from './VideoUrlTile';
 
-export function VideoRow({ video }: { video: Video }) {
+type VideoRowProps = { video: Video };
+
+export function VideoRow({ video }: VideoRowProps) {
   return (
     <div className="edit-video-row">
       <VideoUrlTile name={`url-${video.id}`} defaultValue={video.url} />

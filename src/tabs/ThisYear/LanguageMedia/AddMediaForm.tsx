@@ -1,5 +1,5 @@
 import { FormEvent, useState } from 'react';
-import { useModal } from '../../../shared/controls/Modal';
+import { useModal } from '../../../shared/controls/ModalContext';
 import { Switch } from '../../../shared/controls/Switch';
 import { TickIcon } from '../../../shared/icons/Tick';
 import { BookVolumeNames } from './BookVolumeNames';

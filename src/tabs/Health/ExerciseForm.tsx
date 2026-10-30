@@ -1,31 +1,20 @@
 import { FormEvent, useId, useState } from 'react';
 import { getToday } from '../../shared/dates';
-import { ExerciseUpdate, Recommendation } from '../../shared/types';
+import { ExerciseUpdate } from '../../shared/types';
 import { Switch } from '../../shared/controls/Switch';
-import { ChevronUpIcon } from '../../shared/icons/ChevronUp';
-import { ChevronDownIcon } from '../../shared/icons/ChevronDown';
-import { MinusIcon } from '../../shared/icons/Minus';
 import { XIcon } from '../../shared/icons/X';
 import { TickIcon } from '../../shared/icons/Tick';
 import { DeleteWithConfirmation } from '../../shared/controls/DeleteWithConfirmation';
-
-type RecommendationOption = Recommendation | 'no change';
+import {
+  RecommendationOption,
+  RecommendationOptionIcon,
+} from './RecommendationOptionIcon';
 
 const RECOMMENDATION_OPTIONS: RecommendationOption[] = [
   'increase',
   'no change',
   'decrease',
 ];
-
-function RecommendationIcon({ value }: { value: RecommendationOption }) {
-  if (value === 'increase') {
-    return <ChevronUpIcon role="img" aria-label={value} />;
-  }
-  if (value === 'decrease') {
-    return <ChevronDownIcon role="img" aria-label={value} />;
-  }
-  return <MinusIcon role="img" aria-label={value} />;
-}
 
 type ExerciseFormProps = {
   exerciseName: string;
@@ -92,7 +81,7 @@ export function ExerciseForm({
             value={recommendation}
             onChange={setRecommendation}
             name={recommendationName}
-            Option={RecommendationIcon}
+            Option={RecommendationOptionIcon}
             className="health-switch"
           />
         </fieldset>

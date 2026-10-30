@@ -35,7 +35,9 @@ function pickOpenBuds(seed: string, understood: number) {
   return new Set(order.slice(0, openCount));
 }
 
-export function SaguaroCrown({ spot }: { spot: CrownSpot }) {
+type SaguaroCrownProps = { spot: CrownSpot };
+
+export function SaguaroCrown({ spot }: SaguaroCrownProps) {
   const open = pickOpenBuds(spot.key, spot.understood);
 
   return (

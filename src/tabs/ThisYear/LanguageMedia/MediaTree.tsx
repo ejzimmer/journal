@@ -27,7 +27,9 @@ import { PrintSeries, Volume } from './types';
 import { UpdateStretches } from './UpdateStretches';
 import { readVolumeProgress } from './volumeProgress';
 
-export function MediaTree({ series }: { series: PrintSeries }) {
+type MediaTreeProps = { series: PrintSeries };
+
+export function MediaTree({ series }: MediaTreeProps) {
   const layout = useMemo(() => createTreeLayout(series), [series]);
   const volumes = getItemsByNumber(series.volumes);
   const progress = volumes.map((volume) => readVolumeProgress(series, volume));

@@ -24,13 +24,12 @@ const calculatePickerLayout = (trigger: HTMLElement): PickerLayout => {
   };
 };
 
-export function EmojiPicker({
-  value,
-  onChange,
-}: {
+type EmojiPickerProps = {
   value: string;
   onChange: (emoji: string) => void;
-}) {
+};
+
+export function EmojiPicker({ value, onChange }: EmojiPickerProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [layout, setLayout] = useState<PickerLayout>({
     height: PICKER_HEIGHT,

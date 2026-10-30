@@ -20,7 +20,9 @@ function drawSpine({ base, direction }: Spine) {
   return tips.map(({ x, y }) => `M${base.x} ${base.y} L${x} ${y}`).join(' ');
 }
 
-export function CactusSpines({ shapes }: { shapes: GrownShape[] }) {
+type CactusSpinesProps = { shapes: GrownShape[] };
+
+export function CactusSpines({ shapes }: CactusSpinesProps) {
   return (
     <path
       className="cactus-spines"

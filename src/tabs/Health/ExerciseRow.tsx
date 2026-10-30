@@ -8,7 +8,9 @@ import { UpdateChip } from './UpdateChip';
 
 type ActiveForm = { kind: 'record' } | { kind: 'edit'; update: ExerciseUpdate };
 
-export function ExerciseRow({ exercise }: { exercise: Exercise }) {
+type ExerciseRowProps = { exercise: Exercise };
+
+export function ExerciseRow({ exercise }: ExerciseRowProps) {
   const { recordExercise, editExerciseUpdate, deleteExerciseUpdate } =
     useHealthStorage();
   const [activeForm, setActiveForm] = useState<ActiveForm | null>(null);
