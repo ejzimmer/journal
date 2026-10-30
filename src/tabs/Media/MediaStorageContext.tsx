@@ -51,7 +51,7 @@ function getAuthors(books: ReadingItemDetails[]) {
     entryBooks.forEach(({ author }) => author && authors.add(author));
   });
 
-  return [...authors];
+  return [...authors].toSorted((a, b) => a.localeCompare(b));
 }
 
 export const MediaStorageContext = createContext<
