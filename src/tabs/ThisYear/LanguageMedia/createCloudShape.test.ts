@@ -12,8 +12,11 @@ const getLeftEdges = () =>
 const isInsideBody = (body: [number, number][], x: number, y: number) =>
   body.reduce((inside, [x1, y1], index) => {
     const [x2, y2] = body[(index + 1) % body.length];
+    const startIsBelow = y1 > y;
+    const endIsBelow = y2 > y;
     const crosses =
-      y1 > y !== y2 > y && x < x1 + ((y - y1) / (y2 - y1)) * (x2 - x1);
+      startIsBelow !== endIsBelow &&
+      x < x1 + ((y - y1) / (y2 - y1)) * (x2 - x1);
     return crosses ? !inside : inside;
   }, false);
 

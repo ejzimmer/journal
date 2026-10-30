@@ -6,6 +6,7 @@ export function WisteriaFloret({ x, y, scale }: WisteriaFloretProps) {
   return (
     <g
       className="wisteria-floret"
+      data-testid="wisteria-floret"
       transform={`translate(${x} ${y}) scale(${scale})`}
     >
       <path

@@ -6,7 +6,7 @@ import { MediaFormConfig } from './MediaForm';
 import { BookDetails, SeriesDetails } from './types';
 import { renderWithMediaStorage } from './mediaStorageTestUtils';
 
-function itemConfig(
+function createItemConfig(
   overrides: Partial<MediaFormConfig<BookDetails>> = {},
 ): MediaFormConfig<BookDetails> {
   return {
@@ -60,7 +60,7 @@ describe('AddMediaForm', () => {
       const user = userEvent.setup();
       const addMedia = jest.fn();
       renderWithMediaStorage(
-        <AddMediaForm ariaLabel="Add an item" config={itemConfig()} />,
+        <AddMediaForm ariaLabel="Add an item" config={createItemConfig()} />,
         { addMedia },
       );
 
@@ -84,7 +84,7 @@ describe('AddMediaForm', () => {
       renderWithMediaStorage(
         <AddMediaForm
           ariaLabel="Add an item"
-          config={itemConfig({ seriesList })}
+          config={createItemConfig({ seriesList })}
         />,
         { addMediaSeries },
       );
@@ -114,7 +114,7 @@ describe('AddMediaForm', () => {
       renderWithMediaStorage(
         <AddMediaForm
           ariaLabel="Add an item"
-          config={itemConfig({ seriesList })}
+          config={createItemConfig({ seriesList })}
         />,
         { addMedia },
       );
@@ -142,7 +142,7 @@ describe('AddMediaForm', () => {
       renderWithMediaStorage(
         <AddMediaForm
           ariaLabel="Add an item"
-          config={itemConfig({ seriesList })}
+          config={createItemConfig({ seriesList })}
         />,
       );
 
@@ -171,7 +171,7 @@ describe('AddMediaForm', () => {
     it("isn't shown when the config has no author options", async () => {
       const user = userEvent.setup();
       renderWithMediaStorage(
-        <AddMediaForm ariaLabel="Add an item" config={itemConfig()} />,
+        <AddMediaForm ariaLabel="Add an item" config={createItemConfig()} />,
       );
 
       await user.click(screen.getByRole('button', { name: 'Add an item' }));
@@ -187,7 +187,7 @@ describe('AddMediaForm', () => {
       renderWithMediaStorage(
         <AddMediaForm
           ariaLabel="Add an item"
-          config={itemConfig({
+          config={createItemConfig({
             authorOptions: ['Terry Pratchett', 'Ursula Le Guin'],
           })}
         />,
@@ -218,7 +218,7 @@ describe('AddMediaForm', () => {
       renderWithMediaStorage(
         <AddMediaForm
           ariaLabel="Add an item"
-          config={itemConfig({
+          config={createItemConfig({
             authorOptions: ['Terry Pratchett', 'Ursula Le Guin'],
           })}
         />,
@@ -257,7 +257,7 @@ describe('EditMediaForm', () => {
         item={{ ...guards, author: 'Terry Pratchett' }}
         isOpen={true}
         onCancel={jest.fn()}
-        config={itemConfig({
+        config={createItemConfig({
           seriesList,
           authorOptions: ['Terry Pratchett', 'Ursula Le Guin'],
           getAuthor: (item) => item.author,
@@ -285,7 +285,7 @@ describe('EditMediaForm', () => {
         item={guards}
         isOpen={true}
         onCancel={jest.fn()}
-        config={itemConfig({ seriesList })}
+        config={createItemConfig({ seriesList })}
       />,
       { updateMedia, moveMedia },
     );
@@ -310,7 +310,7 @@ describe('EditMediaForm', () => {
         item={guards}
         isOpen={true}
         onCancel={jest.fn()}
-        config={itemConfig({ seriesList })}
+        config={createItemConfig({ seriesList })}
       />,
       { moveMedia },
     );
@@ -335,7 +335,7 @@ describe('EditMediaForm', () => {
         item={guards}
         isOpen={true}
         onCancel={jest.fn()}
-        config={itemConfig({ seriesList })}
+        config={createItemConfig({ seriesList })}
       />,
       { moveMedia },
     );
@@ -357,7 +357,7 @@ describe('EditMediaForm', () => {
         item={guards}
         isOpen={true}
         onCancel={jest.fn()}
-        config={itemConfig({ seriesList })}
+        config={createItemConfig({ seriesList })}
       />,
       { deleteMedia },
     );
@@ -375,7 +375,7 @@ describe('EditMediaForm', () => {
         item={guards}
         isOpen={true}
         onCancel={jest.fn()}
-        config={itemConfig({ seriesList })}
+        config={createItemConfig({ seriesList })}
       />,
       { updateMedia },
     );

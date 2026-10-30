@@ -8,7 +8,9 @@ type DueDateProps = {
 
 export function DueDate({ dueDate, onChange }: DueDateProps) {
   return dueDate ? (
-    <div className={`due-date ${dueToday(dueDate)} ${dueThisWeek(dueDate)}`}>
+    <div
+      className={`due-date ${getDueTodayClass(dueDate)} ${getDueThisWeekClass(dueDate)}`}
+    >
       <EditableDate value={dueDate} onChange={onChange} />
     </div>
   ) : (
@@ -23,7 +25,7 @@ export function DueDate({ dueDate, onChange }: DueDateProps) {
   );
 }
 
-const dueToday = (dueDate: string) =>
+const getDueTodayClass = (dueDate: string) =>
   isAfterToday(dueDate) ? '' : 'due-today';
-const dueThisWeek = (dueDate: string) =>
+const getDueThisWeekClass = (dueDate: string) =>
   isThisWeek(dueDate) ? 'due-this-week' : '';

@@ -19,17 +19,21 @@ function Wrapper({ children }: { children: ReactNode }) {
   );
 }
 
-const expectToBeInViewMode = () => {
+const getEditControls = () => [
+  screen.getByRole('combobox', { name: 'Category' }),
+  screen.getByRole('textbox', { name: 'Description' }),
+];
+
+const expectToBeInViewMode = (editControls: HTMLElement[] = []) => {
   expect(
     screen.getByRole('checkbox', { name: 'Brush teeth done' }),
   ).toBeInTheDocument();
   expect(screen.getByText('Brush teeth')).toBeInTheDocument();
-  expect(screen.queryByRole('combobox')).not.toBeInTheDocument();
-  expect(screen.queryByRole('textbox')).not.toBeInTheDocument();
+  editControls.forEach((control) => expect(control).not.toBeInTheDocument());
 };
 
-const expectToBeInEditMode = () => {
-  expect(screen.queryByRole('checkbox')).not.toBeInTheDocument();
+const expectToBeInEditMode = (checkbox: HTMLElement) => {
+  expect(checkbox).not.toBeInTheDocument();
   expect(
     screen.getByRole('combobox', { name: 'Category' }),
   ).toBeInTheDocument();
@@ -83,9 +87,13 @@ describe('TodayTaskDescription', () => {
       const user = userEvent.setup();
       render(<TodayTaskDescription {...commonProps} />, { wrapper: Wrapper });
 
+      const checkbox = screen.getByRole('checkbox', {
+        name: 'Brush teeth done',
+      });
+
       await user.click(screen.getByText('Brush teeth'));
 
-      expectToBeInEditMode();
+      expectToBeInEditMode(checkbox);
       const textInput = screen.getByRole('textbox', { name: 'Description' });
       expect(textInput).toHaveValue('Brush teeth');
       expect(textInput).toHaveFocus();
@@ -97,11 +105,15 @@ describe('TodayTaskDescription', () => {
       const user = userEvent.setup();
       render(<TodayTaskDescription {...commonProps} />, { wrapper: Wrapper });
 
+      const checkbox = screen.getByRole('checkbox', {
+        name: 'Brush teeth done',
+      });
+
       await user.tab();
       await user.tab();
       await user.keyboard('{Enter}');
 
-      expectToBeInEditMode();
+      expectToBeInEditMode(checkbox);
       const textInput = screen.getByRole('textbox', { name: 'Description' });
       expect(textInput).toHaveValue('Brush teeth');
       expect(textInput).toHaveFocus();
@@ -129,13 +141,14 @@ describe('TodayTaskDescription', () => {
           wrapper: Wrapper,
         });
         await user.click(screen.getByText('Brush teeth'));
+        const editControls = getEditControls();
 
         await user.click(
           screen.getByRole('option', { name: '🧹', hidden: true }),
         );
 
         expect(onChange).toHaveBeenCalledWith({ category: '🧹' });
-        expectToBeInViewMode();
+        expectToBeInViewMode(editControls);
       });
     });
 
@@ -151,13 +164,14 @@ describe('TodayTaskDescription', () => {
             },
           );
           await user.click(screen.getByText('Brush teeth'));
+          const editControls = getEditControls();
 
           const input = screen.getByRole('textbox', { name: 'Description' });
           await user.clear(input);
           await user.type(input, 'Floss teeth{Enter}');
 
           expect(onChange).toHaveBeenCalledWith({ description: 'Floss teeth' });
-          expectToBeInViewMode();
+          expectToBeInViewMode(editControls);
         });
       });
 
@@ -172,13 +186,14 @@ describe('TodayTaskDescription', () => {
             },
           );
           await user.click(screen.getByText('Brush teeth'));
+          const editControls = getEditControls();
 
           const input = screen.getByRole('textbox', { name: 'Description' });
           await user.clear(input);
           await user.type(input, 'Floss teeth{Escape}');
 
           expect(onChange).not.toHaveBeenCalled();
-          expectToBeInViewMode();
+          expectToBeInViewMode(editControls);
         });
       });
     });
@@ -195,11 +210,12 @@ describe('TodayTaskDescription', () => {
             },
           );
           await user.click(screen.getByText('Brush teeth'));
+          const editControls = getEditControls();
 
           await user.keyboard('{Enter}');
 
           expect(onChange).not.toHaveBeenCalled();
-          expectToBeInViewMode();
+          expectToBeInViewMode(editControls);
         });
       });
     });

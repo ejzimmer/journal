@@ -20,11 +20,11 @@ describe('Combobox', () => {
   describe('when the value is undefined', () => {
     it('is closed, with no value showing', () => {
       render(<Combobox {...commonProps} />);
-      const popover = screen.getByTestId('popover');
-      jest.spyOn(popover, 'showPopover');
 
       expect(screen.getByRole('combobox')).toHaveValue('');
-      expect(popover.showPopover).not.toHaveBeenCalled();
+      expect(screen.getByTestId('popover').matches(':popover-open')).toBe(
+        false,
+      );
     });
   });
 
@@ -211,8 +211,8 @@ describe('Combobox', () => {
         expect(onChange).toHaveBeenCalledWith({ id: '5', label: 'g' });
 
         expect(
-          screen.queryByRole('option', { name: options[0].label }),
-        ).not.toBeInTheDocument();
+          screen.getAllByRole('option').map((option) => option.textContent),
+        ).toEqual(['grape', 'grapefruit']);
 
         await user.type(input, '{ArrowDown}{ArrowDown}{Enter}');
 
@@ -276,8 +276,8 @@ describe('Combobox', () => {
         await user.type(screen.getByRole('combobox'), '{ArrowDown}');
 
         expect(
-          screen.queryByRole('option', { name: options[2].label }),
-        ).not.toBeInTheDocument();
+          screen.getAllByRole('option').map((option) => option.textContent),
+        ).toEqual(['apple', 'orange', 'grapefruit']);
       });
     });
   });
@@ -405,10 +405,11 @@ describe('Combobox', () => {
         const onChange = jest.fn();
         render(<Combobox {...multivalueProps} onChange={onChange} />);
         const input = screen.getByRole('combobox');
+        const allOptions = screen.getAllByRole('option', { hidden: true });
 
         await user.type(input, 'range');
 
-        expect(screen.queryByRole('option')).not.toBeInTheDocument();
+        allOptions.forEach((option) => expect(option).not.toBeInTheDocument());
 
         await user.type(input, '{Enter}');
 
@@ -584,11 +585,8 @@ describe('Combobox', () => {
         await user.type(screen.getByRole('combobox'), '{ArrowDown}');
 
         expect(
-          screen.queryByRole('option', { name: options[2].label }),
-        ).not.toBeInTheDocument();
-        expect(
-          screen.queryByRole('option', { name: options[3].label }),
-        ).not.toBeInTheDocument();
+          screen.getAllByRole('option').map((option) => option.textContent),
+        ).toEqual(['apple', 'orange']);
       });
     });
   });

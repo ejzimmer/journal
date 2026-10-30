@@ -60,6 +60,7 @@ const MenuBase = forwardRef<MenuHandle, MenuProps>(function Menu(
         id={id}
         ref={dialogRef}
         className="menu"
+        role="menu"
         popover="auto"
         style={{ positionAnchor: anchorName } as React.CSSProperties}
       >

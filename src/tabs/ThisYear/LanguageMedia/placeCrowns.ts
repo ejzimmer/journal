@@ -3,6 +3,7 @@ import { getItemsInAddedOrder } from './lists';
 import { roundCoordinate } from './treeGeometry';
 import { GrownShape } from './treeGrowth';
 import { YoutubeChannel } from './types';
+import { toRadians } from '../../../shared/toRadians';
 
 const SINK = 2;
 
@@ -14,8 +15,6 @@ export type CrownSpot = {
   understood: number;
   date?: string;
 };
-
-const toRadians = (degrees: number) => (degrees * Math.PI) / 180;
 
 export function placeCrowns(
   channel: YoutubeChannel,

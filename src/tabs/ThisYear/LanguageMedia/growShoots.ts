@@ -14,6 +14,7 @@ import {
 } from './treeGeometry';
 import { GrownShape } from './treeGrowth';
 import { ShootStyle } from './treeSpecies';
+import { toRadians } from '../../../shared/toRadians';
 
 export type Leaf = Point & { angle: number };
 
@@ -27,8 +28,6 @@ const FIRST_SHOOT = 10;
 const LIMB_TIP_GAP = 4;
 const SHOOT_SEGMENTS = 4;
 const FIRST_LEAF = 0.25;
-
-const toRadians = (degrees: number) => (degrees * Math.PI) / 180;
 
 export function findShootBase(point: BranchPoint, side: number): Point {
   const offset = point.width * 0.35 * side;

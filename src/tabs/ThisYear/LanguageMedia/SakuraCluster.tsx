@@ -1,10 +1,9 @@
 import { SakuraBlossom } from './SakuraBlossom';
+import { toRadians } from '../../../shared/toRadians';
 
 const BLOSSOM_COUNT = 5;
 const OPENING_ORDER = [2, 0, 4, 1, 3];
 const FAN = 34;
-
-const toRadians = (degrees: number) => (degrees * Math.PI) / 180;
 
 const clampFraction = (value: number) => Math.min(1, Math.max(0, value));
 

@@ -1,3 +1,4 @@
+import { toRadians } from '../../../shared/toRadians';
 export type Point = { x: number; y: number };
 
 type Curve = [Point, Point, Point, Point];
@@ -5,8 +6,6 @@ type Curve = [Point, Point, Point, Point];
 export type EdgeSample = { at: number; left: Point; right: Point };
 
 export const SAMPLES_PER_CURVE = 8;
-
-const toRadians = (degrees: number) => (degrees * Math.PI) / 180;
 
 export const roundCoordinate = (value: number) => Math.round(value * 10) / 10;
 

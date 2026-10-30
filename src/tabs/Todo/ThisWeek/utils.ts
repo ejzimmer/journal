@@ -7,7 +7,7 @@ const dateFormatter = Intl.DateTimeFormat('en-AU', {
 });
 const suffixes = ['th', 'st', 'nd', 'rd'];
 
-export const dateToWeekday = (date: string) => {
+export const formatWeekday = (date: string) => {
   const formatted = dateFormatter.format(Temporal.PlainDate.from(date));
   const secondLastDigit = formatted.at(-2);
   const lastDigit = formatted.at(-1);

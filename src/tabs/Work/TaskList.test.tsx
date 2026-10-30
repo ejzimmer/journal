@@ -1,4 +1,4 @@
-import { render, screen, within } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { TaskList } from './TaskList';
 import {
@@ -125,10 +125,7 @@ describe('TaskList label', () => {
     const storageContext = createStorageContext();
     renderTaskList(labelledList.id, storageContext);
 
-    const labelItem = screen.getByText('a11y').closest('li');
-    await user.click(
-      within(labelItem!).getByRole('button', { name: 'Remove a11y' }),
-    );
+    await user.click(screen.getByRole('button', { name: 'Remove a11y' }));
 
     expect(storageContext.removeLabel).toHaveBeenCalledWith(
       a11yLabel.id,
@@ -155,10 +152,11 @@ describe('TaskList label', () => {
     const user = userEvent.setup();
     renderTaskList(labelledList.id, createStorageContext());
 
-    await user.click(screen.getByRole('button', { name: 'Change a11y label' }));
-    expect(
-      screen.queryByRole('button', { name: 'Change a11y label' }),
-    ).not.toBeInTheDocument();
+    const editButton = screen.getByRole('button', {
+      name: 'Change a11y label',
+    });
+    await user.click(editButton);
+    expect(editButton).not.toBeInTheDocument();
 
     await user.click(document.body);
 
