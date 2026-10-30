@@ -1,12 +1,11 @@
 ul.exercise-classes {
-  --class-background: hsl(71 49% 93%);
-  --session: hsl(73 33% 85%);
-  --session-hover: hsl(73 25% 72%);
-  --session-done: hsl(105 56% 51%);
+  --class-background: var(--olive-pale);
+  --session: var(--olive-light);
+  --session-hover: var(--olive-mid);
+  --session-done: var(--leaf);
   --session-done-hover: hsl(105 56% 44%);
-  --done-tick: hsl(110 61% 42%);
-  --done-tick-hover: hsl(110 61% 34%);
-  --focus: hsl(28 100% 56%);
+  --done-tick: var(--green);
+  --done-tick-hover: var(--green-dark);
 
   list-style-type: none;
   margin: 0;
@@ -95,7 +94,7 @@ ul.exercise-classes {
     border-radius: 50%;
     background: var(--focus);
     color: white;
-    box-shadow: 0 2px 6px hsl(28 100% 56% / 0.35);
+    box-shadow: 0 2px 6px var(--orange-glow);
     cursor: pointer;
 
     svg {

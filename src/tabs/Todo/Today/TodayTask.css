@@ -1,21 +1,24 @@
 .today-task {
-  .task-screen {
+  .today-task-description {
+    display: flex;
     flex-grow: 1;
+    gap: 10px;
+    align-items: center;
+
+    > [role='button'] {
+      flex-grow: 1;
+    }
   }
 
   &.status-done,
   &.status-finished {
-    .editable-description > div {
+    .today-task-description > div {
       color: var(--crt-unlit);
       text-shadow: none;
     }
-
-    .emoji-checkbox {
-      filter: grayscale(1) brightness(0.6);
-    }
   }
 
-  &.type-毎日 .editable-description > :last-child {
+  &.type-毎日 .today-task-description > :last-child {
     font-style: italic;
   }
 }

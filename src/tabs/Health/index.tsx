@@ -7,7 +7,7 @@ import { HealthStorageProvider } from './HealthStorageContext';
 export function Health() {
   return (
     <HealthStorageProvider>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+      <div className="health">
         <Calories />
         <ExerciseTracker />
         <ExerciseClasses />

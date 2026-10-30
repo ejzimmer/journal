@@ -11,6 +11,7 @@ import './TaskList.css';
 import { DragHandle } from '../../shared/drag-and-drop/DragHandle';
 import { draggableTypeKey } from '../../shared/drag-and-drop/types';
 import { DraggableListItem } from '../../shared/drag-and-drop/DraggableListItem';
+import { DragPreview } from '../../shared/drag-and-drop/DragPreview';
 import { ListDestination } from './listDestination';
 import { PostitModalDialog } from './PostitModalDialog';
 import { WorkTask } from './types';
@@ -147,7 +148,16 @@ export function TaskList({
   return (
     <DraggableListItem
       getData={() => getListData(list, parentListId)}
-      dragPreview={<DragPreview list={list} />}
+      dragPreview={
+        <DragPreview>
+          <h2>{list.description}</h2>
+          <ol>
+            {Object.values(list.items ?? {}).map((item) => (
+              <li key={item.id}>{item.description}</li>
+            ))}
+          </ol>
+        </DragPreview>
+      }
       isDroppable={isList}
       allowedEdges={['left', 'right']}
       dragHandle={
@@ -276,25 +286,5 @@ export function TaskList({
         </ol>
       </div>
     </DraggableListItem>
-  );
-}
-
-function DragPreview({ list }: { list: WorkTask }) {
-  return (
-    <div
-      style={{
-        border: '1px solid',
-        paddingInline: '20px',
-        paddingBlockEnd: '10px',
-        paddingBlockStart: '5px',
-      }}
-    >
-      <h2>{list.description}</h2>
-      <ol style={{ padding: 0, marginInline: '10px' }}>
-        {Object.values(list.items ?? {}).map((item) => (
-          <li key={item.id}>{item.description}</li>
-        ))}
-      </ol>
-    </div>
   );
 }

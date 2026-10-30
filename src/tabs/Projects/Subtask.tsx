@@ -6,6 +6,7 @@ import { ButtonWithConfirmation } from '../../shared/controls/ButtonWithConfirma
 import { useLinkedTasks } from './utils';
 import { EditableText } from '../../shared/controls/EditableText';
 import { DraggableListItem } from '../../shared/drag-and-drop/DraggableListItem';
+import { DragPreview } from '../../shared/drag-and-drop/DragPreview';
 import { draggableTypeKey } from '../../shared/drag-and-drop/types';
 import { getToday } from '../../shared/dates';
 
@@ -56,7 +57,7 @@ export function Subtask({ path, dragHandle, project, ...task }: SubtaskProps) {
         id: task.id,
         parentId: path,
       })}
-      dragPreview={<DragPreview task={task} />}
+      dragPreview={<DragPreview>{task.description}</DragPreview>}
       isDroppable={(data) =>
         draggableTypeKey in data && data[draggableTypeKey] === `subtask-${path}`
       }
@@ -92,8 +93,4 @@ export function Subtask({ path, dragHandle, project, ...task }: SubtaskProps) {
       )}
     </DraggableListItem>
   );
-}
-
-function DragPreview({ task }: { task: ProjectSubtask }) {
-  return <div>{task.description}</div>;
 }

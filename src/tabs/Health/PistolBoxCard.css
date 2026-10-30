@@ -2,9 +2,9 @@
   --cm: 2.1px;
   --mat: hsl(76 21% 62%);
   --mat-edge: hsl(76 21% 48%);
-  --block: hsl(42 100% 60%);
+  --block: var(--yellow);
   --block-edge: hsl(40 90% 45%);
-  --floor: hsl(73 25% 72%);
+  --floor: var(--olive-mid);
 
   button.stack {
     display: flex;

@@ -1,13 +1,12 @@
 .exercise-tracker {
-  --focus: hsl(28 100% 56%);
-  --increase: hsl(110 61% 42%);
-  --decrease: hsl(28 100% 56%);
+  --increase: var(--green);
+  --decrease: var(--orange);
   --date: hsl(110 61% 30%);
-  --row-background: hsl(71 49% 93%);
+  --row-background: var(--olive-pale);
   --chip-background: white;
   --chip-shadow: 0 1px 2px hsl(0 0% 0% / 0.06);
-  --field-background: hsl(70 60% 98%);
-  --field-border: hsl(73 33% 85%);
+  --field-background: var(--olive-white);
+  --field-border: var(--olive-light);
 
   display: grid;
   gap: 8px;
@@ -154,7 +153,7 @@
     border: none;
     background: var(--focus);
     color: white;
-    box-shadow: 0 2px 6px hsl(28 100% 56% / 0.35);
+    box-shadow: 0 2px 6px var(--orange-glow);
 
     svg {
       width: 20px;
@@ -186,12 +185,7 @@
 
   .exercise-form {
     --delete-border: hsl(28 100% 85%);
-    --save-hover: hsl(110 61% 34%);
-    --switch-background: hsl(73 49% 91%);
-    --switch-knob: hsl(42 100% 60%);
-    --switch-knob-shadow: hsl(40 100% 50% / 0.45);
-    --switch-icon: hsl(76 21% 45%);
-    --switch-icon-selected: hsl(47 100% 15%);
+    --save-hover: var(--green-dark);
 
     grid-column: 1 / -1;
     justify-self: start;
@@ -232,72 +226,6 @@
       border: none;
       padding: 0;
       margin: 0;
-    }
-
-    [role='radiogroup'].switch {
-      isolation: isolate;
-      border: none;
-      border-radius: 999px;
-      padding: 2px;
-      background: var(--switch-background);
-
-      &:focus-within {
-        outline: none;
-      }
-
-      &:has(input:focus-visible) {
-        outline: 2px solid var(--focus);
-        outline-offset: 2px;
-      }
-
-      label {
-        width: 36px;
-        height: 30px;
-        padding: 0;
-        display: grid;
-        place-items: center;
-        border-radius: 999px;
-        color: var(--switch-icon);
-
-        &:not(:last-of-type) {
-          border-inline-end: none;
-        }
-
-        &:has(input:not(:checked)) {
-          box-shadow: none;
-
-          &:hover {
-            color: var(--switch-knob);
-
-            svg {
-              filter: drop-shadow(0 0 2px var(--switch-knob))
-                drop-shadow(0 0 4px var(--switch-knob-shadow));
-            }
-          }
-        }
-
-        &:has(input:checked) {
-          color: var(--switch-icon-selected);
-
-          &:hover {
-            color: white;
-          }
-        }
-
-        svg {
-          display: block;
-          width: 18px;
-          height: 18px;
-        }
-      }
-
-      .indicator {
-        top: 2px;
-        height: calc(100% - 4px);
-        border-radius: 999px;
-        background: var(--switch-knob);
-        box-shadow: 0 2px 6px var(--switch-knob-shadow);
-      }
     }
 
     .actions {

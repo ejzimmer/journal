@@ -7,7 +7,8 @@ import { PlayButtonIcon } from '../../../shared/icons/PlayButton';
 import { PauseButtonIcon } from '../../../shared/icons/PauseButton';
 import { TickIcon } from '../../../shared/icons/Tick';
 import { IconProps } from '../../../shared/icons/types';
-import { EditableDescription } from '../../../shared/controls/EditableDescription';
+import { EditableText } from '../../../shared/controls/EditableText';
+import { CategoryPicker } from './CategoryPicker';
 
 const getDateClass = (task: CalendarTask) => {
   const daysUntilDue = getDaysUntil(task.dueDate);
@@ -69,23 +70,18 @@ export function DueDateTask({ task }: DueDateTaskProps) {
         }}
         className={`due-date ${getDateClass(task)}`}
       />
-      <div className="task-screen">
-        <div className="description">
-          <EditableDescription
-            category={task.category}
-            description={task.description}
-            isChecked={false}
-            onChange={(change) => {
-              if ('description' in change && change.description === '') {
-                onDelete();
-              } else if ('description' in change) {
-                onChange({ ...task, description: change.description });
-              } else if ('category' in change) {
-                onChange({ ...task, category: change.category });
-              }
-            }}
-          />
-        </div>
+      <div className="description">
+        <CategoryPicker
+          category={task.category}
+          onChange={(category) => onChange({ ...task, category })}
+        />
+        <EditableText
+          value={task.description}
+          label="Description"
+          className="task-screen"
+          onChange={(description) => onChange({ ...task, description })}
+          onDelete={onDelete}
+        />
       </div>
       <Switch
         options={[...STATUSES]}

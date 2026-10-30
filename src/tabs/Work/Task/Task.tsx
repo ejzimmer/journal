@@ -2,6 +2,7 @@ import { ReactElement, Ref } from 'react';
 import { isTask } from '../drag-utils';
 
 import { DraggableListItem } from '../../../shared/drag-and-drop/DraggableListItem';
+import { DragPreview } from '../../../shared/drag-and-drop/DragPreview';
 import { draggableTypeKey } from '../../../shared/drag-and-drop/types';
 import { Checkbox } from '../../../shared/controls/Checkbox';
 import { WorkTask, WORK_KEY } from '../types';
@@ -50,7 +51,7 @@ export function Task({
         id: task.id,
         parentId: `${WORK_KEY}/${listId}/items`,
       })}
-      dragPreview={<DragPreview task={task} />}
+      dragPreview={<DragPreview>{task.description}</DragPreview>}
       isDroppable={isTask}
       allowedEdges={['top', 'bottom']}
       className={`task status-${task.status}`}
@@ -112,8 +113,4 @@ export function Task({
       </div>
     </DraggableListItem>
   );
-}
-
-function DragPreview({ task }: { task: WorkTask }) {
-  return <div>{task.description}</div>;
 }

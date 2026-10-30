@@ -1,4 +1,6 @@
+import { formatDayAndMonth, getLocalDate } from '../../../shared/dates';
 import { findBranchPoint } from './findBranchPoint';
+import { HoverCloud } from './HoverCloud';
 import { Raceme } from './getRacemes';
 import { TreeLayout } from './treeLayout';
 import { WisteriaRaceme } from './WisteriaRaceme';
@@ -36,15 +38,19 @@ export function VineRacemes({
         const base = findRacemeBase(raceme, index % 2 ? 1 : -1);
         if (!base) return null;
         return (
-          <WisteriaRaceme
+          <HoverCloud
             key={raceme.key}
-            seed={raceme.key}
-            base={base}
-            understood={raceme.understood}
-            className={
-              raceme.key === highlightedKey ? 'highlighted' : undefined
-            }
-          />
+            text={formatDayAndMonth(getLocalDate(raceme.date))}
+          >
+            <WisteriaRaceme
+              seed={raceme.key}
+              base={base}
+              understood={raceme.understood}
+              className={
+                raceme.key === highlightedKey ? 'highlighted' : undefined
+              }
+            />
+          </HoverCloud>
         );
       })}
       {ghostRaceme && ghostBase && (

@@ -1,10 +1,9 @@
-import { SubmitEvent, useContext, useMemo, useRef } from 'react';
+import { SubmitEvent, useRef } from 'react';
 
 import './ThisWeekTask.css';
 import { useStorageContext } from '../../../shared/FirebaseContext';
 import { WEEKLY_KEY, WeeklyTask } from '../../../shared/types';
-import { Combobox } from '../../../shared/controls/combobox/Combobox';
-import { CategoriesContext } from '..';
+import { CategoryCombobox } from '../CategoryCombobox';
 import { ProgressIndicator } from './ProgressIndicator';
 import { AddDoneMenu } from './AddDoneMenu';
 import { getToday } from '../../../shared/dates';
@@ -59,15 +58,6 @@ export function ThisWeekTask({ task }: ThisWeekTaskProps) {
     switchToViewMode();
   };
 
-  const categories = useContext(CategoriesContext);
-  if (!categories) {
-    throw new Error('Missing categories context provider');
-  }
-  const categoryOptions = useMemo(
-    () => categories.map((category) => ({ id: category, label: category })),
-    [categories],
-  );
-
   const completedDates = task.completed ?? [];
 
   const addDone = (date: string) => {
@@ -91,16 +81,12 @@ export function ThisWeekTask({ task }: ThisWeekTaskProps) {
         onSubmit={onSubmit}
         onKeyDown={handleClose}
       >
-        <Combobox
-          value={{ id: task.category, label: task.category }}
-          options={categoryOptions}
-          createOption={(value) => ({ id: value, label: value })}
-          onChange={(value) => {
-            onChange({ ...task, category: value.id });
+        <CategoryCombobox
+          value={task.category}
+          onChange={(category) => {
+            onChange({ ...task, category });
             switchToViewMode();
           }}
-          inputSize={1}
-          ariaLabel="Category"
         />
         <input
           ref={descriptionRef}
@@ -122,8 +108,8 @@ export function ThisWeekTask({ task }: ThisWeekTaskProps) {
 
   return (
     <>
+      <AddDoneMenu category={task.category} onAdd={addDone} />
       <div className="task-screen">
-        <AddDoneMenu category={task.category} onAdd={addDone} />
         <div
           ref={descriptionDisplayRef}
           role="button"
