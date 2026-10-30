@@ -9,9 +9,6 @@ const options = [
   { id: '4', label: 'grapefruit' },
 ];
 
-const getOptionLabels = () =>
-  screen.getAllByRole('option').map((option) => option.textContent);
-
 const commonProps = {
   value: undefined,
   options: options,
@@ -213,7 +210,9 @@ describe('Combobox', () => {
         expect(popover.showPopover).toHaveBeenCalled();
         expect(onChange).toHaveBeenCalledWith({ id: '5', label: 'g' });
 
-        expect(getOptionLabels()).toEqual(['grape', 'grapefruit']);
+        expect(
+          screen.getAllByRole('option').map((option) => option.textContent),
+        ).toEqual(['grape', 'grapefruit']);
 
         await user.type(input, '{ArrowDown}{ArrowDown}{Enter}');
 
@@ -276,7 +275,9 @@ describe('Combobox', () => {
         );
         await user.type(screen.getByRole('combobox'), '{ArrowDown}');
 
-        expect(getOptionLabels()).toEqual(['apple', 'orange', 'grapefruit']);
+        expect(
+          screen.getAllByRole('option').map((option) => option.textContent),
+        ).toEqual(['apple', 'orange', 'grapefruit']);
       });
     });
   });
@@ -583,7 +584,9 @@ describe('Combobox', () => {
         );
         await user.type(screen.getByRole('combobox'), '{ArrowDown}');
 
-        expect(getOptionLabels()).toEqual(['apple', 'orange']);
+        expect(
+          screen.getAllByRole('option').map((option) => option.textContent),
+        ).toEqual(['apple', 'orange']);
       });
     });
   });
