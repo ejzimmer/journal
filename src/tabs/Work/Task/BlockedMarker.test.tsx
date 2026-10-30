@@ -5,7 +5,7 @@ import { BlockedMarker } from './BlockedMarker';
 describe('BlockedMarker', () => {
   describe('when the task is not blocked', () => {
     describe('and the user opens the menu and picks a stamp', () => {
-      it('blocks the task on that stamp', async () => {
+      it('sets that blocking stamp on the task', async () => {
         const user = userEvent.setup();
         const onChange = jest.fn();
         render(<BlockedMarker onChange={onChange} />);
@@ -32,7 +32,7 @@ describe('BlockedMarker', () => {
     });
 
     describe('and the user opens the menu and picks another stamp', () => {
-      it('blocks the task on that stamp instead', async () => {
+      it('replaces the blocking stamp on the task with that one', async () => {
         const user = userEvent.setup();
         const onChange = jest.fn();
         render(<BlockedMarker blockedOn="human" onChange={onChange} />);
@@ -52,7 +52,7 @@ describe('BlockedMarker', () => {
     });
 
     describe('and the user opens the menu and picks the bin', () => {
-      it('unblocks the task', async () => {
+      it('removes the blocking stamp from the task', async () => {
         const user = userEvent.setup();
         const onChange = jest.fn();
         render(<BlockedMarker blockedOn="human" onChange={onChange} />);
