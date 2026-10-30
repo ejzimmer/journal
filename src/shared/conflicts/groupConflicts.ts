@@ -1,7 +1,7 @@
 import { Conflict } from '../localFirst/editTimes';
 import { findOrderedListPath } from '../localFirst/listOrder';
 
-export type ConflictGroup =
+type ConflictGroup =
   | { kind: 'field'; key: string; conflict: Conflict }
   | { kind: 'order'; key: string; listPath: string; conflicts: Conflict[] };
 

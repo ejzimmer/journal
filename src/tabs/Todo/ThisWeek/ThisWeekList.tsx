@@ -33,7 +33,7 @@ export function ThisWeekList() {
     <div className="todo-task-list weekly">
       {tasks.length ? (
         <ol ref={listRef}>
-          {tasks.map((task, index) => (
+          {tasks.map((task) => (
             <li key={task.id} className="item">
               <ThisWeekTask task={task} />
             </li>

@@ -1,6 +1,6 @@
 import { ProgressUpdate, Volume } from './types';
 
-export type KeyedProgressUpdate = ProgressUpdate & { key: string };
+type KeyedProgressUpdate = ProgressUpdate & { key: string };
 
 export const getProgressUpdates = (volume: Volume): KeyedProgressUpdate[] =>
   Object.entries(volume.updates ?? {})

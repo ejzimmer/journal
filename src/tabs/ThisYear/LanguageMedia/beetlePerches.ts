@@ -6,7 +6,7 @@ import { GrownShape } from './treeGrowth';
 
 export const BASE_GAP = 0.12;
 export const TIP_GAP = 0.08;
-export const BEETLE_ROOM = 12;
+const BEETLE_ROOM = 12;
 const TRUNK_FOOT = 0.02;
 
 export type Perch = {

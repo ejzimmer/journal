@@ -145,6 +145,7 @@ describe('MediaTree', () => {
               page: 50,
               lookups: 4,
               aiQuestions: 0,
+              understood: 60,
             },
           },
         },
@@ -190,6 +191,33 @@ describe('MediaTree', () => {
           const date = screen.getByRole('tooltip');
 
           await user.unhover(getStretch());
+
+          expect(date).not.toBeInTheDocument();
+        });
+      });
+    });
+
+    describe('hovering the flower the update grew', () => {
+      it('shows the date of the update', async () => {
+        const user = userEvent.setup();
+        renderWithLanguageMediaStorage(<MediaTree series={seriesWithUpdate} />);
+
+        await user.hover(screen.getByTestId('callistemon-flower'));
+
+        expect(screen.getByRole('tooltip')).toHaveTextContent('01 Oct');
+      });
+
+      describe('then moving away', () => {
+        it('hides the date', async () => {
+          const user = userEvent.setup();
+          renderWithLanguageMediaStorage(
+            <MediaTree series={seriesWithUpdate} />,
+          );
+          const flower = screen.getByTestId('callistemon-flower');
+          await user.hover(flower);
+          const date = screen.getByRole('tooltip');
+
+          await user.unhover(flower);
 
           expect(date).not.toBeInTheDocument();
         });

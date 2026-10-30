@@ -1,7 +1,7 @@
 import { RefObject, useRef } from 'react';
 import { Modal, ModalProps, useModal } from './Modal';
 
-export type FormModalProps = {
+type FormModalProps = {
   children: React.ReactNode;
   onSubmit: (
     event: React.FormEvent<HTMLFormElement>,

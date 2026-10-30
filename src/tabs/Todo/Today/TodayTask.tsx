@@ -2,7 +2,7 @@ import { useStorageContext } from '../../../shared/FirebaseContext';
 
 import './TodayTask.css';
 import { DailyTask, DAILY_KEY, ProjectSubtask } from '../../../shared/types';
-import { EditableDescription } from '../../../shared/controls/EditableDescription';
+import { TodayTaskDescription } from './TodayTaskDescription';
 import { getToday } from '../../../shared/dates';
 
 export function TodayTask({
@@ -43,22 +43,19 @@ export function TodayTask({
   };
 
   return (
-    <div className="task-screen">
-      <EditableDescription
-        category={task.category}
-        description={task.description}
-        isChecked={task.status !== 'ready'}
-        useTickForDone
-        onChange={(change) => {
-          if ('isChecked' in change) {
-            handleStatusChange();
-          } else if ('description' in change && change.description === '') {
-            deleteItem<DailyTask>(DAILY_KEY, task);
-          } else {
-            onChange({ ...task, ...change });
-          }
-        }}
-      />
-    </div>
+    <TodayTaskDescription
+      category={task.category}
+      description={task.description}
+      isChecked={task.status !== 'ready'}
+      onChange={(change) => {
+        if ('isChecked' in change) {
+          handleStatusChange();
+        } else if ('description' in change && change.description === '') {
+          deleteItem<DailyTask>(DAILY_KEY, task);
+        } else {
+          onChange({ ...task, ...change });
+        }
+      }}
+    />
   );
 }

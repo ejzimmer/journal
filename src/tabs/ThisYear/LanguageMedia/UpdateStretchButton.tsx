@@ -1,6 +1,5 @@
-import { KeyboardEvent, PointerEvent, useState } from 'react';
-import { createPortal } from 'react-dom';
-import { TinyCloud } from './TinyCloud';
+import { KeyboardEvent } from 'react';
+import { HoverCloud } from './HoverCloud';
 
 type UpdateStretchButtonProps = {
   label: string;
@@ -17,8 +16,6 @@ export function UpdateStretchButton({
   onClick,
   onHighlight,
 }: UpdateStretchButtonProps) {
-  const [hoveredRect, setHoveredRect] = useState<DOMRect>();
-
   const clickOnEnterOrSpace = (event: KeyboardEvent) => {
     if (event.key === 'Enter' || event.key === ' ') {
       event.preventDefault();
@@ -26,18 +23,8 @@ export function UpdateStretchButton({
     }
   };
 
-  const startHover = (event: PointerEvent<SVGPathElement>) => {
-    onHighlight?.(true);
-    setHoveredRect(event.currentTarget.getBoundingClientRect());
-  };
-
-  const endHover = () => {
-    onHighlight?.(false);
-    setHoveredRect(undefined);
-  };
-
   return (
-    <>
+    <HoverCloud text={hoverText}>
       <path
         className="update-stretch"
         role="button"
@@ -46,17 +33,11 @@ export function UpdateStretchButton({
         d={path}
         onClick={onClick}
         onKeyDown={clickOnEnterOrSpace}
-        onPointerEnter={startHover}
-        onPointerLeave={endHover}
+        onPointerEnter={() => onHighlight?.(true)}
+        onPointerLeave={() => onHighlight?.(false)}
         onFocus={() => onHighlight?.(true)}
         onBlur={() => onHighlight?.(false)}
       />
-      {hoverText &&
-        hoveredRect &&
-        createPortal(
-          <TinyCloud text={hoverText} rect={hoveredRect} />,
-          document.body,
-        )}
-    </>
+    </HoverCloud>
   );
 }

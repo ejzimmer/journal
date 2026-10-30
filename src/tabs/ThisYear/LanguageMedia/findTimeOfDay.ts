@@ -1,7 +1,7 @@
 import SunCalc from 'suncalc';
 import { GardenLocation } from './gardenLocation';
 
-export type TimeOfDay = 'night' | 'dawn' | 'day' | 'dusk';
+type TimeOfDay = 'night' | 'dawn' | 'day' | 'dusk';
 
 export function findTimeOfDay(
   now: number,

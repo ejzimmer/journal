@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react';
-import { EditableDescription } from './EditableDescription';
+import { TodayTaskDescription } from './TodayTaskDescription';
 import userEvent from '@testing-library/user-event';
-import { CategoriesContext } from '../../tabs/Todo';
+import { CategoriesContext } from '..';
 import { ReactNode } from 'react';
 
 const commonProps = {
@@ -42,22 +42,37 @@ const expectToBeInEditMode = (checkbox: HTMLElement) => {
   ).toBeInTheDocument();
 };
 
-describe('EditableDescription', () => {
-  it('displays an emoji checkbox and some text', () => {
-    render(<EditableDescription {...commonProps} />, { wrapper: Wrapper });
+describe('TodayTaskDescription', () => {
+  describe('when the task is not done', () => {
+    it('displays an unchecked emoji checkbox and some text', () => {
+      render(<TodayTaskDescription {...commonProps} isChecked={false} />, {
+        wrapper: Wrapper,
+      });
 
-    expect(screen.getByText('🪥')).toBeInTheDocument();
-    expect(
-      screen.getByRole('checkbox', { name: 'Brush teeth done' }),
-    ).toBeChecked();
-    expectToBeInViewMode();
+      expect(screen.getByText('🪥')).toBeInTheDocument();
+      expect(
+        screen.getByRole('checkbox', { name: 'Brush teeth done' }),
+      ).not.toBeChecked();
+      expectToBeInViewMode();
+    });
+  });
+
+  describe('when the task is done', () => {
+    it('displays a checked checkbox and some text', () => {
+      render(<TodayTaskDescription {...commonProps} />, { wrapper: Wrapper });
+
+      expect(
+        screen.getByRole('checkbox', { name: 'Brush teeth done' }),
+      ).toBeChecked();
+      expectToBeInViewMode();
+    });
   });
 
   describe('when the user clicks the emoji checkbox', () => {
     it('calls the onChange handler', async () => {
       const user = userEvent.setup();
       const onChange = jest.fn();
-      render(<EditableDescription {...commonProps} onChange={onChange} />, {
+      render(<TodayTaskDescription {...commonProps} onChange={onChange} />, {
         wrapper: Wrapper,
       });
 
@@ -70,7 +85,7 @@ describe('EditableDescription', () => {
   describe('when the user clicks the description text', () => {
     it('switches to edit mode', async () => {
       const user = userEvent.setup();
-      render(<EditableDescription {...commonProps} />, { wrapper: Wrapper });
+      render(<TodayTaskDescription {...commonProps} />, { wrapper: Wrapper });
 
       const checkbox = screen.getByRole('checkbox', {
         name: 'Brush teeth done',
@@ -88,7 +103,7 @@ describe('EditableDescription', () => {
   describe('when the user presses enter on the description text', () => {
     it('switches to edit mode', async () => {
       const user = userEvent.setup();
-      render(<EditableDescription {...commonProps} />, { wrapper: Wrapper });
+      render(<TodayTaskDescription {...commonProps} />, { wrapper: Wrapper });
 
       const checkbox = screen.getByRole('checkbox', {
         name: 'Brush teeth done',
@@ -108,7 +123,7 @@ describe('EditableDescription', () => {
   describe('when the user leaves edit mode', () => {
     it('returns focus to the description text', async () => {
       const user = userEvent.setup();
-      render(<EditableDescription {...commonProps} />, { wrapper: Wrapper });
+      render(<TodayTaskDescription {...commonProps} />, { wrapper: Wrapper });
 
       await user.click(screen.getByText('Brush teeth'));
       await user.keyboard('{Escape}');
@@ -122,7 +137,7 @@ describe('EditableDescription', () => {
       it('calls on change and switches back to view mode', async () => {
         const user = userEvent.setup();
         const onChange = jest.fn();
-        render(<EditableDescription {...commonProps} onChange={onChange} />, {
+        render(<TodayTaskDescription {...commonProps} onChange={onChange} />, {
           wrapper: Wrapper,
         });
         await user.click(screen.getByText('Brush teeth'));
@@ -142,9 +157,12 @@ describe('EditableDescription', () => {
         it('calls on change and switches back to view mode', async () => {
           const user = userEvent.setup();
           const onChange = jest.fn();
-          render(<EditableDescription {...commonProps} onChange={onChange} />, {
-            wrapper: Wrapper,
-          });
+          render(
+            <TodayTaskDescription {...commonProps} onChange={onChange} />,
+            {
+              wrapper: Wrapper,
+            },
+          );
           await user.click(screen.getByText('Brush teeth'));
           const editControls = getEditControls();
 
@@ -161,9 +179,12 @@ describe('EditableDescription', () => {
         it('switches back to view mode without calling onChange', async () => {
           const user = userEvent.setup();
           const onChange = jest.fn();
-          render(<EditableDescription {...commonProps} onChange={onChange} />, {
-            wrapper: Wrapper,
-          });
+          render(
+            <TodayTaskDescription {...commonProps} onChange={onChange} />,
+            {
+              wrapper: Wrapper,
+            },
+          );
           await user.click(screen.getByText('Brush teeth'));
           const editControls = getEditControls();
 
@@ -182,9 +203,12 @@ describe('EditableDescription', () => {
         it('switches back to view mode without calling onChange', async () => {
           const user = userEvent.setup();
           const onChange = jest.fn();
-          render(<EditableDescription {...commonProps} onChange={onChange} />, {
-            wrapper: Wrapper,
-          });
+          render(
+            <TodayTaskDescription {...commonProps} onChange={onChange} />,
+            {
+              wrapper: Wrapper,
+            },
+          );
           await user.click(screen.getByText('Brush teeth'));
           const editControls = getEditControls();
 

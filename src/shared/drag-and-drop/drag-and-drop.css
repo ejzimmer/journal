@@ -15,9 +15,6 @@
   --terminal-radius: 4px;
   --line-offset: -5px;
   --terminal-diameter: calc(var(--terminal-radius) * 2);
-  --terminal-offset: calc(
-    (var(--terminal-radius) + (var(--stroke-size) / 2)) * -1
-  );
   position: absolute;
   background-color: var(--action-colour);
   pointer-events: none;

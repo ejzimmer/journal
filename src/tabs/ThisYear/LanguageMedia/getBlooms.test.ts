@@ -52,8 +52,20 @@ describe('getBlooms', () => {
 
     it('grows a flower for each update that says how much was understood, at its page, in the order they were saved', () => {
       expect(getBlooms(series)).toEqual([
-        { key: 'u1', limbKey: 'vol1-limb', at: 0.25, understood: 40 },
-        { key: 'u2', limbKey: 'vol1-limb', at: 0.5, understood: 55 },
+        {
+          key: 'u1',
+          limbKey: 'vol1-limb',
+          at: 0.25,
+          understood: 40,
+          date: '2026-10-01T10:00:00Z',
+        },
+        {
+          key: 'u2',
+          limbKey: 'vol1-limb',
+          at: 0.5,
+          understood: 55,
+          date: '2026-10-03T10:00:00Z',
+        },
       ]);
     });
   });

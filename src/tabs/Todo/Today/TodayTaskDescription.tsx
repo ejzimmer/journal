@@ -1,29 +1,24 @@
-import { useContext, useEffect, useMemo, useRef, useState } from 'react';
-import { EmojiCheckbox } from './EmojiCheckbox';
-import { CategoriesContext } from '../../tabs/Todo';
-import { Combobox } from './combobox/Combobox';
-import { useFormToggle } from './useFormToggle';
-
-import './EditableDescription.css';
+import { useEffect, useRef, useState } from 'react';
+import { EmojiCheckbox } from '../../../shared/controls/EmojiCheckbox';
+import { CategoryCombobox } from '../CategoryCombobox';
+import { useFormToggle } from '../../../shared/controls/useFormToggle';
 
 type Change =
   { isChecked: boolean } | { category: string } | { description: string };
 
-export type EditableDescriptionProps = {
+type TodayTaskDescriptionProps = {
   category: string;
   description: string;
   isChecked: boolean;
   onChange: (change: Change) => void;
-  useTickForDone?: boolean;
 };
 
-export function EditableDescription({
+export function TodayTaskDescription({
   category,
   description,
   isChecked,
   onChange,
-  useTickForDone,
-}: EditableDescriptionProps) {
+}: TodayTaskDescriptionProps) {
   const inputRef = useRef<HTMLInputElement>(null);
   const {
     isFormOpen: inEditMode,
@@ -34,15 +29,6 @@ export function EditableDescription({
   } = useFormToggle<HTMLDivElement>();
   const [inputValue, setInputValue] = useState(description);
 
-  const categories = useContext(CategoriesContext);
-  if (!categories) {
-    throw new Error('Missing categories context provider');
-  }
-  const categoryOptions = useMemo(
-    () => categories.map((category) => ({ id: category, label: category })),
-    [categories],
-  );
-
   useEffect(() => {
     if (inputRef.current && inEditMode) {
       inputRef.current.focus();
@@ -52,7 +38,7 @@ export function EditableDescription({
   if (inEditMode) {
     return (
       <div
-        className="editable-description"
+        className="today-task-description"
         onKeyDown={({ key }) => {
           if (key === 'Enter' && inputValue !== description) {
             onChange({ description: inputValue });
@@ -63,16 +49,12 @@ export function EditableDescription({
           }
         }}
       >
-        <Combobox
-          value={{ id: category, label: category }}
-          options={categoryOptions}
-          createOption={(value) => ({ id: value, label: value })}
-          onChange={(value) => {
-            onChange({ category: value.id });
+        <CategoryCombobox
+          value={category}
+          onChange={(category) => {
+            onChange({ category });
             stopEditing();
           }}
-          inputSize={1}
-          ariaLabel="Category"
         />
         <input
           className="subtle"
@@ -87,13 +69,13 @@ export function EditableDescription({
   }
 
   return (
-    <div className="editable-description">
+    <div className="today-task-description">
       <EmojiCheckbox
         emoji={category}
         isChecked={isChecked}
         label={`${description} done`}
         onChange={() => onChange({ isChecked: !isChecked })}
-        useTickForDone={useTickForDone}
+        useTickForDone
       />
       <div
         ref={displayRef}

@@ -9,6 +9,7 @@ export type Bloom = {
   limbKey: string;
   at: number;
   understood: number;
+  date: string;
 };
 
 export function getBlooms(series: PrintSeries): Bloom[] {
@@ -23,6 +24,7 @@ export function getBlooms(series: PrintSeries): Bloom[] {
               limbKey: `${volume.id}-limb`,
               at: calculateUpdatePosition(volume, update, progress),
               understood: update.understood,
+              date: update.at,
             },
           ],
     );

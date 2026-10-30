@@ -4,7 +4,7 @@ import {
   onAuthStateChanged,
   signInWithPopup,
 } from 'firebase/auth';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import './App.css';
 import { Loading } from './shared/loading';
@@ -18,15 +18,18 @@ export function App() {
   const [isLoggedIn, setLoggedIn] = useState(false);
   const auth = getAuth();
 
-  onAuthStateChanged(auth, () => {
-    setIsLoading(false);
-    setLoggedIn(!!auth.currentUser);
-  });
+  useEffect(
+    () =>
+      onAuthStateChanged(auth, (user) => {
+        setIsLoading(false);
+        setLoggedIn(!!user);
+      }),
+    [auth],
+  );
 
   const login = () => {
     const provider = new GoogleAuthProvider();
     signInWithPopup(auth, provider);
-    // signInWithRedirect(auth, provider)
   };
 
   if (isLoading) {

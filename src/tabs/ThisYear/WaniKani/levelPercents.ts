@@ -5,7 +5,7 @@ export function isUnlocked(srsStage: number) {
   return srsStage >= 1;
 }
 
-export function isBurned(srsStage: number) {
+function isBurned(srsStage: number) {
   return srsStage >= 9;
 }
 
