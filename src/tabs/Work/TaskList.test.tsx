@@ -58,7 +58,16 @@ const unlabelledList: WorkTask = {
       status: 'done',
       parentId: 'list-2',
       lastStatusUpdate: '2026-01-01',
+      position: 3,
+    },
+    'task-4': {
+      id: 'task-4',
+      description: 'blocked',
+      status: 'not_started',
+      parentId: 'list-2',
+      lastStatusUpdate: '2026-01-01',
       position: 2,
+      blockedOn: 'build',
     },
   },
 };
@@ -179,7 +188,7 @@ describe('TaskList label', () => {
 });
 
 describe('TaskList count', () => {
-  it('shows the number of not-done items in the list', () => {
+  it('shows the number of tasks in the list that are neither done nor blocked', () => {
     renderTaskList(unlabelledList.id, createStorageContext());
 
     expect(screen.getByLabelText('2 tasks remaining')).toHaveTextContent('(2)');
