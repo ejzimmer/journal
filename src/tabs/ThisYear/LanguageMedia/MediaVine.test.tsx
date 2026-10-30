@@ -149,5 +149,16 @@ describe('MediaVine', () => {
         expect(screen.getByRole('tooltip')).toHaveTextContent('02 Oct');
       });
     });
+
+    describe('hovering the flowers an update grew', () => {
+      it('shows the date of the update', async () => {
+        const user = userEvent.setup();
+        renderWithLanguageMediaStorage(<MediaVine series={series} />);
+
+        await user.hover(screen.getByTestId('wisteria-raceme'));
+
+        expect(screen.getByRole('tooltip')).toHaveTextContent('01 Oct');
+      });
+    });
   });
 });

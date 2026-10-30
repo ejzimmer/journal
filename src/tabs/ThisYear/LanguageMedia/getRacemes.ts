@@ -9,6 +9,7 @@ export type Raceme = {
   shootKey: string;
   at: number;
   understood?: number;
+  date: string;
 };
 
 export function getRacemes(series: TvSeries): Raceme[] {
@@ -21,6 +22,7 @@ export function getRacemes(series: TvSeries): Raceme[] {
         shootKey: `${season.id}-${episode.id}-shoot`,
         at: calculateEpisodeUpdatePosition(episode, update, progress),
         understood: update.understood,
+        date: update.at,
       }));
     }),
   );

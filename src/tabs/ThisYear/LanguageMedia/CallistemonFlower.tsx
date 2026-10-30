@@ -55,7 +55,7 @@ export function CallistemonFlower({
   );
 
   return (
-    <g className="callistemon-flower">
+    <g className="callistemon-flower" data-testid="callistemon-flower">
       <TreeShoot shoot={twig} type="book" />
       <TreeShoot shoot={stem} type="book" />
       <Bottlebrush

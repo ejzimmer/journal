@@ -676,7 +676,7 @@
 .tiny-cloud {
   position: fixed;
   z-index: 1;
-  translate: -50% -100%;
+  translate: -50% calc(-100% - 12px);
   pointer-events: none;
   overflow: visible;
   filter: blur(0) drop-shadow(1px 1px 2px hsl(0 0% 0% / 0.15));
