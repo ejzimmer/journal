@@ -50,7 +50,8 @@ body:has(.today) {
   }
 }
 
-.task-screen {
+.task-screen,
+.today-task-description > [role='button'] {
   margin-block: 3px;
   padding: 4px 10px;
   border: 1px solid hsl(0 0% 0%);
@@ -64,8 +65,66 @@ body:has(.today) {
   text-shadow: 0 0 5px var(--crt-glow);
 }
 
+button.category-button,
+.todo-task-list .emoji-checkbox {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-block: 2px;
+  width: 38px;
+  height: 38px;
+  padding: 0;
+  border: 1px solid hsl(0 0% 0%);
+  border-radius: 6px;
+  font-size: 20px;
+  text-shadow: none;
+  cursor: pointer;
+  background: linear-gradient(hsl(150 4% 24%), hsl(150 4% 15%));
+  box-shadow:
+    inset 0 1px 0 hsl(0 0% 100% / 0.12),
+    0 2px 0 hsl(0 0% 0% / 0.7),
+    0 3px 6px hsl(0 0% 0% / 0.4);
+  transition:
+    translate 0.1s ease,
+    box-shadow 0.1s ease,
+    background 0.2s ease;
+
+  &:hover,
+  &:focus-visible,
+  &:has(:focus-visible) {
+    background: linear-gradient(hsl(150 4% 28%), hsl(150 4% 18%));
+  }
+
+  &:focus-visible,
+  &:has(:focus-visible) {
+    outline: 1px solid var(--crt-green);
+    outline-offset: 2px;
+  }
+
+  &:active,
+  &:has(input:checked) {
+    translate: 0 2px;
+    background: linear-gradient(hsl(150 4% 11%), hsl(150 4% 18%));
+    box-shadow:
+      inset 0 3px 5px hsl(0 0% 0% / 0.85),
+      inset 0 -1px 0 hsl(0 0% 100% / 0.06),
+      0 0 0 hsl(0 0% 0% / 0.7);
+  }
+}
+
+.todo-task-list .emoji-checkbox {
+  border-radius: 50%;
+
+  .done-tick {
+    background: none;
+    color: hsl(150 4% 58%);
+  }
+}
+
 .today-panel {
   input:not(.led-push-button),
+  textarea.editable-text,
   .single-value-container {
     background: var(--crt-bg);
     color: var(--crt-green);
