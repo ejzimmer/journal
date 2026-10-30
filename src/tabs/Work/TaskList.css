@@ -125,6 +125,20 @@ ol.work-lists > li {
       opacity: 0.4;
     }
 
+    .blocked-marker {
+      position: absolute;
+      right: calc(100% + 4px);
+      top: 50%;
+      translate: 0 -50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      button.add-metadata {
+        margin-inline-start: 0;
+      }
+    }
+
     .drag-handle {
       opacity: 0;
     }
@@ -142,6 +156,11 @@ ol.work-lists > li {
 
     &:focus-within .drag-handle {
       opacity: 1;
+    }
+
+    /* the drag handle clutters the fanned-out menu, so hide it while one is open */
+    &:has(.stamp-menu:popover-open) .drag-handle {
+      opacity: 0;
     }
 
     &:has(form.subtasks.editing:focus-within) .add-metadata {

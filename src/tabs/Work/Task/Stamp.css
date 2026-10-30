@@ -1,0 +1,45 @@
+.stamp {
+  --size: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--size);
+  height: var(--size);
+  padding: 6px;
+  border-radius: 50%;
+  border: 2px solid var(--ink-colour);
+  color: var(--ink-colour);
+  user-select: none;
+
+  svg {
+    width: 100%;
+    height: 100%;
+  }
+
+  &.merge_queue {
+    --ink-colour: hsl(280 50% 38%);
+    --stamp-rotation: -8deg;
+  }
+  &.build {
+    --ink-colour: hsl(211 75% 35%);
+    --stamp-rotation: 5deg;
+  }
+  &.human {
+    --ink-colour: hsl(355 70% 40%);
+    --stamp-rotation: -4deg;
+  }
+  &.time {
+    --ink-colour: hsl(140 55% 28%);
+    --stamp-rotation: 7deg;
+  }
+  &.blank {
+    --ink-colour: hsl(0 0% 45%);
+    border-style: dashed;
+  }
+}
+
+/* the jaunty tilt only makes sense once a stamp is actually applied to a
+   task, not while it's just an option in the fanned-out menu */
+.stamp-trigger .stamp {
+  rotate: var(--stamp-rotation, 0deg);
+}
