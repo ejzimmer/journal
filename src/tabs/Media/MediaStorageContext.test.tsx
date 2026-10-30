@@ -121,7 +121,27 @@ describe('MediaStorageContext', () => {
       );
 
       expect(mediaStorage.authors).toEqual([
+        'Terry Pratchett',
         'Ursula Le Guin',
+      ]);
+    });
+
+    it('sorts the authors by their full name, ignoring case', () => {
+      const mediaStorage = createMediaStorage(
+        createStoredMedia({
+          books: [
+            createBook('book-nation', 'Nation', { author: 'Terry Pratchett' }),
+            createBook('book-all-about-love', 'All About Love', {
+              author: 'bell hooks',
+            }),
+            createBook('book-dune', 'Dune', { author: 'Frank Herbert' }),
+          ],
+        }),
+      );
+
+      expect(mediaStorage.authors).toEqual([
+        'bell hooks',
+        'Frank Herbert',
         'Terry Pratchett',
       ]);
     });
