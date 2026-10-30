@@ -1,4 +1,4 @@
-import { getToday, isBeforeToday, isToday } from '../../shared/dates';
+import { getToday, isAfterToday, isBeforeToday } from '../../shared/dates';
 import { useStorageContext } from '../../shared/FirebaseContext';
 import { useDailyJob } from '../../shared/dailyJobs/DailyJobsContext';
 import {
@@ -13,8 +13,8 @@ import { addSourceListLabel } from './labelUtils';
 const finishedBeforeToday = (task: WorkTask) =>
   task.status === 'done' && isBeforeToday(task.lastStatusUpdate);
 
-const isDueToday = (task: WorkTask) =>
-  task.status !== 'done' && !!task.dueDate && isToday(task.dueDate);
+const isDue = (task: WorkTask) =>
+  task.status !== 'done' && !!task.dueDate && !isAfterToday(task.dueDate);
 
 const getItemsKey = (list: WorkTask) => `${WORK_KEY}/${list.id}/items`;
 
@@ -46,10 +46,10 @@ export function useWorkDailyUpdate() {
             getSortedItems(list).filter(finishedBeforeToday),
           )
         : [];
-      const tasksDueToday = todayList
+      const dueTasks = todayList
         ? activeLists.flatMap((list) =>
             getSortedItems(list)
-              .filter(isDueToday)
+              .filter(isDue)
               .map((task) =>
                 list === todayList
                   ? task
@@ -74,7 +74,7 @@ export function useWorkDailyUpdate() {
       }
 
       const movingTaskIds = new Set(
-        [...tasksToFinish, ...tasksDueToday].map((task) => task.id),
+        [...tasksToFinish, ...dueTasks].map((task) => task.id),
       );
       activeLists.forEach((list) => {
         const remainingTasks = getSortedItems(list).filter(
@@ -82,7 +82,7 @@ export function useWorkDailyUpdate() {
         );
         const items = renumberPositions(
           list === todayList
-            ? [...tasksDueToday, ...remainingTasks]
+            ? [...dueTasks, ...remainingTasks]
             : remainingTasks,
         );
 

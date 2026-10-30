@@ -318,6 +318,27 @@ describe('the daily work update', () => {
     });
   });
 
+  describe('a task due on an earlier day', () => {
+    it('moves to the top of the Today list', async () => {
+      const storage = await updateLists([
+        createList('today', 'Today', 0, [createTask('today', 'already-today')]),
+        createList('backlog', 'Backlog', 1, [
+          createTask('backlog', 'fix-the-thing', {
+            dueDate: getDateDaysAgo(3),
+          }),
+        ]),
+      ]);
+
+      expect(storage.updateList).toHaveBeenCalledWith(
+        `${WORK_KEY}/today/items`,
+        [
+          expect.objectContaining({ id: 'fix-the-thing', position: 0 }),
+          expect.objectContaining({ id: 'already-today', position: 1 }),
+        ],
+      );
+    });
+  });
+
   describe('a task due on a later day', () => {
     it('stays where it is', async () => {
       const storage = await updateLists([
