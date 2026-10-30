@@ -88,8 +88,10 @@ export function TaskList({
     [list?.items],
   );
 
-  const notDoneCount = useMemo(
-    () => sortedList.filter((task) => task.status !== 'done').length,
+  const remainingCount = useMemo(
+    () =>
+      sortedList.filter((task) => task.status !== 'done' && !task.blockedOn)
+        .length,
     [sortedList],
   );
 
@@ -206,12 +208,12 @@ export function TaskList({
                 onEditLabel={() => setEditingLabel(true)}
               />
             ))}
-          {notDoneCount > 0 && (
+          {remainingCount > 0 && (
             <span
               className="task-count"
-              aria-label={`${notDoneCount} tasks remaining`}
+              aria-label={`${remainingCount} tasks remaining`}
             >
-              ({notDoneCount})
+              ({remainingCount})
             </span>
           )}
           <PostitModalDialog
