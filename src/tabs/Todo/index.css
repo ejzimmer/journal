@@ -7,6 +7,7 @@ body:has(.today) {
   --crt-rule: hsl(120 40% 18%);
   --crt-tick: hsl(120 30% 13%);
   --crt-red: hsl(10 90% 60%);
+  --crt-blue: hsl(195 90% 65%);
 
   --body-colour: var(--crt-green);
   --body-colour-mid: var(--crt-dim);
