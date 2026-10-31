@@ -240,4 +240,49 @@ describe('MediaTree', () => {
       });
     });
   });
+
+  describe('a volume with updates a few pages apart', () => {
+    const series = createSeries('book');
+    const seriesWithUpdates: PrintSeries = {
+      ...series,
+      volumes: {
+        ...series.volumes,
+        vol1: {
+          ...series.volumes!.vol1,
+          updates: {
+            u1: {
+              at: '2026-10-01T09:00:00Z',
+              page: 50,
+              lookups: 4,
+              aiQuestions: 0,
+              understood: 60,
+            },
+            u2: {
+              at: '2026-10-02T09:00:00Z',
+              page: 55,
+              lookups: 7,
+              aiQuestions: 0,
+              understood: 70,
+            },
+          },
+        },
+      },
+      upTo: { volume: 1, page: 55 },
+    };
+
+    describe('clicking the second flower', () => {
+      it('opens the second update in the update form', async () => {
+        const user = userEvent.setup();
+        renderWithLanguageMediaStorage(
+          <MediaTree series={seriesWithUpdates} />,
+        );
+
+        await user.click(screen.getAllByTestId('callistemon-flower')[1]);
+
+        expect(
+          screen.getByRole('spinbutton', { name: 'Looked up' }),
+        ).toHaveValue(7);
+      });
+    });
+  });
 });
