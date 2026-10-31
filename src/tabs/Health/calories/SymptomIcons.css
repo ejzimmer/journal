@@ -40,7 +40,9 @@
     position: absolute;
     top: calc(50% - 4.5px);
     left: calc(50% - 4.5px);
-    transform: rotate(calc((var(--icon-index) - (var(--icon-count) - 1) / 2) * 34deg))
+    transform: rotate(
+        calc((var(--icon-index) - (var(--icon-count) - 1) / 2) * 34deg)
+      )
       translateY(18px)
       rotate(calc((var(--icon-index) - (var(--icon-count) - 1) / 2) * -34deg));
   }

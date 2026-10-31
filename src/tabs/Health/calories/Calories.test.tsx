@@ -154,82 +154,68 @@ describe('Calories', () => {
     });
   });
 
-  describe('period tracking', () => {
-    it('shows the period icon for a day that has tracker data', async () => {
-      const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
-      const dailyData = {
-        '2026-01-03': {
-          id: '2026-01-03',
-          consumed: 1500,
-          expended: 2000,
-          trackers: ['🔴'],
-        },
-      };
+  describe('symptom tracking', () => {
+    const dailyData = {
+      '2026-01-03': {
+        id: '2026-01-03',
+        consumed: 1500,
+        expended: 2000,
+        trackers: ['flow-2'],
+      },
+    };
 
+    it('shows the symptom icons for a day that has symptoms', async () => {
+      const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
       renderWithHealthStorage(<Calories />, { days: dailyData });
 
       await user.click(screen.getByRole('radio', { name: 'by day' }));
 
       expect(
-        screen.getByRole('img', { name: 'heavy flow' }),
+        screen.getByRole('img', { name: 'period flow 2' }),
       ).toBeInTheDocument();
     });
 
-    it('shows a checkbox for each tracker in the calorie form, checked to match existing trackers', async () => {
-      const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
-      const dailyData = {
-        '2026-01-03': {
-          id: '2026-01-03',
-          consumed: 1500,
-          expended: 2000,
-          trackers: ['🔴'],
-        },
-      };
+    describe('in the calorie form', () => {
+      it('marks the logged level of each symptom as pressed', async () => {
+        const user = userEvent.setup({
+          advanceTimers: jest.advanceTimersByTime,
+        });
+        renderWithHealthStorage(<Calories />, { days: dailyData });
 
-      renderWithHealthStorage(<Calories />, { days: dailyData });
+        await user.click(screen.getByRole('radio', { name: 'by day' }));
+        await user.click(screen.getByRole('button', { name: 'update 3 Jan' }));
+        await user.click(screen.getByRole('button', { name: 'symptoms' }));
 
-      await user.click(screen.getByRole('radio', { name: 'by day' }));
-      await user.click(screen.getByRole('button', { name: 'update 3 Jan' }));
+        expect(
+          screen.getByRole('button', { name: 'period flow 2' }),
+        ).toHaveAttribute('aria-pressed', 'true');
+        expect(
+          screen.getByRole('button', { name: 'period flow 3' }),
+        ).toHaveAttribute('aria-pressed', 'false');
+      });
 
-      expect(
-        screen.getByRole('checkbox', { name: 'light flow' }),
-      ).not.toBeChecked();
-      expect(
-        screen.getByRole('checkbox', { name: 'heavy flow' }),
-      ).toBeChecked();
-      expect(
-        screen.getByRole('checkbox', { name: 'ovary pain' }),
-      ).not.toBeChecked();
-    });
+      it('saves the symptom levels chosen, clearing a level that is clicked again', async () => {
+        const user = userEvent.setup({
+          advanceTimers: jest.advanceTimersByTime,
+        });
+        const updateDay = jest.fn();
+        renderWithHealthStorage(<Calories />, { days: dailyData, updateDay });
 
-    it('saves the trackers selected in the calorie form', async () => {
-      const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
-      const updateDay = jest.fn();
-      const dailyData = {
-        '2026-01-03': {
-          id: '2026-01-03',
-          consumed: 1500,
-          expended: 2000,
-          trackers: ['🔴'],
-        },
-      };
+        await user.click(screen.getByRole('radio', { name: 'by day' }));
+        await user.click(screen.getByRole('button', { name: 'update 3 Jan' }));
+        await user.click(screen.getByRole('button', { name: 'symptoms' }));
+        await user.click(screen.getByRole('button', { name: 'period flow 2' }));
+        await user.click(screen.getByRole('button', { name: 'headache 3' }));
+        await user.click(screen.getByRole('textbox', { name: 'In' }));
+        await user.keyboard('{Enter}');
 
-      renderWithHealthStorage(<Calories />, { days: dailyData, updateDay });
-
-      await user.click(screen.getByRole('radio', { name: 'by day' }));
-      await user.click(screen.getByRole('button', { name: 'update 3 Jan' }));
-
-      await user.click(screen.getByRole('checkbox', { name: 'heavy flow' }));
-      await user.click(screen.getByRole('checkbox', { name: 'ovary pain' }));
-      await user.click(screen.getByRole('textbox', { name: 'In' }));
-      await user.keyboard('{Enter}');
-
-      expect(updateDay).toHaveBeenCalledWith(
-        expect.objectContaining({
-          id: '2026-01-03',
-          trackers: ['🥚'],
-        }),
-      );
+        expect(updateDay).toHaveBeenCalledWith(
+          expect.objectContaining({
+            id: '2026-01-03',
+            trackers: ['headache-3'],
+          }),
+        );
+      });
     });
   });
 

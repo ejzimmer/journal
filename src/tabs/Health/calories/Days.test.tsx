@@ -41,65 +41,59 @@ describe('Days', () => {
     expect(onSelectDay).toHaveBeenCalledWith('2026-01-05');
   });
 
-  describe('period icons', () => {
-    it("doesn't show any for a day with no trackers", () => {
-      render(<Days days={mockDays} onSelectDay={jest.fn()} />);
+  describe('symptom icons', () => {
+    describe('given a day with symptoms logged at different levels', () => {
+      it('shows an icon for each symptom and its level', () => {
+        const days: Balance[] = mockDays.map((day) =>
+          day.day === 5 ? { ...day, trackers: ['flow-3', 'headache-1'] } : day,
+        );
+        render(<Days days={days} onSelectDay={jest.fn()} />);
 
-      expect(
-        screen.queryByRole('img', { name: 'light flow' }),
-      ).not.toBeInTheDocument();
-      expect(
-        screen.queryByRole('img', { name: 'heavy flow' }),
-      ).not.toBeInTheDocument();
-      expect(
-        screen.queryByRole('img', { name: 'ovary pain' }),
-      ).not.toBeInTheDocument();
+        expect(
+          screen.getByRole('img', { name: 'period flow 3' }),
+        ).toBeInTheDocument();
+        expect(
+          screen.getByRole('img', { name: 'headache 1' }),
+        ).toBeInTheDocument();
+      });
     });
 
-    it('shows a single drop for light flow, two drops for heavy flow, and a lightning bolt for ovary pain', () => {
-      const days: Balance[] = mockDays.map((day) =>
-        day.day === 5
-          ? { ...day, trackers: ['🟤'] }
-          : day.day === 6
-            ? { ...day, trackers: ['🔴'] }
-            : day.day === 7
-              ? { ...day, trackers: ['🥚'] }
-              : day,
-      );
-      render(<Days days={days} onSelectDay={jest.fn()} />);
+    describe('given a day logged with the old period trackers', () => {
+      it('shows them as period flow and period pain levels', () => {
+        const days: Balance[] = mockDays.map((day) =>
+          day.day === 5 ? { ...day, trackers: ['🔴', '🥚'] } : day,
+        );
+        render(<Days days={days} onSelectDay={jest.fn()} />);
 
-      expect(
-        screen.getByRole('img', { name: 'light flow' }),
-      ).toBeInTheDocument();
-      expect(
-        screen.getByRole('img', { name: 'heavy flow' }),
-      ).toBeInTheDocument();
-      expect(
-        screen.getByRole('img', { name: 'ovary pain' }),
-      ).toBeInTheDocument();
+        expect(
+          screen.getByRole('img', { name: 'period flow 2' }),
+        ).toBeInTheDocument();
+        expect(
+          screen.getByRole('img', { name: 'period pain 2' }),
+        ).toBeInTheDocument();
+      });
     });
 
-    it('shows a flow icon and the ovary pain icon together on the same day', () => {
-      const days: Balance[] = mockDays.map((day) =>
-        day.day === 5 ? { ...day, trackers: ['🔴', '🥚'] } : day,
-      );
-      render(<Days days={days} onSelectDay={jest.fn()} />);
+    describe('given more symptoms than fit along the bottom of the circle', () => {
+      it('shows how many more there are', () => {
+        const days: Balance[] = mockDays.map((day) =>
+          day.day === 5
+            ? {
+                ...day,
+                trackers: [
+                  'flow-1',
+                  'pain-1',
+                  'tummy-1',
+                  'headache-1',
+                  'tired-1',
+                ],
+              }
+            : day,
+        );
+        render(<Days days={days} onSelectDay={jest.fn()} />);
 
-      expect(
-        screen.getByRole('img', { name: 'heavy flow' }),
-      ).toBeInTheDocument();
-      expect(
-        screen.getByRole('img', { name: 'ovary pain' }),
-      ).toBeInTheDocument();
-    });
-
-    it("doesn't show any for trackers that aren't period-related", () => {
-      const days: Balance[] = mockDays.map((day) =>
-        day.day === 5 ? { ...day, trackers: ['🧘'] } : day,
-      );
-      render(<Days days={days} onSelectDay={jest.fn()} />);
-
-      expect(screen.queryByRole('img')).not.toBeInTheDocument();
+        expect(screen.getByText('+2')).toBeInTheDocument();
+      });
     });
   });
 
