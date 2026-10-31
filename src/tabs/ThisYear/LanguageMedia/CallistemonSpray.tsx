@@ -11,11 +11,11 @@ import { TREE_SPECIES } from './treeSpecies';
 import { Volume } from './types';
 
 const TWIG_LENGTH = 18;
-const TWIG_LENGTH_PER_FLOWER = 8;
+const TWIG_LENGTH_PER_FLOWER = 16;
 const FIRST_FORK = 0.4;
 const LONE_FORK = 0.75;
-const STEM_LENGTH = 26;
-const STEM_TURN = 38;
+const STEM_LENGTH = 36;
+const STEM_TURN = 50;
 
 const SHOOTS = TREE_SPECIES.book.shoots;
 const TWIG_STYLE = {
@@ -25,7 +25,7 @@ const TWIG_STYLE = {
 };
 const STEM_STYLE = {
   ...SHOOTS,
-  widths: [0.6, 0.4] as [number, number],
+  widths: [0.7, 0.45] as [number, number],
   bend: 0.2,
 };
 

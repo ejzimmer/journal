@@ -3,15 +3,15 @@ import { EdgeSample } from './treeGeometry';
 import { findBranchPoint } from './findBranchPoint';
 import { toRadians } from '../../../shared/toRadians';
 
-const BUD_ROWS = 7;
-const SPAN = 14;
-const TIP_GAP = 2;
-const BUD_RADIUS = 0.9;
-const BUD_GAP = 0.8;
-const STAMEN_LENGTH = 5;
-const FRONT_STAMEN_LENGTH = 2;
-const FANS = [-70, -35, 0, 35, 70];
-const ANTHER_FANS = [-35, 0, 35];
+const BUD_ROWS = 8;
+const SPAN = 22;
+const TIP_GAP = 4;
+const BUD_RADIUS = 1.3;
+const BUD_GAP = 1.2;
+const STAMEN_LENGTH = 7.5;
+const FRONT_STAMEN_LENGTH = 3;
+const FANS = [-70, -45, -22, 0, 22, 45, 70];
+const ANTHER_FANS = [-22, 0, 22];
 const FRONT_STAMENS = [-1, 0, 1];
 const CLOSED_BUD = [92, 42, 46];
 const OPEN_BUD = [54, 72, 62];
@@ -133,7 +133,7 @@ export function Bottlebrush({
                       key={`${row}${side}${fan}`}
                       cx={tipX}
                       cy={tipY}
-                      r={0.4 * sprout}
+                      r={0.45 * sprout}
                     />
                   )),
               )
@@ -143,7 +143,7 @@ export function Bottlebrush({
               key={`${row}front${offset}`}
               cx={tipX}
               cy={tipY}
-              r={0.35 * sprout}
+              r={0.4 * sprout}
             />
           )),
         ])}
