@@ -77,10 +77,12 @@ export function DueDateTask({ task }: DueDateTaskProps) {
         className={`due-date ${getDateClass(task.dueDate)}`}
       />
       <div className="description">
-        <CategoryPicker
-          category={task.category}
-          onChange={(category) => onChange({ ...task, category })}
-        />
+        {!isSmallScreen && (
+          <CategoryPicker
+            category={task.category}
+            onChange={(category) => onChange({ ...task, category })}
+          />
+        )}
         <EditableText
           value={task.description}
           label="Description"

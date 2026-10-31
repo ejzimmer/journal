@@ -8,6 +8,10 @@ import { ProgressIndicator } from './ProgressIndicator';
 import { AddDoneMenu } from './AddDoneMenu';
 import { getToday } from '../../../shared/dates';
 import { useFormToggle } from '../../../shared/controls/useFormToggle';
+import {
+  SMALL_SCREEN_QUERY,
+  useMediaQuery,
+} from '../../../shared/useMediaQuery';
 
 type ThisWeekTaskProps = { task: WeeklyTask };
 
@@ -24,6 +28,7 @@ export function ThisWeekTask({ task }: ThisWeekTaskProps) {
   const frequencyRef = useRef<HTMLInputElement>(null);
 
   const { updateItem, deleteItem } = useStorageContext();
+  const isSmallScreen = useMediaQuery(SMALL_SCREEN_QUERY);
   const onChange = (task: WeeklyTask) => {
     updateItem<WeeklyTask>(WEEKLY_KEY, task);
   };
@@ -111,7 +116,9 @@ export function ThisWeekTask({ task }: ThisWeekTaskProps) {
 
   return (
     <>
-      <AddDoneMenu category={task.category} onAdd={addDone} />
+      {!isSmallScreen && (
+        <AddDoneMenu category={task.category} onAdd={addDone} />
+      )}
       <div className="task-screen">
         <div
           ref={descriptionDisplayRef}
