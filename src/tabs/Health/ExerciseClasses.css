@@ -19,6 +19,8 @@ ul.exercise-classes {
   li.tracker-card {
     display: grid;
     gap: 6px;
+    max-width: 100%;
+    box-sizing: border-box;
     padding: 10px 12px;
     border-radius: 10px;
     background: var(--class-background);

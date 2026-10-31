@@ -14,16 +14,7 @@ export function YarnYears() {
       onSelectYear={selectYear}
       className="yarn-year-tabs"
     >
-      <div
-        key={selectedYear}
-        style={{
-          padding: '60px',
-          display: 'flex',
-          flexWrap: 'wrap',
-          alignItems: 'center',
-          gap: '24px',
-        }}
-      >
+      <div key={selectedYear} className="yarn-year">
         <YarnState />
         <div
           style={{

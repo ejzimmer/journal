@@ -117,6 +117,10 @@ nav ul {
   --page-padding-inline: 30px;
   --page-padding-block: 20px;
 
+  @media (width <= 600px) {
+    --page-padding-inline: 12px;
+  }
+
   padding-inline: var(--page-padding-inline);
   padding-block: var(--page-padding-block);
 }
