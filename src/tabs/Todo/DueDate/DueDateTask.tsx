@@ -1,7 +1,12 @@
 import { EditableDate } from '../../../shared/controls/EditableDate';
 import { useStorageContext } from '../../../shared/FirebaseContext';
 import { CalendarTask, CALENDAR_KEY, STATUSES } from '../../../shared/types';
-import { getToday, isAfterToday, isThisWeek } from '../../../shared/dates';
+import {
+  getToday,
+  isBeforeToday,
+  isThisWeek,
+  isToday,
+} from '../../../shared/dates';
 import { Switch } from '../../../shared/controls/Switch';
 import { PlayButtonIcon } from '../../../shared/icons/PlayButton';
 import { PauseButtonIcon } from '../../../shared/icons/PauseButton';
@@ -11,8 +16,11 @@ import { EditableText } from '../../../shared/controls/EditableText';
 import { CategoryPicker } from './CategoryPicker';
 
 const getDateClass = (dueDate: string) => {
-  if (!isAfterToday(dueDate)) {
+  if (isBeforeToday(dueDate)) {
     return 'overdue';
+  }
+  if (isToday(dueDate)) {
+    return 'due-today';
   }
   if (isThisWeek(dueDate)) {
     return 'this-week';

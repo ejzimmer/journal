@@ -38,7 +38,7 @@ describe('DueDateTask', () => {
 
     describe.each([
       ['in the past', '2026-10-27', 'overdue'],
-      ['today', '2026-10-28', 'overdue'],
+      ['today', '2026-10-28', 'due-today'],
       ['later this week', '2026-11-01', 'this-week'],
       ['next week', '2026-11-02', 'later'],
     ])('when the task is due %s', (_, dueDate, dateClass) => {
