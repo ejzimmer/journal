@@ -115,6 +115,7 @@ button.category-button,
 
 .todo-task-list .emoji-checkbox {
   border-radius: 50%;
+  overflow: hidden;
 
   .done-tick {
     background: none;

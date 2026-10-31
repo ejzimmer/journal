@@ -49,7 +49,9 @@ describe('TodayTaskDescription', () => {
         wrapper: Wrapper,
       });
 
-      expect(screen.getByText('🪥')).toBeInTheDocument();
+      expect(
+        screen.getByText('🪥', { ignore: '[aria-hidden="true"]' }),
+      ).toBeInTheDocument();
       expect(
         screen.getByRole('checkbox', { name: 'Brush teeth done' }),
       ).not.toBeChecked();

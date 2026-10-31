@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { EmojiCheckbox } from '../../../shared/controls/EmojiCheckbox';
 import { CategoryCombobox } from '../CategoryCombobox';
+import { GlowingEmoji } from './GlowingEmoji';
 import { useFormToggle } from '../../../shared/controls/useFormToggle';
 
 type Change =
@@ -71,7 +72,7 @@ export function TodayTaskDescription({
   return (
     <div className="today-task-description">
       <EmojiCheckbox
-        emoji={category}
+        emoji={<GlowingEmoji emoji={category} />}
         isChecked={isChecked}
         label={`${description} done`}
         onChange={() => onChange({ isChecked: !isChecked })}
