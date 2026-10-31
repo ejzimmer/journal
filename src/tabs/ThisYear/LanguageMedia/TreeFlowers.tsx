@@ -1,7 +1,8 @@
 import { formatDayAndMonth, getLocalDate } from '../../../shared/dates';
-import { CallistemonFlower } from './CallistemonFlower';
+import { CallistemonSpray } from './CallistemonSpray';
 import { findBranchPoint } from './findBranchPoint';
 import { Bloom } from './getBlooms';
+import { Spray } from './groupBloomsIntoSprays';
 import { findShootBase } from './growShoots';
 import { HoverCloud } from './HoverCloud';
 import { SakuraFlower } from './SakuraFlower';
@@ -15,6 +16,7 @@ const SAKURA_TURN = 55;
 type TreeFlowersProps = {
   layout: TreeLayout;
   blooms: Bloom[];
+  sprays: Spray[];
   type: PrintSeries['type'];
   onSelect: (volume: Volume, updateKey: string) => void;
 };
@@ -22,17 +24,47 @@ type TreeFlowersProps = {
 export function TreeFlowers({
   layout,
   blooms,
+  sprays,
   type,
   onSelect,
 }: TreeFlowersProps) {
+  const findLimbPoint = ({ limbKey, at }: Pick<Bloom, 'limbKey' | 'at'>) => {
+    const limb = layout.shapes.find(({ key }) => key === limbKey);
+    if (!limb) return undefined;
+    const point = findBranchPoint(limb.edges, at);
+    const downSide = Math.cos(toRadians(point.angle)) >= 0 ? 1 : -1;
+    return { point, downSide };
+  };
+
+  if (type === 'book') {
+    return (
+      <g className="tree-flowers">
+        {sprays.map((spray, index) => {
+          const limbPoint = findLimbPoint(spray);
+          if (!limbPoint) return null;
+          const { point, downSide } = limbPoint;
+          return (
+            <CallistemonSpray
+              key={spray.key}
+              seed={spray.key}
+              base={findShootBase(point, downSide)}
+              angle={point.angle + CALLISTEMON_TURNS[index % 2] * downSide}
+              side={downSide}
+              blooms={spray.blooms}
+              onSelect={onSelect}
+            />
+          );
+        })}
+      </g>
+    );
+  }
+
   return (
     <g className="tree-flowers">
       {blooms.map((bloom, index) => {
-        const limb = layout.shapes.find(({ key }) => key === bloom.limbKey);
-        if (!limb) return null;
-        const point = findBranchPoint(limb.edges, bloom.at);
-        const downSide = Math.cos(toRadians(point.angle)) >= 0 ? 1 : -1;
-
+        const limbPoint = findLimbPoint(bloom);
+        if (!limbPoint) return null;
+        const { point, downSide } = limbPoint;
         const side = index % 2 ? -downSide : downSide;
 
         return (
@@ -41,22 +73,12 @@ export function TreeFlowers({
             text={formatDayAndMonth(getLocalDate(bloom.date))}
             onClick={() => onSelect(bloom.volume, bloom.key)}
           >
-            {type === 'book' ? (
-              <CallistemonFlower
-                seed={bloom.key}
-                base={findShootBase(point, downSide)}
-                angle={point.angle + CALLISTEMON_TURNS[index % 2] * downSide}
-                side={downSide}
-                understood={bloom.understood}
-              />
-            ) : (
-              <SakuraFlower
-                seed={bloom.key}
-                base={findShootBase(point, side)}
-                angle={point.angle + SAKURA_TURN * side}
-                understood={bloom.understood}
-              />
-            )}
+            <SakuraFlower
+              seed={bloom.key}
+              base={findShootBase(point, side)}
+              angle={point.angle + SAKURA_TURN * side}
+              understood={bloom.understood}
+            />
           </HoverCloud>
         );
       })}

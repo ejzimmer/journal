@@ -11,6 +11,7 @@ import { findSignpostPlacement } from './findSignpostPlacement';
 import { getItemsByNumber } from './lists';
 import { HangingSign } from './HangingSign';
 import { getBlooms } from './getBlooms';
+import { groupBloomsIntoSprays } from './groupBloomsIntoSprays';
 import { placeProgressBeetles } from './placeProgressBeetles';
 import { TreeBeetles } from './TreeBeetles';
 import { ProgressUpdateForm } from './ProgressUpdateForm';
@@ -35,6 +36,7 @@ export function MediaTree({ series }: MediaTreeProps) {
   const progress = volumes.map((volume) => readVolumeProgress(series, volume));
   const grownShapes = getGrownShapes(layout, progress);
   const blooms = getBlooms(series);
+  const sprays = groupBloomsIntoSprays(blooms, layout.shapes);
   const [isProgressUpdateFormOpen, setIsProgressUpdateFormOpen] =
     useState(false);
   const [isEditFormOpen, setIsEditFormOpen] = useState(false);
@@ -63,13 +65,18 @@ export function MediaTree({ series }: MediaTreeProps) {
         width={width}
         height={height}
       >
-        <TreeShoots shapes={grownShapes} blooms={blooms} type={series.type} />
+        <TreeShoots
+          shapes={grownShapes}
+          flowerSpots={series.type === 'book' ? sprays : blooms}
+          type={series.type}
+        />
         <TreeOutline shapes={grownShapes} />
         <TreeSilhouette layout={layout} />
         <TreeFill shapes={grownShapes} />
         <TreeFlowers
           layout={layout}
           blooms={blooms}
+          sprays={sprays}
           type={series.type}
           onSelect={(volume, updateKey) =>
             setEditedUpdate({ volume, updateKey })

@@ -7,18 +7,18 @@ import { PrintSeries } from './types';
 
 type TreeShootsProps = {
   shapes: GrownShape[];
-  blooms: Bloom[];
+  flowerSpots: Pick<Bloom, 'limbKey' | 'at'>[];
   type: PrintSeries['type'];
 };
 
-export function TreeShoots({ shapes, blooms, type }: TreeShootsProps) {
+export function TreeShoots({ shapes, flowerSpots, type }: TreeShootsProps) {
   const shoots = shapes
     .filter(({ growth }) => growth.type === 'branch')
     .flatMap((shape) =>
       growShoots(
         shape,
         TREE_SPECIES[type].shoots,
-        blooms
+        flowerSpots
           .filter(({ limbKey }) => limbKey === shape.key)
           .map(({ at }) => at),
       ),
