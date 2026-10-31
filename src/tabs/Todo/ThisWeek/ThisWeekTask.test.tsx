@@ -6,6 +6,10 @@ import { CategoriesContext } from '..';
 import { getDateDaysAgo, getToday } from '../../../shared/dates';
 import { ContextType } from '../../../shared/FirebaseContext';
 import { renderWithStorage } from '../../../shared/storageContextTestUtils';
+import {
+  mockSmallScreen,
+  restoreScreenSize,
+} from '../../../shared/mediaQueryTestUtils';
 
 const task: WeeklyTask = {
   frequency: 3,
@@ -270,6 +274,72 @@ describe('ThisWeekTask', () => {
         );
 
         expect(screen.getByText('+3')).toBeInTheDocument();
+      });
+    });
+  });
+
+  describe('on a small screen', () => {
+    beforeEach(mockSmallScreen);
+    afterEach(restoreScreenSize);
+
+    const renderTask = (weeklyTask: WeeklyTask, updateItem = jest.fn()) =>
+      renderWithStorage(
+        <CategoriesContext.Provider value={['🧘', '💪']}>
+          <ThisWeekTask task={weeklyTask} />
+        </CategoriesContext.Provider>,
+        { value: { useValue, updateItem } },
+      );
+
+    it('shows how many are done out of how many are needed', () => {
+      renderTask(task);
+
+      const progress = screen.getByRole('group', {
+        name: `${task.description}: 2 of ${task.frequency} done`,
+      });
+      expect(progress).toHaveTextContent('23');
+    });
+
+    describe('when the user clicks the done count', () => {
+      it('adds a done for today', async () => {
+        const user = userEvent.setup();
+        const updateItem = jest.fn();
+        renderTask(task, updateItem);
+
+        await user.click(screen.getByRole('button', { name: 'Mark done' }));
+
+        expect(updateItem).toHaveBeenCalledWith(
+          expect.anything(),
+          expect.objectContaining({
+            completed: [...task.completed!, getToday()],
+          }),
+        );
+      });
+    });
+
+    describe('when the user clicks the frequency', () => {
+      it('removes the most recently completed item', async () => {
+        const user = userEvent.setup();
+        const updateItem = jest.fn();
+        renderTask(task, updateItem);
+
+        await user.click(screen.getByRole('button', { name: 'Undo' }));
+
+        expect(updateItem).toHaveBeenCalledWith(
+          expect.anything(),
+          expect.objectContaining({ completed: [task.completed?.[0]] }),
+        );
+      });
+
+      describe('and the task has never been completed', () => {
+        it('leaves the task as it is', async () => {
+          const user = userEvent.setup();
+          const updateItem = jest.fn();
+          renderTask({ ...task, completed: [] }, updateItem);
+
+          await user.click(screen.getByRole('button', { name: 'Undo' }));
+
+          expect(updateItem).not.toHaveBeenCalled();
+        });
       });
     });
   });
