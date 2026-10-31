@@ -1,38 +1,37 @@
-import { CSSProperties } from 'react';
 import { SymptomIcon } from './SymptomIcon';
-import { parseSymptoms } from './symptoms';
+import { LoggedSymptom } from './symptoms';
+import { splitIntoRows } from './symptomRows';
 import './SymptomIcons.css';
 
-const MAX_VISIBLE = 3;
+type SymptomIconsProps = {
+  symptoms: LoggedSymptom[];
+  iconSize: number;
+};
 
-type SymptomIconsProps = { trackers?: string[] };
-
-export function SymptomIcons({ trackers }: SymptomIconsProps) {
-  const symptoms = parseSymptoms(trackers);
+export function SymptomIcons({ symptoms, iconSize }: SymptomIconsProps) {
   if (!symptoms.length) {
     return null;
   }
 
-  const visible = symptoms.slice(0, MAX_VISIBLE);
-  const hiddenCount = symptoms.length - visible.length;
-
   return (
-    <div
-      className="symptom-icons"
-      style={{ '--icon-count': symptoms.length } as CSSProperties}
-    >
-      {symptoms.map(({ symptom, magnitude }, index) => (
-        <span
-          key={symptom.id}
-          role="img"
-          aria-label={`${symptom.label} ${magnitude}`}
-          className={index >= MAX_VISIBLE ? 'overflow' : undefined}
-          style={{ '--icon-index': index } as CSSProperties}
-        >
-          <SymptomIcon symptom={symptom} magnitude={magnitude} width="9px" />
-        </span>
+    <div className="symptom-icons">
+      {splitIntoRows(symptoms).map((row) => (
+        <div key={row[0].symptom.id} className="symptom-icon-row">
+          {row.map(({ symptom, magnitude }) => (
+            <span
+              key={symptom.id}
+              role="img"
+              aria-label={`${symptom.label} ${magnitude}`}
+            >
+              <SymptomIcon
+                symptom={symptom}
+                magnitude={magnitude}
+                width={`${iconSize}px`}
+              />
+            </span>
+          ))}
+        </div>
       ))}
-      {hiddenCount > 0 && <span className="more">+{hiddenCount}</span>}
     </div>
   );
 }

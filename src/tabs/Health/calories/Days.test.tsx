@@ -74,8 +74,8 @@ describe('Days', () => {
       });
     });
 
-    describe('given more symptoms than fit along the bottom of the circle', () => {
-      it('shows how many more there are', () => {
+    describe('given five symptoms on one day', () => {
+      it('shows all of them', () => {
         const days: Balance[] = mockDays.map((day) =>
           day.day === 5
             ? {
@@ -92,7 +92,17 @@ describe('Days', () => {
         );
         render(<Days days={days} onSelectDay={jest.fn()} />);
 
-        expect(screen.getByText('+2')).toBeInTheDocument();
+        expect(
+          screen
+            .getAllByRole('img')
+            .map((icon) => icon.getAttribute('aria-label')),
+        ).toEqual([
+          'period flow 1',
+          'period pain 1',
+          'sore tummy 1',
+          'headache 1',
+          'tired 1',
+        ]);
       });
     });
   });

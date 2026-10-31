@@ -1,57 +1,16 @@
 .symptom-icons {
-  position: absolute;
-  bottom: 3px;
-  left: 50%;
-  translate: -50% 0;
   display: flex;
-  align-items: flex-end;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
   pointer-events: none;
 
+  .symptom-icon-row {
+    display: flex;
+    gap: 2px;
+  }
+
   span {
     display: flex;
-  }
-
-  .overflow {
-    display: none;
-  }
-
-  .more {
-    font-size: 6px;
-    line-height: 9px;
-    color: var(--body-colour);
-  }
-}
-
-.day-circle:hover .symptom-icons {
-  .overflow {
-    display: flex;
-  }
-
-  .more {
-    display: none;
-  }
-}
-
-[data-symptom-layout='arc'] .symptom-icons {
-  inset: 0;
-  translate: none;
-
-  span {
-    position: absolute;
-    top: calc(50% - 4.5px);
-    left: calc(50% - 4.5px);
-    transform: rotate(
-        calc((var(--icon-index) - (var(--icon-count) - 1) / 2) * 34deg)
-      )
-      translateY(18px)
-      rotate(calc((var(--icon-index) - (var(--icon-count) - 1) / 2) * -34deg));
-  }
-
-  .overflow {
-    display: flex;
-  }
-
-  .more {
-    display: none;
   }
 }
