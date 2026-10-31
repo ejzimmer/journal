@@ -32,6 +32,10 @@
       display: flex;
       width: 160px;
       height: 25px;
+
+      @media (width <= 600px) {
+        width: 100px;
+      }
       border: 1px solid var(--crt-rule);
       border-radius: 100px;
       background-color: var(--crt-bg);
@@ -107,6 +111,10 @@
     opacity: 0;
     pointer-events: none;
     transition: opacity 0.4s;
+
+    @media (width <= 880px) {
+      right: 0;
+    }
   }
 
   form.edit-this-week-task {

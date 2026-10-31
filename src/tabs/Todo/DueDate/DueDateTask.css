@@ -1,6 +1,6 @@
 .todo-task-list.calendar ol:first-child {
   display: grid;
-  grid-template-columns: max-content max-content min-content;
+  grid-template-columns: max-content minmax(0, max-content) min-content;
 
   & > li {
     display: grid;
@@ -105,6 +105,14 @@
 .todo-task-list.calendar form.add-task-form {
   grid-template-columns: repeat(3, min-content) 1fr;
   max-width: 480px;
+
+  @media (width <= 600px) {
+    grid-template-columns: min-content minmax(0, 1fr) min-content;
+
+    .buttons {
+      grid-column: 1 / -1;
+    }
+  }
 
   .description {
     grid-column: 1 / -1;
