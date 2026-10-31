@@ -115,10 +115,15 @@ button.category-button,
 
 .todo-task-list .emoji-checkbox {
   border-radius: 50%;
+  overflow: hidden;
 
   .done-tick {
     background: none;
     color: hsl(150 4% 58%);
+
+    svg {
+      width: 55%;
+    }
   }
 }
 
