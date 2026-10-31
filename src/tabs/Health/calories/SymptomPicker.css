@@ -1,0 +1,67 @@
+button.symptom-trigger {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  min-height: 24px;
+  padding: 2px 8px;
+  border: 1px solid var(--border-colour);
+  border-radius: 12px;
+  background: white;
+  box-shadow: none;
+  cursor: pointer;
+}
+
+.symptom-list[popover] {
+  inset: unset;
+  margin: 0;
+  position: absolute;
+  top: anchor(bottom);
+  left: anchor(center);
+  translate: -50% 6px;
+  border: none;
+  border-radius: 8px;
+  padding: 4px;
+  background: white;
+  box-shadow:
+    2px 2px 4px hsl(0 0% 0% / 0.1),
+    2px 2px 16px 4px hsl(0 0% 0% / 0.12);
+}
+
+.symptom-list:popover-open {
+  display: flex;
+  flex-direction: column;
+}
+
+.symptom-row {
+  display: flex;
+  gap: 2px;
+
+  & + & {
+    border-top: 1px solid var(--border-colour);
+  }
+}
+
+.symptom-level {
+  display: flex;
+  padding: 5px;
+  border: none;
+  border-radius: 6px;
+  background: none;
+  cursor: pointer;
+  opacity: 0.35;
+  filter: grayscale(60%);
+  transition:
+    opacity 0.2s,
+    filter 0.2s;
+
+  &:hover,
+  &:focus-visible,
+  &[aria-pressed='true'] {
+    opacity: 1;
+    filter: none;
+  }
+
+  &[aria-pressed='true'] {
+    background: hsl(0 0% 0% / 0.06);
+  }
+}

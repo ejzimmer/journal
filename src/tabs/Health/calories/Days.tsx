@@ -2,7 +2,7 @@ import { CSSProperties, useMemo } from 'react';
 
 import './Days.css';
 import { Balance } from '../utils';
-import { PeriodIcons } from './PeriodIcons';
+import { SymptomIcons } from './SymptomIcons';
 
 type DaysProps = {
   days: Balance[];
@@ -54,7 +54,7 @@ export function Days({ days, onSelectDay }: DaysProps) {
               <div>{day.balance?.toLocaleString()}</div>
             </div>
           </button>
-          <PeriodIcons trackers={day.trackers} />
+          <SymptomIcons trackers={day.trackers} />
         </li>
       ))}
     </ol>
