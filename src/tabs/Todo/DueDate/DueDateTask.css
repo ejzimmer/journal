@@ -22,7 +22,7 @@
   }
 
   .due-date {
-    --date-colour: var(--crt-green);
+    --date-colour: var(--crt-blue);
     border: 1px solid;
     font-weight: bold;
     font-size: 0.8em;
@@ -41,7 +41,7 @@
       box-shadow: 0 0 10px var(--crt-glow);
     }
     &.this-week {
-      --date-colour: var(--crt-blue);
+      --date-colour: var(--crt-green);
     }
   }
 
