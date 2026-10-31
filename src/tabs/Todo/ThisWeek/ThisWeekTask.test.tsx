@@ -331,10 +331,14 @@ describe('ThisWeekTask', () => {
       });
 
       describe('and the task has never been completed', () => {
-        it('has nothing to remove', () => {
-          renderTask({ ...task, completed: [] });
+        it('leaves the task as it is', async () => {
+          const user = userEvent.setup();
+          const updateItem = jest.fn();
+          renderTask({ ...task, completed: [] }, updateItem);
 
-          expect(screen.getByRole('button', { name: 'Undo' })).toBeDisabled();
+          await user.click(screen.getByRole('button', { name: 'Undo' }));
+
+          expect(updateItem).not.toHaveBeenCalled();
         });
       });
     });

@@ -65,6 +65,9 @@ export function ThisWeekTask({ task }: ThisWeekTaskProps) {
   };
 
   const removeLastDone = () => {
+    if (completedDates.length === 0) {
+      return;
+    }
     onChange({ ...task, completed: completedDates.slice(0, -1) });
   };
 

@@ -22,7 +22,7 @@ export function ProgressCount({
       <button aria-label="Mark done" onClick={onAdd}>
         {numberDone}
       </button>
-      <button aria-label="Undo" onClick={onRemove} disabled={numberDone === 0}>
+      <button aria-label="Undo" onClick={onRemove}>
         {frequency}
       </button>
     </div>
