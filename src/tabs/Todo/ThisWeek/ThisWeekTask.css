@@ -148,7 +148,7 @@
   border-radius: 100px;
   background: var(--crt-bg);
   box-shadow: inset 0 2px 4px hsl(0 0% 0% / 0.8);
-  color: var(--crt-unlit);
+  color: var(--crt-dim);
   font-weight: bold;
 
   &.not-due {
@@ -159,7 +159,7 @@
     color: color-mix(
       in srgb,
       var(--led-colour) calc(var(--fill-opacity) * 100%),
-      var(--crt-unlit)
+      var(--crt-dim)
     );
     text-shadow: 0 0 6px
       color-mix(
@@ -197,6 +197,7 @@
     }
 
     &:disabled {
+      opacity: 1;
       cursor: default;
     }
   }
