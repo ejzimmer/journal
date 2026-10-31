@@ -22,28 +22,35 @@
   }
 
   .due-date {
+    --date-colour: var(--crt-blue);
     border: 1px solid;
     font-weight: bold;
     font-size: 0.8em;
     padding: 4px;
-    color: var(--crt-unlit);
-    text-shadow: none;
+    color: var(--date-colour);
+    text-shadow: 0 0 5px color-mix(in srgb, var(--date-colour) 60%, transparent);
 
-    &.now {
+    &.overdue {
+      --date-colour: var(--crt-red);
+    }
+    &.due-today {
       border-color: var(--crt-green);
       background: var(--crt-green);
       color: var(--crt-bg);
+      text-shadow: none;
       box-shadow: 0 0 10px var(--crt-glow);
     }
-    &.past {
-      color: var(--crt-red);
-      text-shadow: 0 0 5px hsl(10 90% 50% / 0.6);
-    }
     &.this-week {
-      color: var(--crt-green);
-      text-shadow: 0 0 5px var(--crt-glow);
-      box-shadow: 0 0 6px hsl(120 100% 50% / 0.25);
+      --date-colour: var(--crt-green);
     }
+  }
+
+  li.status-finished .due-date {
+    border-color: currentColor;
+    background: none;
+    color: var(--crt-unlit);
+    text-shadow: none;
+    box-shadow: none;
   }
 
   .description {

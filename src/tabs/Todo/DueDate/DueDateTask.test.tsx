@@ -18,6 +18,40 @@ const task: CalendarTask = {
 };
 
 describe('DueDateTask', () => {
+  describe('due date colour', () => {
+    // 2026-10-28 is a Wednesday
+    beforeEach(() => {
+      jest.useFakeTimers();
+      jest.setSystemTime(new Date('2026-10-28T12:00:00'));
+    });
+
+    afterEach(() => {
+      jest.useRealTimers();
+    });
+
+    const renderTaskDue = (dueDate: string) =>
+      renderWithStorage(
+        <CategoriesContext.Provider value={['🛒']}>
+          <DueDateTask task={{ ...task, dueDate }} />
+        </CategoriesContext.Provider>,
+      );
+
+    describe.each([
+      ['in the past', '2026-10-27', 'overdue'],
+      ['today', '2026-10-28', 'due-today'],
+      ['later this week', '2026-11-01', 'this-week'],
+      ['next week', '2026-11-02', 'later'],
+    ])('when the task is due %s', (_, dueDate, dateClass) => {
+      it(`marks the date as ${dateClass}`, () => {
+        renderTaskDue(dueDate);
+
+        expect(screen.getByRole('button', { name: /^Due date/ })).toHaveClass(
+          dateClass,
+        );
+      });
+    });
+  });
+
   describe('when the user edits the description and presses Enter', () => {
     it('saves the new description, not the original one', async () => {
       const user = userEvent.setup();

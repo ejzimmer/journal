@@ -1,7 +1,12 @@
 import { EditableDate } from '../../../shared/controls/EditableDate';
 import { useStorageContext } from '../../../shared/FirebaseContext';
 import { CalendarTask, CALENDAR_KEY, STATUSES } from '../../../shared/types';
-import { getDaysUntil, getToday } from '../../../shared/dates';
+import {
+  getToday,
+  isBeforeToday,
+  isThisWeek,
+  isToday,
+} from '../../../shared/dates';
 import { Switch } from '../../../shared/controls/Switch';
 import { PlayButtonIcon } from '../../../shared/icons/PlayButton';
 import { PauseButtonIcon } from '../../../shared/icons/PauseButton';
@@ -10,20 +15,18 @@ import { IconProps } from '../../../shared/icons/types';
 import { EditableText } from '../../../shared/controls/EditableText';
 import { CategoryPicker } from './CategoryPicker';
 
-const getDateClass = (task: CalendarTask) => {
-  const daysUntilDue = getDaysUntil(task.dueDate);
-
-  if (daysUntilDue < 0) {
-    return 'past';
+const getDateClass = (dueDate: string) => {
+  if (isBeforeToday(dueDate)) {
+    return 'overdue';
   }
-  if (daysUntilDue === 0) {
-    return 'now';
+  if (isToday(dueDate)) {
+    return 'due-today';
   }
-  if (daysUntilDue <= 7) {
+  if (isThisWeek(dueDate)) {
     return 'this-week';
   }
 
-  return '';
+  return 'later';
 };
 
 const createNextOccurrence = ({
@@ -68,7 +71,7 @@ export function DueDateTask({ task }: DueDateTaskProps) {
             onChange({ ...task, dueDate: date });
           }
         }}
-        className={`due-date ${getDateClass(task)}`}
+        className={`due-date ${getDateClass(task.dueDate)}`}
       />
       <div className="description">
         <CategoryPicker
