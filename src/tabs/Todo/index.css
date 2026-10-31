@@ -19,13 +19,13 @@ body:has(.today) {
 
   color-scheme: dark;
   min-height: 100vh;
+  background: linear-gradient(hsl(150 4% 10%), hsl(150 4% 6%)) fixed;
 
   .main-content {
     @media (width <= 600px) {
       --page-padding-inline: 16px;
     }
   }
-  background: linear-gradient(hsl(150 4% 10%), hsl(150 4% 6%)) fixed;
 
   nav.tabs {
     --nav-bg: hsl(150 12% 5%);
