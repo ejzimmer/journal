@@ -1,7 +1,12 @@
-import { CSSProperties } from 'react';
 import { getDaysSince } from '../../../shared/dates';
+import {
+  SMALL_SCREEN_QUERY,
+  useMediaQuery,
+} from '../../../shared/useMediaQuery';
 import { WeeklyTask } from '../../../shared/types';
 import { formatWeekday, isTaskDue } from './utils';
+import { ProgressBar } from './ProgressBar';
+import { ProgressCount } from './ProgressCount';
 
 type ProgressIndicatorProps = Pick<
   WeeklyTask,
@@ -18,10 +23,10 @@ export function ProgressIndicator({
   onAdd,
   onRemove,
 }: ProgressIndicatorProps) {
+  const isSmallScreen = useMediaQuery(SMALL_SCREEN_QUERY);
   const completedDates = completed ?? [];
   const numberDone = completedDates.length;
   const remainder = Math.max(numberDone - frequency, 0);
-  const filledSegments = Math.min(numberDone, frequency);
 
   const mostRecentlyDone = completedDates.reduce<string | undefined>(
     (latest, date) =>
@@ -35,37 +40,26 @@ export function ProgressIndicator({
   const fillOpacity =
     daysSinceDone > 2 ? Math.max(0, 1 - 0.2 * (daysSinceDone - 2)) : 1;
 
+  const progressProps = {
+    numberDone,
+    frequency,
+    label: `${description}: ${numberDone} of ${frequency} done`,
+    isDue,
+    fillOpacity,
+    onAdd,
+    onRemove,
+  };
+
   return (
     <div className="indicators">
-      <div
-        role="group"
-        aria-label={`${description}: ${numberDone} of ${frequency} done`}
-        className={`progress-bar ${isDue ? '' : 'not-due'}`}
-        style={
-          {
-            '--segments': frequency,
-            '--fill-opacity': fillOpacity,
-          } as CSSProperties
-        }
-      >
-        {filledSegments > 0 && (
-          <button
-            className="done led"
-            aria-label="Undo"
-            onClick={onRemove}
-            style={
-              {
-                width: `${(filledSegments / frequency) * 100}%`,
-                '--lit-segments': filledSegments,
-              } as CSSProperties
-            }
-          />
-        )}
-        {filledSegments < frequency && (
-          <button className="not-done" aria-label="Mark done" onClick={onAdd} />
-        )}
-      </div>
-      {remainder > 0 && <span className="remainder">+{remainder}</span>}
+      {isSmallScreen ? (
+        <ProgressCount {...progressProps} />
+      ) : (
+        <>
+          <ProgressBar {...progressProps} />
+          {remainder > 0 && <span className="remainder">+{remainder}</span>}
+        </>
+      )}
       {numberDone > 0 && (
         <ol className="dates-popover">
           {completedDates.map((date) => (

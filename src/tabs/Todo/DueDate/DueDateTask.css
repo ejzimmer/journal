@@ -151,3 +151,28 @@
     }
   }
 }
+
+.todo-task-list.calendar .status-cycle-button {
+  --led-colour: var(--led-blue);
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: 1px solid var(--led-edge);
+  border-radius: 50%;
+  color: white;
+  cursor: pointer;
+
+  &.status-paused {
+    --led-colour: var(--led-orange);
+  }
+
+  &.status-finished {
+    --led-colour: var(--led-green);
+  }
+
+  svg {
+    filter: drop-shadow(0 0 3px var(--led-edge));
+  }
+}

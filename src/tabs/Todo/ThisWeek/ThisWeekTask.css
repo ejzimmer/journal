@@ -139,3 +139,65 @@
     }
   }
 }
+
+.todo-task-list.weekly .progress-count {
+  --led-colour: var(--led-green);
+  display: flex;
+  height: 25px;
+  border: 1px solid var(--crt-rule);
+  border-radius: 100px;
+  background: var(--crt-bg);
+  box-shadow: inset 0 2px 4px hsl(0 0% 0% / 0.8);
+  color: var(--crt-unlit);
+  font-weight: bold;
+
+  &.not-due {
+    --led-colour: var(--led-blue);
+  }
+
+  &.lit {
+    color: color-mix(
+      in srgb,
+      var(--led-colour) calc(var(--fill-opacity) * 100%),
+      var(--crt-unlit)
+    );
+    text-shadow: 0 0 6px
+      color-mix(
+        in srgb,
+        var(--led-colour) calc(var(--fill-opacity) * 60%),
+        transparent
+      );
+  }
+
+  &:hover ~ .dates-popover {
+    opacity: 1;
+  }
+
+  button {
+    appearance: none;
+    height: 100%;
+    padding: 0;
+    border: 0;
+    background: none;
+    color: inherit;
+    font: inherit;
+    cursor: pointer;
+
+    &:first-child {
+      padding-inline: 12px 4px;
+    }
+
+    &:last-child {
+      padding-inline: 4px 12px;
+
+      &::before {
+        content: '/';
+        margin-inline-end: 8px;
+      }
+    }
+
+    &:disabled {
+      cursor: default;
+    }
+  }
+}
