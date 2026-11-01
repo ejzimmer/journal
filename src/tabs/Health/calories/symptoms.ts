@@ -1,4 +1,6 @@
-import { HEAVY_FLOW, LIGHT_FLOW, OVARY_PAIN } from './PeriodIcons';
+export const LIGHT_FLOW = '🟤';
+export const HEAVY_FLOW = '🔴';
+export const OVARY_PAIN = '🥚';
 
 export type Magnitude = 1 | 2 | 3;
 
