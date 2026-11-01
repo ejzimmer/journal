@@ -42,6 +42,10 @@
       );
       box-shadow: inset 0 2px 4px hsl(0 0% 0% / 0.8);
 
+      @media (width <= 600px) {
+        width: 100px;
+      }
+
       &::after {
         content: '';
         position: absolute;
@@ -97,7 +101,7 @@
     font-size: 0.8em;
     background: var(--crt-bg);
     border: 1px solid var(--crt-rule);
-    width: fit-content;
+    width: max-content;
     padding: 8px;
     box-shadow: 0 8px 24px hsl(0 0% 0% / 0.7);
     position: absolute;
@@ -107,6 +111,10 @@
     opacity: 0;
     pointer-events: none;
     transition: opacity 0.4s;
+
+    @media (width <= 880px) {
+      right: 0;
+    }
   }
 
   form.edit-this-week-task {
@@ -121,6 +129,16 @@
     input:nth-last-of-type(2) {
       flex-grow: 1;
     }
+
+    @media (width <= 600px) {
+      input {
+        min-width: 0;
+      }
+
+      input[type='number'] {
+        width: 4em;
+      }
+    }
   }
 
   form.add-task-form {
@@ -128,6 +146,64 @@
 
     input[type='number'] {
       width: 60px;
+    }
+  }
+}
+
+.todo-task-list.weekly .progress-count {
+  --led-colour: var(--led-green);
+  display: flex;
+  height: 25px;
+  border: 1px solid var(--crt-rule);
+  border-radius: 100px;
+  background: var(--crt-bg);
+  box-shadow: inset 0 2px 4px hsl(0 0% 0% / 0.8);
+  color: var(--crt-dim);
+  font-weight: bold;
+
+  &.not-due {
+    --led-colour: var(--led-blue);
+  }
+
+  &.lit {
+    color: color-mix(
+      in srgb,
+      var(--led-colour) calc(var(--fill-opacity) * 100%),
+      var(--crt-dim)
+    );
+    text-shadow: 0 0 6px
+      color-mix(
+        in srgb,
+        var(--led-colour) calc(var(--fill-opacity) * 60%),
+        transparent
+      );
+  }
+
+  &:hover ~ .dates-popover {
+    opacity: 1;
+  }
+
+  button {
+    appearance: none;
+    height: 100%;
+    padding: 0;
+    border: 0;
+    background: none;
+    color: inherit;
+    font: inherit;
+    cursor: pointer;
+
+    &:first-child {
+      padding-inline: 12px 4px;
+    }
+
+    &:last-child {
+      padding-inline: 4px 12px;
+
+      &::before {
+        content: '/';
+        margin-inline-end: 8px;
+      }
     }
   }
 }

@@ -72,16 +72,7 @@ export function AddProjectForm() {
   };
 
   return (
-    <form
-      style={{
-        padding: '8px 16px',
-        display: 'flex',
-        flexDirection: 'row',
-        alignItems: 'center',
-        gap: '12px',
-      }}
-      onSubmit={handleSubmit}
-    >
+    <form className="add-project-form" onSubmit={handleSubmit}>
       <FormControl
         label="Description"
         value={description}

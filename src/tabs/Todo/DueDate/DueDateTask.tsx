@@ -8,12 +8,14 @@ import {
   isToday,
 } from '../../../shared/dates';
 import { Switch } from '../../../shared/controls/Switch';
-import { PlayButtonIcon } from '../../../shared/icons/PlayButton';
-import { PauseButtonIcon } from '../../../shared/icons/PauseButton';
-import { TickIcon } from '../../../shared/icons/Tick';
-import { IconProps } from '../../../shared/icons/types';
 import { EditableText } from '../../../shared/controls/EditableText';
+import {
+  SMALL_SCREEN_QUERY,
+  useMediaQuery,
+} from '../../../shared/useMediaQuery';
 import { CategoryPicker } from './CategoryPicker';
+import { StatusCycleButton } from './StatusCycleButton';
+import { StatusIcon } from './StatusIcon';
 
 const getDateClass = (dueDate: string) => {
   if (isBeforeToday(dueDate)) {
@@ -43,6 +45,7 @@ type DueDateTaskProps = { task: CalendarTask };
 
 export function DueDateTask({ task }: DueDateTaskProps) {
   const { addItem, updateItem, deleteItem } = useStorageContext();
+  const isSmallScreen = useMediaQuery(SMALL_SCREEN_QUERY);
 
   const onChange = (task: CalendarTask) => updateItem(CALENDAR_KEY, task);
   const onStatusChange = (status: CalendarTask['status']) => {
@@ -74,10 +77,12 @@ export function DueDateTask({ task }: DueDateTaskProps) {
         className={`due-date ${getDateClass(task.dueDate)}`}
       />
       <div className="description">
-        <CategoryPicker
-          category={task.category}
-          onChange={(category) => onChange({ ...task, category })}
-        />
+        {!isSmallScreen && (
+          <CategoryPicker
+            category={task.category}
+            onChange={(category) => onChange({ ...task, category })}
+          />
+        )}
         <EditableText
           value={task.description}
           label="Description"
@@ -86,27 +91,18 @@ export function DueDateTask({ task }: DueDateTaskProps) {
           onDelete={onDelete}
         />
       </div>
-      <Switch
-        options={[...STATUSES]}
-        value={task.status}
-        onChange={onStatusChange}
-        name={task.id}
-        Option={StatusOption}
-        className="led-switch"
-      />
+      {isSmallScreen ? (
+        <StatusCycleButton status={task.status} onChange={onStatusChange} />
+      ) : (
+        <Switch
+          options={[...STATUSES]}
+          value={task.status}
+          onChange={onStatusChange}
+          name={task.id}
+          Option={StatusIcon}
+          className="led-switch"
+        />
+      )}
     </>
   );
-}
-
-const statusIconMapping: Record<CalendarTask['status'], React.FC<IconProps>> = {
-  ready: PlayButtonIcon,
-  paused: PauseButtonIcon,
-  finished: TickIcon,
-};
-
-type StatusOptionProps = { value: CalendarTask['status'] };
-
-function StatusOption({ value }: StatusOptionProps) {
-  const Icon = statusIconMapping[value];
-  return <Icon colour="currentColor" width="12px" />;
 }

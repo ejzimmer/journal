@@ -1,6 +1,6 @@
 .media {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(400px, 600px));
+  grid-template-columns: repeat(auto-fit, minmax(min(400px, 100%), 600px));
   gap: 32px;
   font-size: 18px;
   justify-content: center;

@@ -5,6 +5,10 @@ import { CategoriesContext } from '..';
 import { CalendarTask } from '../../../shared/types';
 import { renderWithStorage } from '../../../shared/storageContextTestUtils';
 import { getToday } from '../../../shared/dates';
+import {
+  mockSmallScreen,
+  restoreScreenSize,
+} from '../../../shared/mediaQueryTestUtils';
 
 const task: CalendarTask = {
   id: '1',
@@ -155,6 +159,37 @@ describe('DueDateTask', () => {
           status: 'finished',
         });
         expect(addItem).not.toHaveBeenCalled();
+      });
+    });
+  });
+
+  describe('on a small screen', () => {
+    beforeEach(mockSmallScreen);
+    afterEach(restoreScreenSize);
+
+    describe.each([
+      ['ready', 'paused'],
+      ['paused', 'finished'],
+      ['finished', 'ready'],
+    ] as const)("when a %s task's status button is clicked", (from, to) => {
+      it(`moves it to ${to}`, async () => {
+        const user = userEvent.setup();
+        const updateItem = jest.fn();
+        renderWithStorage(
+          <CategoriesContext.Provider value={['🛒']}>
+            <DueDateTask task={{ ...task, status: from }} />
+          </CategoriesContext.Provider>,
+          { value: { updateItem } },
+        );
+
+        await user.click(
+          screen.getByRole('button', { name: `Status: ${from}` }),
+        );
+
+        expect(updateItem).toHaveBeenCalledWith(
+          'today/暦',
+          expect.objectContaining({ status: to }),
+        );
       });
     });
   });

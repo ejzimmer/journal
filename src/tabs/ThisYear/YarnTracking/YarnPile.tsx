@@ -1,7 +1,11 @@
 import { RefObject, useEffect, useMemo, useRef, useState } from 'react';
 import { PileBall } from './pileBalls';
 import { BowlWorld, PlacedBall, createSettledBowlWorld } from './bowlWorld';
-import { BALL_SIZE } from './drawPile';
+import { BALL_SIZE, SMALL_SCREEN_BALL_SIZE } from './drawPile';
+import {
+  SMALL_SCREEN_QUERY,
+  useMediaQuery,
+} from '../../../shared/useMediaQuery';
 import { YarnPileCanvas } from './YarnPileCanvas';
 import {
   advanceTween,
@@ -90,10 +94,11 @@ function placeBowlScene(
   balls: PlacedBall[],
   pileTop: number,
   width: number,
+  maxUnitSize: number,
 ) {
   const rimDepth = world.radius * RIM_DEPTH_TO_RADIUS;
   const top = Math.min(pileTop, -rimDepth) - BOWL_MARGIN;
-  const unitSize = Math.min(BALL_SIZE, width / (2 * world.tableHalfWidth));
+  const unitSize = Math.min(maxUnitSize, width / (2 * world.tableHalfWidth));
   const originX = width / 2;
   const originY = -top * unitSize;
 
@@ -122,6 +127,8 @@ type YarnPileProps = { balls: PileBall[] };
 export function YarnPile({ balls }: YarnPileProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const width = useElementWidth(containerRef);
+  const isSmallScreen = useMediaQuery(SMALL_SCREEN_QUERY);
+  const maxUnitSize = isSmallScreen ? SMALL_SCREEN_BALL_SIZE : BALL_SIZE;
   const [world] = useState(() =>
     isReducedMotionPreferred()
       ? createSettledBowlWorld(balls)
@@ -129,8 +136,8 @@ export function YarnPile({ balls }: YarnPileProps) {
   );
   const frame = useAnimatedBalls(world, balls);
   const scene = useMemo(
-    () => placeBowlScene(world, frame.balls, frame.pileTop, width),
-    [world, frame, width],
+    () => placeBowlScene(world, frame.balls, frame.pileTop, width, maxUnitSize),
+    [world, frame, width, maxUnitSize],
   );
 
   return (
