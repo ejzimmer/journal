@@ -1,15 +1,17 @@
 import { Magnitude, Symptom } from './symptoms';
 
-const CLUSTERS: Record<Magnitude, [number, number, number][]> = {
-  1: [[10, 10, 1]],
+const GLYPH_SCALE = 0.5;
+
+const CLUSTERS: Record<Magnitude, [number, number][]> = {
+  1: [[10, 10]],
   2: [
-    [6.5, 11.5, 0.62],
-    [13.5, 8.5, 0.62],
+    [5.5, 10],
+    [14.5, 10],
   ],
   3: [
-    [5, 14, 0.5],
-    [10, 5.5, 0.5],
-    [15, 14, 0.5],
+    [5, 14],
+    [10, 5.5],
+    [15, 14],
   ],
 };
 
@@ -32,11 +34,11 @@ export function SymptomIcon({ symptom, magnitude, width }: SymptomIconProps) {
 
   return (
     <svg viewBox="0 0 20 20" width={width} aria-hidden="true">
-      {CLUSTERS[magnitude].map(([x, y, scale]) => (
+      {CLUSTERS[magnitude].map(([x, y]) => (
         <path
           key={`${x}-${y}`}
           d={symptom.path}
-          transform={`translate(${x - 10 * scale} ${y - 10 * scale}) scale(${scale})`}
+          transform={`translate(${x - 10 * GLYPH_SCALE} ${y - 10 * GLYPH_SCALE}) scale(${GLYPH_SCALE})`}
           {...paint}
         />
       ))}
