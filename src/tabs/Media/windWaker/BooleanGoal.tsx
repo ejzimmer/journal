@@ -1,8 +1,8 @@
 import { ReactElement } from 'react';
 import { EmojiCheckbox } from '../../../shared/controls/EmojiCheckbox';
+import { useTooltipPopover } from '../../../shared/useTooltipPopover';
 
 import './ItemSlot.css';
-import { useTooltipPopover } from '../../../shared/useTooltipPopover';
 
 type BooleanGoalProps = {
   icon: string | ReactElement;

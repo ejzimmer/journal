@@ -96,32 +96,14 @@
   anchor-name: --label-text;
 }
 
-.hovertext {
-  opacity: 0;
-  pointer-events: none;
-  transition:
-    opacity 0.2s,
-    display 0.2s allow-discrete,
-    overlay 0.2s allow-discrete;
+.tooltip.hovertext {
   position-anchor: --label-text;
   position-area: top;
-  inset: auto;
-  margin: 0;
+  margin-inline-start: 0;
   margin-block-end: 8px;
-  border: 0;
-  overflow: visible;
   background: color-mix(in srgb, var(--switch-background) 85%, transparent);
   color: var(--switch-icon-selected);
-  padding: 6px 8px;
   font-size: 0.8em;
   border-radius: 4px;
   white-space: nowrap;
-
-  &:popover-open {
-    opacity: 1;
-
-    @starting-style {
-      opacity: 0;
-    }
-  }
 }

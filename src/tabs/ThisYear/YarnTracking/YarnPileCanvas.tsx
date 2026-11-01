@@ -1,9 +1,9 @@
 import { PointerEvent, useEffect, useMemo, useRef, useState } from 'react';
+import { showPopoverOnMount } from '../../../shared/useTooltipPopover';
 import { PlacedBall } from './bowlWorld';
 import { Bowl, createBallSprites, drawPile } from './drawPile';
 import { getBallDetails } from './yarnBallText';
 import { useYarnStorage } from './YarnStorageContext';
-import { showPopoverOnMount } from '../../../shared/useTooltipPopover';
 
 const EFFECTS_BLEED = 8;
 

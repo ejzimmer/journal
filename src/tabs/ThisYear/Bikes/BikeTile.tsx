@@ -19,7 +19,7 @@ export function BikeTile({ bike, onChange }: BikeTileProps) {
         onChange={(event) => onChange(event.target.checked)}
         label={bike.name}
       />
-      <div className="bike-name" {...tooltipProps}>
+      <div className="tooltip bike-name" {...tooltipProps}>
         {bike.name}
       </div>
     </li>

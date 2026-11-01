@@ -26,7 +26,7 @@ export function WeekBar({ week, lowestBalance, heightScale }: WeekBarProps) {
         aria-label={label}
         {...triggerProps}
       />
-      <div className="hovertext" {...tooltipProps}>
+      <div className="tooltip hovertext" {...tooltipProps}>
         {label}
       </div>
     </div>

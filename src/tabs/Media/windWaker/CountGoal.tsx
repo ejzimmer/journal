@@ -1,8 +1,8 @@
 import { CSSProperties } from 'react';
 import { EditableText } from '../../../shared/controls/EditableText';
+import { useTooltipPopover } from '../../../shared/useTooltipPopover';
 
 import './ItemSlot.css';
-import { useTooltipPopover } from '../../../shared/useTooltipPopover';
 
 type CountGoalProps = {
   icon: string;
@@ -20,7 +20,6 @@ export function CountGoal({
   onChange,
 }: CountGoalProps) {
   const { triggerProps, tooltipProps } = useTooltipPopover();
-
   const progress = `${Math.round((100 * value) / total)}%`;
 
   return (

@@ -1,5 +1,6 @@
-import './ItemSlot.css';
 import { useTooltipPopover } from '../../../shared/useTooltipPopover';
+
+import './ItemSlot.css';
 
 type PipGoalProps = {
   icon: string;

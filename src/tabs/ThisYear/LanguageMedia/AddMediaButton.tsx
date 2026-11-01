@@ -1,14 +1,13 @@
 import { useState } from 'react';
 import { ModalDialog } from '../../../shared/controls/ModalDialog';
+import { useTooltipPopover } from '../../../shared/useTooltipPopover';
 import { AddMediaForm } from './AddMediaForm';
 import { CloudFrame } from './CloudFrame';
 import { SeedlingIcon } from './SeedlingIcon';
-import { useTooltipPopover } from '../../../shared/useTooltipPopover';
 
 export function AddMediaButton() {
-  const { triggerProps, tooltipProps } = useTooltipPopover();
-
   const [isOpen, setIsOpen] = useState(false);
+  const { triggerProps, tooltipProps } = useTooltipPopover();
 
   return (
     <div className="add-media-button tooltip-container">
