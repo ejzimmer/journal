@@ -208,7 +208,7 @@ dialog {
   pointer-events: none;
   opacity: 0;
   transition: opacity 0.2s;
-  z-index: 1;
+  z-index: 3;
   width: max-content;
 }
 

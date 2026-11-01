@@ -42,6 +42,7 @@ ul.bike-grid {
     background: var(--body-colour);
     color: white;
     position: fixed;
+    z-index: 3;
     opacity: 0;
     pointer-events: none;
     transition: opacity 0.2s;

@@ -104,7 +104,7 @@
   position-anchor: --label-text;
   position-area: top;
   margin-block-end: 8px;
-  z-index: 1;
+  z-index: 3;
   background: color-mix(in srgb, var(--switch-background) 85%, transparent);
   color: var(--switch-icon-selected);
   padding: 6px 8px;
