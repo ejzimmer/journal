@@ -18,8 +18,8 @@ export const SYMPTOMS: Symptom[] = [
   {
     id: 'headache',
     label: 'headache',
-    colour: '#e8833a',
-    path: 'M10 1 12 6.5 17.5 4.5 14.5 9.5 19 13 13 13.5 13 19 10 14.5 7 19 7 13.5 1 13 5.5 9.5 2.5 4.5 8 6.5Z',
+    colour: '#2f80ed',
+    path: 'M11 1 4.5 11.5 9 11.5 8 19 15.5 8 10.5 8Z',
   },
   {
     id: 'flow',
@@ -30,7 +30,7 @@ export const SYMPTOMS: Symptom[] = [
   {
     id: 'cramps',
     label: 'cramps',
-    colour: '#2f80ed',
+    colour: '#d1263f',
     path: 'M11 1 4.5 11.5 9 11.5 8 19 15.5 8 10.5 8Z',
   },
   {
@@ -51,8 +51,7 @@ export const SYMPTOMS: Symptom[] = [
     id: 'gut',
     label: 'upset gut',
     colour: '#2e9e5b',
-    path: 'M10 10a1.5 1.5 0 1 1 3 0a3.5 3.5 0 1 1 -7 0a5.5 5.5 0 1 1 11 0a7 7 0 0 1 -7 7',
-    stroked: true,
+    path: 'M11 1 4.5 11.5 9 11.5 8 19 15.5 8 10.5 8Z',
   },
   {
     id: 'tired',
@@ -70,9 +69,8 @@ export const SYMPTOMS: Symptom[] = [
   {
     id: 'throat',
     label: 'sore throat',
-    colour: '#d6409f',
-    path: 'M2 7 5.5 13 9 7 12.5 13 16 7 18 10.5',
-    stroked: true,
+    colour: '#e8833a',
+    path: 'M11 1 4.5 11.5 9 11.5 8 19 15.5 8 10.5 8Z',
   },
   {
     id: 'cough',
