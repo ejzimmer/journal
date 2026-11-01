@@ -1,9 +1,11 @@
 import { useState } from 'react';
 import { PlusIcon } from '../../../shared/icons/Plus';
+import { useTooltipPopover } from '../../../shared/useTooltipPopover';
 import { VolumeNameField } from './VolumeNameField';
 
 export function BookVolumeNames() {
   const [count, setCount] = useState(1);
+  const { triggerProps, tooltipProps } = useTooltipPopover();
 
   return (
     <div className="book-volume-names">
@@ -19,12 +21,13 @@ export function BookVolumeNames() {
         <button
           type="button"
           className="tooltip-anchor"
+          {...triggerProps}
           aria-label="Add another volume"
           onClick={() => setCount((previous) => previous + 1)}
         >
           <PlusIcon width="12px" strokeWidth="2.4" />
         </button>
-        <div className="tooltip" aria-hidden="true">
+        <div className="tooltip" {...tooltipProps} aria-hidden="true">
           Add another volume
         </div>
       </div>

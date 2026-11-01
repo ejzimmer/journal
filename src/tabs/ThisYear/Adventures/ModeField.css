@@ -39,11 +39,6 @@
     margin-inline-start: 0;
     margin-block-end: 16px;
   }
-
-  &:hover .tooltip,
-  &:has(:focus-visible) .tooltip {
-    opacity: 1;
-  }
 }
 
 .mode-option-item {

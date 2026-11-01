@@ -1,4 +1,5 @@
 import './ItemSlot.css';
+import { useTooltipPopover } from '../../../shared/useTooltipPopover';
 
 type PipGoalProps = {
   icon: string;
@@ -15,8 +16,10 @@ export function PipGoal({
   levels,
   onChange,
 }: PipGoalProps) {
+  const { triggerProps, tooltipProps } = useTooltipPopover();
+
   return (
-    <li className="tooltip-container pip-goal">
+    <li className="tooltip-container pip-goal" {...triggerProps}>
       <div
         className={`item-slot tooltip-anchor ${level >= levels ? 'done' : ''}`}
       >
@@ -38,7 +41,9 @@ export function PipGoal({
           );
         })}
       </div>
-      <div className="tooltip">{label}</div>
+      <div className="tooltip" {...tooltipProps}>
+        {label}
+      </div>
     </li>
   );
 }

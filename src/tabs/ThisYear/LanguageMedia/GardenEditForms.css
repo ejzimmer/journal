@@ -11,12 +11,6 @@
     margin-block-end: 4px;
   }
 
-  .tooltip-container:has(.tooltip-anchor:hover, .tooltip-anchor:focus-visible)
-    .tooltip,
-  label:hover .tooltip {
-    opacity: 1;
-  }
-
   .add-media-name {
     margin-block-end: 4px;
   }

@@ -199,17 +199,28 @@ dialog {
   padding: 6px 8px;
   border-radius: 3px;
   font-size: 14px;
-  /* position-area is clamped to the containing block, so a positioned
-     ancestor hugging the anchor would push the tooltip back over it. */
-  position: fixed;
   position-anchor: --tooltip;
   position-area: right;
+  inset: auto;
+  margin: 0;
   margin-inline-start: 4px;
+  border: 0;
+  overflow: visible;
   pointer-events: none;
   opacity: 0;
-  transition: opacity 0.2s;
-  z-index: 3;
+  transition:
+    opacity 0.2s,
+    display 0.2s allow-discrete,
+    overlay 0.2s allow-discrete;
   width: max-content;
+
+  &:popover-open {
+    opacity: 1;
+
+    @starting-style {
+      opacity: 0;
+    }
+  }
 }
 
 .pointer-tooltip {
@@ -221,6 +232,6 @@ dialog {
   }
 
   .tooltip {
-    opacity: 1;
+    transition: none;
   }
 }

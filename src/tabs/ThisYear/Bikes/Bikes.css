@@ -38,23 +38,32 @@ ul.bike-grid {
     filter: grayscale(0%);
   }
 
-  label + div {
+  .bike-name {
     background: var(--body-colour);
     color: white;
-    position: fixed;
-    z-index: 3;
+    position-anchor: --bike-name;
+    position-area: top right;
+    inset: auto;
+    margin: 0;
+    border: 0;
+    overflow: visible;
     opacity: 0;
     pointer-events: none;
-    transition: opacity 0.2s;
+    transition:
+      opacity 0.2s,
+      display 0.2s allow-discrete,
+      overlay 0.2s allow-discrete;
     padding: 6px 8px;
     font-size: 0.8em;
     border-radius: 4px;
-  }
 
-  label:hover + div {
-    position-anchor: --bike-name;
-    position-area: top right;
-    opacity: 0.8;
+    &:popover-open {
+      opacity: 0.8;
+
+      @starting-style {
+        opacity: 0;
+      }
+    }
   }
 }
 

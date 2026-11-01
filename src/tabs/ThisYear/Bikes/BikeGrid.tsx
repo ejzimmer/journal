@@ -1,5 +1,4 @@
-import { EmojiCheckbox } from '../../../shared/controls/EmojiCheckbox';
-import { bikePictures } from './BikePictures/bikePictures';
+import { BikeTile } from './BikeTile';
 import { Bike } from './types';
 
 type BikeGridProps = {
@@ -11,15 +10,11 @@ export function BikeGrid({ bikes, onBikeChange }: BikeGridProps) {
   return (
     <ul className="bike-grid">
       {bikes.map((bike, index) => (
-        <li key={bike.name}>
-          <EmojiCheckbox
-            emoji={bikePictures[bike.name] ?? bike.icon}
-            isChecked={bike.isDone}
-            onChange={(event) => onBikeChange(index, event.target.checked)}
-            label={bike.name}
-          />
-          <div>{bike.name}</div>
-        </li>
+        <BikeTile
+          key={bike.name}
+          bike={bike}
+          onChange={(isDone) => onBikeChange(index, isDone)}
+        />
       ))}
     </ul>
   );

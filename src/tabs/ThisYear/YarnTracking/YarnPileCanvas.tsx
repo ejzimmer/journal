@@ -3,6 +3,7 @@ import { PlacedBall } from './bowlWorld';
 import { Bowl, createBallSprites, drawPile } from './drawPile';
 import { getBallDetails } from './yarnBallText';
 import { useYarnStorage } from './YarnStorageContext';
+import { showPopoverOnMount } from '../../../shared/useTooltipPopover';
 
 const EFFECTS_BLEED = 8;
 
@@ -72,7 +73,12 @@ export function YarnPileCanvas({
               height: hoveredBall.size,
             }}
           />
-          <div className="tooltip" role="tooltip">
+          <div
+            ref={showPopoverOnMount}
+            className="tooltip"
+            popover="manual"
+            role="tooltip"
+          >
             {getBallDetails(
               hoveredBall.ball,
               getBalance(hoveredBall.ball.yarnType),

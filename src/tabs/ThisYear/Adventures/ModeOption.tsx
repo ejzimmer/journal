@@ -1,5 +1,6 @@
 import { DeleteWithConfirmation } from '../../../shared/controls/DeleteWithConfirmation';
 import { PencilIcon } from '../../../shared/icons/Pencil';
+import { useTooltipPopover } from '../../../shared/useTooltipPopover';
 import { AdventureMode } from './types';
 
 type ModeOptionProps = {
@@ -17,12 +18,14 @@ export function ModeOption({
   onEdit,
   onDelete,
 }: ModeOptionProps) {
+  const { triggerProps, tooltipProps } = useTooltipPopover<HTMLSpanElement>();
+
   return (
     <div
       className="mode-option-item tooltip-container"
       style={{ '--mode-colour': mode.colour } as React.CSSProperties}
     >
-      <label className="mode-option tooltip-anchor">
+      <label className="mode-option tooltip-anchor" {...triggerProps}>
         <input
           type="radio"
           name="mode"
@@ -31,7 +34,7 @@ export function ModeOption({
           onChange={onSelect}
         />
         <span aria-hidden="true">{mode.emoji}</span>
-        <span className="tooltip" aria-hidden="true">
+        <span className="tooltip" {...tooltipProps} aria-hidden="true">
           {mode.name}
         </span>
       </label>

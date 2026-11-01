@@ -1,3 +1,5 @@
+import { useTooltipPopover } from '../../../shared/useTooltipPopover';
+
 type VolumeNameFieldProps = {
   name: string;
   label: string;
@@ -13,12 +15,18 @@ export function VolumeNameField({
   isRequired,
   isFocused,
 }: VolumeNameFieldProps) {
+  const { triggerProps, tooltipProps } = useTooltipPopover();
+
   return (
     <div className="volume-name-field tooltip-container">
-      <span className="count-icon tooltip-anchor" aria-hidden="true">
+      <span
+        className="count-icon tooltip-anchor"
+        {...triggerProps}
+        aria-hidden="true"
+      >
         📕
       </span>
-      <div className="tooltip" aria-hidden="true">
+      <div className="tooltip" {...tooltipProps} aria-hidden="true">
         {label}
       </div>
       <input

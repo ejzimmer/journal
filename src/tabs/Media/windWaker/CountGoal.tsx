@@ -2,6 +2,7 @@ import { CSSProperties } from 'react';
 import { EditableText } from '../../../shared/controls/EditableText';
 
 import './ItemSlot.css';
+import { useTooltipPopover } from '../../../shared/useTooltipPopover';
 
 type CountGoalProps = {
   icon: string;
@@ -18,10 +19,12 @@ export function CountGoal({
   total,
   onChange,
 }: CountGoalProps) {
+  const { triggerProps, tooltipProps } = useTooltipPopover();
+
   const progress = `${Math.round((100 * value) / total)}%`;
 
   return (
-    <li className="tooltip-container">
+    <li className="tooltip-container" {...triggerProps}>
       <div
         className={`item-slot ring tooltip-anchor ${value >= total ? 'done' : ''}`}
         style={{ '--progress': progress } as CSSProperties}
@@ -40,7 +43,9 @@ export function CountGoal({
           }}
         />
       </div>
-      <div className="tooltip">{label}</div>
+      <div className="tooltip" {...tooltipProps}>
+        {label}
+      </div>
     </li>
   );
 }

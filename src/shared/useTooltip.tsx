@@ -1,4 +1,5 @@
 import { PointerEvent, useState } from 'react';
+import { showPopoverOnMount } from './useTooltipPopover';
 
 type TooltipState = { text: string; rect: DOMRect };
 
@@ -22,7 +23,12 @@ export function useTooltip() {
           height: state.rect.height,
         }}
       />
-      <div className="tooltip" role="tooltip">
+      <div
+        ref={showPopoverOnMount}
+        className="tooltip"
+        popover="manual"
+        role="tooltip"
+      >
         {state.text}
       </div>
     </div>
