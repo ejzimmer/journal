@@ -155,66 +155,85 @@ describe('Calories', () => {
   });
 
   describe('symptom tracking', () => {
-    const dailyData = {
-      '2026-01-03': {
-        id: '2026-01-03',
-        consumed: 1500,
-        expended: 2000,
-        trackers: ['flow-2'],
-      },
-    };
+    describe('when a day has a symptom logged', () => {
+      const dailyData = {
+        '2026-01-03': {
+          id: '2026-01-03',
+          consumed: 1500,
+          expended: 2000,
+          trackers: ['flow-2'],
+        },
+      };
 
-    it('shows the symptom icons for a day that has symptoms', async () => {
-      const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
-      renderWithHealthStorage(<Calories />, { days: dailyData });
+      describe('and the user switches to the day view', () => {
+        it("shows that symptom's icon at its level on the day", async () => {
+          const user = userEvent.setup({
+            advanceTimers: jest.advanceTimersByTime,
+          });
+          renderWithHealthStorage(<Calories />, { days: dailyData });
 
-      await user.click(screen.getByRole('radio', { name: 'by day' }));
+          await user.click(screen.getByRole('radio', { name: 'by day' }));
 
-      expect(
-        screen.getByRole('img', { name: 'period flow 2' }),
-      ).toBeInTheDocument();
-    });
-
-    describe('in the calorie form', () => {
-      it('marks the logged level of each symptom as pressed', async () => {
-        const user = userEvent.setup({
-          advanceTimers: jest.advanceTimersByTime,
+          expect(
+            screen.getByRole('img', { name: 'period flow 2' }),
+          ).toBeInTheDocument();
         });
-        renderWithHealthStorage(<Calories />, { days: dailyData });
-
-        await user.click(screen.getByRole('radio', { name: 'by day' }));
-        await user.click(screen.getByRole('button', { name: 'update 3 Jan' }));
-        await user.click(screen.getByRole('button', { name: 'symptoms' }));
-
-        expect(
-          screen.getByRole('button', { name: 'period flow 2' }),
-        ).toHaveAttribute('aria-pressed', 'true');
-        expect(
-          screen.getByRole('button', { name: 'period flow 3' }),
-        ).toHaveAttribute('aria-pressed', 'false');
       });
 
-      it('saves the symptom levels chosen, clearing a level that is clicked again', async () => {
-        const user = userEvent.setup({
-          advanceTimers: jest.advanceTimersByTime,
+      describe("and the user opens the symptom picker in the day's form", () => {
+        it('shows only the logged level as pressed', async () => {
+          const user = userEvent.setup({
+            advanceTimers: jest.advanceTimersByTime,
+          });
+          renderWithHealthStorage(<Calories />, { days: dailyData });
+
+          await user.click(screen.getByRole('radio', { name: 'by day' }));
+          await user.click(
+            screen.getByRole('button', { name: 'update 3 Jan' }),
+          );
+          await user.click(screen.getByRole('button', { name: 'symptoms' }));
+
+          expect(
+            screen.getByRole('button', { name: 'period flow 2' }),
+          ).toHaveAttribute('aria-pressed', 'true');
+          expect(
+            screen.getByRole('button', { name: 'period flow 3' }),
+          ).toHaveAttribute('aria-pressed', 'false');
         });
-        const updateDay = jest.fn();
-        renderWithHealthStorage(<Calories />, { days: dailyData, updateDay });
 
-        await user.click(screen.getByRole('radio', { name: 'by day' }));
-        await user.click(screen.getByRole('button', { name: 'update 3 Jan' }));
-        await user.click(screen.getByRole('button', { name: 'symptoms' }));
-        await user.click(screen.getByRole('button', { name: 'period flow 2' }));
-        await user.click(screen.getByRole('button', { name: 'headache 3' }));
-        await user.click(screen.getByRole('textbox', { name: 'In' }));
-        await user.keyboard('{Enter}');
+        describe('then clicks the logged level, picks a level for another symptom and saves', () => {
+          it('saves the day with only the newly picked symptom', async () => {
+            const user = userEvent.setup({
+              advanceTimers: jest.advanceTimersByTime,
+            });
+            const updateDay = jest.fn();
+            renderWithHealthStorage(<Calories />, {
+              days: dailyData,
+              updateDay,
+            });
 
-        expect(updateDay).toHaveBeenCalledWith(
-          expect.objectContaining({
-            id: '2026-01-03',
-            trackers: ['headache-3'],
-          }),
-        );
+            await user.click(screen.getByRole('radio', { name: 'by day' }));
+            await user.click(
+              screen.getByRole('button', { name: 'update 3 Jan' }),
+            );
+            await user.click(screen.getByRole('button', { name: 'symptoms' }));
+            await user.click(
+              screen.getByRole('button', { name: 'period flow 2' }),
+            );
+            await user.click(
+              screen.getByRole('button', { name: 'headache 3' }),
+            );
+            await user.click(screen.getByRole('textbox', { name: 'In' }));
+            await user.keyboard('{Enter}');
+
+            expect(updateDay).toHaveBeenCalledWith(
+              expect.objectContaining({
+                id: '2026-01-03',
+                trackers: ['headache-3'],
+              }),
+            );
+          });
+        });
       });
     });
   });
