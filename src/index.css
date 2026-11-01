@@ -185,12 +185,10 @@ dialog {
   color: var(--body-colour);
 }
 
-.tooltip-container {
-  anchor-scope: --tooltip;
-}
-
 .tooltip-anchor {
   anchor-name: --tooltip;
+  anchor-scope: --tooltip;
+  display: inline-flex;
 }
 
 .tooltip {
@@ -225,11 +223,7 @@ dialog {
 
 .pointer-tooltip {
   position: fixed;
-
-  .tooltip-anchor {
-    position: fixed;
-    pointer-events: none;
-  }
+  pointer-events: none;
 
   .tooltip {
     transition: none;

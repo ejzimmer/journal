@@ -1,7 +1,7 @@
 import { CSSProperties, useState } from 'react';
 import { MediaTypeIcon } from './MediaTypeIcon';
 import { MediaType } from './types';
-import { useTooltipPopover } from '../../../shared/useTooltipPopover';
+import { Tooltip } from '../../../shared/controls/Tooltip';
 
 type UnderstoodTileProps = {
   mediaType: MediaType;
@@ -12,20 +12,13 @@ export function UnderstoodTile({
   mediaType,
   defaultValue,
 }: UnderstoodTileProps) {
-  const { triggerProps, tooltipProps } = useTooltipPopover();
-
   const [value, setValue] = useState(defaultValue);
 
   return (
-    <div
-      className={`progress-tile understood-tile ${mediaType} tooltip-container`}
-    >
-      <span className="flower-icon tooltip-anchor" {...triggerProps}>
+    <div className={`progress-tile understood-tile ${mediaType}`}>
+      <Tooltip className="flower-icon" text="Understood">
         <MediaTypeIcon type={mediaType} width="44px" />
-      </span>
-      <div className="tooltip" {...tooltipProps} aria-hidden="true">
-        Understood
-      </div>
+      </Tooltip>
       <input
         type="range"
         name={value === undefined ? undefined : 'understood'}

@@ -1,6 +1,6 @@
 import { ReactElement } from 'react';
 import { EmojiCheckbox } from '../../../shared/controls/EmojiCheckbox';
-import { useTooltipPopover } from '../../../shared/useTooltipPopover';
+import { Tooltip } from '../../../shared/controls/Tooltip';
 
 import './ItemSlot.css';
 
@@ -17,21 +17,19 @@ export function BooleanGoal({
   label,
   onChange,
 }: BooleanGoalProps) {
-  const { triggerProps, tooltipProps } = useTooltipPopover();
-
   return (
-    <li className="tooltip-container" {...triggerProps}>
-      <div className={`item-slot tooltip-anchor ${isChecked ? 'done' : 'off'}`}>
+    <li>
+      <Tooltip
+        className={`item-slot ${isChecked ? 'done' : 'off'}`}
+        text={label}
+      >
         <EmojiCheckbox
           emoji={typeof icon === 'string' ? <img src={icon} alt="" /> : icon}
           isChecked={isChecked}
           label={label}
           onChange={() => onChange(!isChecked)}
         />
-      </div>
-      <div className="tooltip" {...tooltipProps}>
-        {label}
-      </div>
+      </Tooltip>
     </li>
   );
 }

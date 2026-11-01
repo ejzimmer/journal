@@ -1,5 +1,5 @@
 import { ReactNode } from 'react';
-import { useTooltipPopover } from '../../../shared/useTooltipPopover';
+import { Tooltip } from '../../../shared/controls/Tooltip';
 
 type CountFieldProps = {
   name: string;
@@ -16,20 +16,11 @@ export function CountField({
   defaultValue,
   isRequired,
 }: CountFieldProps) {
-  const { triggerProps, tooltipProps } = useTooltipPopover();
-
   return (
-    <div className="count-field tooltip-container">
-      <span
-        className="count-icon tooltip-anchor"
-        {...triggerProps}
-        aria-hidden="true"
-      >
+    <div className="count-field">
+      <Tooltip className="count-icon" text={label} aria-hidden="true">
         {icon}
-      </span>
-      <div className="tooltip" {...tooltipProps} aria-hidden="true">
-        {label}
-      </div>
+      </Tooltip>
       <input
         type="number"
         name={name}

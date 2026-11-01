@@ -33,16 +33,16 @@
     outline: 2px solid black;
     outline-offset: 2px;
   }
+}
+
+.mode-option-item {
+  position: relative;
 
   .tooltip {
     position-area: top;
     margin-inline-start: 0;
     margin-block-end: 16px;
   }
-}
-
-.mode-option-item {
-  position: relative;
 
   .mode-option-action {
     position: absolute;

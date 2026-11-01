@@ -1,8 +1,15 @@
-import { useLayoutEffect, useMemo, useRef } from 'react';
+import { CSSProperties, useLayoutEffect, useMemo, useRef } from 'react';
+
+import { Tooltip } from '../../../shared/controls/Tooltip';
 
 import './WeeklyCalorieTracker.css';
-import { Balance, STARTING_BALANCE, getWeeklyBalance } from '../utils';
-import { WeekBar } from './WeekBar';
+import {
+  Balance,
+  STARTING_BALANCE,
+  getWeekClass,
+  getWeekLowestShare,
+  getWeeklyBalance,
+} from '../utils';
 
 type WeeklyCalorieTrackerProps = {
   days: Balance[];
@@ -27,11 +34,21 @@ export function WeeklyCalorieTracker({ days }: WeeklyCalorieTrackerProps) {
   return (
     <div ref={chartRef} className="weekly-calories">
       {weeklyBalances.map((balance, index) => (
-        <WeekBar
+        <Tooltip
           key={index}
-          week={balance}
-          lowestBalance={lowestBalance}
-          heightScale={heightScale}
+          text={`${balance.day} ${balance.month}: ${balance.balance.toLocaleString()}`}
+          className={getWeekClass({
+            balance: balance.balance,
+            lowestBalance,
+          })}
+          style={
+            {
+              height: (balance.balance / heightScale) * 100 + '%',
+              '--lowest-share': `${getWeekLowestShare({ balance: balance.balance, lowestBalance }) * 100}%`,
+            } as CSSProperties
+          }
+          role="img"
+          aria-label={`${balance.day} ${balance.month}: ${balance.balance.toLocaleString()}`}
         />
       ))}
     </div>

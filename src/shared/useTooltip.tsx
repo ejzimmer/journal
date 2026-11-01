@@ -1,5 +1,5 @@
 import { PointerEvent, useState } from 'react';
-import { showPopoverOnMount } from './useTooltipPopover';
+import { PointerTooltip } from './controls/PointerTooltip';
 
 type TooltipState = { text: string; rect: DOMRect };
 
@@ -13,25 +13,7 @@ export function useTooltip() {
   });
 
   const tooltip = state && (
-    <div className="tooltip-container pointer-tooltip">
-      <div
-        className="tooltip-anchor"
-        style={{
-          left: state.rect.left,
-          top: state.rect.top,
-          width: state.rect.width,
-          height: state.rect.height,
-        }}
-      />
-      <div
-        ref={showPopoverOnMount}
-        className="tooltip"
-        popover="manual"
-        role="tooltip"
-      >
-        {state.text}
-      </div>
-    </div>
+    <PointerTooltip text={state.text} rect={state.rect} />
   );
 
   return { createTooltipHandlers, tooltip };

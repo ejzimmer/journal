@@ -677,11 +677,19 @@
   }
 }
 
-.tiny-cloud {
-  position: fixed;
-  z-index: 1;
+.tiny-cloud-popover {
+  inset: auto;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  overflow: visible;
   translate: -50% calc(-100% - 12px);
   pointer-events: none;
+}
+
+.tiny-cloud {
+  display: block;
   overflow: visible;
   filter: blur(0) drop-shadow(1px 1px 2px hsl(0 0% 0% / 0.15));
   transform-origin: bottom center;

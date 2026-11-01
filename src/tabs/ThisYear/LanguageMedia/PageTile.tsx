@@ -1,22 +1,13 @@
-import { useTooltipPopover } from '../../../shared/useTooltipPopover';
+import { Tooltip } from '../../../shared/controls/Tooltip';
 
 type PageTileProps = { page?: number; pages?: number };
 
 export function PageTile({ page, pages }: PageTileProps) {
-  const { triggerProps, tooltipProps } = useTooltipPopover();
-
   return (
-    <div className="progress-tile tooltip-container">
-      <span
-        className="page-icon tooltip-anchor"
-        {...triggerProps}
-        aria-hidden="true"
-      >
+    <div className="progress-tile">
+      <Tooltip className="page-icon" text="Page" aria-hidden="true">
         📖
-      </span>
-      <div className="tooltip" {...tooltipProps} aria-hidden="true">
-        Page
-      </div>
+      </Tooltip>
       <input
         type="number"
         name="page"

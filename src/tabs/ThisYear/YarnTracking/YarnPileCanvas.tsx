@@ -1,5 +1,5 @@
 import { PointerEvent, useEffect, useMemo, useRef, useState } from 'react';
-import { showPopoverOnMount } from '../../../shared/useTooltipPopover';
+import { PointerTooltip } from '../../../shared/controls/PointerTooltip';
 import { PlacedBall } from './bowlWorld';
 import { Bowl, createBallSprites, drawPile } from './drawPile';
 import { getBallDetails } from './yarnBallText';
@@ -63,28 +63,18 @@ export function YarnPileCanvas({
         onPointerLeave={() => setHoveredBall(undefined)}
       />
       {hoveredBall && (
-        <div className="tooltip-container">
-          <div
-            className="tooltip-anchor"
-            style={{
-              left: hoveredBall.x - hoveredBall.size / 2,
-              top: hoveredBall.y - hoveredBall.size / 2,
-              width: hoveredBall.size,
-              height: hoveredBall.size,
-            }}
-          />
-          <div
-            ref={showPopoverOnMount}
-            className="tooltip"
-            popover="manual"
-            role="tooltip"
-          >
-            {getBallDetails(
-              hoveredBall.ball,
-              getBalance(hoveredBall.ball.yarnType),
-            )}
-          </div>
-        </div>
+        <PointerTooltip
+          text={getBallDetails(
+            hoveredBall.ball,
+            getBalance(hoveredBall.ball.yarnType),
+          )}
+          rect={{
+            left: hoveredBall.x - hoveredBall.size / 2,
+            top: hoveredBall.y - hoveredBall.size / 2,
+            width: hoveredBall.size,
+            height: hoveredBall.size,
+          }}
+        />
       )}
     </>
   );

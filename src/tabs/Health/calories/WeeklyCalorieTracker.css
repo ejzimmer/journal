@@ -18,9 +18,15 @@
   border-block-end: 2px solid var(--axis);
   box-sizing: content-box;
 
-  .week-container {
-    anchor-scope: --label-text;
-    display: contents;
+  .tooltip {
+    position-area: top;
+    margin-inline-start: 0;
+    margin-block-end: 8px;
+    background: color-mix(in srgb, var(--switch-background) 85%, transparent);
+    color: var(--switch-icon-selected);
+    font-size: 0.8em;
+    border-radius: 4px;
+    white-space: nowrap;
   }
 
   .week {

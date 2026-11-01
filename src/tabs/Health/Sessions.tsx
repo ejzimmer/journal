@@ -1,6 +1,6 @@
 import { Ref } from 'react';
+import { Tooltip } from '../../shared/controls/Tooltip';
 import { ClassBlock, ExerciseClass } from '../../shared/types';
-import { Session } from './Session';
 
 type SessionsProps = {
   exerciseClass: ExerciseClass;
@@ -23,22 +23,24 @@ export function Sessions({
   return (
     <div className="sessions">
       {Array.from({ length: block.total }, (_, index) => (
-        <Session
-          key={index}
-          name={getSessionName(index)}
-          label={`${exerciseClass.description}: ${getSessionName(index)}`}
-          isChecked={completed.includes(index)}
-          inputRef={index === 0 ? firstSessionRef : undefined}
-          onToggle={() =>
-            onChange({
-              ...exerciseClass,
-              blocks: exerciseClass.blocks.with(
-                blockIndex,
-                toggleSession(block, index),
-              ),
-            })
-          }
-        />
+        <Tooltip key={index} text={getSessionName(index)}>
+          <input
+            ref={index === 0 ? firstSessionRef : undefined}
+            type="checkbox"
+            className="session"
+            aria-label={`${exerciseClass.description}: ${getSessionName(index)}`}
+            checked={completed.includes(index)}
+            onChange={() =>
+              onChange({
+                ...exerciseClass,
+                blocks: exerciseClass.blocks.with(
+                  blockIndex,
+                  toggleSession(block, index),
+                ),
+              })
+            }
+          />
+        </Tooltip>
       ))}
     </div>
   );

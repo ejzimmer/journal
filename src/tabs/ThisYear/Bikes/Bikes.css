@@ -7,7 +7,6 @@ ul.bike-grid {
   padding: 0;
 
   li {
-    anchor-scope: --bike-name;
     position: relative;
     display: flex;
     gap: 12px;
@@ -16,7 +15,6 @@ ul.bike-grid {
   }
 
   label {
-    anchor-name: --bike-name;
     width: 48px;
     padding: 0;
     color: var(--body-colour);
@@ -38,8 +36,7 @@ ul.bike-grid {
     filter: grayscale(0%);
   }
 
-  .tooltip.bike-name {
-    position-anchor: --bike-name;
+  .tooltip {
     position-area: top right;
     margin-inline-start: 0;
     font-size: 0.8em;

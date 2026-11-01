@@ -11,13 +11,8 @@
     display: block;
   }
 
-  .tooltip-anchor {
+  .pointer-tooltip {
     position: absolute;
-    pointer-events: none;
-  }
-
-  .tooltip {
-    transition: none;
   }
 }
 

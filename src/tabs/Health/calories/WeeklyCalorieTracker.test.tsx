@@ -85,7 +85,7 @@ describe('WeeklyCalorieTracker', () => {
       it('shows it as the lightest green', () => {
         const [bottom, top] = renderWeeks([19000, 20000, 15000]);
         [bottom, top].forEach((week) => {
-          expect(week).toHaveClass('week hovertext-anchor', { exact: true });
+          expect(week).toHaveClass('week tooltip-anchor', { exact: true });
         });
       });
     });

@@ -1,5 +1,5 @@
 import { ReactNode } from 'react';
-import { useTooltipPopover } from '../../../shared/useTooltipPopover';
+import { Tooltip } from '../../../shared/controls/Tooltip';
 
 type CountTileProps = {
   name: string;
@@ -18,22 +18,18 @@ export function CountTile({
   count,
   onAdd,
 }: CountTileProps) {
-  const { triggerProps, tooltipProps } = useTooltipPopover();
-
   return (
-    <div className="progress-tile tooltip-container">
-      <button
-        type="button"
-        className="count-button tooltip-anchor"
-        {...triggerProps}
-        aria-label={addLabel}
-        onClick={onAdd}
-      >
-        {icon}
-      </button>
-      <div className="tooltip" {...tooltipProps} aria-hidden="true">
-        {label}
-      </div>
+    <div className="progress-tile">
+      <Tooltip text={label}>
+        <button
+          type="button"
+          className="count-button"
+          aria-label={addLabel}
+          onClick={onAdd}
+        >
+          {icon}
+        </button>
+      </Tooltip>
       <input
         key={count}
         type="number"

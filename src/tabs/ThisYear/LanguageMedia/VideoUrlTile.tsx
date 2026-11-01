@@ -1,4 +1,4 @@
-import { useTooltipPopover } from '../../../shared/useTooltipPopover';
+import { Tooltip } from '../../../shared/controls/Tooltip';
 
 type VideoUrlTileProps = {
   name?: string;
@@ -9,20 +9,11 @@ export function VideoUrlTile({
   name = 'url',
   defaultValue,
 }: VideoUrlTileProps) {
-  const { triggerProps, tooltipProps } = useTooltipPopover();
-
   return (
-    <div className="progress-tile url-tile tooltip-container">
-      <span
-        className="page-icon tooltip-anchor"
-        {...triggerProps}
-        aria-hidden="true"
-      >
+    <div className="progress-tile url-tile">
+      <Tooltip className="page-icon" text="URL" aria-hidden="true">
         🔗
-      </span>
-      <div className="tooltip" {...tooltipProps} aria-hidden="true">
-        URL
-      </div>
+      </Tooltip>
       <input
         type="url"
         name={name}

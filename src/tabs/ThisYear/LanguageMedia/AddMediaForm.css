@@ -53,7 +53,7 @@
       &:has(input:not(:checked)) {
         box-shadow: none;
 
-        .tooltip-anchor {
+        .tooltip-option {
           filter: grayscale(1) opacity(0.45);
         }
       }
@@ -66,7 +66,7 @@
   }
 }
 
-.tooltip-option .tooltip-anchor {
+.tooltip-option {
   display: grid;
   place-items: center;
   transition: filter 0.2s;
