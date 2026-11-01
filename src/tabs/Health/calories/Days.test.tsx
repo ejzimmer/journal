@@ -59,7 +59,7 @@ describe('Days', () => {
     });
 
     describe('given a day logged with the old period trackers', () => {
-      it('shows them as period flow and period pain levels', () => {
+      it('shows them as period flow and cramps levels', () => {
         const days: Balance[] = mockDays.map((day) =>
           day.day === 5 ? { ...day, trackers: ['🔴', '🥚'] } : day,
         );
@@ -69,7 +69,7 @@ describe('Days', () => {
           screen.getByRole('img', { name: 'period flow 2' }),
         ).toBeInTheDocument();
         expect(
-          screen.getByRole('img', { name: 'period pain 2' }),
+          screen.getByRole('img', { name: 'cramps 2' }),
         ).toBeInTheDocument();
       });
     });
@@ -82,8 +82,8 @@ describe('Days', () => {
                 ...day,
                 trackers: [
                   'flow-1',
-                  'pain-1',
-                  'tummy-1',
+                  'cramps-1',
+                  'gut-1',
                   'headache-1',
                   'tired-1',
                 ],
@@ -97,10 +97,10 @@ describe('Days', () => {
             .getAllByRole('img')
             .map((icon) => icon.getAttribute('aria-label')),
         ).toEqual([
-          'period flow 1',
-          'period pain 1',
-          'sore tummy 1',
           'headache 1',
+          'period flow 1',
+          'cramps 1',
+          'upset gut 1',
           'tired 1',
         ]);
       });
