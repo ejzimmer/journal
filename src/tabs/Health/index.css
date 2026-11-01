@@ -97,7 +97,7 @@
 }
 
 .hovertext {
-  position: absolute;
+  position: fixed;
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.2s;

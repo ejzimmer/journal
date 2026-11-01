@@ -19,10 +19,10 @@ export function ModeOption({
 }: ModeOptionProps) {
   return (
     <div
-      className="mode-option-item"
+      className="mode-option-item tooltip-container"
       style={{ '--mode-colour': mode.colour } as React.CSSProperties}
     >
-      <label className="mode-option tooltip-container">
+      <label className="mode-option tooltip-anchor">
         <input
           type="radio"
           name="mode"
@@ -30,9 +30,7 @@ export function ModeOption({
           checked={isSelected}
           onChange={onSelect}
         />
-        <span className="tooltip-anchor" aria-hidden="true">
-          {mode.emoji}
-        </span>
+        <span aria-hidden="true">{mode.emoji}</span>
         <span className="tooltip" aria-hidden="true">
           {mode.name}
         </span>

@@ -37,7 +37,7 @@
   .tooltip {
     position-area: top;
     margin-inline-start: 0;
-    margin-block-end: 6px;
+    margin-block-end: 16px;
   }
 
   &:hover .tooltip,

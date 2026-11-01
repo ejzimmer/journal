@@ -199,7 +199,9 @@ dialog {
   padding: 6px 8px;
   border-radius: 3px;
   font-size: 14px;
-  position: absolute;
+  /* position-area is clamped to the containing block, so a positioned
+     ancestor hugging the anchor would push the tooltip back over it. */
+  position: fixed;
   position-anchor: --tooltip;
   position-area: right;
   margin-inline-start: 4px;
@@ -219,7 +221,6 @@ dialog {
   }
 
   .tooltip {
-    position: fixed;
     opacity: 1;
   }
 }
