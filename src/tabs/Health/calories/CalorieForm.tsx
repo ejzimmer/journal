@@ -1,7 +1,7 @@
 import { FormEvent, useEffect, useId, useRef, useState } from 'react';
 import { FormControl } from '../../../shared/controls/FormControl';
 import { XIcon } from '../../../shared/icons/X';
-import { PeriodCheckboxes } from './PeriodCheckboxes';
+import { SymptomPicker } from './SymptomPicker';
 
 type CalorieFormProps = {
   date: { day: number; month: string };
@@ -94,7 +94,7 @@ export function CalorieForm({
           defaultValue={`${expended ?? ''}`}
           size={4}
         />
-        <PeriodCheckboxes trackers={trackers} onChange={setTrackers} />
+        <SymptomPicker trackers={trackers} onChange={setTrackers} />
         <button type="submit" />
       </form>
     </div>

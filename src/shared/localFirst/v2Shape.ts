@@ -2,7 +2,7 @@ import {
   HEAVY_FLOW,
   LIGHT_FLOW,
   OVARY_PAIN,
-} from '../../tabs/Health/calories/PeriodIcons';
+} from '../../tabs/Health/calories/symptoms';
 import { WORK_KEY } from '../../tabs/Work/types';
 import { CLASSES_PATH, DAILY_PATH, WEEKLY_KEY } from '../types';
 import { getAtPath, isPlainTree, Tree } from './pathTree';

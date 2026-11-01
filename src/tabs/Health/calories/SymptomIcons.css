@@ -1,0 +1,16 @@
+.symptom-icons {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  pointer-events: none;
+
+  .symptom-icon-row {
+    display: flex;
+    gap: 2px;
+  }
+
+  span {
+    display: flex;
+  }
+}
