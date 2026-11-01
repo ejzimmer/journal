@@ -37,8 +37,7 @@ export const SYMPTOMS: Symptom[] = [
     id: 'loose',
     label: 'loose stool',
     colour: '#8a5a2b',
-    path: 'M2.5 7.5C5 5 7 5 10 7.5S15 10 17.5 7.5M2.5 13.5C5 11 7 11 10 13.5S15 16 17.5 13.5',
-    stroked: true,
+    path: 'M10 1.7C10 1.7 4.5 9.4 4.5 12.8A5.5 5.5 0 0 0 10 18.3A5.5 5.5 0 0 0 15.5 12.8C15.5 9.4 10 1.7 10 1.7Z',
   },
   {
     id: 'gas',
@@ -71,6 +70,12 @@ export const SYMPTOMS: Symptom[] = [
     label: 'sore throat',
     colour: '#e8833a',
     path: 'M11 1 4.5 11.5 9 11.5 8 19 15.5 8 10.5 8Z',
+  },
+  {
+    id: 'nose',
+    label: 'blocked or runny nose',
+    colour: '#e8833a',
+    path: 'M10 1.7C10 1.7 4.5 9.4 4.5 12.8A5.5 5.5 0 0 0 10 18.3A5.5 5.5 0 0 0 15.5 12.8C15.5 9.4 10 1.7 10 1.7Z',
   },
   {
     id: 'cough',
