@@ -1,5 +1,7 @@
 .wanikani {
   display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
   align-items: center;
   gap: 16px;
 
@@ -80,6 +82,10 @@
     row-gap: 3px;
     column-gap: 4px;
     padding-inline-start: 8px;
+
+    @media (width <= 600px) {
+      grid-template-columns: repeat(5, auto);
+    }
   }
 
   .level-gem-cluster {

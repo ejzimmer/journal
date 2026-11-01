@@ -1,3 +1,15 @@
 .yarn-year-tabs [role='tablist'] {
   padding-inline: 60px;
 }
+
+.yarn-year {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 24px;
+  padding: 60px;
+
+  @media (width <= 600px) {
+    padding-inline: 0;
+  }
+}

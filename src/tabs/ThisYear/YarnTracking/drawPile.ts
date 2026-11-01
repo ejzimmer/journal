@@ -7,6 +7,8 @@ import {
 } from '../../../shared/icons/drawBallOfYarn';
 
 export const BALL_SIZE = 48;
+export const SMALL_SCREEN_BALL_SIZE = 72;
+const SPRITE_SIZE = Math.max(BALL_SIZE, SMALL_SCREEN_BALL_SIZE);
 const ICON_SIZE = 20;
 const GLASS = {
   tint: 'rgb(190 215 235 / 0.2)',
@@ -32,7 +34,7 @@ function createBallSprite(
   draw: (context: CanvasRenderingContext2D) => void,
 ) {
   const sprite = document.createElement('canvas');
-  sprite.width = sprite.height = Math.ceil(BALL_SIZE * pixelRatio);
+  sprite.width = sprite.height = Math.ceil(SPRITE_SIZE * pixelRatio);
   const context = sprite.getContext('2d');
   if (context) {
     context.scale(sprite.width / ICON_SIZE, sprite.height / ICON_SIZE);
