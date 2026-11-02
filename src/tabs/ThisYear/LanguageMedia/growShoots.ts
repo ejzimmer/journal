@@ -28,6 +28,8 @@ const FIRST_SHOOT = 10;
 const LIMB_TIP_GAP = 4;
 const SHOOT_SEGMENTS = 4;
 const FIRST_LEAF = 0.25;
+const ARCH_SEGMENTS = 6;
+const ARCH_WOBBLE = 10;
 
 export function findShootBase(point: BranchPoint, side: number): Point {
   const offset = point.width * 0.35 * side;
@@ -58,6 +60,18 @@ export function placeLeaves(
   ];
 }
 
+const dressShoot = (
+  points: Point[],
+  length: number,
+  style: ShootStyle,
+  leafRanges: [number, number][],
+) => ({
+  edges: traceTaperedEdges(points, style.widths),
+  leaves: leafRanges.flatMap((range) =>
+    placeLeaves(points, length, style, range),
+  ),
+});
+
 export function growShoot(
   base: Point,
   angle: number,
@@ -74,12 +88,28 @@ export function growShoot(
     (direction) => turnToward(direction, style.bendToward, style.bend),
     random,
   );
-  return {
-    edges: traceTaperedEdges(points, style.widths),
-    leaves: leafRanges.flatMap((range) =>
-      placeLeaves(points, length, style, range),
-    ),
-  };
+  return dressShoot(points, length, style, leafRanges);
+}
+
+export function growArchingShoot(
+  base: Point,
+  angle: number,
+  length: number,
+  arch: number,
+  style: ShootStyle,
+  random: () => number,
+  leafRanges: [number, number][],
+) {
+  const turn = arch / (ARCH_SEGMENTS - 1);
+  const points = walkPath(
+    base,
+    angle - arch / 2,
+    length,
+    ARCH_SEGMENTS,
+    (direction) => direction + turn + (random() - 0.5) * ARCH_WOBBLE,
+    random,
+  );
+  return dressShoot(points, length, style, leafRanges);
 }
 
 export function spaceShootsBetween(

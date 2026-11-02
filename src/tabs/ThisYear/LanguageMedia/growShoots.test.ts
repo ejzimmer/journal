@@ -1,4 +1,5 @@
-import { growShoots, spaceShootsBetween } from './growShoots';
+import { findBranchPoint } from './findBranchPoint';
+import { growArchingShoot, growShoots, spaceShootsBetween } from './growShoots';
 import { EdgeSample } from './treeGeometry';
 import { GrownShape } from './treeGrowth';
 import { ShootStyle } from './treeSpecies';
@@ -100,6 +101,35 @@ describe('spaceShootsBetween', () => {
 
     it('ignores flowers past the end of the read wood', () => {
       expect(spaceShootsBetween(10, 50, [120], 20)).toEqual([10, 30]);
+    });
+  });
+});
+
+describe('growArchingShoot', () => {
+  const midpoint = () => 0.5;
+  const growArch = (arch: number) =>
+    growArchingShoot({ x: 0, y: 0 }, 90, 60, arch, style, midpoint, []);
+
+  describe('with a clockwise arch', () => {
+    const { edges } = growArch(40);
+
+    it('sets off anticlockwise of the heading and ends clockwise of it', () => {
+      expect(findBranchPoint(edges, 0.05).angle).toBeLessThan(90);
+      expect(findBranchPoint(edges, 0.95).angle).toBeGreaterThan(90);
+    });
+
+    it('ends up level with its base, straight down the heading', () => {
+      const tip = findBranchPoint(edges, 1);
+      expect(tip.x).toBeCloseTo(0, 0);
+      expect(tip.y).toBeGreaterThan(50);
+    });
+  });
+
+  describe('with an anticlockwise arch', () => {
+    it('bends the other way', () => {
+      const { edges } = growArch(-40);
+      expect(findBranchPoint(edges, 0.05).angle).toBeGreaterThan(90);
+      expect(findBranchPoint(edges, 0.95).angle).toBeLessThan(90);
     });
   });
 });
