@@ -4,23 +4,34 @@ import { Magnitude, MAGNITUDES, Symptom } from './symptoms';
 type SymptomRowProps = {
   symptom: Symptom;
   magnitude?: Magnitude;
-  onChange: (magnitude: Magnitude | undefined) => void;
+  activeLevel?: Magnitude;
+  cellId: (level: Magnitude) => string;
+  onSelect: (level: Magnitude) => void;
 };
 
-export function SymptomRow({ symptom, magnitude, onChange }: SymptomRowProps) {
+export function SymptomRow({
+  symptom,
+  magnitude,
+  activeLevel,
+  cellId,
+  onSelect,
+}: SymptomRowProps) {
   return (
-    <div className="symptom-row" role="group" aria-label={symptom.label}>
+    <div className="symptom-row" role="row">
       {MAGNITUDES.map((level) => (
-        <button
+        <div
           key={level}
-          type="button"
+          id={cellId(level)}
+          role="gridcell"
           className="symptom-level"
           aria-label={`${symptom.label} ${level}`}
-          aria-pressed={magnitude === level}
-          onClick={() => onChange(magnitude === level ? undefined : level)}
+          aria-selected={magnitude === level}
+          data-active={activeLevel === level || undefined}
+          onMouseDown={(event) => event.preventDefault()}
+          onClick={() => onSelect(level)}
         >
-          <SymptomIcon symptom={symptom} magnitude={level} width="22px" />
-        </button>
+          <SymptomIcon symptom={symptom} magnitude={level} width="40px" />
+        </div>
       ))}
     </div>
   );

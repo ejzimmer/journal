@@ -64,7 +64,10 @@ export function CalorieForm({
       role="dialog"
       aria-labelledby={dateHeadingId}
       onToggle={(event) => {
-        if (event.newState === 'closed') {
+        if (
+          event.target === event.currentTarget &&
+          event.newState === 'closed'
+        ) {
           onClose();
         }
       }}
