@@ -15,14 +15,18 @@ export function BookVolumeNames() {
           isFocused={index > 0}
         />
       ))}
-      <Tooltip className="add-volume-name" text="Add another volume">
-        <button
-          type="button"
-          aria-label="Add another volume"
-          onClick={() => setCount((previous) => previous + 1)}
-        >
-          <PlusIcon width="12px" strokeWidth="2.4" />
-        </button>
+      <Tooltip label="Add another volume" position="top">
+        {(triggerProps) => (
+          <button
+            {...triggerProps}
+            type="button"
+            className="add-volume-name"
+            aria-label="Add another volume"
+            onClick={() => setCount((previous) => previous + 1)}
+          >
+            <PlusIcon width="12px" strokeWidth="2.4" />
+          </button>
+        )}
       </Tooltip>
     </div>
   );

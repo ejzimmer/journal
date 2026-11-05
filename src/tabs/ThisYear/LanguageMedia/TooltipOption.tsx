@@ -8,13 +8,17 @@ type TooltipOptionProps = {
 
 export function TooltipOption({ icon, label }: TooltipOptionProps) {
   return (
-    <Tooltip
-      className="tooltip-option"
-      text={label}
-      role="img"
-      aria-label={label}
-    >
-      {icon}
+    <Tooltip label={label} position="top">
+      {(triggerProps) => (
+        <span
+          {...triggerProps}
+          className="tooltip-option"
+          role="img"
+          aria-label={label}
+        >
+          {icon}
+        </span>
+      )}
     </Tooltip>
   );
 }

@@ -1,14 +1,30 @@
-import { ComponentPropsWithoutRef, FocusEvent, ReactNode, useRef } from 'react';
+import { FocusEvent, ReactNode, useId, useRef } from 'react';
 
-type TooltipProps = ComponentPropsWithoutRef<'span'> & { text: ReactNode };
+type TooltipPosition = 'top' | 'right' | 'top-right';
 
-export function Tooltip({
-  text,
-  className,
-  children,
-  ...anchorProps
-}: TooltipProps) {
-  const tooltipRef = useRef<HTMLSpanElement>(null);
+export type TooltipTriggerProps = {
+  ref: (trigger: HTMLElement | null) => void;
+  'aria-describedby': string;
+  onPointerEnter: () => void;
+  onPointerLeave: () => void;
+  onFocus: (event: FocusEvent<Element>) => void;
+  onBlur: () => void;
+};
+
+type TooltipProps = {
+  label: string;
+  position?: TooltipPosition;
+  children: (triggerProps: TooltipTriggerProps) => ReactNode;
+};
+
+export function Tooltip({ label, position = 'right', children }: TooltipProps) {
+  const id = useId();
+  const anchorName = `--tooltip${id.replace(/[^\w-]/g, '-')}`;
+  const tooltipRef = useRef<HTMLDivElement>(null);
+
+  const anchorTooltipToTrigger = (trigger: HTMLElement | null) => {
+    trigger?.style.setProperty('anchor-name', anchorName);
+  };
 
   const showTooltip = () => {
     const tooltip = tooltipRef.current;
@@ -31,23 +47,25 @@ export function Tooltip({
   };
 
   return (
-    <span
-      {...anchorProps}
-      className={`tooltip-anchor ${className ?? ''}`.trim()}
-      onPointerEnter={showTooltip}
-      onPointerLeave={hideTooltip}
-      onFocus={showTooltipOnKeyboardFocus}
-      onBlur={hideTooltip}
-    >
-      {children}
-      <span
+    <>
+      {children({
+        ref: anchorTooltipToTrigger,
+        'aria-describedby': id,
+        onPointerEnter: showTooltip,
+        onPointerLeave: hideTooltip,
+        onFocus: showTooltipOnKeyboardFocus,
+        onBlur: hideTooltip,
+      })}
+      <div
         ref={tooltipRef}
-        className="tooltip"
+        id={id}
+        role="tooltip"
+        className={`tooltip tooltip-${position}`}
         popover="manual"
-        aria-hidden="true"
+        style={{ positionAnchor: anchorName }}
       >
-        {text}
-      </span>
-    </span>
+        {label}
+      </div>
+    </>
   );
 }

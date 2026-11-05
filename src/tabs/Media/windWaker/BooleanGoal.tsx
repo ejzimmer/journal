@@ -19,16 +19,22 @@ export function BooleanGoal({
 }: BooleanGoalProps) {
   return (
     <li>
-      <Tooltip
-        className={`item-slot ${isChecked ? 'done' : 'off'}`}
-        text={label}
-      >
-        <EmojiCheckbox
-          emoji={typeof icon === 'string' ? <img src={icon} alt="" /> : icon}
-          isChecked={isChecked}
-          label={label}
-          onChange={() => onChange(!isChecked)}
-        />
+      <Tooltip label={label}>
+        {(triggerProps) => (
+          <div
+            {...triggerProps}
+            className={`item-slot ${isChecked ? 'done' : 'off'}`}
+          >
+            <EmojiCheckbox
+              emoji={
+                typeof icon === 'string' ? <img src={icon} alt="" /> : icon
+              }
+              isChecked={isChecked}
+              label={label}
+              onChange={() => onChange(!isChecked)}
+            />
+          </div>
+        )}
       </Tooltip>
     </li>
   );

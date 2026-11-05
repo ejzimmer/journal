@@ -11,8 +11,12 @@ export function VideoUrlTile({
 }: VideoUrlTileProps) {
   return (
     <div className="progress-tile url-tile">
-      <Tooltip className="page-icon" text="URL" aria-hidden="true">
-        🔗
+      <Tooltip label="URL" position="top">
+        {(triggerProps) => (
+          <span {...triggerProps} className="page-icon" aria-hidden="true">
+            🔗
+          </span>
+        )}
       </Tooltip>
       <input
         type="url"

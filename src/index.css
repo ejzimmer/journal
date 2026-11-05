@@ -185,23 +185,14 @@ dialog {
   color: var(--body-colour);
 }
 
-.tooltip-anchor {
-  anchor-name: --tooltip;
-  anchor-scope: --tooltip;
-  display: inline-flex;
-}
-
 .tooltip {
   background: var(--body-colour);
   color: white;
   padding: 6px 8px;
   border-radius: 3px;
   font-size: 14px;
-  position-anchor: --tooltip;
-  position-area: right;
   inset: auto;
   margin: 0;
-  margin-inline-start: 4px;
   border: 0;
   overflow: visible;
   pointer-events: none;
@@ -221,11 +212,25 @@ dialog {
   }
 }
 
+.tooltip-right {
+  position-area: right;
+  margin-inline-start: 4px;
+}
+
+.tooltip-top {
+  position-area: top;
+  margin-block-end: 4px;
+}
+
+.tooltip-top-right {
+  position-area: top right;
+}
+
 .pointer-tooltip {
+  transition: none;
+}
+
+.pointer-tooltip-anchor {
   position: fixed;
   pointer-events: none;
-
-  .tooltip {
-    transition: none;
-  }
 }

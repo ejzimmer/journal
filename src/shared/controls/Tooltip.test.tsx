@@ -4,8 +4,14 @@ import { Tooltip } from './Tooltip';
 
 function setUpTooltip() {
   render(
-    <Tooltip text="Class 3">
-      <input type="checkbox" aria-label="Spinning: Class 3" />
+    <Tooltip label="Class 3">
+      {(triggerProps) => (
+        <input
+          {...triggerProps}
+          type="checkbox"
+          aria-label="Spinning: Class 3"
+        />
+      )}
     </Tooltip>,
   );
   return screen.getByText('Class 3');

@@ -18,8 +18,12 @@ export function CountField({
 }: CountFieldProps) {
   return (
     <div className="count-field">
-      <Tooltip className="count-icon" text={label} aria-hidden="true">
-        {icon}
+      <Tooltip label={label} position="top">
+        {(triggerProps) => (
+          <span {...triggerProps} className="count-icon" aria-hidden="true">
+            {icon}
+          </span>
+        )}
       </Tooltip>
       <input
         type="number"

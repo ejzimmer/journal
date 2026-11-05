@@ -13,8 +13,12 @@ export function EpisodeTimeTile({
 }: EpisodeTimeTileProps) {
   return (
     <div className="progress-tile time-tile">
-      <Tooltip className="page-icon" text="Up to" aria-hidden="true">
-        ⏱️
+      <Tooltip label="Up to" position="top">
+        {(triggerProps) => (
+          <span {...triggerProps} className="page-icon" aria-hidden="true">
+            ⏱️
+          </span>
+        )}
       </Tooltip>
       <DurationField
         label="Up to"

@@ -23,17 +23,19 @@ export function ModeOption({
       className="mode-option-item"
       style={{ '--mode-colour': mode.colour } as React.CSSProperties}
     >
-      <Tooltip text={mode.name}>
-        <label className="mode-option">
-          <input
-            type="radio"
-            name="mode"
-            aria-label={mode.name}
-            checked={isSelected}
-            onChange={onSelect}
-          />
-          <span aria-hidden="true">{mode.emoji}</span>
-        </label>
+      <Tooltip label={mode.name} position="top">
+        {(triggerProps) => (
+          <label {...triggerProps} className="mode-option">
+            <input
+              type="radio"
+              name="mode"
+              aria-label={mode.name}
+              checked={isSelected}
+              onChange={onSelect}
+            />
+            <span aria-hidden="true">{mode.emoji}</span>
+          </label>
+        )}
       </Tooltip>
       <button
         type="button"

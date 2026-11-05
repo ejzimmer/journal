@@ -35,17 +35,6 @@ ul.bike-grid {
   label:hover {
     filter: grayscale(0%);
   }
-
-  .tooltip {
-    position-area: top right;
-    margin-inline-start: 0;
-    font-size: 0.8em;
-    border-radius: 4px;
-
-    &:popover-open {
-      opacity: 0.8;
-    }
-  }
 }
 
 .bike-year-tabs {

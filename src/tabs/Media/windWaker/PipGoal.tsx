@@ -19,11 +19,15 @@ export function PipGoal({
 }: PipGoalProps) {
   return (
     <li className="pip-goal">
-      <Tooltip
-        className={`item-slot ${level >= levels ? 'done' : ''}`}
-        text={label}
-      >
-        <img src={icon} alt="" />
+      <Tooltip label={label}>
+        {(triggerProps) => (
+          <div
+            {...triggerProps}
+            className={`item-slot ${level >= levels ? 'done' : ''}`}
+          >
+            <img src={icon} alt="" />
+          </div>
+        )}
       </Tooltip>
       <div className="pips">
         {Array.from({ length: levels }, (_, index) => {

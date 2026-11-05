@@ -17,8 +17,12 @@ export function VolumeNameField({
 }: VolumeNameFieldProps) {
   return (
     <div className="volume-name-field">
-      <Tooltip className="count-icon" text={label} aria-hidden="true">
-        📕
+      <Tooltip label={label} position="top">
+        {(triggerProps) => (
+          <span {...triggerProps} className="count-icon" aria-hidden="true">
+            📕
+          </span>
+        )}
       </Tooltip>
       <input
         name={name}

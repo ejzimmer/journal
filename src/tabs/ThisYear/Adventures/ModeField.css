@@ -38,12 +38,6 @@
 .mode-option-item {
   position: relative;
 
-  .tooltip {
-    position-area: top;
-    margin-inline-start: 0;
-    margin-block-end: 16px;
-  }
-
   .mode-option-action {
     position: absolute;
     top: -12px;

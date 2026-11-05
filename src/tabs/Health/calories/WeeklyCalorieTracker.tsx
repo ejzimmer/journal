@@ -36,20 +36,27 @@ export function WeeklyCalorieTracker({ days }: WeeklyCalorieTrackerProps) {
       {weeklyBalances.map((balance, index) => (
         <Tooltip
           key={index}
-          text={`${balance.day} ${balance.month}: ${balance.balance.toLocaleString()}`}
-          className={getWeekClass({
-            balance: balance.balance,
-            lowestBalance,
-          })}
-          style={
-            {
-              height: (balance.balance / heightScale) * 100 + '%',
-              '--lowest-share': `${getWeekLowestShare({ balance: balance.balance, lowestBalance }) * 100}%`,
-            } as CSSProperties
-          }
-          role="img"
-          aria-label={`${balance.day} ${balance.month}: ${balance.balance.toLocaleString()}`}
-        />
+          label={`${balance.day} ${balance.month}: ${balance.balance.toLocaleString()}`}
+          position="top"
+        >
+          {(triggerProps) => (
+            <div
+              {...triggerProps}
+              className={getWeekClass({
+                balance: balance.balance,
+                lowestBalance,
+              })}
+              style={
+                {
+                  height: (balance.balance / heightScale) * 100 + '%',
+                  '--lowest-share': `${getWeekLowestShare({ balance: balance.balance, lowestBalance }) * 100}%`,
+                } as CSSProperties
+              }
+              role="img"
+              aria-label={`${balance.day} ${balance.month}: ${balance.balance.toLocaleString()}`}
+            />
+          )}
+        </Tooltip>
       ))}
     </div>
   );

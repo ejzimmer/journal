@@ -107,10 +107,6 @@ ul.exercise-classes {
     }
   }
 
-  .tooltip-anchor {
-    display: flex;
-  }
-
   input.session {
     appearance: none;
     display: block;

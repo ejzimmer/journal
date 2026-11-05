@@ -19,15 +19,6 @@
   }
 }
 
-.add-media-form,
-.add-volume-form {
-  .tooltip {
-    position-area: top;
-    margin-inline-start: 0;
-    margin-block-end: 4px;
-  }
-}
-
 .add-media-switches {
   display: flex;
   justify-content: center;
@@ -154,56 +145,44 @@
 
 .add-volume-name {
   align-self: center;
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: 2px dashed var(--border-colour-hover);
+  border-radius: 50%;
+  background: none;
+  color: var(--body-colour-mid);
 
-  button {
-    display: grid;
-    place-items: center;
-    width: 28px;
-    height: 28px;
-    padding: 0;
-    border: 2px dashed var(--border-colour-hover);
-    border-radius: 50%;
-    background: none;
-    color: var(--body-colour-mid);
-
-    &:hover,
-    &:focus-visible {
-      background: hsl(214 40% 96%);
-    }
+  &:hover,
+  &:focus-visible {
+    background: hsl(214 40% 96%);
   }
 }
 
 .add-media-button {
   align-self: flex-end;
+  display: grid;
+  place-items: center;
+  height: auto;
+  padding: 0;
+  border: 0;
+  background: none;
 
-  > button {
-    display: grid;
-    place-items: center;
-    height: auto;
-    padding: 0;
-    border: 0;
+  svg {
+    display: block;
+    transition: transform 0.15s;
+    transform-origin: bottom;
+  }
+
+  &:hover,
+  &:focus-visible {
     background: none;
 
     svg {
-      display: block;
-      transition: transform 0.15s;
-      transform-origin: bottom;
+      transform: scale(1.08);
     }
-
-    &:hover,
-    &:focus-visible {
-      background: none;
-
-      svg {
-        transform: scale(1.08);
-      }
-    }
-  }
-
-  > .tooltip {
-    position-area: top;
-    margin-inline-start: 0;
-    margin-block-end: 4px;
   }
 }
 

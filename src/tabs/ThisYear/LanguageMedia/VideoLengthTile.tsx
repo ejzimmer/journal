@@ -14,8 +14,12 @@ export function VideoLengthTile({
 }: VideoLengthTileProps) {
   return (
     <div className="progress-tile time-tile">
-      <Tooltip className="page-icon" text="Length" aria-hidden="true">
-        ⏱️
+      <Tooltip label="Length" position="top">
+        {(triggerProps) => (
+          <span {...triggerProps} className="page-icon" aria-hidden="true">
+            ⏱️
+          </span>
+        )}
       </Tooltip>
       <DurationField
         label="Length"

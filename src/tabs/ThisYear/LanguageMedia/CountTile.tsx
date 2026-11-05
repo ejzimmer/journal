@@ -20,15 +20,18 @@ export function CountTile({
 }: CountTileProps) {
   return (
     <div className="progress-tile">
-      <Tooltip text={label}>
-        <button
-          type="button"
-          className="count-button"
-          aria-label={addLabel}
-          onClick={onAdd}
-        >
-          {icon}
-        </button>
+      <Tooltip label={label} position="top">
+        {(triggerProps) => (
+          <button
+            {...triggerProps}
+            type="button"
+            className="count-button"
+            aria-label={addLabel}
+            onClick={onAdd}
+          >
+            {icon}
+          </button>
+        )}
       </Tooltip>
       <input
         key={count}

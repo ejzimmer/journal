@@ -5,8 +5,12 @@ type PageTileProps = { page?: number; pages?: number };
 export function PageTile({ page, pages }: PageTileProps) {
   return (
     <div className="progress-tile">
-      <Tooltip className="page-icon" text="Page" aria-hidden="true">
-        📖
+      <Tooltip label="Page" position="top">
+        {(triggerProps) => (
+          <span {...triggerProps} className="page-icon" aria-hidden="true">
+            📖
+          </span>
+        )}
       </Tooltip>
       <input
         type="number"

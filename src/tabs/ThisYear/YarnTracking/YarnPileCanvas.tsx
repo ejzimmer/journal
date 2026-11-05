@@ -10,6 +10,8 @@ const EFFECTS_BLEED = 8;
 const isPointerOverBall = (x: number, y: number, ball: PlacedBall) =>
   Math.hypot(x - ball.x, y - ball.y) <= ball.size / 2;
 
+type HoveredBall = { placed: PlacedBall; pileLeft: number; pileTop: number };
+
 type YarnPileCanvasProps = {
   balls: PlacedBall[];
   bowl: Bowl;
@@ -25,7 +27,7 @@ export function YarnPileCanvas({
 }: YarnPileCanvasProps) {
   const { getBalance } = useYarnStorage();
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const [hoveredBall, setHoveredBall] = useState<PlacedBall>();
+  const [hoveredBall, setHoveredBall] = useState<HoveredBall>();
   const pixelRatio = window.devicePixelRatio;
   const sprites = useMemo(() => createBallSprites(pixelRatio), [pixelRatio]);
 
@@ -45,7 +47,16 @@ export function YarnPileCanvas({
     const { left, top } = event.currentTarget.getBoundingClientRect();
     const x = event.clientX - left - EFFECTS_BLEED;
     const y = event.clientY - top - EFFECTS_BLEED;
-    setHoveredBall(balls.find((ball) => isPointerOverBall(x, y, ball)));
+    const placed = balls.find((ball) => isPointerOverBall(x, y, ball));
+    setHoveredBall((current) =>
+      current?.placed === placed
+        ? current
+        : placed && {
+            placed,
+            pileLeft: left + EFFECTS_BLEED,
+            pileTop: top + EFFECTS_BLEED,
+          },
+    );
   };
 
   return (
@@ -65,14 +76,20 @@ export function YarnPileCanvas({
       {hoveredBall && (
         <PointerTooltip
           text={getBallDetails(
-            hoveredBall.ball,
-            getBalance(hoveredBall.ball.yarnType),
+            hoveredBall.placed.ball,
+            getBalance(hoveredBall.placed.ball.yarnType),
           )}
           rect={{
-            left: hoveredBall.x - hoveredBall.size / 2,
-            top: hoveredBall.y - hoveredBall.size / 2,
-            width: hoveredBall.size,
-            height: hoveredBall.size,
+            left:
+              hoveredBall.pileLeft +
+              hoveredBall.placed.x -
+              hoveredBall.placed.size / 2,
+            top:
+              hoveredBall.pileTop +
+              hoveredBall.placed.y -
+              hoveredBall.placed.size / 2,
+            width: hoveredBall.placed.size,
+            height: hoveredBall.placed.size,
           }}
         />
       )}

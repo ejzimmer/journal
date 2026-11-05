@@ -16,8 +16,12 @@ export function UnderstoodTile({
 
   return (
     <div className={`progress-tile understood-tile ${mediaType}`}>
-      <Tooltip className="flower-icon" text="Understood">
-        <MediaTypeIcon type={mediaType} width="44px" />
+      <Tooltip label="Understood" position="top">
+        {(triggerProps) => (
+          <span {...triggerProps} className="flower-icon">
+            <MediaTypeIcon type={mediaType} width="44px" />
+          </span>
+        )}
       </Tooltip>
       <input
         type="range"

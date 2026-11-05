@@ -9,15 +9,19 @@ export function AddMediaButton() {
   const [isOpen, setIsOpen] = useState(false);
   return (
     <>
-      <Tooltip className="add-media-button" text="Add media">
-        <button
-          type="button"
-          aria-label="Add media"
-          aria-expanded={isOpen}
-          onClick={() => setIsOpen(true)}
-        >
-          <SeedlingIcon width="56px" />
-        </button>
+      <Tooltip label="Add media" position="top">
+        {(triggerProps) => (
+          <button
+            {...triggerProps}
+            type="button"
+            className="add-media-button"
+            aria-label="Add media"
+            aria-expanded={isOpen}
+            onClick={() => setIsOpen(true)}
+          >
+            <SeedlingIcon width="56px" />
+          </button>
+        )}
       </Tooltip>
       <ModalDialog
         isOpen={isOpen}

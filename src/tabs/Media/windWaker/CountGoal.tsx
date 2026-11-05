@@ -23,24 +23,28 @@ export function CountGoal({
 
   return (
     <li>
-      <Tooltip
-        className={`item-slot ring ${value >= total ? 'done' : ''}`}
-        text={label}
-        style={{ '--progress': progress } as CSSProperties}
-      >
-        <img src={icon} alt="" />
-        <EditableText
-          className="slot-count"
-          label={label}
-          style={{ '--digits': total.toString().length } as CSSProperties}
-          value={value.toString()}
-          onChange={(text) => {
-            const count = Number.parseInt(text);
-            if (!isNaN(count)) {
-              onChange(count);
-            }
-          }}
-        />
+      <Tooltip label={label}>
+        {(triggerProps) => (
+          <div
+            {...triggerProps}
+            className={`item-slot ring ${value >= total ? 'done' : ''}`}
+            style={{ '--progress': progress } as CSSProperties}
+          >
+            <img src={icon} alt="" />
+            <EditableText
+              className="slot-count"
+              label={label}
+              style={{ '--digits': total.toString().length } as CSSProperties}
+              value={value.toString()}
+              onChange={(text) => {
+                const count = Number.parseInt(text);
+                if (!isNaN(count)) {
+                  onChange(count);
+                }
+              }}
+            />
+          </div>
+        )}
       </Tooltip>
     </li>
   );
