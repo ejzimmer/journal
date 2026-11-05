@@ -1,4 +1,5 @@
 import { DURATION_UNITS, DurationField } from './DurationField';
+import { Tooltip } from '../../../shared/controls/Tooltip';
 
 type VideoLengthTileProps = {
   name?: string;
@@ -12,13 +13,14 @@ export function VideoLengthTile({
   durationFormat = 'hh:mm:ss',
 }: VideoLengthTileProps) {
   return (
-    <div className="progress-tile time-tile tooltip-container">
-      <span className="page-icon tooltip-anchor" aria-hidden="true">
-        ⏱️
-      </span>
-      <div className="tooltip" aria-hidden="true">
-        Length
-      </div>
+    <div className="progress-tile time-tile">
+      <Tooltip label="Length" position="top">
+        {(triggerProps) => (
+          <span {...triggerProps} className="page-icon" aria-hidden="true">
+            ⏱️
+          </span>
+        )}
+      </Tooltip>
       <DurationField
         label="Length"
         name={name}

@@ -1,6 +1,7 @@
 import { CSSProperties, useState } from 'react';
 import { MediaTypeIcon } from './MediaTypeIcon';
 import { MediaType } from './types';
+import { Tooltip } from '../../../shared/controls/Tooltip';
 
 type UnderstoodTileProps = {
   mediaType: MediaType;
@@ -14,15 +15,14 @@ export function UnderstoodTile({
   const [value, setValue] = useState(defaultValue);
 
   return (
-    <div
-      className={`progress-tile understood-tile ${mediaType} tooltip-container`}
-    >
-      <span className="flower-icon tooltip-anchor">
-        <MediaTypeIcon type={mediaType} width="44px" />
-      </span>
-      <div className="tooltip" aria-hidden="true">
-        Understood
-      </div>
+    <div className={`progress-tile understood-tile ${mediaType}`}>
+      <Tooltip label="Understood" position="top">
+        {(triggerProps) => (
+          <span {...triggerProps} className="flower-icon">
+            <MediaTypeIcon type={mediaType} width="44px" />
+          </span>
+        )}
+      </Tooltip>
       <input
         type="range"
         name={value === undefined ? undefined : 'understood'}

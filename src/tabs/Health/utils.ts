@@ -74,7 +74,7 @@ export const getWeekClass = ({
   balance: number;
   lowestBalance: number;
 }) => {
-  const className = 'week hovertext-anchor';
+  const className = 'week';
   if (balance === lowestBalance) {
     return `${className} week-min`;
   }

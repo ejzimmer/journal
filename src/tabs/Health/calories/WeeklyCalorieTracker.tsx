@@ -1,5 +1,7 @@
 import { CSSProperties, useLayoutEffect, useMemo, useRef } from 'react';
 
+import { Tooltip } from '../../../shared/controls/Tooltip';
+
 import './WeeklyCalorieTracker.css';
 import {
   Balance,
@@ -32,25 +34,29 @@ export function WeeklyCalorieTracker({ days }: WeeklyCalorieTrackerProps) {
   return (
     <div ref={chartRef} className="weekly-calories">
       {weeklyBalances.map((balance, index) => (
-        <div className="week-container" key={index}>
-          <div
-            className={getWeekClass({
-              balance: balance.balance,
-              lowestBalance,
-            })}
-            style={
-              {
-                height: (balance.balance / heightScale) * 100 + '%',
-                '--lowest-share': `${getWeekLowestShare({ balance: balance.balance, lowestBalance }) * 100}%`,
-              } as CSSProperties
-            }
-            role="img"
-            aria-label={`${balance.day} ${balance.month}: ${balance.balance.toLocaleString()}`}
-          />
-          <div className="hovertext">
-            {balance.day} {balance.month}: {balance.balance.toLocaleString()}
-          </div>
-        </div>
+        <Tooltip
+          key={index}
+          label={`${balance.day} ${balance.month}: ${balance.balance.toLocaleString()}`}
+          position="top"
+        >
+          {(triggerProps) => (
+            <div
+              {...triggerProps}
+              className={getWeekClass({
+                balance: balance.balance,
+                lowestBalance,
+              })}
+              style={
+                {
+                  height: (balance.balance / heightScale) * 100 + '%',
+                  '--lowest-share': `${getWeekLowestShare({ balance: balance.balance, lowestBalance }) * 100}%`,
+                } as CSSProperties
+              }
+              role="img"
+              aria-label={`${balance.day} ${balance.month}: ${balance.balance.toLocaleString()}`}
+            />
+          )}
+        </Tooltip>
       ))}
     </div>
   );

@@ -1,3 +1,5 @@
+import { Tooltip } from '../../../shared/controls/Tooltip';
+
 import './ItemSlot.css';
 
 type PipGoalProps = {
@@ -16,12 +18,17 @@ export function PipGoal({
   onChange,
 }: PipGoalProps) {
   return (
-    <li className="tooltip-container pip-goal">
-      <div
-        className={`item-slot tooltip-anchor ${level >= levels ? 'done' : ''}`}
-      >
-        <img src={icon} alt="" />
-      </div>
+    <li className="pip-goal">
+      <Tooltip label={label}>
+        {(triggerProps) => (
+          <div
+            {...triggerProps}
+            className={`item-slot ${level >= levels ? 'done' : ''}`}
+          >
+            <img src={icon} alt="" />
+          </div>
+        )}
+      </Tooltip>
       <div className="pips">
         {Array.from({ length: levels }, (_, index) => {
           const pipLevel = index + 1;
@@ -38,7 +45,6 @@ export function PipGoal({
           );
         })}
       </div>
-      <div className="tooltip">{label}</div>
     </li>
   );
 }

@@ -124,16 +124,6 @@ dialog.progress-update-modal {
   border: 2px solid var(--border-colour);
   border-radius: 10px;
 
-  .tooltip {
-    position-area: top;
-    margin-inline-start: 0;
-    margin-block-end: 4px;
-  }
-
-  &:has(.tooltip-anchor:hover, .tooltip-anchor:focus-visible) .tooltip {
-    opacity: 1;
-  }
-
   input[type='number'] {
     width: 3.6ch;
     padding-inline: 2px;
