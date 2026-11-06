@@ -1,6 +1,8 @@
-button.symptom-trigger {
+.symptom-trigger {
   align-self: start;
   display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
   align-items: center;
   gap: 2px;
   min-height: 24px;
@@ -19,6 +21,7 @@ button.symptom-trigger {
   top: anchor(bottom);
   left: anchor(center);
   translate: -50% 6px;
+  position-try-fallbacks: flip-block;
   border: none;
   border-radius: 8px;
   padding: 4px;
@@ -44,7 +47,7 @@ button.symptom-trigger {
 
 .symptom-level {
   display: flex;
-  padding: 5px;
+  padding: 4px;
   border: none;
   border-radius: 6px;
   background: none;
@@ -56,13 +59,19 @@ button.symptom-trigger {
     filter 0.2s;
 
   &:hover,
-  &:focus-visible,
-  &[aria-pressed='true'] {
+  &[aria-selected='true'] {
     opacity: 1;
     filter: none;
   }
 
-  &[aria-pressed='true'] {
+  &[aria-selected='true'] {
     background: hsl(0 0% 0% / 0.06);
   }
+}
+
+.symptom-trigger:focus-visible + .symptom-list .symptom-level[data-active] {
+  opacity: 1;
+  filter: none;
+  outline: 2px solid black;
+  outline-offset: -2px;
 }

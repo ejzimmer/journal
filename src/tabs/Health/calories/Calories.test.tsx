@@ -181,7 +181,7 @@ describe('Calories', () => {
       });
 
       describe("and the user opens the symptom picker in the day's form", () => {
-        it('shows only the logged level as pressed', async () => {
+        it('shows only the logged level as selected', async () => {
           const user = userEvent.setup({
             advanceTimers: jest.advanceTimersByTime,
           });
@@ -191,14 +191,14 @@ describe('Calories', () => {
           await user.click(
             screen.getByRole('button', { name: 'update 3 Jan' }),
           );
-          await user.click(screen.getByRole('button', { name: 'symptoms' }));
+          await user.click(screen.getByRole('combobox', { name: 'symptoms' }));
 
           expect(
-            screen.getByRole('button', { name: 'period flow 2' }),
-          ).toHaveAttribute('aria-pressed', 'true');
+            screen.getByRole('gridcell', { name: 'period flow 2' }),
+          ).toHaveAttribute('aria-selected', 'true');
           expect(
-            screen.getByRole('button', { name: 'period flow 3' }),
-          ).toHaveAttribute('aria-pressed', 'false');
+            screen.getByRole('gridcell', { name: 'period flow 3' }),
+          ).toHaveAttribute('aria-selected', 'false');
         });
 
         describe('then clicks the logged level, picks a level for another symptom and saves', () => {
@@ -216,12 +216,14 @@ describe('Calories', () => {
             await user.click(
               screen.getByRole('button', { name: 'update 3 Jan' }),
             );
-            await user.click(screen.getByRole('button', { name: 'symptoms' }));
             await user.click(
-              screen.getByRole('button', { name: 'period flow 2' }),
+              screen.getByRole('combobox', { name: 'symptoms' }),
             );
             await user.click(
-              screen.getByRole('button', { name: 'headache 3' }),
+              screen.getByRole('gridcell', { name: 'period flow 2' }),
+            );
+            await user.click(
+              screen.getByRole('gridcell', { name: 'headache 3' }),
             );
             await user.click(screen.getByRole('textbox', { name: 'In' }));
             await user.keyboard('{Enter}');
