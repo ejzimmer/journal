@@ -4,7 +4,7 @@ import { LoggedSymptom } from './symptoms';
 import { splitIntoRows } from './symptomRows';
 import './DayHoverCircle.css';
 
-const ICON_SIZE = 18;
+const ICON_SIZE = 24;
 const GAP = 2;
 const TEXT_WIDTH = 70;
 const TEXT_HEIGHT = 36;
