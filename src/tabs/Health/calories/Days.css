@@ -8,7 +8,7 @@
   overflow-y: hidden;
   /* leaves room for hovered circles at the edges of the grid to grow into,
      since the overflow above would otherwise clip them */
-  padding: 36px;
+  padding: 48px;
   box-sizing: content-box;
   list-style-type: none;
   margin: 0;
@@ -16,7 +16,7 @@
 
 .day-circle {
   position: relative;
-  padding: 8px;
+  padding: 3px;
   aspect-ratio: 1;
   align-self: center;
   border-radius: 50%;
