@@ -1,5 +1,5 @@
 import { PointerEvent, useEffect, useMemo, useRef, useState } from 'react';
-import { PointerTooltip } from '../../../shared/controls/PointerTooltip';
+import { CursorPositionedTooltip } from '../../../shared/controls/CursorPositionedTooltip';
 import { PlacedBall } from './bowlWorld';
 import { Bowl, createBallSprites, drawPile } from './drawPile';
 import { getBallDetails } from './yarnBallText';
@@ -74,7 +74,7 @@ export function YarnPileCanvas({
         onPointerLeave={() => setHoveredBall(undefined)}
       />
       {hoveredBall && (
-        <PointerTooltip
+        <CursorPositionedTooltip
           text={getBallDetails(
             hoveredBall.placed.ball,
             getBalance(hoveredBall.placed.ball.yarnType),

@@ -226,11 +226,11 @@ dialog {
   position-area: top right;
 }
 
-.pointer-tooltip {
+.cursor-positioned-tooltip {
   transition: none;
 }
 
-.pointer-tooltip-anchor {
+.cursor-positioned-tooltip-anchor {
   position: fixed;
   pointer-events: none;
 }

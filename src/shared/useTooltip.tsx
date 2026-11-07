@@ -1,5 +1,5 @@
 import { PointerEvent, useState } from 'react';
-import { PointerTooltip } from './controls/PointerTooltip';
+import { CursorPositionedTooltip } from './controls/CursorPositionedTooltip';
 
 type TooltipState = { text: string; rect: DOMRect };
 
@@ -13,7 +13,7 @@ export function useTooltip() {
   });
 
   const tooltip = state && (
-    <PointerTooltip text={state.text} rect={state.rect} />
+    <CursorPositionedTooltip text={state.text} rect={state.rect} />
   );
 
   return { createTooltipHandlers, tooltip };

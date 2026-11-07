@@ -1,18 +1,21 @@
 import { useId } from 'react';
 import { showPopoverOnMount } from './showPopoverOnMount';
 
-type PointerTooltipProps = {
+type CursorPositionedTooltipProps = {
   text: string;
   rect: Pick<DOMRect, 'left' | 'top' | 'width' | 'height'>;
 };
 
-export function PointerTooltip({ text, rect }: PointerTooltipProps) {
-  const anchorName = `--pointer-tooltip${useId().replace(/[^\w-]/g, '-')}`;
+export function CursorPositionedTooltip({
+  text,
+  rect,
+}: CursorPositionedTooltipProps) {
+  const anchorName = `--cursor-positioned-tooltip${useId().replace(/[^\w-]/g, '-')}`;
 
   return (
     <>
       <div
-        className="pointer-tooltip-anchor"
+        className="cursor-positioned-tooltip-anchor"
         style={{
           anchorName,
           left: rect.left,
@@ -23,7 +26,7 @@ export function PointerTooltip({ text, rect }: PointerTooltipProps) {
       />
       <div
         ref={showPopoverOnMount}
-        className="tooltip tooltip-right pointer-tooltip"
+        className="tooltip tooltip-right cursor-positioned-tooltip"
         popover="manual"
         role="tooltip"
         style={{ positionAnchor: anchorName }}
