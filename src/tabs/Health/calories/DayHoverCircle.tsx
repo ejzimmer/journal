@@ -9,7 +9,7 @@ import './DayHoverCircle.css';
 const ICON_SIZE = 18;
 const GAP = 2;
 const TEXT_WIDTH = 70;
-const WATCH_SIZE = 36;
+const WATCH_SIZE = 28;
 const TEXT_HEIGHT = 36;
 const MIN_SIZE = 106;
 const PADDING = 14;

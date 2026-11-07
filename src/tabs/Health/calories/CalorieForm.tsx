@@ -100,13 +100,13 @@ export function CalorieForm({
           size={4}
         />
         <div className="day-trackers">
-          <SymptomPicker trackers={trackers} onChange={setTrackers} />
           <WatchChargedToggle
             charged={isWatchCharged(trackers)}
             onChange={(charged) =>
               setTrackers(setWatchCharged(trackers, charged))
             }
           />
+          <SymptomPicker trackers={trackers} onChange={setTrackers} />
         </div>
         <button type="submit" />
       </form>
