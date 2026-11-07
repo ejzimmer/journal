@@ -45,7 +45,7 @@ export const SYMPTOMS: Symptom[] = [
     id: 'gas',
     label: 'gas',
     colour: '#93a531',
-    path: 'M10 4a6.5 6.5 0 1 0 0.01 0ZM7.5 7.5a2.5 2.5 0 0 0 -2 2.5',
+    path: 'M10 5a5.5 5.5 0 1 0 0.01 0ZM8 8.2a2.2 2.2 0 0 0 -1.8 2.2',
     stroked: true,
   },
   {

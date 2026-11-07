@@ -27,6 +27,7 @@ export function SymptomIcons({ symptoms, iconSize }: SymptomIconsProps) {
                 symptom={symptom}
                 magnitude={magnitude}
                 width={`${iconSize}px`}
+                outlined
               />
             </span>
           ))}

@@ -13,4 +13,13 @@
   span {
     display: flex;
   }
+
+  .symptom-outline {
+    fill: none;
+    stroke: white;
+
+    &.filled {
+      fill: white;
+    }
+  }
 }
