@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { ClipboardIcon } from '../../../shared/icons/Clipboard';
 
-const TICK_DURATION_MS = 1500;
+const TICK_DURATION_MS = 1400;
 
 type CopyFeatureGateButtonProps = {
   featureGateName: string;

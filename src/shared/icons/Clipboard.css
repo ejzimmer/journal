@@ -1,31 +1,47 @@
 .clipboard {
-  --clipboard-redraw: 0.25s;
+  /* the paths' drawn lengths in viewBox units, so every line moves at the same speed */
+  --board-length: 59.5;
+  --clip-length: 22.5;
+  --tick-length: 26.8;
+  --board-redraw: 0.4s;
+  --clip-redraw: calc(
+    var(--board-redraw) * var(--clip-length) / var(--board-length)
+  );
+  --tick-redraw: calc(
+    var(--board-redraw) * var(--tick-length) / var(--board-length)
+  );
 
   path {
     /* the gap is twice the dash so a fully hidden path leaves no round-cap dot at its end */
     stroke-dasharray: 1 2;
-    transition: stroke-dashoffset var(--clipboard-redraw) ease-in-out;
+    stroke-dashoffset: 0;
+    transition: stroke-dashoffset linear;
   }
 
-  .board path {
-    stroke-dashoffset: 0;
-    transition-delay: var(--clipboard-redraw);
+  .board {
+    transition-duration: var(--board-redraw);
+  }
+
+  .clip {
+    transition-duration: var(--clip-redraw);
+    transition-delay: calc(var(--board-redraw) - var(--clip-redraw));
   }
 
   .tick {
     stroke-dashoffset: 1;
-    transition-delay: 0s;
+    transition-duration: var(--tick-redraw);
   }
 
   &.show-tick {
-    .board path {
+    .board,
+    .clip {
       stroke-dashoffset: 1;
       transition-delay: 0s;
     }
 
     .tick {
       stroke-dashoffset: 0;
-      transition-delay: var(--clipboard-redraw);
+      transition-delay: calc(var(--board-redraw) - var(--tick-redraw));
     }
   }
 
