@@ -70,4 +70,26 @@ describe('AddProjectForm', () => {
       });
     });
   });
+
+  describe('after adding a project', () => {
+    it('clears the description', async () => {
+      renderForm();
+
+      await addProject('Cardigan', '🧶');
+
+      expect(screen.getByRole('textbox', { name: 'Description' })).toHaveValue(
+        '',
+      );
+    });
+
+    it('keeps the chosen category', async () => {
+      renderForm();
+
+      await addProject('Cardigan', '🧶');
+
+      expect(screen.getByRole('combobox', { name: 'Category' })).toHaveValue(
+        '🧶',
+      );
+    });
+  });
 });
