@@ -100,7 +100,7 @@
     .day-trackers {
       align-self: start;
       display: flex;
-      align-items: start;
+      align-items: center;
       gap: 4px;
     }
 
