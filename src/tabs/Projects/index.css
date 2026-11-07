@@ -77,7 +77,6 @@
     padding: 8px 16px;
 
     .form-control {
-      flex: 1;
       min-width: 0;
     }
   }
