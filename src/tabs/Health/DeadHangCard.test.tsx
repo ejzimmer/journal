@@ -1,5 +1,6 @@
 import { act, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { longPress } from '../../shared/controls/longPressTestUtils';
 import { getDateDaysAgo, getToday } from '../../shared/dates';
 import { renderWithHealthStorage } from './healthStorageTestUtils';
 import { DeadHangCard } from './DeadHangCard';
@@ -203,6 +204,54 @@ describe('DeadHangCard', () => {
       await user.unhover(ring);
 
       expect(tooltip).not.toBeInTheDocument();
+    });
+  });
+
+  describe('on a touchscreen', () => {
+    const deadHang = { date: getToday(), hangs: [12, 9], bestHang: 25 };
+
+    describe('tapping a ring', () => {
+      it('does not show its tooltip', async () => {
+        const user = userEvent.setup({
+          advanceTimers: jest.advanceTimersByTime,
+        });
+        renderWithHealthStorage(<DeadHangCard />, { deadHang });
+
+        await user.pointer({
+          keys: '[TouchA]',
+          target: screen.getByTestId('session-ring'),
+        });
+
+        expect(screen.queryByRole('tooltip')).not.toBeInTheDocument();
+      });
+    });
+
+    describe('long-pressing a ring', () => {
+      it('shows its tooltip', async () => {
+        const user = userEvent.setup({
+          advanceTimers: jest.advanceTimersByTime,
+        });
+        renderWithHealthStorage(<DeadHangCard />, { deadHang });
+
+        await longPress(user, screen.getByTestId('session-ring'));
+
+        expect(screen.getByRole('tooltip')).toHaveTextContent('21s');
+      });
+
+      describe('and then touching the screen again', () => {
+        it('hides the tooltip', async () => {
+          const user = userEvent.setup({
+            advanceTimers: jest.advanceTimersByTime,
+          });
+          renderWithHealthStorage(<DeadHangCard />, { deadHang });
+          await longPress(user, screen.getByTestId('session-ring'));
+          const tooltip = screen.getByRole('tooltip');
+
+          await user.pointer({ keys: '[TouchA]', target: document.body });
+
+          expect(tooltip).not.toBeInTheDocument();
+        });
+      });
     });
   });
 });

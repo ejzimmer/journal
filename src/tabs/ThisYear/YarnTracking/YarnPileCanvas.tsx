@@ -1,5 +1,10 @@
-import { PointerEvent, useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { CursorPositionedTooltip } from '../../../shared/controls/CursorPositionedTooltip';
+import {
+  isTouch,
+  PressPosition,
+  useTouchLongPress,
+} from '../../../shared/controls/useTouchLongPress';
 import { PlacedBall } from './bowlWorld';
 import { Bowl, createBallSprites, drawPile } from './drawPile';
 import { getBallDetails } from './yarnBallText';
@@ -43,7 +48,10 @@ export function YarnPileCanvas({
     drawPile(context, balls, bowl, sprites, pixelRatio);
   }, [balls, bowl, width, height, sprites, pixelRatio]);
 
-  const findHoveredBall = (event: PointerEvent<HTMLCanvasElement>) => {
+  const hideTooltip = () => setHoveredBall(undefined);
+  const createLongPressHandlers = useTouchLongPress(hideTooltip);
+
+  const findBallUnderPointer = (event: PressPosition) => {
     const { left, top } = event.currentTarget.getBoundingClientRect();
     const x = event.clientX - left - EFFECTS_BLEED;
     const y = event.clientY - top - EFFECTS_BLEED;
@@ -70,8 +78,13 @@ export function YarnPileCanvas({
           height: height + 2 * EFFECTS_BLEED,
           margin: -EFFECTS_BLEED,
         }}
-        onPointerMove={findHoveredBall}
-        onPointerLeave={() => setHoveredBall(undefined)}
+        onPointerMove={(event) => {
+          if (!isTouch(event)) findBallUnderPointer(event);
+        }}
+        onPointerLeave={(event) => {
+          if (!isTouch(event)) hideTooltip();
+        }}
+        {...createLongPressHandlers(findBallUnderPointer)}
       />
       {hoveredBall && (
         <CursorPositionedTooltip

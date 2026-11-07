@@ -1,12 +1,25 @@
-import { FocusEvent, ReactNode, useId, useRef } from 'react';
+import {
+  FocusEvent,
+  MouseEvent,
+  PointerEvent,
+  ReactNode,
+  useId,
+  useRef,
+} from 'react';
+import { isTouch, useTouchLongPress } from './useTouchLongPress';
 
 type TooltipPosition = 'top' | 'right' | 'top-right';
 
 export type TooltipTriggerProps = {
   ref: (trigger: HTMLElement | null) => void;
   'aria-describedby': string;
-  onPointerEnter: () => void;
-  onPointerLeave: () => void;
+  onPointerEnter: (event: PointerEvent<Element>) => void;
+  onPointerLeave: (event: PointerEvent<Element>) => void;
+  onPointerDown: (event: PointerEvent<Element>) => void;
+  onPointerUp: () => void;
+  onPointerCancel: () => void;
+  onContextMenu: (event: MouseEvent<Element>) => void;
+  onClickCapture: (event: MouseEvent<Element>) => void;
   onFocus: (event: FocusEvent<Element>) => void;
   onBlur: () => void;
 };
@@ -40,6 +53,16 @@ export function Tooltip({ label, position = 'right', children }: TooltipProps) {
     }
   };
 
+  const showTooltipForMouse = (event: PointerEvent<Element>) => {
+    if (!isTouch(event)) showTooltip();
+  };
+
+  const hideTooltipForMouse = (event: PointerEvent<Element>) => {
+    if (!isTouch(event)) hideTooltip();
+  };
+
+  const createLongPressHandlers = useTouchLongPress(hideTooltip);
+
   const showTooltipOnKeyboardFocus = (event: FocusEvent<Element>) => {
     if (event.target.matches(':focus-visible')) {
       showTooltip();
@@ -51,8 +74,9 @@ export function Tooltip({ label, position = 'right', children }: TooltipProps) {
       {children({
         ref: anchorTooltipToTrigger,
         'aria-describedby': id,
-        onPointerEnter: showTooltip,
-        onPointerLeave: hideTooltip,
+        onPointerEnter: showTooltipForMouse,
+        onPointerLeave: hideTooltipForMouse,
+        ...createLongPressHandlers(showTooltip),
         onFocus: showTooltipOnKeyboardFocus,
         onBlur: hideTooltip,
       })}
