@@ -1,7 +1,7 @@
 import { Magnitude, Symptom } from './symptoms';
 
 const GLYPH_SCALE = 0.5;
-const OUTLINE_WIDTH = 3;
+const OUTLINE_WIDTH = 2.25;
 const STROKE_WIDTH = 2.5;
 
 const CLUSTERS: Record<Magnitude, [number, number][]> = {
@@ -46,22 +46,25 @@ export function SymptomIcon({
 
   return (
     <svg viewBox="0 0 20 20" width={width} aria-hidden="true">
-      {outlined &&
-        glyphs.map(({ key, transform }) => (
-          <path
-            key={`outline-${key}`}
-            className={
-              symptom.stroked ? 'symptom-outline' : 'symptom-outline filled'
-            }
-            d={symptom.path}
-            transform={transform}
-            strokeWidth={
-              (symptom.stroked ? STROKE_WIDTH : 0) + OUTLINE_WIDTH * 2
-            }
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-        ))}
+      {outlined && (
+        <g className="symptom-outlines">
+          {glyphs.map(({ key, transform }) => (
+            <path
+              key={`outline-${key}`}
+              className={
+                symptom.stroked ? 'symptom-outline' : 'symptom-outline filled'
+              }
+              d={symptom.path}
+              transform={transform}
+              strokeWidth={
+                (symptom.stroked ? STROKE_WIDTH : 0) + OUTLINE_WIDTH * 2
+              }
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          ))}
+        </g>
+      )}
       {glyphs.map(({ key, transform }) => (
         <path key={key} d={symptom.path} transform={transform} {...paint} />
       ))}
