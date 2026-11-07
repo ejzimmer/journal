@@ -25,10 +25,11 @@
     scale 0.15s ease-out,
     opacity 0.1s;
 
-  b {
+  .day-hover-heading {
     display: flex;
     align-items: center;
     gap: 2px;
+    text-align: center;
   }
 
   .symptom-icons {

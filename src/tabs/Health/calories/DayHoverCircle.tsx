@@ -9,7 +9,7 @@ import './DayHoverCircle.css';
 const ICON_SIZE = 18;
 const GAP = 2;
 const TEXT_WIDTH = 70;
-const WATCH_SIZE = 16;
+const WATCH_SIZE = 36;
 const TEXT_HEIGHT = 36;
 const MIN_SIZE = 106;
 const PADDING = 14;
@@ -39,13 +39,17 @@ export function DayHoverCircle({
         } as CSSProperties
       }
     >
-      <b>
-        {day} {month}
+      <div className="day-hover-heading">
         {watchCharged && (
           <WatchIcon colour={WATCH.colour} width={`${WATCH_SIZE}px`} />
         )}
-      </b>
-      <div>{balance?.toLocaleString()}</div>
+        <div>
+          <b>
+            {day} {month}
+          </b>
+          <div>{balance?.toLocaleString()}</div>
+        </div>
+      </div>
       <SymptomIcons symptoms={symptoms} iconSize={ICON_SIZE} />
     </div>
   );
