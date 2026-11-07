@@ -85,6 +85,12 @@ export const SYMPTOMS: Symptom[] = [
     colour: '#7d8a99',
     path: 'M5.5 16a3.5 3.5 0 0 1 -0.5 -7a5 5 0 0 1 9.5 -1a4 4 0 0 1 1 8Z',
   },
+  {
+    id: 'watch',
+    label: 'watch charged',
+    colour: '#16a3a3',
+    path: 'M7 1H13V4H7ZM6 4.5H14A2 2 0 0 1 16 6.5V13.5A2 2 0 0 1 14 15.5H6A2 2 0 0 1 4 13.5V6.5A2 2 0 0 1 6 4.5ZM7 16H13V19H7Z',
+  },
 ];
 
 const LEGACY_TRACKERS: Record<string, string> = {
