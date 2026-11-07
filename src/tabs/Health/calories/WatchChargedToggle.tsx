@@ -19,7 +19,7 @@ export function WatchChargedToggle({
       aria-pressed={charged}
       onClick={() => onChange(!charged)}
     >
-      <SymptomIcon symptom={WATCH} magnitude={1} width="28px" />
+      <SymptomIcon symptom={WATCH} magnitude={1} width="24px" />
     </button>
   );
 }

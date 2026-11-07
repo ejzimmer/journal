@@ -22,6 +22,10 @@ type SymptomIconProps = {
 };
 
 export function SymptomIcon({ symptom, magnitude, width }: SymptomIconProps) {
+  if (symptom.Icon) {
+    return <symptom.Icon colour={symptom.colour} width={width} />;
+  }
+
   const paint = symptom.stroked
     ? {
         fill: 'none',

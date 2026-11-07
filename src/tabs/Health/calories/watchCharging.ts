@@ -1,3 +1,4 @@
+import { WatchIcon } from './WatchIcon';
 import { LoggedSymptom, parseSymptoms, Symptom } from './symptoms';
 
 export const WATCH_CHARGED = 'watch-charged';
@@ -6,7 +7,7 @@ export const WATCH: Symptom = {
   id: 'watch',
   label: 'watch charged',
   colour: '#16a3a3',
-  path: 'M7 1H13V4H7ZM6 4.5H14A2 2 0 0 1 16 6.5V13.5A2 2 0 0 1 14 15.5H6A2 2 0 0 1 4 13.5V6.5A2 2 0 0 1 6 4.5ZM7 16H13V19H7Z',
+  Icon: WatchIcon,
   unlevelled: true,
 };
 
