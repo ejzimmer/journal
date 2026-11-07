@@ -25,6 +25,12 @@
     scale 0.15s ease-out,
     opacity 0.1s;
 
+  b {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+  }
+
   .symptom-icons {
     margin-top: 4px;
   }

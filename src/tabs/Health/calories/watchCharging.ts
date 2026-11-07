@@ -23,6 +23,6 @@ export function setWatchCharged(trackers: string[], charged: boolean) {
 export function listDayIcons(trackers: string[] = []): LoggedSymptom[] {
   const symptoms = parseSymptoms(trackers);
   return isWatchCharged(trackers)
-    ? [...symptoms, { symptom: WATCH, magnitude: 1 }]
+    ? [{ symptom: WATCH, magnitude: 1 }, ...symptoms]
     : symptoms;
 }
