@@ -4,7 +4,7 @@ import './Days.css';
 import { Balance } from '../utils';
 import { SymptomIcons } from './SymptomIcons';
 import { DayHoverCircle } from './DayHoverCircle';
-import { parseSymptoms } from './symptoms';
+import { listDayIcons } from './watchCharging';
 import { getRestingIconSize } from './restingIconSize';
 
 type DaysProps = {
@@ -32,7 +32,7 @@ export function Days({ days, onSelectDay }: DaysProps) {
       style={{ '--starting-index': startingIndex } as CSSProperties}
     >
       {days.map((day, index) => {
-        const symptoms = parseSymptoms(day.trackers);
+        const symptoms = listDayIcons(day.trackers);
         return (
           <li
             key={day.id}

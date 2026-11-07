@@ -97,6 +97,13 @@
   form {
     display: contents;
 
+    .day-trackers {
+      align-self: start;
+      display: flex;
+      align-items: start;
+      gap: 4px;
+    }
+
     button[type='submit'] {
       display: none;
     }

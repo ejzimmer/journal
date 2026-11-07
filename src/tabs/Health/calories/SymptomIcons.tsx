@@ -21,7 +21,11 @@ export function SymptomIcons({ symptoms, iconSize }: SymptomIconsProps) {
             <span
               key={symptom.id}
               role="img"
-              aria-label={`${symptom.label} ${magnitude}`}
+              aria-label={
+                symptom.unlevelled
+                  ? symptom.label
+                  : `${symptom.label} ${magnitude}`
+              }
             >
               <SymptomIcon
                 symptom={symptom}
