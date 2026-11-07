@@ -9,7 +9,7 @@ import './DayHoverCircle.css';
 const ICON_SIZE = 18;
 const GAP = 2;
 const TEXT_WIDTH = 70;
-const WATCH_SIZE = 28;
+const WATCH_SIZE = 16;
 const TEXT_HEIGHT = 36;
 const MIN_SIZE = 106;
 const PADDING = 14;
@@ -35,40 +35,32 @@ export function DayHoverCircle({
       aria-hidden="true"
       style={
         {
-          '--hover-size': getHoverSize(symptoms, watchCharged),
+          '--hover-size': getHoverSize(symptoms),
         } as CSSProperties
       }
     >
       <div className="day-hover-heading">
+        <b>
+          {day} {month}
+        </b>
+        <div>{balance?.toLocaleString()}</div>
         {watchCharged && (
           <WatchIcon colour={WATCH.colour} width={`${WATCH_SIZE}px`} />
         )}
-        <div>
-          <b>
-            {day} {month}
-          </b>
-          <div>{balance?.toLocaleString()}</div>
-        </div>
       </div>
       <SymptomIcons symptoms={symptoms} iconSize={ICON_SIZE} />
     </div>
   );
 }
 
-function getHoverSize(symptoms: LoggedSymptom[], watchCharged: boolean) {
-  const textWidth = watchCharged ? TEXT_WIDTH + WATCH_SIZE + GAP : TEXT_WIDTH;
+function getHoverSize(symptoms: LoggedSymptom[]) {
   const rows = splitIntoRows(symptoms);
-  if (!rows.length) {
-    return Math.max(
-      MIN_SIZE,
-      Math.ceil(Math.hypot(textWidth, TEXT_HEIGHT)) + PADDING,
-    );
-  }
+  if (!rows.length) return MIN_SIZE;
 
   const longestRow = Math.max(...rows.map((row) => row.length));
   const iconsWidth = longestRow * ICON_SIZE + (longestRow - 1) * GAP;
   const iconsHeight = rows.length * ICON_SIZE + (rows.length - 1) * GAP;
-  const width = Math.max(textWidth, iconsWidth);
+  const width = Math.max(TEXT_WIDTH, iconsWidth);
   const height = TEXT_HEIGHT + GAP * 2 + iconsHeight;
 
   return Math.max(MIN_SIZE, Math.ceil(Math.hypot(width, height)) + PADDING);
