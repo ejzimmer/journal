@@ -1,0 +1,37 @@
+.clipboard {
+  --clipboard-redraw: 0.25s;
+
+  path {
+    /* the gap is twice the dash so a fully hidden path leaves no round-cap dot at its end */
+    stroke-dasharray: 1 2;
+    transition: stroke-dashoffset var(--clipboard-redraw) ease-in-out;
+  }
+
+  .board path {
+    stroke-dashoffset: 0;
+    transition-delay: var(--clipboard-redraw);
+  }
+
+  .tick {
+    stroke-dashoffset: 1;
+    transition-delay: 0s;
+  }
+
+  &.show-tick {
+    .board path {
+      stroke-dashoffset: 1;
+      transition-delay: 0s;
+    }
+
+    .tick {
+      stroke-dashoffset: 0;
+      transition-delay: var(--clipboard-redraw);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    path {
+      transition: none;
+    }
+  }
+}

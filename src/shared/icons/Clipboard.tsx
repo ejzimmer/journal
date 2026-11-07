@@ -1,9 +1,13 @@
 import { IconProps } from './types';
+import './Clipboard.css';
+
+type ClipboardIconProps = IconProps & { showTick?: boolean };
 
 export function ClipboardIcon({
   colour = 'currentColor',
+  showTick,
   ...props
-}: IconProps) {
+}: ClipboardIconProps) {
   return (
     <svg
       viewBox="0 0 22.5 22"
@@ -13,10 +17,20 @@ export function ClipboardIcon({
       strokeLinejoin="round"
       width="100%"
       fill="none"
+      className={`clipboard ${showTick ? 'show-tick' : ''}`}
       {...props}
     >
-      <path d="M7.25,3 L4,3 Q3,3 3,4 L3,20 Q3,21 4,21 L18.5,21 Q19.5,21 19.5,20 L19.5,4 Q19.5,3 18.5,3 L15.25,3" />
-      <rect x="7.25" y="1" width="8" height="4" rx="1" />
+      <g className="board">
+        <path
+          d="M7.25,3 L4,3 Q3,3 3,4 L3,20 Q3,21 4,21 L18.5,21 Q19.5,21 19.5,20 L19.5,4 Q19.5,3 18.5,3 L15.25,3"
+          pathLength="1"
+        />
+        <path
+          d="M8.25,1 L14.25,1 Q15.25,1 15.25,2 L15.25,4 Q15.25,5 14.25,5 L8.25,5 Q7.25,5 7.25,4 L7.25,2 Q7.25,1 8.25,1"
+          pathLength="1"
+        />
+      </g>
+      <path className="tick" d="M3,12 L9,18 19.5,3" pathLength="1" />
     </svg>
   );
 }
