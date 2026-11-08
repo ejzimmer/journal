@@ -1,3 +1,5 @@
+import { Tooltip } from '../../../shared/controls/Tooltip';
+
 type VideoUrlTileProps = {
   name?: string;
   defaultValue?: string;
@@ -8,13 +10,14 @@ export function VideoUrlTile({
   defaultValue,
 }: VideoUrlTileProps) {
   return (
-    <div className="progress-tile url-tile tooltip-container">
-      <span className="page-icon tooltip-anchor" aria-hidden="true">
-        🔗
-      </span>
-      <div className="tooltip" aria-hidden="true">
-        URL
-      </div>
+    <div className="progress-tile url-tile">
+      <Tooltip label="URL" position="top">
+        {(triggerProps) => (
+          <span {...triggerProps} className="page-icon" aria-hidden="true">
+            🔗
+          </span>
+        )}
+      </Tooltip>
       <input
         type="url"
         name={name}

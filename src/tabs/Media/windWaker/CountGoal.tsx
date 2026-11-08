@@ -1,5 +1,6 @@
 import { CSSProperties } from 'react';
 import { EditableText } from '../../../shared/controls/EditableText';
+import { Tooltip } from '../../../shared/controls/Tooltip';
 
 import './ItemSlot.css';
 
@@ -21,26 +22,30 @@ export function CountGoal({
   const progress = `${Math.round((100 * value) / total)}%`;
 
   return (
-    <li className="tooltip-container">
-      <div
-        className={`item-slot ring tooltip-anchor ${value >= total ? 'done' : ''}`}
-        style={{ '--progress': progress } as CSSProperties}
-      >
-        <img src={icon} alt="" />
-        <EditableText
-          className="slot-count"
-          label={label}
-          style={{ '--digits': total.toString().length } as CSSProperties}
-          value={value.toString()}
-          onChange={(text) => {
-            const count = Number.parseInt(text);
-            if (!isNaN(count)) {
-              onChange(count);
-            }
-          }}
-        />
-      </div>
-      <div className="tooltip">{label}</div>
+    <li>
+      <Tooltip label={label}>
+        {(triggerProps) => (
+          <div
+            {...triggerProps}
+            className={`item-slot ring ${value >= total ? 'done' : ''}`}
+            style={{ '--progress': progress } as CSSProperties}
+          >
+            <img src={icon} alt="" />
+            <EditableText
+              className="slot-count"
+              label={label}
+              style={{ '--digits': total.toString().length } as CSSProperties}
+              value={value.toString()}
+              onChange={(text) => {
+                const count = Number.parseInt(text);
+                if (!isNaN(count)) {
+                  onChange(count);
+                }
+              }}
+            />
+          </div>
+        )}
+      </Tooltip>
     </li>
   );
 }

@@ -1,5 +1,6 @@
 import { DurationField } from './DurationField';
 import { formatMinutesAndSeconds } from './format';
+import { Tooltip } from '../../../shared/controls/Tooltip';
 
 type EpisodeTimeTileProps = {
   timestampInSeconds?: number;
@@ -11,13 +12,14 @@ export function EpisodeTimeTile({
   lengthInSeconds,
 }: EpisodeTimeTileProps) {
   return (
-    <div className="progress-tile time-tile tooltip-container">
-      <span className="page-icon tooltip-anchor" aria-hidden="true">
-        ⏱️
-      </span>
-      <div className="tooltip" aria-hidden="true">
-        Up to
-      </div>
+    <div className="progress-tile time-tile">
+      <Tooltip label="Up to" position="top">
+        {(triggerProps) => (
+          <span {...triggerProps} className="page-icon" aria-hidden="true">
+            ⏱️
+          </span>
+        )}
+      </Tooltip>
       <DurationField
         label="Up to"
         name="timestamp"

@@ -1,14 +1,17 @@
+import { Tooltip } from '../../../shared/controls/Tooltip';
+
 type PageTileProps = { page?: number; pages?: number };
 
 export function PageTile({ page, pages }: PageTileProps) {
   return (
-    <div className="progress-tile tooltip-container">
-      <span className="page-icon tooltip-anchor" aria-hidden="true">
-        📖
-      </span>
-      <div className="tooltip" aria-hidden="true">
-        Page
-      </div>
+    <div className="progress-tile">
+      <Tooltip label="Page" position="top">
+        {(triggerProps) => (
+          <span {...triggerProps} className="page-icon" aria-hidden="true">
+            📖
+          </span>
+        )}
+      </Tooltip>
       <input
         type="number"
         name="page"

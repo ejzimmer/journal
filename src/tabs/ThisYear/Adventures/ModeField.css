@@ -33,17 +33,6 @@
     outline: 2px solid black;
     outline-offset: 2px;
   }
-
-  .tooltip {
-    position-area: top;
-    margin-inline-start: 0;
-    margin-block-end: 6px;
-  }
-
-  &:hover .tooltip,
-  &:has(:focus-visible) .tooltip {
-    opacity: 1;
-  }
 }
 
 .mode-option-item {
