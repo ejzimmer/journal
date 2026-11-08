@@ -2,7 +2,6 @@ import { render, screen } from '@testing-library/react';
 import { useState } from 'react';
 import userEvent from '@testing-library/user-event';
 import { ExerciseClass } from '../../shared/types';
-import { getToday } from '../../shared/dates';
 import {
   createHealthStorageContext,
   renderWithHealthStorage,
@@ -162,52 +161,12 @@ describe('ExerciseClasses', () => {
       );
     }
 
-    describe('when the trackers are still in progress', () => {
-      it('lists unfinished classes, then the trackers, then finished classes', () => {
-        renderWithHealthStorage(<ExerciseClasses />, {
-          classes: [finished, unfinished],
-        });
-
-        expectCardOrder([
-          'Unfinished class',
-          'Pistol squat',
-          'Dead hang',
-          'Finished class',
-        ]);
+    it('lists unfinished classes before finished ones', () => {
+      renderWithHealthStorage(<ExerciseClasses />, {
+        classes: [finished, unfinished],
       });
-    });
 
-    describe('when a tracker is finished', () => {
-      it('lists it after the finished classes', () => {
-        renderWithHealthStorage(<ExerciseClasses />, {
-          classes: [finished, unfinished],
-          pistolBoxLevel: 0,
-          deadHang: { date: getToday(), hangs: [31, 30] },
-        });
-
-        expectCardOrder([
-          'Unfinished class',
-          'Finished class',
-          'Pistol squat',
-          'Dead hang',
-        ]);
-      });
-    });
-
-    describe('when only one tracker is finished', () => {
-      it('keeps the other with the classes in progress', () => {
-        renderWithHealthStorage(<ExerciseClasses />, {
-          classes: [finished, unfinished],
-          deadHang: { date: getToday(), hangs: [31, 30] },
-        });
-
-        expectCardOrder([
-          'Unfinished class',
-          'Pistol squat',
-          'Finished class',
-          'Dead hang',
-        ]);
-      });
+      expectCardOrder(['Unfinished class', 'Finished class']);
     });
   });
 

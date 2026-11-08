@@ -10,7 +10,6 @@ import {
   CalendarTask,
   Category,
   Exercise,
-  DeadHangSession,
   ExerciseClass,
   HEALTH_PATH,
   ProjectDetails,
@@ -356,14 +355,6 @@ const exercises: Record<string, Exercise> = {
       },
     },
   },
-};
-
-const pistolBoxLevel = 6;
-
-const deadHang: DeadHangSession = {
-  date: todaysDate,
-  hangs: [12, 9, 14],
-  bestHang: 22,
 };
 
 const classes: Record<string, ExerciseClass> = {
@@ -1016,7 +1007,7 @@ export const seedData = {
   },
   [TODO_KEY]: { 週: weeklyTasks, 暦: calendarTasks },
   [PROJECTS_KEY]: projects,
-  [HEALTH_PATH]: { exercises, classes, pistolBox: pistolBoxLevel, deadHang },
+  [HEALTH_PATH]: { exercises, classes },
   yarn: { '2026': yarn },
   language_media: { '2026': languageMedia },
   bikes: {
