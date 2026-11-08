@@ -1,6 +1,6 @@
 import { act, fireEvent } from '@testing-library/react';
 import { UserEvent } from '@testing-library/user-event';
-import { LONG_PRESS_MS } from './useTouchLongPress';
+import { LONG_PRESS_MS } from './useHoverOrLongPress';
 
 export async function longPress(
   user: UserEvent,

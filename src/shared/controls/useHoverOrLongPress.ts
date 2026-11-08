@@ -10,15 +10,15 @@ export type PressPosition = Pick<
 export const isTouch = (event: PointerEvent<Element>) =>
   event.pointerType === 'touch';
 
-type TouchLongPressCallbacks = {
-  onLongPress: (position: PressPosition) => void;
-  onNextPress: () => void;
+type HoverOrLongPressCallbacks = {
+  onShow: (position: PressPosition) => void;
+  onHide: () => void;
 };
 
-export function useTouchLongPress({
-  onLongPress,
-  onNextPress,
-}: TouchLongPressCallbacks) {
+export function useHoverOrLongPress({
+  onShow,
+  onHide,
+}: HoverOrLongPressCallbacks) {
   const pressTimer = useRef<ReturnType<typeof setTimeout>>(undefined);
   const isTouchPress = useRef(false);
   const wasLongPress = useRef(false);
@@ -26,6 +26,14 @@ export function useTouchLongPress({
   const cancelPress = () => clearTimeout(pressTimer.current);
 
   return {
+    // Touch fires pointerenter on touch down and pointerleave on lift, so
+    // hover only counts for mouse and pen.
+    onPointerEnter: (event: PointerEvent<Element>) => {
+      if (!isTouch(event)) onShow(event);
+    },
+    onPointerLeave: (event: PointerEvent<Element>) => {
+      if (!isTouch(event)) onHide();
+    },
     onPointerDown: (event: PointerEvent<Element>) => {
       isTouchPress.current = isTouch(event);
       wasLongPress.current = false;
@@ -34,8 +42,8 @@ export function useTouchLongPress({
       const { currentTarget, clientX, clientY } = event;
       pressTimer.current = setTimeout(() => {
         wasLongPress.current = true;
-        onLongPress({ currentTarget, clientX, clientY });
-        document.addEventListener('pointerdown', onNextPress, {
+        onShow({ currentTarget, clientX, clientY });
+        document.addEventListener('pointerdown', onHide, {
           once: true,
           capture: true,
         });

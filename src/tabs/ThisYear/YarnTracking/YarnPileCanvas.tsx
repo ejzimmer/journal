@@ -3,8 +3,8 @@ import { CursorPositionedTooltip } from '../../../shared/controls/CursorPosition
 import {
   isTouch,
   PressPosition,
-  useTouchLongPress,
-} from '../../../shared/controls/useTouchLongPress';
+  useHoverOrLongPress,
+} from '../../../shared/controls/useHoverOrLongPress';
 import { PlacedBall } from './bowlWorld';
 import { Bowl, createBallSprites, drawPile } from './drawPile';
 import { getBallDetails } from './yarnBallText';
@@ -66,9 +66,9 @@ export function YarnPileCanvas({
     );
   };
 
-  const longPressHandlers = useTouchLongPress({
-    onLongPress: findBallUnderPointer,
-    onNextPress: hideTooltip,
+  const hoverOrLongPressHandlers = useHoverOrLongPress({
+    onShow: findBallUnderPointer,
+    onHide: hideTooltip,
   });
 
   return (
@@ -82,13 +82,10 @@ export function YarnPileCanvas({
           height: height + 2 * EFFECTS_BLEED,
           margin: -EFFECTS_BLEED,
         }}
+        {...hoverOrLongPressHandlers}
         onPointerMove={(event) => {
           if (!isTouch(event)) findBallUnderPointer(event);
         }}
-        onPointerLeave={(event) => {
-          if (!isTouch(event)) hideTooltip();
-        }}
-        {...longPressHandlers}
       />
       {hoveredBall && (
         <CursorPositionedTooltip

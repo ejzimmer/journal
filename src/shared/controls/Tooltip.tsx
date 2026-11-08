@@ -6,7 +6,7 @@ import {
   useId,
   useRef,
 } from 'react';
-import { isTouch, useTouchLongPress } from './useTouchLongPress';
+import { useHoverOrLongPress } from './useHoverOrLongPress';
 
 type TooltipPosition = 'top' | 'right' | 'top-right';
 
@@ -53,17 +53,9 @@ export function Tooltip({ label, position = 'right', children }: TooltipProps) {
     }
   };
 
-  const showTooltipForMouse = (event: PointerEvent<Element>) => {
-    if (!isTouch(event)) showTooltip();
-  };
-
-  const hideTooltipForMouse = (event: PointerEvent<Element>) => {
-    if (!isTouch(event)) hideTooltip();
-  };
-
-  const longPressHandlers = useTouchLongPress({
-    onLongPress: showTooltip,
-    onNextPress: hideTooltip,
+  const hoverOrLongPressHandlers = useHoverOrLongPress({
+    onShow: showTooltip,
+    onHide: hideTooltip,
   });
 
   const showTooltipOnKeyboardFocus = (event: FocusEvent<Element>) => {
@@ -77,9 +69,7 @@ export function Tooltip({ label, position = 'right', children }: TooltipProps) {
       {children({
         ref: anchorTooltipToTrigger,
         'aria-describedby': id,
-        onPointerEnter: showTooltipForMouse,
-        onPointerLeave: hideTooltipForMouse,
-        ...longPressHandlers,
+        ...hoverOrLongPressHandlers,
         onFocus: showTooltipOnKeyboardFocus,
         onBlur: hideTooltip,
       })}
