@@ -1,15 +1,14 @@
 import { CSSProperties } from 'react';
 import { SymptomIcons } from './SymptomIcons';
 import { LoggedSymptom } from './symptoms';
-import { WatchIcon } from './WatchIcon';
+import { SymptomIcon } from './SymptomIcon';
 import { WATCH } from './watchCharging';
 import { splitIntoRows } from './symptomRows';
 import './DayHoverCircle.css';
 
-const ICON_SIZE = 18;
+const ICON_SIZE = 24;
 const GAP = 2;
 const TEXT_WIDTH = 70;
-const WATCH_SIZE = 16;
 const TEXT_HEIGHT = 36;
 const MIN_SIZE = 106;
 const PADDING = 14;
@@ -45,7 +44,12 @@ export function DayHoverCircle({
         </b>
         <div>{balance?.toLocaleString()}</div>
         {watchCharged && (
-          <WatchIcon colour={WATCH.colour} width={`${WATCH_SIZE}px`} />
+          <SymptomIcon
+            symptom={WATCH}
+            magnitude={1}
+            width={`${ICON_SIZE}px`}
+            onDot
+          />
         )}
       </div>
       <SymptomIcons symptoms={symptoms} iconSize={ICON_SIZE} />

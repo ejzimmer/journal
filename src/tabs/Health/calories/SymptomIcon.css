@@ -1,0 +1,12 @@
+.symptom-outlines {
+  opacity: 0.7;
+}
+
+.symptom-outline {
+  fill: none;
+  stroke: white;
+
+  &.filled {
+    fill: white;
+  }
+}
