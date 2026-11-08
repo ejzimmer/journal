@@ -1,36 +1,35 @@
 import { PointerEvent, useRef, useState } from 'react';
 import { CursorPositionedTooltip } from './controls/CursorPositionedTooltip';
-import {
-  PressPosition,
-  useHoverOrLongPress,
-} from './controls/useHoverOrLongPress';
+import { createHoverHandlers } from './controls/createHoverHandlers';
+import { PointerPosition } from './controls/pointerPosition';
+import { useTouchLongPress } from './controls/useTouchLongPress';
 
 type TooltipState = { text: string; rect: DOMRect };
 
 export function useCursorPositionedTooltip() {
   const [state, setState] = useState<TooltipState>();
 
-  const activeTriggerText = useRef('');
+  const pressedTriggerText = useRef('');
 
-  const showTooltip = (text: string, position: PressPosition) =>
+  const showTooltip = (text: string, position: PointerPosition) =>
     setState({ text, rect: position.currentTarget.getBoundingClientRect() });
 
   const hideTooltip = () => setState(undefined);
 
-  const handlers = useHoverOrLongPress({
-    onShow: (position) => showTooltip(activeTriggerText.current, position),
+  const longPressHandlers = useTouchLongPress({
+    onShow: (position) => showTooltip(pressedTriggerText.current, position),
     onHide: hideTooltip,
   });
 
   const createTooltipHandlers = (text: string) => ({
-    ...handlers,
-    onPointerEnter: (event: PointerEvent<Element>) => {
-      activeTriggerText.current = text;
-      handlers.onPointerEnter(event);
-    },
+    ...createHoverHandlers({
+      onShow: (position) => showTooltip(text, position),
+      onHide: hideTooltip,
+    }),
+    ...longPressHandlers,
     onPointerDown: (event: PointerEvent<Element>) => {
-      activeTriggerText.current = text;
-      handlers.onPointerDown(event);
+      pressedTriggerText.current = text;
+      longPressHandlers.onPointerDown(event);
     },
   });
 
