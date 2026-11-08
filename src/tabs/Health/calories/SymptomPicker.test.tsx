@@ -188,5 +188,18 @@ describe('SymptomPicker', () => {
         expect(activeCellName(picker)).toBe('cough 3');
       });
     });
+
+    describe('hovering a level', () => {
+      it("shows the symptom's name", async () => {
+        const { user } = await openPicker();
+
+        await user.hover(
+          screen.getByRole('gridcell', { name: 'sore throat 2' }),
+        );
+
+        expect(screen.getByRole('tooltip')).toHaveTextContent('sore throat');
+        expect(screen.getByText('sore throat')).toBeVisible();
+      });
+    });
   });
 });

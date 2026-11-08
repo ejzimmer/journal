@@ -1,3 +1,4 @@
+import { Tooltip } from '../../../shared/controls/Tooltip';
 import { SymptomIcon } from './SymptomIcon';
 import { Magnitude, MAGNITUDES, Symptom } from './symptoms';
 
@@ -17,22 +18,26 @@ export function SymptomRow({
   onSelect,
 }: SymptomRowProps) {
   return (
-    <div className="symptom-row" role="row">
-      {MAGNITUDES.map((level) => (
-        <div
-          key={level}
-          id={cellId(level)}
-          role="gridcell"
-          className="symptom-level"
-          aria-label={`${symptom.label} ${level}`}
-          aria-selected={magnitude === level}
-          data-active={activeLevel === level || undefined}
-          onMouseDown={(event) => event.preventDefault()}
-          onClick={() => onSelect(level)}
-        >
-          <SymptomIcon symptom={symptom} magnitude={level} width="40px" />
+    <Tooltip label={symptom.label}>
+      {(triggerProps) => (
+        <div {...triggerProps} className="symptom-row" role="row">
+          {MAGNITUDES.map((level) => (
+            <div
+              key={level}
+              id={cellId(level)}
+              role="gridcell"
+              className="symptom-level"
+              aria-label={`${symptom.label} ${level}`}
+              aria-selected={magnitude === level}
+              data-active={activeLevel === level || undefined}
+              onMouseDown={(event) => event.preventDefault()}
+              onClick={() => onSelect(level)}
+            >
+              <SymptomIcon symptom={symptom} magnitude={level} width="40px" />
+            </div>
+          ))}
         </div>
-      ))}
-    </div>
+      )}
+    </Tooltip>
   );
 }
