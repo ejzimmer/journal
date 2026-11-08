@@ -2,7 +2,7 @@ import { formatDayAndMonth, getLocalDate } from '../../../shared/dates';
 import { CallistemonFlower } from './CallistemonFlower';
 import { findBranchPoint } from './findBranchPoint';
 import { Bloom } from './getBlooms';
-import { growShoot } from './growShoots';
+import { growArchingShoot, growShoot } from './growShoots';
 import { HoverCloud } from './HoverCloud';
 import { createSeededRandom } from './seededRandom';
 import { Point } from './treeGeometry';
@@ -16,12 +16,12 @@ const FIRST_FORK = 0.4;
 const LONE_FORK = 0.75;
 const STEM_LENGTH = 36;
 const STEM_TURN = 50;
+const ARCH = [30, 55];
 
 const SHOOTS = TREE_SPECIES.book.shoots;
 const TWIG_STYLE = {
   ...SHOOTS,
   widths: [2.2, 1] as [number, number],
-  bend: 0.08,
 };
 const STEM_STYLE = {
   ...SHOOTS,
@@ -55,10 +55,12 @@ export function CallistemonSpray({
   onSelect,
 }: CallistemonSprayProps) {
   const random = createSeededRandom(seed);
-  const twig = growShoot(
+  const [gentlest, steepest] = ARCH;
+  const twig = growArchingShoot(
     base,
     angle,
     TWIG_LENGTH + TWIG_LENGTH_PER_FLOWER * blooms.length,
+    side * (gentlest + random() * (steepest - gentlest)),
     TWIG_STYLE,
     random,
     [[0.15, 0.35]],

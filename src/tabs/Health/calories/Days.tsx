@@ -2,7 +2,11 @@ import { CSSProperties, useMemo } from 'react';
 
 import './Days.css';
 import { Balance } from '../utils';
-import { PeriodIcons } from './PeriodIcons';
+import { SymptomIcons } from './SymptomIcons';
+import { DayHoverCircle } from './DayHoverCircle';
+import { isWatchCharged, listDayIcons } from './watchCharging';
+import { parseSymptoms } from './symptoms';
+import { getRestingIconSize } from './restingIconSize';
 
 type DaysProps = {
   days: Balance[];
@@ -28,35 +32,42 @@ export function Days({ days, onSelectDay }: DaysProps) {
       aria-label="by day"
       style={{ '--starting-index': startingIndex } as CSSProperties}
     >
-      {days.map((day, index) => (
-        <li
-          key={day.id}
-          className="day-circle"
-          style={
-            {
-              animationDelay: `${popDelays[index]}s`,
-              ...(typeof day.diff === 'number'
-                ? { '--day-colour': getDayColour(day.diff, maxDiff) }
-                : {}),
-            } as CSSProperties
-          }
-        >
-          <button
-            type="button"
-            className="day-button"
-            aria-label={`update ${day.day} ${day.month}`}
-            onClick={() => onSelectDay(day.id)}
+      {days.map((day, index) => {
+        const restingIcons = listDayIcons(day.trackers);
+        return (
+          <li
+            key={day.id}
+            className="day-circle"
+            style={
+              {
+                animationDelay: `${popDelays[index]}s`,
+                ...(typeof day.diff === 'number'
+                  ? { '--day-colour': getDayColour(day.diff, maxDiff) }
+                  : {}),
+              } as CSSProperties
+            }
           >
-            <div className="day-details" style={{ textAlign: 'center' }}>
-              <b>
-                {day.day} {day.month}
-              </b>
-              <div>{day.balance?.toLocaleString()}</div>
-            </div>
-          </button>
-          <PeriodIcons trackers={day.trackers} />
-        </li>
-      ))}
+            <button
+              type="button"
+              className="day-button"
+              aria-label={`update ${day.day} ${day.month}`}
+              onClick={() => onSelectDay(day.id)}
+            >
+              <SymptomIcons
+                symptoms={restingIcons}
+                iconSize={getRestingIconSize(restingIcons.length)}
+              />
+            </button>
+            <DayHoverCircle
+              day={day.day}
+              month={day.month}
+              balance={day.balance}
+              symptoms={parseSymptoms(day.trackers)}
+              watchCharged={isWatchCharged(day.trackers)}
+            />
+          </li>
+        );
+      })}
     </ol>
   );
 }

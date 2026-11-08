@@ -167,6 +167,16 @@ ol.work-lists > li {
       opacity: 0.4;
     }
 
+    @media (hover: none) {
+      &:not(:focus-within) .task-content > button.add-metadata {
+        display: none;
+      }
+
+      &:focus-within .task-content > button.add-metadata {
+        opacity: 0.4;
+      }
+    }
+
     .task-content {
       display: flex;
       flex-grow: 1;

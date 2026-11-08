@@ -72,9 +72,37 @@ const unlabelledList: WorkTask = {
   },
 };
 
+const featureGateList: WorkTask = {
+  id: 'list-3',
+  description: 'Feature gates',
+  status: 'not_started',
+  parentId: 'work',
+  lastStatusUpdate: '2026-01-01',
+  position: 2,
+  items: {
+    'gate-1': {
+      id: 'gate-1',
+      description: 'new-checkout-2 [0930]',
+      status: 'not_started',
+      parentId: 'list-3',
+      lastStatusUpdate: '2026-01-01',
+      position: 0,
+    },
+    'gate-2': {
+      id: 'gate-2',
+      description: 'Turn on new checkout',
+      status: 'not_started',
+      parentId: 'list-3',
+      lastStatusUpdate: '2026-01-01',
+      position: 1,
+    },
+  },
+};
+
 const lists: Record<string, WorkTask> = {
   [labelledList.id]: labelledList,
   [unlabelledList.id]: unlabelledList,
+  [featureGateList.id]: featureGateList,
 };
 
 const mockLabels: StoredLabel[] = [a11yLabel, urgentLabel];
@@ -198,6 +226,34 @@ describe('TaskList count', () => {
     renderTaskList(labelledList.id, createStorageContext());
 
     expect(screen.queryByLabelText(/tasks remaining/)).not.toBeInTheDocument();
+  });
+});
+
+describe('TaskList task actions', () => {
+  describe('when a task is named like a feature gate', () => {
+    it('copies the feature gate name, without its timestamp', async () => {
+      const user = userEvent.setup();
+      renderTaskList(featureGateList.id, createStorageContext());
+
+      await user.click(
+        screen.getByRole('button', { name: 'Copy new-checkout-2' }),
+      );
+
+      expect(await navigator.clipboard.readText()).toBe('new-checkout-2');
+    });
+  });
+
+  describe('when a task is not named like a feature gate', () => {
+    it('offers to add subtasks', () => {
+      renderTaskList(featureGateList.id, createStorageContext());
+
+      const [addSubtask] = screen.getAllByRole('button', {
+        name: 'Add subtask',
+      });
+      expect(addSubtask.closest('li')).toHaveTextContent(
+        'Turn on new checkout',
+      );
+    });
   });
 });
 

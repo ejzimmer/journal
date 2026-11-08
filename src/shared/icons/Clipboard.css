@@ -1,0 +1,57 @@
+.clipboard {
+  /* distances along .line in viewBox units: the clipboard outline loops from
+     the tick's start back round to it, and the clip's top edge is the stretch
+     between --clip-start and --clip-end */
+  --outline-length: 70.74;
+  --tick-length: 26.8;
+  --clip-start: 46.62;
+  --clip-end: 57.87;
+  --line-speed: 150;
+
+  --outline-time: calc(var(--outline-length) * 1s / var(--line-speed));
+  --tick-time: calc(var(--tick-length) * 1s / var(--line-speed));
+  --shrink-time: calc(var(--outline-time) - var(--tick-time));
+  --clip-time: calc(
+    (var(--clip-end) - var(--clip-start)) * 1s / var(--line-speed)
+  );
+
+  /* the trailing end of the dash travels the whole outline while its length
+     shrinks to the tick's, so the leading end stays put until the remaining
+     outline is as long as the tick, then runs on into it at the same speed */
+  .line {
+    stroke-dasharray: var(--outline-length) 1000;
+    stroke-dashoffset: 0;
+    transition:
+      stroke-dashoffset var(--outline-time) linear,
+      stroke-dasharray var(--shrink-time) linear var(--tick-time);
+  }
+
+  .clip {
+    /* the gap is twice the dash so a fully hidden path leaves no round-cap dot at its end */
+    stroke-dasharray: 1 2;
+    stroke-dashoffset: 0;
+    transition: stroke-dashoffset var(--clip-time) linear
+      calc((var(--outline-length) - var(--clip-end)) * 1s / var(--line-speed));
+  }
+
+  &.show-tick {
+    .line {
+      stroke-dasharray: var(--tick-length) 1000;
+      stroke-dashoffset: calc(-1 * var(--outline-length));
+      transition:
+        stroke-dashoffset var(--outline-time) linear,
+        stroke-dasharray var(--shrink-time) linear;
+    }
+
+    .clip {
+      stroke-dashoffset: 1;
+      transition-delay: calc(var(--clip-start) * 1s / var(--line-speed));
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    path {
+      transition: none;
+    }
+  }
+}
