@@ -358,8 +358,10 @@ describe('Calories', () => {
             screen.getByRole('button', { name: 'update 3 Jan' }),
           );
 
-          const toggle = screen.getByRole('button', { name: 'watch charged' });
-          expect(toggle).toHaveAttribute('aria-pressed', 'true');
+          const toggle = screen.getByRole('checkbox', {
+            name: 'watch charged',
+          });
+          expect(toggle).toBeChecked();
           await user.click(toggle);
           await saveForm(user);
 
@@ -379,7 +381,7 @@ describe('Calories', () => {
           );
 
           await user.click(
-            screen.getByRole('button', { name: 'watch charged' }),
+            screen.getByRole('checkbox', { name: 'watch charged' }),
           );
           await user.click(screen.getByRole('combobox', { name: 'symptoms' }));
           await user.click(
@@ -392,6 +394,51 @@ describe('Calories', () => {
               id: '2026-01-03',
               trackers: ['watch-charged', 'flow-1'],
             }),
+          );
+        });
+      });
+    });
+
+    describe('hovering the watch toggle in the form', () => {
+      it('shows what it tracks', async () => {
+        const { user } = await openDayForm([]);
+        await user.click(screen.getByRole('button', { name: 'update 3 Jan' }));
+
+        await user.hover(
+          screen.getByRole('checkbox', { name: 'watch charged' }),
+        );
+
+        expect(screen.getByRole('tooltip')).toHaveTextContent('watch charged');
+      });
+    });
+
+    describe('with the watch toggle focused in the form', () => {
+      const focusToggle = async () => {
+        const { user, updateDay } = await openDayForm(['flow-2']);
+        await user.click(screen.getByRole('button', { name: 'update 3 Jan' }));
+        const toggle = screen.getByRole('checkbox', { name: 'watch charged' });
+        toggle.focus();
+        return { user, updateDay, toggle };
+      };
+
+      describe('pressing space', () => {
+        it('turns the watch on', async () => {
+          const { user, toggle } = await focusToggle();
+
+          await user.keyboard(' ');
+
+          expect(toggle).toBeChecked();
+        });
+      });
+
+      describe('pressing enter', () => {
+        it('saves the day as it stands', async () => {
+          const { user, updateDay } = await focusToggle();
+
+          await user.keyboard('{Enter}');
+
+          expect(updateDay).toHaveBeenCalledWith(
+            expect.objectContaining({ id: '2026-01-03', trackers: ['flow-2'] }),
           );
         });
       });
