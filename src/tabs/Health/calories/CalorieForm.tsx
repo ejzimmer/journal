@@ -2,8 +2,9 @@ import { FormEvent, useEffect, useId, useRef, useState } from 'react';
 import { FormControl } from '../../../shared/controls/FormControl';
 import { XIcon } from '../../../shared/icons/X';
 import { SymptomPicker } from './SymptomPicker';
-import { WatchChargedToggle } from './WatchChargedToggle';
-import { isWatchCharged, setWatchCharged } from './watchCharging';
+import { EmojiCheckbox } from '../../../shared/controls/EmojiCheckbox';
+import { SymptomIcon } from './SymptomIcon';
+import { isWatchCharged, setWatchCharged, WATCH } from './watchCharging';
 
 type CalorieFormProps = {
   date: { day: number; month: string };
@@ -93,10 +94,12 @@ export function CalorieForm({
           size={4}
         />
         <div className="day-trackers">
-          <WatchChargedToggle
-            charged={isWatchCharged(trackers)}
-            onChange={(charged) =>
-              setTrackers(setWatchCharged(trackers, charged))
+          <EmojiCheckbox
+            emoji={<SymptomIcon symptom={WATCH} magnitude={1} width="24px" />}
+            label={WATCH.label}
+            isChecked={isWatchCharged(trackers)}
+            onChange={(event) =>
+              setTrackers(setWatchCharged(trackers, event.target.checked))
             }
           />
           <SymptomPicker trackers={trackers} onChange={setTrackers} />

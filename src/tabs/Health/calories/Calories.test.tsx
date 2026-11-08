@@ -358,8 +358,10 @@ describe('Calories', () => {
             screen.getByRole('button', { name: 'update 3 Jan' }),
           );
 
-          const toggle = screen.getByRole('button', { name: 'watch charged' });
-          expect(toggle).toHaveAttribute('aria-pressed', 'true');
+          const toggle = screen.getByRole('checkbox', {
+            name: 'watch charged',
+          });
+          expect(toggle).toBeChecked();
           await user.click(toggle);
           await saveForm(user);
 
@@ -379,7 +381,7 @@ describe('Calories', () => {
           );
 
           await user.click(
-            screen.getByRole('button', { name: 'watch charged' }),
+            screen.getByRole('checkbox', { name: 'watch charged' }),
           );
           await user.click(screen.getByRole('combobox', { name: 'symptoms' }));
           await user.click(
@@ -401,7 +403,7 @@ describe('Calories', () => {
       const focusToggle = async () => {
         const { user, updateDay } = await openDayForm(['flow-2']);
         await user.click(screen.getByRole('button', { name: 'update 3 Jan' }));
-        const toggle = screen.getByRole('button', { name: 'watch charged' });
+        const toggle = screen.getByRole('checkbox', { name: 'watch charged' });
         toggle.focus();
         return { user, updateDay, toggle };
       };
@@ -412,7 +414,7 @@ describe('Calories', () => {
 
           await user.keyboard(' ');
 
-          expect(toggle).toHaveAttribute('aria-pressed', 'true');
+          expect(toggle).toBeChecked();
         });
       });
 

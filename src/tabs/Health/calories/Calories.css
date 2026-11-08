@@ -102,6 +102,20 @@
       display: flex;
       align-items: center;
       gap: 4px;
+
+      .emoji-checkbox {
+        opacity: 0.35;
+        filter: grayscale(60%);
+        transition:
+          opacity 0.2s,
+          filter 0.2s;
+
+        &:hover,
+        &.done {
+          opacity: 1;
+          filter: none;
+        }
+      }
     }
 
     button[type='submit'] {
