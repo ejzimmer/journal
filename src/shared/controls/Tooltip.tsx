@@ -4,6 +4,7 @@ import {
   PointerEvent,
   ReactNode,
   useEffect,
+  useEffectEvent,
   useId,
   useRef,
 } from 'react';
@@ -48,15 +49,27 @@ export function Tooltip({
     trigger?.style.setProperty('anchor-name', anchorName);
   };
 
-  const showTooltip = () => showPopover(tooltipRef.current);
-  const hideTooltip = () => hidePopover(tooltipRef.current);
+  const showTooltip = () => {
+    const tooltip = tooltipRef.current;
+    if (tooltip && !tooltip.matches(':popover-open')) {
+      tooltip.showPopover();
+    }
+  };
+
+  const hideTooltip = () => {
+    const tooltip = tooltipRef.current;
+    if (tooltip?.matches(':popover-open')) {
+      tooltip.hidePopover();
+    }
+  };
+
+  const setTooltipOpen = useEffectEvent((open: boolean) =>
+    open ? showTooltip() : hideTooltip(),
+  );
 
   useEffect(() => {
-    if (isOpen === undefined) return;
-    if (isOpen) {
-      showPopover(tooltipRef.current);
-    } else {
-      hidePopover(tooltipRef.current);
+    if (isOpen !== undefined) {
+      setTooltipOpen(isOpen);
     }
   }, [isOpen]);
 
@@ -93,16 +106,4 @@ export function Tooltip({
       </div>
     </>
   );
-}
-
-function showPopover(popover: HTMLElement | null) {
-  if (popover && !popover.matches(':popover-open')) {
-    popover.showPopover();
-  }
-}
-
-function hidePopover(popover: HTMLElement | null) {
-  if (popover?.matches(':popover-open')) {
-    popover.hidePopover();
-  }
 }
