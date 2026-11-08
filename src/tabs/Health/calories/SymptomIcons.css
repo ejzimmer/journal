@@ -7,10 +7,15 @@
 
   .symptom-icon-row {
     display: flex;
+    align-items: center;
     gap: 2px;
   }
 
   span {
     display: flex;
+  }
+
+  .more-icon svg {
+    fill: color-mix(in oklch, var(--day-colour, hsl(200 90% 96%)), black 60%);
   }
 }

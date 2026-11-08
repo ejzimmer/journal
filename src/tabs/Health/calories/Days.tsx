@@ -8,6 +8,8 @@ import { isWatchCharged, listDayIcons } from './watchCharging';
 import { parseSymptoms } from './symptoms';
 import { getRestingIconSize } from './restingIconSize';
 
+const MAX_RESTING_ICONS = 7;
+
 type DaysProps = {
   days: Balance[];
   onSelectDay: (dayId: string) => void;
@@ -55,7 +57,10 @@ export function Days({ days, onSelectDay }: DaysProps) {
             >
               <SymptomIcons
                 symptoms={restingIcons}
-                iconSize={getRestingIconSize(restingIcons.length)}
+                iconSize={getRestingIconSize(
+                  Math.min(restingIcons.length, MAX_RESTING_ICONS),
+                )}
+                maxIcons={MAX_RESTING_ICONS}
               />
             </button>
             <DayHoverCircle

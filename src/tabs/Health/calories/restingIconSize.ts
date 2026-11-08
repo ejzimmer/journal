@@ -1,8 +1,8 @@
 import { splitIntoRows } from './symptomRows';
 
-const CONTENT_SIZE = 30;
+const CONTENT_SIZE = 42;
 const GAP = 2;
-const MAX_ICON_SIZE = 14;
+const MAX_ICON_SIZE = 24;
 
 export function getRestingIconSize(count: number) {
   const rows = splitIntoRows(Array.from({ length: count }));

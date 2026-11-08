@@ -1,11 +1,10 @@
-type WatchIconProps = {
+type WatchGlyphProps = {
   colour: string;
-  width: string;
 };
 
-export function WatchIcon({ colour, width }: WatchIconProps) {
+export function WatchGlyph({ colour }: WatchGlyphProps) {
   return (
-    <svg viewBox="0 0 20 20" width={width} aria-hidden="true">
+    <>
       <path d="M7.5 1H12.5V5H7.5ZM7.5 15H12.5V19H7.5Z" fill={colour} />
       <circle
         cx="10"
@@ -22,6 +21,6 @@ export function WatchIcon({ colour, width }: WatchIconProps) {
         strokeWidth="1.4"
         strokeLinecap="round"
       />
-    </svg>
+    </>
   );
 }
