@@ -25,6 +25,18 @@
     scale 0.15s ease-out,
     opacity 0.1s;
 
+  .day-hover-heading {
+    position: relative;
+    text-align: center;
+
+    svg {
+      position: absolute;
+      top: 50%;
+      right: calc(100% + 2px);
+      translate: 0 -50%;
+    }
+  }
+
   .symptom-icons {
     margin-top: 4px;
   }

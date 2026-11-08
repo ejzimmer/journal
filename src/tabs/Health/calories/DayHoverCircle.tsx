@@ -1,12 +1,15 @@
 import { CSSProperties } from 'react';
 import { SymptomIcons } from './SymptomIcons';
 import { LoggedSymptom } from './symptoms';
+import { WatchIcon } from './WatchIcon';
+import { WATCH } from './watchCharging';
 import { splitIntoRows } from './symptomRows';
 import './DayHoverCircle.css';
 
 const ICON_SIZE = 18;
 const GAP = 2;
 const TEXT_WIDTH = 70;
+const WATCH_SIZE = 16;
 const TEXT_HEIGHT = 36;
 const MIN_SIZE = 106;
 const PADDING = 14;
@@ -16,6 +19,7 @@ type DayHoverCircleProps = {
   month: string;
   balance?: number;
   symptoms: LoggedSymptom[];
+  watchCharged: boolean;
 };
 
 export function DayHoverCircle({
@@ -23,17 +27,27 @@ export function DayHoverCircle({
   month,
   balance,
   symptoms,
+  watchCharged,
 }: DayHoverCircleProps) {
   return (
     <div
       className="day-hover-circle"
       aria-hidden="true"
-      style={{ '--hover-size': getHoverSize(symptoms) } as CSSProperties}
+      style={
+        {
+          '--hover-size': getHoverSize(symptoms),
+        } as CSSProperties
+      }
     >
-      <b>
-        {day} {month}
-      </b>
-      <div>{balance?.toLocaleString()}</div>
+      <div className="day-hover-heading">
+        <b>
+          {day} {month}
+        </b>
+        <div>{balance?.toLocaleString()}</div>
+        {watchCharged && (
+          <WatchIcon colour={WATCH.colour} width={`${WATCH_SIZE}px`} />
+        )}
+      </div>
       <SymptomIcons symptoms={symptoms} iconSize={ICON_SIZE} />
     </div>
   );

@@ -316,6 +316,88 @@ describe('Calories', () => {
     });
   });
 
+  describe('watch charging', () => {
+    const openDayForm = async (trackers: string[]) => {
+      const user = userEvent.setup({
+        advanceTimers: jest.advanceTimersByTime,
+      });
+      const updateDay = jest.fn();
+      renderWithHealthStorage(<Calories />, {
+        days: {
+          '2026-01-03': {
+            id: '2026-01-03',
+            consumed: 1500,
+            expended: 2000,
+            trackers,
+          },
+        },
+        updateDay,
+      });
+      await user.click(screen.getByRole('radio', { name: 'by day' }));
+      return { user, updateDay };
+    };
+
+    const saveForm = async (user: ReturnType<typeof userEvent.setup>) => {
+      await user.click(screen.getByRole('textbox', { name: 'In' }));
+      await user.keyboard('{Enter}');
+    };
+
+    describe('when the watch was charged on a day', () => {
+      it('shows a watch on the day', async () => {
+        await openDayForm(['watch-charged']);
+
+        expect(
+          screen.getByRole('img', { name: 'watch charged' }),
+        ).toBeInTheDocument();
+      });
+
+      describe('and the user turns the watch off in the form and saves', () => {
+        it('saves the day without the watch charge', async () => {
+          const { user, updateDay } = await openDayForm(['watch-charged']);
+          await user.click(
+            screen.getByRole('button', { name: 'update 3 Jan' }),
+          );
+
+          const toggle = screen.getByRole('button', { name: 'watch charged' });
+          expect(toggle).toHaveAttribute('aria-pressed', 'true');
+          await user.click(toggle);
+          await saveForm(user);
+
+          expect(updateDay).toHaveBeenCalledWith(
+            expect.objectContaining({ id: '2026-01-03', trackers: [] }),
+          );
+        });
+      });
+    });
+
+    describe('when a day has a symptom logged', () => {
+      describe('and the user turns the watch on, changes the symptom and saves', () => {
+        it('saves the watch charge alongside the new symptom', async () => {
+          const { user, updateDay } = await openDayForm(['flow-2']);
+          await user.click(
+            screen.getByRole('button', { name: 'update 3 Jan' }),
+          );
+
+          await user.click(
+            screen.getByRole('button', { name: 'watch charged' }),
+          );
+          await user.click(screen.getByRole('combobox', { name: 'symptoms' }));
+          await user.click(
+            screen.getByRole('gridcell', { name: 'period flow 1' }),
+          );
+          await saveForm(user);
+
+          expect(updateDay).toHaveBeenCalledWith(
+            expect.objectContaining({
+              id: '2026-01-03',
+              trackers: ['watch-charged', 'flow-1'],
+            }),
+          );
+        });
+      });
+    });
+  });
+
   describe('the dots', () => {
     describe("today's dot", () => {
       it("opens the form for today, and saves what's entered against today", async () => {
