@@ -27,6 +27,7 @@ export function SymptomPicker({ trackers, onChange }: SymptomPickerProps) {
   const id = useId();
   const gridRef = useRef<HTMLDivElement>(null);
   const [active, setActive] = useState<GridPosition>();
+  const [isNavigatingByKeyboard, setIsNavigatingByKeyboard] = useState(false);
   const anchorName = `--symptom-anchor-${id.replace(/[^a-zA-Z0-9]/g, '')}`;
   const logged = parseSymptoms(trackers);
   const isOpen = active !== undefined;
@@ -41,6 +42,7 @@ export function SymptomPicker({ trackers, onChange }: SymptomPickerProps) {
 
   const close = () => {
     gridRef.current?.hidePopover();
+    setIsNavigatingByKeyboard(false);
     setActive(undefined);
   };
 
@@ -54,12 +56,14 @@ export function SymptomPicker({ trackers, onChange }: SymptomPickerProps) {
     if (!isOpen) {
       if ([' ', 'Enter', 'ArrowUp', 'ArrowDown'].includes(event.key)) {
         event.preventDefault();
+        setIsNavigatingByKeyboard(true);
         open();
       }
       return;
     }
 
     if (isArrowKey(event.key)) {
+      setIsNavigatingByKeyboard(true);
       setActive(moveGridPosition(active, event.key));
     } else if (event.key === ' ') {
       toggleLevel(SYMPTOMS[active.row], MAGNITUDES[active.column]);
@@ -122,8 +126,10 @@ export function SymptomPicker({ trackers, onChange }: SymptomPickerProps) {
             activeLevel={
               active?.row === row ? MAGNITUDES[active.column] : undefined
             }
+            isTooltipOpen={isNavigatingByKeyboard && active?.row === row}
             cellId={(level) => cellId(symptom, level)}
             onSelect={(level) => {
+              setIsNavigatingByKeyboard(false);
               setActive({ row, column: MAGNITUDES.indexOf(level) });
               toggleLevel(symptom, level);
             }}

@@ -6,6 +6,7 @@ type SymptomRowProps = {
   symptom: Symptom;
   magnitude?: Magnitude;
   activeLevel?: Magnitude;
+  isTooltipOpen: boolean;
   cellId: (level: Magnitude) => string;
   onSelect: (level: Magnitude) => void;
 };
@@ -14,11 +15,12 @@ export function SymptomRow({
   symptom,
   magnitude,
   activeLevel,
+  isTooltipOpen,
   cellId,
   onSelect,
 }: SymptomRowProps) {
   return (
-    <Tooltip label={symptom.label}>
+    <Tooltip label={symptom.label} isOpen={isTooltipOpen}>
       {(triggerProps) => (
         <div {...triggerProps} className="symptom-row" role="row">
           {MAGNITUDES.map((level) => (

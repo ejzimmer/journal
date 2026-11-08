@@ -3,6 +3,7 @@ import {
   MouseEvent,
   PointerEvent,
   ReactNode,
+  useEffect,
   useId,
   useRef,
 } from 'react';
@@ -29,10 +30,16 @@ export type TooltipTriggerProps = {
 type TooltipProps = {
   label: string;
   position?: TooltipPosition;
+  isOpen?: boolean;
   children: (triggerProps: TooltipTriggerProps) => ReactNode;
 };
 
-export function Tooltip({ label, position = 'right', children }: TooltipProps) {
+export function Tooltip({
+  label,
+  position = 'right',
+  isOpen,
+  children,
+}: TooltipProps) {
   const id = useId();
   const anchorName = `--tooltip${id.replace(/[^\w-]/g, '-')}`;
   const tooltipRef = useRef<HTMLDivElement>(null);
@@ -41,19 +48,17 @@ export function Tooltip({ label, position = 'right', children }: TooltipProps) {
     trigger?.style.setProperty('anchor-name', anchorName);
   };
 
-  const showTooltip = () => {
-    const tooltip = tooltipRef.current;
-    if (tooltip && !tooltip.matches(':popover-open')) {
-      tooltip.showPopover();
-    }
-  };
+  const showTooltip = () => showPopover(tooltipRef.current);
+  const hideTooltip = () => hidePopover(tooltipRef.current);
 
-  const hideTooltip = () => {
-    const tooltip = tooltipRef.current;
-    if (tooltip?.matches(':popover-open')) {
-      tooltip.hidePopover();
+  useEffect(() => {
+    if (isOpen === undefined) return;
+    if (isOpen) {
+      showPopover(tooltipRef.current);
+    } else {
+      hidePopover(tooltipRef.current);
     }
-  };
+  }, [isOpen]);
 
   const longPressHandlers = useTouchLongPress({
     onShow: showTooltip,
@@ -88,4 +93,16 @@ export function Tooltip({ label, position = 'right', children }: TooltipProps) {
       </div>
     </>
   );
+}
+
+function showPopover(popover: HTMLElement | null) {
+  if (popover && !popover.matches(':popover-open')) {
+    popover.showPopover();
+  }
+}
+
+function hidePopover(popover: HTMLElement | null) {
+  if (popover?.matches(':popover-open')) {
+    popover.hidePopover();
+  }
 }
