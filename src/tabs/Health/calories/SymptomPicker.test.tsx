@@ -119,6 +119,19 @@ describe('SymptomPicker', () => {
 
         expect(activeCellName(picker)).toBe('headache 1');
       });
+
+      describe('moving to another symptom', () => {
+        it("shows that symptom's name instead", async () => {
+          const { user } = await openPicker();
+          const headache = screen.getByText('headache');
+          expect(headache).toBeVisible();
+
+          await user.keyboard('{ArrowDown}');
+
+          expect(screen.getByText('period flow')).toBeVisible();
+          expect(headache).not.toBeVisible();
+        });
+      });
     });
 
     describe('pressing space', () => {
@@ -186,6 +199,21 @@ describe('SymptomPicker', () => {
         expect(trackers()).toBe('cough-3');
         expect(picker).toHaveAttribute('aria-expanded', 'true');
         expect(activeCellName(picker)).toBe('cough 3');
+      });
+    });
+  });
+
+  describe('when the picker is opened with the mouse', () => {
+    describe('hovering a level', () => {
+      it("shows the symptom's name", async () => {
+        const { user, picker } = renderPicker();
+        await user.click(picker);
+
+        await user.hover(
+          screen.getByRole('gridcell', { name: 'sore throat 2' }),
+        );
+
+        expect(screen.getByRole('tooltip')).toHaveTextContent('sore throat');
       });
     });
   });

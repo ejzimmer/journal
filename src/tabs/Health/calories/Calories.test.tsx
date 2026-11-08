@@ -399,6 +399,19 @@ describe('Calories', () => {
       });
     });
 
+    describe('hovering the watch toggle in the form', () => {
+      it('shows what it tracks', async () => {
+        const { user } = await openDayForm([]);
+        await user.click(screen.getByRole('button', { name: 'update 3 Jan' }));
+
+        await user.hover(
+          screen.getByRole('checkbox', { name: 'watch charged' }),
+        );
+
+        expect(screen.getByRole('tooltip')).toHaveTextContent('watch charged');
+      });
+    });
+
     describe('with the watch toggle focused in the form', () => {
       const focusToggle = async () => {
         const { user, updateDay } = await openDayForm(['flow-2']);

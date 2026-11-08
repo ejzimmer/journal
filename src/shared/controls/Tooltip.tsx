@@ -3,6 +3,8 @@ import {
   MouseEvent,
   PointerEvent,
   ReactNode,
+  useEffect,
+  useEffectEvent,
   useId,
   useRef,
 } from 'react';
@@ -29,10 +31,16 @@ export type TooltipTriggerProps = {
 type TooltipProps = {
   label: string;
   position?: TooltipPosition;
+  isOpen?: boolean;
   children: (triggerProps: TooltipTriggerProps) => ReactNode;
 };
 
-export function Tooltip({ label, position = 'right', children }: TooltipProps) {
+export function Tooltip({
+  label,
+  position = 'right',
+  isOpen,
+  children,
+}: TooltipProps) {
   const id = useId();
   const anchorName = `--tooltip${id.replace(/[^\w-]/g, '-')}`;
   const tooltipRef = useRef<HTMLDivElement>(null);
@@ -54,6 +62,16 @@ export function Tooltip({ label, position = 'right', children }: TooltipProps) {
       tooltip.hidePopover();
     }
   };
+
+  const setTooltipOpen = useEffectEvent((open: boolean) =>
+    open ? showTooltip() : hideTooltip(),
+  );
+
+  useEffect(() => {
+    if (isOpen !== undefined) {
+      setTooltipOpen(isOpen);
+    }
+  }, [isOpen]);
 
   const longPressHandlers = useTouchLongPress({
     onShow: showTooltip,

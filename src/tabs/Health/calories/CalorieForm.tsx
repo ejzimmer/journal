@@ -3,6 +3,7 @@ import { FormControl } from '../../../shared/controls/FormControl';
 import { XIcon } from '../../../shared/icons/X';
 import { SymptomPicker } from './SymptomPicker';
 import { EmojiCheckbox } from '../../../shared/controls/EmojiCheckbox';
+import { Tooltip } from '../../../shared/controls/Tooltip';
 import { SymptomIcon } from './SymptomIcon';
 import { isWatchCharged, setWatchCharged, WATCH } from './watchCharging';
 
@@ -94,14 +95,21 @@ export function CalorieForm({
           size={4}
         />
         <div className="day-trackers">
-          <EmojiCheckbox
-            emoji={<SymptomIcon symptom={WATCH} magnitude={1} width="24px" />}
-            label={WATCH.label}
-            isChecked={isWatchCharged(trackers)}
-            onChange={(event) =>
-              setTrackers(setWatchCharged(trackers, event.target.checked))
-            }
-          />
+          <Tooltip label={WATCH.label}>
+            {(triggerProps) => (
+              <EmojiCheckbox
+                emoji={
+                  <SymptomIcon symptom={WATCH} magnitude={1} width="24px" />
+                }
+                label={WATCH.label}
+                isChecked={isWatchCharged(trackers)}
+                onChange={(event) =>
+                  setTrackers(setWatchCharged(trackers, event.target.checked))
+                }
+                tooltipTriggerProps={triggerProps}
+              />
+            )}
+          </Tooltip>
           <SymptomPicker trackers={trackers} onChange={setTrackers} />
         </div>
         <button type="submit" />
