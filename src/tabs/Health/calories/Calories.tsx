@@ -39,7 +39,8 @@ export function Calories() {
     isPastDay,
     getDayYear,
   );
-  const yesterday = days[days.length - 1];
+  const pastDays = useMemo(() => days.slice(0, -1), [days]);
+  const yesterday = pastDays[pastDays.length - 1];
   const yesterdayId = yesterday && yesterday.id;
   const caloriesRecordedYesterday = typeof yesterday?.diff === 'number';
 
@@ -91,7 +92,7 @@ export function Calories() {
           className={`tracker-pane ${view === 'week' ? 'active' : ''}`}
           aria-hidden={view !== 'week'}
         >
-          <WeeklyCalorieTracker days={days} />
+          <WeeklyCalorieTracker days={pastDays} />
         </div>
         {activeDay && activeDayId && (
           <CalorieForm

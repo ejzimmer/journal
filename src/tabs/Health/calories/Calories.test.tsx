@@ -241,6 +241,35 @@ describe('Calories', () => {
   });
 
   describe('the dots', () => {
+    describe("today's dot", () => {
+      it("opens the form for today, and saves what's entered against today", async () => {
+        const user = userEvent.setup({
+          advanceTimers: jest.advanceTimersByTime,
+        });
+        const updateDay = jest.fn();
+        renderWithHealthStorage(<Calories />, {
+          days: {
+            '2026-01-06': { id: '2026-01-06', consumed: 1800, expended: 2200 },
+          },
+          updateDay,
+        });
+        await user.click(screen.getByRole('radio', { name: 'by day' }));
+
+        await user.click(screen.getByRole('button', { name: 'update 7 Jan' }));
+        await user.type(screen.getByRole('textbox', { name: 'In' }), '1500');
+        await user.type(screen.getByRole('textbox', { name: 'Out' }), '2100');
+        await user.keyboard('{Enter}');
+
+        expect(updateDay).toHaveBeenCalledWith(
+          expect.objectContaining({
+            id: '2026-01-07',
+            consumed: 1500,
+            expended: 2100,
+          }),
+        );
+      });
+    });
+
     describe('once the days run into a second year', () => {
       beforeEach(() => {
         jest.setSystemTime(new Date('2027-01-05'));
@@ -275,6 +304,7 @@ describe('Calories', () => {
           'update 2 Jan',
           'update 3 Jan',
           'update 4 Jan',
+          'update 5 Jan',
         ]);
       });
 

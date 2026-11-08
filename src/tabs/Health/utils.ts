@@ -17,8 +17,8 @@ export type Balance = {
 
 export function setupDays(dayData?: Record<string, DayData>): Balance[] {
   const newYearsDay = Temporal.PlainDate.from('2026-01-01');
-  const numberOfDays = getDaysSince(newYearsDay.toString()) - 1;
-  const days = new Array<Balance>(numberOfDays);
+  const numberOfDays = getDaysSince(newYearsDay.toString());
+  const days = new Array<Balance>(numberOfDays + 1);
 
   let balance = STARTING_BALANCE;
   for (let i = 0; i <= numberOfDays; i += 1) {
