@@ -49,7 +49,6 @@ export function YarnPileCanvas({
   }, [balls, bowl, width, height, sprites, pixelRatio]);
 
   const hideTooltip = () => setHoveredBall(undefined);
-  const createLongPressHandlers = useTouchLongPress(hideTooltip);
 
   const findBallUnderPointer = (event: PressPosition) => {
     const { left, top } = event.currentTarget.getBoundingClientRect();
@@ -66,6 +65,11 @@ export function YarnPileCanvas({
           },
     );
   };
+
+  const longPressHandlers = useTouchLongPress({
+    onLongPress: findBallUnderPointer,
+    onNextPress: hideTooltip,
+  });
 
   return (
     <>
@@ -84,7 +88,7 @@ export function YarnPileCanvas({
         onPointerLeave={(event) => {
           if (!isTouch(event)) hideTooltip();
         }}
-        {...createLongPressHandlers(findBallUnderPointer)}
+        {...longPressHandlers}
       />
       {hoveredBall && (
         <CursorPositionedTooltip

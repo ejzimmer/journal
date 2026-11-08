@@ -10,14 +10,22 @@ export type PressPosition = Pick<
 export const isTouch = (event: PointerEvent<Element>) =>
   event.pointerType === 'touch';
 
-export function useTouchLongPress(onNextPress: () => void) {
+type TouchLongPressCallbacks = {
+  onLongPress: (position: PressPosition) => void;
+  onNextPress: () => void;
+};
+
+export function useTouchLongPress({
+  onLongPress,
+  onNextPress,
+}: TouchLongPressCallbacks) {
   const pressTimer = useRef<ReturnType<typeof setTimeout>>(undefined);
   const isTouchPress = useRef(false);
   const wasLongPress = useRef(false);
 
   const cancelPress = () => clearTimeout(pressTimer.current);
 
-  return (onLongPress: (position: PressPosition) => void) => ({
+  return {
     onPointerDown: (event: PointerEvent<Element>) => {
       isTouchPress.current = isTouch(event);
       wasLongPress.current = false;
@@ -46,5 +54,5 @@ export function useTouchLongPress(onNextPress: () => void) {
         event.stopPropagation();
       }
     },
-  });
+  };
 }

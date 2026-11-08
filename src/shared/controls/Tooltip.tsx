@@ -61,7 +61,10 @@ export function Tooltip({ label, position = 'right', children }: TooltipProps) {
     if (!isTouch(event)) hideTooltip();
   };
 
-  const createLongPressHandlers = useTouchLongPress(hideTooltip);
+  const longPressHandlers = useTouchLongPress({
+    onLongPress: showTooltip,
+    onNextPress: hideTooltip,
+  });
 
   const showTooltipOnKeyboardFocus = (event: FocusEvent<Element>) => {
     if (event.target.matches(':focus-visible')) {
@@ -76,7 +79,7 @@ export function Tooltip({ label, position = 'right', children }: TooltipProps) {
         'aria-describedby': id,
         onPointerEnter: showTooltipForMouse,
         onPointerLeave: hideTooltipForMouse,
-        ...createLongPressHandlers(showTooltip),
+        ...longPressHandlers,
         onFocus: showTooltipOnKeyboardFocus,
         onBlur: hideTooltip,
       })}
