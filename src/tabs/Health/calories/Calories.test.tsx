@@ -3,7 +3,7 @@ import userEvent from '@testing-library/user-event';
 import { Calories } from './Calories';
 import { FirebaseContext } from '../../../shared/FirebaseContext';
 import { createMockFirebaseContext } from '../../../shared/mockFirebase';
-import { DAILY_PATH } from '../../../shared/types';
+import { DAILY_PATH, DayData } from '../../../shared/types';
 import { HealthStorageProvider } from '../HealthStorageContext';
 import { renderWithHealthStorage } from '../healthStorageTestUtils';
 
@@ -151,6 +151,79 @@ describe('Calories', () => {
       ).toBeInTheDocument();
       expect(firstHeading).not.toBeVisible();
       expect(screen.getByRole('textbox', { name: 'In' })).toHaveValue('');
+    });
+  });
+
+  describe('saving with calories left blank', () => {
+    const openDay = async (
+      dayLabel: string,
+      days: Record<string, DayData> = {},
+    ) => {
+      const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
+      const updateDay = jest.fn();
+      renderWithHealthStorage(<Calories />, {
+        days: {
+          '2026-01-06': { id: '2026-01-06', consumed: 1800, expended: 2200 },
+          ...days,
+        },
+        updateDay,
+      });
+      await user.click(screen.getByRole('radio', { name: 'by day' }));
+      await user.click(screen.getByRole('button', { name: dayLabel }));
+      return { user, updateDay };
+    };
+
+    describe('on a day with nothing recorded', () => {
+      it('saves the day with its trackers and no calories', async () => {
+        const { user, updateDay } = await openDay('update 7 Jan');
+
+        await user.click(screen.getByRole('textbox', { name: 'In' }));
+        await user.keyboard('{Enter}');
+
+        expect(updateDay).toHaveBeenCalledWith({
+          id: '2026-01-07',
+          trackers: [],
+        });
+      });
+    });
+
+    describe('on a day with calories and a symptom recorded', () => {
+      it('removes the cleared calories and keeps the symptom', async () => {
+        const { user, updateDay } = await openDay('update 3 Jan', {
+          '2026-01-03': {
+            id: '2026-01-03',
+            consumed: 1500,
+            expended: 2000,
+            trackers: ['🔴'],
+          },
+        });
+
+        await user.clear(screen.getByRole('textbox', { name: 'In' }));
+        await user.clear(screen.getByRole('textbox', { name: 'Out' }));
+        await user.keyboard('{Enter}');
+
+        expect(updateDay).toHaveBeenCalledWith({
+          id: '2026-01-03',
+          trackers: ['🔴'],
+        });
+      });
+    });
+
+    describe('when only one of In and Out is filled in', () => {
+      it('saves the one that was filled in', async () => {
+        const { user, updateDay } = await openDay('update 7 Jan');
+
+        await user.type(
+          screen.getByRole('textbox', { name: 'In' }),
+          '900{Enter}',
+        );
+
+        expect(updateDay).toHaveBeenCalledWith({
+          id: '2026-01-07',
+          consumed: 900,
+          trackers: [],
+        });
+      });
     });
   });
 

@@ -104,11 +104,10 @@ export function Calories() {
             onClose={closeForm}
             onSubmit={({ consumed, expended, trackers }) => {
               updateDay({
-                ...(activeDayData ?? { id: activeDayId }),
                 id: activeDayId,
-                consumed,
-                expended,
                 trackers,
+                ...(consumed !== undefined && { consumed }),
+                ...(expended !== undefined && { expended }),
               });
             }}
           />
