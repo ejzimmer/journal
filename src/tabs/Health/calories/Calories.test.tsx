@@ -19,9 +19,12 @@ describe('Calories', () => {
   });
 
   describe('add calories form', () => {
-    it('shows the form when no calories have been recorded for yesterday', () => {
+    it('shows the form for yesterday when no calories have been recorded for it', () => {
       renderWithHealthStorage(<Calories />);
 
+      expect(
+        screen.getByRole('heading', { name: '6 Jan' }),
+      ).toBeInTheDocument();
       expect(screen.getByRole('textbox', { name: 'In' })).toBeInTheDocument();
       expect(screen.getByRole('textbox', { name: 'Out' })).toBeInTheDocument();
     });
