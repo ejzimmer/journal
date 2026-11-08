@@ -3,7 +3,7 @@ import userEvent from '@testing-library/user-event';
 import { Calories } from './Calories';
 import { FirebaseContext } from '../../../shared/FirebaseContext';
 import { createMockFirebaseContext } from '../../../shared/mockFirebase';
-import { DAILY_PATH } from '../../../shared/types';
+import { DAILY_PATH, DayData } from '../../../shared/types';
 import { HealthStorageProvider } from '../HealthStorageContext';
 import { renderWithHealthStorage } from '../healthStorageTestUtils';
 
@@ -19,9 +19,12 @@ describe('Calories', () => {
   });
 
   describe('add calories form', () => {
-    it('shows the form when no calories have been recorded for yesterday', () => {
+    it('shows the form for yesterday when no calories have been recorded for it', () => {
       renderWithHealthStorage(<Calories />);
 
+      expect(
+        screen.getByRole('heading', { name: '6 Jan' }),
+      ).toBeInTheDocument();
       expect(screen.getByRole('textbox', { name: 'In' })).toBeInTheDocument();
       expect(screen.getByRole('textbox', { name: 'Out' })).toBeInTheDocument();
     });
@@ -154,6 +157,79 @@ describe('Calories', () => {
     });
   });
 
+  describe('saving with calories left blank', () => {
+    const openDay = async (
+      dayLabel: string,
+      days: Record<string, DayData> = {},
+    ) => {
+      const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
+      const updateDay = jest.fn();
+      renderWithHealthStorage(<Calories />, {
+        days: {
+          '2026-01-06': { id: '2026-01-06', consumed: 1800, expended: 2200 },
+          ...days,
+        },
+        updateDay,
+      });
+      await user.click(screen.getByRole('radio', { name: 'by day' }));
+      await user.click(screen.getByRole('button', { name: dayLabel }));
+      return { user, updateDay };
+    };
+
+    describe('on a day with nothing recorded', () => {
+      it('saves the day with its trackers and no calories', async () => {
+        const { user, updateDay } = await openDay('update 7 Jan');
+
+        await user.click(screen.getByRole('textbox', { name: 'In' }));
+        await user.keyboard('{Enter}');
+
+        expect(updateDay).toHaveBeenCalledWith({
+          id: '2026-01-07',
+          trackers: [],
+        });
+      });
+    });
+
+    describe('on a day with calories and a symptom recorded', () => {
+      it('removes the cleared calories and keeps the symptom', async () => {
+        const { user, updateDay } = await openDay('update 3 Jan', {
+          '2026-01-03': {
+            id: '2026-01-03',
+            consumed: 1500,
+            expended: 2000,
+            trackers: ['🔴'],
+          },
+        });
+
+        await user.clear(screen.getByRole('textbox', { name: 'In' }));
+        await user.clear(screen.getByRole('textbox', { name: 'Out' }));
+        await user.keyboard('{Enter}');
+
+        expect(updateDay).toHaveBeenCalledWith({
+          id: '2026-01-03',
+          trackers: ['🔴'],
+        });
+      });
+    });
+
+    describe('when only one of In and Out is filled in', () => {
+      it('saves the one that was filled in', async () => {
+        const { user, updateDay } = await openDay('update 7 Jan');
+
+        await user.type(
+          screen.getByRole('textbox', { name: 'In' }),
+          '900{Enter}',
+        );
+
+        expect(updateDay).toHaveBeenCalledWith({
+          id: '2026-01-07',
+          consumed: 900,
+          trackers: [],
+        });
+      });
+    });
+  });
+
   describe('symptom tracking', () => {
     describe('when a day has a symptom logged', () => {
       const dailyData = {
@@ -241,6 +317,35 @@ describe('Calories', () => {
   });
 
   describe('the dots', () => {
+    describe("today's dot", () => {
+      it("opens the form for today, and saves what's entered against today", async () => {
+        const user = userEvent.setup({
+          advanceTimers: jest.advanceTimersByTime,
+        });
+        const updateDay = jest.fn();
+        renderWithHealthStorage(<Calories />, {
+          days: {
+            '2026-01-06': { id: '2026-01-06', consumed: 1800, expended: 2200 },
+          },
+          updateDay,
+        });
+        await user.click(screen.getByRole('radio', { name: 'by day' }));
+
+        await user.click(screen.getByRole('button', { name: 'update 7 Jan' }));
+        await user.type(screen.getByRole('textbox', { name: 'In' }), '1500');
+        await user.type(screen.getByRole('textbox', { name: 'Out' }), '2100');
+        await user.keyboard('{Enter}');
+
+        expect(updateDay).toHaveBeenCalledWith(
+          expect.objectContaining({
+            id: '2026-01-07',
+            consumed: 1500,
+            expended: 2100,
+          }),
+        );
+      });
+    });
+
     describe('once the days run into a second year', () => {
       beforeEach(() => {
         jest.setSystemTime(new Date('2027-01-05'));
@@ -275,6 +380,7 @@ describe('Calories', () => {
           'update 2 Jan',
           'update 3 Jan',
           'update 4 Jan',
+          'update 5 Jan',
         ]);
       });
 

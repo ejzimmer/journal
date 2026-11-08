@@ -14,8 +14,8 @@ type CalorieFormProps = {
     expended,
     trackers,
   }: {
-    consumed: number;
-    expended: number;
+    consumed?: number;
+    expended?: number;
     trackers: string[];
   }) => void;
 };
@@ -41,16 +41,9 @@ export function CalorieForm({
     const [consumedElement, expendedElement] = (event.target as HTMLFormElement)
       .elements;
 
-    const consumedInput = consumedElement as HTMLInputElement;
-    const expendedInput = expendedElement as HTMLInputElement;
-
-    if (!consumedInput.value || !expendedInput.value) {
-      return;
-    }
-
     onSubmit({
-      consumed: Number.parseInt(consumedInput.value),
-      expended: Number.parseInt(expendedInput.value),
+      consumed: parseCalories(consumedElement as HTMLInputElement),
+      expended: parseCalories(expendedElement as HTMLInputElement),
       trackers,
     });
     onClose();
@@ -102,4 +95,8 @@ export function CalorieForm({
       </form>
     </div>
   );
+}
+
+function parseCalories(input: HTMLInputElement) {
+  return input.value ? Number.parseInt(input.value) : undefined;
 }
