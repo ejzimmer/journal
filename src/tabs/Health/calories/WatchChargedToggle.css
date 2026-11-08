@@ -1,0 +1,20 @@
+.watch-charged-toggle {
+  display: flex;
+  padding: 0;
+  border: none;
+  border-radius: 12px;
+  background: white;
+  box-shadow: none;
+  cursor: pointer;
+  opacity: 0.35;
+  filter: grayscale(60%);
+  transition:
+    opacity 0.2s,
+    filter 0.2s;
+
+  &:hover,
+  &[aria-pressed='true'] {
+    opacity: 1;
+    filter: none;
+  }
+}

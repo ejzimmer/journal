@@ -7,6 +7,7 @@
 
   .symptom-icon-row {
     display: flex;
+    align-items: center;
     gap: 2px;
   }
 
@@ -14,16 +15,7 @@
     display: flex;
   }
 
-  .symptom-outlines {
-    opacity: 0.7;
-  }
-
-  .symptom-outline {
-    fill: none;
-    stroke: white;
-
-    &.filled {
-      fill: white;
-    }
+  .more-icon svg {
+    fill: color-mix(in oklch, var(--day-colour, hsl(200 90% 96%)), black 60%);
   }
 }

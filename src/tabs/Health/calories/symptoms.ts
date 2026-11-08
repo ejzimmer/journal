@@ -1,3 +1,5 @@
+import { ComponentType } from 'react';
+
 export const LIGHT_FLOW = '🟤';
 export const HEAVY_FLOW = '🔴';
 export const OVARY_PAIN = '🥚';
@@ -10,6 +12,8 @@ export type Symptom = {
   colour: string;
   path: string;
   stroked?: boolean;
+  unlevelled?: boolean;
+  Glyph?: ComponentType<{ colour: string }>;
 };
 
 export type LoggedSymptom = { symptom: Symptom; magnitude: Magnitude };
@@ -109,8 +113,8 @@ export function setSymptomMagnitude(
   symptom: Symptom,
   magnitude: Magnitude | undefined,
 ) {
-  const others = parseSymptoms(trackers)
-    .filter((logged) => logged.symptom.id !== symptom.id)
-    .map((logged) => `${logged.symptom.id}-${logged.magnitude}`);
+  const others = trackers
+    .map((tracker) => LEGACY_TRACKERS[tracker] ?? tracker)
+    .filter((tracker) => !tracker.startsWith(`${symptom.id}-`));
   return magnitude ? [...others, `${symptom.id}-${magnitude}`] : others;
 }

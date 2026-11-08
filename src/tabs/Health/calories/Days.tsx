@@ -4,8 +4,11 @@ import './Days.css';
 import { Balance } from '../utils';
 import { SymptomIcons } from './SymptomIcons';
 import { DayHoverCircle } from './DayHoverCircle';
+import { isWatchCharged, listDayIcons } from './watchCharging';
 import { parseSymptoms } from './symptoms';
 import { getRestingIconSize } from './restingIconSize';
+
+const MAX_RESTING_ICONS = 7;
 
 type DaysProps = {
   days: Balance[];
@@ -32,7 +35,7 @@ export function Days({ days, onSelectDay }: DaysProps) {
       style={{ '--starting-index': startingIndex } as CSSProperties}
     >
       {days.map((day, index) => {
-        const symptoms = parseSymptoms(day.trackers);
+        const restingIcons = listDayIcons(day.trackers);
         return (
           <li
             key={day.id}
@@ -53,15 +56,19 @@ export function Days({ days, onSelectDay }: DaysProps) {
               onClick={() => onSelectDay(day.id)}
             >
               <SymptomIcons
-                symptoms={symptoms}
-                iconSize={getRestingIconSize(symptoms.length)}
+                symptoms={restingIcons}
+                iconSize={getRestingIconSize(
+                  Math.min(restingIcons.length, MAX_RESTING_ICONS),
+                )}
+                maxIcons={MAX_RESTING_ICONS}
               />
             </button>
             <DayHoverCircle
               day={day.day}
               month={day.month}
               balance={day.balance}
-              symptoms={symptoms}
+              symptoms={parseSymptoms(day.trackers)}
+              watchCharged={isWatchCharged(day.trackers)}
             />
           </li>
         );

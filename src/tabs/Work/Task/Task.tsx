@@ -17,6 +17,8 @@ import {
 import { Subtasks } from './Subtasks';
 import { BlockedMarker } from './BlockedMarker';
 import { getToday } from '../../../shared/dates';
+import { getFeatureGateName } from '../featureGate';
+import { CopyFeatureGateButton } from './CopyFeatureGateButton';
 
 type TaskProps = {
   task: WorkTask;
@@ -35,6 +37,7 @@ export function Task({
 }: TaskProps) {
   const { updateTask, deleteTask, addLabel, removeLabel } = useWorkStorage();
   const hasLabels = (task.labelIds?.length ?? 0) > 0;
+  const featureGateName = getFeatureGateName(task.description);
 
   const onChangeDueDate = (date?: string) => {
     const { dueDate, ...taskWithoutDueDate } = task;
@@ -100,7 +103,11 @@ export function Task({
           className="inline"
           style={{ fontSize: 'inherit' }}
         />
-        <Subtasks subtasks={task.subtasks} listId={listId} taskId={task.id} />
+        {featureGateName ? (
+          <CopyFeatureGateButton featureGateName={featureGateName} />
+        ) : (
+          <Subtasks subtasks={task.subtasks} listId={listId} taskId={task.id} />
+        )}
         {hasLabels && (
           <Labels
             labelIds={task.labelIds}

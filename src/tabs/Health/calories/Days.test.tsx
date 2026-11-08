@@ -105,6 +105,92 @@ describe('Days', () => {
         ]);
       });
     });
+    describe('on a resting dot', () => {
+      const renderDayWith = (trackers: string[]) => {
+        const days: Balance[] = mockDays.map((day) =>
+          day.day === 5 ? { ...day, trackers } : day,
+        );
+        render(<Days days={days} onSelectDay={jest.fn()} />);
+        return screen
+          .getAllByRole('img')
+          .map((icon) => icon.getAttribute('aria-label'));
+      };
+
+      describe('given seven icons', () => {
+        it('shows all of them', () => {
+          expect(
+            renderDayWith([
+              'headache-1',
+              'flow-1',
+              'cramps-1',
+              'loose-1',
+              'gas-1',
+              'gut-1',
+              'tired-1',
+            ]),
+          ).toEqual([
+            'headache 1',
+            'period flow 1',
+            'cramps 1',
+            'loose stool 1',
+            'gas 1',
+            'upset gut 1',
+            'tired 1',
+          ]);
+        });
+      });
+
+      describe('given more than seven icons', () => {
+        it('shows the first six and a marker for the rest', () => {
+          expect(
+            renderDayWith([
+              'headache-1',
+              'flow-1',
+              'cramps-1',
+              'loose-1',
+              'gas-1',
+              'gut-1',
+              'tired-1',
+              'hayfever-1',
+              'cough-1',
+            ]),
+          ).toEqual([
+            'headache 1',
+            'period flow 1',
+            'cramps 1',
+            'loose stool 1',
+            'gas 1',
+            'upset gut 1',
+            '3 more',
+          ]);
+        });
+
+        describe('and the watch was charged', () => {
+          it('keeps the watch first', () => {
+            expect(
+              renderDayWith([
+                'headache-1',
+                'flow-1',
+                'cramps-1',
+                'loose-1',
+                'gas-1',
+                'gut-1',
+                'tired-1',
+                'watch-charged',
+              ]),
+            ).toEqual([
+              'watch charged',
+              'headache 1',
+              'period flow 1',
+              'cramps 1',
+              'loose stool 1',
+              'gas 1',
+              '2 more',
+            ]);
+          });
+        });
+      });
+    });
   });
 
   describe('dot colours', () => {

@@ -1,9 +1,8 @@
 import { WorkTask } from './types';
+import { getFeatureGateName } from './featureGate';
 
 export const TODAY_LIST_NAME = 'Today';
 const FEATURE_GATES_LIST_NAME = 'Feature gates';
-
-const FEATURE_GATE_NAME = /^\s*[a-z0-9-]+\s*(\[\d{4}\])?\s*$/;
 
 export function findPriorityDestinations(
   destinations: WorkTask[],
@@ -20,7 +19,7 @@ export function findPriorityDestinations(
     const listLabelId = labelIds?.[0];
     return listLabelId && task.labelIds?.includes(listLabelId);
   });
-  const featureGateDestination = FEATURE_GATE_NAME.test(task.description)
+  const featureGateDestination = getFeatureGateName(task.description)
     ? destinations.find(
         ({ description }) => description === FEATURE_GATES_LIST_NAME,
       )
