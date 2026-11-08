@@ -63,3 +63,16 @@
     opacity: 1;
   }
 }
+
+/* Gives the opened circle's area to the button, so the circle stays open
+   while the cursor is anywhere inside it and a click there opens the day. */
+.day-circle:hover .day-button::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: calc(var(--hover-size) * 1px);
+  aspect-ratio: 1;
+  translate: -50% -50%;
+  border-radius: 50%;
+}

@@ -7,6 +7,7 @@ import { DayHoverCircle } from './DayHoverCircle';
 import { isWatchCharged, listDayIcons } from './watchCharging';
 import { parseSymptoms } from './symptoms';
 import { getRestingIconSize } from './restingIconSize';
+import { getHoverSize } from './hoverSize';
 
 const MAX_RESTING_ICONS = 7;
 
@@ -36,6 +37,7 @@ export function Days({ days, onSelectDay }: DaysProps) {
     >
       {days.map((day, index) => {
         const restingIcons = listDayIcons(day.trackers);
+        const symptoms = parseSymptoms(day.trackers);
         return (
           <li
             key={day.id}
@@ -43,6 +45,7 @@ export function Days({ days, onSelectDay }: DaysProps) {
             style={
               {
                 animationDelay: `${popDelays[index]}s`,
+                '--hover-size': getHoverSize(symptoms),
                 ...(typeof day.diff === 'number'
                   ? { '--day-colour': getDayColour(day.diff, maxDiff) }
                   : {}),
@@ -67,7 +70,7 @@ export function Days({ days, onSelectDay }: DaysProps) {
               day={day.day}
               month={day.month}
               balance={day.balance}
-              symptoms={parseSymptoms(day.trackers)}
+              symptoms={symptoms}
               watchCharged={isWatchCharged(day.trackers)}
             />
           </li>
