@@ -396,6 +396,38 @@ describe('Calories', () => {
         });
       });
     });
+
+    describe('with the watch toggle focused in the form', () => {
+      const focusToggle = async () => {
+        const { user, updateDay } = await openDayForm(['flow-2']);
+        await user.click(screen.getByRole('button', { name: 'update 3 Jan' }));
+        const toggle = screen.getByRole('button', { name: 'watch charged' });
+        toggle.focus();
+        return { user, updateDay, toggle };
+      };
+
+      describe('pressing space', () => {
+        it('turns the watch on', async () => {
+          const { user, toggle } = await focusToggle();
+
+          await user.keyboard(' ');
+
+          expect(toggle).toHaveAttribute('aria-pressed', 'true');
+        });
+      });
+
+      describe('pressing enter', () => {
+        it('saves the day as it stands', async () => {
+          const { user, updateDay } = await focusToggle();
+
+          await user.keyboard('{Enter}');
+
+          expect(updateDay).toHaveBeenCalledWith(
+            expect.objectContaining({ id: '2026-01-03', trackers: ['flow-2'] }),
+          );
+        });
+      });
+    });
   });
 
   describe('the dots', () => {

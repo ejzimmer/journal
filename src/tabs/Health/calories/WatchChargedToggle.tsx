@@ -18,6 +18,12 @@ export function WatchChargedToggle({
       aria-label={WATCH.label}
       aria-pressed={charged}
       onClick={() => onChange(!charged)}
+      onKeyDown={(event) => {
+        if (event.key === 'Enter') {
+          event.preventDefault();
+          event.currentTarget.form?.requestSubmit();
+        }
+      }}
     >
       <SymptomIcon symptom={WATCH} magnitude={1} width="24px" />
     </button>
