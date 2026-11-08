@@ -19,21 +19,6 @@
   }
 }
 
-.add-media-form,
-.add-volume-form {
-  .tooltip {
-    position-area: top;
-    margin-inline-start: 0;
-    margin-block-end: 4px;
-  }
-
-  .tooltip-container:has(.tooltip-anchor:hover, .tooltip-anchor:focus-visible)
-    .tooltip,
-  label:hover .tooltip {
-    opacity: 1;
-  }
-}
-
 .add-media-switches {
   display: flex;
   justify-content: center;
@@ -59,7 +44,7 @@
       &:has(input:not(:checked)) {
         box-shadow: none;
 
-        .tooltip-anchor {
+        .tooltip-option {
           filter: grayscale(1) opacity(0.45);
         }
       }
@@ -72,7 +57,7 @@
   }
 }
 
-.tooltip-option .tooltip-anchor {
+.tooltip-option {
   display: grid;
   place-items: center;
   transition: filter 0.2s;
@@ -160,60 +145,44 @@
 
 .add-volume-name {
   align-self: center;
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: 2px dashed var(--border-colour-hover);
+  border-radius: 50%;
+  background: none;
+  color: var(--body-colour-mid);
 
-  button {
-    display: grid;
-    place-items: center;
-    width: 28px;
-    height: 28px;
-    padding: 0;
-    border: 2px dashed var(--border-colour-hover);
-    border-radius: 50%;
-    background: none;
-    color: var(--body-colour-mid);
-
-    &:hover,
-    &:focus-visible {
-      background: hsl(214 40% 96%);
-    }
+  &:hover,
+  &:focus-visible {
+    background: hsl(214 40% 96%);
   }
 }
 
 .add-media-button {
   align-self: flex-end;
+  display: grid;
+  place-items: center;
+  height: auto;
+  padding: 0;
+  border: 0;
+  background: none;
 
-  > button {
-    display: grid;
-    place-items: center;
-    height: auto;
-    padding: 0;
-    border: 0;
+  svg {
+    display: block;
+    transition: transform 0.15s;
+    transform-origin: bottom;
+  }
+
+  &:hover,
+  &:focus-visible {
     background: none;
 
     svg {
-      display: block;
-      transition: transform 0.15s;
-      transform-origin: bottom;
+      transform: scale(1.08);
     }
-
-    &:hover,
-    &:focus-visible {
-      background: none;
-
-      svg {
-        transform: scale(1.08);
-      }
-    }
-  }
-
-  > .tooltip {
-    position-area: top;
-    margin-inline-start: 0;
-    margin-block-end: 4px;
-  }
-
-  &:has(> .tooltip-anchor:hover, > .tooltip-anchor:focus-visible) > .tooltip {
-    opacity: 1;
   }
 }
 

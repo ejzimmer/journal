@@ -41,10 +41,6 @@
     min-width: 0;
   }
 
-  li:hover .tooltip {
-    opacity: 1;
-  }
-
   .double-magic-meter {
     width: 30px;
 

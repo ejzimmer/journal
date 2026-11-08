@@ -1,3 +1,5 @@
+import { Tooltip } from '../../../shared/controls/Tooltip';
+
 type VolumeNameFieldProps = {
   name: string;
   label: string;
@@ -14,13 +16,14 @@ export function VolumeNameField({
   isFocused,
 }: VolumeNameFieldProps) {
   return (
-    <div className="volume-name-field tooltip-container">
-      <span className="count-icon tooltip-anchor" aria-hidden="true">
-        📕
-      </span>
-      <div className="tooltip" aria-hidden="true">
-        {label}
-      </div>
+    <div className="volume-name-field">
+      <Tooltip label={label} position="top">
+        {(triggerProps) => (
+          <span {...triggerProps} className="count-icon" aria-hidden="true">
+            📕
+          </span>
+        )}
+      </Tooltip>
       <input
         name={name}
         aria-label={label}

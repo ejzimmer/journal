@@ -187,27 +187,18 @@ dialog {
 
 .tooltip-container {
   anchor-scope: --tooltip;
-}
 
-.tooltip-anchor {
-  anchor-name: --tooltip;
-}
+  .tooltip-anchor {
+    anchor-name: --tooltip;
+  }
 
-.tooltip {
-  background: var(--body-colour);
-  color: white;
-  padding: 6px 8px;
-  border-radius: 3px;
-  font-size: 14px;
-  position: absolute;
-  position-anchor: --tooltip;
-  position-area: right;
-  margin-inline-start: 4px;
-  pointer-events: none;
-  opacity: 0;
-  transition: opacity 0.2s;
-  z-index: 1;
-  width: max-content;
+  .tooltip {
+    position: absolute;
+    position-anchor: --tooltip;
+    position-area: right;
+    margin-inline-start: 4px;
+    z-index: 1;
+  }
 }
 
 .pointer-tooltip {

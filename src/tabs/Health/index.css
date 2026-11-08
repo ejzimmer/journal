@@ -91,24 +91,3 @@
     box-shadow: 0 2px 6px var(--switch-knob-shadow);
   }
 }
-
-.hovertext-anchor {
-  anchor-name: --label-text;
-}
-
-.hovertext {
-  position: absolute;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.2s;
-  position-anchor: --label-text;
-  position-area: top;
-  margin-block-end: 8px;
-  z-index: 1;
-  background: color-mix(in srgb, var(--switch-background) 85%, transparent);
-  color: var(--switch-icon-selected);
-  padding: 6px 8px;
-  font-size: 0.8em;
-  border-radius: 4px;
-  white-space: nowrap;
-}

@@ -1,4 +1,6 @@
 import { Ref } from 'react';
+import { Tooltip } from '../../shared/controls/Tooltip';
+import { mergeRefs } from '../../shared/mergeRefs';
 import { ClassBlock, ExerciseClass } from '../../shared/types';
 
 type SessionsProps = {
@@ -22,10 +24,11 @@ export function Sessions({
   return (
     <div className="sessions">
       {Array.from({ length: block.total }, (_, index) => (
-        <div className="tooltip-container" key={index}>
-          <div className="tooltip-anchor">
+        <Tooltip key={index} label={getSessionName(index)}>
+          {({ ref, ...triggerProps }) => (
             <input
-              ref={index === 0 ? firstSessionRef : undefined}
+              {...triggerProps}
+              ref={mergeRefs(ref, index === 0 ? firstSessionRef : undefined)}
               type="checkbox"
               className="session"
               aria-label={`${exerciseClass.description}: ${getSessionName(index)}`}
@@ -40,9 +43,8 @@ export function Sessions({
                 })
               }
             />
-          </div>
-          <div className="tooltip">{getSessionName(index)}</div>
-        </div>
+          )}
+        </Tooltip>
       ))}
     </div>
   );

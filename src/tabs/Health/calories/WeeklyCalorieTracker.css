@@ -18,20 +18,11 @@
   border-block-end: 2px solid var(--axis);
   box-sizing: content-box;
 
-  .week-container {
-    anchor-scope: --label-text;
-    display: contents;
-  }
-
   .week {
     background: var(--week);
     border-top-left-radius: 4px;
     border-top-right-radius: 4px;
     transform-origin: bottom;
-
-    &:hover + .hovertext {
-      opacity: 1;
-    }
   }
 
   .week-over {

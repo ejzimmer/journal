@@ -1,4 +1,5 @@
 import { ReactNode } from 'react';
+import { Tooltip } from '../../../shared/controls/Tooltip';
 
 type CountTileProps = {
   name: string;
@@ -18,18 +19,20 @@ export function CountTile({
   onAdd,
 }: CountTileProps) {
   return (
-    <div className="progress-tile tooltip-container">
-      <button
-        type="button"
-        className="count-button tooltip-anchor"
-        aria-label={addLabel}
-        onClick={onAdd}
-      >
-        {icon}
-      </button>
-      <div className="tooltip" aria-hidden="true">
-        {label}
-      </div>
+    <div className="progress-tile">
+      <Tooltip label={label} position="top">
+        {(triggerProps) => (
+          <button
+            {...triggerProps}
+            type="button"
+            className="count-button"
+            aria-label={addLabel}
+            onClick={onAdd}
+          >
+            {icon}
+          </button>
+        )}
+      </Tooltip>
       <input
         key={count}
         type="number"

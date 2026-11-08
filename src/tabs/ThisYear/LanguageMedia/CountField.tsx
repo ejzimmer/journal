@@ -1,4 +1,5 @@
 import { ReactNode } from 'react';
+import { Tooltip } from '../../../shared/controls/Tooltip';
 
 type CountFieldProps = {
   name: string;
@@ -16,13 +17,14 @@ export function CountField({
   isRequired,
 }: CountFieldProps) {
   return (
-    <div className="count-field tooltip-container">
-      <span className="count-icon tooltip-anchor" aria-hidden="true">
-        {icon}
-      </span>
-      <div className="tooltip" aria-hidden="true">
-        {label}
-      </div>
+    <div className="count-field">
+      <Tooltip label={label} position="top">
+        {(triggerProps) => (
+          <span {...triggerProps} className="count-icon" aria-hidden="true">
+            {icon}
+          </span>
+        )}
+      </Tooltip>
       <input
         type="number"
         name={name}
