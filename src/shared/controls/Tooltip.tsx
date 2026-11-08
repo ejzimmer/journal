@@ -8,6 +8,7 @@ import {
 } from 'react';
 import { createHoverHandlers } from './createHoverHandlers';
 import { useTouchLongPress } from './useTouchLongPress';
+import './Tooltip.css';
 
 type TooltipPosition = 'top' | 'right' | 'top-right';
 

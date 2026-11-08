@@ -1,5 +1,7 @@
 import { useId } from 'react';
 import { showPopoverOnMount } from './showPopoverOnMount';
+import './Tooltip.css';
+import './CursorPositionedTooltip.css';
 
 type CursorPositionedTooltipProps = {
   text: string;
