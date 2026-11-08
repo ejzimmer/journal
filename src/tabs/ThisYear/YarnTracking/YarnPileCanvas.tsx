@@ -67,8 +67,10 @@ export function YarnPileCanvas({
     );
   };
 
-  const showAndHide = { onShow: findBallUnderPointer, onHide: hideTooltip };
-  const longPressHandlers = useTouchLongPress(showAndHide);
+  const longPressHandlers = useTouchLongPress({
+    onShow: findBallUnderPointer,
+    onHide: hideTooltip,
+  });
 
   return (
     <>
@@ -81,7 +83,10 @@ export function YarnPileCanvas({
           height: height + 2 * EFFECTS_BLEED,
           margin: -EFFECTS_BLEED,
         }}
-        {...createHoverHandlers(showAndHide)}
+        {...createHoverHandlers({
+          onShow: findBallUnderPointer,
+          onHide: hideTooltip,
+        })}
         {...longPressHandlers}
         onPointerMove={(event) => {
           if (!isTouch(event)) findBallUnderPointer(event);
