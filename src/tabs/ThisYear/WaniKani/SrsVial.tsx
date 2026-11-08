@@ -4,7 +4,7 @@ import { EMPTY_GEM_COLOUR, GEM_COLOURS } from './gemColours';
 import { formatPoints, getHexVertices } from './gemGeometry';
 import { SUBJECT_TYPE_LABELS } from './subjectTypeLabels';
 import { SRS_GROUPS, SrsGroup, SubjectType } from './types';
-import { useTooltip } from '../../../shared/useTooltip';
+import { useCursorPositionedTooltip } from '../../../shared/useCursorPositionedTooltip';
 import { calculateLiquidLayers, createBubbles, drawTube } from './vialGeometry';
 
 const WIDTH = 52;
@@ -24,7 +24,7 @@ type SrsVialProps = {
 };
 
 export function SrsVial({ type, index, total, counts }: SrsVialProps) {
-  const { createTooltipHandlers, tooltip } = useTooltip();
+  const { createTooltipHandlers, tooltip } = useCursorPositionedTooltip();
   const label = SUBJECT_TYPE_LABELS[type];
   const description = SRS_GROUPS.map(
     (group) => `${counts[group]} ${group}`,

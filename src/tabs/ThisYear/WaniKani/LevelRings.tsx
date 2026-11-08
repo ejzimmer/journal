@@ -1,6 +1,6 @@
 import { GEM_COLOURS } from './gemColours';
 import { calculateRingDash, drawStar, findPointOnRing } from './ringGeometry';
-import { useTooltip } from '../../../shared/useTooltip';
+import { useCursorPositionedTooltip } from '../../../shared/useCursorPositionedTooltip';
 
 const SIZE = 200;
 const CENTRE = SIZE / 2;
@@ -13,7 +13,7 @@ type LevelRingsProps = {
 };
 
 export function LevelRings({ radical, kanji }: LevelRingsProps) {
-  const { createTooltipHandlers, tooltip } = useTooltip();
+  const { createTooltipHandlers, tooltip } = useCursorPositionedTooltip();
   const rings = [
     {
       type: 'kanji',

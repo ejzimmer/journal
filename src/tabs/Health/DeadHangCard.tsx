@@ -1,7 +1,7 @@
 import { useEffect, useId, useState } from 'react';
 import { getToday } from '../../shared/dates';
 import { useHealthStorage } from './HealthStorageContext';
-import { useTooltip } from '../../shared/useTooltip';
+import { useCursorPositionedTooltip } from '../../shared/useCursorPositionedTooltip';
 import {
   findBestHang,
   getTodaysHangs,
@@ -20,7 +20,7 @@ export function DeadHangCard() {
   const [pressedStartAt, setPressedStartAt] = useState<number | null>(null);
   const [liveHangSeconds, setLiveHangSeconds] = useState(0);
   const nameId = useId();
-  const { createTooltipHandlers, tooltip } = useTooltip();
+  const { createTooltipHandlers, tooltip } = useCursorPositionedTooltip();
 
   useEffect(() => {
     if (pressedStartAt === null) return;

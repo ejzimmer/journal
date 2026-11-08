@@ -1,5 +1,5 @@
 import { StopWatchIcon } from '../../../shared/icons/StopWatch';
-import { useTooltip } from '../../../shared/useTooltip';
+import { Tooltip } from '../../../shared/controls/Tooltip';
 import { formatDayMonthAndYear, getDateDaysAhead } from '../../../shared/dates';
 import { LevelBadge } from './LevelBadge';
 import { LevelRings } from './LevelRings';
@@ -17,7 +17,6 @@ export function CurrentLevel({ data }: CurrentLevelProps) {
   );
 
   const daysToFinish = predictDaysToFinish(data.levelProgressions, data.level);
-  const { createTooltipHandlers, tooltip } = useTooltip();
 
   return (
     <section className="current-level" aria-label={`Level ${data.level}`}>
@@ -29,22 +28,20 @@ export function CurrentLevel({ data }: CurrentLevelProps) {
         </div>
       </div>
       {daysToFinish !== undefined && (
-        <div
-          className="days-remaining"
-          {...createTooltipHandlers(
-            formatDayMonthAndYear(getDateDaysAhead(daysToFinish)),
+        <Tooltip label={formatDayMonthAndYear(getDateDaysAhead(daysToFinish))}>
+          {(triggerProps) => (
+            <div {...triggerProps} className="days-remaining">
+              <StopWatchIcon
+                width="16px"
+                role="img"
+                aria-label="Days remaining"
+                handAngleDegrees={((data.level - 1) / MAX_LEVEL) * 360}
+              />
+              {daysToFinish}
+            </div>
           )}
-        >
-          <StopWatchIcon
-            width="16px"
-            role="img"
-            aria-label="Days remaining"
-            handAngleDegrees={((data.level - 1) / MAX_LEVEL) * 360}
-          />
-          {daysToFinish}
-        </div>
+        </Tooltip>
       )}
-      {tooltip}
     </section>
   );
 }

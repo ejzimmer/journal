@@ -6,7 +6,7 @@ import {
 } from './gemGeometry';
 import { SUBJECT_TYPE_LABELS } from './subjectTypeLabels';
 import { SUBJECT_TYPES, SubjectType } from './types';
-import { useTooltip } from '../../../shared/useTooltip';
+import { useCursorPositionedTooltip } from '../../../shared/useCursorPositionedTooltip';
 
 const SETTING_RADIUS = 16;
 const layout = calculateClusterLayout(SETTING_RADIUS);
@@ -24,7 +24,7 @@ export function LevelGemCluster({
   percents,
   burned,
 }: LevelGemClusterProps) {
-  const { createTooltipHandlers, tooltip } = useTooltip();
+  const { createTooltipHandlers, tooltip } = useCursorPositionedTooltip();
   const description = SUBJECT_TYPES.map(
     (type) =>
       `${SUBJECT_TYPE_LABELS[type]} ${percents[type]}% unlocked${burned[type] ? ' and burned' : ''}`,

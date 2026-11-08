@@ -7,7 +7,7 @@ import {
 
 type TooltipState = { text: string; rect: DOMRect };
 
-export function useTooltip() {
+export function useCursorPositionedTooltip() {
   const [state, setState] = useState<TooltipState>();
 
   const activeTriggerText = useRef('');
