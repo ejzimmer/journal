@@ -54,7 +54,7 @@ export function SymptomPicker({ trackers, onChange }: SymptomPickerProps) {
 
   const handleKeyDown = (event: KeyboardEvent) => {
     if (!isOpen) {
-      if ([' ', 'Enter', 'ArrowUp', 'ArrowDown'].includes(event.key)) {
+      if ([' ', 'ArrowUp', 'ArrowDown'].includes(event.key)) {
         event.preventDefault();
         setIsNavigatingByKeyboard(true);
         open();
