@@ -313,6 +313,65 @@ describe('Calories', () => {
           });
         });
       });
+
+      describe("with the symptom picker focused in the day's form", () => {
+        const focusPicker = async () => {
+          const user = userEvent.setup({
+            advanceTimers: jest.advanceTimersByTime,
+          });
+          const updateDay = jest.fn();
+          renderWithHealthStorage(<Calories />, {
+            days: dailyData,
+            updateDay,
+          });
+          await user.click(screen.getByRole('radio', { name: 'by day' }));
+          await user.click(
+            screen.getByRole('button', { name: 'update 3 Jan' }),
+          );
+          screen.getByRole('combobox', { name: 'symptoms' }).focus();
+          return { user, updateDay };
+        };
+
+        describe('pressing enter', () => {
+          it('saves the day as it stands', async () => {
+            const { user, updateDay } = await focusPicker();
+
+            await user.keyboard('{Enter}');
+
+            expect(updateDay).toHaveBeenCalledWith(
+              expect.objectContaining({
+                id: '2026-01-03',
+                trackers: ['flow-2'],
+              }),
+            );
+          });
+        });
+
+        describe('and the picker open', () => {
+          describe('pressing enter twice', () => {
+            it('closes the picker, then saves the picked symptom', async () => {
+              const { user, updateDay } = await focusPicker();
+              const picker = screen.getByRole('combobox', {
+                name: 'symptoms',
+              });
+
+              await user.keyboard('{ArrowDown}');
+              await user.keyboard('{ArrowRight}');
+              await user.keyboard(' ');
+              await user.keyboard('{Enter}');
+              expect(picker).toHaveAttribute('aria-expanded', 'false');
+              await user.keyboard('{Enter}');
+
+              expect(updateDay).toHaveBeenCalledWith(
+                expect.objectContaining({
+                  id: '2026-01-03',
+                  trackers: ['flow-3'],
+                }),
+              );
+            });
+          });
+        });
+      });
     });
   });
 

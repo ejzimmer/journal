@@ -1,4 +1,11 @@
-import { FormEvent, useEffect, useId, useRef, useState } from 'react';
+import {
+  FormEvent,
+  KeyboardEvent,
+  useEffect,
+  useId,
+  useRef,
+  useState,
+} from 'react';
 import { FormControl } from '../../../shared/controls/FormControl';
 import { XIcon } from '../../../shared/icons/X';
 import { SymptomPicker } from './SymptomPicker';
@@ -53,6 +60,12 @@ export function CalorieForm({
     onClose();
   };
 
+  const submitOnEnter = (event: KeyboardEvent<HTMLFormElement>) => {
+    if (event.key !== 'Enter') return;
+    event.preventDefault();
+    event.currentTarget.requestSubmit();
+  };
+
   return (
     <div
       ref={popoverRef}
@@ -79,7 +92,7 @@ export function CalorieForm({
       <h2 id={dateHeadingId}>
         {date.day} {date.month}
       </h2>
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit} onKeyDown={submitOnEnter}>
         <FormControl
           hideLabel
           pattern="[0-9]{1,4}"
