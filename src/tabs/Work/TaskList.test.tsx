@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { TaskList } from './TaskList';
 import {
@@ -95,6 +95,14 @@ const featureGateList: WorkTask = {
       parentId: 'list-3',
       lastStatusUpdate: '2026-01-01',
       position: 1,
+    },
+    'gate-3': {
+      id: 'gate-3',
+      description: 'checkout',
+      status: 'not_started',
+      parentId: 'list-3',
+      lastStatusUpdate: '2026-01-01',
+      position: 2,
     },
   },
 };
@@ -244,16 +252,17 @@ describe('TaskList task actions', () => {
   });
 
   describe('when a task is not named like a feature gate', () => {
-    it('offers to add subtasks', () => {
-      renderTaskList(featureGateList.id, createStorageContext());
+    it.each(['Turn on new checkout', 'checkout'])(
+      'offers to add subtasks to "%s"',
+      (description) => {
+        renderTaskList(featureGateList.id, createStorageContext());
 
-      const [addSubtask] = screen.getAllByRole('button', {
-        name: 'Add subtask',
-      });
-      expect(addSubtask.closest('li')).toHaveTextContent(
-        'Turn on new checkout',
-      );
-    });
+        const task = screen.getByText(description).closest('li')!;
+        expect(
+          within(task).getByRole('button', { name: 'Add subtask' }),
+        ).toBeInTheDocument();
+      },
+    );
   });
 });
 
