@@ -181,6 +181,14 @@ describe('MoveToOtherLists', () => {
         });
       });
 
+      describe('with underscores instead of hyphens', () => {
+        it('puts Feature gates at the top', () => {
+          showMenuItems(today, createTask(today.id, [], 'new_checkout_2'));
+
+          expect(getMenuItemNames()[0]).toBe('Feature gates');
+        });
+      });
+
       describe('with surrounding spaces or a trailing [hhmm] timestamp', () => {
         it.each([
           '  new-checkout-2  ',
@@ -209,6 +217,19 @@ describe('MoveToOtherLists', () => {
           ]);
         },
       );
+    });
+
+    describe('and has a single-word name', () => {
+      it('lists Feature gates in order with the other lists', () => {
+        showMenuItems(today, createTask(today.id, [], 'checkout'));
+
+        expect(getMenuItemNames()).toEqual([
+          'Backlog',
+          'a11y',
+          'Design',
+          'Feature gates',
+        ]);
+      });
     });
 
     describe('and has a name with capitals or spaces', () => {
