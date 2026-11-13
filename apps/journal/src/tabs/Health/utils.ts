@@ -1,0 +1,104 @@
+import { formatDate, formatDateId, getDaysSince } from 'shared/dates';
+import { DayData } from '../../types';
+
+export const STARTING_BALANCE = 19687;
+
+export type Balance = {
+  id: string;
+  day: number;
+  month: string;
+  monthNumber: number;
+  year: number;
+  dayOfWeek: number;
+  balance?: number;
+  diff?: number;
+  trackers?: string[];
+};
+
+export function setupDays(dayData?: Record<string, DayData>): Balance[] {
+  const newYearsDay = Temporal.PlainDate.from('2026-01-01');
+  const numberOfDays = getDaysSince(newYearsDay.toString());
+  const days = new Array<Balance>(numberOfDays + 1);
+
+  let balance = STARTING_BALANCE;
+  for (let i = 0; i <= numberOfDays; i += 1) {
+    const date = newYearsDay.add({ days: i });
+    const { day, month } = formatDate(date);
+    const id = formatDateId(date);
+    const { consumed, expended, trackers } = dayData?.[id] ?? {};
+    const diff =
+      typeof consumed === 'number' && typeof expended === 'number'
+        ? expended - consumed
+        : undefined;
+    balance -= diff ?? 0;
+
+    days[i] = {
+      id,
+      day,
+      month,
+      monthNumber: date.month,
+      year: date.year,
+      dayOfWeek: date.dayOfWeek,
+      diff,
+      trackers,
+      balance,
+    };
+  }
+
+  return days;
+}
+
+export const getWeeklyBalance = (balances: Balance[]): Required<Balance>[] => {
+  const weeklyBalances = balances.filter(
+    (b, index) => index % 7 === 6 && b.balance,
+  ) as Required<Balance>[];
+
+  const lastCompleteIndex = balances.findLastIndex(
+    (b) => typeof b.balance === 'number',
+  );
+  const lastComplete = balances[lastCompleteIndex] as
+    Required<Balance> | undefined;
+
+  return lastComplete && lastCompleteIndex % 7 !== 6
+    ? [...weeklyBalances, lastComplete]
+    : weeklyBalances;
+};
+
+const OVER_BALANCE = 20000;
+const BAND_SIZE = 1000;
+
+export const getWeekClass = ({
+  balance,
+  lowestBalance,
+}: {
+  balance: number;
+  lowestBalance: number;
+}) => {
+  const className = 'week';
+  if (balance === lowestBalance) {
+    return `${className} week-min`;
+  }
+  if (balance > OVER_BALANCE) {
+    return `${className} week-over`;
+  }
+  if (balance < lowestBalance + BAND_SIZE) {
+    return `${className} week-lowest`;
+  }
+  if (balance >= OVER_BALANCE - BAND_SIZE) {
+    return className;
+  }
+  return `${className} week-between`;
+};
+
+export const getWeekLowestShare = ({
+  balance,
+  lowestBalance,
+}: {
+  balance: number;
+  lowestBalance: number;
+}) => {
+  const lowestBand = Math.floor((lowestBalance + BAND_SIZE) / BAND_SIZE);
+  const lightestBand = (OVER_BALANCE - BAND_SIZE) / BAND_SIZE;
+  const band = Math.floor(balance / BAND_SIZE);
+  return (lightestBand - band) / (lightestBand - lowestBand + 1);
+};

@@ -1,0 +1,140 @@
+import { SubmitEvent, useRef } from 'react';
+
+import './ThisWeekTask.css';
+import { useStorageContext } from 'shared/FirebaseContext';
+import { WEEKLY_KEY, WeeklyTask } from '../../../types';
+import { CategoryCombobox } from '../CategoryCombobox';
+import { ProgressIndicator } from './ProgressIndicator';
+import { AddDoneMenu } from './AddDoneMenu';
+import { getToday } from 'shared/dates';
+import { useFormToggle } from 'shared/controls/useFormToggle';
+import { SMALL_SCREEN_QUERY, useMediaQuery } from 'shared/useMediaQuery';
+
+type ThisWeekTaskProps = { task: WeeklyTask };
+
+export function ThisWeekTask({ task }: ThisWeekTaskProps) {
+  const {
+    isFormOpen: inEditMode,
+    triggerRef: descriptionDisplayRef,
+    openForm: switchToEditMode,
+    closeForm: switchToViewMode,
+    openFormOnEnterOrSpace,
+  } = useFormToggle<HTMLDivElement>();
+
+  const descriptionRef = useRef<HTMLInputElement>(null);
+  const frequencyRef = useRef<HTMLInputElement>(null);
+
+  const { updateItem, deleteItem } = useStorageContext();
+  const isSmallScreen = useMediaQuery(SMALL_SCREEN_QUERY);
+  const onChange = (task: WeeklyTask) => {
+    updateItem<WeeklyTask>(WEEKLY_KEY, task);
+  };
+
+  const onSubmit = (event: SubmitEvent) => {
+    event.preventDefault();
+    if (!descriptionRef.current || !frequencyRef.current) {
+      return;
+    }
+
+    const description = descriptionRef.current.value;
+    if (!description) {
+      deleteItem<WeeklyTask>(WEEKLY_KEY, task);
+      return;
+    }
+
+    const frequency = Number.parseInt(frequencyRef.current.value);
+    if (
+      description === task.description &&
+      (frequency === task.frequency || isNaN(frequency))
+    ) {
+      switchToViewMode();
+      return;
+    }
+
+    updateItem<WeeklyTask>(WEEKLY_KEY, {
+      ...task,
+      description: descriptionRef.current.value,
+      frequency: isNaN(frequency) ? task.frequency : frequency,
+    });
+
+    switchToViewMode();
+  };
+
+  const completedDates = task.completed ?? [];
+
+  const addDone = (date: string) => {
+    onChange({ ...task, completed: [...completedDates, date] });
+  };
+
+  const removeLastDone = () => {
+    if (completedDates.length === 0) {
+      return;
+    }
+    onChange({ ...task, completed: completedDates.slice(0, -1) });
+  };
+
+  const handleClose = ({ key }: React.KeyboardEvent<HTMLFormElement>) => {
+    if (key === 'Escape') {
+      switchToViewMode();
+    }
+  };
+
+  if (inEditMode) {
+    return (
+      <form
+        className="edit-this-week-task"
+        onSubmit={onSubmit}
+        onKeyDown={handleClose}
+      >
+        <CategoryCombobox
+          value={task.category}
+          onChange={(category) => {
+            onChange({ ...task, category });
+            switchToViewMode();
+          }}
+        />
+        <input
+          ref={descriptionRef}
+          autoFocus
+          aria-label="Description"
+          defaultValue={task.description}
+        />
+        <input
+          ref={frequencyRef}
+          type="number"
+          aria-label="Frequency"
+          defaultValue={task.frequency}
+          size={2}
+        />
+        <button>submit</button>
+      </form>
+    );
+  }
+
+  return (
+    <>
+      {!isSmallScreen && (
+        <AddDoneMenu category={task.category} onAdd={addDone} />
+      )}
+      <div className="task-screen">
+        <div
+          ref={descriptionDisplayRef}
+          role="button"
+          tabIndex={0}
+          aria-label={task.description}
+          onClick={switchToEditMode}
+          onKeyDown={openFormOnEnterOrSpace}
+        >
+          {task.description}
+        </div>
+      </div>
+      <ProgressIndicator
+        completed={task.completed}
+        frequency={task.frequency}
+        description={task.description}
+        onAdd={() => addDone(getToday())}
+        onRemove={removeLastDone}
+      />
+    </>
+  );
+}

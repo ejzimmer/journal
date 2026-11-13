@@ -1,0 +1,590 @@
+import { render, screen, within } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { Calories } from './Calories';
+import { FirebaseContext } from 'shared/FirebaseContext';
+import { createMockFirebaseContext } from 'shared/mockFirebase';
+import { DAILY_PATH, DayData } from '../../../types';
+import { HealthStorageProvider } from '../HealthStorageContext';
+import { renderWithHealthStorage } from '../healthStorageTestUtils';
+
+describe('Calories', () => {
+  beforeEach(() => {
+    jest.useFakeTimers();
+    // yesterday is 6 Jan
+    jest.setSystemTime(new Date('2026-01-07'));
+  });
+
+  afterEach(() => {
+    jest.useRealTimers();
+  });
+
+  describe('add calories form', () => {
+    it('shows the form for yesterday when no calories have been recorded for it', () => {
+      renderWithHealthStorage(<Calories />);
+
+      expect(
+        screen.getByRole('heading', { name: '6 Jan' }),
+      ).toBeInTheDocument();
+      expect(screen.getByRole('textbox', { name: 'In' })).toBeInTheDocument();
+      expect(screen.getByRole('textbox', { name: 'Out' })).toBeInTheDocument();
+    });
+
+    it("doesn't show the form while daily data is still loading", () => {
+      renderWithHealthStorage(<Calories />, { isLoading: true });
+
+      expect(
+        screen.queryByRole('textbox', { name: 'In' }),
+      ).not.toBeInTheDocument();
+    });
+
+    it("doesn't show the form when yesterday's calories are already recorded", () => {
+      renderWithHealthStorage(<Calories />, {
+        days: {
+          '2026-01-06': { id: '2026-01-06', consumed: 1800, expended: 2200 },
+        },
+      });
+
+      expect(
+        screen.queryByRole('textbox', { name: 'In' }),
+      ).not.toBeInTheDocument();
+    });
+
+    it("shows the form when yesterday has an entry but calories haven't been recorded yet", () => {
+      renderWithHealthStorage(<Calories />, {
+        days: {
+          '2026-01-06': { id: '2026-01-06', trackers: ['🔴'] },
+        },
+      });
+
+      expect(screen.getByRole('textbox', { name: 'In' })).toBeInTheDocument();
+    });
+
+    it('dismisses the form without saving anything', async () => {
+      const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
+      const updateDay = jest.fn();
+      renderWithHealthStorage(<Calories />, { updateDay });
+
+      const input = screen.getByRole('textbox', { name: 'In' });
+
+      await user.click(screen.getByRole('button', { name: 'dismiss' }));
+
+      expect(input).not.toBeInTheDocument();
+      expect(updateDay).not.toHaveBeenCalled();
+    });
+
+    it('saves consumed and expended for yesterday, and hides the form once saved', async () => {
+      const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
+      const storageContext = createMockFirebaseContext({ [DAILY_PATH]: {} });
+
+      render(
+        <FirebaseContext.Provider value={storageContext}>
+          <HealthStorageProvider>
+            <Calories />
+          </HealthStorageProvider>
+        </FirebaseContext.Provider>,
+      );
+
+      const input = screen.getByRole('textbox', { name: 'In' });
+      await user.type(input, '1800');
+      await user.type(
+        screen.getByRole('textbox', { name: 'Out' }),
+        '2200{Enter}',
+      );
+
+      expect(input).not.toBeInTheDocument();
+    });
+  });
+
+  describe('editing an existing day', () => {
+    it("opens the form pre-populated with that day's values when its dot is clicked, and updates it on submit", async () => {
+      const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
+      const updateDay = jest.fn();
+      const dailyData = {
+        '2026-01-03': { id: '2026-01-03', consumed: 1500, expended: 2000 },
+        '2026-01-06': { id: '2026-01-06', consumed: 1800, expended: 2200 },
+      };
+
+      renderWithHealthStorage(<Calories />, { days: dailyData, updateDay });
+
+      await user.click(screen.getByRole('radio', { name: 'by day' }));
+      await user.click(screen.getByRole('button', { name: 'update 3 Jan' }));
+
+      expect(
+        screen.getByRole('heading', { name: '3 Jan' }),
+      ).toBeInTheDocument();
+      expect(screen.getByRole('textbox', { name: 'In' })).toHaveValue('1500');
+      expect(screen.getByRole('textbox', { name: 'Out' })).toHaveValue('2000');
+
+      await user.clear(screen.getByRole('textbox', { name: 'In' }));
+      await user.type(screen.getByRole('textbox', { name: 'In' }), '1600');
+      await user.clear(screen.getByRole('textbox', { name: 'Out' }));
+      await user.type(
+        screen.getByRole('textbox', { name: 'Out' }),
+        '2100{Enter}',
+      );
+
+      expect(updateDay).toHaveBeenCalledWith(
+        expect.objectContaining({
+          id: '2026-01-03',
+          consumed: 1600,
+          expended: 2100,
+        }),
+      );
+    });
+
+    it("switches to the newly clicked day's form when another dot is clicked while a form is already open", async () => {
+      const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
+      const dailyData = {
+        '2026-01-02': { id: '2026-01-02', consumed: 1200, expended: 2600 },
+        '2026-01-06': { id: '2026-01-06', consumed: 1800, expended: 2200 },
+      };
+
+      renderWithHealthStorage(<Calories />, { days: dailyData });
+
+      await user.click(screen.getByRole('radio', { name: 'by day' }));
+      await user.click(screen.getByRole('button', { name: 'update 2 Jan' }));
+
+      const firstHeading = screen.getByRole('heading', { name: '2 Jan' });
+      expect(screen.getByRole('textbox', { name: 'In' })).toHaveValue('1200');
+
+      await user.click(screen.getByRole('button', { name: 'update 4 Jan' }));
+
+      expect(
+        screen.getByRole('heading', { name: '4 Jan' }),
+      ).toBeInTheDocument();
+      expect(firstHeading).not.toBeVisible();
+      expect(screen.getByRole('textbox', { name: 'In' })).toHaveValue('');
+    });
+  });
+
+  describe('saving with calories left blank', () => {
+    const openDay = async (
+      dayLabel: string,
+      days: Record<string, DayData> = {},
+    ) => {
+      const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
+      const updateDay = jest.fn();
+      renderWithHealthStorage(<Calories />, {
+        days: {
+          '2026-01-06': { id: '2026-01-06', consumed: 1800, expended: 2200 },
+          ...days,
+        },
+        updateDay,
+      });
+      await user.click(screen.getByRole('radio', { name: 'by day' }));
+      await user.click(screen.getByRole('button', { name: dayLabel }));
+      return { user, updateDay };
+    };
+
+    describe('on a day with nothing recorded', () => {
+      it('saves the day with its trackers and no calories', async () => {
+        const { user, updateDay } = await openDay('update 7 Jan');
+
+        await user.click(screen.getByRole('textbox', { name: 'In' }));
+        await user.keyboard('{Enter}');
+
+        expect(updateDay).toHaveBeenCalledWith({
+          id: '2026-01-07',
+          trackers: [],
+        });
+      });
+    });
+
+    describe('on a day with calories and a symptom recorded', () => {
+      it('removes the cleared calories and keeps the symptom', async () => {
+        const { user, updateDay } = await openDay('update 3 Jan', {
+          '2026-01-03': {
+            id: '2026-01-03',
+            consumed: 1500,
+            expended: 2000,
+            trackers: ['🔴'],
+          },
+        });
+
+        await user.clear(screen.getByRole('textbox', { name: 'In' }));
+        await user.clear(screen.getByRole('textbox', { name: 'Out' }));
+        await user.keyboard('{Enter}');
+
+        expect(updateDay).toHaveBeenCalledWith({
+          id: '2026-01-03',
+          trackers: ['🔴'],
+        });
+      });
+    });
+
+    describe('when only one of In and Out is filled in', () => {
+      it('saves the one that was filled in', async () => {
+        const { user, updateDay } = await openDay('update 7 Jan');
+
+        await user.type(
+          screen.getByRole('textbox', { name: 'In' }),
+          '900{Enter}',
+        );
+
+        expect(updateDay).toHaveBeenCalledWith({
+          id: '2026-01-07',
+          consumed: 900,
+          trackers: [],
+        });
+      });
+    });
+  });
+
+  describe('symptom tracking', () => {
+    describe('when a day has a symptom logged', () => {
+      const dailyData = {
+        '2026-01-03': {
+          id: '2026-01-03',
+          consumed: 1500,
+          expended: 2000,
+          trackers: ['flow-2'],
+        },
+      };
+
+      describe('and the user switches to the day view', () => {
+        it("shows that symptom's icon at its level on the day", async () => {
+          const user = userEvent.setup({
+            advanceTimers: jest.advanceTimersByTime,
+          });
+          renderWithHealthStorage(<Calories />, { days: dailyData });
+
+          await user.click(screen.getByRole('radio', { name: 'by day' }));
+
+          expect(
+            screen.getByRole('img', { name: 'period flow 2' }),
+          ).toBeInTheDocument();
+        });
+      });
+
+      describe("and the user opens the symptom picker in the day's form", () => {
+        it('shows only the logged level as selected', async () => {
+          const user = userEvent.setup({
+            advanceTimers: jest.advanceTimersByTime,
+          });
+          renderWithHealthStorage(<Calories />, { days: dailyData });
+
+          await user.click(screen.getByRole('radio', { name: 'by day' }));
+          await user.click(
+            screen.getByRole('button', { name: 'update 3 Jan' }),
+          );
+          await user.click(screen.getByRole('combobox', { name: 'symptoms' }));
+
+          expect(
+            screen.getByRole('gridcell', { name: 'period flow 2' }),
+          ).toHaveAttribute('aria-selected', 'true');
+          expect(
+            screen.getByRole('gridcell', { name: 'period flow 3' }),
+          ).toHaveAttribute('aria-selected', 'false');
+        });
+
+        describe('then clicks the logged level, picks a level for another symptom and saves', () => {
+          it('saves the day with only the newly picked symptom', async () => {
+            const user = userEvent.setup({
+              advanceTimers: jest.advanceTimersByTime,
+            });
+            const updateDay = jest.fn();
+            renderWithHealthStorage(<Calories />, {
+              days: dailyData,
+              updateDay,
+            });
+
+            await user.click(screen.getByRole('radio', { name: 'by day' }));
+            await user.click(
+              screen.getByRole('button', { name: 'update 3 Jan' }),
+            );
+            await user.click(
+              screen.getByRole('combobox', { name: 'symptoms' }),
+            );
+            await user.click(
+              screen.getByRole('gridcell', { name: 'period flow 2' }),
+            );
+            await user.click(
+              screen.getByRole('gridcell', { name: 'headache 3' }),
+            );
+            await user.click(screen.getByRole('textbox', { name: 'In' }));
+            await user.keyboard('{Enter}');
+
+            expect(updateDay).toHaveBeenCalledWith(
+              expect.objectContaining({
+                id: '2026-01-03',
+                trackers: ['headache-3'],
+              }),
+            );
+          });
+        });
+      });
+
+      describe("with the symptom picker focused in the day's form", () => {
+        const focusPicker = async () => {
+          const user = userEvent.setup({
+            advanceTimers: jest.advanceTimersByTime,
+          });
+          const updateDay = jest.fn();
+          renderWithHealthStorage(<Calories />, {
+            days: dailyData,
+            updateDay,
+          });
+          await user.click(screen.getByRole('radio', { name: 'by day' }));
+          await user.click(
+            screen.getByRole('button', { name: 'update 3 Jan' }),
+          );
+          screen.getByRole('combobox', { name: 'symptoms' }).focus();
+          return { user, updateDay };
+        };
+
+        describe('pressing enter', () => {
+          it('saves the day as it stands', async () => {
+            const { user, updateDay } = await focusPicker();
+
+            await user.keyboard('{Enter}');
+
+            expect(updateDay).toHaveBeenCalledWith(
+              expect.objectContaining({
+                id: '2026-01-03',
+                trackers: ['flow-2'],
+              }),
+            );
+          });
+        });
+
+        describe('and the picker open', () => {
+          describe('pressing enter twice', () => {
+            it('closes the picker, then saves the picked symptom', async () => {
+              const { user, updateDay } = await focusPicker();
+              const picker = screen.getByRole('combobox', {
+                name: 'symptoms',
+              });
+
+              await user.keyboard('{ArrowDown}');
+              await user.keyboard('{ArrowRight}');
+              await user.keyboard(' ');
+              await user.keyboard('{Enter}');
+              expect(picker).toHaveAttribute('aria-expanded', 'false');
+              await user.keyboard('{Enter}');
+
+              expect(updateDay).toHaveBeenCalledWith(
+                expect.objectContaining({
+                  id: '2026-01-03',
+                  trackers: ['flow-3'],
+                }),
+              );
+            });
+          });
+        });
+      });
+    });
+  });
+
+  describe('watch charging', () => {
+    const openDayForm = async (trackers: string[]) => {
+      const user = userEvent.setup({
+        advanceTimers: jest.advanceTimersByTime,
+      });
+      const updateDay = jest.fn();
+      renderWithHealthStorage(<Calories />, {
+        days: {
+          '2026-01-03': {
+            id: '2026-01-03',
+            consumed: 1500,
+            expended: 2000,
+            trackers,
+          },
+        },
+        updateDay,
+      });
+      await user.click(screen.getByRole('radio', { name: 'by day' }));
+      return { user, updateDay };
+    };
+
+    const saveForm = async (user: ReturnType<typeof userEvent.setup>) => {
+      await user.click(screen.getByRole('textbox', { name: 'In' }));
+      await user.keyboard('{Enter}');
+    };
+
+    describe('when the watch was charged on a day', () => {
+      it('shows a watch on the day', async () => {
+        await openDayForm(['watch-charged']);
+
+        expect(
+          screen.getByRole('img', { name: 'watch charged' }),
+        ).toBeInTheDocument();
+      });
+
+      describe('and the user turns the watch off in the form and saves', () => {
+        it('saves the day without the watch charge', async () => {
+          const { user, updateDay } = await openDayForm(['watch-charged']);
+          await user.click(
+            screen.getByRole('button', { name: 'update 3 Jan' }),
+          );
+
+          const toggle = screen.getByRole('checkbox', {
+            name: 'watch charged',
+          });
+          expect(toggle).toBeChecked();
+          await user.click(toggle);
+          await saveForm(user);
+
+          expect(updateDay).toHaveBeenCalledWith(
+            expect.objectContaining({ id: '2026-01-03', trackers: [] }),
+          );
+        });
+      });
+    });
+
+    describe('when a day has a symptom logged', () => {
+      describe('and the user turns the watch on, changes the symptom and saves', () => {
+        it('saves the watch charge alongside the new symptom', async () => {
+          const { user, updateDay } = await openDayForm(['flow-2']);
+          await user.click(
+            screen.getByRole('button', { name: 'update 3 Jan' }),
+          );
+
+          await user.click(
+            screen.getByRole('checkbox', { name: 'watch charged' }),
+          );
+          await user.click(screen.getByRole('combobox', { name: 'symptoms' }));
+          await user.click(
+            screen.getByRole('gridcell', { name: 'period flow 1' }),
+          );
+          await saveForm(user);
+
+          expect(updateDay).toHaveBeenCalledWith(
+            expect.objectContaining({
+              id: '2026-01-03',
+              trackers: ['watch-charged', 'flow-1'],
+            }),
+          );
+        });
+      });
+    });
+
+    describe('hovering the watch toggle in the form', () => {
+      it('shows what it tracks', async () => {
+        const { user } = await openDayForm([]);
+        await user.click(screen.getByRole('button', { name: 'update 3 Jan' }));
+
+        await user.hover(
+          screen.getByRole('checkbox', { name: 'watch charged' }),
+        );
+
+        expect(screen.getByRole('tooltip')).toHaveTextContent('watch charged');
+      });
+    });
+
+    describe('with the watch toggle focused in the form', () => {
+      const focusToggle = async () => {
+        const { user, updateDay } = await openDayForm(['flow-2']);
+        await user.click(screen.getByRole('button', { name: 'update 3 Jan' }));
+        const toggle = screen.getByRole('checkbox', { name: 'watch charged' });
+        toggle.focus();
+        return { user, updateDay, toggle };
+      };
+
+      describe('pressing space', () => {
+        it('turns the watch on', async () => {
+          const { user, toggle } = await focusToggle();
+
+          await user.keyboard(' ');
+
+          expect(toggle).toBeChecked();
+        });
+      });
+
+      describe('pressing enter', () => {
+        it('saves the day as it stands', async () => {
+          const { user, updateDay } = await focusToggle();
+
+          await user.keyboard('{Enter}');
+
+          expect(updateDay).toHaveBeenCalledWith(
+            expect.objectContaining({ id: '2026-01-03', trackers: ['flow-2'] }),
+          );
+        });
+      });
+    });
+  });
+
+  describe('the dots', () => {
+    describe("today's dot", () => {
+      it("opens the form for today, and saves what's entered against today", async () => {
+        const user = userEvent.setup({
+          advanceTimers: jest.advanceTimersByTime,
+        });
+        const updateDay = jest.fn();
+        renderWithHealthStorage(<Calories />, {
+          days: {
+            '2026-01-06': { id: '2026-01-06', consumed: 1800, expended: 2200 },
+          },
+          updateDay,
+        });
+        await user.click(screen.getByRole('radio', { name: 'by day' }));
+
+        await user.click(screen.getByRole('button', { name: 'update 7 Jan' }));
+        await user.type(screen.getByRole('textbox', { name: 'In' }), '1500');
+        await user.type(screen.getByRole('textbox', { name: 'Out' }), '2100');
+        await user.keyboard('{Enter}');
+
+        expect(updateDay).toHaveBeenCalledWith(
+          expect.objectContaining({
+            id: '2026-01-07',
+            consumed: 1500,
+            expended: 2100,
+          }),
+        );
+      });
+    });
+
+    describe('once the days run into a second year', () => {
+      beforeEach(() => {
+        jest.setSystemTime(new Date('2027-01-05'));
+      });
+
+      const showDots = async () => {
+        const user = userEvent.setup({
+          advanceTimers: jest.advanceTimersByTime,
+        });
+        renderWithHealthStorage(<Calories />);
+        await user.click(screen.getByRole('radio', { name: 'by day' }));
+        return user;
+      };
+
+      it('has a tab for each year, newest first', async () => {
+        await showDots();
+
+        expect(
+          screen.getAllByRole('tab').map((tab) => tab.textContent),
+        ).toEqual(['2027', '2026']);
+      });
+
+      it('starts on this year', async () => {
+        await showDots();
+
+        expect(
+          within(screen.getByRole('list', { name: 'by day' }))
+            .getAllByRole('button')
+            .map((dot) => dot.getAttribute('aria-label')),
+        ).toEqual([
+          'update 1 Jan',
+          'update 2 Jan',
+          'update 3 Jan',
+          'update 4 Jan',
+          'update 5 Jan',
+        ]);
+      });
+
+      describe('and an earlier year is selected', () => {
+        it('shows a dot for every day of that year', async () => {
+          const user = await showDots();
+
+          await user.click(screen.getByRole('tab', { name: '2026' }));
+
+          expect(
+            within(screen.getByRole('list', { name: 'by day' })).getAllByRole(
+              'button',
+            ),
+          ).toHaveLength(365);
+        });
+      });
+    });
+  });
+});

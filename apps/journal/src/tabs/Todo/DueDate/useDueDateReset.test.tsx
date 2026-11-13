@@ -1,0 +1,110 @@
+import { getDateDaysAgo, getDateDaysAhead, getToday } from 'shared/dates';
+import {
+  createDailyJobsStorage,
+  renderDailyJob,
+} from 'shared/dailyJobs/dailyJobsTestUtils';
+import { CALENDAR_KEY, CalendarTask } from '../../../types';
+import { useDueDateReset } from './useDueDateReset';
+
+const createTask = (
+  id: string,
+  overrides: Partial<CalendarTask> = {},
+): CalendarTask => ({
+  id,
+  description: id,
+  category: '🧹',
+  parentId: CALENDAR_KEY,
+  position: 0,
+  status: 'ready',
+  dueDate: getToday(),
+  statusUpdateDate: getToday(),
+  ...overrides,
+});
+
+const indexById = (tasks: CalendarTask[]) =>
+  Object.fromEntries(tasks.map((task) => [task.id, task]));
+
+async function resetTasks(tasks: CalendarTask[]) {
+  const storage = createDailyJobsStorage({ [CALENDAR_KEY]: indexById(tasks) });
+  await renderDailyJob(useDueDateReset, storage);
+
+  return storage;
+}
+
+describe('resetting due date tasks', () => {
+  describe('a finished task', () => {
+    it("is deleted once it's been finished since an earlier day", async () => {
+      const task = createTask('renew-passport', {
+        status: 'finished',
+        dueDate: getDateDaysAgo(2),
+        statusUpdateDate: getDateDaysAgo(1),
+      });
+      const storage = await resetTasks([task]);
+
+      expect(storage.deleteItem).toHaveBeenCalledWith(CALENDAR_KEY, task);
+    });
+
+    it('is kept if it was finished today', async () => {
+      const storage = await resetTasks([
+        createTask('renew-passport', {
+          status: 'finished',
+          dueDate: getDateDaysAgo(2),
+        }),
+      ]);
+
+      expect(storage.deleteItem).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('a paused task', () => {
+    it("wakes up on the day it's due", async () => {
+      const storage = await resetTasks([
+        createTask('pay-rates', { status: 'paused' }),
+      ]);
+
+      expect(storage.updateItem).toHaveBeenCalledWith(
+        CALENDAR_KEY,
+        expect.objectContaining({ id: 'pay-rates', status: 'ready' }),
+      );
+    });
+
+    it("stays paused while it isn't due yet", async () => {
+      const storage = await resetTasks([
+        createTask('pay-rates', {
+          status: 'paused',
+          dueDate: getDateDaysAhead(3),
+        }),
+      ]);
+
+      expect(storage.updateItem).not.toHaveBeenCalled();
+    });
+  });
+
+  describe("when the tasks haven't arrived yet", () => {
+    it('resets nothing', async () => {
+      const storage = createDailyJobsStorage({});
+
+      await renderDailyJob(useDueDateReset, storage);
+
+      expect(storage.updateItem).not.toHaveBeenCalled();
+      expect(storage.deleteItem).not.toHaveBeenCalled();
+    });
+
+    it('resets them once they arrive', async () => {
+      const storedValues: Record<string, unknown> = {};
+      const storage = createDailyJobsStorage(storedValues);
+
+      const { rerender } = await renderDailyJob(useDueDateReset, storage);
+
+      storedValues[CALENDAR_KEY] = indexById([
+        createTask('pay-rates', { status: 'paused' }),
+      ]);
+      await rerender();
+
+      expect(storage.updateItem).toHaveBeenCalledWith(
+        CALENDAR_KEY,
+        expect.objectContaining({ id: 'pay-rates', status: 'ready' }),
+      );
+    });
+  });
+});

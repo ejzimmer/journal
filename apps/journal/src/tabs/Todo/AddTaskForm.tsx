@@ -1,0 +1,136 @@
+import { useContext, useEffect, useMemo, useRef, useState } from 'react';
+import { PlusIcon } from 'shared/icons/Plus';
+import { TickIcon } from 'shared/icons/Tick';
+import { XIcon } from 'shared/icons/X';
+import { useStorageContext } from 'shared/FirebaseContext';
+import { CategoriesContext } from '.';
+import { TodoTask } from '../../types';
+import { FormControl } from 'shared/controls/FormControl';
+import { Combobox } from 'shared/controls/combobox/Combobox';
+import { OptionType } from 'shared/controls/combobox/types';
+import { CATEGORIES } from 'shared/utils';
+import { useFormToggle } from 'shared/controls/useFormToggle';
+
+type AddTaskFormProps<T> = {
+  listId: string;
+  getAdditionalFieldValues: () => T;
+  children: React.ReactNode;
+};
+
+export function AddTaskForm<T>({
+  listId,
+  getAdditionalFieldValues,
+  children,
+}: AddTaskFormProps<T>) {
+  const { useValue, addItem } = useStorageContext();
+  const { value } = useValue<Record<string, T & TodoTask>>(listId);
+
+  const categories = useContext(CategoriesContext);
+  if (!categories) {
+    throw new Error('Missing categories context provider');
+  }
+  const categoryOptions = useMemo(
+    () =>
+      Array.from(new Set([...CATEGORIES, ...categories])).map((category) => ({
+        id: category,
+        label: category,
+      })),
+    [categories],
+  );
+
+  const [description, setDescription] = useState('');
+  const [category, setCategory] = useState<OptionType>(categoryOptions[0]);
+
+  const formRef = useRef<HTMLFormElement>(null);
+  const formHeightRef = useRef(0);
+  const descriptionRef = useRef<HTMLInputElement>(null);
+
+  const { isFormOpen, triggerRef, toggleForm, closeForm, closeFormOnEscape } =
+    useFormToggle();
+
+  useEffect(() => {
+    if (formRef.current) {
+      formHeightRef.current = formRef.current.scrollHeight;
+    }
+  }, []);
+
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    if (!description || !category) {
+      return;
+    }
+
+    const additionalFields = getAdditionalFieldValues();
+    if (!additionalFields) {
+      return;
+    }
+
+    addItem<TodoTask & T>(listId, {
+      description,
+      category: category.label,
+      position: value ? Object.keys(value).length : 0,
+      ...additionalFields,
+    } as TodoTask & T);
+
+    setDescription('');
+    descriptionRef.current?.focus();
+  };
+
+  return (
+    <>
+      <button
+        ref={triggerRef}
+        className={`icon subtle ${isFormOpen ? 'form-visible' : ''}`}
+        onClick={toggleForm}
+      >
+        <PlusIcon width="16px" />
+      </button>
+      <form
+        ref={formRef}
+        className={isFormOpen ? 'add-task-form visible' : 'add-task-form'}
+        style={{ height: isFormOpen ? formHeightRef.current : 0 }}
+        onSubmit={handleSubmit}
+        onKeyDown={closeFormOnEscape}
+      >
+        <div className="description">
+          <FormControl
+            label="Description"
+            value={description}
+            onChange={setDescription}
+            ref={descriptionRef}
+          />
+        </div>
+        <div>
+          <Combobox
+            label="Category"
+            value={category}
+            options={categoryOptions}
+            createOption={(value) => ({ id: value, label: value })}
+            onChange={(value) => setCategory(value)}
+            inputSize={1}
+          />
+        </div>
+
+        {children}
+        <div className="buttons">
+          <button
+            type="submit"
+            className="icon led-button led"
+            aria-label="Create"
+          >
+            <TickIcon width="20px" />
+          </button>
+          <button
+            type="reset"
+            className="icon secondary"
+            onClick={closeForm}
+            aria-label="Cancel"
+          >
+            <XIcon colour="var(--error-colour)" width="20px" />
+          </button>
+        </div>
+      </form>
+    </>
+  );
+}
