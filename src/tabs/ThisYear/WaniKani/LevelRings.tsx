@@ -1,6 +1,6 @@
 import { GEM_COLOURS } from './gemColours';
 import { calculateRingDash, drawStar, findPointOnRing } from './ringGeometry';
-import { useTooltip } from '../../../shared/useTooltip';
+import { SvgTooltip } from '../../../shared/controls/SvgTooltip';
 
 const SIZE = 200;
 const CENTRE = SIZE / 2;
@@ -13,7 +13,6 @@ type LevelRingsProps = {
 };
 
 export function LevelRings({ radical, kanji }: LevelRingsProps) {
-  const { createTooltipHandlers, tooltip } = useTooltip();
   const rings = [
     {
       type: 'kanji',
@@ -38,53 +37,50 @@ export function LevelRings({ radical, kanji }: LevelRingsProps) {
   );
 
   return (
-    <>
-      <svg
-        className="level-rings"
-        viewBox={`0 0 ${SIZE} ${SIZE}`}
-        width={SIZE}
-        height={SIZE}
-        role="img"
-        aria-label={`Radicals ${radical.passed} of ${radical.total}, Kanji ${kanji.passed} of ${kanji.needed}`}
-      >
-        {rings.map(({ type, r, width, label, fraction }) => (
-          <g
-            key={type}
-            data-testid={`${type}-ring`}
-            {...createTooltipHandlers(label)}
-          >
-            <circle
-              cx={CENTRE}
-              cy={CENTRE}
-              r={r}
-              stroke={GEM_COLOURS[type].base}
-              strokeOpacity={0.18}
-              strokeWidth={width}
-              fill="none"
-            />
-            {fraction > 0 && (
+    <svg
+      className="level-rings"
+      viewBox={`0 0 ${SIZE} ${SIZE}`}
+      width={SIZE}
+      height={SIZE}
+      role="img"
+      aria-label={`Radicals ${radical.passed} of ${radical.total}, Kanji ${kanji.passed} of ${kanji.needed}`}
+    >
+      {rings.map(({ type, r, width, label, fraction }) => (
+        <SvgTooltip key={type} content={label}>
+          {(triggerProps) => (
+            <g {...triggerProps} data-testid={`${type}-ring`}>
               <circle
                 cx={CENTRE}
                 cy={CENTRE}
                 r={r}
-                stroke={`url(#wanikani-gem-${type})`}
+                stroke={GEM_COLOURS[type].base}
+                strokeOpacity={0.18}
                 strokeWidth={width}
-                strokeLinecap="round"
-                strokeDasharray={calculateRingDash(r, fraction)}
                 fill="none"
-                transform={`rotate(-90 ${CENTRE} ${CENTRE})`}
               />
-            )}
-          </g>
-        ))}
-        <path
-          d={drawStar(...goal, 7)}
-          fill="url(#wanikani-gold)"
-          stroke="#7a5a14"
-          strokeWidth={0.5}
-        />
-      </svg>
-      {tooltip}
-    </>
+              {fraction > 0 && (
+                <circle
+                  cx={CENTRE}
+                  cy={CENTRE}
+                  r={r}
+                  stroke={`url(#wanikani-gem-${type})`}
+                  strokeWidth={width}
+                  strokeLinecap="round"
+                  strokeDasharray={calculateRingDash(r, fraction)}
+                  fill="none"
+                  transform={`rotate(-90 ${CENTRE} ${CENTRE})`}
+                />
+              )}
+            </g>
+          )}
+        </SvgTooltip>
+      ))}
+      <path
+        d={drawStar(...goal, 7)}
+        fill="url(#wanikani-gold)"
+        stroke="#7a5a14"
+        strokeWidth={0.5}
+      />
+    </svg>
   );
 }

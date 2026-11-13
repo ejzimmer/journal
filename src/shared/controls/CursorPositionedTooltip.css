@@ -1,0 +1,8 @@
+.cursor-positioned-tooltip {
+  transition: none;
+}
+
+.cursor-positioned-tooltip-anchor {
+  position: fixed;
+  pointer-events: none;
+}

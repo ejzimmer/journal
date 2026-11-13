@@ -10,15 +10,6 @@
   canvas {
     display: block;
   }
-
-  .tooltip-anchor {
-    position: absolute;
-    pointer-events: none;
-  }
-
-  .tooltip {
-    opacity: 1;
-  }
 }
 
 .yarn-ball-list {

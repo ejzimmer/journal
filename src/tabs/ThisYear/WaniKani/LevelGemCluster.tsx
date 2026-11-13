@@ -6,7 +6,7 @@ import {
 } from './gemGeometry';
 import { SUBJECT_TYPE_LABELS } from './subjectTypeLabels';
 import { SUBJECT_TYPES, SubjectType } from './types';
-import { useTooltip } from '../../../shared/useTooltip';
+import { SvgTooltip } from '../../../shared/controls/SvgTooltip';
 
 const SETTING_RADIUS = 16;
 const layout = calculateClusterLayout(SETTING_RADIUS);
@@ -24,60 +24,57 @@ export function LevelGemCluster({
   percents,
   burned,
 }: LevelGemClusterProps) {
-  const { createTooltipHandlers, tooltip } = useTooltip();
   const description = SUBJECT_TYPES.map(
     (type) =>
       `${SUBJECT_TYPE_LABELS[type]} ${percents[type]}% unlocked${burned[type] ? ' and burned' : ''}`,
   ).join(', ');
 
   return (
-    <>
-      <svg
-        className="level-gem-cluster"
-        viewBox={layout.viewBox}
-        width={layout.width}
-        height={layout.height}
-        role="img"
-        aria-label={`Level ${level}: ${description}`}
-      >
-        {SUBJECT_TYPES.map((type) => (
-          <polygon
-            key={type}
-            points={formatPoints(
-              getHexVertices(...layout.centres[type], layout.settingRadius),
-            )}
-            fill={burned[type] ? 'url(#wanikani-gold)' : 'url(#wanikani-grey)'}
-          />
-        ))}
-        {SUBJECT_TYPES.map((type) => (
-          <g
-            key={type}
-            data-testid={`${type}-gem`}
-            {...createTooltipHandlers(
-              `${SUBJECT_TYPE_LABELS[type]}: ${counts[type].counted}/${counts[type].total}`,
-            )}
-          >
-            <Gem
-              type={type}
-              cx={layout.centres[type][0]}
-              cy={layout.centres[type][1]}
-              r={layout.gemRadius}
-              percent={percents[type]}
-              hasSparkle={burned[type]}
-            />
-          </g>
-        ))}
-        <text
-          x={layout.label.x}
-          y={layout.label.y}
-          textAnchor="end"
-          dominantBaseline="central"
-          aria-hidden="true"
+    <svg
+      className="level-gem-cluster"
+      viewBox={layout.viewBox}
+      width={layout.width}
+      height={layout.height}
+      role="img"
+      aria-label={`Level ${level}: ${description}`}
+    >
+      {SUBJECT_TYPES.map((type) => (
+        <polygon
+          key={type}
+          points={formatPoints(
+            getHexVertices(...layout.centres[type], layout.settingRadius),
+          )}
+          fill={burned[type] ? 'url(#wanikani-gold)' : 'url(#wanikani-grey)'}
+        />
+      ))}
+      {SUBJECT_TYPES.map((type) => (
+        <SvgTooltip
+          key={type}
+          content={`${SUBJECT_TYPE_LABELS[type]}: ${counts[type].counted}/${counts[type].total}`}
         >
-          {level}
-        </text>
-      </svg>
-      {tooltip}
-    </>
+          {(triggerProps) => (
+            <g {...triggerProps} data-testid={`${type}-gem`}>
+              <Gem
+                type={type}
+                cx={layout.centres[type][0]}
+                cy={layout.centres[type][1]}
+                r={layout.gemRadius}
+                percent={percents[type]}
+                hasSparkle={burned[type]}
+              />
+            </g>
+          )}
+        </SvgTooltip>
+      ))}
+      <text
+        x={layout.label.x}
+        y={layout.label.y}
+        textAnchor="end"
+        dominantBaseline="central"
+        aria-hidden="true"
+      >
+        {level}
+      </text>
+    </svg>
   );
 }
