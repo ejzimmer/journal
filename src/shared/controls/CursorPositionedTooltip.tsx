@@ -1,16 +1,16 @@
-import { useId } from 'react';
+import { ReactNode, useId } from 'react';
 import { showPopoverOnMount } from './showPopoverOnMount';
 import './Tooltip.css';
 import './CursorPositionedTooltip.css';
 
 type CursorPositionedTooltipProps = {
-  text: string;
   rect: Pick<DOMRect, 'left' | 'top' | 'width' | 'height'>;
+  children: ReactNode;
 };
 
 export function CursorPositionedTooltip({
-  text,
   rect,
+  children,
 }: CursorPositionedTooltipProps) {
   const anchorName = `--cursor-positioned-tooltip${useId().replace(/[^\w-]/g, '-')}`;
 
@@ -33,7 +33,7 @@ export function CursorPositionedTooltip({
         role="tooltip"
         style={{ positionAnchor: anchorName }}
       >
-        {text}
+        {children}
       </div>
     </>
   );

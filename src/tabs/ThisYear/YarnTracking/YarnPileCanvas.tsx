@@ -94,10 +94,6 @@ export function YarnPileCanvas({
       />
       {hoveredBall && (
         <CursorPositionedTooltip
-          text={getBallDetails(
-            hoveredBall.placed.ball,
-            getBalance(hoveredBall.placed.ball.yarnType),
-          )}
           rect={{
             left:
               hoveredBall.pileLeft +
@@ -110,7 +106,12 @@ export function YarnPileCanvas({
             width: hoveredBall.placed.size,
             height: hoveredBall.placed.size,
           }}
-        />
+        >
+          {getBallDetails(
+            hoveredBall.placed.ball,
+            getBalance(hoveredBall.placed.ball.yarnType),
+          )}
+        </CursorPositionedTooltip>
       )}
     </>
   );
