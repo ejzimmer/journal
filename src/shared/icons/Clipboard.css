@@ -50,10 +50,4 @@
       transition-delay: calc(var(--clip-start) * 1s / var(--line-speed));
     }
   }
-
-  @media (prefers-reduced-motion: reduce) {
-    path {
-      transition: none;
-    }
-  }
 }
