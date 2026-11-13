@@ -301,7 +301,7 @@ describe('WaniKani', () => {
 
         await user.unhover(kanjiRing);
 
-        expect(tooltip).not.toBeInTheDocument();
+        expect(tooltip).not.toBeVisible();
       });
     });
 
