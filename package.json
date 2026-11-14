@@ -11,6 +11,8 @@
   "scripts": {
     "start": "yarn workspace journal start",
     "start:mock": "yarn workspace journal start:mock",
+    "start:amimono": "yarn workspace amimono start",
+    "start:amimono:mock": "yarn workspace amimono start:mock",
     "build": "yarn workspace journal build",
     "test": "jest",
     "typecheck": "yarn workspaces run typecheck",
