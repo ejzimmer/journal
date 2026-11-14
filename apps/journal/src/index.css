@@ -184,33 +184,3 @@ dialog {
   padding-block: 20px;
   color: var(--body-colour);
 }
-
-.tooltip-container {
-  anchor-scope: --tooltip;
-
-  .tooltip-anchor {
-    anchor-name: --tooltip;
-  }
-
-  .tooltip {
-    position: absolute;
-    position-anchor: --tooltip;
-    position-area: right;
-    margin-inline-start: 4px;
-    z-index: 1;
-  }
-}
-
-.pointer-tooltip {
-  position: fixed;
-
-  .tooltip-anchor {
-    position: fixed;
-    pointer-events: none;
-  }
-
-  .tooltip {
-    position: fixed;
-    opacity: 1;
-  }
-}

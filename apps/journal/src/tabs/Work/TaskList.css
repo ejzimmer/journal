@@ -167,6 +167,10 @@ ol.work-lists > li {
       opacity: 0.4;
     }
 
+    button.add-metadata.copied {
+      opacity: 1;
+    }
+
     @media (hover: none) {
       &:not(:focus-within) .task-content > button.add-metadata {
         display: none;

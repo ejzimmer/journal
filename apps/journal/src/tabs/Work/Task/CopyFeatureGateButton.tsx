@@ -28,7 +28,7 @@ export function CopyFeatureGateButton({
   return (
     <button
       type="button"
-      className="add-metadata ghost"
+      className={`add-metadata ghost ${isCopied ? 'copied' : ''}`}
       aria-label={`Copy ${featureGateName}`}
       onClick={copyFeatureGateName}
     >
