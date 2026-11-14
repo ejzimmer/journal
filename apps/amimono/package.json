@@ -1,0 +1,33 @@
+{
+  "name": "amimono",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "firebase": "^12.17.1",
+    "react": "^19.1.0",
+    "react-dom": "19",
+    "shared": "0.1.0"
+  },
+  "scripts": {
+    "start": "node ../../webpack/scripts/start.js",
+    "start:mock": "REACT_APP_USE_MOCK_FIREBASE=true node ../../webpack/scripts/start.js",
+    "build": "node ../../webpack/scripts/build.js",
+    "typecheck": "tsc --noEmit"
+  },
+  "browserslist": {
+    "production": [
+      "last 2 chrome versions",
+      "last 2 firefox versions",
+      "last 2 and_ff versions"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version"
+    ]
+  },
+  "babel": {
+    "presets": [
+      "react-app"
+    ]
+  }
+}

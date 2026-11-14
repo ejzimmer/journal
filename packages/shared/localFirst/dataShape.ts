@@ -11,16 +11,21 @@ export type DataShape = {
   ) => Record<string, unknown>;
 };
 
-const findPathUnderV2 = (appPath: string) => `${V2_ROOT}/${appPath}`;
+export function createSubtreeDataShape(subtree: string): DataShape {
+  const findPathInSubtree = (appPath: string) =>
+    [V2_ROOT, subtree, appPath].filter(Boolean).join('/');
 
-export const PLAIN_DATA_SHAPE: DataShape = {
-  findStoredPath: findPathUnderV2,
-  convertStoredValue: (_appPath, storedValue) => storedValue,
-  convertUpdates: (updates) =>
-    Object.fromEntries(
-      Object.entries(updates).map(([appPath, value]) => [
-        findPathUnderV2(appPath),
-        value ?? null,
-      ]),
-    ),
-};
+  return {
+    findStoredPath: findPathInSubtree,
+    convertStoredValue: (_appPath, storedValue) => storedValue,
+    convertUpdates: (updates) =>
+      Object.fromEntries(
+        Object.entries(updates).map(([appPath, value]) => [
+          findPathInSubtree(appPath),
+          value ?? null,
+        ]),
+      ),
+  };
+}
+
+export const PLAIN_DATA_SHAPE: DataShape = createSubtreeDataShape('');
