@@ -1,0 +1,90 @@
+.move-project-menu[popover] {
+  inset: unset;
+  position: absolute;
+  margin: 0;
+  top: anchor(bottom);
+  right: anchor(right);
+  translate: 0 6px;
+  width: 112px;
+  padding: 8px;
+  background: white;
+  border: 1px solid var(--border-colour);
+  border-radius: 8px;
+  box-shadow: 0 6px 18px hsl(214 30% 40% / 0.18);
+}
+
+.move-project-menu:popover-open {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.move-project-menu .queue-wireframes {
+  display: flex;
+  gap: 6px;
+  justify-content: flex-end;
+}
+
+.move-project-menu .list-wireframe {
+  width: 24px;
+  height: 54px;
+  padding: 5px 4px;
+  border: 0;
+  border-radius: 4px;
+  background: hsl(214 30% 93%);
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  cursor: pointer;
+
+  span {
+    display: block;
+    height: 5px;
+    border-radius: 2px;
+    background: hsl(214 25% 80%);
+  }
+
+  &:hover {
+    background: hsl(211 81% 46% / 0.22);
+
+    span {
+      background: hsl(211 81% 46% / 0.45);
+    }
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--action-colour);
+    outline-offset: 2px;
+  }
+
+  &.current {
+    background: rgb(var(--card-pastel) / 0.7);
+    cursor: default;
+
+    span {
+      background: rgb(var(--card-dark) / 0.7);
+    }
+  }
+
+  &.future {
+    width: 100%;
+    height: 24px;
+    flex-direction: row;
+    flex-wrap: wrap;
+    border: 1.5px dashed hsl(214 32% 75%);
+    background: white;
+
+    span {
+      width: 16px;
+    }
+
+    &:hover {
+      border-color: var(--action-colour);
+      background: hsl(211 81% 46% / 0.1);
+    }
+
+    &.current {
+      background: rgb(var(--card-pastel) / 0.7);
+    }
+  }
+}
