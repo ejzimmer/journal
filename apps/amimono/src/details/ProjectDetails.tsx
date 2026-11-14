@@ -1,5 +1,6 @@
 import './ProjectDetails.css';
 import { Project } from '../projects/types';
+import { sortByPosition } from '../projects/sortByPosition';
 import { GaugeSummary } from './GaugeSummary';
 import { YarnSummary } from './YarnSummary';
 
@@ -23,7 +24,7 @@ export function ProjectDetails({ project }: ProjectDetailsProps) {
         ))}
       {yarns && (
         <div className="yarns">
-          {Object.values(yarns).map((yarn) => (
+          {sortByPosition(Object.values(yarns)).map((yarn) => (
             <YarnSummary key={yarn.id} yarn={yarn} />
           ))}
         </div>

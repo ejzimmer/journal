@@ -31,12 +31,14 @@ export type Colourway = {
   name: string;
   skeins: number;
   dyeLot?: string;
+  position: number;
 };
 
 export type Yarn = {
   id: string;
   name: string;
   colourways?: Record<string, Colourway>;
+  position: number;
 };
 
 export type Gauge = {
