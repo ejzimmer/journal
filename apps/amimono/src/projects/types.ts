@@ -1,3 +1,5 @@
+import { SockProgress } from '../socks/types';
+
 export const PROJECTS_KEY = 'projects';
 export const LISTS_KEY = 'lists';
 
@@ -56,6 +58,7 @@ export type Project = {
   yarns?: Record<string, Yarn>;
   gauge?: Gauge;
   subtasks?: Record<string, Subtask>;
+  socks?: SockProgress;
 };
 
 export type ListEntry = {
