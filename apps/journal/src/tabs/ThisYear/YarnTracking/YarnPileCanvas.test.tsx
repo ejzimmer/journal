@@ -1,5 +1,6 @@
 import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { longPress } from 'shared/controls/longPressTestUtils';
 import { YarnPileCanvas } from './YarnPileCanvas';
 import { PlacedBall } from './bowlWorld';
 import { renderWithYarnStorage } from './yarnStorageTestUtils';
@@ -92,6 +93,31 @@ describe('YarnPileCanvas', () => {
 
         expect(tooltip).not.toBeInTheDocument();
       });
+    });
+  });
+
+  describe('when a ball is long-pressed on a touchscreen', () => {
+    beforeEach(() => {
+      jest.useFakeTimers();
+    });
+
+    afterEach(() => {
+      jest.useRealTimers();
+    });
+
+    it('shows the details of that ball', async () => {
+      const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
+      renderPile([
+        placeBall(0, 'wool', 60, 50),
+        placeBall(1, 'cotton', 110, 50),
+      ]);
+
+      await longPress(user, getPileCanvas(), {
+        clientX: 110 + BLEED,
+        clientY: 50 + BLEED,
+      });
+
+      expect(screen.getByRole('tooltip')).toHaveTextContent('cotton: 950g');
     });
   });
 });
