@@ -4,6 +4,7 @@ import './ProjectCard.css';
 import { ProjectDrawer } from '../details/ProjectDrawer';
 import { ProjectEditForm } from '../edit/ProjectEditForm';
 import { ChevronDownIcon } from '../icons/ChevronDownIcon';
+import { countProjectSteps } from './countProjectSteps';
 import { CraftIcon } from './CraftIcon';
 import { createCardStyle } from './createCardStyle';
 import { MoveProjectMenu } from './MoveProjectMenu';
@@ -32,7 +33,7 @@ export function ProjectCard({ project, listKey, onMove }: ProjectCardProps) {
   }
 
   const projectType = PROJECT_TYPES[project.type];
-  const subtasks = Object.values(project.subtasks ?? {});
+  const steps = countProjectSteps(project);
   const classNames = [
     'project-card',
     listKey !== 'future' && 'queued',
@@ -61,7 +62,7 @@ export function ProjectCard({ project, listKey, onMove }: ProjectCardProps) {
           <ChevronDownIcon />
         </button>
       </div>
-      {subtasks.length > 0 && <SubtaskProgress subtasks={subtasks} />}
+      {steps.totalCount > 0 && <SubtaskProgress {...steps} />}
       {isExpanded && (
         <ProjectDrawer project={project} onEdit={() => setIsEditing(true)} />
       )}
