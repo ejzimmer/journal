@@ -1,0 +1,173 @@
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useStorageContext } from 'shared/FirebaseContext';
+
+import './index.css';
+import { Project } from './Project';
+import { AddProjectForm } from './AddProjectForm';
+import {
+  Category,
+  PROJECT_COLOURS,
+  ProjectDetails,
+  PROJECTS_KEY,
+} from '../../types';
+import { EmojiCheckbox } from 'shared/controls/EmojiCheckbox';
+import { XIcon } from 'shared/icons/X';
+import { renumberPositions, sortByPosition } from 'shared/drag-and-drop/utils';
+import {
+  isProjectAtEnd,
+  isProjectAtStart,
+  moveProjectToEnd,
+  moveProjectToStart,
+  reorderProjects,
+} from './utils';
+import { FilteredProject } from './FilteredProject';
+import { ProjectsSkeleton } from './ProjectsSkeleton';
+import { YearTabs } from 'shared/controls/YearTabs';
+import { getCompletionYear, useItemYears } from 'shared/years';
+
+const isProjectDone = (project: ProjectDetails) =>
+  (project.status ?? 'ready') === 'done';
+
+export function Projects() {
+  const [filterCategories, setFilterCategories] = useState<Category[]>([]);
+
+  const { useValue, updateList, deleteItem } = useStorageContext();
+
+  const { value, loading, synced } =
+    useValue<Record<string, ProjectDetails>>(PROJECTS_KEY);
+  const sortedProjects = useMemo(
+    () => sortByPosition(value ? Object.values(value) : []),
+    [value],
+  );
+
+  const {
+    years,
+    selectedYear,
+    selectYear,
+    isThisYearSelected,
+    isInSelectedYear,
+  } = useItemYears(sortedProjects, isProjectDone, getCompletionYear);
+
+  const hasUnsortedDoneProjects = sortedProjects.some(
+    (project, index) =>
+      index > 0 &&
+      (project.status ?? 'ready') !== 'done' &&
+      (sortedProjects[index - 1].status ?? 'ready') === 'done',
+  );
+
+  const onSortDoneProjectsToEnd = useCallback(() => {
+    const reordered = renumberPositions(
+      sortedProjects.toSorted(
+        (a, b) =>
+          Number((a.status ?? 'ready') === 'done') -
+          Number((b.status ?? 'ready') === 'done'),
+      ),
+    );
+
+    updateList<ProjectDetails>(PROJECTS_KEY, reordered);
+  }, [sortedProjects, updateList]);
+
+  const hasSortedDoneProjectsOnLoad = useRef(false);
+
+  useEffect(() => {
+    if (hasSortedDoneProjectsOnLoad.current || !synced) return;
+    hasSortedDoneProjectsOnLoad.current = true;
+
+    if (hasUnsortedDoneProjects) {
+      onSortDoneProjectsToEnd();
+    }
+  }, [synced, hasUnsortedDoneProjects, onSortDoneProjectsToEnd]);
+
+  const updateFilterCategories = (
+    category: Category,
+    action: 'add' | 'remove',
+  ) => {
+    if (action === 'add') {
+      setFilterCategories((prev) => [...prev, category]);
+    } else {
+      setFilterCategories((prev) => prev.filter((f) => f !== category));
+    }
+  };
+
+  return (
+    <div className="projects-container">
+      <div className="projects-filter">
+        {(Object.keys(PROJECT_COLOURS) as Category[]).map((category) => (
+          <EmojiCheckbox
+            key={category}
+            emoji={category}
+            isChecked={filterCategories.includes(category)}
+            onChange={() =>
+              updateFilterCategories(
+                category,
+                filterCategories.includes(category) ? 'remove' : 'add',
+              )
+            }
+            label={`Filter by ${category}`}
+          />
+        ))}
+        <button
+          className="icon ghost"
+          style={{ marginInlineEnd: '8px' }}
+          onClick={() => setFilterCategories([])}
+        >
+          <XIcon width=".6em" colour="var(--body-colour-mid)" />
+        </button>
+      </div>
+      <YearTabs
+        years={years}
+        selectedYear={selectedYear}
+        onSelectYear={selectYear}
+      >
+        <ul className="projects">
+          {loading ? (
+            <ProjectsSkeleton />
+          ) : (
+            sortedProjects.map(
+              (project, index) =>
+                isInSelectedYear(project) && (
+                  <FilteredProject
+                    key={project.id}
+                    project={project}
+                    filter={filterCategories}
+                  >
+                    <Project
+                      project={project}
+                      onDelete={() => {
+                        updateList(
+                          PROJECTS_KEY,
+                          reorderProjects(sortedProjects, index),
+                        );
+                        deleteItem(PROJECTS_KEY, project);
+                      }}
+                      onMoveToStart={
+                        (project.status ?? 'ready') !== 'in_progress' ||
+                        isProjectAtStart(sortedProjects, index)
+                          ? undefined
+                          : () =>
+                              updateList(
+                                PROJECTS_KEY,
+                                moveProjectToStart(sortedProjects, index),
+                              )
+                      }
+                      onMoveToEnd={
+                        (project.status ?? 'ready') !== 'ready' ||
+                        isProjectAtEnd(sortedProjects, index)
+                          ? undefined
+                          : () =>
+                              updateList(
+                                PROJECTS_KEY,
+                                moveProjectToEnd(sortedProjects, index),
+                              )
+                      }
+                    />
+                  </FilteredProject>
+                ),
+            )
+          )}
+        </ul>
+      </YearTabs>
+      {isThisYearSelected && <AddProjectForm />}
+    </div>
+  );
+}

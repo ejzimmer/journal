@@ -59,5 +59,5 @@ rm -f "$lockfile_backup"
 if [ "$install_ok" -eq 0 ]; then
   echo "Node $(node -v) ready, dependencies installed."
 else
-  echo "yarn install failed on $(node -v), which does not match .nvmrc. Expect src/tabs/Health/calories to fail with 'Temporal is not defined' until Node matches." >&2
+  echo "yarn install failed on $(node -v), which does not match .nvmrc. Expect apps/journal/src/tabs/Health/calories to fail with 'Temporal is not defined' until Node matches." >&2
 fi

@@ -12,7 +12,7 @@ const confusingBrowserGlobals = require('confusing-browser-globals');
 
 module.exports = tseslint.config(
   {
-    ignores: ['build/**'],
+    ignores: ['**/build/**'],
   },
   js.configs.recommended,
   tseslint.configs.base,
