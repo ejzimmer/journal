@@ -1,0 +1,82 @@
+.subtask-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+
+  &:not(:first-child) {
+    border-top: 1px solid hsl(214 32% 88%);
+    padding-top: 14px;
+  }
+
+  ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  li {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    label.checkbox {
+      --checkbox-size: 20px;
+      color: rgb(var(--card-dark));
+
+      .control {
+        color: rgb(var(--card-dark) / 0.6);
+      }
+    }
+
+    &.done span {
+      text-decoration: line-through;
+      color: hsl(0 0% 50%);
+    }
+  }
+
+  .add-subtask-form {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+
+    label {
+      color: hsl(0 0% 45%);
+      white-space: nowrap;
+    }
+
+    input {
+      flex: 1;
+      min-width: 0;
+      font: inherit;
+      padding: 4px;
+      border: 0;
+      border-bottom: 1px solid var(--border-colour);
+      outline: none;
+
+      &:focus-visible {
+        border-bottom-color: var(--action-colour);
+      }
+    }
+
+    button {
+      display: grid;
+      place-items: center;
+      width: 28px;
+      height: 28px;
+      border: 0;
+      border-radius: 50%;
+      background: transparent;
+      color: hsl(211 81% 40%);
+      cursor: pointer;
+
+      &:hover,
+      &:focus-visible {
+        background: hsl(211 81% 46% / 0.1);
+      }
+    }
+  }
+}

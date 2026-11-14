@@ -5,13 +5,14 @@
   font-size: 18px;
   background: rgb(var(--card-pastel) / 0.3);
   border: 1px solid rgb(var(--card-pastel));
-  padding: 6px 8px;
+  --card-padding-block: 6px;
+  padding: var(--card-padding-block) 8px;
 
   &.queued {
     background: rgb(var(--card-pastel) / 0.55);
     border: 2px solid rgb(var(--card-dark) / 0.55);
     box-shadow: 0 2px 7px rgb(var(--card-pastel) / 0.45);
-    padding: 7px 8px;
+    --card-padding-block: 7px;
   }
 
   .project-card-header {
@@ -31,9 +32,26 @@
     opacity: 0.65;
   }
 
-  &.queued .project-name {
+  &:is(.queued, .expanded) .project-name {
     opacity: 1;
     font-weight: 500;
+  }
+
+  .craft-icon {
+    display: inline-flex;
+    color: rgb(var(--card-dark));
+  }
+
+  .expand-toggle svg {
+    transition: rotate 0.15s;
+  }
+
+  .expand-toggle[aria-expanded='true'] {
+    background: rgb(var(--card-dark) / 0.2);
+
+    svg {
+      rotate: 180deg;
+    }
   }
 
   .card-control {
@@ -56,7 +74,7 @@
   }
 
   @media (hover: hover) {
-    &:not(.queued) .card-control {
+    &:not(.queued, .expanded) .card-control {
       opacity: 0;
     }
 
