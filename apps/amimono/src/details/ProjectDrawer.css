@@ -9,8 +9,18 @@
   border-radius: 0 0 5px 5px;
   font-size: 17px;
 
+  .drawer-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-block: -6px;
+  }
+
+  .edit-button {
+    margin-inline-start: auto;
+  }
+
   .details-toggle {
-    align-self: flex-start;
     display: inline-flex;
     align-items: center;
     gap: 4px;
