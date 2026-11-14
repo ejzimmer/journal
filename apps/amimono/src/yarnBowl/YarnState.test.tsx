@@ -1,0 +1,70 @@
+import { screen } from '@testing-library/react';
+import { YarnState } from './YarnState';
+import { renderWithYarnStorage } from './yarnStorageTestUtils';
+
+describe('YarnState', () => {
+  beforeEach(() => {
+    jest.useFakeTimers();
+    jest.setSystemTime(new Date('2026-09-11'));
+  });
+
+  afterEach(() => {
+    jest.useRealTimers();
+  });
+
+  describe('the pile of yarn', () => {
+    describe('a ball in the stash', () => {
+      it('is labelled with its yarn type and weight', () => {
+        renderWithYarnStorage(<YarnState />, {
+          pile: [
+            { id: 0, yarnType: 'wool', grams: 200 },
+            { id: 1, yarnType: 'wool', grams: 100 },
+          ],
+        });
+
+        expect(
+          screen.getByRole('listitem', { name: 'wool: 200g' }),
+        ).toBeInTheDocument();
+        expect(
+          screen.getByRole('listitem', { name: 'wool: 100g' }),
+        ).toBeInTheDocument();
+      });
+
+      it('is described by the balance of its whole yarn type', () => {
+        renderWithYarnStorage(<YarnState />, {
+          pile: [
+            { id: 0, yarnType: 'wool', grams: 200 },
+            { id: 1, yarnType: 'wool', grams: 100 },
+          ],
+          getBalance: (yarnType) => (yarnType === 'wool' ? 3191 : 0),
+        });
+
+        expect(
+          screen.getByRole('listitem', { name: 'wool: 200g' }),
+        ).toHaveAccessibleDescription('wool: 3,191g');
+        expect(
+          screen.getByRole('listitem', { name: 'wool: 100g' }),
+        ).toHaveAccessibleDescription('wool: 3,191g');
+      });
+    });
+
+    describe('a ball that has been used', () => {
+      it('is described by its size and the month it was used', () => {
+        renderWithYarnStorage(<YarnState />, {
+          pile: [
+            {
+              id: 0,
+              yarnType: 'cotton',
+              grams: 200,
+              usedIn: Temporal.PlainYearMonth.from('2026-06'),
+            },
+          ],
+        });
+
+        expect(
+          screen.getByRole('listitem', { name: 'used cotton: 200g' }),
+        ).toHaveAccessibleDescription('cotton: 200g, used Jun 2026');
+      });
+    });
+  });
+});

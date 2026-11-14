@@ -12,6 +12,12 @@
     gap: 32px;
     align-items: flex-start;
 
+    .yarn-bowl {
+      flex: 1 1 340px;
+      max-width: 420px;
+      min-width: 0;
+    }
+
     .project-list {
       flex: 1 1 300px;
       min-width: 0;
