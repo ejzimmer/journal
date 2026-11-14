@@ -1,0 +1,47 @@
+.gauge-summary {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 15px;
+
+  .gauge-swatch {
+    position: relative;
+    width: 68px;
+    height: 70px;
+    flex: none;
+
+    img {
+      position: absolute;
+      left: 16px;
+      top: 0;
+      width: 52px;
+      height: 52px;
+    }
+  }
+
+  .gauge-rows,
+  .gauge-stitches {
+    position: absolute;
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 16px;
+  }
+
+  .gauge-rows {
+    left: 0;
+    top: 14px;
+    width: 18px;
+    text-align: right;
+  }
+
+  .gauge-stitches {
+    left: 29px;
+    top: 52px;
+    width: 36px;
+    text-align: center;
+  }
+
+  .needle-size {
+    color: hsl(0 0% 35%);
+  }
+}

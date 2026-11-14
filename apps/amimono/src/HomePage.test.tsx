@@ -1,9 +1,7 @@
-import { render, screen, within } from '@testing-library/react';
+import { screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
-import { HomePage } from './HomePage';
-import { FirebaseContext } from 'shared/FirebaseContext';
-import { createMockFirebaseContext } from 'shared/mockFirebase';
+import { findCard, renderHomePage } from './homePageTestUtils';
 
 const seed = {
   projects: {
@@ -22,32 +20,16 @@ const seed = {
   },
 };
 
-function renderHomePage() {
-  render(
-    <FirebaseContext.Provider value={createMockFirebaseContext(seed)}>
-      <HomePage />
-    </FirebaseContext.Provider>,
-  );
-}
-
 function findProjectNamesIn(listName: string) {
   return within(screen.getByRole('list', { name: listName }))
     .getAllByRole('listitem')
-    .map((card) => card.textContent);
-}
-
-function findCard(projectName: string) {
-  const card = screen
-    .getAllByRole('listitem')
-    .find((listItem) => listItem.textContent === projectName);
-  if (!card) throw new Error(`No card for ${projectName}`);
-  return card;
+    .map((card) => card.querySelector('.project-name')?.textContent);
 }
 
 describe('HomePage', () => {
   describe('showing the lists', () => {
     it('shows each list in position order', () => {
-      renderHomePage();
+      renderHomePage(seed);
 
       expect(findProjectNamesIn('Meetings')).toEqual([
         'Blanket',
@@ -58,7 +40,7 @@ describe('HomePage', () => {
     });
 
     it('labels each card with its project type', () => {
-      renderHomePage();
+      renderHomePage(seed);
 
       expect(
         within(findCard('Laptop sleeve')).getByRole('img', {
@@ -71,7 +53,7 @@ describe('HomePage', () => {
   describe('moving a project', () => {
     describe('to another list', () => {
       it('puts it at the end of that list', async () => {
-        renderHomePage();
+        renderHomePage(seed);
         const card = within(findCard('Blanket'));
 
         await userEvent.click(
@@ -91,7 +73,7 @@ describe('HomePage', () => {
 
     describe('when the menu is open', () => {
       it('shows the current list as unavailable', async () => {
-        renderHomePage();
+        renderHomePage(seed);
         const card = within(findCard('Socks for Dad'));
 
         await userEvent.click(
@@ -108,7 +90,7 @@ describe('HomePage', () => {
   describe('adding a project', () => {
     describe('with a name', () => {
       it('adds it to the end of the future list with the chosen type', async () => {
-        renderHomePage();
+        renderHomePage(seed);
 
         await userEvent.type(
           screen.getByRole('textbox', { name: 'New project' }),
@@ -132,7 +114,7 @@ describe('HomePage', () => {
       });
 
       it('clears the name ready for the next project', async () => {
-        renderHomePage();
+        renderHomePage(seed);
         const nameInput = screen.getByRole('textbox', { name: 'New project' });
 
         await userEvent.type(nameInput, 'Mittens{Enter}');
@@ -143,7 +125,7 @@ describe('HomePage', () => {
 
     describe('with only spaces for a name', () => {
       it('adds nothing', async () => {
-        renderHomePage();
+        renderHomePage(seed);
 
         await userEvent.type(
           screen.getByRole('textbox', { name: 'New project' }),

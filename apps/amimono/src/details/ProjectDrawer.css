@@ -1,0 +1,40 @@
+.project-drawer {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin: 8px -8px calc(-1 * var(--card-padding-block));
+  padding: 16px;
+  background: white;
+  border-top: 2px solid rgb(var(--card-dark) / 0.55);
+  border-radius: 0 0 5px 5px;
+  font-size: 17px;
+
+  .details-toggle {
+    align-self: flex-start;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    border: 0;
+    background: transparent;
+    padding: 4px 6px 4px 0;
+    font: inherit;
+    font-size: 15px;
+    color: hsl(0 0% 35%);
+    cursor: pointer;
+    border-radius: 6px;
+
+    svg {
+      width: 16px;
+      height: 16px;
+      transition: rotate 0.15s;
+    }
+
+    &[aria-expanded='true'] svg {
+      rotate: 90deg;
+    }
+
+    &:hover {
+      color: hsl(0 0% 15%);
+    }
+  }
+}

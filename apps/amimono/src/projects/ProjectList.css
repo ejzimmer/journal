@@ -8,5 +8,10 @@
   &.future {
     flex-direction: row;
     flex-wrap: wrap;
+    align-items: flex-start;
+
+    .project-card.expanded {
+      width: min(440px, 100%);
+    }
   }
 }

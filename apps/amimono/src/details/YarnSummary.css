@@ -1,0 +1,25 @@
+.yarn-summary {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 15px;
+
+  .yarn-name {
+    font-weight: 600;
+  }
+
+  .colourway-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    font-size: 14px;
+    color: hsl(0 0% 30%);
+    padding: 2px 4px;
+    border-radius: 5px;
+
+    &:hover {
+      background: hsl(214 30% 95%);
+    }
+  }
+}

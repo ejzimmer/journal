@@ -59,4 +59,36 @@ Object.entries(projectsByList).forEach(([listKey, entries]) => {
   });
 });
 
+projects['concentration-1'] = {
+  ...projects['concentration-1'],
+  craft: 'knitting',
+  pattern: {
+    name: 'Telja Cardigan',
+    url: 'https://www.ravelry.com/patterns/library/telja-cardigan',
+  },
+  yarns: {
+    tweed: {
+      id: 'tweed',
+      name: 'Rowan Felted Tweed',
+      colourways: {
+        ancient: { id: 'ancient', name: 'Ancient', skeins: 6, dyeLot: '2481' },
+        mineral: {
+          id: 'mineral',
+          name: 'Mineral',
+          skeins: 1.5,
+          dyeLot: '0917',
+        },
+      },
+    },
+    kidSilk: {
+      id: 'kidSilk',
+      name: 'Drops Kid-Silk',
+      colourways: {
+        beige: { id: 'beige', name: 'Light beige', skeins: 3, dyeLot: '66310' },
+      },
+    },
+  },
+  gauge: { stitches: 22, rows: 30, needleMm: 4 },
+};
+
 export const seedData: Record<string, unknown> = { projects, lists };
