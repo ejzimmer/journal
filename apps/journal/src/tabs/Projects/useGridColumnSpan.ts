@@ -42,10 +42,7 @@ export function useGridColumnSpan(
     });
 
     const card = item.firstElementChild;
-    if (
-      !(card instanceof HTMLElement) ||
-      typeof ResizeObserver === 'undefined'
-    ) {
+    if (!(card instanceof HTMLElement)) {
       return () => {
         cancelled = true;
       };

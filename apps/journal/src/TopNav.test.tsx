@@ -40,13 +40,15 @@ function getTabNames() {
 }
 
 describe('TopNav', () => {
+  const stubResizeObserver = globalThis.ResizeObserver;
+
   beforeEach(() => {
     globalThis.ResizeObserver =
       ImmediateResizeObserver as unknown as typeof ResizeObserver;
   });
 
   afterEach(() => {
-    delete (globalThis as { ResizeObserver?: unknown }).ResizeObserver;
+    globalThis.ResizeObserver = stubResizeObserver;
     delete (HTMLUListElement.prototype as { clientWidth?: number }).clientWidth;
   });
 

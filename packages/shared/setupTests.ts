@@ -97,6 +97,13 @@ HTMLCanvasElement.prototype.getContext = function mock() {
 // jsdom doesn't implement scrollIntoView.
 Element.prototype.scrollIntoView = function mock() {};
 
+// jsdom doesn't implement ResizeObserver.
+globalThis.ResizeObserver = class StubResizeObserver {
+  observe() {}
+  unobserve() {}
+  disconnect() {}
+};
+
 // jsdom doesn't implement structuredClone, which fake-indexeddb relies on.
 // A JSON round-trip is an adequate stand-in for the plain data this app
 // stores (no Dates, Maps, or other structured-clone-only types).
