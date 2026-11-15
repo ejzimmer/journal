@@ -1,6 +1,6 @@
 import './YarnSummary.css';
 import { Yarn } from '../projects/types';
-import { sortByPosition } from '../projects/sortByPosition';
+import { sortByPosition } from 'shared/drag-and-drop/utils';
 import { ColourwayRow } from './ColourwayRow';
 
 type YarnSummaryProps = {
