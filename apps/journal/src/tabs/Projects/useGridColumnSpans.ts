@@ -1,0 +1,87 @@
+import { RefObject, useLayoutEffect } from 'react';
+import { Category, ProjectDetails } from '../../types';
+
+const SHOWN_ITEM = '.project-item:not(.filtered-out)';
+const RESIZABLE_PARTS = [
+  `${SHOWN_ITEM} > .project`,
+  `${SHOWN_ITEM} .project-main-row`,
+  `${SHOWN_ITEM} .project-name`,
+].join(', ');
+
+type ShownProjects = {
+  projects: ProjectDetails[];
+  filter: Category[];
+  year: number;
+};
+
+function measureColumnSpans(list: HTMLElement) {
+  const style = getComputedStyle(list);
+  const columnUnit = parseFloat(style.getPropertyValue('--grid-unit'));
+  const gap = parseFloat(style.getPropertyValue('--shelf-gap'));
+  const items = [...list.querySelectorAll<HTMLElement>(SHOWN_ITEM)];
+
+  // Writing every item's width before reading any of them lets the browser
+  // lay the grid out once for the whole list, instead of once per item.
+  items.forEach((item) => (item.style.width = 'max-content'));
+  const naturalWidths = items.map((item) => item.getBoundingClientRect().width);
+  items.forEach((item) => (item.style.width = ''));
+
+  items.forEach((item, index) => {
+    const columnSpan = String(
+      Math.max(1, Math.ceil((naturalWidths[index] + gap) / (columnUnit + gap))),
+    );
+    if (item.style.getPropertyValue('--col-span') !== columnSpan) {
+      item.style.setProperty('--col-span', columnSpan);
+    }
+  });
+}
+
+export function useGridColumnSpans(
+  listRef: RefObject<HTMLElement | null>,
+  { projects, filter, year }: ShownProjects,
+) {
+  useLayoutEffect(() => {
+    const list = listRef.current;
+    if (!list) return;
+
+    measureColumnSpans(list);
+
+    let cancelled = false;
+    let frame = 0;
+
+    document.fonts?.ready.then(() => {
+      if (!cancelled) measureColumnSpans(list);
+    });
+
+    if (typeof ResizeObserver === 'undefined') {
+      return () => {
+        cancelled = true;
+      };
+    }
+
+    const resizeObserver = new ResizeObserver(() => measureOnNextFrame());
+    const observeResizableParts = () =>
+      list
+        .querySelectorAll(RESIZABLE_PARTS)
+        .forEach((part) => resizeObserver.observe(part));
+
+    // EditableText swaps the project name between a button and an input, so
+    // the name element can be replaced without anything else re-rendering.
+    const measureOnNextFrame = () => {
+      cancelAnimationFrame(frame);
+      frame = requestAnimationFrame(() => {
+        if (cancelled) return;
+        measureColumnSpans(list);
+        observeResizableParts();
+      });
+    };
+
+    observeResizableParts();
+
+    return () => {
+      cancelled = true;
+      cancelAnimationFrame(frame);
+      resizeObserver.disconnect();
+    };
+  }, [listRef, projects, filter, year]);
+}

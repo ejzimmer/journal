@@ -211,6 +211,57 @@ describe('Projects', () => {
     });
   });
 
+  describe('column spans', () => {
+    const GRID_UNIT = 8;
+    const SHELF_GAP = 9;
+    const NATURAL_WIDTH_PER_CHARACTER = 10;
+
+    beforeEach(() => {
+      const getComputedStyle = window.getComputedStyle;
+      jest.spyOn(window, 'getComputedStyle').mockImplementation((element) => {
+        const style = getComputedStyle(element);
+        const getPropertyValue = style.getPropertyValue.bind(style);
+        style.getPropertyValue = (property) =>
+          ({
+            '--grid-unit': `${GRID_UNIT}px`,
+            '--shelf-gap': `${SHELF_GAP}px`,
+          })[property] ?? getPropertyValue(property);
+        return style;
+      });
+      jest
+        .spyOn(HTMLElement.prototype, 'getBoundingClientRect')
+        .mockImplementation(function (this: HTMLElement) {
+          const width =
+            this.style.width === 'max-content'
+              ? (this.textContent?.length ?? 0) * NATURAL_WIDTH_PER_CHARACTER
+              : 0;
+          return { width } as DOMRect;
+        });
+    });
+
+    afterEach(() => {
+      jest.restoreAllMocks();
+    });
+
+    describe('when the projects are shown', () => {
+      it("spans enough grid columns to fit each project's natural width", () => {
+        renderProjects([
+          createProject('knit', 0, 'ready'),
+          createProject('knit a jumper', 1, 'ready'),
+        ]);
+
+        const [shortProject, longProject] = screen
+          .getAllByRole('listitem')
+          .map((item) => item.style.getPropertyValue('--col-span'));
+
+        // Each card's text includes its two-code-unit 🧶 emoji: (60px + 9px gap)
+        // / 17px per column, and (150px + 9px) / 17px, rounded up
+        expect(shortProject).toBe('5');
+        expect(longProject).toBe('10');
+      });
+    });
+  });
+
   describe('sock projects', () => {
     const socks = createProject('socks', 0, 'in_progress', {
       socks: {
