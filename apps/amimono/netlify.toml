@@ -1,0 +1,3 @@
+[build]
+  command = "yarn typecheck && yarn build"
+  publish = "build"

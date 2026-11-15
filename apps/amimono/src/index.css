@@ -1,0 +1,32 @@
+body {
+  margin: 0;
+  font-family:
+    -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background: white;
+
+  --body-colour: hsl(0 0% 20%);
+  --border-colour: hsl(214 32% 82%);
+  --link-colour: hsl(211 61% 43%);
+  --action-colour: hsl(211 81% 46%);
+  --success-colour: hsl(108 81% 36%);
+
+  color: var(--body-colour);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}

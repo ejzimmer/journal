@@ -1,6 +1,6 @@
 import { act, render, screen } from '@testing-library/react';
 import { onAuthStateChanged, User } from 'firebase/auth';
-import { App } from './App';
+import { AuthGate } from './AuthGate';
 
 jest.mock('firebase/auth', () => ({
   getAuth: jest.fn(() => ({})),
@@ -8,19 +8,19 @@ jest.mock('firebase/auth', () => ({
   onAuthStateChanged: jest.fn(),
   signInWithPopup: jest.fn(),
 }));
-jest.mock('shared/loading', () => ({ Loading: () => null }));
-jest.mock('./TopNav', () => ({ TopNav: () => null }));
-jest.mock('./AppRoutes', () => ({ AppRoutes: () => <main /> }));
-jest.mock('./DailyJobs', () => ({ DailyJobs: () => null }));
-jest.mock('shared/dailyJobs/DailyJobsContext', () => ({
-  DailyJobsProvider: ({ children }: { children: React.ReactNode }) => (
-    <>{children}</>
-  ),
-}));
+jest.mock('./loading', () => ({ Loading: () => null }));
 
 const mockOnAuthStateChanged = onAuthStateChanged as jest.Mock;
 
-function renderApp() {
+function GatedApp() {
+  return (
+    <AuthGate>
+      <main />
+    </AuthGate>
+  );
+}
+
+function renderGatedApp() {
   const unsubscribe = jest.fn();
   let reportUser: (user: User | null) => void = () => {};
   mockOnAuthStateChanged.mockImplementation((_auth, callback) => {
@@ -28,7 +28,7 @@ function renderApp() {
     return unsubscribe;
   });
 
-  const view = render(<App />);
+  const view = render(<GatedApp />);
   return {
     ...view,
     unsubscribe,
@@ -36,19 +36,19 @@ function renderApp() {
   };
 }
 
-describe('App', () => {
+describe('AuthGate', () => {
   describe('the auth state listener', () => {
-    it('is registered once, however many times the app renders', () => {
-      const { rerender, reportUser } = renderApp();
+    it('is registered once, however many times the gate renders', () => {
+      const { rerender, reportUser } = renderGatedApp();
 
       reportUser(null);
-      rerender(<App />);
+      rerender(<GatedApp />);
 
       expect(mockOnAuthStateChanged).toHaveBeenCalledTimes(1);
     });
 
-    it('is removed when the app unmounts', () => {
-      const { unmount, unsubscribe } = renderApp();
+    it('is removed when the gate unmounts', () => {
+      const { unmount, unsubscribe } = renderGatedApp();
 
       unmount();
 
@@ -58,7 +58,7 @@ describe('App', () => {
 
   describe('when auth reports no user', () => {
     it('offers a login button', () => {
-      const { reportUser } = renderApp();
+      const { reportUser } = renderGatedApp();
 
       reportUser(null);
 
@@ -69,8 +69,8 @@ describe('App', () => {
   });
 
   describe('when auth reports a user', () => {
-    it('shows the app', () => {
-      const { reportUser } = renderApp();
+    it('shows its children', () => {
+      const { reportUser } = renderGatedApp();
 
       reportUser({} as User);
 
