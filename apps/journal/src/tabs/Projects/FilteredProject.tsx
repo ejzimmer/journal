@@ -1,15 +1,17 @@
-import { CSSProperties } from 'react';
+import { CSSProperties, Ref } from 'react';
 import { Category, ProjectDetails } from '../../types';
 
 type FilteredProjectProps = {
   filter: Category[];
   project: ProjectDetails;
+  itemRef: Ref<HTMLLIElement>;
   children: React.ReactNode;
 };
 
 export function FilteredProject({
   filter: categories,
   project,
+  itemRef,
   children,
 }: FilteredProjectProps) {
   const isVisible = !categories.length || categories.includes(project.category);
@@ -17,6 +19,7 @@ export function FilteredProject({
 
   return (
     <li
+      ref={isVisible ? itemRef : undefined}
       className={`project-item ${isVisible ? '' : 'filtered-out'}`}
       style={{ '--row-span': rowSpan } as CSSProperties}
     >

@@ -1,12 +1,11 @@
-import { RefObject, useLayoutEffect } from 'react';
+import {
+  RefCallback,
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useState,
+} from 'react';
 import { Category, ProjectDetails } from '../../types';
-
-const SHOWN_ITEM = '.project-item:not(.filtered-out)';
-const RESIZABLE_PARTS = [
-  `${SHOWN_ITEM} > .project`,
-  `${SHOWN_ITEM} .project-main-row`,
-  `${SHOWN_ITEM} .project-name`,
-].join(', ');
 
 type ShownProjects = {
   projects: ProjectDetails[];
@@ -14,11 +13,12 @@ type ShownProjects = {
   year: number;
 };
 
-function fitColumnSpansToContent(list: HTMLElement) {
-  const style = getComputedStyle(list);
+function fitColumnSpansToContent(items: HTMLElement[]) {
+  if (items.length === 0) return;
+
+  const style = getComputedStyle(items[0]);
   const columnUnit = parseFloat(style.getPropertyValue('--grid-unit'));
   const gap = parseFloat(style.getPropertyValue('--shelf-gap'));
-  const items = [...list.querySelectorAll<HTMLElement>(SHOWN_ITEM)];
 
   // Reading the size immediately after updating it forces a synchronous
   // layout of the whole grid. Doing all the writes before any of the reads
@@ -37,52 +37,63 @@ function fitColumnSpansToContent(list: HTMLElement) {
   });
 }
 
-export function useGridColumnSpans(
-  listRef: RefObject<HTMLElement | null>,
-  { projects, filter, year }: ShownProjects,
-) {
-  useLayoutEffect(() => {
-    const list = listRef.current;
-    if (!list) return;
+function createColumnSpanFitter() {
+  const items = new Set<HTMLElement>();
+  let frame = 0;
 
-    fitColumnSpansToContent(list);
+  const fitNow = () => fitColumnSpansToContent([...items]);
+  const fitOnNextFrame = () => {
+    cancelAnimationFrame(frame);
+    frame = requestAnimationFrame(fitNow);
+  };
+  const resizeObserver =
+    typeof ResizeObserver === 'undefined'
+      ? undefined
+      : new ResizeObserver(fitOnNextFrame);
 
-    let cancelled = false;
-    let frame = 0;
-
-    document.fonts?.ready.then(() => {
-      if (!cancelled) fitColumnSpansToContent(list);
-    });
-
-    if (typeof ResizeObserver === 'undefined') {
+  return {
+    fitNow,
+    cancelPendingFit: () => cancelAnimationFrame(frame),
+    addItem: (item: HTMLElement) => {
+      items.add(item);
       return () => {
-        cancelled = true;
+        items.delete(item);
       };
-    }
+    },
+    refitOnResize: (element: HTMLElement) => {
+      resizeObserver?.observe(element);
+      return () => resizeObserver?.unobserve(element);
+    },
+  };
+}
 
-    const resizeObserver = new ResizeObserver(() => measureOnNextFrame());
-    const observeResizableParts = () =>
-      list
-        .querySelectorAll(RESIZABLE_PARTS)
-        .forEach((part) => resizeObserver.observe(part));
+export function useGridColumnSpans({ projects, filter, year }: ShownProjects) {
+  const [fitter] = useState(createColumnSpanFitter);
 
-    const measureOnNextFrame = () => {
-      cancelAnimationFrame(frame);
-      frame = requestAnimationFrame(() => {
-        if (cancelled) return;
-        fitColumnSpansToContent(list);
-        // A `.project-name` is replaced by a textarea while it's being edited,
-        // without re-rendering this list, so the parts are looked up again.
-        observeResizableParts();
-      });
-    };
+  useLayoutEffect(() => {
+    fitter.fitNow();
+  }, [fitter, projects, filter, year]);
 
-    observeResizableParts();
+  useEffect(() => {
+    let cancelled = false;
+    document.fonts?.ready.then(() => {
+      if (!cancelled) fitter.fitNow();
+    });
 
     return () => {
       cancelled = true;
-      cancelAnimationFrame(frame);
-      resizeObserver.disconnect();
+      fitter.cancelPendingFit();
     };
-  }, [listRef, projects, filter, year]);
+  }, [fitter]);
+
+  const itemRef: RefCallback<HTMLElement> = useCallback(
+    (item) => (item ? fitter.addItem(item) : undefined),
+    [fitter],
+  );
+  const resizableContentRef: RefCallback<HTMLElement> = useCallback(
+    (element) => (element ? fitter.refitOnResize(element) : undefined),
+    [fitter],
+  );
+
+  return { itemRef, resizableContentRef };
 }

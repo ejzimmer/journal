@@ -49,8 +49,7 @@ export function Projects() {
     isInSelectedYear,
   } = useItemYears(sortedProjects, isProjectDone, getCompletionYear);
 
-  const projectListRef = useRef<HTMLUListElement>(null);
-  useGridColumnSpans(projectListRef, {
+  const { itemRef, resizableContentRef } = useGridColumnSpans({
     projects: sortedProjects,
     filter: filterCategories,
     year: selectedYear,
@@ -127,7 +126,7 @@ export function Projects() {
         selectedYear={selectedYear}
         onSelectYear={selectYear}
       >
-        <ul className="projects" ref={projectListRef}>
+        <ul className="projects">
           {loading ? (
             <ProjectsSkeleton />
           ) : (
@@ -138,9 +137,11 @@ export function Projects() {
                     key={project.id}
                     project={project}
                     filter={filterCategories}
+                    itemRef={itemRef}
                   >
                     <Project
                       project={project}
+                      nameRef={resizableContentRef}
                       onDelete={() => {
                         updateList(
                           PROJECTS_KEY,
