@@ -17,8 +17,8 @@ export function HomePage() {
           <YarnTracking />
         </section>
         <ProjectList
-          listKey="anywhere"
-          projects={lists.anywhere}
+          listKey="portable"
+          projects={lists.portable}
           onMove={moveProject}
         />
         <ProjectList
