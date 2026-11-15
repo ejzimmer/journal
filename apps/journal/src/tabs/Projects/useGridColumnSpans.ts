@@ -14,7 +14,7 @@ type ShownProjects = {
   year: number;
 };
 
-function measureColumnSpans(list: HTMLElement) {
+function fitColumnSpansToContent(list: HTMLElement) {
   const style = getComputedStyle(list);
   const columnUnit = parseFloat(style.getPropertyValue('--grid-unit'));
   const gap = parseFloat(style.getPropertyValue('--shelf-gap'));
@@ -45,13 +45,13 @@ export function useGridColumnSpans(
     const list = listRef.current;
     if (!list) return;
 
-    measureColumnSpans(list);
+    fitColumnSpansToContent(list);
 
     let cancelled = false;
     let frame = 0;
 
     document.fonts?.ready.then(() => {
-      if (!cancelled) measureColumnSpans(list);
+      if (!cancelled) fitColumnSpansToContent(list);
     });
 
     if (typeof ResizeObserver === 'undefined') {
@@ -70,7 +70,7 @@ export function useGridColumnSpans(
       cancelAnimationFrame(frame);
       frame = requestAnimationFrame(() => {
         if (cancelled) return;
-        measureColumnSpans(list);
+        fitColumnSpansToContent(list);
         // Editing a project name swaps its element for a textarea without
         // re-rendering the list, so this effect never sees the new element.
         observeResizableParts();
