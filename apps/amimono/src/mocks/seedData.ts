@@ -28,7 +28,7 @@ const projectsByList: Record<
   ListKey,
   Array<[string, ProjectType, Project['subtasks']?]>
 > = {
-  anywhere: [
+  portable: [
     ['Blanket', 'blanket', createSubtasks(3, 8)],
     ['Hat band', 'accessory'],
     ['Laptop sleeve', 'accessory'],
