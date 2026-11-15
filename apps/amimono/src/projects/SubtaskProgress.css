@@ -8,17 +8,28 @@
   font-size: 13px;
   color: hsl(0 0% 30%);
 
-  .subtask-progress-track {
+  progress {
     flex: 1;
+    min-width: 0;
     height: 6px;
+    appearance: none;
+    border: 0;
     border-radius: 3px;
     background: rgb(var(--card-pastel) / 0.8);
     overflow: hidden;
-  }
 
-  .subtask-progress-fill {
-    height: 100%;
-    border-radius: 3px;
-    background: rgb(var(--card-dark));
+    &::-webkit-progress-bar {
+      background: transparent;
+    }
+
+    &::-webkit-progress-value {
+      border-radius: 3px;
+      background: rgb(var(--card-dark));
+    }
+
+    &::-moz-progress-bar {
+      border-radius: 3px;
+      background: rgb(var(--card-dark));
+    }
   }
 }
