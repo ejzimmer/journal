@@ -71,8 +71,8 @@ export function useGridColumnSpans(
       frame = requestAnimationFrame(() => {
         if (cancelled) return;
         fitColumnSpansToContent(list);
-        // Editing a project name swaps its element for a textarea without
-        // re-rendering the list, so this effect never sees the new element.
+        // A `.project-name` is replaced by a textarea while it's being edited,
+        // without re-rendering this list, so the parts are looked up again.
         observeResizableParts();
       });
     };
