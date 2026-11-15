@@ -74,7 +74,7 @@ export const PROJECT_TYPES: Record<ProjectType, ProjectTypeDetails> = {
 };
 
 export const LIST_LABELS = {
-  meetings: 'Meetings',
+  anywhere: 'Anywhere',
   concentration: 'Concentration',
   future: 'Future',
 };
