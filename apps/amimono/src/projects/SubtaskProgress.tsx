@@ -7,16 +7,14 @@ type SubtaskProgressProps = {
 
 export function SubtaskProgress({ subtasks }: SubtaskProgressProps) {
   const doneCount = subtasks.filter(({ status }) => status === 'done').length;
-  const percentDone = Math.round((doneCount / subtasks.length) * 100);
 
   return (
     <div className="subtask-progress">
-      <div className="subtask-progress-track">
-        <div
-          className="subtask-progress-fill"
-          style={{ width: `${percentDone}%` }}
-        />
-      </div>
+      <progress
+        aria-label="Steps done"
+        value={doneCount}
+        max={subtasks.length}
+      />
       <span>
         {doneCount} of {subtasks.length}
       </span>
