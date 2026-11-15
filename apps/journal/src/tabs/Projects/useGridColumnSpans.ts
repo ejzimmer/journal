@@ -53,14 +53,13 @@ function createColumnSpanFitter() {
     cancelPendingFit: () => cancelAnimationFrame(frame),
     addItem: (item: HTMLElement) => {
       items.add(item);
-      return () => {
-        items.delete(item);
-      };
     },
-    refitOnResize: (element: HTMLElement) => {
-      resizeObserver.observe(element);
-      return () => resizeObserver.unobserve(element);
+    removeItem: (item: HTMLElement) => {
+      items.delete(item);
     },
+    refitOnResize: (element: HTMLElement) => resizeObserver.observe(element),
+    stopRefittingOnResize: (element: HTMLElement) =>
+      resizeObserver.unobserve(element),
   };
 }
 
@@ -84,11 +83,21 @@ export function useGridColumnSpans({ projects, filter, year }: ShownProjects) {
   }, [fitter]);
 
   const itemRef: RefCallback<HTMLElement> = useCallback(
-    (item) => (item ? fitter.addItem(item) : undefined),
+    (item) => {
+      if (!item) return;
+
+      fitter.addItem(item);
+      return () => fitter.removeItem(item);
+    },
     [fitter],
   );
   const resizableContentRef: RefCallback<HTMLElement> = useCallback(
-    (element) => (element ? fitter.refitOnResize(element) : undefined),
+    (element) => {
+      if (!element) return;
+
+      fitter.refitOnResize(element);
+      return () => fitter.stopRefittingOnResize(element);
+    },
     [fitter],
   );
 
