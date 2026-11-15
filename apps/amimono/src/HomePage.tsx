@@ -13,8 +13,8 @@ export function HomePage() {
       <h1 className="visually-hidden">Amimono</h1>
       <div className="queues">
         <ProjectList
-          listKey="meetings"
-          projects={lists.meetings}
+          listKey="anywhere"
+          projects={lists.anywhere}
           onMove={moveProject}
         />
         <ProjectList
