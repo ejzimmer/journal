@@ -202,8 +202,8 @@ describe('migrating from the journal', () => {
       });
 
       expect(updates).toMatchObject({
-        'lists/meetings/sleeve': { id: 'sleeve', position: 1 },
-        'lists/meetings/blanket': { id: 'blanket', position: 2 },
+        'lists/anywhere/sleeve': { id: 'sleeve', position: 1 },
+        'lists/anywhere/blanket': { id: 'blanket', position: 2 },
         'lists/future/cardi': { id: 'cardi', position: 1 },
         'lists/future/hat': { id: 'hat', position: 2 },
       });
