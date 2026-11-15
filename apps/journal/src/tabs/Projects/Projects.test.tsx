@@ -1,4 +1,4 @@
-import { screen, within } from '@testing-library/react';
+import { screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { renderWithStorage } from 'shared/storageContextTestUtils';
 import { ProjectDetails, PROJECTS_KEY } from '../../types';
@@ -17,6 +17,45 @@ const createProject = (
   status,
   position,
   ...extra,
+});
+
+class FakeResizeObserver {
+  static instances: FakeResizeObserver[] = [];
+  readonly observed = new Set<Element>();
+
+  constructor(private onResize: ResizeObserverCallback) {
+    FakeResizeObserver.instances.push(this);
+  }
+
+  observe(element: Element) {
+    this.observed.add(element);
+  }
+
+  unobserve(element: Element) {
+    this.observed.delete(element);
+  }
+
+  disconnect() {
+    this.observed.clear();
+  }
+
+  static resize(element: Element) {
+    FakeResizeObserver.instances
+      .filter((observer) => observer.observed.has(element))
+      .forEach((observer) =>
+        observer.onResize([], observer as unknown as ResizeObserver),
+      );
+  }
+}
+
+beforeEach(() => {
+  FakeResizeObserver.instances = [];
+  globalThis.ResizeObserver =
+    FakeResizeObserver as unknown as typeof ResizeObserver;
+});
+
+afterEach(() => {
+  delete (globalThis as { ResizeObserver?: unknown }).ResizeObserver;
 });
 
 function renderProjects(projects: ProjectDetails[]) {
@@ -215,8 +254,10 @@ describe('Projects', () => {
     const GRID_UNIT = 8;
     const SHELF_GAP = 9;
     const NATURAL_WIDTH_PER_CHARACTER = 10;
+    let naturalWidthOverride: number | undefined;
 
     beforeEach(() => {
+      naturalWidthOverride = undefined;
       const getComputedStyle = window.getComputedStyle;
       jest.spyOn(window, 'getComputedStyle').mockImplementation((element) => {
         const style = getComputedStyle(element);
@@ -233,7 +274,8 @@ describe('Projects', () => {
         .mockImplementation(function (this: HTMLElement) {
           const width =
             this.style.width === 'max-content'
-              ? (this.textContent?.length ?? 0) * NATURAL_WIDTH_PER_CHARACTER
+              ? (naturalWidthOverride ??
+                (this.textContent?.length ?? 0) * NATURAL_WIDTH_PER_CHARACTER)
               : 0;
           return { width } as DOMRect;
         });
@@ -258,6 +300,25 @@ describe('Projects', () => {
         // / 17px per column, and (150px + 9px) / 17px, rounded up
         expect(shortProject).toBe('5');
         expect(longProject).toBe('10');
+      });
+    });
+
+    describe("when a project's name grows while it's being edited", () => {
+      it('widens the project to fit', async () => {
+        const user = userEvent.setup();
+        renderProjects([createProject('knit', 0, 'ready')]);
+        const item = screen.getByRole('listitem');
+
+        await user.click(screen.getByRole('button', { name: 'project' }));
+        naturalWidthOverride = 200;
+        FakeResizeObserver.resize(
+          screen.getByRole('textbox', { name: 'project' }),
+        );
+
+        // (200px + 9px gap) / 17px per column, rounded up
+        await waitFor(() =>
+          expect(item.style.getPropertyValue('--col-span')).toBe('13'),
+        );
       });
     });
   });

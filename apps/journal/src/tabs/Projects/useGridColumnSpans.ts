@@ -46,10 +46,7 @@ function createColumnSpanFitter() {
     cancelAnimationFrame(frame);
     frame = requestAnimationFrame(fitNow);
   };
-  const resizeObserver =
-    typeof ResizeObserver === 'undefined'
-      ? undefined
-      : new ResizeObserver(fitOnNextFrame);
+  const resizeObserver = new ResizeObserver(fitOnNextFrame);
 
   return {
     fitNow,
@@ -61,8 +58,8 @@ function createColumnSpanFitter() {
       };
     },
     refitOnResize: (element: HTMLElement) => {
-      resizeObserver?.observe(element);
-      return () => resizeObserver?.unobserve(element);
+      resizeObserver.observe(element);
+      return () => resizeObserver.unobserve(element);
     },
   };
 }
