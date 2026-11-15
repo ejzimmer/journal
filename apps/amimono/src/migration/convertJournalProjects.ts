@@ -15,7 +15,7 @@ export function convertJournalProjects(
     ),
   );
   const listPositions: Record<ListKey, number> = {
-    anywhere: 0,
+    portable: 0,
     concentration: 0,
     future: 0,
   };
@@ -24,7 +24,7 @@ export function convertJournalProjects(
   knittingProjects.forEach((journalProject) => {
     const project = convertProject(journalProject);
     const listKey =
-      journalProject.status === 'in_progress' ? 'anywhere' : 'future';
+      journalProject.status === 'in_progress' ? 'portable' : 'future';
     listPositions[listKey] += 1;
     updates[`projects/${project.id}`] = project;
     updates[`lists/${listKey}/${project.id}`] = {
