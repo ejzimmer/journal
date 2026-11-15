@@ -13,7 +13,7 @@ const seed = {
     socks: { id: 'socks', name: 'Socks for Dad', type: 'socks' },
   },
   lists: {
-    anywhere: {
+    portable: {
       sleeve: { id: 'sleeve', position: 2 },
       blanket: { id: 'blanket', position: 1 },
     },
@@ -49,7 +49,7 @@ describe('HomePage', () => {
     it('shows each list in position order', () => {
       renderHomePage();
 
-      expect(findProjectNamesIn('Anywhere')).toEqual([
+      expect(findProjectNamesIn('Portable')).toEqual([
         'Blanket',
         'Laptop sleeve',
       ]);
@@ -85,7 +85,7 @@ describe('HomePage', () => {
           'Cardigan',
           'Blanket',
         ]);
-        expect(findProjectNamesIn('Anywhere')).toEqual(['Laptop sleeve']);
+        expect(findProjectNamesIn('Portable')).toEqual(['Laptop sleeve']);
       });
     });
 
