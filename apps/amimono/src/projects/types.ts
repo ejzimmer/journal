@@ -1,7 +1,7 @@
 export const PROJECTS_KEY = 'projects';
 export const LISTS_KEY = 'lists';
 
-export const LIST_KEYS = ['meetings', 'concentration', 'future'] as const;
+export const LIST_KEYS = ['anywhere', 'concentration', 'future'] as const;
 export type ListKey = (typeof LIST_KEYS)[number];
 
 export const PROJECT_TYPE_KEYS = [
