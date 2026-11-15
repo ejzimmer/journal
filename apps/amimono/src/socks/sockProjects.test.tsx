@@ -5,7 +5,7 @@ import { findCard, renderHomePage } from '../homePageTestUtils';
 
 const createSeed = (project: Record<string, unknown>) => ({
   projects: { socks: { id: 'socks', name: 'Socks for Dad', ...project } },
-  lists: { anywhere: { socks: { id: 'socks', position: 1 } } },
+  lists: { portable: { socks: { id: 'socks', position: 1 } } },
 });
 
 async function expandCard() {

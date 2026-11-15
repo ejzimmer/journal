@@ -74,7 +74,7 @@ export const PROJECT_TYPES: Record<ProjectType, ProjectTypeDetails> = {
 };
 
 export const LIST_LABELS = {
-  anywhere: 'Anywhere',
+  portable: 'Portable',
   concentration: 'Concentration',
   future: 'Future',
 };
