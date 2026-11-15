@@ -1,3 +1,4 @@
+import { sortByPosition } from 'shared/drag-and-drop/utils';
 import { useStorageContext } from 'shared/FirebaseContext';
 import {
   LIST_KEYS,
@@ -27,8 +28,7 @@ function arrangeProjectsInLists(
   storedLists: StoredLists,
 ): ProjectLists {
   const findProjectsInList = (listKey: ListKey) =>
-    Object.values(storedLists[listKey] ?? {})
-      .toSorted((a, b) => a.position - b.position)
+    sortByPosition(Object.values(storedLists[listKey] ?? {}))
       .map((entry) => projects[entry.id])
       .filter((project): project is Project => !!project);
 
