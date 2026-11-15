@@ -9,7 +9,7 @@ export function useVisibleTabCount(
 
   useLayoutEffect(() => {
     const list = listRef.current;
-    if (!list || typeof ResizeObserver === 'undefined') return;
+    if (!list) return;
 
     const updateVisibleTabCount = () => {
       const itemWidths = itemWidthsRef.current;
