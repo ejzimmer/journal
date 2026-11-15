@@ -1,6 +1,7 @@
 import { screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { renderWithStorage } from 'shared/storageContextTestUtils';
+import { resizeElement } from 'shared/resizeObserverTestUtils';
 import { ProjectDetails, PROJECTS_KEY } from '../../types';
 import { Projects } from '.';
 
@@ -17,45 +18,6 @@ const createProject = (
   status,
   position,
   ...extra,
-});
-
-class FakeResizeObserver {
-  static instances: FakeResizeObserver[] = [];
-  readonly observed = new Set<Element>();
-
-  constructor(private onResize: ResizeObserverCallback) {
-    FakeResizeObserver.instances.push(this);
-  }
-
-  observe(element: Element) {
-    this.observed.add(element);
-  }
-
-  unobserve(element: Element) {
-    this.observed.delete(element);
-  }
-
-  disconnect() {
-    this.observed.clear();
-  }
-
-  static resize(element: Element) {
-    FakeResizeObserver.instances
-      .filter((observer) => observer.observed.has(element))
-      .forEach((observer) =>
-        observer.onResize([], observer as unknown as ResizeObserver),
-      );
-  }
-}
-
-beforeEach(() => {
-  FakeResizeObserver.instances = [];
-  globalThis.ResizeObserver =
-    FakeResizeObserver as unknown as typeof ResizeObserver;
-});
-
-afterEach(() => {
-  delete (globalThis as { ResizeObserver?: unknown }).ResizeObserver;
 });
 
 function renderProjects(projects: ProjectDetails[]) {
@@ -311,9 +273,7 @@ describe('Projects', () => {
 
         await user.click(screen.getByRole('button', { name: 'project' }));
         naturalWidthOverride = 200;
-        FakeResizeObserver.resize(
-          screen.getByRole('textbox', { name: 'project' }),
-        );
+        resizeElement(screen.getByRole('textbox', { name: 'project' }));
 
         // (200px + 9px gap) / 17px per column, rounded up
         await waitFor(() =>
