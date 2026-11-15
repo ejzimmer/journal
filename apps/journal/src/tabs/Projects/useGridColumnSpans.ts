@@ -20,7 +20,7 @@ function measureColumnSpans(list: HTMLElement) {
   const gap = parseFloat(style.getPropertyValue('--shelf-gap'));
   const items = [...list.querySelectorAll<HTMLElement>(SHOWN_ITEM)];
 
-  // Reading the style immediately after updating it forces a synchronous
+  // Reading the size immediately after updating it forces a synchronous
   // layout of the whole grid. Doing all the writes before any of the reads
   // ensures this layout only happens once.
   items.forEach((item) => (item.style.width = 'max-content'));
