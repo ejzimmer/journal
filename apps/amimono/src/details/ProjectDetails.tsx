@@ -1,6 +1,6 @@
 import './ProjectDetails.css';
 import { Project } from '../projects/types';
-import { sortByPosition } from '../projects/sortByPosition';
+import { sortByPosition } from 'shared/drag-and-drop/utils';
 import { GaugeSummary } from './GaugeSummary';
 import { YarnSummary } from './YarnSummary';
 
