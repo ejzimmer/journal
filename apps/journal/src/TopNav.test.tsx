@@ -1,18 +1,10 @@
-import { render, screen, within } from '@testing-library/react';
+import { act, render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
+import { resizeElement } from 'shared/resizeObserverTestUtils';
 import { TopNav } from './TopNav';
 
 const TAB_WIDTH = 100;
-
-class ImmediateResizeObserver {
-  constructor(private callback: ResizeObserverCallback) {}
-  observe() {
-    this.callback([], this as unknown as ResizeObserver);
-  }
-  unobserve() {}
-  disconnect() {}
-}
 
 function renderTopNav({
   barWidth,
@@ -31,6 +23,8 @@ function renderTopNav({
       <TopNav />
     </MemoryRouter>,
   );
+  const tabList = within(screen.getByRole('navigation')).getByRole('list');
+  act(() => resizeElement(tabList));
 }
 
 function getTabNames() {
@@ -40,15 +34,7 @@ function getTabNames() {
 }
 
 describe('TopNav', () => {
-  const stubResizeObserver = globalThis.ResizeObserver;
-
-  beforeEach(() => {
-    globalThis.ResizeObserver =
-      ImmediateResizeObserver as unknown as typeof ResizeObserver;
-  });
-
   afterEach(() => {
-    globalThis.ResizeObserver = stubResizeObserver;
     delete (HTMLUListElement.prototype as { clientWidth?: number }).clientWidth;
   });
 
