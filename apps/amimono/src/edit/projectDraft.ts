@@ -1,4 +1,4 @@
-import { sortByPosition } from '../projects/sortByPosition';
+import { sortByPosition } from 'shared/drag-and-drop/utils';
 import {
   Colourway,
   Craft,

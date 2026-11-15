@@ -1,7 +1,7 @@
 import './SubtaskList.css';
 import { Checkbox } from 'shared/controls/Checkbox';
 import { Subtask } from '../projects/types';
-import { sortByPosition } from '../projects/sortByPosition';
+import { sortByPosition } from 'shared/drag-and-drop/utils';
 import { AddSubtaskForm } from './AddSubtaskForm';
 import { useSubtaskActions } from './useSubtaskActions';
 
