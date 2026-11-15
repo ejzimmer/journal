@@ -1,6 +1,5 @@
 import { Database } from 'firebase/database';
 import {
-  getMockServerData,
   mockUpdate,
   resetMockDatabase,
   setMockServerData,
@@ -88,6 +87,7 @@ describe('migrating from the journal', () => {
       expect(Object.keys(updates)).toEqual([
         'projects/cardi',
         'lists/future/cardi',
+        'migratedFromJournalAt',
       ]);
     });
 
@@ -223,17 +223,32 @@ describe('migrating from the journal', () => {
   });
 
   describe('running only once', () => {
+    it('records that it ran along with the copy', async () => {
+      const updates = await migrate({});
+
+      expect(updates.migratedFromJournalAt).toEqual(expect.any(Number));
+    });
+
     it('leaves Amimono alone when it has already run', async () => {
       await migrate({ amimono: { migratedFromJournalAt: 1 } });
 
       expect(mockUpdate).not.toHaveBeenCalled();
     });
 
-    it('records that it ran', async () => {
-      await migrate({});
+    describe('when the copy fails', () => {
+      it('tries again next time', async () => {
+        mockUpdate.mockRejectedValueOnce(new Error('offline'));
+        const v2 = {
+          projects: { cardi: createJournalProject('cardi', 'Cardigan') },
+        };
 
-      expect(getMockServerData()).toMatchObject({
-        v2: { amimono: { migratedFromJournalAt: expect.any(Number) } },
+        await expect(migrate(v2)).rejects.toThrow('offline');
+        await migrateFromJournal(database);
+
+        expect(mockUpdate).toHaveBeenCalledTimes(2);
+        expect(mockUpdate.mock.calls[1][0]['projects/cardi']).toMatchObject({
+          name: 'Cardigan',
+        });
       });
     });
   });
