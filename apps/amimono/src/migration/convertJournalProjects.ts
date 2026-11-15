@@ -1,4 +1,4 @@
-import { sortByPosition } from '../projects/sortByPosition';
+import { sortByPosition } from 'shared/drag-and-drop/utils';
 import { ListKey, Project, Subtask } from '../projects/types';
 import { findProjectType } from './findProjectType';
 import { JournalProject, JournalSubtask } from './journalTypes';
