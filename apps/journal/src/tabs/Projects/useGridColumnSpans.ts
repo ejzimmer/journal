@@ -66,13 +66,13 @@ export function useGridColumnSpans(
         .querySelectorAll(RESIZABLE_PARTS)
         .forEach((part) => resizeObserver.observe(part));
 
-    // EditableText swaps the project name between a button and an input, so
-    // the name element can be replaced without anything else re-rendering.
     const measureOnNextFrame = () => {
       cancelAnimationFrame(frame);
       frame = requestAnimationFrame(() => {
         if (cancelled) return;
         measureColumnSpans(list);
+        // Editing a project name swaps its element for a textarea without
+        // re-rendering the list, so this effect never sees the new element.
         observeResizableParts();
       });
     };
