@@ -20,8 +20,8 @@ function measureColumnSpans(list: HTMLElement) {
   const gap = parseFloat(style.getPropertyValue('--shelf-gap'));
   const items = [...list.querySelectorAll<HTMLElement>(SHOWN_ITEM)];
 
-  // Writing every item's width before reading any of them lets the browser
-  // lay the grid out once for the whole list, instead of once per item.
+  // Reading a rect after a style write forces a synchronous layout of the
+  // whole grid, so every write goes before the first read.
   items.forEach((item) => (item.style.width = 'max-content'));
   const naturalWidths = items.map((item) => item.getBoundingClientRect().width);
   items.forEach((item) => (item.style.width = ''));
