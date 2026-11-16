@@ -31,7 +31,7 @@
 
   input:not([type='radio'], [role='combobox']),
   select,
-  .single-value-container {
+  .combobox .single-value-container {
     border-width: 2px;
   }
 
@@ -44,6 +44,57 @@
       linear-gradient(white, white) padding-box,
       linear-gradient(135deg in oklch, var(--gradient-colours)) border-box;
     border-color: transparent;
+  }
+
+  :is(.form-action, dialog.modal .footer button) {
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 36px;
+    padding: 0;
+    border: 2px solid var(--border-colour);
+    border-radius: 6px;
+    background: white;
+    color: var(--error-colour);
+    cursor: pointer;
+
+    &:hover,
+    &:focus-visible {
+      outline: none;
+      background:
+        linear-gradient(white, white) padding-box,
+        linear-gradient(
+            135deg in oklch,
+            var(--wool-colour),
+            var(--sock-yarn-colour)
+          )
+          border-box;
+      border-color: transparent;
+    }
+
+    &.primary {
+      --button-gradient: linear-gradient(
+        135deg in oklch,
+        var(--sock-yarn-colour),
+        var(--cotton-colour),
+        var(--wool-colour),
+        var(--acrylic-colour)
+      );
+      border-color: transparent;
+      background: var(--button-gradient) border-box;
+      color: white;
+      transition:
+        filter 0.15s,
+        box-shadow 0.15s;
+
+      &:hover,
+      &:focus-visible {
+        background: var(--button-gradient) border-box;
+        filter: brightness(1.08) saturate(1.4);
+        box-shadow: 0 0 10px 2px
+          color-mix(in oklch, var(--acrylic-colour) 55%, transparent);
+      }
+    }
   }
 
   .app-update-button {

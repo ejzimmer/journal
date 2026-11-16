@@ -65,14 +65,16 @@ export function ProjectEditForm({
           />
         </div>
         <div className="edit-fields">
-          <CraftPicker
-            craft={draft.craft}
-            onChange={(craft) => updateDraft({ craft })}
-          />
-          <TypePicker
-            type={draft.type}
-            onChange={(type) => updateDraft({ type })}
-          />
+          <div className="craft-and-type">
+            <CraftPicker
+              craft={draft.craft}
+              onChange={(craft) => updateDraft({ craft })}
+            />
+            <TypePicker
+              type={draft.type}
+              onChange={(type) => updateDraft({ type })}
+            />
+          </div>
           <FormControl
             label="Pattern"
             value={draft.pattern}

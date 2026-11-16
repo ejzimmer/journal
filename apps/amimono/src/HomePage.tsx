@@ -21,13 +21,13 @@ export function HomePage() {
           <YarnTracking />
         </section>
         <ProjectList
-          listKey="portable"
-          projects={lists.portable}
+          listKey="priority"
+          projects={lists.priority}
           onMove={moveProject}
         />
         <ProjectList
-          listKey="concentration"
-          projects={lists.concentration}
+          listKey="portable"
+          projects={lists.portable}
           onMove={moveProject}
         />
       </div>

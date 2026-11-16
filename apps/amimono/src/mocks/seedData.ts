@@ -33,7 +33,7 @@ const projectsByList: Record<
     ['Hat band', 'accessory'],
     ['Laptop sleeve', 'accessory'],
   ],
-  concentration: [
+  priority: [
     ['Cardigan', 'cardigan', createSubtasks(2, 5)],
     ['Jacket', 'cardigan'],
     ['Bolero', 'cardigan'],
@@ -67,8 +67,8 @@ projects['future-1'] = {
   socks: { direction: 'cuff_down', knittedSections: { first: 6, second: 2 } },
 };
 
-projects['concentration-1'] = {
-  ...projects['concentration-1'],
+projects['priority-1'] = {
+  ...projects['priority-1'],
   craft: 'knitting',
   pattern: {
     name: 'Telja Cardigan',

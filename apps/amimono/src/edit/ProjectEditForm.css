@@ -10,45 +10,6 @@
     min-width: 0;
   }
 
-  .type-picker {
-    .combobox-field {
-      gap: 6px;
-    }
-
-    .label {
-      font-size: 13px;
-      font-weight: normal;
-      color: hsl(0 0% 45%);
-    }
-
-    .combobox {
-      width: 220px;
-    }
-
-    .single-value-container {
-      border-radius: 6px;
-    }
-
-    .type-option {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    [role='option'] {
-      padding: 6px 10px;
-
-      &:not(:last-child) {
-        border-bottom: none;
-      }
-
-      &[aria-selected='true'] {
-        background: rgb(var(--card-pastel));
-        color: inherit;
-      }
-    }
-  }
-
   .form-control {
     gap: 2px;
 
@@ -82,6 +43,25 @@
     border-radius: 0 0 5px 5px;
   }
 
+  .craft-and-type {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    gap: 18px 24px;
+
+    .type-picker {
+      flex: 1 1 160px;
+      max-width: 220px;
+    }
+  }
+
+  .type-picker .label {
+    margin: 0;
+    font-size: 13px;
+    font-weight: normal;
+    color: hsl(0 0% 45%);
+  }
+
   .edit-field {
     margin: 0;
     padding: 0;
@@ -100,56 +80,6 @@
 
   legend.field-label {
     margin-bottom: 6px;
-  }
-
-  [role='radiogroup'].switch.craft-picker {
-    isolation: isolate;
-    border: 1px solid var(--border-colour);
-    border-radius: 999px;
-    padding: 2px;
-    background: white;
-
-    &:focus-within {
-      outline: none;
-    }
-
-    &:has(input:focus-visible) {
-      border-width: 2px;
-      padding: 1px;
-    }
-
-    label {
-      padding: 0;
-      border-radius: 999px;
-      color: hsl(0 0% 45%);
-
-      &:not(:last-of-type) {
-        border-inline-end: none;
-      }
-
-      &:has(input:not(:checked)) {
-        box-shadow: none;
-      }
-
-      &:has(input:checked) {
-        color: white;
-      }
-    }
-
-    .indicator {
-      top: 2px;
-      height: calc(100% - 4px);
-      border-radius: 999px;
-      background: rgb(var(--card-dark));
-      box-shadow: none;
-    }
-  }
-
-  .craft-option {
-    display: grid;
-    place-items: center;
-    width: 36px;
-    height: 28px;
   }
 
   .yarn-field-list {
@@ -235,9 +165,5 @@
         color: white;
       }
     }
-  }
-
-  .edit-actions .round-button {
-    --button-size: 38px;
   }
 }

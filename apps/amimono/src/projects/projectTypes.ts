@@ -34,7 +34,7 @@ export const PROJECT_TYPES: Record<ProjectType, ProjectTypeDetails> = {
     label: 'Vest',
     icon: vestIcon,
     pastel: '248 188 119',
-    dark: '174 116 50',
+    dark: '226 132 44',
   },
   dress: {
     label: 'Dress/skirt',
@@ -75,13 +75,13 @@ export const PROJECT_TYPES: Record<ProjectType, ProjectTypeDetails> = {
   accessory: {
     label: 'Accessory',
     icon: accessoryIcon,
-    pastel: '245 142 132',
-    dark: '174 61 50',
+    pastel: '246 166 176',
+    dark: '180 66 86',
   },
 };
 
 export const LIST_LABELS = {
+  priority: 'Priority',
   portable: 'Portable',
-  concentration: 'Concentration',
   future: 'Future',
 };
