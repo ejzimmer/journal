@@ -16,7 +16,7 @@ import {
   sortByPosition,
 } from 'shared/drag-and-drop/utils';
 import { useDraggableList } from 'shared/drag-and-drop/useDraggableList';
-import { useDrawer } from './useDrawer';
+import { Drawer } from 'shared/drawer/Drawer';
 import { useFormToggle } from 'shared/controls/useFormToggle';
 
 type SubtasksProps = {
@@ -26,9 +26,7 @@ type SubtasksProps = {
 
 export function SubtaskList({ projectId, isVisible }: SubtasksProps) {
   const { isFormOpen, triggerRef, toggleForm } = useFormToggle();
-  const drawerRef = useRef<HTMLDivElement>(null);
   const listRef = useRef<HTMLOListElement>(null);
-  const formRef = useRef<HTMLDivElement>(null);
   const subtasksKey = getSubtasksKey(projectId);
 
   const { useValue, addItem, updateList } = useStorageContext();
@@ -37,7 +35,6 @@ export function SubtaskList({ projectId, isVisible }: SubtasksProps) {
   const { value: project } = useValue<ProjectDetails>(
     `${PROJECTS_KEY}/${projectId}`,
   );
-  const isProjectLoaded = Boolean(project);
 
   const onAddTask = (description: string) => {
     if (!project) return;
@@ -49,20 +46,6 @@ export function SubtaskList({ projectId, isVisible }: SubtasksProps) {
       position: getNextPosition(subtasks),
     });
   };
-
-  const {
-    height: drawerHeight,
-    isRaised,
-    isSettled,
-  } = useDrawer({
-    drawerRef,
-    listRef,
-    formRef,
-    subtasks,
-    isProjectLoaded,
-    isOpen: isVisible,
-    isFormOpen,
-  });
 
   useDropTarget({
     dropTargetRef: listRef,
@@ -102,13 +85,7 @@ export function SubtaskList({ projectId, isVisible }: SubtasksProps) {
   }
 
   return (
-    <div
-      className={`subtasks-section ${isVisible ? 'visible' : ''} ${
-        isRaised ? 'raised' : ''
-      } ${isSettled ? 'settled' : ''}`}
-      style={{ height: drawerHeight }}
-      ref={drawerRef}
-    >
+    <Drawer isOpen={isVisible} className="subtasks-section">
       <ol className="subtasks" ref={listRef}>
         {sortedTasks.map((task, index) => (
           <Subtask
@@ -129,7 +106,6 @@ export function SubtaskList({ projectId, isVisible }: SubtasksProps) {
         ))}
       </ol>
       <div
-        ref={formRef}
         style={{
           display: 'flex',
           alignItems: 'center',
@@ -160,6 +136,6 @@ export function SubtaskList({ projectId, isVisible }: SubtasksProps) {
           </button>
         )}
       </div>
-    </div>
+    </Drawer>
   );
 }

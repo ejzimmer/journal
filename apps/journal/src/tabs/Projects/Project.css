@@ -40,7 +40,7 @@
     }
 
     .subtasks-section {
-      --seam-shadow-opacity: 0.15;
+      --drawer-seam-opacity: 0.15;
     }
   }
 
@@ -179,32 +179,8 @@
   }
 
   .subtasks-section {
-    --seam-shadow-opacity: 0.35;
-    --seam-shadow: linear-gradient(
-      to bottom,
-      hsl(0 0% 0% / var(--seam-shadow-opacity)),
-      transparent
-    );
-    position: absolute;
-    inset-block-start: 100%;
-    inset-inline: var(--drawer-inset);
-    overflow: hidden;
-    background:
-      var(--seam-shadow) top / 100% 8px no-repeat,
-      white;
-    transition: height 0.2s ease-out;
-
-    &.visible {
-      border: 1px solid var(--card-border-colour);
-      border-top: none;
-      border-end-start-radius: var(--radius);
-      border-end-end-radius: var(--radius);
-    }
-
-    &.settled {
-      overflow: visible;
-      transition: none;
-    }
+    --drawer-border-colour: var(--card-border-colour);
+    --drawer-radius: var(--radius);
   }
 
   input {
