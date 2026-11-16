@@ -129,16 +129,36 @@
     border-radius: 8px;
   }
 
-  .colourway-grid {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) 72px 92px;
-    gap: 8px;
+  .colourway-table {
+    table-layout: fixed;
+    border-spacing: 8px 4px;
+    margin: -4px -8px;
+    width: calc(100% + 16px);
     font-size: 14px;
-  }
 
-  .colourway-headings {
-    font-size: 12px;
-    color: hsl(0 0% 45%);
+    th {
+      font-size: 12px;
+      font-weight: normal;
+      text-align: start;
+      color: hsl(0 0% 45%);
+    }
+
+    th:nth-child(2) {
+      width: 72px;
+    }
+
+    th:nth-child(3) {
+      width: 92px;
+    }
+
+    td {
+      padding: 0;
+    }
+
+    input {
+      width: 100%;
+      box-sizing: border-box;
+    }
   }
 
   .add-button {
