@@ -1,5 +1,4 @@
 import { screen, within } from '@testing-library/react';
-import { UserEvent } from '@testing-library/user-event';
 
 import { findCard, renderHomePage } from '../homePageTestUtils';
 
@@ -7,12 +6,6 @@ const createSeed = (project: Record<string, unknown>) => ({
   projects: { socks: { id: 'socks', name: 'Socks for Dad', ...project } },
   lists: { portable: { socks: { id: 'socks', position: 1 } } },
 });
-
-async function expandCard(user: UserEvent) {
-  const card = within(findCard('Socks for Dad'));
-  await user.click(card.getByRole('button', { name: 'Expand project' }));
-  return card;
-}
 
 describe('sock projects', () => {
   describe('when the project has sock progress', () => {
@@ -43,7 +36,8 @@ describe('sock projects', () => {
     describe('knitting another section', () => {
       it('updates the progress on the card', async () => {
         const { user } = renderHomePage(seed);
-        const card = await expandCard(user);
+        const card = within(findCard('Socks for Dad'));
+        await user.click(card.getByRole('button', { name: 'Expand project' }));
 
         await user.click(
           within(card.getByRole('slider', { name: 'second sock' })).getByText(
@@ -59,7 +53,8 @@ describe('sock projects', () => {
   describe('when a new socks project has no progress yet', () => {
     it('starts both socks unknitted', async () => {
       const { user } = renderHomePage(createSeed({ type: 'socks' }));
-      const card = await expandCard(user);
+      const card = within(findCard('Socks for Dad'));
+      await user.click(card.getByRole('button', { name: 'Expand project' }));
 
       expect(
         card
@@ -85,7 +80,8 @@ describe('sock projects', () => {
           },
         }),
       );
-      const card = await expandCard(user);
+      const card = within(findCard('Socks for Dad'));
+      await user.click(card.getByRole('button', { name: 'Expand project' }));
 
       await user.click(card.getByRole('button', { name: 'Edit project' }));
       await user.click(screen.getByRole('radio', { name: 'Hat' }));
