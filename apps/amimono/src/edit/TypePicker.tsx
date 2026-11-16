@@ -1,5 +1,4 @@
 import { useId } from 'react';
-import { Switch } from 'shared/controls/Switch';
 
 import { PROJECT_TYPES } from '../projects/projectTypes';
 import { PROJECT_TYPE_KEYS, ProjectType } from '../projects/types';
@@ -10,28 +9,24 @@ type TypePickerProps = {
 };
 
 export function TypePicker({ type, onChange }: TypePickerProps) {
-  const name = useId();
+  const id = useId();
 
   return (
-    <fieldset className="edit-field">
-      <legend className="field-label">Type</legend>
-      <Switch
-        options={[...PROJECT_TYPE_KEYS]}
+    <div className="edit-field">
+      <label htmlFor={id} className="field-label">
+        Type
+      </label>
+      <select
+        id={id}
         value={type}
-        onChange={onChange}
-        name={name}
-        Option={TypeOptionLabel}
-        className="type-picker"
-      />
-    </fieldset>
-  );
-}
-
-function TypeOptionLabel({ value }: { value: ProjectType }) {
-  const { label, icon } = PROJECT_TYPES[value];
-  return (
-    <span className="type-option" title={label}>
-      <img src={icon} alt={label} />
-    </span>
+        onChange={(event) => onChange(event.target.value as ProjectType)}
+      >
+        {PROJECT_TYPE_KEYS.map((typeKey) => (
+          <option key={typeKey} value={typeKey}>
+            {PROJECT_TYPES[typeKey].label}
+          </option>
+        ))}
+      </select>
+    </div>
   );
 }
