@@ -26,7 +26,6 @@ function useElementWidth(ref: RefObject<HTMLElement | null>) {
     const measureWidth = () => setWidth(element.getBoundingClientRect().width);
     measureWidth();
 
-    if (typeof ResizeObserver === 'undefined') return;
     const observer = new ResizeObserver(measureWidth);
     observer.observe(element);
     return () => observer.disconnect();

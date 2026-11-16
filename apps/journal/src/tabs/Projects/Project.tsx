@@ -1,4 +1,4 @@
-import { CSSProperties, useState } from 'react';
+import { CSSProperties, Ref, useState } from 'react';
 import { useStorageContext } from 'shared/FirebaseContext';
 
 import './Project.css';
@@ -23,6 +23,7 @@ import { SECTIONS_PER_PAIR, countKnittedSections } from './socks/sockProgress';
 
 type ProjectProps = {
   project: ProjectDetails;
+  nameRef?: Ref<HTMLElement>;
   onMoveToStart?: () => void;
   onMoveToEnd?: () => void;
   onDelete: () => void;
@@ -58,6 +59,7 @@ function setProjectOpen(projectId: string, isOpen: boolean) {
 
 export function Project({
   project,
+  nameRef,
   onMoveToStart,
   onMoveToEnd,
   onDelete,
@@ -152,6 +154,7 @@ export function Project({
           />
           <EditableText
             className="project-name"
+            elementRef={nameRef}
             label="project"
             value={project.description}
             onChange={(description) => {
