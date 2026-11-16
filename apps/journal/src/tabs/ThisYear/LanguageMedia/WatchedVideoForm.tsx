@@ -12,6 +12,7 @@ import { parseNumber, readText } from './fields';
 import { Video, YoutubeChannel } from './types';
 
 import './ProgressUpdateForm.css';
+import './WatchedVideoForm.css';
 
 type WatchedVideoFormProps = {
   channel: YoutubeChannel;
@@ -67,31 +68,26 @@ export function WatchedVideoForm({ channel, video }: WatchedVideoFormProps) {
     >
       <h2 className="progress-update-title">{channel.name}</h2>
       {video?.createdAt && <UpdateDate instant={video.createdAt} />}
-      <div className="progress-update-body">
-        <div className="progress-tiles">
-          <VideoUrlTile defaultValue={video?.url} />
-          <CountTile
-            name="lookups"
-            label="Looked up"
-            addLabel="Add a lookup"
-            icon={<LadyBeetleIcon colour="red" width="45px" />}
-            count={lookups}
-            onAdd={() => setLookups((count) => count + 1)}
-          />
-          <CountTile
-            name="aiQuestions"
-            label="Asked AI"
-            addLabel="Add an AI question"
-            icon={<LadyBeetleIcon colour="yellow" width="45px" />}
-            count={aiQuestions}
-            onAdd={() => setAiQuestions((count) => count + 1)}
-          />
-          <UnderstoodTile
-            mediaType="youtube"
-            defaultValue={video?.understood}
-          />
-        </div>
-        <div className="progress-update-actions">
+      <div className="progress-tiles">
+        <VideoUrlTile defaultValue={video?.url} />
+        <CountTile
+          name="lookups"
+          label="Looked up"
+          addLabel="Add a lookup"
+          icon={<LadyBeetleIcon colour="red" width="45px" />}
+          count={lookups}
+          onAdd={() => setLookups((count) => count + 1)}
+        />
+        <CountTile
+          name="aiQuestions"
+          label="Asked AI"
+          addLabel="Add an AI question"
+          icon={<LadyBeetleIcon colour="yellow" width="45px" />}
+          count={aiQuestions}
+          onAdd={() => setAiQuestions((count) => count + 1)}
+        />
+        <UnderstoodTile mediaType="youtube" defaultValue={video?.understood} />
+        <div className="progress-update-actions watched-video-actions">
           {video && (
             <DeleteWithConfirmation
               className="progress-update-delete"
