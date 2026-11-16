@@ -1,13 +1,11 @@
 import React from 'react';
 import { createRoot } from 'react-dom/client';
 import { initializeApp } from 'firebase/app';
-import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import { getDatabase } from 'firebase/database';
 
 import './index.css';
 import { App } from './App';
 import { AMIMONO_DATA_SHAPE } from './localFirst/amimonoDataShape';
-import { removeMigratedJournalData } from './migration/removeMigratedJournalData';
 import { ConflictBanner } from 'shared/ConflictBanner';
 import { FirebaseContext } from 'shared/FirebaseContext';
 import { FIREBASE_CONFIG } from 'shared/firebaseConfig';
@@ -28,10 +26,6 @@ const {
   'amimono-local-first',
   AMIMONO_DATA_SHAPE,
 );
-
-onAuthStateChanged(getAuth(firebaseApp), (user) => {
-  if (user) void removeMigratedJournalData(database);
-});
 
 serviceWorkerRegistration.register({ onUpdate: setWaitingRegistration });
 
