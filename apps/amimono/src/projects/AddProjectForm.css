@@ -19,17 +19,13 @@
     border: 0;
     border-bottom: 2px solid var(--border-colour);
     outline: none;
-
-    &:focus-visible {
-      border-bottom-color: var(--action-colour);
-    }
   }
 
   select {
     font: inherit;
     font-size: 15px;
-    padding: 6px;
-    border: 1px solid var(--border-colour);
+    padding: 5px;
+    border: 2px solid var(--border-colour);
     border-radius: 6px;
     background: white;
   }

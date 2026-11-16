@@ -1,17 +1,21 @@
+import { AppUpdateButton } from 'shared/AppUpdateButton';
+
 import './HomePage.css';
 import { AddProjectForm } from './projects/AddProjectForm';
 import { ProjectList } from './projects/ProjectList';
 import { useProjectActions } from './projects/useProjectActions';
 import { useProjectLists } from './projects/useProjectLists';
 import { YarnTracking } from './yarnBowl';
+import { YARN_COLOUR_PROPERTIES } from './yarnBowl/utils';
 
 export function HomePage() {
   const { lists } = useProjectLists();
   const { addProject, moveProject } = useProjectActions();
 
   return (
-    <main className="home-page">
+    <main className="home-page" style={YARN_COLOUR_PROPERTIES}>
       <h1 className="visually-hidden">Amimono</h1>
+      <AppUpdateButton />
       <div className="queues">
         <section className="yarn-bowl" aria-label="Yarn bowl">
           <YarnTracking />

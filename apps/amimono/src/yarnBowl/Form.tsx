@@ -13,13 +13,6 @@ import { YARN_TYPE_OPTIONS, YarnTypeLabel } from './YarnTypeLabel';
 
 import './Form.css';
 
-const YARN_COLOUR_PROPERTIES = Object.fromEntries(
-  YARN_TYPE_IDS.map((id) => [
-    `--${id.replace(' ', '-')}-colour`,
-    YARN_COLOURS[id],
-  ]),
-) as React.CSSProperties;
-
 export function YarnTrackingForm() {
   const { addYarn, removeYarn } = useYarnStorage();
   const [operation, setOperation] = useState<Operation>('-');
@@ -42,7 +35,7 @@ export function YarnTrackingForm() {
   };
 
   return (
-    <div className="yarn-tracking-form" style={YARN_COLOUR_PROPERTIES}>
+    <div className="yarn-tracking-form">
       <FormModal
         trigger={(props) => (
           <button

@@ -1,8 +1,4 @@
 .yarn-tracking-form {
-  --gradient-colours:
-    var(--wool-colour), var(--sock-yarn-colour), var(--acrylic-colour),
-    var(--cotton-colour);
-
   .yarn-tracking-trigger {
     display: flex;
     align-items: center;

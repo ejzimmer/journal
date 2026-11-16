@@ -1,4 +1,8 @@
 .home-page {
+  --gradient-colours:
+    var(--wool-colour), var(--sock-yarn-colour), var(--acrylic-colour),
+    var(--cotton-colour);
+
   max-width: 1280px;
   margin: 0 auto;
   padding: 28px 24px;
@@ -23,6 +27,31 @@
       flex: 1 1 300px;
       min-width: 0;
     }
+  }
+
+  input:not([type='radio'], [role='combobox']),
+  select,
+  .single-value-container {
+    border-width: 2px;
+  }
+
+  input:not([type='radio'], [role='combobox']):focus-visible,
+  select:focus-visible,
+  .single-value-container:focus-within,
+  [role='radiogroup'].switch.craft-picker:has(input:focus-visible) {
+    outline: none;
+    background:
+      linear-gradient(white, white) padding-box,
+      linear-gradient(135deg in oklch, var(--gradient-colours)) border-box;
+    border-color: transparent;
+  }
+
+  .app-update-button {
+    position: fixed;
+    inset-block: 12px auto;
+    inset-inline-end: 12px;
+    margin: 0;
+    box-shadow: 0 1px 4px hsl(0 0% 0% / 0.3);
   }
 
   .future-projects {
