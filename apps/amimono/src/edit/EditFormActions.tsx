@@ -18,20 +18,20 @@ export function EditFormActions({ onCancel, onDelete }: EditFormActionsProps) {
       />
       <button
         type="button"
-        className="round-button outlined"
+        className="form-action"
         aria-label="Cancel changes"
         title="Cancel changes"
         onClick={onCancel}
       >
-        <XIcon width="16" />
+        <XIcon width="14" />
       </button>
       <button
         type="submit"
-        className="round-button primary"
+        className="form-action primary"
         aria-label="Save changes"
         title="Save changes"
       >
-        <TickIcon width="18" strokeWidth="2.6" />
+        <TickIcon width="18" strokeWidth="3" />
       </button>
     </div>
   );

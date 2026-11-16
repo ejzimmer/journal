@@ -50,7 +50,12 @@ export function YarnTrackingForm() {
         onSubmit={updateYarn}
         submitButtonClassName="yarn-tracking-submit"
         submitButtonContent={
-          <TickIcon width="18px" role="img" aria-label="Submit" />
+          <TickIcon
+            width="18px"
+            strokeWidth="3"
+            role="img"
+            aria-label="Submit"
+          />
         }
         cancelButtonContent={
           <XIcon width="14px" role="img" aria-label="Close" />
