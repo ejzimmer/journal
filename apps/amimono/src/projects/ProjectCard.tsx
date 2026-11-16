@@ -4,7 +4,7 @@ import './ProjectCard.css';
 import { ProjectDrawer } from '../details/ProjectDrawer';
 import { ChevronDownIcon } from 'shared/icons/ChevronDown';
 import { ProjectEditForm } from '../edit/ProjectEditForm';
-import { countProjectSteps } from './countProjectSteps';
+import { countProjectSubtasks } from './countProjectSubtasks';
 import { CraftIcon } from './CraftIcon';
 import { createCardStyle } from './createCardStyle';
 import { MoveProjectMenu } from './MoveProjectMenu';
@@ -33,7 +33,7 @@ export function ProjectCard({ project, listKey, onMove }: ProjectCardProps) {
   }
 
   const projectType = PROJECT_TYPES[project.type];
-  const steps = countProjectSteps(project);
+  const subtaskCounts = countProjectSubtasks(project);
   const classNames = ['project-card', isExpanded && 'expanded'].filter(Boolean);
   const expandLabel = isExpanded ? 'Collapse project' : 'Expand project';
 
@@ -58,7 +58,7 @@ export function ProjectCard({ project, listKey, onMove }: ProjectCardProps) {
           <ChevronDownIcon width="18" />
         </button>
       </div>
-      {steps.totalCount > 0 && <SubtaskProgress {...steps} />}
+      {subtaskCounts.totalCount > 0 && <SubtaskProgress {...subtaskCounts} />}
       {isExpanded && (
         <ProjectDrawer project={project} onEdit={() => setIsEditing(true)} />
       )}

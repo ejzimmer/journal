@@ -2,7 +2,7 @@ import { getSockProgress } from '../socks/getSockProgress';
 import { countKnittedSections, SECTIONS_PER_PAIR } from '../socks/sockProgress';
 import { Project } from './types';
 
-export function countProjectSteps(project: Project) {
+export function countProjectSubtasks(project: Project) {
   const subtasks = Object.values(project.subtasks ?? {});
   const doneSubtaskCount = subtasks.filter(
     ({ status }) => status === 'done',
