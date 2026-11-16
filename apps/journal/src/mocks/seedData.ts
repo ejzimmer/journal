@@ -19,7 +19,6 @@ import {
   WEEKLY_KEY,
   WeeklyTask,
 } from '../types';
-import { StoredYarn } from '../tabs/ThisYear/YarnTracking/types';
 import { LanguageMedia } from '../tabs/ThisYear/LanguageMedia/types';
 import { Adventure, AdventureMode } from '../tabs/ThisYear/Adventures/types';
 import {
@@ -244,16 +243,11 @@ const projects = indexById<ProjectDetails>([
       createSubtask('subtask-paint', 'Paint the boards', '🚚', 2),
     ]),
   }),
-  createProject('project-socks', 'Knit the striped socks', '🧶', 1, {
+  createProject('project-mending', 'Darn the jumper elbows', '🧶', 1, {
     status: 'in_progress',
-    socks: {
-      direction: 'cuff_down',
-      knittedSections: { first: 6, second: 2 },
-    },
     subtasks: indexById([
-      createSubtask('subtask-finishing', 'Finishing', '🧶', 0),
-      createSubtask('subtask-yarn', 'Wind the yarn', '🧶', 1, 'done'),
-      createSubtask('subtask-heel', 'Learn a better heel', '🧶', 2),
+      createSubtask('subtask-wool', 'Find matching wool', '🧶', 0, 'done'),
+      createSubtask('subtask-darn', 'Darn the holes', '🧶', 1),
     ]),
   }),
   createProject('project-quilt', 'Finish the quilt binding', '🪡', 2),
@@ -282,35 +276,6 @@ const projects = indexById<ProjectDetails>([
     ]),
   }),
 ]);
-
-const yarn: StoredYarn = {
-  wool: {
-    id: 'wool',
-    history: {
-      '2026-01': 4732,
-      '2026-03': 4380,
-      '2026-06': 3910,
-      '2026-09': 3520,
-    },
-  },
-  cotton: {
-    id: 'cotton',
-    history: { '2026-01': 420, '2026-04': 365, '2026-07': 300 },
-  },
-  acrylic: {
-    id: 'acrylic',
-    history: { '2026-01': 246, '2026-06': 180, '2026-09': 95 },
-  },
-  'sock yarn': {
-    id: 'sock yarn',
-    history: {
-      '2026-01': 2641,
-      '2026-02': 2480,
-      '2026-05': 2150,
-      '2026-08': 1890,
-    },
-  },
-};
 
 const exercises: Record<string, Exercise> = {
   'exercise-pistol': {
@@ -1008,7 +973,6 @@ export const seedData = {
   [TODO_KEY]: { 週: weeklyTasks, 暦: calendarTasks },
   [PROJECTS_KEY]: projects,
   [HEALTH_PATH]: { exercises, classes },
-  yarn: { '2026': yarn },
   language_media: { '2026': languageMedia },
   bikes: {
     '2026': [

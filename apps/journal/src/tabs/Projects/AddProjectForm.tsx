@@ -7,45 +7,18 @@ import {
   Category,
   ProjectDetails,
   PROJECTS_KEY,
-  ProjectSubtask,
 } from '../../types';
 import { CATEGORIES } from 'shared/utils';
 import { getNextPosition } from 'shared/drag-and-drop/utils';
-import { getSubtasksKey } from './utils';
-import { NEW_SOCK_PROGRESS, SOCK_CATEGORY } from './socks/sockProgress';
 
-type CategoryOption = Category | typeof SOCK_CATEGORY;
-
-const allCategories = Array.from(
-  new Set([...categories, ...CATEGORIES]),
-).flatMap((category) =>
-  category === '🧶' ? [category, SOCK_CATEGORY] : [category],
-);
+const allCategories = Array.from(new Set([...categories, ...CATEGORIES]));
 
 export function AddProjectForm() {
   const [description, setDescription] = useState('');
-  const [category, setCategory] = useState<CategoryOption>('🧹');
+  const [category, setCategory] = useState<Category>('🧹');
 
   const { useValue, addItem } = useStorageContext();
   const { value } = useValue<Record<string, ProjectDetails>>(PROJECTS_KEY);
-
-  const addSockProject = (position: number) => {
-    const projectId = addItem<ProjectDetails>(PROJECTS_KEY, {
-      description,
-      category: '🧶',
-      parentId: PROJECTS_KEY,
-      position,
-      socks: NEW_SOCK_PROGRESS,
-    });
-    if (!projectId) return;
-
-    addItem<ProjectSubtask>(getSubtasksKey(projectId), {
-      description: 'Finishing',
-      status: 'ready',
-      category: '🧶',
-      position: 0,
-    });
-  };
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -56,16 +29,12 @@ export function AddProjectForm() {
 
     const position = getNextPosition(value ? Object.values(value) : []);
 
-    if (category === SOCK_CATEGORY) {
-      addSockProject(position);
-    } else {
-      addItem<ProjectDetails>(PROJECTS_KEY, {
-        description,
-        category,
-        parentId: PROJECTS_KEY,
-        position,
-      });
-    }
+    addItem<ProjectDetails>(PROJECTS_KEY, {
+      description,
+      category,
+      parentId: PROJECTS_KEY,
+      position,
+    });
 
     setDescription('');
   };
@@ -83,9 +52,7 @@ export function AddProjectForm() {
         <select
           aria-label="Category"
           value={category}
-          onChange={(event) =>
-            setCategory(event.target.value as CategoryOption)
-          }
+          onChange={(event) => setCategory(event.target.value as Category)}
           className="subtle"
         >
           {allCategories.map((c) => (

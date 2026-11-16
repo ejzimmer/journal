@@ -8,6 +8,7 @@ import './index.css';
 import { App } from './App';
 import { AMIMONO_DATA_SHAPE } from './localFirst/amimonoDataShape';
 import { migrateFromJournal } from './migration/migrateFromJournal';
+import { removeMigratedJournalData } from './migration/removeMigratedJournalData';
 import { renameConcentrationList } from './migration/renameConcentrationList';
 import { ConflictBanner } from 'shared/ConflictBanner';
 import { FirebaseContext } from 'shared/FirebaseContext';
@@ -32,9 +33,9 @@ const {
 
 onAuthStateChanged(getAuth(firebaseApp), (user) => {
   if (user)
-    void migrateFromJournal(database).then(() =>
-      renameConcentrationList(database),
-    );
+    void migrateFromJournal(database)
+      .then(() => renameConcentrationList(database))
+      .then(() => removeMigratedJournalData(database));
 });
 
 serviceWorkerRegistration.register({ onUpdate: setWaitingRegistration });
