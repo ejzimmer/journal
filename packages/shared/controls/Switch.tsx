@@ -4,7 +4,7 @@ import './Switch.css';
 
 type SwitchProps<T extends string> = {
   options: T[];
-  value: T;
+  value?: T;
   onChange: (value: T) => void;
   name: string;
   Option?: React.FC<{ value: T }>;
@@ -74,17 +74,19 @@ export function Switch<T extends string>({
           </label>
         );
       })}
-      <div
-        className="indicator"
-        style={{
-          width,
-          left,
-          borderTopLeftRadius: borderRadiusLeft,
-          borderTopRightRadius: borderRadiusRight,
-          borderBottomLeftRadius: borderRadiusLeft,
-          borderBottomRightRadius: borderRadiusRight,
-        }}
-      />
+      {value !== undefined && (
+        <div
+          className="indicator"
+          style={{
+            width,
+            left,
+            borderTopLeftRadius: borderRadiusLeft,
+            borderTopRightRadius: borderRadiusRight,
+            borderBottomLeftRadius: borderRadiusLeft,
+            borderBottomRightRadius: borderRadiusRight,
+          }}
+        />
+      )}
     </div>
   );
 }

@@ -189,19 +189,15 @@
   }
 
   .gauge-fields {
-    display: grid;
-    grid-template-columns: repeat(3, 80px);
-    column-gap: 8px;
-    margin-top: 6px;
-
-    label {
-      font-size: 12px;
-      white-space: nowrap;
-    }
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+    font-size: 15px;
+    white-space: nowrap;
 
     input {
-      width: 100%;
-      box-sizing: border-box;
+      width: 52px;
     }
   }
 
