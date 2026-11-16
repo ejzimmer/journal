@@ -15,7 +15,7 @@ export function createDoneListUpdates(
   projects: Record<string, Project>,
   storedLists: StoredLists,
 ) {
-  const updates: Record<string, unknown> = {};
+  const updates: Record<string, ListEntry | null> = {};
 
   const getProjectsInList = (listKey: ListKey) =>
     sortByPosition(Object.values(storedLists[listKey] ?? {})).filter(
@@ -45,7 +45,7 @@ export function createDoneListUpdates(
           id: entry.id,
           position: nextDonePosition++,
           previous,
-        } satisfies ListEntry;
+        };
         updates[`${LISTS_KEY}/${listKey}/${entry.id}`] = null;
       });
   });
@@ -63,7 +63,7 @@ export function createDoneListUpdates(
       updates[`${LISTS_KEY}/${previous.list}/${entry.id}`] = {
         id: entry.id,
         position: previous.position,
-      } satisfies ListEntry;
+      };
       updates[`${LISTS_KEY}/done/${entry.id}`] = null;
     });
 
