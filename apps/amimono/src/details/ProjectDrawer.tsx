@@ -1,8 +1,8 @@
 import { useState } from 'react';
 
 import './ProjectDrawer.css';
+import { ChevronDownIcon } from 'shared/icons/ChevronDown';
 import { PencilIcon } from 'shared/icons/Pencil';
-import { ChevronRightIcon } from '../icons/ChevronRightIcon';
 import { Project } from '../projects/types';
 import { SubtaskList } from '../subtasks/SubtaskList';
 import { hasProjectDetails } from './hasProjectDetails';
@@ -26,7 +26,7 @@ export function ProjectDrawer({ project, onEdit }: ProjectDrawerProps) {
             aria-expanded={areDetailsOpen}
             onClick={() => setAreDetailsOpen(!areDetailsOpen)}
           >
-            <ChevronRightIcon />
+            <ChevronDownIcon />
             Details
           </button>
         )}

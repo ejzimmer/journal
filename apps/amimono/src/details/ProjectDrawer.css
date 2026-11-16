@@ -36,11 +36,12 @@
     svg {
       width: 16px;
       height: 16px;
+      rotate: -90deg;
       transition: rotate 0.15s;
     }
 
     &[aria-expanded='true'] svg {
-      rotate: 90deg;
+      rotate: 0deg;
     }
 
     &:hover {

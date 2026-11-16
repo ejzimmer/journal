@@ -2,8 +2,8 @@ import { useState } from 'react';
 
 import './ProjectCard.css';
 import { ProjectDrawer } from '../details/ProjectDrawer';
+import { ChevronDownIcon } from 'shared/icons/ChevronDown';
 import { ProjectEditForm } from '../edit/ProjectEditForm';
-import { ChevronDownIcon } from '../icons/ChevronDownIcon';
 import { CraftIcon } from './CraftIcon';
 import { createCardStyle } from './createCardStyle';
 import { MoveProjectMenu } from './MoveProjectMenu';
@@ -58,7 +58,7 @@ export function ProjectCard({ project, listKey, onMove }: ProjectCardProps) {
           aria-expanded={isExpanded}
           onClick={() => setIsExpanded(!isExpanded)}
         >
-          <ChevronDownIcon />
+          <ChevronDownIcon width="18" />
         </button>
       </div>
       {subtasks.length > 0 && <SubtaskProgress subtasks={subtasks} />}
