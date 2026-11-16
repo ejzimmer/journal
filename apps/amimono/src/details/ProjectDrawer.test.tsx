@@ -1,4 +1,4 @@
-import { screen, within } from '@testing-library/react';
+import { within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
 import { findCard, renderHomePage } from '../homePageTestUtils';
@@ -89,10 +89,7 @@ describe('the project drawer', () => {
       expect(
         card.getByRole('link', { name: 'Telja Cardigan' }),
       ).toHaveAttribute('href', 'https://example.com/telja');
-      expect(card.getByText('Mineral').parentElement).toHaveAttribute(
-        'title',
-        'Dye lot 0917',
-      );
+      expect(card.getByTitle('Dye lot 0917')).toHaveTextContent('Mineral');
       expect(card.getByRole('img', { name: '1.5 skeins' })).toBeInTheDocument();
       expect(
         card.getByRole('img', {
