@@ -2,6 +2,7 @@ import { useStorageContext } from 'shared/FirebaseContext';
 import { ProjectFields } from '../edit/projectDraft';
 import {
   Craft,
+  ListEntry,
   ListKey,
   LISTS_KEY,
   ProjectType,
@@ -36,13 +37,30 @@ export function useProjectActions() {
     });
   };
 
+  const findPositionInTarget = (
+    entry: ListEntry | undefined,
+    from: ListKey,
+    to: ListKey,
+  ) => {
+    if (to === 'portable' && entry?.portablePosition !== undefined) {
+      return entry.portablePosition;
+    }
+    return isSwappingQueues(from, to)
+      ? findPositionAtStartOf(to)
+      : findPositionAtEndOf(to);
+  };
+
   const moveProject = (projectId: string, from: ListKey, to: ListKey) => {
+    const entry = storedLists?.[from]?.[projectId];
+    const isLeavingPortableForPriority =
+      from === 'portable' && to === 'priority';
+
     setValues({
       [`${LISTS_KEY}/${to}/${projectId}`]: {
         id: projectId,
-        position: isSwappingQueues(from, to)
-          ? findPositionAtStartOf(to)
-          : findPositionAtEndOf(to),
+        position: findPositionInTarget(entry, from, to),
+        ...(isLeavingPortableForPriority &&
+          entry && { portablePosition: entry.position }),
       },
       [`${LISTS_KEY}/${from}/${projectId}`]: null,
     });
