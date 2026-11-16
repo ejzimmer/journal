@@ -20,7 +20,7 @@ export function SubtaskList({ projectId, subtasks }: SubtaskListProps) {
   return (
     <div className="subtask-list">
       {orderedSubtasks.length > 0 && (
-        <ul aria-label="Steps">
+        <ul aria-label="Subtasks">
           {orderedSubtasks.map((subtask) => (
             <li
               key={subtask.id}

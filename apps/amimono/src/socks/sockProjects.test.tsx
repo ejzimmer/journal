@@ -25,7 +25,7 @@ describe('sock projects', () => {
       },
     });
 
-    it('counts knitted sections alongside the steps', () => {
+    it('counts knitted sections alongside the subtasks', () => {
       renderHomePage(seed);
 
       expect(

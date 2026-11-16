@@ -20,7 +20,7 @@ export function AddSubtaskForm({ onAdd }: AddSubtaskFormProps) {
 
   return (
     <form className="add-subtask-form" onSubmit={addSubtask}>
-      <label htmlFor={inputId}>New step</label>
+      <label htmlFor={inputId}>New subtask</label>
       <input
         id={inputId}
         value={description}
@@ -29,8 +29,8 @@ export function AddSubtaskForm({ onAdd }: AddSubtaskFormProps) {
       <button
         type="submit"
         className="round-button"
-        aria-label="Add step"
-        title="Add step"
+        aria-label="Add subtask"
+        title="Add subtask"
       >
         <PlusIcon width="14" />
       </button>
