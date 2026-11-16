@@ -1,6 +1,7 @@
 import { useStorageContext } from 'shared/FirebaseContext';
 import { ProjectFields } from '../edit/projectDraft';
 import {
+  Craft,
   ListKey,
   LISTS_KEY,
   ProjectType,
@@ -24,10 +25,10 @@ export function useProjectActions() {
   const isSwappingQueues = (from: ListKey, to: ListKey) =>
     from !== 'future' && to !== 'future';
 
-  const addProject = (name: string, type: ProjectType) => {
+  const addProject = (name: string, type: ProjectType, craft?: Craft) => {
     const id = crypto.randomUUID();
     setValues({
-      [`${PROJECTS_KEY}/${id}`]: { id, name, type },
+      [`${PROJECTS_KEY}/${id}`]: { id, name, type, ...(craft && { craft }) },
       [`${LISTS_KEY}/future/${id}`]: {
         id,
         position: findPositionAtEndOf('future'),

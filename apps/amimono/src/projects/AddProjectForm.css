@@ -3,15 +3,19 @@
   gap: 8px;
   align-items: center;
   flex-wrap: wrap;
-  max-width: 520px;
+  max-width: 760px;
 
-  label {
-    white-space: nowrap;
-    font-size: 15px;
-    color: hsl(0 0% 40%);
+  fieldset {
+    margin: 0;
+    padding: 0;
+    border: 0;
   }
 
-  input {
+  .type-picker {
+    width: 200px;
+  }
+
+  > input {
     flex: 1 1 160px;
     min-width: 0;
     font: inherit;
@@ -21,21 +25,12 @@
     outline: none;
   }
 
-  select {
-    font: inherit;
-    font-size: 15px;
-    padding: 5px;
-    border: 2px solid var(--border-colour);
-    border-radius: 6px;
-    background: white;
-  }
-
-  button {
+  > button {
     display: grid;
     place-items: center;
-    width: 34px;
-    height: 34px;
-    border: 1px solid var(--border-colour);
+    width: 41px;
+    height: 41px;
+    border: 2px solid var(--border-colour);
     border-radius: 6px;
     background: white;
     color: hsl(211 50% 40%);

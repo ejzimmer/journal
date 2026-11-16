@@ -76,7 +76,12 @@ describe('editing a project', () => {
       expect(screen.getByRole('textbox', { name: 'Name' })).toHaveValue(
         'Cardigan',
       );
-      expect(screen.getByRole('radio', { name: 'Knitting' })).toBeChecked();
+      expect(
+        within(screen.getByRole('form', { name: 'Edit project' })).getByRole(
+          'radio',
+          { name: 'Knitting' },
+        ),
+      ).toBeChecked();
       expect(screen.getByRole('textbox', { name: 'Pattern' })).toHaveValue(
         'https://www.ravelry.com/patterns/library/telja-cardigan',
       );
@@ -114,7 +119,12 @@ describe('editing a project', () => {
       const { user } = renderHomePage(seed);
       await openEditForm(user, 'Hat');
 
-      await user.click(screen.getByRole('radio', { name: 'Crochet' }));
+      await user.click(
+        within(screen.getByRole('form', { name: 'Edit project' })).getByRole(
+          'radio',
+          { name: 'Crochet' },
+        ),
+      );
       await user.click(screen.getByRole('button', { name: 'Save changes' }));
 
       expect(

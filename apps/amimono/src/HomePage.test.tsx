@@ -131,10 +131,8 @@ describe('HomePage', () => {
           screen.getByRole('textbox', { name: 'New project' }),
           'Mittens',
         );
-        await user.selectOptions(
-          screen.getByRole('combobox', { name: 'Type' }),
-          'Accessory',
-        );
+        await user.click(screen.getByRole('combobox', { name: 'Type' }));
+        await user.click(screen.getByRole('option', { name: 'Accessory' }));
         await user.click(screen.getByRole('button', { name: 'Add project' }));
 
         expect(findProjectNamesIn('Future')).toEqual([
@@ -143,6 +141,21 @@ describe('HomePage', () => {
         ]);
         expect(
           within(findCard('Mittens')).getByRole('img', { name: 'Accessory' }),
+        ).toBeInTheDocument();
+      });
+
+      it('shows the chosen craft on the card', async () => {
+        const { user } = renderHomePage(seed);
+
+        await user.type(
+          screen.getByRole('textbox', { name: 'New project' }),
+          'Mittens',
+        );
+        await user.click(screen.getByRole('radio', { name: 'Crochet' }));
+        await user.click(screen.getByRole('button', { name: 'Add project' }));
+
+        expect(
+          within(findCard('Mittens')).getByRole('img', { name: 'Crochet' }),
         ).toBeInTheDocument();
       });
 
