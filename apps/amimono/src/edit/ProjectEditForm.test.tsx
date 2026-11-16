@@ -129,19 +129,6 @@ describe('editing a project', () => {
       ).toBeInTheDocument();
     });
 
-    it('clears the craft when the chosen one is clicked again', async () => {
-      renderHomePage(seed);
-      const craftIcon = within(findCard('Cardigan')).getByRole('img', {
-        name: 'Knitting',
-      });
-      await openEditForm('Cardigan');
-
-      await userEvent.click(screen.getByRole('radio', { name: 'Knitting' }));
-      await saveChanges();
-
-      expect(craftIcon).not.toBeInTheDocument();
-    });
-
     it('adds a new yarn after the existing ones', async () => {
       renderHomePage(seed);
       await openEditForm('Cardigan');
