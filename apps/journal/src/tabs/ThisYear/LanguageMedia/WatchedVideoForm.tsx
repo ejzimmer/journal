@@ -7,9 +7,8 @@ import { LadyBeetleIcon } from './LadyBeetleIcon';
 import { UnderstoodTile } from './UnderstoodTile';
 import { UpdateDate } from './UpdateDate';
 import { useLanguageMediaStorage } from './LanguageMediaStorageContext';
-import { VideoLengthTile } from './VideoLengthTile';
 import { VideoUrlTile } from './VideoUrlTile';
-import { parseNumber, readDuration, readText } from './fields';
+import { parseNumber, readText } from './fields';
 import { Video, YoutubeChannel } from './types';
 
 import './ProgressUpdateForm.css';
@@ -35,23 +34,17 @@ export function WatchedVideoForm({ channel, video }: WatchedVideoFormProps) {
   const saveWatchedVideo = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-    const lengthInSeconds = readDuration(data, 'length');
     const watchedVideo = {
       url: readText(data, 'url'),
-      lengthInSeconds,
       lookups: parseNumber(data, 'lookups') ?? 0,
       aiQuestions: parseNumber(data, 'aiQuestions') ?? 0,
       understood: parseNumber(data, 'understood'),
     };
     if (video) {
-      updateItem([channel.id, 'videos', video.id], {
-        ...watchedVideo,
-        ...(video.status === 'done' && { upToInSeconds: lengthInSeconds }),
-      });
+      updateItem([channel.id, 'videos', video.id], watchedVideo);
     } else {
       addItem([channel.id, 'videos'], {
         ...watchedVideo,
-        upToInSeconds: lengthInSeconds,
         status: 'done',
       });
     }
@@ -93,7 +86,6 @@ export function WatchedVideoForm({ channel, video }: WatchedVideoFormProps) {
             count={aiQuestions}
             onAdd={() => setAiQuestions((count) => count + 1)}
           />
-          <VideoLengthTile defaultValue={video?.lengthInSeconds} />
           <UnderstoodTile
             mediaType="youtube"
             defaultValue={video?.understood}
