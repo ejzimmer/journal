@@ -29,7 +29,7 @@ function arrangeProjectsInLists(
 ): ProjectLists {
   const findProjectsInList = (listKey: ListKey) =>
     sortByPosition(Object.values(storedLists[listKey] ?? {}))
-      .map((entry) => projects[entry.id])
+      .map((position) => projects[position.id])
       .filter((project): project is Project => !!project);
 
   return Object.fromEntries(

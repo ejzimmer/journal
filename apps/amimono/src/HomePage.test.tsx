@@ -202,32 +202,6 @@ describe('HomePage', () => {
           });
         });
 
-        describe('when an earlier version saved its portable spot', () => {
-          it('puts it back where it was', async () => {
-            const { user } = renderHomePage({
-              ...seed,
-              lists: {
-                ...seed.lists,
-                priority: {
-                  cardigan: {
-                    id: 'cardigan',
-                    position: 1,
-                    portablePosition: 3,
-                  },
-                },
-              },
-            });
-
-            await moveProject(user, 'Cardigan', 'Portable');
-
-            expect(findProjectNamesIn('Portable')).toEqual([
-              'Blanket',
-              'Laptop sleeve',
-              'Cardigan',
-            ]);
-          });
-        });
-
         describe('when it came from somewhere else', () => {
           it('puts it at the top of portable', async () => {
             const { user } = renderHomePage(seed);
@@ -287,6 +261,32 @@ describe('HomePage', () => {
           'Socks for Dad',
           'Cardigan',
         ]);
+      });
+
+      describe('when it came from the future list', () => {
+        it('still puts it at the end of the future list', async () => {
+          const { user } = renderHomePage({
+            projects: {
+              ...seed.projects,
+              tam: { id: 'tam', name: 'Tam', type: 'hat' },
+            },
+            lists: {
+              ...seed.lists,
+              future: {
+                socks: { id: 'socks', position: 1 },
+                tam: { id: 'tam', position: 2 },
+              },
+            },
+          });
+          await moveProject(user, 'Socks for Dad', 'Priority');
+
+          await moveProject(user, 'Socks for Dad', 'Future');
+
+          expect(findProjectNamesIn('Future')).toEqual([
+            'Tam',
+            'Socks for Dad',
+          ]);
+        });
       });
     });
 

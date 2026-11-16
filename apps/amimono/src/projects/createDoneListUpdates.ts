@@ -1,5 +1,4 @@
 import { sortByPosition } from 'shared/drag-and-drop/utils';
-import { findPreviousPosition } from './findPreviousPosition';
 import { isProjectFinished } from './isProjectFinished';
 import {
   LIST_KEYS,
@@ -26,7 +25,7 @@ export function createDoneListUpdates(
     Math.max(
       0,
       ...Object.values(storedLists[listKey] ?? {}).map(
-        (entry) => entry.position,
+        (position) => position.position,
       ),
     );
 
@@ -34,37 +33,37 @@ export function createDoneListUpdates(
 
   LIST_KEYS.filter((listKey) => listKey !== 'done').forEach((listKey) => {
     getProjectsInList(listKey)
-      .filter((entry) => isProjectFinished(projects[entry.id]))
-      .forEach((entry) => {
+      .filter((position) => isProjectFinished(projects[position.id]))
+      .forEach((position) => {
         const previous: ListPosition = {
           list: listKey,
-          position: entry.position,
+          position: position.position,
         };
 
-        updates[`${LISTS_KEY}/done/${entry.id}`] = {
-          id: entry.id,
+        updates[`${LISTS_KEY}/done/${position.id}`] = {
+          id: position.id,
           position: nextDonePosition++,
           previous,
         };
-        updates[`${LISTS_KEY}/${listKey}/${entry.id}`] = null;
+        updates[`${LISTS_KEY}/${listKey}/${position.id}`] = null;
       });
   });
 
   let nextFuturePosition = findLastPositionIn('future') + 1;
 
   getProjectsInList('done')
-    .filter((entry) => !isProjectFinished(projects[entry.id]))
-    .forEach((entry) => {
-      const previous = findPreviousPosition(entry) ?? {
+    .filter((position) => !isProjectFinished(projects[position.id]))
+    .forEach((position) => {
+      const previous = position.previous ?? {
         list: 'future',
         position: nextFuturePosition++,
       };
 
-      updates[`${LISTS_KEY}/${previous.list}/${entry.id}`] = {
-        id: entry.id,
+      updates[`${LISTS_KEY}/${previous.list}/${position.id}`] = {
+        id: position.id,
         position: previous.position,
       };
-      updates[`${LISTS_KEY}/done/${entry.id}`] = null;
+      updates[`${LISTS_KEY}/done/${position.id}`] = null;
     });
 
   return updates;

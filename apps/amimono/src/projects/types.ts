@@ -71,8 +71,6 @@ export type ProjectPosition = {
   id: string;
   position: number;
   previous?: ListPosition;
-  // Written by earlier versions, which only remembered a spot in Portable.
-  portablePosition?: number;
 };
 
 export type ProjectLists = Record<ListKey, Project[]>;
