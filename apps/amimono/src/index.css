@@ -1,17 +1,20 @@
 body {
   margin: 0;
-  font-family:
+  --body-font:
     -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue',
     sans-serif;
+  font-family: var(--body-font);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   background: white;
 
   --body-colour: hsl(0 0% 20%);
   --border-colour: hsl(214 32% 82%);
+  --border-colour-hover: hsl(214 32% 70%);
   --link-colour: hsl(211 61% 43%);
   --action-colour: hsl(211 81% 46%);
   --success-colour: hsl(108 81% 36%);
+  --error-colour: hsl(10 89% 41%);
 
   color: var(--body-colour);
 }
@@ -68,6 +71,40 @@ body {
     &:hover,
     &:focus-visible {
       background: hsl(108 81% 30%);
+    }
+  }
+}
+
+dialog {
+  border: 0;
+  border-radius: 10px;
+  padding-inline: 30px;
+  padding-block: 20px;
+  color: var(--body-colour);
+}
+
+/* The shared modal's buttons take their look from the journal's global
+   button styles, which Amimono doesn't have. */
+dialog.modal button {
+  padding-inline: 16px;
+  font-size: 1em;
+  line-height: 1.2;
+  height: 2.5rem;
+  cursor: pointer;
+  border-radius: 6px;
+  background: transparent;
+  border: 2px solid;
+
+  &.ghost {
+    border: 0;
+    opacity: 0.5;
+    padding: 6px;
+    height: auto;
+    line-height: 1;
+
+    &:hover,
+    &:focus-visible {
+      opacity: 1;
     }
   }
 }

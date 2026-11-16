@@ -11,6 +11,8 @@
     padding: 6px 12px;
     background: transparent;
     border: 2px solid var(--border-colour);
+    border-radius: 6px;
+    cursor: pointer;
   }
 
   .yarn-tracking-fields {
@@ -18,40 +20,40 @@
     grid-template-columns: min-content 1fr;
     gap: 8px 12px;
 
-    select {
+    .yarn-type-picker {
       grid-column: 1/-1;
-      appearance: base-select;
-      display: flex;
-      align-items: center;
 
-      &::picker-icon {
-        color: var(--border-colour);
-      }
-
-      &::picker(select) {
-        appearance: base-select;
+      .single-value-container {
         border-radius: 8px;
-        border-color: var(--border-colour);
       }
 
-      button {
-        all: unset;
-        flex: 1;
+      input[role='combobox'] {
+        padding: 8px;
+        padding-inline-end: 28px;
+        border: none;
+        background: transparent;
       }
 
-      button,
-      option {
+      .yarn-type-option {
         display: flex;
         align-items: center;
         gap: 8px;
       }
 
-      option {
+      [role='option'] {
         padding: 6px 8px;
+
+        &:not(:last-child) {
+          border-bottom: none;
+        }
+
+        &[aria-selected='true'] {
+          background: color-mix(in srgb, var(--yarn-colour) 40%, white);
+          color: inherit;
+        }
       }
     }
 
-    select,
     input {
       padding: 8px;
       border-radius: 8px;
@@ -138,8 +140,8 @@
   }
 
   .footer button,
-  select,
-  input,
+  .single-value-container,
+  input:not([role='combobox']),
   .switch {
     background: white;
     border: 2px solid var(--border-colour);
@@ -149,8 +151,8 @@
   .yarn-tracking-trigger:focus-visible,
   .footer button:hover,
   .footer button:focus-visible,
-  select:focus,
-  input:focus,
+  .single-value-container:focus-within,
+  input:not([role='combobox']):focus,
   .switch:focus-within {
     outline: none;
     background:

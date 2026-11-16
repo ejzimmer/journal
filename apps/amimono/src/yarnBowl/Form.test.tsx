@@ -19,7 +19,9 @@ describe('YarnTrackingForm', () => {
     });
 
     it('offers every yarn type', async () => {
-      await openForm();
+      const { user } = await openForm();
+
+      await user.click(screen.getByRole('combobox', { name: 'Yarn type' }));
 
       expect(
         screen.getAllByRole('option').map((option) => option.textContent),
@@ -32,10 +34,8 @@ describe('YarnTrackingForm', () => {
       it('removes the yarn from the stash', async () => {
         const { user, storageContext } = await openForm();
 
-        await user.selectOptions(
-          screen.getByRole('combobox', { name: 'Yarn type' }),
-          'cotton',
-        );
+        await user.click(screen.getByRole('combobox', { name: 'Yarn type' }));
+        await user.click(screen.getByRole('option', { name: 'cotton' }));
         await user.type(screen.getByRole('textbox', { name: 'Grams' }), '150');
         await user.click(screen.getByRole('button', { name: 'Submit' }));
 

@@ -25,42 +25,41 @@
   }
 
   .type-picker {
-    appearance: base-select;
-    display: flex;
-    align-items: center;
-    gap: 12px;
+    .combobox-field {
+      gap: 6px;
+    }
 
-    &::picker-icon {
+    .label {
+      font-size: 13px;
+      font-weight: normal;
       color: hsl(0 0% 45%);
     }
 
-    &::picker(select) {
-      appearance: base-select;
-      border: 1px solid var(--border-colour);
+    .combobox {
+      width: 220px;
+    }
+
+    .single-value-container {
       border-radius: 6px;
+      background: white;
     }
 
-    button {
-      all: unset;
-      flex: 1;
-    }
-
-    button,
-    option {
+    .type-option {
       display: flex;
       align-items: center;
       gap: 8px;
     }
 
-    option {
+    [role='option'] {
       padding: 6px 10px;
 
-      &::checkmark {
-        display: none;
+      &:not(:last-child) {
+        border-bottom: none;
       }
 
-      &:checked {
+      &[aria-selected='true'] {
         background: rgb(var(--card-pastel));
+        color: inherit;
       }
     }
   }

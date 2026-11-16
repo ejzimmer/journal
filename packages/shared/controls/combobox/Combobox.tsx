@@ -137,7 +137,8 @@ export function Combobox<T extends OptionType>({
     ) {
       return;
     }
-    updateValue(existingOption ?? createOption(label));
+    const option = existingOption ?? createOption?.(label);
+    if (option) updateValue(option);
   };
 
   return (
