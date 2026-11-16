@@ -9,9 +9,13 @@
     font: inherit;
     padding: 6px 6px;
     border: 0;
-    border-bottom: 2px solid var(--border-colour);
-    background: white;
+    border-bottom: 2px solid white;
+    background: transparent;
     outline: none;
+
+    &:not(:focus) {
+      color: white;
+    }
   }
 
   > input:first-child {
@@ -29,12 +33,20 @@
   }
 
   select {
-    border: 2px solid var(--border-colour);
+    border: 2px solid white;
     border-radius: 6px;
+
+    option {
+      color: var(--body-colour);
+    }
   }
 
   .eu-size {
     font-size: 14px;
-    color: hsl(0 0% 45%);
+    color: white;
+  }
+
+  button.form-action.primary {
+    border-color: white;
   }
 }

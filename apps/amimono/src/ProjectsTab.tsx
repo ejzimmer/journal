@@ -1,5 +1,6 @@
 import { AddProjectForm } from './projects/AddProjectForm';
 import { ProjectList } from './projects/ProjectList';
+import { useMoveFinishedProjects } from './projects/useMoveFinishedProjects';
 import { useProjectActions } from './projects/useProjectActions';
 import { useProjectLists } from './projects/useProjectLists';
 import { YarnTracking } from './yarnBowl';
@@ -7,6 +8,7 @@ import { YarnTracking } from './yarnBowl';
 export function ProjectsTab() {
   const { lists } = useProjectLists();
   const { addProject, moveProject } = useProjectActions();
+  useMoveFinishedProjects();
 
   return (
     <div className="projects-tab">
@@ -33,6 +35,7 @@ export function ProjectsTab() {
         />
         <AddProjectForm onAdd={addProject} />
       </section>
+      <ProjectList listKey="done" projects={lists.done} />
     </div>
   );
 }
