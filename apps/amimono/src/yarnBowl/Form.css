@@ -6,8 +6,9 @@
     font-size: 20px;
     padding: 6px 12px;
     background: transparent;
-    border: 2px solid var(--border-colour);
+    border: 2px solid white;
     border-radius: 6px;
+    color: white;
     cursor: pointer;
   }
 
@@ -137,5 +138,6 @@
       linear-gradient(white, white) padding-box,
       linear-gradient(135deg in oklch, var(--gradient-colours)) border-box;
     border-color: transparent;
+    color: var(--body-colour);
   }
 }

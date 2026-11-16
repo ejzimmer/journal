@@ -87,6 +87,10 @@
         filter 0.15s,
         box-shadow 0.15s;
 
+      .add-project-form & {
+        border-color: white;
+      }
+
       &:hover,
       &:focus-visible {
         background: var(--button-gradient) border-box;
@@ -114,7 +118,5 @@
     display: flex;
     flex-direction: column;
     gap: 12px;
-    border-top: 1px dashed var(--border-colour);
-    padding-top: 24px;
   }
 }
