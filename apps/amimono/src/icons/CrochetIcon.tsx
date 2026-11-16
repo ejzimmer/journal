@@ -1,4 +1,8 @@
+import { useId } from 'react';
+
 export function CrochetIcon() {
+  const handleHoleMaskId = useId();
+
   return (
     <svg
       width="20"
@@ -9,11 +13,26 @@ export function CrochetIcon() {
       strokeLinecap="round"
       strokeLinejoin="round"
       aria-hidden="true"
-      strokeWidth="1.7"
     >
+      <mask
+        id={handleHoleMaskId}
+        maskUnits="userSpaceOnUse"
+        x="0"
+        y="0"
+        width="24"
+        height="24"
+      >
+        <rect width="24" height="24" fill="white" stroke="none" />
+        <circle cx="5.4" cy="18.6" r="0.8" fill="black" stroke="none" />
+      </mask>
       <path
-        transform="rotate(45 12 12)"
-        d="M9.6 22.4V3Q9.6 0.8 12 0.8Q14.4 0.8 14.4 3.4L12 4.6Q11 5.6 11.8 7.2L14.4 10V22.4A2.4 2.4 0 0 1 9.6 22.4Z"
+        d="M4.4 19.6L11 13"
+        strokeWidth="4.4"
+        mask={`url(#${handleHoleMaskId})`}
+      />
+      <path
+        d="M11 13L18.6 5.4Q19.6 4.4 20.6 4.4Q21.4 4.6 21.2 5.8"
+        strokeWidth="1.7"
       />
     </svg>
   );
