@@ -73,9 +73,15 @@
     }
 
     &.primary {
+      --button-gradient: linear-gradient(
+        135deg in oklch,
+        var(--sock-yarn-colour),
+        var(--cotton-colour),
+        var(--wool-colour),
+        var(--acrylic-colour)
+      );
       border-color: transparent;
-      background: linear-gradient(135deg in oklch, var(--gradient-colours))
-        border-box;
+      background: var(--button-gradient) border-box;
       color: white;
       transition:
         filter 0.15s,
@@ -83,8 +89,7 @@
 
       &:hover,
       &:focus-visible {
-        background: linear-gradient(135deg in oklch, var(--gradient-colours))
-          border-box;
+        background: var(--button-gradient) border-box;
         filter: brightness(1.08) saturate(1.4);
         box-shadow: 0 0 10px 2px
           color-mix(in oklch, var(--acrylic-colour) 55%, transparent);
