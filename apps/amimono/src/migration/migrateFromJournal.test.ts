@@ -41,7 +41,7 @@ describe('migrating from the journal', () => {
   });
 
   describe('knitting projects', () => {
-    it('copies their name and steps, without the todo links', async () => {
+    it('copies their name and subtasks, without the todo links', async () => {
       const updates = await migrate({
         projects: {
           cardi: createJournalProject('cardi', 'Cardigan', {
