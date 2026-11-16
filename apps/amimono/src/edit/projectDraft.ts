@@ -25,6 +25,8 @@ export type ProjectDraft = Omit<Project, 'pattern' | 'yarns' | 'gauge'> & {
   gauge: GaugeDraft;
 };
 
+// Saving writes each field separately, and null deletes it, so a field the
+// user cleared has to be sent as null rather than left out.
 type Removable<T> = { [K in keyof T]-?: NonNullable<T[K]> | null };
 
 export type ProjectFields = Pick<Project, 'name' | 'type'> &
