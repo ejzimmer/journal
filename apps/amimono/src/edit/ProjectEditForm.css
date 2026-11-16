@@ -54,6 +54,14 @@
 
     option {
       padding: 6px 10px;
+
+      &::checkmark {
+        display: none;
+      }
+
+      &:checked {
+        background: rgb(var(--card-pastel));
+      }
     }
   }
 
