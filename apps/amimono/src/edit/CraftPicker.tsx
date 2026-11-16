@@ -8,7 +8,7 @@ const CRAFT_OPTIONS = Object.keys(CRAFTS) as Craft[];
 
 type CraftPickerProps = {
   craft?: Craft;
-  onChange: (craft: Craft) => void;
+  onChange: (craft?: Craft) => void;
 };
 
 export function CraftPicker({ craft, onChange }: CraftPickerProps) {
@@ -21,6 +21,7 @@ export function CraftPicker({ craft, onChange }: CraftPickerProps) {
         options={CRAFT_OPTIONS}
         value={craft}
         onChange={onChange}
+        onDeselect={() => onChange(undefined)}
         name={name}
         Option={CraftOptionLabel}
         className="craft-picker"
