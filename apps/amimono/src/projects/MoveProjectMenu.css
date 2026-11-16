@@ -59,10 +59,17 @@
 
   &.current {
     background: rgb(var(--card-pastel) / 0.7);
-    cursor: default;
 
     span {
       background: rgb(var(--card-dark) / 0.7);
+    }
+
+    &:disabled {
+      cursor: default;
+    }
+
+    &:not(:disabled):is(:hover, :focus-visible) span:first-child {
+      background: hsl(211 81% 46% / 0.6);
     }
   }
 
