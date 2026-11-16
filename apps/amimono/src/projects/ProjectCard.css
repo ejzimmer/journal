@@ -6,7 +6,8 @@
   background: rgb(var(--card-pastel) / 0.3);
   border: 1px solid rgb(var(--card-pastel));
   --card-padding-block: 6px;
-  padding: var(--card-padding-block) 8px;
+  --card-padding-inline: 8px;
+  padding: var(--card-padding-block) var(--card-padding-inline);
 
   .project-list:not(.future) & {
     background: rgb(var(--card-pastel) / 0.55);
