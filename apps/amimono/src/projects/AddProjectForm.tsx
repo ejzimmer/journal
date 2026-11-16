@@ -31,7 +31,6 @@ export function AddProjectForm({ onAdd }: AddProjectFormProps) {
     >
       <input
         aria-label="New project"
-        placeholder="New project"
         value={name}
         onChange={(event) => setName(event.target.value)}
         required
