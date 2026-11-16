@@ -147,7 +147,7 @@
       }
 
       &:has(input:checked) {
-        color: white;
+        color: rgb(var(--card-dark));
       }
     }
 
@@ -155,7 +155,7 @@
       top: 2px;
       height: calc(100% - 4px);
       border-radius: 999px;
-      background: rgb(var(--card-dark));
+      background: rgb(var(--card-pastel) / 0.55);
       box-shadow: none;
     }
   }
