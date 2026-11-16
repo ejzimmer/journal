@@ -1,3 +1,9 @@
+.bikes {
+  width: 100%;
+  max-width: 720px;
+  margin-inline: auto;
+}
+
 ul.bike-grid {
   display: flex;
   flex-wrap: wrap;

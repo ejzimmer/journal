@@ -7,7 +7,6 @@ import {
   StationRunning,
 } from './StationRunning/StationRunning';
 import { WaniKani } from './WaniKani';
-import { YarnTracking } from './YarnTracking';
 
 import './ThisYear.css';
 
@@ -15,13 +14,8 @@ export function ThisYear() {
   return (
     <div className="this-year">
       <div className="above-garden">
-        <div className="yarn-and-adventures">
-          <div className="yarn-and-bikes">
-            <YarnTracking />
-            <Bikes />
-          </div>
-          <Adventures />
-        </div>
+        <Bikes />
+        <Adventures />
         {getThisYear() === STATION_RUNNING_YEAR && <StationRunning />}
         <WaniKani />
       </div>

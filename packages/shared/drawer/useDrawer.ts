@@ -6,29 +6,14 @@ import {
   useRef,
   useState,
 } from 'react';
-import { ProjectSubtask } from '../../types';
 
 type DrawerParams = {
   drawerRef: RefObject<HTMLDivElement | null>;
-  listRef: RefObject<HTMLOListElement | null>;
-  formRef: RefObject<HTMLDivElement | null>;
-  trackerRef: RefObject<HTMLDivElement | null>;
-  subtasks: ProjectSubtask[];
-  isProjectLoaded: boolean;
+  contentRef: RefObject<HTMLDivElement | null>;
   isOpen: boolean;
-  isFormOpen: boolean;
 };
 
-export function useDrawer({
-  drawerRef,
-  listRef,
-  formRef,
-  trackerRef,
-  subtasks,
-  isProjectLoaded,
-  isOpen,
-  isFormOpen,
-}: DrawerParams) {
+export function useDrawer({ drawerRef, contentRef, isOpen }: DrawerParams) {
   const [openHeight, setOpenHeight] = useState(0);
   const [isAnimating, setIsAnimating] = useState(false);
   const hasScrolledIntoView = useRef(false);
@@ -45,19 +30,20 @@ export function useDrawer({
     }
   }
 
-  const measureDrawerHeight = useCallback(() => {
-    if (!listRef.current || !formRef.current) return;
-
-    setOpenHeight(
-      (trackerRef.current?.clientHeight ?? 0) +
-        listRef.current.clientHeight +
-        formRef.current.clientHeight,
-    );
-  }, [listRef, formRef, trackerRef]);
+  const measureContentHeight = useCallback(() => {
+    if (!contentRef.current) return;
+    setOpenHeight(contentRef.current.offsetHeight);
+  }, [contentRef]);
 
   useLayoutEffect(() => {
-    measureDrawerHeight();
-  }, [measureDrawerHeight, subtasks, isProjectLoaded, isFormOpen]);
+    const content = contentRef.current;
+    if (!content) return;
+
+    measureContentHeight();
+    const observer = new ResizeObserver(measureContentHeight);
+    observer.observe(content);
+    return () => observer.disconnect();
+  }, [contentRef, measureContentHeight]);
 
   useEffect(() => {
     const drawer = drawerRef.current;
@@ -73,7 +59,7 @@ export function useDrawer({
     return () => {
       drawer.removeEventListener('transitionend', stopAnimatingWhenSettled);
     };
-  }, [drawerRef, isProjectLoaded]);
+  }, [drawerRef]);
 
   useEffect(() => {
     if (!isOpen) {

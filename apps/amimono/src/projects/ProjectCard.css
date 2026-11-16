@@ -3,17 +3,33 @@
   list-style: none;
   border-radius: 7px;
   font-size: 18px;
+  --card-border-width: 1px;
+  --card-border-colour: rgb(var(--card-pastel));
   background: rgb(var(--card-pastel) / 0.3);
-  border: 1px solid rgb(var(--card-pastel));
+  border: var(--card-border-width) solid var(--card-border-colour);
   --card-padding-block: 6px;
   --card-padding-inline: 8px;
   padding: var(--card-padding-block) var(--card-padding-inline);
 
   .project-list:is(.priority, .portable) & {
+    --card-border-width: 2px;
+    --card-border-colour: rgb(var(--card-dark) / 0.55);
     background: rgb(var(--card-pastel) / 0.55);
-    border: 2px solid rgb(var(--card-dark) / 0.55);
     box-shadow: 0 2px 7px rgb(var(--card-pastel) / 0.45);
     --card-padding-block: 7px;
+  }
+
+  --drawer-offset: var(--card-border-width);
+  --drawer-border-width: var(--card-border-width);
+  --drawer-border-colour: var(--card-border-colour);
+  --drawer-seam-opacity: 0.15;
+
+  &:has(.drawer.raised) {
+    z-index: 1;
+  }
+
+  .drawer.open {
+    box-shadow: 0 6px 14px rgb(var(--card-dark) / 0.18);
   }
 
   .project-card-header {

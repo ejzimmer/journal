@@ -52,7 +52,19 @@ export function useProjectActions() {
       : findPositionAtEndOf(to);
   };
 
+  const moveProjectToTopOf = (listKey: ListKey, projectId: string) => {
+    setValues({
+      [`${LISTS_KEY}/${listKey}/${projectId}/position`]:
+        findPositionAtStartOf(listKey),
+    });
+  };
+
   const moveProject = (projectId: string, from: ListKey, to: ListKey) => {
+    if (from === to) {
+      moveProjectToTopOf(to, projectId);
+      return;
+    }
+
     const entry = storedLists?.[from]?.[projectId];
     const isLeavingPortableForPriority =
       from === 'portable' && to === 'priority';

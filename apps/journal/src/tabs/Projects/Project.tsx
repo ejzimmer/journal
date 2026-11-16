@@ -12,14 +12,12 @@ import {
   PROJECTS_KEY,
   ProjectStatus,
 } from '../../types';
-import { SOCK_CATEGORY } from './socks/sockProgress';
 import { useLinkedTasks } from './utils';
 import { ArrowToEndIcon } from 'shared/icons/ArrowToEnd';
 import { ArrowToStartIcon } from 'shared/icons/ArrowToStart';
 import { EditableText } from 'shared/controls/EditableText';
 import { getToday } from 'shared/dates';
 import { updateCompletionDate } from 'shared/years';
-import { SECTIONS_PER_PAIR, countKnittedSections } from './socks/sockProgress';
 
 type ProjectProps = {
   project: ProjectDetails;
@@ -101,11 +99,6 @@ export function Project({
 
   const subtasks = Object.values(project.subtasks ?? {});
   const doneSubtasks = subtasks.filter((subtask) => subtask.status === 'done');
-  const knittedSections = project.socks
-    ? countKnittedSections(project.socks)
-    : 0;
-  const doneSteps = doneSubtasks.length + knittedSections;
-  const totalSteps = subtasks.length + (project.socks ? SECTIONS_PER_PAIR : 0);
   const longestSubtaskLength = Math.max(
     0,
     ...subtasks.map((subtask) => subtask.description.length),
@@ -119,7 +112,7 @@ export function Project({
     '--longest-subtask-chars': longestSubtaskLength,
   } as CSSProperties;
 
-  if (status === 'ready' && doneSteps > 0) {
+  if (status === 'ready' && doneSubtasks.length > 0) {
     updateItem<ProjectDetails>(PROJECTS_KEY, {
       ...project,
       status: 'in_progress',
@@ -146,7 +139,7 @@ export function Project({
       <div className="project-details">
         <div className="project-main-row">
           <EmojiCheckbox
-            emoji={project.socks ? SOCK_CATEGORY : project.category}
+            emoji={project.category}
             isChecked={status === 'done'}
             useTickForDone
             onChange={onChangeStatus}
@@ -183,7 +176,10 @@ export function Project({
 
         {status === 'in_progress' && (
           <div className="project-meta-row">
-            <SubtaskProgress done={doneSteps} total={totalSteps} />
+            <SubtaskProgress
+              done={doneSubtasks.length}
+              total={subtasks.length}
+            />
             <div className="project-actions">
               {onMoveToStart && (
                 <button

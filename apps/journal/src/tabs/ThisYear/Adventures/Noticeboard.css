@@ -1,6 +1,9 @@
 .noticeboard {
   display: flex;
   flex-direction: column;
+  width: 100%;
+  max-width: 1200px;
+  margin-inline: auto;
   min-height: 160px;
   padding: 24px;
   background-color: #b88a5a;

@@ -1,4 +1,4 @@
-import { screen, within } from '@testing-library/react';
+import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { ModalContext } from 'shared/controls/ModalContext';
 import { EditChannelForm } from './EditChannelForm';
@@ -44,22 +44,14 @@ const renderForm = () => {
   };
 };
 
-const getLengthGroups = () => screen.getAllByRole('group', { name: 'Length' });
-
 describe('EditChannelForm', () => {
-  it('shows each video length in hours, minutes and seconds', () => {
+  it('shows each video link', () => {
     renderForm();
-    const [firstLength] = getLengthGroups();
 
-    expect(
-      within(firstLength).getByRole('textbox', { name: 'Hours' }),
-    ).toHaveValue('01');
-    expect(
-      within(firstLength).getByRole('textbox', { name: 'Minutes' }),
-    ).toHaveValue('02');
-    expect(
-      within(firstLength).getByRole('textbox', { name: 'Seconds' }),
-    ).toHaveValue('05');
+    const [first, second] = screen.getAllByRole('textbox', { name: 'URL' });
+
+    expect(first).toHaveValue('https://youtu.be/1');
+    expect(second).toHaveValue('https://youtu.be/2');
   });
 
   describe('when saved', () => {
@@ -83,48 +75,19 @@ describe('EditChannelForm', () => {
       expect(closeModal).toHaveBeenCalled();
     });
 
-    describe('after changing a video', () => {
-      describe('that is still being watched', () => {
-        it('saves its link and length', async () => {
-          const { user, storageContext } = renderForm();
-          const [url] = screen.getAllByRole('textbox', { name: 'URL' });
-          const minutes = within(getLengthGroups()[0]).getByRole('textbox', {
-            name: 'Minutes',
-          });
+    describe('after changing a video link', () => {
+      it('saves the new link', async () => {
+        const { user, storageContext } = renderForm();
+        const [url] = screen.getAllByRole('textbox', { name: 'URL' });
 
-          await user.clear(url);
-          await user.type(url, 'https://youtu.be/one');
-          await user.clear(minutes);
-          await user.type(minutes, '10');
-          await user.click(screen.getByRole('button', { name: 'Save' }));
+        await user.clear(url);
+        await user.type(url, 'https://youtu.be/one');
+        await user.click(screen.getByRole('button', { name: 'Save' }));
 
-          expect(storageContext.updateItem).toHaveBeenCalledWith(
-            ['hugo', 'videos', 'v1'],
-            { url: 'https://youtu.be/one', lengthInSeconds: 4205 },
-          );
-        });
-      });
-
-      describe('that has been watched', () => {
-        it('keeps it watched to the end of its new length', async () => {
-          const { user, storageContext } = renderForm();
-          const minutes = within(getLengthGroups()[1]).getByRole('textbox', {
-            name: 'Minutes',
-          });
-
-          await user.clear(minutes);
-          await user.type(minutes, '12');
-          await user.click(screen.getByRole('button', { name: 'Save' }));
-
-          expect(storageContext.updateItem).toHaveBeenCalledWith(
-            ['hugo', 'videos', 'v2'],
-            {
-              url: 'https://youtu.be/2',
-              lengthInSeconds: 720,
-              upToInSeconds: 720,
-            },
-          );
-        });
+        expect(storageContext.updateItem).toHaveBeenCalledWith(
+          ['hugo', 'videos', 'v1'],
+          { url: 'https://youtu.be/one' },
+        );
       });
     });
   });

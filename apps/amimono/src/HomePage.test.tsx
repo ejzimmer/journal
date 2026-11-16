@@ -244,6 +244,35 @@ describe('HomePage', () => {
       });
     });
 
+    describe('within its own queue', () => {
+      it('puts it at the top of the queue', async () => {
+        const { user } = renderHomePage(seed);
+
+        await moveProject(user, 'Laptop sleeve', 'top of Portable');
+
+        expect(findProjectNamesIn('Portable')).toEqual([
+          'Laptop sleeve',
+          'Blanket',
+        ]);
+      });
+
+      describe('in priority after coming from portable', () => {
+        it('still goes back to its old spot when moved to portable', async () => {
+          const { user } = renderHomePage(seed);
+          await moveProject(user, 'Laptop sleeve', 'Priority');
+          await moveProject(user, 'Cardigan', 'top of Priority');
+          await moveProject(user, 'Laptop sleeve', 'top of Priority');
+
+          await moveProject(user, 'Laptop sleeve', 'Portable');
+
+          expect(findProjectNamesIn('Portable')).toEqual([
+            'Blanket',
+            'Laptop sleeve',
+          ]);
+        });
+      });
+    });
+
     describe('from a queue to the future list', () => {
       it('puts it at the end of the future list', async () => {
         const { user } = renderHomePage(seed);
@@ -330,9 +359,12 @@ describe('HomePage', () => {
   describe('a done project', () => {
     it('can be expanded but not moved', () => {
       renderHomePage(finishingSeed);
+      const cardHeader = findCard('Bonnet').querySelector<HTMLElement>(
+        '.project-card-header',
+      );
 
       expect(
-        within(findCard('Bonnet'))
+        within(cardHeader!)
           .getAllByRole('button')
           .map((button) => button.getAttribute('aria-label')),
       ).toEqual(['Expand project']);

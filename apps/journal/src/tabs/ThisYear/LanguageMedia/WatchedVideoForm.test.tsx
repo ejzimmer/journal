@@ -42,8 +42,6 @@ describe('WatchedVideoForm', () => {
         await user.click(
           screen.getByRole('button', { name: 'Add an AI question' }),
         );
-        await user.type(screen.getByRole('textbox', { name: 'Minutes' }), '24');
-        await user.type(screen.getByRole('textbox', { name: 'Seconds' }), '30');
         fireEvent.change(screen.getByRole('slider', { name: 'Understood' }), {
           target: { value: '70' },
         });
@@ -53,8 +51,6 @@ describe('WatchedVideoForm', () => {
           ['hugo', 'videos'],
           {
             url: 'https://youtu.be/3',
-            lengthInSeconds: 1470,
-            upToInSeconds: 1470,
             status: 'done',
             lookups: 2,
             aiQuestions: 1,
@@ -142,9 +138,6 @@ describe('WatchedVideoForm', () => {
       expect(screen.getByRole('spinbutton', { name: 'Asked AI' })).toHaveValue(
         1,
       );
-      expect(screen.getByRole('textbox', { name: 'Minutes' })).toHaveValue(
-        '24',
-      );
       expect(screen.getByRole('slider', { name: 'Understood' })).toHaveValue(
         '70',
       );
@@ -168,36 +161,14 @@ describe('WatchedVideoForm', () => {
         return view;
       };
 
-      describe('for a video watched to the end', () => {
-        it('saves the changes, still watched to the end', async () => {
-          const { storageContext } = await addLookupAndSave(watchedVideo);
+      it('saves the changes', async () => {
+        const { storageContext } = await addLookupAndSave(watchedVideo);
 
-          expect(storageContext.updateItem).toHaveBeenCalledWith(VIDEO_PATH, {
-            url: 'https://youtu.be/3',
-            lengthInSeconds: 1470,
-            upToInSeconds: 1470,
-            lookups: 3,
-            aiQuestions: 1,
-            understood: 70,
-          });
-        });
-      });
-
-      describe('for a video watched part way', () => {
-        it('saves the changes, keeping how far I got', async () => {
-          const { storageContext } = await addLookupAndSave({
-            ...watchedVideo,
-            status: 'in-progress',
-            upToInSeconds: 600,
-          });
-
-          expect(storageContext.updateItem).toHaveBeenCalledWith(VIDEO_PATH, {
-            url: 'https://youtu.be/3',
-            lengthInSeconds: 1470,
-            lookups: 3,
-            aiQuestions: 1,
-            understood: 70,
-          });
+        expect(storageContext.updateItem).toHaveBeenCalledWith(VIDEO_PATH, {
+          url: 'https://youtu.be/3',
+          lookups: 3,
+          aiQuestions: 1,
+          understood: 70,
         });
       });
 

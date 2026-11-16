@@ -3,6 +3,7 @@ import { useState } from 'react';
 import './ProjectCard.css';
 import { ProjectDrawer } from '../details/ProjectDrawer';
 import { ChevronDownIcon } from 'shared/icons/ChevronDown';
+import { Drawer } from 'shared/drawer/Drawer';
 import { ProjectEditForm } from '../edit/ProjectEditForm';
 import { countProjectSubtasks } from './countProjectSubtasks';
 import { CraftIcon } from './CraftIcon';
@@ -59,9 +60,9 @@ export function ProjectCard({ project, listKey, onMove }: ProjectCardProps) {
         </button>
       </div>
       {subtaskCounts.totalCount > 0 && <SubtaskProgress {...subtaskCounts} />}
-      {isExpanded && (
+      <Drawer isOpen={isExpanded}>
         <ProjectDrawer project={project} onEdit={() => setIsEditing(true)} />
-      )}
+      </Drawer>
     </li>
   );
 }

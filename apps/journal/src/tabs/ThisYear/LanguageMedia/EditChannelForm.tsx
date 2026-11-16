@@ -3,25 +3,20 @@ import { DeleteWithConfirmation } from 'shared/controls/DeleteWithConfirmation';
 import { useModal } from 'shared/controls/ModalContext';
 import { Switch } from 'shared/controls/Switch';
 import { TickIcon } from 'shared/icons/Tick';
-import { readDuration, readText } from './fields';
+import { readText } from './fields';
 import { LanguageOption } from './LanguageOption';
 import { useLanguageMediaStorage } from './LanguageMediaStorageContext';
 import { getItemsInAddedOrder } from './lists';
 import { Language, LANGUAGES, Video, YoutubeChannel } from './types';
-import { VideoRow } from './VideoRow';
+import { VideoUrlTile } from './VideoUrlTile';
 
 import './ProgressUpdateForm.css';
 import './AddMediaForm.css';
 import './GardenEditForms.css';
 
-const readVideoChanges = (data: FormData, video: Video) => {
-  const lengthInSeconds = readDuration(data, `length-${video.id}`);
-  return {
-    url: readText(data, `url-${video.id}`) ?? video.url,
-    lengthInSeconds,
-    ...(video.status === 'done' && { upToInSeconds: lengthInSeconds }),
-  };
-};
+const readVideoChanges = (data: FormData, video: Video) => ({
+  url: readText(data, `url-${video.id}`) ?? video.url,
+});
 
 type EditChannelFormProps = { channel: YoutubeChannel };
 
@@ -77,7 +72,11 @@ export function EditChannelForm({ channel }: EditChannelFormProps) {
       </div>
       <div className="edit-video-rows">
         {videos.map((video) => (
-          <VideoRow key={video.id} video={video} />
+          <VideoUrlTile
+            key={video.id}
+            name={`url-${video.id}`}
+            defaultValue={video.url}
+          />
         ))}
       </div>
       <div className="edit-media-actions">
