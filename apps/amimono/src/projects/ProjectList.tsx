@@ -6,7 +6,7 @@ import { ListKey, Project } from './types';
 type ProjectListProps = {
   listKey: ListKey;
   projects: Project[];
-  onMove: (projectId: string, from: ListKey, to: ListKey) => void;
+  onMove?: (projectId: string, from: ListKey, to: ListKey) => void;
 };
 
 export function ProjectList({ listKey, projects, onMove }: ProjectListProps) {
@@ -17,7 +17,9 @@ export function ProjectList({ listKey, projects, onMove }: ProjectListProps) {
           key={project.id}
           project={project}
           listKey={listKey}
-          onMove={(targetList) => onMove(project.id, listKey, targetList)}
+          onMove={
+            onMove && ((targetList) => onMove(project.id, listKey, targetList))
+          }
         />
       ))}
     </ol>

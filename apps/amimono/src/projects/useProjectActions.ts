@@ -2,7 +2,7 @@ import { useStorageContext } from 'shared/FirebaseContext';
 import { ProjectFields } from '../edit/projectDraft';
 import {
   Craft,
-  ListEntry,
+  ProjectPosition,
   ListKey,
   LISTS_KEY,
   ProjectType,
@@ -15,7 +15,9 @@ export function useProjectActions() {
   const { value: storedLists } = useValue<StoredLists>(LISTS_KEY);
 
   const findPositionsIn = (listKey: ListKey) =>
-    Object.values(storedLists?.[listKey] ?? {}).map((entry) => entry.position);
+    Object.values(storedLists?.[listKey] ?? {}).map(
+      (position) => position.position,
+    );
 
   const findPositionAtEndOf = (listKey: ListKey) =>
     Math.max(0, ...findPositionsIn(listKey)) + 1;
@@ -38,12 +40,13 @@ export function useProjectActions() {
   };
 
   const findPositionInTarget = (
-    entry: ListEntry | undefined,
+    position: ProjectPosition | undefined,
     from: ListKey,
     to: ListKey,
   ) => {
-    if (to === 'portable' && entry?.portablePosition !== undefined) {
-      return entry.portablePosition;
+    const previous = position?.previous;
+    if (to !== 'future' && previous?.list === to) {
+      return previous.position;
     }
     return isSwappingQueues(from, to)
       ? findPositionAtStartOf(to)
@@ -63,16 +66,15 @@ export function useProjectActions() {
       return;
     }
 
-    const entry = storedLists?.[from]?.[projectId];
-    const isLeavingPortableForPriority =
-      from === 'portable' && to === 'priority';
+    const position = storedLists?.[from]?.[projectId];
 
     setValues({
       [`${LISTS_KEY}/${to}/${projectId}`]: {
         id: projectId,
-        position: findPositionInTarget(entry, from, to),
-        ...(isLeavingPortableForPriority &&
-          entry && { portablePosition: entry.position }),
+        position: findPositionInTarget(position, from, to),
+        ...(position && {
+          previous: { list: from, position: position.position },
+        }),
       },
       [`${LISTS_KEY}/${from}/${projectId}`]: null,
     });
