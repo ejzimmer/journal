@@ -5,10 +5,41 @@
 
   max-width: 1280px;
   margin: 0 auto;
-  padding: 28px 24px;
-  display: flex;
-  flex-direction: column;
-  gap: 36px;
+  padding: 16px 24px 28px;
+
+  .tabs {
+    [role='tablist'] {
+      border-bottom: 0;
+      margin-bottom: 24px;
+    }
+
+    [role='tab'] {
+      color: white;
+      border-bottom-width: 3px;
+      border-image: none;
+
+      &:hover {
+        color: white;
+        border-bottom-color: rgb(255 255 255 / 0.6);
+      }
+
+      &[aria-selected='true'] {
+        color: white;
+        font-weight: 500;
+        border-image: linear-gradient(90deg in oklch, var(--gradient-colours)) 1;
+      }
+
+      &:focus-visible {
+        outline-color: var(--acrylic-colour);
+      }
+    }
+  }
+
+  .projects-tab {
+    display: flex;
+    flex-direction: column;
+    gap: 36px;
+  }
 
   .queues {
     display: flex;
@@ -87,7 +118,7 @@
         filter 0.15s,
         box-shadow 0.15s;
 
-      .add-project-form & {
+      :is(.add-project-form, .add-recipient-form) & {
         border-color: white;
       }
 

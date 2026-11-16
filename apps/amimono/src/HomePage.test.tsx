@@ -473,4 +473,16 @@ describe('HomePage', () => {
       });
     });
   });
+
+  describe('switching tabs', () => {
+    it('shows the sock planner on the Socks tab', async () => {
+      const { user } = renderHomePage(seed);
+
+      await user.click(screen.getByRole('tab', { name: 'Socks' }));
+
+      expect(
+        screen.getByRole('region', { name: 'Sock planner' }),
+      ).toBeInTheDocument();
+    });
+  });
 });

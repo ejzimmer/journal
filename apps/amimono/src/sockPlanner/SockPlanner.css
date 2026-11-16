@@ -1,0 +1,140 @@
+.sock-planner {
+  --socks-pastel: 148 219 207;
+  --socks-dark: 56 168 150;
+
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-width: 760px;
+
+  table {
+    border-collapse: separate;
+    border-spacing: 0;
+    width: 100%;
+    font-size: 16px;
+  }
+
+  thead th {
+    padding: 0 6px 6px;
+    font-size: 13px;
+    font-weight: normal;
+    color: white;
+    text-align: end;
+
+    &:first-child {
+      text-align: start;
+    }
+  }
+
+  tbody tr {
+    background: rgb(255 255 255 / 0.75);
+
+    > * {
+      border-top: 1px solid rgb(255 255 255 / 0.9);
+    }
+
+    &:nth-child(odd) {
+      background: rgb(255 255 255 / 0.55);
+    }
+  }
+
+  tbody th {
+    font-weight: normal;
+  }
+
+  td,
+  th {
+    padding: 2px;
+  }
+
+  @media (width < 600px) {
+    table {
+      font-size: 15px;
+    }
+
+    .cell-input {
+      padding-inline: 2px;
+    }
+  }
+
+  .cell-input {
+    width: 100%;
+    font: inherit;
+    padding: 4px 6px;
+    border: 2px solid transparent;
+    border-radius: 6px;
+    background: transparent;
+    color: inherit;
+    text-align: end;
+    appearance: textfield;
+
+    &::-webkit-inner-spin-button {
+      appearance: none;
+    }
+
+    &:hover {
+      border-color: white;
+    }
+  }
+
+  tbody th .cell-input {
+    text-align: start;
+  }
+
+  .sock-number {
+    position: relative;
+    width: 18%;
+
+    &.overridden .cell-input {
+      padding-inline-end: 22px;
+      font-weight: 600;
+      color: rgb(var(--socks-dark));
+    }
+  }
+
+  .reset-number {
+    position: absolute;
+    inset-block: 0;
+    inset-inline-end: 4px;
+    display: grid;
+    place-items: center;
+    padding: 0 4px;
+    border: 0;
+    background: none;
+    color: rgb(var(--socks-dark));
+    cursor: pointer;
+  }
+
+  .delete-recipient {
+    display: grid;
+    place-items: center;
+    width: 30px;
+    height: 30px;
+    padding: 0;
+    border: 0;
+    border-radius: 6px;
+    background: none;
+    color: var(--error-colour);
+    cursor: pointer;
+    opacity: 0;
+
+    svg {
+      width: 15px;
+    }
+
+    tr:hover &,
+    &:focus-visible,
+    &.confirming {
+      opacity: 1;
+    }
+
+    @media (hover: none) {
+      opacity: 1;
+    }
+
+    &.confirming {
+      background: var(--error-colour);
+      color: white;
+    }
+  }
+}

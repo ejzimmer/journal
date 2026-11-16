@@ -1,0 +1,71 @@
+.add-recipient-form {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+
+  > input,
+  select {
+    font: inherit;
+    padding: 6px 6px;
+    border: 0;
+    border-bottom: 2px solid white;
+    background: transparent;
+    outline: none;
+
+    &:not(:focus) {
+      color: white;
+    }
+  }
+
+  > input:first-child {
+    flex: 1 1 160px;
+    min-width: 0;
+  }
+
+  > input[type='number'] {
+    width: 72px;
+    appearance: textfield;
+
+    &::-webkit-inner-spin-button {
+      appearance: none;
+    }
+  }
+
+  .size-system {
+    position: relative;
+
+    &::after {
+      content: '';
+      position: absolute;
+      inset-inline-end: 14px;
+      top: 50%;
+      width: 7px;
+      height: 7px;
+      border: solid white;
+      border-width: 0 2px 2px 0;
+      transform: translateY(-70%) rotate(45deg);
+      pointer-events: none;
+    }
+
+    &:has(select:focus)::after {
+      border-color: var(--body-colour);
+    }
+  }
+
+  select {
+    appearance: none;
+    border: 2px solid white;
+    border-radius: 6px;
+    padding-inline: 10px 34px;
+
+    option {
+      color: var(--body-colour);
+    }
+  }
+
+  .eu-size {
+    font-size: 14px;
+    color: white;
+  }
+}
