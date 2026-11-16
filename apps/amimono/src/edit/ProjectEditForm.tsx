@@ -1,4 +1,5 @@
-import { FormEvent, useId, useState } from 'react';
+import { FormEvent, useState } from 'react';
+import { FormControl } from 'shared/controls/FormControl';
 
 import './ProjectEditForm.css';
 import { createCardStyle } from '../projects/createCardStyle';
@@ -28,7 +29,6 @@ export function ProjectEditForm({
   listKey,
   onClose,
 }: ProjectEditFormProps) {
-  const nameId = useId();
   const [draft, setDraft] = useState(() => createProjectDraft(project));
   const { updateProject, deleteProject } = useProjectActions();
 
@@ -54,14 +54,12 @@ export function ProjectEditForm({
             src={PROJECT_TYPES[draft.type].icon}
             alt=""
           />
-          <label htmlFor={nameId} className="visually-hidden">
-            Name
-          </label>
-          <input
-            id={nameId}
-            className="name-input"
+          <FormControl
+            label="Name"
+            hideLabel
+            inputClass="name-input"
             value={draft.name}
-            onChange={(event) => updateDraft({ name: event.target.value })}
+            onChange={(name) => updateDraft({ name })}
             required
             autoFocus
           />
