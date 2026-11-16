@@ -84,7 +84,7 @@ describe('editing a project', () => {
   });
 
   describe('saving', () => {
-    it('shows the new name and type on the card, with its steps kept', async () => {
+    it('shows the new name and type on the card, with its subtasks kept', async () => {
       const { user } = renderHomePage(seed);
       await openEditForm(user, 'Cardigan');
 

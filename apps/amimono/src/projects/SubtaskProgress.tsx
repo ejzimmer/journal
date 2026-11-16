@@ -11,7 +11,7 @@ export function SubtaskProgress({ subtasks }: SubtaskProgressProps) {
   return (
     <div className="subtask-progress">
       <progress
-        aria-label="Steps done"
+        aria-label="Subtasks done"
         value={doneCount}
         max={subtasks.length}
       />
