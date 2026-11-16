@@ -15,6 +15,15 @@
     }
   }
 
+  select {
+    font: inherit;
+    font-size: 15px;
+    padding: 6px;
+    border: 1px solid var(--border-colour);
+    border-radius: 6px;
+    background: white;
+  }
+
   .form-control {
     gap: 2px;
 
@@ -81,32 +90,6 @@
     place-items: center;
     width: 40px;
     height: 34px;
-  }
-
-  .type-picker {
-    --body-colour-light: var(--border-colour);
-    --action-colour: rgb(var(--card-pastel));
-    --action-colour-dark: rgb(var(--card-dark) / 0.6);
-    isolation: isolate;
-    background: white;
-    max-width: 100%;
-
-    label {
-      flex: 0 1 40px;
-      min-width: 0;
-      padding: 0;
-    }
-  }
-
-  .type-option {
-    display: grid;
-    place-items: center;
-    height: 40px;
-
-    img {
-      width: min(28px, 100%);
-      aspect-ratio: 1;
-    }
   }
 
   .pattern-fields {
