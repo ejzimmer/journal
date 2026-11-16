@@ -72,10 +72,7 @@ describe('editing a project', () => {
         'Cardigan',
       );
       expect(screen.getByRole('radio', { name: 'Knitting' })).toBeChecked();
-      expect(screen.getByRole('button', { name: 'Cardigan' })).toHaveAttribute(
-        'aria-pressed',
-        'true',
-      );
+      expect(screen.getByRole('radio', { name: 'Cardigan' })).toBeChecked();
       expect(screen.getByRole('textbox', { name: 'Pattern' })).toHaveValue(
         'Telja Cardigan',
       );
@@ -99,7 +96,7 @@ describe('editing a project', () => {
       const nameInput = screen.getByRole('textbox', { name: 'Name' });
       await userEvent.clear(nameInput);
       await userEvent.type(nameInput, 'Telja');
-      await userEvent.click(screen.getByRole('button', { name: 'Jumper' }));
+      await userEvent.click(screen.getByRole('radio', { name: 'Jumper' }));
       await saveChanges();
 
       const card = within(findCard('Telja'));
