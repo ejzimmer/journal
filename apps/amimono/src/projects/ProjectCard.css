@@ -19,8 +19,17 @@
     --card-padding-block: 7px;
   }
 
-  &.expanded {
+  --drawer-offset: var(--card-border-width);
+  --drawer-border-width: var(--card-border-width);
+  --drawer-border-colour: var(--card-border-colour);
+  --drawer-seam-opacity: 0.15;
+
+  &:has(.drawer.raised) {
     z-index: 1;
+  }
+
+  .drawer.open {
+    box-shadow: 0 6px 14px rgb(var(--card-dark) / 0.18);
   }
 
   .project-card-header {

@@ -1,0 +1,30 @@
+.drawer {
+  --drawer-seam-shadow: linear-gradient(
+    hsl(0 0% 0% / var(--drawer-seam-opacity, 0.35)),
+    transparent
+  );
+  position: absolute;
+  inset-block-start: calc(100% + var(--drawer-offset, 0px));
+  inset-inline: var(
+    --drawer-inset,
+    calc(var(--drawer-radius, 7px) - var(--drawer-border-width, 1px))
+  );
+  overflow: hidden;
+  background:
+    var(--drawer-seam-shadow) top / 100% 8px no-repeat,
+    white;
+  transition: height 0.2s ease-out;
+
+  &.open {
+    border: var(--drawer-border-width, 1px) solid
+      var(--drawer-border-colour, hsl(0 0% 80%));
+    border-top: none;
+    border-end-start-radius: var(--drawer-radius, 7px);
+    border-end-end-radius: var(--drawer-radius, 7px);
+  }
+
+  &.settled {
+    overflow: visible;
+    transition: none;
+  }
+}

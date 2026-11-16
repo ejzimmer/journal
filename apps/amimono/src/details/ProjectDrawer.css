@@ -1,19 +1,8 @@
 .project-drawer {
-  --drawer-inset: calc(7px - var(--card-border-width));
-  position: absolute;
-  inset-block-start: calc(100% + var(--card-border-width));
-  inset-inline: var(--drawer-inset);
   display: flex;
   flex-direction: column;
   gap: 16px;
   padding: 16px;
-  background:
-    linear-gradient(hsl(0 0% 0% / 0.15), transparent) top / 100% 8px no-repeat,
-    white;
-  border: var(--card-border-width) solid var(--card-border-colour);
-  border-top: none;
-  border-radius: 0 0 7px 7px;
-  box-shadow: 0 6px 14px rgb(var(--card-dark) / 0.18);
   font-size: 17px;
 
   .drawer-header {
