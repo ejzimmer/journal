@@ -124,11 +124,11 @@ describe('HomePage', () => {
       it('adds nothing', async () => {
         const { user } = renderHomePage(seed);
 
-        await user.type(
-          screen.getByRole('textbox', { name: 'New project' }),
-          '   {Enter}',
-        );
+        const nameInput = screen.getByRole('textbox', { name: 'New project' });
 
+        await user.type(nameInput, '   {Enter}');
+
+        expect(nameInput).toBeInvalid();
         expect(findProjectNamesIn('Future')).toEqual(['Socks for Dad']);
       });
     });
