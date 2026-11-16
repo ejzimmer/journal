@@ -1,25 +1,25 @@
 import { FormControl } from 'shared/controls/FormControl';
 
-import { ProjectDraft } from './projectDraft';
+import { PatternDraft } from './projectDraft';
 
 type PatternFieldsProps = {
-  draft: ProjectDraft;
-  onChange: (changes: Partial<ProjectDraft>) => void;
+  pattern: PatternDraft;
+  onChange: (pattern: PatternDraft) => void;
 };
 
-export function PatternFields({ draft, onChange }: PatternFieldsProps) {
+export function PatternFields({ pattern, onChange }: PatternFieldsProps) {
   return (
     <div className="pattern-fields">
       <FormControl
         label="Pattern"
-        value={draft.patternName}
-        onChange={(patternName) => onChange({ patternName })}
+        value={pattern.name}
+        onChange={(name) => onChange({ ...pattern, name })}
       />
       <FormControl
         label="Link"
         inputMode="url"
-        value={draft.patternUrl}
-        onChange={(patternUrl) => onChange({ patternUrl })}
+        value={pattern.url}
+        onChange={(url) => onChange({ ...pattern, url })}
       />
     </div>
   );
