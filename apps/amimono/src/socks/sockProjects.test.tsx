@@ -84,7 +84,13 @@ describe('sock projects', () => {
       await user.click(card.getByRole('button', { name: 'Expand project' }));
 
       await user.click(card.getByRole('button', { name: 'Edit project' }));
-      await user.click(screen.getByRole('radio', { name: 'Hat' }));
+      await user.selectOptions(
+        within(screen.getByRole('form', { name: 'Edit project' })).getByRole(
+          'combobox',
+          { name: 'Type' },
+        ),
+        'Hat',
+      );
       await user.click(screen.getByRole('button', { name: 'Save changes' }));
 
       expect(
