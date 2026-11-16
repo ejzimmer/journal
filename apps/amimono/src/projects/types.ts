@@ -10,6 +10,7 @@ export const PROJECT_TYPE_KEYS = [
   'socks',
   'jumper',
   'vest',
+  'dress',
   'cardigan',
   'amigurumi',
   'hat',

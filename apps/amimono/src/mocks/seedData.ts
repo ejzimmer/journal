@@ -46,6 +46,7 @@ const projectsByList: Record<
     ['Unicorn', 'amigurumi'],
     ['Cabled jumper', 'jumper'],
     ['Tiger socks', 'socks'],
+    ['Linen skirt', 'dress'],
   ],
 };
 
