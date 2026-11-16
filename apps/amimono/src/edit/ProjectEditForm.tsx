@@ -73,12 +73,18 @@ export function ProjectEditForm({
             type={draft.type}
             onChange={(type) => updateDraft({ type })}
           />
-          <PatternFields draft={draft} onChange={updateDraft} />
+          <PatternFields
+            pattern={draft.pattern}
+            onChange={(pattern) => updateDraft({ pattern })}
+          />
           <YarnFieldList
             yarns={draft.yarns}
             onChange={(yarns) => updateDraft({ yarns })}
           />
-          <GaugeFields draft={draft} onChange={updateDraft} />
+          <GaugeFields
+            gauge={draft.gauge}
+            onChange={(gauge) => updateDraft({ gauge })}
+          />
           <EditFormActions
             onCancel={onClose}
             onDelete={() => deleteProject(project.id, listKey)}
