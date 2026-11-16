@@ -6,6 +6,7 @@ type SwitchProps<T extends string> = {
   options: T[];
   value?: T;
   onChange: (value: T) => void;
+  onDeselect?: () => void;
   name: string;
   Option?: React.FC<{ value: T }>;
   className?: string;
@@ -15,6 +16,7 @@ export function Switch<T extends string>({
   options,
   value,
   onChange,
+  onDeselect,
   name,
   Option,
   className,
@@ -70,6 +72,7 @@ export function Switch<T extends string>({
               name={name}
               checked={value === option}
               onChange={() => onChange(option)}
+              onClick={() => value === option && onDeselect?.()}
             />
           </label>
         );
