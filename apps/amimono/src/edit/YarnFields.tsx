@@ -49,7 +49,7 @@ export function YarnFields({ yarn, onChange }: YarnFieldsProps) {
       </table>
       <button
         type="button"
-        className="add-button"
+        className="round-button add-button"
         aria-label="Add colourway"
         title="Add colourway"
         onClick={() =>
