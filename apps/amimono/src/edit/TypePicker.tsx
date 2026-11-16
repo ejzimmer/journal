@@ -1,4 +1,5 @@
 import { useId } from 'react';
+import { Switch } from 'shared/controls/Switch';
 
 import { PROJECT_TYPES } from '../projects/projectTypes';
 import { PROJECT_TYPE_KEYS, ProjectType } from '../projects/types';
@@ -9,30 +10,28 @@ type TypePickerProps = {
 };
 
 export function TypePicker({ type, onChange }: TypePickerProps) {
-  const labelId = useId();
+  const name = useId();
 
   return (
-    <div className="edit-field">
-      <span id={labelId} className="field-label">
-        Type
-      </span>
-      <div className="type-picker" role="group" aria-labelledby={labelId}>
-        {PROJECT_TYPE_KEYS.map((typeKey) => {
-          const { label, icon } = PROJECT_TYPES[typeKey];
-          return (
-            <button
-              key={typeKey}
-              type="button"
-              aria-label={label}
-              title={label}
-              aria-pressed={type === typeKey}
-              onClick={() => onChange(typeKey)}
-            >
-              <img src={icon} alt="" />
-            </button>
-          );
-        })}
-      </div>
-    </div>
+    <fieldset className="edit-field">
+      <legend className="field-label">Type</legend>
+      <Switch
+        options={[...PROJECT_TYPE_KEYS]}
+        value={type}
+        onChange={onChange}
+        name={name}
+        Option={TypeOptionLabel}
+        className="type-picker"
+      />
+    </fieldset>
+  );
+}
+
+function TypeOptionLabel({ value }: { value: ProjectType }) {
+  const { label, icon } = PROJECT_TYPES[value];
+  return (
+    <span className="type-option" title={label}>
+      <img src={icon} alt={label} />
+    </span>
   );
 }
