@@ -29,7 +29,9 @@ export type ProjectDraft = Omit<Project, 'pattern' | 'yarns' | 'gauge'> & {
 type Removable<T> = { [K in keyof T]-?: T[K] | null };
 
 export type ProjectFields = Pick<Project, 'name' | 'type'> &
-  Removable<Pick<Project, 'craft' | 'pattern' | 'yarns' | 'gauge'>>;
+  Removable<
+    Pick<Project, 'craft' | 'pattern' | 'yarns' | 'gauge' | 'recipientId'>
+  >;
 
 export function createColourwayDraft(): ColourwayDraft {
   return { id: crypto.randomUUID(), name: '', skeins: '', dyeLot: '' };
@@ -73,6 +75,7 @@ export function convertDraftToFields(draft: ProjectDraft): ProjectFields {
     pattern: convertPattern(draft.pattern),
     yarns: convertYarns(draft.yarns),
     gauge: convertGauge(draft.gauge),
+    recipientId: (draft.type === 'socks' && draft.recipientId) || null,
   };
 }
 

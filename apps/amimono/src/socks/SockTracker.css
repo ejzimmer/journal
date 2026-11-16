@@ -11,6 +11,10 @@
     max-width: 210px;
     margin-inline: auto;
     overflow: visible;
+
+    &.annotated {
+      max-width: 290px;
+    }
   }
 
   .sock {
@@ -119,6 +123,26 @@
     input {
       position: fixed;
       top: -100vh;
+    }
+  }
+
+  .sock-annotations {
+    pointer-events: none;
+
+    text {
+      font-size: 7px;
+      fill: var(--body-colour);
+    }
+
+    path {
+      fill: none;
+      stroke: rgb(var(--card-dark));
+      stroke-width: 0.7;
+    }
+
+    .extension-line {
+      stroke-width: 0.5;
+      stroke-dasharray: 1.6 1.2;
     }
   }
 }

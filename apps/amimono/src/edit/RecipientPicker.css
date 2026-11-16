@@ -1,0 +1,45 @@
+.recipient-picker .recipient-field {
+  display: flex;
+  align-items: flex-end;
+  gap: 6px;
+  width: 100%;
+  max-width: 260px;
+
+  .combobox-field {
+    flex: 1;
+    gap: 6px;
+  }
+
+  .combobox {
+    width: 100%;
+  }
+
+  .single-value-container {
+    border-radius: 6px;
+  }
+
+  [role='option'] {
+    padding: 6px 10px;
+
+    &:not(:last-child) {
+      border-bottom: none;
+    }
+
+    &[aria-selected='true'] {
+      background: rgb(var(--card-pastel));
+      color: inherit;
+    }
+  }
+
+  .clear-recipient {
+    display: grid;
+    place-items: center;
+    width: 30px;
+    height: 34px;
+    padding: 0;
+    border: 0;
+    background: none;
+    color: hsl(0 0% 45%);
+    cursor: pointer;
+  }
+}

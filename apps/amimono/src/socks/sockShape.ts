@@ -35,3 +35,34 @@ const SOCK_OFFSETS: Record<Sock, { x: number; y: number }> = {
 
 export const getSockTransform = (sock: Sock) =>
   `translate(${SOCK_OFFSETS[sock].x} ${SOCK_OFFSETS[sock].y}) scale(-0.4 0.4) translate(-290 -90)`;
+
+export const ANNOTATED_SOCK_PAIR_VIEWBOX = '0 0 184 180';
+
+export function mapSockPoint(sock: Sock, [x, y]: [number, number]) {
+  return {
+    x: SOCK_OFFSETS[sock].x - 0.4 * (x - 290),
+    y: SOCK_OFFSETS[sock].y + 0.4 * (y - 90),
+  };
+}
+
+const FOOT_AXIS_START = [66, 300] as const;
+const FOOT_AXIS_DIRECTION = [0.944, 0.331] as const;
+const FOOT_AXIS_OUTWARD = [-0.331, 0.944] as const;
+
+export const FOOT_TOE_START_DISTANCE = 161.6;
+export const FOOT_TOE_TIP_DISTANCE = 226.7;
+export const FOOT_SOLE_AT_TOE_START_OFFSET = 62;
+
+export function mapFootPoint(sock: Sock, distance: number, offset: number) {
+  return mapSockPoint(sock, [
+    FOOT_AXIS_START[0] +
+      distance * FOOT_AXIS_DIRECTION[0] +
+      offset * FOOT_AXIS_OUTWARD[0],
+    FOOT_AXIS_START[1] +
+      distance * FOOT_AXIS_DIRECTION[1] +
+      offset * FOOT_AXIS_OUTWARD[1],
+  ]);
+}
+
+export const FOOT_TEXT_ANGLE =
+  (Math.atan2(-FOOT_AXIS_DIRECTION[1], FOOT_AXIS_DIRECTION[0]) * 180) / Math.PI;
