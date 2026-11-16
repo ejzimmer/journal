@@ -3,7 +3,7 @@ import { findPreviousPosition } from './findPreviousPosition';
 import { isProjectFinished } from './isProjectFinished';
 import {
   LIST_KEYS,
-  ListEntry,
+  ProjectPosition,
   ListKey,
   LISTS_KEY,
   ListPosition,
@@ -15,7 +15,7 @@ export function createDoneListUpdates(
   projects: Record<string, Project>,
   storedLists: StoredLists,
 ) {
-  const updates: Record<string, ListEntry | null> = {};
+  const updates: Record<string, ProjectPosition | null> = {};
 
   const getProjectsInList = (listKey: ListKey) =>
     sortByPosition(Object.values(storedLists[listKey] ?? {})).filter(

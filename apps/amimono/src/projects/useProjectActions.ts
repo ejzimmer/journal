@@ -3,7 +3,7 @@ import { ProjectFields } from '../edit/projectDraft';
 import { findPreviousPosition } from './findPreviousPosition';
 import {
   Craft,
-  ListEntry,
+  ProjectPosition,
   ListKey,
   LISTS_KEY,
   ProjectType,
@@ -39,7 +39,7 @@ export function useProjectActions() {
   };
 
   const findPositionInTarget = (
-    entry: ListEntry | undefined,
+    entry: ProjectPosition | undefined,
     from: ListKey,
     to: ListKey,
   ) => {

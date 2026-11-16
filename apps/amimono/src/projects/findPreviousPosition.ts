@@ -1,7 +1,7 @@
-import { ListEntry, ListPosition } from './types';
+import { ProjectPosition, ListPosition } from './types';
 
 export function findPreviousPosition(
-  entry: ListEntry | undefined,
+  entry: ProjectPosition | undefined,
 ): ListPosition | undefined {
   if (entry?.previous) return entry.previous;
   if (entry?.portablePosition !== undefined) {

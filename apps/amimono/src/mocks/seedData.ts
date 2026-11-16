@@ -1,5 +1,5 @@
 import {
-  ListEntry,
+  ProjectPosition,
   ListKey,
   Project,
   ProjectType,
@@ -55,7 +55,7 @@ const projectsByList: Record<
 };
 
 const projects: Record<string, Project> = {};
-const lists: Record<string, Record<string, ListEntry>> = {};
+const lists: Record<string, Record<string, ProjectPosition>> = {};
 
 Object.entries(projectsByList).forEach(([listKey, entries]) => {
   lists[listKey] = {};

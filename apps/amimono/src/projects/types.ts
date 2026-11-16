@@ -67,7 +67,7 @@ export type ListPosition = {
   position: number;
 };
 
-export type ListEntry = {
+export type ProjectPosition = {
   id: string;
   position: number;
   previous?: ListPosition;
@@ -77,4 +77,6 @@ export type ListEntry = {
 
 export type ProjectLists = Record<ListKey, Project[]>;
 
-export type StoredLists = Partial<Record<ListKey, Record<string, ListEntry>>>;
+export type StoredLists = Partial<
+  Record<ListKey, Record<string, ProjectPosition>>
+>;
