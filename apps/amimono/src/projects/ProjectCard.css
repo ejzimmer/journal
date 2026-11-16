@@ -8,7 +8,7 @@
   --card-padding-block: 6px;
   padding: var(--card-padding-block) 8px;
 
-  &.queued {
+  .project-list:not(.future) & {
     background: rgb(var(--card-pastel) / 0.55);
     border: 2px solid rgb(var(--card-dark) / 0.55);
     box-shadow: 0 2px 7px rgb(var(--card-pastel) / 0.45);
@@ -32,7 +32,8 @@
     opacity: 0.65;
   }
 
-  &:is(.queued, .expanded) .project-name {
+  .project-list:not(.future) & .project-name,
+  &.expanded .project-name {
     opacity: 1;
     font-weight: 500;
   }
@@ -74,11 +75,11 @@
   }
 
   @media (hover: hover) {
-    &:not(.queued, .expanded) .card-control {
+    .project-list.future &:not(.expanded) .card-control {
       opacity: 0;
     }
 
-    &:not(.queued):is(:hover, :focus-within) .card-control {
+    .project-list.future &:is(:hover, :focus-within) .card-control {
       opacity: 1;
     }
   }
