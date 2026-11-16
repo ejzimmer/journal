@@ -51,10 +51,6 @@ async function openEditForm(projectName: string) {
   await userEvent.click(card.getByRole('button', { name: 'Edit project' }));
 }
 
-async function saveChanges() {
-  await userEvent.click(screen.getByRole('button', { name: 'Save changes' }));
-}
-
 async function openDetails(projectName: string) {
   const card = within(findCard(projectName));
   await userEvent.click(card.getByRole('button', { name: 'Details' }));
@@ -97,7 +93,9 @@ describe('editing a project', () => {
       await userEvent.clear(nameInput);
       await userEvent.type(nameInput, 'Telja');
       await userEvent.click(screen.getByRole('radio', { name: 'Jumper' }));
-      await saveChanges();
+      await userEvent.click(
+        screen.getByRole('button', { name: 'Save changes' }),
+      );
 
       const card = within(findCard('Telja'));
       expect(card.getByRole('img', { name: 'Jumper' })).toBeInTheDocument();
@@ -107,7 +105,9 @@ describe('editing a project', () => {
       renderHomePage(seed);
       await openEditForm('Cardigan');
 
-      await saveChanges();
+      await userEvent.click(
+        screen.getByRole('button', { name: 'Save changes' }),
+      );
 
       expect(
         within(findCard('Cardigan')).getByRole('checkbox', { name: 'Swatch' }),
@@ -119,7 +119,9 @@ describe('editing a project', () => {
       await openEditForm('Hat');
 
       await userEvent.click(screen.getByRole('radio', { name: 'Crochet' }));
-      await saveChanges();
+      await userEvent.click(
+        screen.getByRole('button', { name: 'Save changes' }),
+      );
 
       expect(
         within(findCard('Hat')).getByRole('img', { name: 'Crochet' }),
@@ -143,7 +145,9 @@ describe('editing a project', () => {
         screen.getAllByRole('spinbutton', { name: 'Skeins' })[1],
         '3',
       );
-      await saveChanges();
+      await userEvent.click(
+        screen.getByRole('button', { name: 'Save changes' }),
+      );
       const card = await openDetails('Cardigan');
 
       expect(
@@ -165,7 +169,9 @@ describe('editing a project', () => {
         screen.getAllByRole('textbox', { name: 'Colourway' })[1],
         'Ancient',
       );
-      await saveChanges();
+      await userEvent.click(
+        screen.getByRole('button', { name: 'Save changes' }),
+      );
       const card = await openDetails('Cardigan');
 
       expect(
@@ -183,7 +189,9 @@ describe('editing a project', () => {
       await userEvent.clear(screen.getByRole('textbox', { name: 'Colourway' }));
       await userEvent.clear(screen.getByRole('spinbutton', { name: 'Skeins' }));
       await userEvent.clear(screen.getByRole('textbox', { name: 'Dye lot' }));
-      await saveChanges();
+      await userEvent.click(
+        screen.getByRole('button', { name: 'Save changes' }),
+      );
       await userEvent.click(
         within(findCard('Cardigan')).getByRole('button', {
           name: 'Edit project',
@@ -207,7 +215,9 @@ describe('editing a project', () => {
         screen.getByRole('spinbutton', { name: 'Needle size in mm' }),
         '3.25',
       );
-      await saveChanges();
+      await userEvent.click(
+        screen.getByRole('button', { name: 'Save changes' }),
+      );
       const card = await openDetails('Hat');
 
       expect(card.getByText('Fair Isle tam')).toBeInTheDocument();
@@ -220,7 +230,9 @@ describe('editing a project', () => {
         await openEditForm('Cardigan');
 
         await userEvent.clear(screen.getByRole('textbox', { name: 'Name' }));
-        await saveChanges();
+        await userEvent.click(
+          screen.getByRole('button', { name: 'Save changes' }),
+        );
 
         expect(screen.getByRole('textbox', { name: 'Name' })).toBeInvalid();
       });
