@@ -217,6 +217,20 @@ describe('editing a project', () => {
         expect(screen.getByRole('textbox', { name: 'Name' })).toBeInvalid();
       });
     });
+
+    describe('when the name is only spaces', () => {
+      it('stays in edit mode', async () => {
+        const { user } = renderHomePage(seed);
+        await openEditForm(user, 'Cardigan');
+
+        const nameInput = screen.getByRole('textbox', { name: 'Name' });
+        await user.clear(nameInput);
+        await user.type(nameInput, '   ');
+        await user.click(screen.getByRole('button', { name: 'Save changes' }));
+
+        expect(screen.getByRole('textbox', { name: 'Name' })).toBeInvalid();
+      });
+    });
   });
 
   describe('cancelling', () => {

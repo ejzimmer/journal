@@ -3,6 +3,7 @@ import { FormEvent, useId, useState } from 'react';
 import './AddProjectForm.css';
 import { PlusIcon } from 'shared/icons/Plus';
 import { PROJECT_TYPES } from './projectTypes';
+import { NON_BLANK_PATTERN } from './nonBlankPattern';
 import { PROJECT_TYPE_KEYS, ProjectType } from './types';
 
 type AddProjectFormProps = {
@@ -17,9 +18,7 @@ export function AddProjectForm({ onAdd }: AddProjectFormProps) {
 
   const addProject = (event: FormEvent) => {
     event.preventDefault();
-    const trimmedName = name.trim();
-    if (!trimmedName) return;
-    onAdd(trimmedName, type);
+    onAdd(name.trim(), type);
     setName('');
   };
 
@@ -30,6 +29,8 @@ export function AddProjectForm({ onAdd }: AddProjectFormProps) {
         id={nameId}
         value={name}
         onChange={(event) => setName(event.target.value)}
+        required
+        pattern={NON_BLANK_PATTERN}
       />
       <label htmlFor={typeId} className="visually-hidden">
         Type
