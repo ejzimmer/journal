@@ -27,18 +27,24 @@ export function YarnFields({ yarn, onChange }: YarnFieldsProps) {
         value={yarn.name}
         onChange={(event) => onChange({ ...yarn, name: event.target.value })}
       />
-      <div className="colourway-grid colourway-headings" aria-hidden="true">
-        <span>Colourway</span>
-        <span>Skeins</span>
-        <span>Dye lot</span>
-      </div>
-      {yarn.colourways.map((colourway) => (
-        <ColourwayFields
-          key={colourway.id}
-          colourway={colourway}
-          onChange={updateColourway}
-        />
-      ))}
+      <table className="colourway-table">
+        <thead>
+          <tr>
+            <th>Colourway</th>
+            <th>Skeins</th>
+            <th>Dye lot</th>
+          </tr>
+        </thead>
+        <tbody>
+          {yarn.colourways.map((colourway) => (
+            <ColourwayFields
+              key={colourway.id}
+              colourway={colourway}
+              onChange={updateColourway}
+            />
+          ))}
+        </tbody>
+      </table>
       <button
         type="button"
         className="add-button"
