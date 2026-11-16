@@ -34,7 +34,7 @@ export const PROJECT_TYPES: Record<ProjectType, ProjectTypeDetails> = {
     label: 'Vest',
     icon: vestIcon,
     pastel: '248 188 119',
-    dark: '174 116 50',
+    dark: '226 132 44',
   },
   dress: {
     label: 'Dress/skirt',
