@@ -24,7 +24,7 @@ export function CellInput({ value, onCommit, ...inputProps }: CellInputProps) {
 
   const commitOrCancel = (event: KeyboardEvent<HTMLInputElement>) => {
     if (event.key === 'Enter') {
-      event.currentTarget.blur();
+      commitDraft();
     } else if (event.key === 'Escape') {
       setDraft(value);
     }
