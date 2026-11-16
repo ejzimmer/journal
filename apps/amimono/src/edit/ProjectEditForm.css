@@ -25,18 +25,21 @@
   }
 
   .type-picker {
+    flex: 1 1 160px;
+    max-width: 220px;
     .combobox-field {
       gap: 6px;
     }
 
     .label {
+      margin: 0;
       font-size: 13px;
       font-weight: normal;
       color: hsl(0 0% 45%);
     }
 
     .combobox {
-      width: 220px;
+      width: 100%;
     }
 
     .single-value-container {
@@ -95,6 +98,13 @@
     background: white;
     border-top: 2px solid rgb(var(--card-dark) / 0.55);
     border-radius: 0 0 5px 5px;
+  }
+
+  .craft-and-type {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    gap: 18px 24px;
   }
 
   .edit-field {
@@ -164,7 +174,7 @@
     display: grid;
     place-items: center;
     width: 36px;
-    height: 28px;
+    height: 33px;
   }
 
   .yarn-field-list {
