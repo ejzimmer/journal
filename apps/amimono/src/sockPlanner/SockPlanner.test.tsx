@@ -159,11 +159,14 @@ describe('SockPlanner', () => {
   describe('deleting a person', () => {
     it('removes them once confirmed', async () => {
       const { user } = renderSockPlanner();
-      const row = findRow('Dad');
-      const name = row.getByRole('textbox', { name: 'Name' });
+      const name = findRow('Dad').getByRole('textbox', { name: 'Name' });
 
-      await user.click(row.getByRole('button', { name: 'Delete Dad' }));
-      await user.click(row.getByRole('button', { name: 'Confirm delete Dad' }));
+      await user.click(
+        findRow('Dad').getByRole('button', { name: 'Delete Dad' }),
+      );
+      await user.click(
+        findRow('Dad').getByRole('button', { name: 'Confirm delete Dad' }),
+      );
 
       expect(name).not.toBeInTheDocument();
     });
