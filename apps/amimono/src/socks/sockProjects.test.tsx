@@ -1,5 +1,5 @@
 import { screen, within } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
+import { UserEvent } from '@testing-library/user-event';
 
 import { findCard, renderHomePage } from '../homePageTestUtils';
 
@@ -8,9 +8,9 @@ const createSeed = (project: Record<string, unknown>) => ({
   lists: { portable: { socks: { id: 'socks', position: 1 } } },
 });
 
-async function expandCard() {
+async function expandCard(user: UserEvent) {
   const card = within(findCard('Socks for Dad'));
-  await userEvent.click(card.getByRole('button', { name: 'Expand project' }));
+  await user.click(card.getByRole('button', { name: 'Expand project' }));
   return card;
 }
 
@@ -42,10 +42,10 @@ describe('sock projects', () => {
 
     describe('knitting another section', () => {
       it('updates the progress on the card', async () => {
-        renderHomePage(seed);
-        const card = await expandCard();
+        const { user } = renderHomePage(seed);
+        const card = await expandCard(user);
 
-        await userEvent.click(
+        await user.click(
           within(card.getByRole('slider', { name: 'second sock' })).getByText(
             'Knit heel',
           ),
@@ -58,8 +58,8 @@ describe('sock projects', () => {
 
   describe('when a new socks project has no progress yet', () => {
     it('starts both socks unknitted', async () => {
-      renderHomePage(createSeed({ type: 'socks' }));
-      const card = await expandCard();
+      const { user } = renderHomePage(createSeed({ type: 'socks' }));
+      const card = await expandCard(user);
 
       expect(
         card
@@ -72,7 +72,7 @@ describe('sock projects', () => {
 
   describe('changing the type away from socks', () => {
     it('stops counting the sock sections', async () => {
-      renderHomePage(
+      const { user } = renderHomePage(
         createSeed({
           type: 'socks',
           subtasks: {
@@ -85,13 +85,11 @@ describe('sock projects', () => {
           },
         }),
       );
-      const card = await expandCard();
+      const card = await expandCard(user);
 
-      await userEvent.click(card.getByRole('button', { name: 'Edit project' }));
-      await userEvent.click(screen.getByRole('radio', { name: 'Hat' }));
-      await userEvent.click(
-        screen.getByRole('button', { name: 'Save changes' }),
-      );
+      await user.click(card.getByRole('button', { name: 'Edit project' }));
+      await user.click(screen.getByRole('radio', { name: 'Hat' }));
+      await user.click(screen.getByRole('button', { name: 'Save changes' }));
 
       expect(
         within(findCard('Socks for Dad')).getByText('1 of 1'),
