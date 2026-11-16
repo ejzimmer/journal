@@ -19,7 +19,7 @@
     calc((var(--cover-lightness) - var(--cover-shade) - 12) * 1%)
       var(--cover-chroma) var(--hue)
   );
-  --ink: oklch(28% 0.09 var(--hue));
+  --ink: oklch(20% 0.1 var(--hue));
   position: relative;
   padding-inline: 9px;
   padding-block-start: 22px;
@@ -39,7 +39,6 @@
   color: var(--ink);
   font-family: 'Literata', Georgia, 'Times New Roman', serif;
   font-size: 14px;
-  font-weight: 600;
   line-height: 1.25;
   transition: --cover-shade 0.15s;
 
@@ -51,7 +50,6 @@
     --cover-lightness: 94;
     --cover-chroma: 0.04;
     --ink: oklch(42% 0.07 var(--hue));
-    font-weight: 400;
   }
 }
 
