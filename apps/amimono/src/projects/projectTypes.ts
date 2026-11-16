@@ -75,8 +75,8 @@ export const PROJECT_TYPES: Record<ProjectType, ProjectTypeDetails> = {
   accessory: {
     label: 'Accessory',
     icon: accessoryIcon,
-    pastel: '245 142 132',
-    dark: '174 61 50',
+    pastel: '246 166 176',
+    dark: '180 66 86',
   },
 };
 
