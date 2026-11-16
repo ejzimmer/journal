@@ -15,6 +15,7 @@ import {
   createProjectDraft,
   ProjectDraft,
 } from './projectDraft';
+import { RecipientPicker } from './RecipientPicker';
 import { TypePicker } from './TypePicker';
 import { YarnFieldList } from './YarnFieldList';
 
@@ -75,6 +76,12 @@ export function ProjectEditForm({
               onChange={(type) => updateDraft({ type })}
             />
           </div>
+          {draft.type === 'socks' && (
+            <RecipientPicker
+              recipientId={draft.recipientId}
+              onChange={(recipientId) => updateDraft({ recipientId })}
+            />
+          )}
           <FormControl
             label="Pattern"
             value={draft.pattern}

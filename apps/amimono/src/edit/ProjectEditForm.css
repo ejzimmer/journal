@@ -55,7 +55,8 @@
     }
   }
 
-  .type-picker .label {
+  .type-picker .label,
+  .recipient-picker .label {
     margin: 0;
     font-size: 13px;
     font-weight: normal;

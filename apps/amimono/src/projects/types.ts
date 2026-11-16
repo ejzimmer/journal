@@ -60,6 +60,7 @@ export type Project = {
   gauge?: Gauge;
   subtasks?: Record<string, Subtask>;
   socks?: SockProgress;
+  recipientId?: string;
 };
 
 export type ListEntry = {

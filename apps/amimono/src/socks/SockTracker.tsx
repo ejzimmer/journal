@@ -3,16 +3,21 @@ import { SOCKS, Sock, SockProgress } from './types';
 import { DirectionSwitch } from './DirectionSwitch';
 import { SockPicture } from './SockPicture';
 import { clampKnittedCount, getSocksKey } from './sockProgress';
-import { SOCK_PAIR_VIEWBOX } from './sockShape';
+import { SockNumbers } from '../sockPlanner/types';
+import { SockAnnotations } from './SockAnnotations';
+import { ANNOTATED_SOCK_PAIR_VIEWBOX, SOCK_PAIR_VIEWBOX } from './sockShape';
 
 import './SockTracker.css';
 
 type SockTrackerProps = {
   projectId: string;
   socks: SockProgress;
+  numbers?: SockNumbers;
 };
 
-export function SockTracker({ projectId, socks }: SockTrackerProps) {
+export function SockTracker({ projectId, socks, numbers }: SockTrackerProps) {
+  const isAnnotated = numbers && socks.direction === 'cuff_down';
+
   const { setValue } = useStorageContext();
 
   const saveSocks = (nextSocks: SockProgress) =>
@@ -29,7 +34,10 @@ export function SockTracker({ projectId, socks }: SockTrackerProps) {
 
   return (
     <div className="sock-tracker">
-      <svg className="sock-pair" viewBox={SOCK_PAIR_VIEWBOX}>
+      <svg
+        className={`sock-pair ${isAnnotated ? 'annotated' : ''}`}
+        viewBox={isAnnotated ? ANNOTATED_SOCK_PAIR_VIEWBOX : SOCK_PAIR_VIEWBOX}
+      >
         {SOCKS.map((sock) => (
           <SockPicture
             key={sock}
@@ -39,6 +47,7 @@ export function SockTracker({ projectId, socks }: SockTrackerProps) {
             onChangeKnittedCount={(count) => setKnittedCount(sock, count)}
           />
         ))}
+        {isAnnotated && <SockAnnotations numbers={numbers} />}
       </svg>
       <DirectionSwitch
         value={socks.direction}
