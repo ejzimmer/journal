@@ -84,7 +84,7 @@ describe('editing a project', () => {
   });
 
   describe('saving', () => {
-    it('shows the new name and type on the card', async () => {
+    it('shows the new name and type on the card, with its steps kept', async () => {
       const { user } = renderHomePage(seed);
       await openEditForm(user, 'Cardigan');
 
@@ -102,17 +102,7 @@ describe('editing a project', () => {
 
       const card = within(findCard('Telja'));
       expect(card.getByRole('img', { name: 'Jumper' })).toBeInTheDocument();
-    });
-
-    it('keeps the steps', async () => {
-      const { user } = renderHomePage(seed);
-      await openEditForm(user, 'Cardigan');
-
-      await user.click(screen.getByRole('button', { name: 'Save changes' }));
-
-      expect(
-        within(findCard('Cardigan')).getByRole('checkbox', { name: 'Swatch' }),
-      ).toBeChecked();
+      expect(card.getByRole('checkbox', { name: 'Swatch' })).toBeChecked();
     });
 
     it('shows the chosen craft on the card', async () => {
