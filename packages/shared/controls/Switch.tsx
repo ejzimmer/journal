@@ -45,7 +45,6 @@ export function Switch<T extends string>({
 
     positionIndicator();
 
-    if (typeof ResizeObserver === 'undefined') return;
     const observer = new ResizeObserver(positionIndicator);
     observer.observe(radioGroup);
     return () => observer.disconnect();

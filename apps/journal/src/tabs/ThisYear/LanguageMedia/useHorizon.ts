@@ -15,7 +15,6 @@ export function useHorizon(listRef: RefObject<HTMLUListElement | null>) {
     };
     measureHorizon();
 
-    if (typeof ResizeObserver === 'undefined') return;
     const observer = new ResizeObserver(measureHorizon);
     observer.observe(list);
     return () => observer.disconnect();
