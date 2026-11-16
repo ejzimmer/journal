@@ -47,17 +47,19 @@ export function AddRecipientForm({ onAdd }: AddRecipientFormProps) {
         onChange={(event) => setSize(event.target.value)}
         required
       />
-      <select
-        aria-label="Sizing system"
-        value={sizeSystem}
-        onChange={(event) => setSizeSystem(event.target.value as SizeSystem)}
-      >
-        {Object.entries(SIZE_SYSTEMS).map(([system, label]) => (
-          <option key={system} value={system}>
-            {label}
-          </option>
-        ))}
-      </select>
+      <span className="size-system">
+        <select
+          aria-label="Sizing system"
+          value={sizeSystem}
+          onChange={(event) => setSizeSystem(event.target.value as SizeSystem)}
+        >
+          {Object.entries(SIZE_SYSTEMS).map(([system, label]) => (
+            <option key={system} value={system}>
+              {label}
+            </option>
+          ))}
+        </select>
+      </span>
       {sizeSystem !== 'eu' && euSize !== undefined && (
         <output className="eu-size">EU {euSize}</output>
       )}
