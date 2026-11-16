@@ -30,3 +30,44 @@ body {
   clip-path: inset(50%);
   white-space: nowrap;
 }
+
+.round-button {
+  --button-size: 36px;
+  width: var(--button-size);
+  height: var(--button-size);
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: hsl(211 81% 40%);
+  cursor: pointer;
+
+  &:hover,
+  &:focus-visible {
+    background: hsl(211 81% 46% / 0.1);
+  }
+
+  &.outlined {
+    border: 1px solid var(--border-colour);
+    background: white;
+    color: hsl(0 0% 40%);
+
+    &:hover,
+    &:focus-visible {
+      background: hsl(214 30% 96%);
+    }
+  }
+
+  &.primary {
+    background: var(--success-colour);
+    color: white;
+    box-shadow: 0 1px 3px hsl(108 60% 25% / 0.4);
+
+    &:hover,
+    &:focus-visible {
+      background: hsl(108 81% 30%);
+    }
+  }
+}

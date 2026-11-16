@@ -18,7 +18,7 @@ export function EditFormActions({ onCancel, onDelete }: EditFormActionsProps) {
       />
       <button
         type="button"
-        className="round-button cancel"
+        className="round-button outlined"
         aria-label="Cancel changes"
         title="Cancel changes"
         onClick={onCancel}
@@ -27,7 +27,7 @@ export function EditFormActions({ onCancel, onDelete }: EditFormActionsProps) {
       </button>
       <button
         type="submit"
-        className="round-button save"
+        className="round-button primary"
         aria-label="Save changes"
         title="Save changes"
       >
