@@ -31,6 +31,20 @@
     }
   }
 
+  .add-another {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-inline-start: 8px;
+    font-size: 1rem;
+    cursor: pointer;
+
+    input {
+      margin: 0;
+      accent-color: var(--media-accent);
+    }
+  }
+
   .delete {
     margin-inline-end: auto;
     color: var(--media-accent-dark);

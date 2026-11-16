@@ -167,6 +167,113 @@ describe('AddMediaForm', () => {
     });
   });
 
+  describe('when Add another is checked', () => {
+    describe('and the user picks an author & an existing series, enters a title and submits the form', () => {
+      it('keeps the modal open with the title cleared', async () => {
+        const user = userEvent.setup();
+        renderWithMediaStorage(
+          <AddMediaForm
+            ariaLabel="Add an item"
+            config={createItemConfig({
+              seriesList,
+              authorOptions: ['Ursula Le Guin'],
+            })}
+          />,
+        );
+
+        await user.click(screen.getByRole('button', { name: 'Add an item' }));
+        await user.click(screen.getByRole('checkbox', { name: 'Add another' }));
+        await user.type(
+          screen.getByRole('textbox', { name: 'Item title' }),
+          'The Tombs of Atuan',
+        );
+        await user.click(screen.getByRole('button', { name: 'Save' }));
+
+        expect(screen.getByRole('dialog')).toHaveAttribute('open');
+        expect(screen.getByRole('textbox', { name: 'Item title' })).toHaveValue(
+          '',
+        );
+      });
+
+      it('adds the next item with the same author & series', async () => {
+        const user = userEvent.setup();
+        const addMedia = jest.fn();
+        renderWithMediaStorage(
+          <AddMediaForm
+            ariaLabel="Add an item"
+            config={createItemConfig({
+              seriesList,
+              authorOptions: ['Ursula Le Guin'],
+            })}
+          />,
+          { addMedia },
+        );
+
+        await user.click(screen.getByRole('button', { name: 'Add an item' }));
+        await user.click(screen.getByRole('checkbox', { name: 'Add another' }));
+        await user.click(
+          screen.getByRole('option', { name: 'Ursula Le Guin', hidden: true }),
+        );
+        await user.click(
+          screen.getByRole('option', { name: 'Earthsea', hidden: true }),
+        );
+        await user.type(
+          screen.getByRole('textbox', { name: 'Item title' }),
+          'The Tombs of Atuan{Enter}',
+        );
+        await user.type(
+          screen.getByRole('textbox', { name: 'Item title' }),
+          'The Farthest Shore{Enter}',
+        );
+
+        expect(addMedia).toHaveBeenLastCalledWith(
+          {
+            type: 'book',
+            title: 'The Farthest Shore',
+            author: 'Ursula Le Guin',
+          },
+          'series-earthsea',
+        );
+      });
+    });
+
+    describe('and the user enters a new series & title and submits the form', () => {
+      it('adds the next item to the series that was just created', async () => {
+        const user = userEvent.setup();
+        const addMedia = jest.fn();
+        const addMediaSeries = jest.fn(() => 'series-locked-tomb');
+        renderWithMediaStorage(
+          <AddMediaForm
+            ariaLabel="Add an item"
+            config={createItemConfig({ seriesList })}
+          />,
+          { addMedia, addMediaSeries },
+        );
+
+        await user.click(screen.getByRole('button', { name: 'Add an item' }));
+        await user.click(screen.getByRole('checkbox', { name: 'Add another' }));
+        await user.type(
+          screen.getByRole('combobox', { name: 'Series name' }),
+          'The Locked Tomb',
+        );
+        await user.type(
+          screen.getByRole('textbox', { name: 'Item title' }),
+          'Gideon the Ninth{Enter}',
+        );
+        await user.type(
+          screen.getByRole('textbox', { name: 'Item title' }),
+          'Harrow the Ninth{Enter}',
+        );
+
+        expect(addMediaSeries).toHaveBeenCalledTimes(1);
+        expect(addMedia).toHaveBeenCalledWith(
+          { type: 'book', title: 'Harrow the Ninth' },
+          'series-locked-tomb',
+        );
+      });
+    });
+  });
+
   describe('the author field', () => {
     it("isn't shown when the config has no author options", async () => {
       const user = userEvent.setup();
