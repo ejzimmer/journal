@@ -6,7 +6,8 @@ body {
   font-family: var(--body-font);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background: white;
+  min-height: 100vh;
+  background: linear-gradient(hsl(200 80% 91%), transparent) white;
 
   --body-colour: hsl(0 0% 20%);
   --border-colour: hsl(214 32% 82%);
