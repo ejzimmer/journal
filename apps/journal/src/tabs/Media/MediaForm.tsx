@@ -53,6 +53,8 @@ export function MediaForm<T extends MediaDetails>({
     label: s.name,
   }));
 
+  const [shouldAddAnother, setShouldAddAnother] = useState(false);
+
   const authorOptions = (config.authorOptions ?? []).map((name) => ({
     id: name,
     label: name,
@@ -78,7 +80,8 @@ export function MediaForm<T extends MediaDetails>({
       const newItem = config.buildNew(title, author?.label) as NewMedia;
 
       if (series && series.id === '') {
-        addMediaSeries(series.label, newItem);
+        const seriesId = addMediaSeries(series.label, newItem);
+        if (seriesId) setSeries({ id: seriesId, label: series.label });
       } else if (series) {
         addMedia(newItem, series.id);
       } else {
@@ -86,6 +89,12 @@ export function MediaForm<T extends MediaDetails>({
       }
 
       if (titleRef.current) titleRef.current.value = '';
+
+      if (shouldAddAnother) {
+        titleRef.current?.focus();
+        return;
+      }
+
       setAuthor(undefined);
       setSeries(undefined);
     }
@@ -137,6 +146,16 @@ export function MediaForm<T extends MediaDetails>({
         <button type="submit" className="round save" aria-label="Save">
           <TickIcon width="18px" />
         </button>
+        {!item && (
+          <label className="add-another">
+            <input
+              type="checkbox"
+              checked={shouldAddAnother}
+              onChange={(event) => setShouldAddAnother(event.target.checked)}
+            />
+            Add another
+          </label>
+        )}
       </Modal.Footer>
     </form>
   );

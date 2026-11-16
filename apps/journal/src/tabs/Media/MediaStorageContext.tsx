@@ -26,7 +26,7 @@ export type MediaStorageContextType = {
   isLoading: boolean;
 
   addMedia: (media: NewMedia, seriesId?: string) => void;
-  addMediaSeries: (name: string, media: NewMedia) => void;
+  addMediaSeries: (name: string, media: NewMedia) => string | null;
   updateMedia: (media: MediaDetails) => void;
   updateMediaSeries: (series: MediaSeries, name: string) => void;
   deleteMedia: (media: MediaDetails) => void;
@@ -141,6 +141,7 @@ export function MediaStorageProvider({ children }: MediaStorageProviderProps) {
         name,
       });
       addItem(`${key}/${seriesId}/items`, { ...media, position: 0 });
+      return seriesId;
     },
     updateMedia: (media) => {
       const currentSeries = findSeriesContaining(media);
