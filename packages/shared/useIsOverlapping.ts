@@ -9,7 +9,7 @@ export function useIsOverlapping(
   useEffect(() => {
     const overlay = overlayRef.current;
     const underlay = underlayRef.current;
-    if (!overlay || !underlay || typeof ResizeObserver === 'undefined') return;
+    if (!overlay || !underlay) return;
 
     const measureOverlap = () => {
       const lastItem = underlay.lastElementChild ?? underlay;

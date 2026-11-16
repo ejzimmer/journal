@@ -3,10 +3,12 @@ import {
   Ref,
   useEffect,
   useImperativeHandle,
+  useMemo,
   useRef,
   useState,
 } from 'react';
 import { useFormToggle } from './useFormToggle';
+import { mergeRefs } from '../mergeRefs';
 import './EditableText.css';
 
 export type EditableTextHandle = {
@@ -15,6 +17,7 @@ export type EditableTextHandle = {
 
 type EditableTextProps = {
   ref?: Ref<EditableTextHandle>;
+  elementRef?: Ref<HTMLElement>;
   value: string;
   onChange: (text: string) => void;
   onDelete?: () => void;
@@ -25,6 +28,7 @@ type EditableTextProps = {
 
 export function EditableText({
   ref,
+  elementRef,
   value,
   onChange,
   onDelete,
@@ -41,6 +45,14 @@ export function EditableText({
   } = useFormToggle<HTMLDivElement>();
   const [text, setText] = useState(value);
   const inputRef = useRef<HTMLTextAreaElement>(null);
+  const mergedInputRef = useMemo(
+    () => mergeRefs(inputRef, elementRef),
+    [elementRef],
+  );
+  const mergedDisplayRef = useMemo(
+    () => mergeRefs(displayRef, elementRef),
+    [displayRef, elementRef],
+  );
 
   useImperativeHandle(ref, () => ({
     focus: () => displayRef.current?.focus(),
@@ -65,7 +77,7 @@ export function EditableText({
   return isEditing ? (
     <textarea
       className={`editable-text ${className}`}
-      ref={inputRef}
+      ref={mergedInputRef}
       onKeyDown={(event) => {
         if (event.key === 'Enter') {
           handleSubmit();
@@ -82,7 +94,7 @@ export function EditableText({
     />
   ) : (
     <div
-      ref={displayRef}
+      ref={mergedDisplayRef}
       role="button"
       tabIndex={0}
       aria-label={label}
