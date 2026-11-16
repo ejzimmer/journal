@@ -3,6 +3,7 @@ import { FormControl } from 'shared/controls/FormControl';
 
 import './ProjectEditForm.css';
 import { createCardStyle } from '../projects/createCardStyle';
+import { NON_BLANK_PATTERN } from '../projects/nonBlankPattern';
 import { PROJECT_TYPES } from '../projects/projectTypes';
 import { ListKey, Project } from '../projects/types';
 import { useProjectActions } from '../projects/useProjectActions';
@@ -37,7 +38,6 @@ export function ProjectEditForm({
 
   const saveProject = (event: FormEvent) => {
     event.preventDefault();
-    if (!draft.name.trim()) return;
     updateProject(project.id, convertDraftToFields(draft));
     onClose();
   };
@@ -61,6 +61,7 @@ export function ProjectEditForm({
             value={draft.name}
             onChange={(name) => updateDraft({ name })}
             required
+            pattern={NON_BLANK_PATTERN}
             autoFocus
           />
         </div>
