@@ -85,12 +85,13 @@ export function TaskList({
     [list?.items],
   );
 
-  const remainingCount = useMemo(
-    () =>
-      sortedList.filter((task) => task.status !== 'done' && !task.blockedOn)
-        .length,
+  const unfinishedTasks = useMemo(
+    () => sortedList.filter((task) => task.status !== 'done'),
     [sortedList],
   );
+  const remainingCount = unfinishedTasks.filter(
+    (task) => !task.blockedOn,
+  ).length;
 
   useEffect(() => {
     if (pendingFocus.current?.isReady(sortedList)) {
@@ -205,12 +206,12 @@ export function TaskList({
                 onEditLabel={() => setEditingLabel(true)}
               />
             ))}
-          {remainingCount > 0 && (
+          {unfinishedTasks.length > 0 && (
             <span
               className="task-count"
-              aria-label={`${remainingCount} tasks remaining`}
+              aria-label={`${remainingCount} of ${unfinishedTasks.length} tasks remaining`}
             >
-              ({remainingCount})
+              ({remainingCount}/{unfinishedTasks.length})
             </span>
           )}
           <PostitModalDialog
