@@ -84,33 +84,27 @@
   }
 
   .type-picker {
-    align-self: stretch;
-    display: grid;
-    grid-template-columns: repeat(9, minmax(0, 1fr));
-    gap: 4px;
+    --body-colour-light: var(--border-colour);
+    --action-colour: rgb(var(--card-pastel));
+    --action-colour-dark: rgb(var(--card-dark) / 0.6);
+    isolation: isolate;
+    background: white;
+    max-width: 100%;
 
-    button {
-      display: grid;
-      place-items: center;
-      padding: 6px 2px;
-      border: 1px solid transparent;
-      border-radius: 7px;
-      background: white;
-      cursor: pointer;
-
-      &:hover {
-        background: hsl(214 30% 96%);
-      }
-
-      &[aria-pressed='true'] {
-        border-color: rgb(var(--card-dark));
-        background: rgb(var(--card-dark) / 0.15);
-      }
+    label {
+      flex: 0 1 40px;
+      min-width: 0;
+      padding: 0;
     }
+  }
+
+  .type-option {
+    display: grid;
+    place-items: center;
+    height: 40px;
 
     img {
-      width: 100%;
-      max-width: 30px;
+      width: min(28px, 100%);
       aspect-ratio: 1;
     }
   }
