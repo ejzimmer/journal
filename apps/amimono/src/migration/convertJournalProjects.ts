@@ -18,6 +18,7 @@ export function convertJournalProjects(
     priority: 0,
     portable: 0,
     future: 0,
+    done: 0,
   };
   const updates: Record<string, unknown> = {};
 

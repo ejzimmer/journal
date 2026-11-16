@@ -15,7 +15,7 @@ import { ListKey, Project } from './types';
 type ProjectCardProps = {
   project: Project;
   listKey: ListKey;
-  onMove: (targetList: ListKey) => void;
+  onMove?: (targetList: ListKey) => void;
 };
 
 export function ProjectCard({ project, listKey, onMove }: ProjectCardProps) {
@@ -47,7 +47,7 @@ export function ProjectCard({ project, listKey, onMove }: ProjectCardProps) {
         />
         <span className="project-name">{project.name}</span>
         {project.craft && <CraftIcon craft={project.craft} />}
-        <MoveProjectMenu currentList={listKey} onMove={onMove} />
+        {onMove && <MoveProjectMenu currentList={listKey} onMove={onMove} />}
         <button
           className="card-control expand-toggle"
           aria-label={expandLabel}

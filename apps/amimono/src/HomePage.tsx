@@ -4,6 +4,7 @@ import './HomePage.css';
 import { AddProjectForm } from './projects/AddProjectForm';
 import { ProjectList } from './projects/ProjectList';
 import { useProjectActions } from './projects/useProjectActions';
+import { useMoveFinishedProjects } from './projects/useMoveFinishedProjects';
 import { useProjectLists } from './projects/useProjectLists';
 import { YarnTracking } from './yarnBowl';
 import { YARN_COLOUR_PROPERTIES } from './yarnBowl/utils';
@@ -11,6 +12,7 @@ import { YARN_COLOUR_PROPERTIES } from './yarnBowl/utils';
 export function HomePage() {
   const { lists } = useProjectLists();
   const { addProject, moveProject } = useProjectActions();
+  useMoveFinishedProjects();
 
   return (
     <main className="home-page" style={YARN_COLOUR_PROPERTIES}>
@@ -39,6 +41,7 @@ export function HomePage() {
         />
         <AddProjectForm onAdd={addProject} />
       </section>
+      <ProjectList listKey="done" projects={lists.done} />
     </main>
   );
 }

@@ -48,6 +48,10 @@ const projectsByList: Record<
     ['Tiger socks', 'socks'],
     ['Linen skirt', 'dress'],
   ],
+  done: [
+    ['Rainbow mittens', 'accessory', createSubtasks(4, 4)],
+    ['Baby bonnet', 'hat', createSubtasks(3, 3)],
+  ],
 };
 
 const projects: Record<string, Project> = {};

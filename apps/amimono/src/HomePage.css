@@ -105,6 +105,11 @@
     box-shadow: 0 1px 4px hsl(0 0% 0% / 0.3);
   }
 
+  .project-list.done:not(:empty) {
+    border-top: 1px dashed var(--border-colour);
+    padding-top: 24px;
+  }
+
   .future-projects {
     display: flex;
     flex-direction: column;

@@ -1,4 +1,4 @@
-import { screen, within } from '@testing-library/react';
+import { act, screen, within } from '@testing-library/react';
 
 import { findCard, renderHomePage } from './homePageTestUtils';
 
@@ -19,10 +19,103 @@ const seed = {
   },
 };
 
+const finishingSeed = {
+  projects: {
+    cardigan: { id: 'cardigan', name: 'Cardigan', type: 'cardigan' },
+    scarf: { id: 'scarf', name: 'Scarf', type: 'accessory' },
+    socks: { id: 'socks', name: 'Socks for Dad', type: 'socks' },
+    hat: {
+      id: 'hat',
+      name: 'Hat',
+      type: 'hat',
+      subtasks: {
+        brim: { id: 'brim', description: 'Brim', status: 'done', position: 1 },
+        crown: {
+          id: 'crown',
+          description: 'Crown',
+          status: 'ready',
+          position: 2,
+        },
+      },
+    },
+    mittens: {
+      id: 'mittens',
+      name: 'Mittens',
+      type: 'accessory',
+      subtasks: {
+        thumbs: {
+          id: 'thumbs',
+          description: 'Thumbs',
+          status: 'done',
+          position: 1,
+        },
+      },
+    },
+    bonnet: {
+      id: 'bonnet',
+      name: 'Bonnet',
+      type: 'hat',
+      subtasks: {
+        ties: { id: 'ties', description: 'Ties', status: 'done', position: 1 },
+      },
+    },
+    booties: {
+      id: 'booties',
+      name: 'Booties',
+      type: 'socks',
+      subtasks: {
+        soles: {
+          id: 'soles',
+          description: 'Soles',
+          status: 'done',
+          position: 1,
+        },
+      },
+    },
+  },
+  lists: {
+    priority: {
+      cardigan: { id: 'cardigan', position: 1 },
+      mittens: { id: 'mittens', position: 2 },
+    },
+    portable: {
+      hat: { id: 'hat', position: 2 },
+      scarf: { id: 'scarf', position: 3 },
+    },
+    future: { socks: { id: 'socks', position: 1 } },
+    done: {
+      bonnet: {
+        id: 'bonnet',
+        position: 1,
+        previous: { list: 'portable', position: 1 },
+      },
+      booties: { id: 'booties', position: 2 },
+    },
+  },
+};
+
 function findProjectNamesIn(listName: string) {
-  return within(screen.getByRole('list', { name: listName }))
+  const list = screen.getByRole('list', { name: listName });
+  return within(list)
     .getAllByRole('listitem')
+    .filter((card) => card.parentElement === list)
     .map((card) => card.querySelector('.project-name')?.textContent);
+}
+
+async function toggleSubtask(
+  user: ReturnType<typeof renderHomePage>['user'],
+  projectName: string,
+  subtaskName: string,
+) {
+  const card = within(findCard(projectName));
+  await user.click(card.getByRole('button', { name: 'Expand project' }));
+  await user.click(card.getByRole('checkbox', { name: subtaskName }));
+}
+
+function showPageAgain() {
+  act(() => {
+    document.dispatchEvent(new Event('visibilitychange'));
+  });
 }
 
 async function moveProject(
@@ -109,6 +202,32 @@ describe('HomePage', () => {
           });
         });
 
+        describe('when an earlier version saved its portable spot', () => {
+          it('puts it back where it was', async () => {
+            const { user } = renderHomePage({
+              ...seed,
+              lists: {
+                ...seed.lists,
+                priority: {
+                  cardigan: {
+                    id: 'cardigan',
+                    position: 1,
+                    portablePosition: 3,
+                  },
+                },
+              },
+            });
+
+            await moveProject(user, 'Cardigan', 'Portable');
+
+            expect(findProjectNamesIn('Portable')).toEqual([
+              'Blanket',
+              'Laptop sleeve',
+              'Cardigan',
+            ]);
+          });
+        });
+
         describe('when it came from somewhere else', () => {
           it('puts it at the top of portable', async () => {
             const { user } = renderHomePage(seed);
@@ -154,6 +273,110 @@ describe('HomePage', () => {
         expect(
           card.getByRole('button', { name: 'Future (current list)' }),
         ).toBeDisabled();
+      });
+    });
+  });
+
+  describe('finishing a project', () => {
+    describe('when its last subtask is ticked', () => {
+      it('keeps it in its list until the page is shown again', async () => {
+        const { user } = renderHomePage(finishingSeed);
+
+        await toggleSubtask(user, 'Hat', 'Crown');
+
+        expect(findProjectNamesIn('Portable')).toEqual(['Hat', 'Scarf']);
+      });
+
+      it('moves it to the end of the done list when the page is shown again', async () => {
+        const { user } = renderHomePage(finishingSeed);
+        await toggleSubtask(user, 'Hat', 'Crown');
+
+        showPageAgain();
+
+        expect(findProjectNamesIn('Portable')).toEqual(['Scarf']);
+        expect(findProjectNamesIn('Done')).toEqual([
+          'Bonnet',
+          'Booties',
+          'Mittens',
+          'Hat',
+        ]);
+      });
+    });
+
+    describe('when the page loads with a finished project in a list', () => {
+      it('moves it to the done list', () => {
+        renderHomePage(finishingSeed);
+
+        expect(findProjectNamesIn('Priority')).toEqual(['Cardigan']);
+        expect(findProjectNamesIn('Done')).toEqual([
+          'Bonnet',
+          'Booties',
+          'Mittens',
+        ]);
+      });
+    });
+
+    describe('when a project has no subtasks', () => {
+      it('leaves it in its list', () => {
+        renderHomePage(finishingSeed);
+
+        showPageAgain();
+
+        expect(findProjectNamesIn('Portable')).toEqual(['Hat', 'Scarf']);
+      });
+    });
+  });
+
+  describe('a done project', () => {
+    it('can be expanded but not moved', () => {
+      renderHomePage(finishingSeed);
+
+      expect(
+        within(findCard('Bonnet'))
+          .getAllByRole('button')
+          .map((button) => button.getAttribute('aria-label')),
+      ).toEqual(['Expand project']);
+    });
+
+    describe('when a subtask is unticked', () => {
+      it('stays in the done list until the page is shown again', async () => {
+        const { user } = renderHomePage(finishingSeed);
+
+        await toggleSubtask(user, 'Bonnet', 'Ties');
+
+        expect(findProjectNamesIn('Done')).toEqual([
+          'Bonnet',
+          'Booties',
+          'Mittens',
+        ]);
+      });
+
+      it('goes back where it was when the page is shown again', async () => {
+        const { user } = renderHomePage(finishingSeed);
+        await toggleSubtask(user, 'Bonnet', 'Ties');
+
+        showPageAgain();
+
+        expect(findProjectNamesIn('Portable')).toEqual([
+          'Bonnet',
+          'Hat',
+          'Scarf',
+        ]);
+        expect(findProjectNamesIn('Done')).toEqual(['Booties', 'Mittens']);
+      });
+    });
+
+    describe('when it has no saved spot', () => {
+      it('goes to the end of the future list once unticked', async () => {
+        const { user } = renderHomePage(finishingSeed);
+        await toggleSubtask(user, 'Booties', 'Soles');
+
+        showPageAgain();
+
+        expect(findProjectNamesIn('Future')).toEqual([
+          'Socks for Dad',
+          'Booties',
+        ]);
       });
     });
   });

@@ -1,5 +1,6 @@
 import { useStorageContext } from 'shared/FirebaseContext';
 import { ProjectFields } from '../edit/projectDraft';
+import { findPreviousPosition } from './findPreviousPosition';
 import {
   Craft,
   ListEntry,
@@ -42,8 +43,9 @@ export function useProjectActions() {
     from: ListKey,
     to: ListKey,
   ) => {
-    if (to === 'portable' && entry?.portablePosition !== undefined) {
-      return entry.portablePosition;
+    const previous = findPreviousPosition(entry);
+    if (previous?.list === to) {
+      return previous.position;
     }
     return isSwappingQueues(from, to)
       ? findPositionAtStartOf(to)
@@ -60,7 +62,9 @@ export function useProjectActions() {
         id: projectId,
         position: findPositionInTarget(entry, from, to),
         ...(isLeavingPortableForPriority &&
-          entry && { portablePosition: entry.position }),
+          entry && {
+            previous: { list: 'portable', position: entry.position },
+          }),
       },
       [`${LISTS_KEY}/${from}/${projectId}`]: null,
     });

@@ -3,7 +3,7 @@ import { SockProgress } from '../socks/types';
 export const PROJECTS_KEY = 'projects';
 export const LISTS_KEY = 'lists';
 
-export const LIST_KEYS = ['priority', 'portable', 'future'] as const;
+export const LIST_KEYS = ['priority', 'portable', 'future', 'done'] as const;
 export type ListKey = (typeof LIST_KEYS)[number];
 
 export const PROJECT_TYPE_KEYS = [
@@ -62,9 +62,16 @@ export type Project = {
   socks?: SockProgress;
 };
 
+export type ListPosition = {
+  list: ListKey;
+  position: number;
+};
+
 export type ListEntry = {
   id: string;
   position: number;
+  previous?: ListPosition;
+  // Written by earlier versions, which only remembered a spot in Portable.
   portablePosition?: number;
 };
 
