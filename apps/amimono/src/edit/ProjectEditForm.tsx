@@ -31,12 +31,6 @@ export function ProjectEditForm({
   const nameId = useId();
   const [draft, setDraft] = useState(() => createProjectDraft(project));
   const { updateProject, deleteProject } = useProjectActions();
-  const classNames = [
-    'project-card',
-    'project-edit-form',
-    'expanded',
-    listKey !== 'future' && 'queued',
-  ].filter(Boolean);
 
   const updateDraft = (changes: Partial<ProjectDraft>) =>
     setDraft((currentDraft) => ({ ...currentDraft, ...changes }));
@@ -49,7 +43,10 @@ export function ProjectEditForm({
   };
 
   return (
-    <li className={classNames.join(' ')} style={createCardStyle(draft.type)}>
+    <li
+      className="project-card project-edit-form expanded"
+      style={createCardStyle(draft.type)}
+    >
       <form onSubmit={saveProject}>
         <div className="project-card-header">
           <img

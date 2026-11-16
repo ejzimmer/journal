@@ -1,3 +1,3 @@
 [build]
-  command = "yarn typecheck && yarn build"
-  publish = "build"
+  command = "yarn workspace amimono typecheck && yarn workspace amimono build"
+  publish = "apps/amimono/build"

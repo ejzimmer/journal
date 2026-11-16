@@ -34,11 +34,7 @@ export function ProjectCard({ project, listKey, onMove }: ProjectCardProps) {
 
   const projectType = PROJECT_TYPES[project.type];
   const steps = countProjectSteps(project);
-  const classNames = [
-    'project-card',
-    listKey !== 'future' && 'queued',
-    isExpanded && 'expanded',
-  ].filter(Boolean);
+  const classNames = ['project-card', isExpanded && 'expanded'].filter(Boolean);
   const expandLabel = isExpanded ? 'Collapse project' : 'Expand project';
 
   return (
