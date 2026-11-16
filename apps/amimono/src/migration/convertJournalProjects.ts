@@ -15,8 +15,8 @@ export function convertJournalProjects(
     ),
   );
   const listPositions: Record<ListKey, number> = {
+    priority: 0,
     portable: 0,
-    concentration: 0,
     future: 0,
   };
   const updates: Record<string, unknown> = {};

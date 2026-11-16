@@ -14,7 +14,7 @@ const seed = {
       sleeve: { id: 'sleeve', position: 2 },
       blanket: { id: 'blanket', position: 1 },
     },
-    concentration: { cardigan: { id: 'cardigan', position: 1 } },
+    priority: { cardigan: { id: 'cardigan', position: 1 } },
     future: { socks: { id: 'socks', position: 1 } },
   },
 };
@@ -34,7 +34,7 @@ describe('HomePage', () => {
         'Blanket',
         'Laptop sleeve',
       ]);
-      expect(findProjectNamesIn('Concentration')).toEqual(['Cardigan']);
+      expect(findProjectNamesIn('Priority')).toEqual(['Cardigan']);
       expect(findProjectNamesIn('Future')).toEqual(['Socks for Dad']);
     });
 
@@ -50,23 +50,59 @@ describe('HomePage', () => {
   });
 
   describe('moving a project', () => {
-    describe('to another list', () => {
-      it('puts it at the end of that list', async () => {
+    describe('from the future list into a queue', () => {
+      it('puts it at the bottom of the queue', async () => {
         const { user } = renderHomePage(seed);
-        const card = within(findCard('Blanket'));
+        const card = within(findCard('Socks for Dad'));
 
         await user.click(
           card.getByRole('button', { name: 'Move to another list' }),
         );
         await user.click(
-          card.getByRole('button', { name: 'Move to Concentration' }),
+          card.getByRole('button', { name: 'Move to Priority' }),
         );
 
-        expect(findProjectNamesIn('Concentration')).toEqual([
+        expect(findProjectNamesIn('Priority')).toEqual([
           'Cardigan',
-          'Blanket',
+          'Socks for Dad',
         ]);
-        expect(findProjectNamesIn('Portable')).toEqual(['Laptop sleeve']);
+      });
+    });
+
+    describe('between the portable and priority queues', () => {
+      it('puts it at the top of the other queue', async () => {
+        const { user } = renderHomePage(seed);
+        const card = within(findCard('Laptop sleeve'));
+
+        await user.click(
+          card.getByRole('button', { name: 'Move to another list' }),
+        );
+        await user.click(
+          card.getByRole('button', { name: 'Move to Priority' }),
+        );
+
+        expect(findProjectNamesIn('Priority')).toEqual([
+          'Laptop sleeve',
+          'Cardigan',
+        ]);
+        expect(findProjectNamesIn('Portable')).toEqual(['Blanket']);
+      });
+    });
+
+    describe('from a queue to the future list', () => {
+      it('puts it at the end of the future list', async () => {
+        const { user } = renderHomePage(seed);
+        const card = within(findCard('Cardigan'));
+
+        await user.click(
+          card.getByRole('button', { name: 'Move to another list' }),
+        );
+        await user.click(card.getByRole('button', { name: 'Move to Future' }));
+
+        expect(findProjectNamesIn('Future')).toEqual([
+          'Socks for Dad',
+          'Cardigan',
+        ]);
       });
     });
 

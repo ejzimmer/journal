@@ -81,7 +81,7 @@ export const PROJECT_TYPES: Record<ProjectType, ProjectTypeDetails> = {
 };
 
 export const LIST_LABELS = {
+  priority: 'Priority',
   portable: 'Portable',
-  concentration: 'Concentration',
   future: 'Future',
 };

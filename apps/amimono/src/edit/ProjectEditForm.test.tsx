@@ -43,7 +43,7 @@ const seed = {
     hat: { id: 'hat', name: 'Hat', type: 'hat' },
   },
   lists: {
-    concentration: { cardigan: { id: 'cardigan', position: 1 } },
+    priority: { cardigan: { id: 'cardigan', position: 1 } },
     future: { hat: { id: 'hat', position: 1 } },
   },
 };

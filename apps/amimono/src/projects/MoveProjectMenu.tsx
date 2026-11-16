@@ -42,12 +42,12 @@ export function MoveProjectMenu({ currentList, onMove }: MoveProjectMenuProps) {
       >
         <div className="queue-wireframes">
           <ListWireframeButton
-            listKey="portable"
+            listKey="priority"
             currentList={currentList}
             onMove={moveTo}
           />
           <ListWireframeButton
-            listKey="concentration"
+            listKey="portable"
             currentList={currentList}
             onMove={moveTo}
           />

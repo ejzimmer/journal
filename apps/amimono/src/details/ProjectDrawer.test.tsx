@@ -44,7 +44,7 @@ const seed = {
     },
   },
   lists: {
-    concentration: { cardigan: { id: 'cardigan', position: 1 } },
+    priority: { cardigan: { id: 'cardigan', position: 1 } },
   },
 };
 

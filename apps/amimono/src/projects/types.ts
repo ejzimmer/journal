@@ -3,7 +3,7 @@ import { SockProgress } from '../socks/types';
 export const PROJECTS_KEY = 'projects';
 export const LISTS_KEY = 'lists';
 
-export const LIST_KEYS = ['portable', 'concentration', 'future'] as const;
+export const LIST_KEYS = ['priority', 'portable', 'future'] as const;
 export type ListKey = (typeof LIST_KEYS)[number];
 
 export const PROJECT_TYPE_KEYS = [
