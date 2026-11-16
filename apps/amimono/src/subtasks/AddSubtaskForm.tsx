@@ -26,7 +26,12 @@ export function AddSubtaskForm({ onAdd }: AddSubtaskFormProps) {
         value={description}
         onChange={(event) => setDescription(event.target.value)}
       />
-      <button type="submit" aria-label="Add step" title="Add step">
+      <button
+        type="submit"
+        className="round-button"
+        aria-label="Add step"
+        title="Add step"
+      >
         <PlusIcon width="14" />
       </button>
     </form>

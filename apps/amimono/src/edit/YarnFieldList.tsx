@@ -31,7 +31,7 @@ export function YarnFieldList({ yarns, onChange }: YarnFieldListProps) {
       ))}
       <button
         type="button"
-        className="add-button"
+        className="round-button add-button"
         aria-label="Add yarn"
         title="Add yarn"
         onClick={() => onChange([...yarns, createYarnDraft()])}
