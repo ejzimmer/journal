@@ -23,11 +23,7 @@ export function ProjectCard({ project, listKey, onMove }: ProjectCardProps) {
     '--card-pastel': projectType.pastel,
     '--card-dark': projectType.dark,
   } as CSSProperties;
-  const classNames = [
-    'project-card',
-    listKey !== 'future' && 'queued',
-    isExpanded && 'expanded',
-  ].filter(Boolean);
+  const classNames = ['project-card', isExpanded && 'expanded'].filter(Boolean);
   const expandLabel = isExpanded ? 'Collapse project' : 'Expand project';
 
   return (
