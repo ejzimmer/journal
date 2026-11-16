@@ -16,21 +16,23 @@ export function createDoneListUpdates(
   storedLists: StoredLists,
 ) {
   const updates: Record<string, unknown> = {};
+
   const getProjectsInList = (listKey: ListKey) =>
     sortByPosition(Object.values(storedLists[listKey] ?? {})).filter(
       ({ id }) => !!projects[id],
     );
+
   const createEndPositionCounter = (listKey: ListKey) => {
-    let position = Math.max(
-      0,
-      ...Object.values(storedLists[listKey] ?? {}).map(
-        (entry) => entry.position,
-      ),
+    const positions = Object.values(storedLists[listKey] ?? {}).map(
+      (entry) => entry.position,
     );
+    let position = Math.max(0, ...positions);
+
     return () => ++position;
   };
 
   const findNextDonePosition = createEndPositionCounter('done');
+
   LIST_KEYS.filter((listKey) => listKey !== 'done').forEach((listKey) => {
     getProjectsInList(listKey)
       .filter((entry) => isProjectFinished(projects[entry.id]))
@@ -39,6 +41,7 @@ export function createDoneListUpdates(
           list: listKey,
           position: entry.position,
         };
+
         updates[`${LISTS_KEY}/done/${entry.id}`] = {
           id: entry.id,
           position: findNextDonePosition(),
@@ -49,6 +52,7 @@ export function createDoneListUpdates(
   });
 
   const findNextFuturePosition = createEndPositionCounter('future');
+
   getProjectsInList('done')
     .filter((entry) => !isProjectFinished(projects[entry.id]))
     .forEach((entry) => {
@@ -56,6 +60,7 @@ export function createDoneListUpdates(
         list: 'future',
         position: findNextFuturePosition(),
       };
+
       updates[`${LISTS_KEY}/${previous.list}/${entry.id}`] = {
         id: entry.id,
         position: previous.position,
