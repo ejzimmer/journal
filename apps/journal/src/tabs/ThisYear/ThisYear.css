@@ -1,4 +1,4 @@
-.yarn-and-adventures {
+.bikes-and-adventures {
   display: flex;
   flex-wrap: wrap;
   gap: 36px;
@@ -7,12 +7,6 @@
     flex: 1 1 480px;
     min-width: 0;
   }
-}
-
-.yarn-and-bikes {
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
 }
 
 .this-year {

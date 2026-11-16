@@ -12,7 +12,6 @@ type DrawerParams = {
   drawerRef: RefObject<HTMLDivElement | null>;
   listRef: RefObject<HTMLOListElement | null>;
   formRef: RefObject<HTMLDivElement | null>;
-  trackerRef: RefObject<HTMLDivElement | null>;
   subtasks: ProjectSubtask[];
   isProjectLoaded: boolean;
   isOpen: boolean;
@@ -23,7 +22,6 @@ export function useDrawer({
   drawerRef,
   listRef,
   formRef,
-  trackerRef,
   subtasks,
   isProjectLoaded,
   isOpen,
@@ -48,12 +46,8 @@ export function useDrawer({
   const measureDrawerHeight = useCallback(() => {
     if (!listRef.current || !formRef.current) return;
 
-    setOpenHeight(
-      (trackerRef.current?.clientHeight ?? 0) +
-        listRef.current.clientHeight +
-        formRef.current.clientHeight,
-    );
-  }, [listRef, formRef, trackerRef]);
+    setOpenHeight(listRef.current.clientHeight + formRef.current.clientHeight);
+  }, [listRef, formRef]);
 
   useLayoutEffect(() => {
     measureDrawerHeight();
