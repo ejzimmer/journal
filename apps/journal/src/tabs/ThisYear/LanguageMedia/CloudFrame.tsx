@@ -15,7 +15,6 @@ export function CloudFrame({ children }: CloudFrameProps) {
       setSize({ width: element.offsetWidth, height: element.offsetHeight });
     measureSize();
 
-    if (typeof ResizeObserver === 'undefined') return;
     const observer = new ResizeObserver(measureSize);
     observer.observe(element);
     return () => observer.disconnect();
