@@ -1,5 +1,6 @@
 import '@testing-library/jest-dom';
 import { TextEncoder } from 'util';
+import { FakeResizeObserver } from './resizeObserverTestUtils';
 
 declare global {
   namespace jest {
@@ -96,6 +97,12 @@ HTMLCanvasElement.prototype.getContext = function mock() {
 
 // jsdom doesn't implement scrollIntoView.
 Element.prototype.scrollIntoView = function mock() {};
+
+// jsdom doesn't implement ResizeObserver.
+globalThis.ResizeObserver = FakeResizeObserver;
+beforeEach(() => {
+  FakeResizeObserver.instances = [];
+});
 
 // jsdom doesn't implement structuredClone, which fake-indexeddb relies on.
 // A JSON round-trip is an adequate stand-in for the plain data this app

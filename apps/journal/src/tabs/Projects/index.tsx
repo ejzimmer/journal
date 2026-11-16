@@ -24,6 +24,7 @@ import { FilteredProject } from './FilteredProject';
 import { ProjectsSkeleton } from './ProjectsSkeleton';
 import { YearTabs } from 'shared/controls/YearTabs';
 import { getCompletionYear, useItemYears } from 'shared/years';
+import { useGridColumnSpans } from './useGridColumnSpans';
 
 const isProjectDone = (project: ProjectDetails) =>
   (project.status ?? 'ready') === 'done';
@@ -47,6 +48,12 @@ export function Projects() {
     isThisYearSelected,
     isInSelectedYear,
   } = useItemYears(sortedProjects, isProjectDone, getCompletionYear);
+
+  const { itemRef, resizableContentRef } = useGridColumnSpans({
+    projects: sortedProjects,
+    filter: filterCategories,
+    year: selectedYear,
+  });
 
   const hasUnsortedDoneProjects = sortedProjects.some(
     (project, index) =>
@@ -130,9 +137,11 @@ export function Projects() {
                     key={project.id}
                     project={project}
                     filter={filterCategories}
+                    itemRef={itemRef}
                   >
                     <Project
                       project={project}
+                      nameRef={resizableContentRef}
                       onDelete={() => {
                         updateList(
                           PROJECTS_KEY,
