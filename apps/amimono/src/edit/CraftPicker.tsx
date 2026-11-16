@@ -4,16 +4,11 @@ import { Switch } from 'shared/controls/Switch';
 import { CRAFTS } from '../projects/crafts';
 import { Craft } from '../projects/types';
 
-const NO_CRAFT = 'none';
-type CraftOption = Craft | typeof NO_CRAFT;
-const CRAFT_OPTIONS: CraftOption[] = [
-  NO_CRAFT,
-  ...(Object.keys(CRAFTS) as Craft[]),
-];
+const CRAFT_OPTIONS = Object.keys(CRAFTS) as Craft[];
 
 type CraftPickerProps = {
   craft?: Craft;
-  onChange: (craft?: Craft) => void;
+  onChange: (craft: Craft) => void;
 };
 
 export function CraftPicker({ craft, onChange }: CraftPickerProps) {
@@ -24,10 +19,8 @@ export function CraftPicker({ craft, onChange }: CraftPickerProps) {
       <legend className="field-label">Craft</legend>
       <Switch
         options={CRAFT_OPTIONS}
-        value={craft ?? NO_CRAFT}
-        onChange={(option) =>
-          onChange(option === NO_CRAFT ? undefined : option)
-        }
+        value={craft}
+        onChange={onChange}
         name={name}
         Option={CraftOptionLabel}
         className="craft-picker"
@@ -36,16 +29,7 @@ export function CraftPicker({ craft, onChange }: CraftPickerProps) {
   );
 }
 
-function CraftOptionLabel({ value }: { value: CraftOption }) {
-  if (value === NO_CRAFT) {
-    return (
-      <span className="craft-option" title="None">
-        <span aria-hidden="true">–</span>
-        <span className="visually-hidden">None</span>
-      </span>
-    );
-  }
-
+function CraftOptionLabel({ value }: { value: Craft }) {
   const { label, Icon } = CRAFTS[value];
   return (
     <span className="craft-option" title={label}>

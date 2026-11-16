@@ -86,7 +86,7 @@ describe('editing a project', () => {
         1.5,
       );
       expect(
-        screen.getByRole('spinbutton', { name: 'Needle (mm)' }),
+        screen.getByRole('spinbutton', { name: 'Needle size in mm' }),
       ).toHaveValue(4);
     });
   });
@@ -117,17 +117,16 @@ describe('editing a project', () => {
       ).toBeChecked();
     });
 
-    it('clears the craft when none is chosen', async () => {
+    it('shows the chosen craft on the card', async () => {
       renderHomePage(seed);
-      const craftIcon = within(findCard('Cardigan')).getByRole('img', {
-        name: 'Knitting',
-      });
-      await openEditForm('Cardigan');
+      await openEditForm('Hat');
 
-      await userEvent.click(screen.getByRole('radio', { name: 'None' }));
+      await userEvent.click(screen.getByRole('radio', { name: 'Crochet' }));
       await saveChanges();
 
-      expect(craftIcon).not.toBeInTheDocument();
+      expect(
+        within(findCard('Hat')).getByRole('img', { name: 'Crochet' }),
+      ).toBeInTheDocument();
     });
 
     it('adds a new yarn after the existing ones', async () => {
@@ -208,7 +207,7 @@ describe('editing a project', () => {
         'Fair Isle tam',
       );
       await userEvent.type(
-        screen.getByRole('spinbutton', { name: 'Needle (mm)' }),
+        screen.getByRole('spinbutton', { name: 'Needle size in mm' }),
         '3.25',
       );
       await saveChanges();
