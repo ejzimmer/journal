@@ -7,7 +7,7 @@ export type OptionType = {
 
 type BaseProps<T> = {
   options: T[];
-  createOption: (label: string) => T;
+  createOption?: (label: string) => T;
   hideSelectedOptions?: boolean;
   Option?: React.FC<{ value: T }>;
   Value?: MultiValueInputProps<T>['Value'];

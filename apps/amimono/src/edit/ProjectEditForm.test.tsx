@@ -56,6 +56,18 @@ async function openEditForm(user: UserEvent, projectName: string) {
 
 describe('editing a project', () => {
   describe('when the form opens', () => {
+    it('selects the current type', async () => {
+      const { user } = renderHomePage(seed);
+      await openEditForm(user, 'Cardigan');
+      const form = within(screen.getByRole('form', { name: 'Edit project' }));
+
+      await user.click(form.getByRole('combobox', { name: 'Type' }));
+
+      expect(
+        form.getByRole('option', { name: 'Cardigan', selected: true }),
+      ).toBeInTheDocument();
+    });
+
     it('fills in the current details', async () => {
       const { user } = renderHomePage(seed);
 
@@ -65,12 +77,6 @@ describe('editing a project', () => {
         'Cardigan',
       );
       expect(screen.getByRole('radio', { name: 'Knitting' })).toBeChecked();
-      expect(
-        within(screen.getByRole('form', { name: 'Edit project' })).getByRole(
-          'combobox',
-          { name: 'Type' },
-        ),
-      ).toHaveValue('cardigan');
       expect(screen.getByRole('textbox', { name: 'Pattern' })).toHaveValue(
         'https://www.ravelry.com/patterns/library/telja-cardigan',
       );
@@ -94,13 +100,9 @@ describe('editing a project', () => {
       const nameInput = screen.getByRole('textbox', { name: 'Name' });
       await user.clear(nameInput);
       await user.type(nameInput, 'Telja');
-      await user.selectOptions(
-        within(screen.getByRole('form', { name: 'Edit project' })).getByRole(
-          'combobox',
-          { name: 'Type' },
-        ),
-        'jumper',
-      );
+      const form = within(screen.getByRole('form', { name: 'Edit project' }));
+      await user.click(form.getByRole('combobox', { name: 'Type' }));
+      await user.click(form.getByRole('option', { name: 'Jumper' }));
       await user.click(screen.getByRole('button', { name: 'Save changes' }));
 
       const card = within(findCard('Telja'));

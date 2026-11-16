@@ -247,6 +247,24 @@ describe('Combobox', () => {
           expect(input).toHaveValue('');
         });
       });
+
+      describe('and there is no createOption', () => {
+        it("doesn't make up an option from the text", async () => {
+          const user = userEvent.setup();
+          const onChange = jest.fn();
+          render(
+            <Combobox
+              {...commonProps}
+              createOption={undefined}
+              onChange={onChange}
+            />,
+          );
+
+          await user.type(screen.getByRole('combobox'), 'kiwi');
+
+          expect(onChange).not.toHaveBeenCalled();
+        });
+      });
     });
 
     describe('when the user clicks an option', () => {

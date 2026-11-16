@@ -1,17 +1,17 @@
 import { PROJECT_TYPES } from '../projects/projectTypes';
 import { ProjectType } from '../projects/types';
 
+export type TypeOption = { id: ProjectType; label: string };
+
 type TypeOptionLabelProps = {
-  type: ProjectType;
+  value: TypeOption;
 };
 
-export function TypeOptionLabel({ type }: TypeOptionLabelProps) {
-  const { icon, label } = PROJECT_TYPES[type];
-
+export function TypeOptionLabel({ value }: TypeOptionLabelProps) {
   return (
-    <>
-      <img src={icon} alt="" width="20" height="20" />
-      {label}
-    </>
+    <span className="type-option">
+      <img src={PROJECT_TYPES[value.id].icon} alt="" width="20" height="20" />
+      {value.label}
+    </span>
   );
 }

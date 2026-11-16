@@ -1,7 +1,13 @@
-import { useId } from 'react';
+import { Combobox } from 'shared/controls/combobox/Combobox';
 
+import { PROJECT_TYPES } from '../projects/projectTypes';
 import { PROJECT_TYPE_KEYS, ProjectType } from '../projects/types';
-import { TypeOptionLabel } from './TypeOptionLabel';
+import { TypeOption, TypeOptionLabel } from './TypeOptionLabel';
+
+const TYPE_OPTIONS: TypeOption[] = PROJECT_TYPE_KEYS.map((id) => ({
+  id,
+  label: PROJECT_TYPES[id].label,
+}));
 
 type TypePickerProps = {
   type: ProjectType;
@@ -9,28 +15,16 @@ type TypePickerProps = {
 };
 
 export function TypePicker({ type, onChange }: TypePickerProps) {
-  const id = useId();
-
   return (
-    <div className="edit-field">
-      <label htmlFor={id} className="field-label">
-        Type
-      </label>
-      <select
-        id={id}
-        value={type}
-        onChange={(event) => onChange(event.target.value as ProjectType)}
-        className="type-picker"
-      >
-        <button type="button">
-          <TypeOptionLabel type={type} />
-        </button>
-        {PROJECT_TYPE_KEYS.map((typeKey) => (
-          <option key={typeKey} value={typeKey}>
-            <TypeOptionLabel type={typeKey} />
-          </option>
-        ))}
-      </select>
+    <div className="edit-field type-picker">
+      <Combobox
+        label="Type"
+        value={TYPE_OPTIONS.find((option) => option.id === type)}
+        options={TYPE_OPTIONS}
+        onChange={(option) => onChange(option.id)}
+        Option={TypeOptionLabel}
+        Value={TypeOptionLabel}
+      />
     </div>
   );
 }

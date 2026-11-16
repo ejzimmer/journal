@@ -1,13 +1,15 @@
 import { useState } from 'react';
 import { useYarnStorage } from './YarnStorageContext';
-import { isYarnTypeId, Operation, YARN_TYPE_IDS, YarnTypeId } from './types';
+import { Operation, YARN_TYPE_IDS, YarnTypeId } from './types';
 import { YARN_COLOURS } from './utils';
 import { Switch } from 'shared/controls/Switch';
 import { FormModal } from 'shared/controls/FormModal';
-import { BallOfYarnIcon } from 'shared/icons/BallOfYarn';
+import { Combobox } from 'shared/controls/combobox/Combobox';
 import { PlusMinusIcon } from 'shared/icons/PlusMinus';
 import { TickIcon } from 'shared/icons/Tick';
 import { XIcon } from 'shared/icons/X';
+
+import { YARN_TYPE_OPTIONS, YarnTypeLabel } from './YarnTypeLabel';
 
 import './Form.css';
 
@@ -69,27 +71,16 @@ export function YarnTrackingForm() {
             } as React.CSSProperties
           }
         >
-          <select
-            name="yarnType"
-            aria-label="Yarn type"
-            value={yarnType}
-            onChange={(event) => {
-              if (isYarnTypeId(event.target.value)) {
-                setYarnType(event.target.value);
-              }
-            }}
-          >
-            <button type="button">
-              <BallOfYarnIcon width="20px" colour={YARN_COLOURS[yarnType]} />
-              {yarnType}
-            </button>
-            {YARN_TYPE_IDS.map((id) => (
-              <option key={id} value={id}>
-                <BallOfYarnIcon width="20px" colour={YARN_COLOURS[id]} />
-                {id}
-              </option>
-            ))}
-          </select>
+          <div className="yarn-type-picker">
+            <Combobox
+              ariaLabel="Yarn type"
+              value={YARN_TYPE_OPTIONS.find((option) => option.id === yarnType)}
+              options={YARN_TYPE_OPTIONS}
+              onChange={(option) => setYarnType(option.id)}
+              Option={YarnTypeLabel}
+              Value={YarnTypeLabel}
+            />
+          </div>
           <Switch
             options={['-', '+']}
             value={operation}
