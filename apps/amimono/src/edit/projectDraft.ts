@@ -19,7 +19,7 @@ export type PatternDraft = Required<NonNullable<Project['pattern']>>;
 
 export type GaugeDraft = Record<keyof Gauge, string>;
 
-export type ProjectDraft = Pick<Project, 'name' | 'type' | 'craft'> & {
+export type ProjectDraft = Omit<Project, 'pattern' | 'yarns' | 'gauge'> & {
   pattern: PatternDraft;
   yarns: YarnDraft[];
   gauge: GaugeDraft;
@@ -44,20 +44,13 @@ export function createYarnDraft(): YarnDraft {
 
 export function createProjectDraft(project: Project): ProjectDraft {
   return {
-    name: project.name,
-    type: project.type,
-    craft: project.craft,
-    pattern: {
-      name: project.pattern?.name ?? '',
-      url: project.pattern?.url ?? '',
-    },
+    ...project,
+    pattern: { name: '', url: '', ...project.pattern },
     yarns: sortByPosition(Object.values(project.yarns ?? {})).map((yarn) => ({
-      id: yarn.id,
-      name: yarn.name,
+      ...yarn,
       colourways: sortByPosition(Object.values(yarn.colourways ?? {})).map(
         (colourway) => ({
-          id: colourway.id,
-          name: colourway.name,
+          ...colourway,
           skeins: String(colourway.skeins),
           dyeLot: colourway.dyeLot ?? '',
         }),
