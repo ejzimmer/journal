@@ -14,10 +14,17 @@
     }
 
     [role='tab'] {
+      color: white;
       border-bottom-width: 3px;
       border-image: none;
 
+      &:hover {
+        color: white;
+        border-bottom-color: rgb(255 255 255 / 0.6);
+      }
+
       &[aria-selected='true'] {
+        color: white;
         font-weight: 500;
         border-image: linear-gradient(90deg in oklch, var(--gradient-colours)) 1;
       }
@@ -111,7 +118,7 @@
         filter 0.15s,
         box-shadow 0.15s;
 
-      .add-project-form & {
+      :is(.add-project-form, .add-recipient-form) & {
         border-color: white;
       }
 
