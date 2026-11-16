@@ -1,0 +1,25 @@
+import './YarnState.css';
+import { useMemo } from 'react';
+import { useYarnStorage } from './YarnStorageContext';
+import { YarnPile } from './YarnPile';
+import { YarnBallList } from './YarnBallList';
+import { getLatestMonthOfYear, getPileBalls } from './pileBalls';
+
+export function YarnState() {
+  const { year, pile } = useYarnStorage();
+  const pileBalls = useMemo(
+    () => pile && getPileBalls(pile, getLatestMonthOfYear(year)),
+    [pile, year],
+  );
+
+  if (!pileBalls) {
+    return <>Loading...</>;
+  }
+
+  return (
+    <div className="yarn-state">
+      <YarnPile balls={pileBalls} />
+      <YarnBallList balls={pileBalls.map(({ ball }) => ball)} />
+    </div>
+  );
+}

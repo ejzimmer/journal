@@ -5,6 +5,7 @@ import {
   ProjectType,
   Subtask,
 } from '../projects/types';
+import { StoredYarn } from '../yarnBowl/types';
 
 function createSubtasks(doneCount: number, totalCount: number) {
   return Object.fromEntries(
@@ -106,4 +107,37 @@ projects['concentration-1'] = {
   gauge: { stitches: 22, rows: 30, needleMm: 4 },
 };
 
-export const seedData: Record<string, unknown> = { projects, lists };
+const yarn: StoredYarn = {
+  wool: {
+    id: 'wool',
+    history: {
+      '2026-01': 4732,
+      '2026-03': 4380,
+      '2026-06': 3910,
+      '2026-09': 3520,
+    },
+  },
+  cotton: {
+    id: 'cotton',
+    history: { '2026-01': 420, '2026-04': 365, '2026-07': 300 },
+  },
+  acrylic: {
+    id: 'acrylic',
+    history: { '2026-01': 246, '2026-06': 180, '2026-09': 95 },
+  },
+  'sock yarn': {
+    id: 'sock yarn',
+    history: {
+      '2026-01': 2641,
+      '2026-02': 2480,
+      '2026-05': 2150,
+      '2026-08': 1890,
+    },
+  },
+};
+
+export const seedData: Record<string, unknown> = {
+  projects,
+  lists,
+  yarn: { '2026': yarn },
+};
