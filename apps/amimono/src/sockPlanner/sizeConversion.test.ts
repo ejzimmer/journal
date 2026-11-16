@@ -8,7 +8,7 @@ describe('convertToEuSize', () => {
   });
 
   describe('from UK sizes', () => {
-    it('converts with the standard formula, rounded normally', () => {
+    it('converts to the nearest EU size', () => {
       expect(convertToEuSize(4, 'uk')).toBe(37);
       expect(convertToEuSize(6, 'uk')).toBe(39);
       expect(convertToEuSize(10, 'uk')).toBe(44);
@@ -16,22 +16,22 @@ describe('convertToEuSize', () => {
   });
 
   describe('from US sizes', () => {
-    it("treats men's sizes as one more than UK", () => {
-      expect(convertToEuSize(11, 'usMen')).toBe(convertToEuSize(10, 'uk'));
+    it("converts men's sizes", () => {
+      expect(convertToEuSize(11, 'usMen')).toBe(44);
     });
 
-    it("treats women's sizes as two more than UK", () => {
-      expect(convertToEuSize(8, 'usWomen')).toBe(convertToEuSize(6, 'uk'));
+    it("converts women's sizes", () => {
+      expect(convertToEuSize(8, 'usWomen')).toBe(39);
     });
   });
 
   describe('from AU sizes', () => {
-    it("treats men's sizes as UK sizes", () => {
-      expect(convertToEuSize(10, 'auMen')).toBe(convertToEuSize(10, 'uk'));
+    it("converts men's sizes", () => {
+      expect(convertToEuSize(10, 'auMen')).toBe(44);
     });
 
-    it("treats women's sizes as two more than UK", () => {
-      expect(convertToEuSize(8, 'auWomen')).toBe(convertToEuSize(6, 'uk'));
+    it("converts women's sizes", () => {
+      expect(convertToEuSize(8, 'auWomen')).toBe(39);
     });
   });
 });
