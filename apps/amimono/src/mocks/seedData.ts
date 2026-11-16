@@ -45,6 +45,8 @@ const projectsByList: Record<
     ['Fair Isle tam', 'hat'],
     ['Unicorn', 'amigurumi'],
     ['Cabled jumper', 'jumper'],
+    ['Tiger socks', 'socks'],
+    ['Linen skirt', 'dress'],
   ],
 };
 

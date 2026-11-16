@@ -10,7 +10,6 @@ import { useProjectActions } from '../projects/useProjectActions';
 import { CraftPicker } from './CraftPicker';
 import { EditFormActions } from './EditFormActions';
 import { GaugeFields } from './GaugeFields';
-import { PatternFields } from './PatternFields';
 import {
   convertDraftToFields,
   createProjectDraft,
@@ -74,8 +73,9 @@ export function ProjectEditForm({
             type={draft.type}
             onChange={(type) => updateDraft({ type })}
           />
-          <PatternFields
-            pattern={draft.pattern}
+          <FormControl
+            label="Pattern"
+            value={draft.pattern}
             onChange={(pattern) => updateDraft({ pattern })}
           />
           <YarnFieldList

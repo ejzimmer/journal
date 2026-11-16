@@ -2,6 +2,7 @@ import accessoryIcon from './icons/accessory.svg';
 import amigurumiIcon from './icons/amigurumi.svg';
 import blanketIcon from './icons/blanket.svg';
 import cardiganIcon from './icons/cardigan.svg';
+import dressIcon from './icons/dress.svg';
 import hatIcon from './icons/hat.svg';
 import jumperIcon from './icons/jumper.svg';
 import shawlIcon from './icons/shawl.svg';
@@ -34,6 +35,12 @@ export const PROJECT_TYPES: Record<ProjectType, ProjectTypeDetails> = {
     icon: vestIcon,
     pastel: '248 188 119',
     dark: '174 116 50',
+  },
+  dress: {
+    label: 'Dress/skirt',
+    icon: dressIcon,
+    pastel: '232 165 222',
+    dark: '160 60 150',
   },
   cardigan: {
     label: 'Cardigan',

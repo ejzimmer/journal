@@ -8,9 +8,11 @@ export function countProjectSubtasks(project: Project) {
     ({ status }) => status === 'done',
   ).length;
   const socks = getSockProgress(project);
+  const knittedSectionCount = socks ? countKnittedSections(socks) : 0;
+  const hasStartedSocks = knittedSectionCount > 0;
 
   return {
-    doneCount: doneSubtaskCount + (socks ? countKnittedSections(socks) : 0),
-    totalCount: subtasks.length + (socks ? SECTIONS_PER_PAIR : 0),
+    doneCount: doneSubtaskCount + knittedSectionCount,
+    totalCount: subtasks.length + (hasStartedSocks ? SECTIONS_PER_PAIR : 0),
   };
 }

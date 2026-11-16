@@ -43,11 +43,6 @@
     gap: 8px;
     font-size: 14px;
 
-    label {
-      color: hsl(0 0% 45%);
-      white-space: nowrap;
-    }
-
     input {
       flex: 1;
       min-width: 0;

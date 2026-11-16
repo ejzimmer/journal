@@ -2,7 +2,7 @@ import { sortByPosition } from 'shared/drag-and-drop/utils';
 import { ListKey, Project, Subtask } from '../projects/types';
 import { findProjectType } from './findProjectType';
 import { JournalProject, JournalSubtask } from './journalTypes';
-import { parseRavelryName } from './parseRavelryName';
+import { parseRavelryName } from '../projects/parseRavelryName';
 
 const KNITTING_CATEGORY = '🧶';
 

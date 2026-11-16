@@ -1,5 +1,6 @@
 import { sortByPosition } from 'shared/drag-and-drop/utils';
 import { Colourway, Gauge, Project, Yarn } from '../projects/types';
+import { parseRavelryName } from '../projects/parseRavelryName';
 
 // Number inputs hold strings so a half-typed value stays as typed, optional
 // text is '' so inputs stay controlled, and rows are arrays in display order.
@@ -15,12 +16,10 @@ export type YarnDraft = Omit<Yarn, 'colourways' | 'position'> & {
   colourways: ColourwayDraft[];
 };
 
-export type PatternDraft = Required<NonNullable<Project['pattern']>>;
-
 export type GaugeDraft = Record<keyof Gauge, string>;
 
 export type ProjectDraft = Omit<Project, 'pattern' | 'yarns' | 'gauge'> & {
-  pattern: PatternDraft;
+  pattern: string;
   yarns: YarnDraft[];
   gauge: GaugeDraft;
 };
@@ -47,7 +46,7 @@ export function createYarnDraft(): YarnDraft {
 export function createProjectDraft(project: Project): ProjectDraft {
   return {
     ...project,
-    pattern: { name: '', url: '', ...project.pattern },
+    pattern: project.pattern?.url || project.pattern?.name || '',
     yarns: sortByPosition(Object.values(project.yarns ?? {})).map((yarn) => ({
       ...yarn,
       colourways: sortByPosition(Object.values(yarn.colourways ?? {})).map(
@@ -77,12 +76,13 @@ export function convertDraftToFields(draft: ProjectDraft): ProjectFields {
   };
 }
 
-function convertPattern(draft: PatternDraft) {
-  const pattern = withoutEmptyValues({
-    name: draft.name.trim(),
-    url: draft.url.trim(),
-  });
-  return Object.keys(pattern).length ? pattern : null;
+function convertPattern(draft: string) {
+  const pattern = draft.trim();
+  if (!pattern) return null;
+  if (/^https?:\/\//.test(pattern)) {
+    return parseRavelryName(pattern) ?? { url: pattern };
+  }
+  return { name: pattern };
 }
 
 function convertYarns(yarnDrafts: YarnDraft[]) {

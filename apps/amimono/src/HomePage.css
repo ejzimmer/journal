@@ -13,6 +13,7 @@
     align-items: flex-start;
 
     .yarn-bowl {
+      align-self: center;
       flex: 1 1 340px;
       max-width: 420px;
       min-width: 0;
