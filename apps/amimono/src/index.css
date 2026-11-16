@@ -7,7 +7,8 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   min-height: 100vh;
-  background: linear-gradient(hsl(200 80% 91%), transparent) white;
+  background: linear-gradient(hsl(199 72% 70%), hsl(199 72% 80%) 75%, white)
+    white;
 
   --body-colour: hsl(0 0% 20%);
   --border-colour: hsl(214 32% 82%);
