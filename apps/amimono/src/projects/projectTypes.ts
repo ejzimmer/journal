@@ -84,4 +84,5 @@ export const LIST_LABELS = {
   priority: 'Priority',
   portable: 'Portable',
   future: 'Future',
+  done: 'Done',
 };
