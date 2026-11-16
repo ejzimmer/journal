@@ -114,18 +114,13 @@
 
   [role='radiogroup'].switch.craft-picker {
     isolation: isolate;
-    border: 1px solid var(--border-colour);
+    border: 2px solid var(--border-colour);
     border-radius: 999px;
-    padding: 2px;
+    padding: 1px;
     background: white;
 
     &:focus-within {
       outline: none;
-    }
-
-    &:has(input:focus-visible) {
-      border-width: 2px;
-      padding: 1px;
     }
 
     label {
@@ -159,7 +154,7 @@
     display: grid;
     place-items: center;
     width: 36px;
-    height: 33px;
+    height: 35px;
   }
 
   .yarn-field-list {

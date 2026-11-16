@@ -31,7 +31,7 @@
 
   input:not([type='radio'], [role='combobox']),
   select,
-  .single-value-container {
+  .combobox .single-value-container {
     border-width: 2px;
   }
 
