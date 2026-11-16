@@ -1,4 +1,5 @@
-import { YarnTypeId } from './types';
+import { CSSProperties } from 'react';
+import { YARN_TYPE_IDS, YarnTypeId } from './types';
 
 export const GRAMS_PER_BALL = 200;
 
@@ -8,3 +9,10 @@ export const YARN_COLOURS: Record<YarnTypeId, string> = {
   acrylic: 'hsl(335 88% 76%)',
   'sock yarn': 'hsl(170 50% 72%)',
 };
+
+export const YARN_COLOUR_PROPERTIES = Object.fromEntries(
+  YARN_TYPE_IDS.map((id) => [
+    `--${id.replace(' ', '-')}-colour`,
+    YARN_COLOURS[id],
+  ]),
+) as CSSProperties;
