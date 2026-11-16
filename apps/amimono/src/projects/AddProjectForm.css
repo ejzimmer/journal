@@ -21,7 +21,31 @@
     font: inherit;
     padding: 8px 4px;
     border: 0;
-    border-bottom: 2px solid var(--border-colour);
+    border-bottom: 2px solid white;
+    background: transparent;
     outline: none;
+
+    &:not(:focus) {
+      color: white;
+    }
+  }
+
+  [role='radiogroup'].switch.craft-picker,
+  .combobox .single-value-container:not(:focus-within) {
+    border-color: white;
+    background: transparent;
+  }
+
+  [role='radiogroup'].switch.craft-picker:not(:has(input:focus-visible))
+    label:has(input:not(:checked)) {
+    color: white;
+  }
+
+  .combobox .single-value-container:not(:focus-within) {
+    color: white;
+
+    .arrow::after {
+      border-top-color: white;
+    }
   }
 }

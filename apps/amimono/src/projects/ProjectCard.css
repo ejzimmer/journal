@@ -5,7 +5,8 @@
   font-size: 18px;
   --card-border-width: 1px;
   --card-border-colour: rgb(var(--card-pastel));
-  background: rgb(var(--card-pastel) / 0.3);
+  --card-fill: rgb(var(--card-pastel) / 0.3);
+  background: linear-gradient(var(--card-fill), var(--card-fill)) white;
   border: var(--card-border-width) solid var(--card-border-colour);
   --card-padding-block: 6px;
   --card-padding-inline: 8px;
@@ -14,7 +15,7 @@
   .project-list:is(.priority, .portable) & {
     --card-border-width: 2px;
     --card-border-colour: rgb(var(--card-dark) / 0.55);
-    background: rgb(var(--card-pastel) / 0.55);
+    --card-fill: rgb(var(--card-pastel) / 0.55);
     box-shadow: 0 2px 7px rgb(var(--card-pastel) / 0.45);
     --card-padding-block: 7px;
   }
@@ -52,7 +53,6 @@
   .project-list:is(.priority, .portable) & .project-name,
   &.expanded .project-name {
     opacity: 1;
-    font-weight: 500;
   }
 
   .craft-icon {
