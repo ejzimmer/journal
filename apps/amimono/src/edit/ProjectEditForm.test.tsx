@@ -1,5 +1,5 @@
 import { screen, within } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
+import { UserEvent } from '@testing-library/user-event';
 
 import { findCard, renderHomePage } from '../homePageTestUtils';
 
@@ -45,24 +45,24 @@ const seed = {
   },
 };
 
-async function openEditForm(projectName: string) {
+async function openEditForm(user: UserEvent, projectName: string) {
   const card = within(findCard(projectName));
-  await userEvent.click(card.getByRole('button', { name: 'Expand project' }));
-  await userEvent.click(card.getByRole('button', { name: 'Edit project' }));
+  await user.click(card.getByRole('button', { name: 'Expand project' }));
+  await user.click(card.getByRole('button', { name: 'Edit project' }));
 }
 
-async function openDetails(projectName: string) {
+async function openDetails(user: UserEvent, projectName: string) {
   const card = within(findCard(projectName));
-  await userEvent.click(card.getByRole('button', { name: 'Details' }));
+  await user.click(card.getByRole('button', { name: 'Details' }));
   return card;
 }
 
 describe('editing a project', () => {
   describe('when the form opens', () => {
     it('fills in the current details', async () => {
-      renderHomePage(seed);
+      const { user } = renderHomePage(seed);
 
-      await openEditForm('Cardigan');
+      await openEditForm(user, 'Cardigan');
 
       expect(screen.getByRole('textbox', { name: 'Name' })).toHaveValue(
         'Cardigan',
@@ -86,28 +86,24 @@ describe('editing a project', () => {
 
   describe('saving', () => {
     it('shows the new name and type on the card', async () => {
-      renderHomePage(seed);
-      await openEditForm('Cardigan');
+      const { user } = renderHomePage(seed);
+      await openEditForm(user, 'Cardigan');
 
       const nameInput = screen.getByRole('textbox', { name: 'Name' });
-      await userEvent.clear(nameInput);
-      await userEvent.type(nameInput, 'Telja');
-      await userEvent.click(screen.getByRole('radio', { name: 'Jumper' }));
-      await userEvent.click(
-        screen.getByRole('button', { name: 'Save changes' }),
-      );
+      await user.clear(nameInput);
+      await user.type(nameInput, 'Telja');
+      await user.click(screen.getByRole('radio', { name: 'Jumper' }));
+      await user.click(screen.getByRole('button', { name: 'Save changes' }));
 
       const card = within(findCard('Telja'));
       expect(card.getByRole('img', { name: 'Jumper' })).toBeInTheDocument();
     });
 
     it('keeps the steps', async () => {
-      renderHomePage(seed);
-      await openEditForm('Cardigan');
+      const { user } = renderHomePage(seed);
+      await openEditForm(user, 'Cardigan');
 
-      await userEvent.click(
-        screen.getByRole('button', { name: 'Save changes' }),
-      );
+      await user.click(screen.getByRole('button', { name: 'Save changes' }));
 
       expect(
         within(findCard('Cardigan')).getByRole('checkbox', { name: 'Swatch' }),
@@ -115,13 +111,11 @@ describe('editing a project', () => {
     });
 
     it('shows the chosen craft on the card', async () => {
-      renderHomePage(seed);
-      await openEditForm('Hat');
+      const { user } = renderHomePage(seed);
+      await openEditForm(user, 'Hat');
 
-      await userEvent.click(screen.getByRole('radio', { name: 'Crochet' }));
-      await userEvent.click(
-        screen.getByRole('button', { name: 'Save changes' }),
-      );
+      await user.click(screen.getByRole('radio', { name: 'Crochet' }));
+      await user.click(screen.getByRole('button', { name: 'Save changes' }));
 
       expect(
         within(findCard('Hat')).getByRole('img', { name: 'Crochet' }),
@@ -129,26 +123,24 @@ describe('editing a project', () => {
     });
 
     it('adds a new yarn after the existing ones', async () => {
-      renderHomePage(seed);
-      await openEditForm('Cardigan');
+      const { user } = renderHomePage(seed);
+      await openEditForm(user, 'Cardigan');
 
-      await userEvent.click(screen.getByRole('button', { name: 'Add yarn' }));
-      await userEvent.type(
+      await user.click(screen.getByRole('button', { name: 'Add yarn' }));
+      await user.type(
         screen.getAllByRole('textbox', { name: 'Yarn name' })[1],
         'Kid-Silk',
       );
-      await userEvent.type(
+      await user.type(
         screen.getAllByRole('textbox', { name: 'Colourway' })[1],
         'Beige',
       );
-      await userEvent.type(
+      await user.type(
         screen.getAllByRole('spinbutton', { name: 'Skeins' })[1],
         '3',
       );
-      await userEvent.click(
-        screen.getByRole('button', { name: 'Save changes' }),
-      );
-      const card = await openDetails('Cardigan');
+      await user.click(screen.getByRole('button', { name: 'Save changes' }));
+      const card = await openDetails(user, 'Cardigan');
 
       expect(
         card
@@ -159,20 +151,16 @@ describe('editing a project', () => {
     });
 
     it('adds a new colourway after the existing ones', async () => {
-      renderHomePage(seed);
-      await openEditForm('Cardigan');
+      const { user } = renderHomePage(seed);
+      await openEditForm(user, 'Cardigan');
 
-      await userEvent.click(
-        screen.getByRole('button', { name: 'Add colourway' }),
-      );
-      await userEvent.type(
+      await user.click(screen.getByRole('button', { name: 'Add colourway' }));
+      await user.type(
         screen.getAllByRole('textbox', { name: 'Colourway' })[1],
         'Ancient',
       );
-      await userEvent.click(
-        screen.getByRole('button', { name: 'Save changes' }),
-      );
-      const card = await openDetails('Cardigan');
+      await user.click(screen.getByRole('button', { name: 'Save changes' }));
+      const card = await openDetails(user, 'Cardigan');
 
       expect(
         card
@@ -182,17 +170,15 @@ describe('editing a project', () => {
     });
 
     it('removes a yarn whose fields are all cleared', async () => {
-      renderHomePage(seed);
-      await openEditForm('Cardigan');
+      const { user } = renderHomePage(seed);
+      await openEditForm(user, 'Cardigan');
 
-      await userEvent.clear(screen.getByRole('textbox', { name: 'Yarn name' }));
-      await userEvent.clear(screen.getByRole('textbox', { name: 'Colourway' }));
-      await userEvent.clear(screen.getByRole('spinbutton', { name: 'Skeins' }));
-      await userEvent.clear(screen.getByRole('textbox', { name: 'Dye lot' }));
-      await userEvent.click(
-        screen.getByRole('button', { name: 'Save changes' }),
-      );
-      await userEvent.click(
+      await user.clear(screen.getByRole('textbox', { name: 'Yarn name' }));
+      await user.clear(screen.getByRole('textbox', { name: 'Colourway' }));
+      await user.clear(screen.getByRole('spinbutton', { name: 'Skeins' }));
+      await user.clear(screen.getByRole('textbox', { name: 'Dye lot' }));
+      await user.click(screen.getByRole('button', { name: 'Save changes' }));
+      await user.click(
         within(findCard('Cardigan')).getByRole('button', {
           name: 'Edit project',
         }),
@@ -204,21 +190,19 @@ describe('editing a project', () => {
     });
 
     it('adds details to a project that had none', async () => {
-      renderHomePage(seed);
-      await openEditForm('Hat');
+      const { user } = renderHomePage(seed);
+      await openEditForm(user, 'Hat');
 
-      await userEvent.type(
+      await user.type(
         screen.getByRole('textbox', { name: 'Pattern' }),
         'Fair Isle tam',
       );
-      await userEvent.type(
+      await user.type(
         screen.getByRole('spinbutton', { name: 'Needle size in mm' }),
         '3.25',
       );
-      await userEvent.click(
-        screen.getByRole('button', { name: 'Save changes' }),
-      );
-      const card = await openDetails('Hat');
+      await user.click(screen.getByRole('button', { name: 'Save changes' }));
+      const card = await openDetails(user, 'Hat');
 
       expect(card.getByText('Fair Isle tam')).toBeInTheDocument();
       expect(card.getByText('3.25 mm')).toBeInTheDocument();
@@ -226,13 +210,11 @@ describe('editing a project', () => {
 
     describe('when the name is blank', () => {
       it('stays in edit mode', async () => {
-        renderHomePage(seed);
-        await openEditForm('Cardigan');
+        const { user } = renderHomePage(seed);
+        await openEditForm(user, 'Cardigan');
 
-        await userEvent.clear(screen.getByRole('textbox', { name: 'Name' }));
-        await userEvent.click(
-          screen.getByRole('button', { name: 'Save changes' }),
-        );
+        await user.clear(screen.getByRole('textbox', { name: 'Name' }));
+        await user.click(screen.getByRole('button', { name: 'Save changes' }));
 
         expect(screen.getByRole('textbox', { name: 'Name' })).toBeInvalid();
       });
@@ -241,13 +223,11 @@ describe('editing a project', () => {
 
   describe('cancelling', () => {
     it('throws away the changes', async () => {
-      renderHomePage(seed);
-      await openEditForm('Cardigan');
+      const { user } = renderHomePage(seed);
+      await openEditForm(user, 'Cardigan');
 
-      await userEvent.type(screen.getByRole('textbox', { name: 'Name' }), '!!');
-      await userEvent.click(
-        screen.getByRole('button', { name: 'Cancel changes' }),
-      );
+      await user.type(screen.getByRole('textbox', { name: 'Name' }), '!!');
+      await user.click(screen.getByRole('button', { name: 'Cancel changes' }));
 
       expect(findCard('Cardigan')).toBeInTheDocument();
     });
@@ -255,14 +235,12 @@ describe('editing a project', () => {
 
   describe('deleting', () => {
     it('removes the project once confirmed', async () => {
-      renderHomePage(seed);
-      await openEditForm('Cardigan');
+      const { user } = renderHomePage(seed);
+      await openEditForm(user, 'Cardigan');
       const nameInput = screen.getByRole('textbox', { name: 'Name' });
 
-      await userEvent.click(
-        screen.getByRole('button', { name: 'Delete project' }),
-      );
-      await userEvent.click(
+      await user.click(screen.getByRole('button', { name: 'Delete project' }));
+      await user.click(
         screen.getByRole('button', { name: 'Confirm delete project' }),
       );
 
