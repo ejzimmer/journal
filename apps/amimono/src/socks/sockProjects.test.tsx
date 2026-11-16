@@ -61,7 +61,22 @@ describe('sock projects', () => {
           .getAllByRole('slider')
           .map((sock) => sock.getAttribute('aria-valuenow')),
       ).toEqual(['0', '0']);
-      expect(card.getByText('0 of 12')).toBeInTheDocument();
+    });
+
+    describe('knitting the first section', () => {
+      it('shows the progress on the card', async () => {
+        const { user } = renderHomePage(createSeed({ type: 'socks' }));
+        const card = within(findCard('Socks for Dad'));
+        await user.click(card.getByRole('button', { name: 'Expand project' }));
+
+        await user.click(
+          within(card.getByRole('slider', { name: 'first sock' })).getByText(
+            'Knit cuff',
+          ),
+        );
+
+        expect(card.getByText('1 of 12')).toBeInTheDocument();
+      });
     });
   });
 
@@ -70,6 +85,10 @@ describe('sock projects', () => {
       const { user } = renderHomePage(
         createSeed({
           type: 'socks',
+          socks: {
+            direction: 'cuff_down',
+            knittedSections: { first: 3, second: 0 },
+          },
           subtasks: {
             swatch: {
               id: 'swatch',
@@ -89,7 +108,7 @@ describe('sock projects', () => {
           'combobox',
           { name: 'Type' },
         ),
-        'Hat',
+        'hat',
       );
       await user.click(screen.getByRole('button', { name: 'Save changes' }));
 

@@ -10,7 +10,10 @@ const seed = {
       name: 'Cardigan',
       type: 'cardigan',
       craft: 'knitting',
-      pattern: { name: 'Telja Cardigan', url: 'https://example.com/telja' },
+      pattern: {
+        name: 'Telja Cardigan',
+        url: 'https://www.ravelry.com/patterns/library/telja-cardigan',
+      },
       yarns: {
         tweed: {
           id: 'tweed',
@@ -69,7 +72,7 @@ describe('editing a project', () => {
         ),
       ).toHaveValue('cardigan');
       expect(screen.getByRole('textbox', { name: 'Pattern' })).toHaveValue(
-        'Telja Cardigan',
+        'https://www.ravelry.com/patterns/library/telja-cardigan',
       );
       expect(screen.getByRole('textbox', { name: 'Yarn name' })).toHaveValue(
         'Felted Tweed',
@@ -96,7 +99,7 @@ describe('editing a project', () => {
           'combobox',
           { name: 'Type' },
         ),
-        'Jumper',
+        'jumper',
       );
       await user.click(screen.getByRole('button', { name: 'Save changes' }));
 
@@ -204,6 +207,45 @@ describe('editing a project', () => {
 
       expect(card.getByText('Fair Isle tam')).toBeInTheDocument();
       expect(card.getByText('3.25 mm')).toBeInTheDocument();
+    });
+
+    describe('when the pattern is a Ravelry link', () => {
+      it('links the pattern under the name from the link', async () => {
+        const { user } = renderHomePage(seed);
+        await openEditForm(user, 'Hat');
+
+        await user.type(
+          screen.getByRole('textbox', { name: 'Pattern' }),
+          'https://www.ravelry.com/patterns/library/lucca-hat',
+        );
+        await user.click(screen.getByRole('button', { name: 'Save changes' }));
+        const card = within(findCard('Hat'));
+        await user.click(card.getByRole('button', { name: 'Details' }));
+
+        expect(card.getByRole('link', { name: 'Lucca Hat' })).toHaveAttribute(
+          'href',
+          'https://www.ravelry.com/patterns/library/lucca-hat',
+        );
+      });
+    });
+
+    describe('when the pattern is some other link', () => {
+      it('links the pattern under the link itself', async () => {
+        const { user } = renderHomePage(seed);
+        await openEditForm(user, 'Hat');
+
+        await user.type(
+          screen.getByRole('textbox', { name: 'Pattern' }),
+          'https://example.com/tam',
+        );
+        await user.click(screen.getByRole('button', { name: 'Save changes' }));
+        const card = within(findCard('Hat'));
+        await user.click(card.getByRole('button', { name: 'Details' }));
+
+        expect(
+          card.getByRole('link', { name: 'https://example.com/tam' }),
+        ).toHaveAttribute('href', 'https://example.com/tam');
+      });
     });
 
     describe('when the name is blank', () => {

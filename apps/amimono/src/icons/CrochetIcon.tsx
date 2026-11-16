@@ -4,16 +4,13 @@ export function CrochetIcon() {
       width="20"
       height="20"
       viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeLinecap="round"
-      strokeLinejoin="round"
+      fill="currentColor"
       aria-hidden="true"
-      strokeWidth="1.8"
     >
-      <path d="M5 21L16.5 7.5" />
-      <path d="M16.5 7.5c1.5-1.8 2.8-3.2 1.6-4.3s-2.6.4-3.2 1.6" />
-      <path d="M6.5 19.2l3-3.5" strokeWidth="4" />
+      <path
+        transform="rotate(45 12 12)"
+        d="M10.5 22V16.2L9.6 15V11.6L10.5 10.4V9.4L12.6 7V5.2L10.3 6.8Q9.7 3.4 11.2 2.2Q13.6 0.9 13.5 4V10.4L14.4 11.6V15L13.5 16.2V22Q12 23.4 10.5 22Z"
+      />
     </svg>
   );
 }

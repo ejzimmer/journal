@@ -1,4 +1,4 @@
-import { FormEvent, useId, useState } from 'react';
+import { FormEvent, useState } from 'react';
 
 import { PlusIcon } from 'shared/icons/Plus';
 
@@ -7,7 +7,6 @@ type AddSubtaskFormProps = {
 };
 
 export function AddSubtaskForm({ onAdd }: AddSubtaskFormProps) {
-  const inputId = useId();
   const [description, setDescription] = useState('');
 
   const addSubtask = (event: FormEvent) => {
@@ -20,9 +19,8 @@ export function AddSubtaskForm({ onAdd }: AddSubtaskFormProps) {
 
   return (
     <form className="add-subtask-form" onSubmit={addSubtask}>
-      <label htmlFor={inputId}>New subtask</label>
       <input
-        id={inputId}
+        aria-label="New subtask"
         value={description}
         onChange={(event) => setDescription(event.target.value)}
       />

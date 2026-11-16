@@ -18,10 +18,43 @@
   select {
     font: inherit;
     font-size: 15px;
-    padding: 6px;
+    padding: 6px 10px;
     border: 1px solid var(--border-colour);
     border-radius: 6px;
     background: white;
+  }
+
+  .type-picker {
+    appearance: base-select;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    &::picker-icon {
+      color: hsl(0 0% 45%);
+    }
+
+    &::picker(select) {
+      appearance: base-select;
+      border: 1px solid var(--border-colour);
+      border-radius: 6px;
+    }
+
+    button {
+      all: unset;
+      flex: 1;
+    }
+
+    button,
+    option {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    option {
+      padding: 6px 10px;
+    }
   }
 
   .form-control {
@@ -73,33 +106,58 @@
     color: hsl(0 0% 45%);
   }
 
-  .craft-picker {
-    --body-colour-light: var(--border-colour);
-    --action-colour: rgb(var(--card-dark));
-    --action-colour-dark: rgb(var(--card-dark));
+  legend.field-label {
+    margin-bottom: 6px;
+  }
+
+  [role='radiogroup'].switch.craft-picker {
     isolation: isolate;
+    border: 1px solid var(--border-colour);
+    border-radius: 999px;
+    padding: 2px;
     background: white;
+
+    &:focus-within {
+      outline: none;
+    }
+
+    &:has(input:focus-visible) {
+      outline: 2px solid rgb(var(--card-dark));
+      outline-offset: 2px;
+    }
 
     label {
       padding: 0;
+      border-radius: 999px;
+      color: hsl(0 0% 45%);
+
+      &:not(:last-of-type) {
+        border-inline-end: none;
+      }
+
+      &:has(input:not(:checked)) {
+        box-shadow: none;
+      }
+
+      &:has(input:checked) {
+        color: white;
+      }
+    }
+
+    .indicator {
+      top: 2px;
+      height: calc(100% - 4px);
+      border-radius: 999px;
+      background: rgb(var(--card-dark));
+      box-shadow: none;
     }
   }
 
   .craft-option {
     display: grid;
     place-items: center;
-    width: 40px;
-    height: 34px;
-  }
-
-  .pattern-fields {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-    gap: 8px;
-
-    input {
-      align-self: stretch;
-    }
+    width: 36px;
+    height: 28px;
   }
 
   .yarn-field-list {
