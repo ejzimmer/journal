@@ -2,13 +2,13 @@ import { RefObject, useEffect, useState } from 'react';
 
 export function useIsOverlapping(
   overlayRef: RefObject<HTMLElement | null>,
-  underlayRef: RefObject<HTMLElement | null>,
+  underlayRef?: RefObject<HTMLElement | null>,
 ) {
   const [isOverlapping, setIsOverlapping] = useState(false);
 
   useEffect(() => {
     const overlay = overlayRef.current;
-    const underlay = underlayRef.current;
+    const underlay = underlayRef?.current;
     if (!overlay || !underlay) return;
 
     const measureOverlap = () => {

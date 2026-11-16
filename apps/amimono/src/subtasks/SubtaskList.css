@@ -49,12 +49,8 @@
       font: inherit;
       padding: 4px;
       border: 0;
-      border-bottom: 1px solid var(--border-colour);
+      border-bottom: 2px solid var(--border-colour);
       outline: none;
-
-      &:focus-visible {
-        border-bottom-color: var(--action-colour);
-      }
     }
 
     .round-button {

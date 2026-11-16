@@ -2,26 +2,12 @@
   input {
     font: inherit;
     font-size: 15px;
-    padding: 6px 8px;
-    border: 1px solid var(--border-colour);
+    padding: 5px 7px;
+    border: 2px solid var(--border-colour);
     border-radius: 6px;
     background: white;
     color: var(--body-colour);
     min-width: 0;
-
-    &:focus-visible {
-      outline: 2px solid var(--action-colour);
-      outline-offset: -1px;
-    }
-  }
-
-  select {
-    font: inherit;
-    font-size: 15px;
-    padding: 6px 10px;
-    border: 1px solid var(--border-colour);
-    border-radius: 6px;
-    background: white;
   }
 
   .type-picker {
@@ -44,7 +30,6 @@
 
     .single-value-container {
       border-radius: 6px;
-      background: white;
     }
 
     .type-option {
@@ -139,8 +124,8 @@
     }
 
     &:has(input:focus-visible) {
-      outline: 2px solid rgb(var(--card-dark));
-      outline-offset: 2px;
+      border-width: 2px;
+      padding: 1px;
     }
 
     label {

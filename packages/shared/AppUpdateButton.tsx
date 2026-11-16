@@ -5,7 +5,7 @@ import { useIsOverlapping } from './useIsOverlapping';
 import './AppUpdateButton.css';
 
 type AppUpdateButtonProps = {
-  tabListRef: RefObject<HTMLUListElement | null>;
+  tabListRef?: RefObject<HTMLUListElement | null>;
 };
 
 export function AppUpdateButton({ tabListRef }: AppUpdateButtonProps) {
