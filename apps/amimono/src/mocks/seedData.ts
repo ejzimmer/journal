@@ -60,6 +60,11 @@ Object.entries(projectsByList).forEach(([listKey, entries]) => {
   });
 });
 
+projects['future-1'] = {
+  ...projects['future-1'],
+  socks: { direction: 'cuff_down', knittedSections: { first: 6, second: 2 } },
+};
+
 projects['concentration-1'] = {
   ...projects['concentration-1'],
   craft: 'knitting',

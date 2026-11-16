@@ -1,22 +1,19 @@
 import './SubtaskProgress.css';
-import { Subtask } from './types';
 
 type SubtaskProgressProps = {
-  subtasks: Subtask[];
+  doneCount: number;
+  totalCount: number;
 };
 
-export function SubtaskProgress({ subtasks }: SubtaskProgressProps) {
-  const doneCount = subtasks.filter(({ status }) => status === 'done').length;
-
+export function SubtaskProgress({
+  doneCount,
+  totalCount,
+}: SubtaskProgressProps) {
   return (
     <div className="subtask-progress">
-      <progress
-        aria-label="Subtasks done"
-        value={doneCount}
-        max={subtasks.length}
-      />
+      <progress aria-label="Subtasks done" value={doneCount} max={totalCount} />
       <span>
-        {doneCount} of {subtasks.length}
+        {doneCount} of {totalCount}
       </span>
     </div>
   );
