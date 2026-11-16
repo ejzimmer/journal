@@ -24,21 +24,4 @@
     border-bottom: 2px solid var(--border-colour);
     outline: none;
   }
-
-  > button {
-    display: grid;
-    place-items: center;
-    width: 41px;
-    height: 41px;
-    border: 2px solid var(--border-colour);
-    border-radius: 6px;
-    background: white;
-    color: hsl(211 50% 40%);
-    cursor: pointer;
-
-    &:hover,
-    &:focus-visible {
-      background: hsl(214 30% 93%);
-    }
-  }
 }

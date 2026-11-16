@@ -38,8 +38,13 @@ export function AddProjectForm({ onAdd }: AddProjectFormProps) {
       />
       <CraftPicker craft={craft} onChange={setCraft} hideLabel />
       <TypePicker type={type} onChange={setType} hideLabel />
-      <button type="submit" aria-label="Add project" title="Add project">
-        <PlusIcon width="16" />
+      <button
+        type="submit"
+        className="form-action primary"
+        aria-label="Add project"
+        title="Add project"
+      >
+        <PlusIcon width="16" strokeWidth="3" />
       </button>
     </form>
   );
