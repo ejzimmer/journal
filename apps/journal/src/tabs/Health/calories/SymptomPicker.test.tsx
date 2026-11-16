@@ -27,6 +27,15 @@ function activeCellName(picker: HTMLElement) {
   return id && document.getElementById(id)?.getAttribute('aria-label');
 }
 
+function activeCell(picker: HTMLElement) {
+  const id = picker.getAttribute('aria-activedescendant');
+  return document.getElementById(id ?? '')!;
+}
+
+function tooltipFor(cell: HTMLElement) {
+  return document.getElementById(cell.getAttribute('aria-describedby') ?? '');
+}
+
 function trackers() {
   return screen.getByRole('status', { name: 'trackers' }).textContent;
 }
@@ -122,14 +131,31 @@ describe('SymptomPicker', () => {
 
       describe('moving to another symptom', () => {
         it("shows that symptom's name instead", async () => {
-          const { user } = await openPicker();
-          const headache = screen.getByText('headache');
+          const { user, picker } = await openPicker();
+          const headache = tooltipFor(activeCell(picker));
           expect(headache).toBeVisible();
 
           await user.keyboard('{ArrowDown}');
 
-          expect(screen.getByText('period flow')).toBeVisible();
+          const periodFlow = tooltipFor(activeCell(picker));
+          expect(periodFlow).toHaveTextContent('period flow');
+          expect(periodFlow).toBeVisible();
           expect(headache).not.toBeVisible();
+        });
+      });
+
+      describe('moving to another level', () => {
+        it('moves the name to that level', async () => {
+          const { user, picker } = await openPicker();
+          const firstLevel = tooltipFor(activeCell(picker));
+          expect(firstLevel).toBeVisible();
+
+          await user.keyboard('{ArrowRight}');
+
+          const secondLevel = tooltipFor(activeCell(picker));
+          expect(secondLevel).toHaveTextContent('headache');
+          expect(secondLevel).toBeVisible();
+          expect(firstLevel).not.toBeVisible();
         });
       });
     });
@@ -209,11 +235,11 @@ describe('SymptomPicker', () => {
         const { user, picker } = renderPicker();
         await user.click(picker);
 
-        await user.hover(
-          screen.getByRole('gridcell', { name: 'sore throat 2' }),
-        );
+        const cell = screen.getByRole('gridcell', { name: 'sore throat 2' });
+        await user.hover(cell);
 
-        expect(screen.getByRole('tooltip')).toHaveTextContent('sore throat');
+        expect(tooltipFor(cell)).toHaveTextContent('sore throat');
+        expect(tooltipFor(cell)).toBeVisible();
       });
     });
   });
