@@ -14,10 +14,8 @@ export function ThisYear() {
   return (
     <div className="this-year">
       <div className="above-garden">
-        <div className="bikes-and-adventures">
-          <Bikes />
-          <Adventures />
-        </div>
+        <Bikes />
+        <Adventures />
         {getThisYear() === STATION_RUNNING_YEAR && <StationRunning />}
         <WaniKani />
       </div>
