@@ -1,0 +1,67 @@
+.project-card {
+  position: relative;
+  list-style: none;
+  border-radius: 7px;
+  font-size: 18px;
+  background: rgb(var(--card-pastel) / 0.3);
+  border: 1px solid rgb(var(--card-pastel));
+  padding: 6px 8px;
+
+  &.queued {
+    background: rgb(var(--card-pastel) / 0.55);
+    border: 2px solid rgb(var(--card-dark) / 0.55);
+    box-shadow: 0 2px 7px rgb(var(--card-pastel) / 0.45);
+    padding: 7px 8px;
+  }
+
+  .project-card-header {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .project-type-icon {
+    width: 28px;
+    height: 28px;
+    flex: none;
+  }
+
+  .project-name {
+    flex: 1;
+    opacity: 0.65;
+  }
+
+  &.queued .project-name {
+    opacity: 1;
+    font-weight: 500;
+  }
+
+  .card-control {
+    min-width: 30px;
+    height: 30px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 0;
+    background: transparent;
+    border-radius: 6px;
+    color: hsl(211 50% 40%);
+    cursor: pointer;
+    padding: 0 4px;
+
+    &:hover,
+    &:focus-visible {
+      background: rgb(var(--card-pastel) / 0.25);
+    }
+  }
+
+  @media (hover: hover) {
+    &:not(.queued) .card-control {
+      opacity: 0;
+    }
+
+    &:not(.queued):is(:hover, :focus-within) .card-control {
+      opacity: 1;
+    }
+  }
+}

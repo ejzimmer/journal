@@ -1,0 +1,53 @@
+.add-project-form {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+  max-width: 520px;
+
+  label {
+    white-space: nowrap;
+    font-size: 15px;
+    color: hsl(0 0% 40%);
+  }
+
+  input {
+    flex: 1 1 160px;
+    min-width: 0;
+    font: inherit;
+    padding: 8px 4px;
+    border: 0;
+    border-bottom: 2px solid var(--border-colour);
+    outline: none;
+
+    &:focus-visible {
+      border-bottom-color: var(--action-colour);
+    }
+  }
+
+  select {
+    font: inherit;
+    font-size: 15px;
+    padding: 6px;
+    border: 1px solid var(--border-colour);
+    border-radius: 6px;
+    background: white;
+  }
+
+  button {
+    display: grid;
+    place-items: center;
+    width: 34px;
+    height: 34px;
+    border: 1px solid var(--border-colour);
+    border-radius: 6px;
+    background: white;
+    color: hsl(211 50% 40%);
+    cursor: pointer;
+
+    &:hover,
+    &:focus-visible {
+      background: hsl(214 30% 93%);
+    }
+  }
+}

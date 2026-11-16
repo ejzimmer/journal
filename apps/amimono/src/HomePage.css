@@ -2,4 +2,27 @@
   max-width: 1280px;
   margin: 0 auto;
   padding: 28px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 36px;
+
+  .queues {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 32px;
+    align-items: flex-start;
+
+    .project-list {
+      flex: 1 1 300px;
+      min-width: 0;
+    }
+  }
+
+  .future-projects {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    border-top: 1px dashed var(--border-colour);
+    padding-top: 24px;
+  }
 }
