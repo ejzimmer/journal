@@ -1,0 +1,40 @@
+.add-recipient-form {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+
+  > input,
+  select {
+    font: inherit;
+    padding: 6px 6px;
+    border: 0;
+    border-bottom: 2px solid var(--border-colour);
+    background: white;
+    outline: none;
+  }
+
+  > input:first-child {
+    flex: 1 1 160px;
+    min-width: 0;
+  }
+
+  > input[type='number'] {
+    width: 72px;
+    appearance: textfield;
+
+    &::-webkit-inner-spin-button {
+      appearance: none;
+    }
+  }
+
+  select {
+    border: 2px solid var(--border-colour);
+    border-radius: 6px;
+  }
+
+  .eu-size {
+    font-size: 14px;
+    color: hsl(0 0% 45%);
+  }
+}

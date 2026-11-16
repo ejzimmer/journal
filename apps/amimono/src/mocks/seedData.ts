@@ -5,6 +5,7 @@ import {
   ProjectType,
   Subtask,
 } from '../projects/types';
+import { Recipient } from '../sockPlanner/types';
 import { StoredYarn } from '../yarnBowl/types';
 
 function createSubtasks(doneCount: number, totalCount: number) {
@@ -143,8 +144,27 @@ const yarn: StoredYarn = {
   },
 };
 
+const recipientDetails: Array<[string, number, Recipient['overrides']?]> = [
+  ['Me', 39],
+  ['Mum', 37],
+  ['Dad', 44],
+  ['Alex', 38, { castOnStitches: 56 }],
+  ['Sam', 37, { lengthMm: 230 }],
+  ['Jo', 46],
+];
+
+const socks = Object.fromEntries(
+  recipientDetails.map(
+    ([name, euSize, overrides], index): [string, Recipient] => {
+      const id = `recipient-${index + 1}`;
+      return [id, { id, name, euSize, ...(overrides && { overrides }) }];
+    },
+  ),
+);
+
 export const seedData: Record<string, unknown> = {
   projects,
+  socks,
   lists,
   yarn: { '2026': yarn },
 };
