@@ -62,7 +62,12 @@ describe('editing a project', () => {
         'Cardigan',
       );
       expect(screen.getByRole('radio', { name: 'Knitting' })).toBeChecked();
-      expect(screen.getByRole('radio', { name: 'Cardigan' })).toBeChecked();
+      expect(
+        within(screen.getByRole('form', { name: 'Edit project' })).getByRole(
+          'combobox',
+          { name: 'Type' },
+        ),
+      ).toHaveValue('cardigan');
       expect(screen.getByRole('textbox', { name: 'Pattern' })).toHaveValue(
         'Telja Cardigan',
       );
@@ -86,7 +91,13 @@ describe('editing a project', () => {
       const nameInput = screen.getByRole('textbox', { name: 'Name' });
       await user.clear(nameInput);
       await user.type(nameInput, 'Telja');
-      await user.click(screen.getByRole('radio', { name: 'Jumper' }));
+      await user.selectOptions(
+        within(screen.getByRole('form', { name: 'Edit project' })).getByRole(
+          'combobox',
+          { name: 'Type' },
+        ),
+        'Jumper',
+      );
       await user.click(screen.getByRole('button', { name: 'Save changes' }));
 
       const card = within(findCard('Telja'));

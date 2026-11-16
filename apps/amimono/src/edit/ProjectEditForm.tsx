@@ -47,7 +47,7 @@ export function ProjectEditForm({
       className="project-card project-edit-form expanded"
       style={createCardStyle(draft.type)}
     >
-      <form onSubmit={saveProject}>
+      <form aria-label="Edit project" onSubmit={saveProject}>
         <div className="project-card-header">
           <img
             className="project-type-icon"
