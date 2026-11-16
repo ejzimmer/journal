@@ -50,7 +50,7 @@ const seed = {
 
 describe('the project drawer', () => {
   describe('when a card is expanded', () => {
-    it('lists the steps in order', async () => {
+    it('lists the subtasks in order', async () => {
       const { user } = renderHomePage(seed);
 
       const card = within(findCard('Cardigan'));
@@ -58,9 +58,9 @@ describe('the project drawer', () => {
       await user.click(card.getByRole('button', { name: 'Expand project' }));
 
       expect(
-        within(card.getByRole('list', { name: 'Steps' }))
+        within(card.getByRole('list', { name: 'Subtasks' }))
           .getAllByRole('listitem')
-          .map((step) => step.textContent),
+          .map((subtask) => subtask.textContent),
       ).toEqual(['Swatch', 'Sleeves']);
     });
 
@@ -100,7 +100,7 @@ describe('the project drawer', () => {
     });
   });
 
-  describe('ticking off a step', () => {
+  describe('ticking off a subtask', () => {
     it('updates the progress on the card', async () => {
       const { user } = renderHomePage(seed);
       const card = within(findCard('Cardigan'));
@@ -113,21 +113,21 @@ describe('the project drawer', () => {
     });
   });
 
-  describe('adding a step', () => {
-    it('adds it to the end of the steps', async () => {
+  describe('adding a subtask', () => {
+    it('adds it to the end of the subtasks', async () => {
       const { user } = renderHomePage(seed);
       const card = within(findCard('Cardigan'));
       await user.click(card.getByRole('button', { name: 'Expand project' }));
 
       await user.type(
-        card.getByRole('textbox', { name: 'New step' }),
+        card.getByRole('textbox', { name: 'New subtask' }),
         'Button band{Enter}',
       );
 
       expect(
-        within(card.getByRole('list', { name: 'Steps' }))
+        within(card.getByRole('list', { name: 'Subtasks' }))
           .getAllByRole('listitem')
-          .map((step) => step.textContent),
+          .map((subtask) => subtask.textContent),
       ).toEqual(['Swatch', 'Sleeves', 'Button band']);
     });
   });

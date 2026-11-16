@@ -14,7 +14,7 @@ function createSubtasks(doneCount: number, totalCount: number) {
         id,
         {
           id,
-          description: `Step ${index + 1}`,
+          description: `Subtask ${index + 1}`,
           status: index < doneCount ? 'done' : 'ready',
           position: index + 1,
         },
