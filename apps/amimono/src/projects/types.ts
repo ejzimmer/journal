@@ -65,6 +65,7 @@ export type Project = {
 export type ListEntry = {
   id: string;
   position: number;
+  portablePosition?: number;
 };
 
 export type ProjectLists = Record<ListKey, Project[]>;

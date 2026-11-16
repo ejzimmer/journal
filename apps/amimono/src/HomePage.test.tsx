@@ -25,6 +25,16 @@ function findProjectNamesIn(listName: string) {
     .map((card) => card.querySelector('.project-name')?.textContent);
 }
 
+async function moveProject(
+  user: ReturnType<typeof renderHomePage>['user'],
+  projectName: string,
+  listName: string,
+) {
+  const card = within(findCard(projectName));
+  await user.click(card.getByRole('button', { name: 'Move to another list' }));
+  await user.click(card.getByRole('button', { name: `Move to ${listName}` }));
+}
+
 describe('HomePage', () => {
   describe('showing the lists', () => {
     it('shows each list in position order', () => {
@@ -70,22 +80,48 @@ describe('HomePage', () => {
     });
 
     describe('between the portable and priority queues', () => {
-      it('puts it at the top of the other queue', async () => {
-        const { user } = renderHomePage(seed);
-        const card = within(findCard('Laptop sleeve'));
+      describe('from portable to priority', () => {
+        it('puts it at the top of priority', async () => {
+          const { user } = renderHomePage(seed);
 
-        await user.click(
-          card.getByRole('button', { name: 'Move to another list' }),
-        );
-        await user.click(
-          card.getByRole('button', { name: 'Move to Priority' }),
-        );
+          await moveProject(user, 'Laptop sleeve', 'Priority');
 
-        expect(findProjectNamesIn('Priority')).toEqual([
-          'Laptop sleeve',
-          'Cardigan',
-        ]);
-        expect(findProjectNamesIn('Portable')).toEqual(['Blanket']);
+          expect(findProjectNamesIn('Priority')).toEqual([
+            'Laptop sleeve',
+            'Cardigan',
+          ]);
+          expect(findProjectNamesIn('Portable')).toEqual(['Blanket']);
+        });
+      });
+
+      describe('from priority to portable', () => {
+        describe('when it came from portable', () => {
+          it('puts it back where it was', async () => {
+            const { user } = renderHomePage(seed);
+            await moveProject(user, 'Laptop sleeve', 'Priority');
+
+            await moveProject(user, 'Laptop sleeve', 'Portable');
+
+            expect(findProjectNamesIn('Portable')).toEqual([
+              'Blanket',
+              'Laptop sleeve',
+            ]);
+          });
+        });
+
+        describe('when it came from somewhere else', () => {
+          it('puts it at the top of portable', async () => {
+            const { user } = renderHomePage(seed);
+
+            await moveProject(user, 'Cardigan', 'Portable');
+
+            expect(findProjectNamesIn('Portable')).toEqual([
+              'Cardigan',
+              'Blanket',
+              'Laptop sleeve',
+            ]);
+          });
+        });
       });
     });
 
