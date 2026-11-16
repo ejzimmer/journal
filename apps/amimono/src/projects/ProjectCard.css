@@ -52,7 +52,6 @@
   .project-list:not(.future) & .project-name,
   &.expanded .project-name {
     opacity: 1;
-    font-weight: 500;
   }
 
   .craft-icon {
