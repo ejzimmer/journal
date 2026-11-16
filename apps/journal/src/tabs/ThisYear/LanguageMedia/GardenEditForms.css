@@ -64,16 +64,6 @@
   gap: 8px;
 }
 
-.edit-video-row {
-  display: flex;
-  gap: 8px;
-
-  .url-tile {
-    flex: 1;
-    min-width: 0;
-  }
-}
-
 dialog.progress-update-modal.edit-channel-modal {
   width: 640px;
 }
