@@ -1,5 +1,4 @@
 import { within } from '@testing-library/react';
-import { UserEvent } from '@testing-library/user-event';
 
 import { findCard, renderHomePage } from '../homePageTestUtils';
 
@@ -49,18 +48,14 @@ const seed = {
   },
 };
 
-async function expandCard(user: UserEvent, projectName: string) {
-  const card = within(findCard(projectName));
-  await user.click(card.getByRole('button', { name: 'Expand project' }));
-  return card;
-}
-
 describe('the project drawer', () => {
   describe('when a card is expanded', () => {
     it('lists the steps in order', async () => {
       const { user } = renderHomePage(seed);
 
-      const card = await expandCard(user, 'Cardigan');
+      const card = within(findCard('Cardigan'));
+
+      await user.click(card.getByRole('button', { name: 'Expand project' }));
 
       expect(
         within(card.getByRole('list', { name: 'Steps' }))
@@ -72,7 +67,9 @@ describe('the project drawer', () => {
     it('starts with the details closed', async () => {
       const { user } = renderHomePage(seed);
 
-      const card = await expandCard(user, 'Cardigan');
+      const card = within(findCard('Cardigan'));
+
+      await user.click(card.getByRole('button', { name: 'Expand project' }));
 
       expect(card.getByRole('button', { name: 'Details' })).toHaveAttribute(
         'aria-expanded',
@@ -84,7 +81,8 @@ describe('the project drawer', () => {
   describe('opening the details', () => {
     it('shows the pattern, yarn and gauge', async () => {
       const { user } = renderHomePage(seed);
-      const card = await expandCard(user, 'Cardigan');
+      const card = within(findCard('Cardigan'));
+      await user.click(card.getByRole('button', { name: 'Expand project' }));
 
       await user.click(card.getByRole('button', { name: 'Details' }));
 
@@ -105,7 +103,8 @@ describe('the project drawer', () => {
   describe('ticking off a step', () => {
     it('updates the progress on the card', async () => {
       const { user } = renderHomePage(seed);
-      const card = await expandCard(user, 'Cardigan');
+      const card = within(findCard('Cardigan'));
+      await user.click(card.getByRole('button', { name: 'Expand project' }));
 
       await user.click(card.getByRole('checkbox', { name: 'Sleeves' }));
 
@@ -117,7 +116,8 @@ describe('the project drawer', () => {
   describe('adding a step', () => {
     it('adds it to the end of the steps', async () => {
       const { user } = renderHomePage(seed);
-      const card = await expandCard(user, 'Cardigan');
+      const card = within(findCard('Cardigan'));
+      await user.click(card.getByRole('button', { name: 'Expand project' }));
 
       await user.type(
         card.getByRole('textbox', { name: 'New step' }),

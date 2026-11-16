@@ -51,12 +51,6 @@ async function openEditForm(user: UserEvent, projectName: string) {
   await user.click(card.getByRole('button', { name: 'Edit project' }));
 }
 
-async function openDetails(user: UserEvent, projectName: string) {
-  const card = within(findCard(projectName));
-  await user.click(card.getByRole('button', { name: 'Details' }));
-  return card;
-}
-
 describe('editing a project', () => {
   describe('when the form opens', () => {
     it('fills in the current details', async () => {
@@ -140,7 +134,8 @@ describe('editing a project', () => {
         '3',
       );
       await user.click(screen.getByRole('button', { name: 'Save changes' }));
-      const card = await openDetails(user, 'Cardigan');
+      const card = within(findCard('Cardigan'));
+      await user.click(card.getByRole('button', { name: 'Details' }));
 
       expect(
         card
@@ -160,7 +155,8 @@ describe('editing a project', () => {
         'Ancient',
       );
       await user.click(screen.getByRole('button', { name: 'Save changes' }));
-      const card = await openDetails(user, 'Cardigan');
+      const card = within(findCard('Cardigan'));
+      await user.click(card.getByRole('button', { name: 'Details' }));
 
       expect(
         card
@@ -202,7 +198,8 @@ describe('editing a project', () => {
         '3.25',
       );
       await user.click(screen.getByRole('button', { name: 'Save changes' }));
-      const card = await openDetails(user, 'Hat');
+      const card = within(findCard('Hat'));
+      await user.click(card.getByRole('button', { name: 'Details' }));
 
       expect(card.getByText('Fair Isle tam')).toBeInTheDocument();
       expect(card.getByText('3.25 mm')).toBeInTheDocument();
