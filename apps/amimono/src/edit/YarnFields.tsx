@@ -1,3 +1,4 @@
+import { FormControl } from 'shared/controls/FormControl';
 import { PlusIcon } from 'shared/icons/Plus';
 import { ColourwayFields } from './ColourwayFields';
 import {
@@ -22,10 +23,11 @@ export function YarnFields({ yarn, onChange }: YarnFieldsProps) {
 
   return (
     <div className="yarn-fields">
-      <input
-        aria-label="Yarn name"
+      <FormControl
+        label="Yarn name"
+        hideLabel
         value={yarn.name}
-        onChange={(event) => onChange({ ...yarn, name: event.target.value })}
+        onChange={(name) => onChange({ ...yarn, name })}
       />
       <table className="colourway-table">
         <thead>

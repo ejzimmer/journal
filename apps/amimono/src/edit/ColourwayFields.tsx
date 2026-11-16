@@ -1,3 +1,5 @@
+import { FormControl } from 'shared/controls/FormControl';
+
 import { ColourwayDraft } from './projectDraft';
 
 type ColourwayFieldsProps = {
@@ -9,33 +11,30 @@ export function ColourwayFields({ colourway, onChange }: ColourwayFieldsProps) {
   return (
     <tr>
       <td>
-        <input
-          aria-label="Colourway"
+        <FormControl
+          label="Colourway"
+          hideLabel
           value={colourway.name}
-          onChange={(event) =>
-            onChange({ ...colourway, name: event.target.value })
-          }
+          onChange={(name) => onChange({ ...colourway, name })}
         />
       </td>
       <td>
-        <input
-          aria-label="Skeins"
+        <FormControl
+          label="Skeins"
+          hideLabel
           type="number"
           min="0"
           step="0.5"
           value={colourway.skeins}
-          onChange={(event) =>
-            onChange({ ...colourway, skeins: event.target.value })
-          }
+          onChange={(skeins) => onChange({ ...colourway, skeins })}
         />
       </td>
       <td>
-        <input
-          aria-label="Dye lot"
+        <FormControl
+          label="Dye lot"
+          hideLabel
           value={colourway.dyeLot}
-          onChange={(event) =>
-            onChange({ ...colourway, dyeLot: event.target.value })
-          }
+          onChange={(dyeLot) => onChange({ ...colourway, dyeLot })}
         />
       </td>
     </tr>

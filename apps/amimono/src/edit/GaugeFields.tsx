@@ -1,4 +1,4 @@
-import { useId } from 'react';
+import { FormControl } from 'shared/controls/FormControl';
 
 import { ProjectDraft } from './projectDraft';
 
@@ -8,36 +8,31 @@ type GaugeFieldsProps = {
 };
 
 export function GaugeFields({ draft, onChange }: GaugeFieldsProps) {
-  const id = useId();
-
   return (
     <fieldset className="edit-field">
       <legend className="field-label">Gauge per 10 cm</legend>
       <div className="gauge-fields">
-        <label htmlFor={`${id}-stitches`}>Stitches</label>
-        <label htmlFor={`${id}-rows`}>Rows</label>
-        <label htmlFor={`${id}-needle`}>Needle (mm)</label>
-        <input
-          id={`${id}-stitches`}
+        <FormControl
+          label="Stitches"
           type="number"
           min="0"
           value={draft.stitches}
-          onChange={(event) => onChange({ stitches: event.target.value })}
+          onChange={(stitches) => onChange({ stitches })}
         />
-        <input
-          id={`${id}-rows`}
+        <FormControl
+          label="Rows"
           type="number"
           min="0"
           value={draft.rows}
-          onChange={(event) => onChange({ rows: event.target.value })}
+          onChange={(rows) => onChange({ rows })}
         />
-        <input
-          id={`${id}-needle`}
+        <FormControl
+          label="Needle (mm)"
           type="number"
           min="0"
           step="0.25"
           value={draft.needleMm}
-          onChange={(event) => onChange({ needleMm: event.target.value })}
+          onChange={(needleMm) => onChange({ needleMm })}
         />
       </div>
     </fieldset>
