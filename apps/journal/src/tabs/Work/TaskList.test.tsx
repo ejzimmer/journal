@@ -224,10 +224,12 @@ describe('TaskList label', () => {
 });
 
 describe('TaskList count', () => {
-  it('shows the number of tasks in the list that are neither done nor blocked', () => {
+  it('shows the number of tasks that are neither done nor blocked, out of all tasks that are not done', () => {
     renderTaskList(unlabelledList.id, createStorageContext());
 
-    expect(screen.getByLabelText('2 tasks remaining')).toHaveTextContent('(2)');
+    expect(screen.getByLabelText('2 of 3 tasks remaining')).toHaveTextContent(
+      '(2/3)',
+    );
   });
 
   it('hides the count for a list with no items', () => {
