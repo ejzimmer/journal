@@ -1,8 +1,11 @@
-import { forwardRef, useId } from 'react';
+import { forwardRef, InputHTMLAttributes, useId } from 'react';
 import './FormControl.css';
 import { XIcon } from '../icons/X';
 
-type FormControlProps = {
+type FormControlProps = Pick<
+  InputHTMLAttributes<HTMLInputElement>,
+  'min' | 'step' | 'inputMode' | 'required' | 'autoFocus'
+> & {
   label: string | React.ReactElement;
   value?: string;
   onChange?: (value: string) => void;
