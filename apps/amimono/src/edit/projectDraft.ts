@@ -1,46 +1,34 @@
 import { sortByPosition } from 'shared/drag-and-drop/utils';
-import {
-  Colourway,
-  Craft,
-  Gauge,
-  Project,
-  ProjectType,
-  Yarn,
-} from '../projects/types';
+import { Colourway, Gauge, Project, Yarn } from '../projects/types';
 
-export type ColourwayDraft = {
-  id: string;
-  name: string;
+// Number inputs hold strings so a half-typed value stays as typed, optional
+// text is '' so inputs stay controlled, and rows are arrays in display order.
+export type ColourwayDraft = Omit<
+  Colourway,
+  'skeins' | 'dyeLot' | 'position'
+> & {
   skeins: string;
   dyeLot: string;
 };
 
-export type YarnDraft = {
-  id: string;
-  name: string;
+export type YarnDraft = Omit<Yarn, 'colourways' | 'position'> & {
   colourways: ColourwayDraft[];
 };
 
-export type ProjectDraft = {
-  name: string;
-  type: ProjectType;
-  craft?: Craft;
-  patternName: string;
-  patternUrl: string;
+export type PatternDraft = Required<NonNullable<Project['pattern']>>;
+
+export type GaugeDraft = Record<keyof Gauge, string>;
+
+export type ProjectDraft = Pick<Project, 'name' | 'type' | 'craft'> & {
+  pattern: PatternDraft;
   yarns: YarnDraft[];
-  stitches: string;
-  rows: string;
-  needleMm: string;
+  gauge: GaugeDraft;
 };
 
-export type ProjectFields = {
-  name: string;
-  type: ProjectType;
-  craft: Craft | null;
-  pattern: Project['pattern'] | null;
-  yarns: Record<string, Yarn> | null;
-  gauge: Gauge | null;
-};
+type Removable<T> = { [K in keyof T]-?: NonNullable<T[K]> | null };
+
+export type ProjectFields = Pick<Project, 'name' | 'type'> &
+  Removable<Pick<Project, 'craft' | 'pattern' | 'yarns' | 'gauge'>>;
 
 export function createColourwayDraft(): ColourwayDraft {
   return { id: crypto.randomUUID(), name: '', skeins: '', dyeLot: '' };
@@ -59,8 +47,10 @@ export function createProjectDraft(project: Project): ProjectDraft {
     name: project.name,
     type: project.type,
     craft: project.craft,
-    patternName: project.pattern?.name ?? '',
-    patternUrl: project.pattern?.url ?? '',
+    pattern: {
+      name: project.pattern?.name ?? '',
+      url: project.pattern?.url ?? '',
+    },
     yarns: sortByPosition(Object.values(project.yarns ?? {})).map((yarn) => ({
       id: yarn.id,
       name: yarn.name,
@@ -73,9 +63,11 @@ export function createProjectDraft(project: Project): ProjectDraft {
         }),
       ),
     })),
-    stitches: String(project.gauge?.stitches ?? ''),
-    rows: String(project.gauge?.rows ?? ''),
-    needleMm: String(project.gauge?.needleMm ?? ''),
+    gauge: {
+      stitches: String(project.gauge?.stitches ?? ''),
+      rows: String(project.gauge?.rows ?? ''),
+      needleMm: String(project.gauge?.needleMm ?? ''),
+    },
   };
 }
 
@@ -84,16 +76,16 @@ export function convertDraftToFields(draft: ProjectDraft): ProjectFields {
     name: draft.name.trim(),
     type: draft.type,
     craft: draft.craft ?? null,
-    pattern: convertPattern(draft),
+    pattern: convertPattern(draft.pattern),
     yarns: convertYarns(draft.yarns),
-    gauge: convertGauge(draft),
+    gauge: convertGauge(draft.gauge),
   };
 }
 
-function convertPattern({ patternName, patternUrl }: ProjectDraft) {
+function convertPattern(draft: PatternDraft) {
   const pattern = withoutEmptyValues({
-    name: patternName.trim(),
-    url: patternUrl.trim(),
+    name: draft.name.trim(),
+    url: draft.url.trim(),
   });
   return Object.keys(pattern).length ? pattern : null;
 }
@@ -145,7 +137,7 @@ function convertColourway(
   };
 }
 
-function convertGauge(draft: ProjectDraft) {
+function convertGauge(draft: GaugeDraft) {
   const gauge = withoutEmptyValues({
     stitches: parseNumber(draft.stitches),
     rows: parseNumber(draft.rows),
