@@ -88,7 +88,7 @@ describe('sock projects', () => {
       const card = await expandCard();
 
       await userEvent.click(card.getByRole('button', { name: 'Edit project' }));
-      await userEvent.click(screen.getByRole('button', { name: 'Hat' }));
+      await userEvent.click(screen.getByRole('radio', { name: 'Hat' }));
       await userEvent.click(
         screen.getByRole('button', { name: 'Save changes' }),
       );
