@@ -1,17 +1,17 @@
-import { forwardRef, useId } from 'react';
+import { forwardRef, InputHTMLAttributes, useId } from 'react';
 import './FormControl.css';
 import { XIcon } from '../icons/X';
 
-type FormControlProps = {
+type FormControlProps = Omit<
+  InputHTMLAttributes<HTMLInputElement>,
+  'value' | 'onChange' | 'defaultValue' | 'id' | 'className'
+> & {
   label: string | React.ReactElement;
   value?: string;
   onChange?: (value: string) => void;
   errors?: string[] | false;
-  type?: HTMLInputElement['type'];
-  size?: HTMLInputElement['size'];
   defaultValue?: string;
   hideLabel?: boolean;
-  pattern?: string;
   inputClass?: string;
 };
 

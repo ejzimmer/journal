@@ -14,7 +14,7 @@ function createSubtasks(doneCount: number, totalCount: number) {
         id,
         {
           id,
-          description: `Step ${index + 1}`,
+          description: `Subtask ${index + 1}`,
           status: index < doneCount ? 'done' : 'ready',
           position: index + 1,
         },
@@ -71,21 +71,36 @@ projects['concentration-1'] = {
       id: 'tweed',
       name: 'Rowan Felted Tweed',
       colourways: {
-        ancient: { id: 'ancient', name: 'Ancient', skeins: 6, dyeLot: '2481' },
+        ancient: {
+          id: 'ancient',
+          name: 'Ancient',
+          skeins: 6,
+          dyeLot: '2481',
+          position: 1,
+        },
         mineral: {
           id: 'mineral',
           name: 'Mineral',
           skeins: 1.5,
           dyeLot: '0917',
+          position: 2,
         },
       },
+      position: 1,
     },
     kidSilk: {
       id: 'kidSilk',
       name: 'Drops Kid-Silk',
       colourways: {
-        beige: { id: 'beige', name: 'Light beige', skeins: 3, dyeLot: '66310' },
+        beige: {
+          id: 'beige',
+          name: 'Light beige',
+          skeins: 3,
+          dyeLot: '66310',
+          position: 1,
+        },
       },
+      position: 2,
     },
   },
   gauge: { stitches: 22, rows: 30, needleMm: 4 },

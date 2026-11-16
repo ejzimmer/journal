@@ -1,0 +1,193 @@
+.project-edit-form {
+  input {
+    font: inherit;
+    font-size: 15px;
+    padding: 6px 8px;
+    border: 1px solid var(--border-colour);
+    border-radius: 6px;
+    background: white;
+    color: var(--body-colour);
+    min-width: 0;
+
+    &:focus-visible {
+      outline: 2px solid var(--action-colour);
+      outline-offset: -1px;
+    }
+  }
+
+  select {
+    font: inherit;
+    font-size: 15px;
+    padding: 6px;
+    border: 1px solid var(--border-colour);
+    border-radius: 6px;
+    background: white;
+  }
+
+  .form-control {
+    gap: 2px;
+
+    label {
+      margin: 0;
+      font-size: 13px;
+      font-weight: normal;
+      color: hsl(0 0% 45%);
+    }
+  }
+
+  .project-card-header .form-control {
+    flex: 1;
+  }
+
+  .name-input {
+    font-size: 17px;
+    font-weight: 500;
+  }
+
+  .edit-fields {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    /* Bleed to the card's edges so the white panel fills everything below the header */
+    margin: 8px calc(-1 * var(--card-padding-inline))
+      calc(-1 * var(--card-padding-block));
+    padding: 16px;
+    background: white;
+    border-top: 2px solid rgb(var(--card-dark) / 0.55);
+    border-radius: 0 0 5px 5px;
+  }
+
+  .edit-field {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+  }
+
+  .field-label {
+    font-size: 13px;
+    color: hsl(0 0% 45%);
+  }
+
+  .craft-picker {
+    --body-colour-light: var(--border-colour);
+    --action-colour: rgb(var(--card-dark));
+    --action-colour-dark: rgb(var(--card-dark));
+    isolation: isolate;
+    background: white;
+
+    label {
+      padding: 0;
+    }
+  }
+
+  .craft-option {
+    display: grid;
+    place-items: center;
+    width: 40px;
+    height: 34px;
+  }
+
+  .pattern-fields {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 8px;
+
+    input {
+      align-self: stretch;
+    }
+  }
+
+  .yarn-field-list {
+    align-items: stretch;
+    gap: 12px;
+  }
+
+  .yarn-fields {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 10px;
+    border: 1px solid hsl(214 32% 88%);
+    border-radius: 8px;
+  }
+
+  .colourway-table {
+    table-layout: fixed;
+    border-spacing: 8px 4px;
+    margin: -4px -8px;
+    width: calc(100% + 16px);
+    font-size: 14px;
+
+    th {
+      font-size: 12px;
+      font-weight: normal;
+      text-align: start;
+      color: hsl(0 0% 45%);
+    }
+
+    th:nth-child(2) {
+      width: 72px;
+    }
+
+    th:nth-child(3) {
+      width: 92px;
+    }
+
+    td {
+      padding: 0;
+    }
+
+    input {
+      width: 100%;
+      box-sizing: border-box;
+    }
+  }
+
+  .add-button {
+    align-self: flex-start;
+  }
+
+  .gauge-fields {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+    font-size: 15px;
+    white-space: nowrap;
+
+    input {
+      width: 52px;
+    }
+  }
+
+  .edit-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border-top: 1px solid hsl(214 32% 88%);
+    padding-top: 12px;
+
+    .delete {
+      margin-inline-end: auto;
+      color: hsl(10 89% 41%);
+
+      svg {
+        width: 16px;
+      }
+
+      &.confirming {
+        background: hsl(10 89% 41%);
+        color: white;
+      }
+    }
+  }
+
+  .edit-actions .round-button {
+    --button-size: 38px;
+  }
+}

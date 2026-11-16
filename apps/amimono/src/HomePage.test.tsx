@@ -1,5 +1,4 @@
 import { screen, within } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
 
 import { findCard, renderHomePage } from './homePageTestUtils';
 
@@ -53,13 +52,13 @@ describe('HomePage', () => {
   describe('moving a project', () => {
     describe('to another list', () => {
       it('puts it at the end of that list', async () => {
-        renderHomePage(seed);
+        const { user } = renderHomePage(seed);
         const card = within(findCard('Blanket'));
 
-        await userEvent.click(
+        await user.click(
           card.getByRole('button', { name: 'Move to another list' }),
         );
-        await userEvent.click(
+        await user.click(
           card.getByRole('button', { name: 'Move to Concentration' }),
         );
 
@@ -73,10 +72,10 @@ describe('HomePage', () => {
 
     describe('when the menu is open', () => {
       it('shows the current list as unavailable', async () => {
-        renderHomePage(seed);
+        const { user } = renderHomePage(seed);
         const card = within(findCard('Socks for Dad'));
 
-        await userEvent.click(
+        await user.click(
           card.getByRole('button', { name: 'Move to another list' }),
         );
 
@@ -90,19 +89,17 @@ describe('HomePage', () => {
   describe('adding a project', () => {
     describe('with a name', () => {
       it('adds it to the end of the future list with the chosen type', async () => {
-        renderHomePage(seed);
+        const { user } = renderHomePage(seed);
 
-        await userEvent.type(
+        await user.type(
           screen.getByRole('textbox', { name: 'New project' }),
           'Mittens',
         );
-        await userEvent.selectOptions(
+        await user.selectOptions(
           screen.getByRole('combobox', { name: 'Type' }),
           'Accessory',
         );
-        await userEvent.click(
-          screen.getByRole('button', { name: 'Add project' }),
-        );
+        await user.click(screen.getByRole('button', { name: 'Add project' }));
 
         expect(findProjectNamesIn('Future')).toEqual([
           'Socks for Dad',
@@ -114,10 +111,10 @@ describe('HomePage', () => {
       });
 
       it('clears the name ready for the next project', async () => {
-        renderHomePage(seed);
+        const { user } = renderHomePage(seed);
         const nameInput = screen.getByRole('textbox', { name: 'New project' });
 
-        await userEvent.type(nameInput, 'Mittens{Enter}');
+        await user.type(nameInput, 'Mittens{Enter}');
 
         expect(nameInput).toHaveValue('');
       });
@@ -125,13 +122,13 @@ describe('HomePage', () => {
 
     describe('with only spaces for a name', () => {
       it('adds nothing', async () => {
-        renderHomePage(seed);
+        const { user } = renderHomePage(seed);
 
-        await userEvent.type(
-          screen.getByRole('textbox', { name: 'New project' }),
-          '   {Enter}',
-        );
+        const nameInput = screen.getByRole('textbox', { name: 'New project' });
 
+        await user.type(nameInput, '   {Enter}');
+
+        expect(nameInput).toBeInvalid();
         expect(findProjectNamesIn('Future')).toEqual(['Socks for Dad']);
       });
     });

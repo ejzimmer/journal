@@ -1,4 +1,5 @@
 import { useStorageContext } from 'shared/FirebaseContext';
+import { ProjectFields } from '../edit/projectDraft';
 import {
   ListKey,
   LISTS_KEY,
@@ -40,5 +41,23 @@ export function useProjectActions() {
     });
   };
 
-  return { addProject, moveProject };
+  const updateProject = (projectId: string, fields: ProjectFields) => {
+    setValues(
+      Object.fromEntries(
+        Object.entries(fields).map(([field, value]) => [
+          `${PROJECTS_KEY}/${projectId}/${field}`,
+          value,
+        ]),
+      ),
+    );
+  };
+
+  const deleteProject = (projectId: string, listKey: ListKey) => {
+    setValues({
+      [`${PROJECTS_KEY}/${projectId}`]: null,
+      [`${LISTS_KEY}/${listKey}/${projectId}`]: null,
+    });
+  };
+
+  return { addProject, moveProject, updateProject, deleteProject };
 }

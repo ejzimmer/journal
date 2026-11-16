@@ -1,9 +1,11 @@
-import { CSSProperties, useState } from 'react';
+import { useState } from 'react';
 
 import './ProjectCard.css';
 import { ProjectDrawer } from '../details/ProjectDrawer';
 import { ChevronDownIcon } from 'shared/icons/ChevronDown';
+import { ProjectEditForm } from '../edit/ProjectEditForm';
 import { CraftIcon } from './CraftIcon';
+import { createCardStyle } from './createCardStyle';
 import { MoveProjectMenu } from './MoveProjectMenu';
 import { PROJECT_TYPES } from './projectTypes';
 import { SubtaskProgress } from './SubtaskProgress';
@@ -17,17 +19,25 @@ type ProjectCardProps = {
 
 export function ProjectCard({ project, listKey, onMove }: ProjectCardProps) {
   const [isExpanded, setIsExpanded] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+
+  if (isEditing) {
+    return (
+      <ProjectEditForm
+        project={project}
+        listKey={listKey}
+        onClose={() => setIsEditing(false)}
+      />
+    );
+  }
+
   const projectType = PROJECT_TYPES[project.type];
   const subtasks = Object.values(project.subtasks ?? {});
-  const colours = {
-    '--card-pastel': projectType.pastel,
-    '--card-dark': projectType.dark,
-  } as CSSProperties;
   const classNames = ['project-card', isExpanded && 'expanded'].filter(Boolean);
   const expandLabel = isExpanded ? 'Collapse project' : 'Expand project';
 
   return (
-    <li className={classNames.join(' ')} style={colours}>
+    <li className={classNames.join(' ')} style={createCardStyle(project.type)}>
       <div className="project-card-header">
         <img
           className="project-type-icon"
@@ -48,7 +58,9 @@ export function ProjectCard({ project, listKey, onMove }: ProjectCardProps) {
         </button>
       </div>
       {subtasks.length > 0 && <SubtaskProgress subtasks={subtasks} />}
-      {isExpanded && <ProjectDrawer project={project} />}
+      {isExpanded && (
+        <ProjectDrawer project={project} onEdit={() => setIsEditing(true)} />
+      )}
     </li>
   );
 }

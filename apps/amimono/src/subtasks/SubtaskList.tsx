@@ -1,6 +1,7 @@
 import './SubtaskList.css';
 import { Checkbox } from 'shared/controls/Checkbox';
 import { Subtask } from '../projects/types';
+import { sortByPosition } from 'shared/drag-and-drop/utils';
 import { AddSubtaskForm } from './AddSubtaskForm';
 import { useSubtaskActions } from './useSubtaskActions';
 
@@ -14,12 +15,12 @@ export function SubtaskList({ projectId, subtasks }: SubtaskListProps) {
     projectId,
     subtasks,
   );
-  const orderedSubtasks = subtasks.toSorted((a, b) => a.position - b.position);
+  const orderedSubtasks = sortByPosition(subtasks);
 
   return (
     <div className="subtask-list">
       {orderedSubtasks.length > 0 && (
-        <ul aria-label="Steps">
+        <ul aria-label="Subtasks">
           {orderedSubtasks.map((subtask) => (
             <li
               key={subtask.id}
