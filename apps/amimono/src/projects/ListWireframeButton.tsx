@@ -13,14 +13,21 @@ export function ListWireframeButton({
   onMove,
 }: ListWireframeButtonProps) {
   const isCurrent = listKey === currentList;
+  const canMoveToTop = isCurrent && listKey !== 'future';
   const label = LIST_LABELS[listKey];
   const barCount = listKey === 'future' ? 4 : 3;
+
+  function createAriaLabel() {
+    if (canMoveToTop) return `Move to top of ${label}`;
+    if (isCurrent) return `${label} (current list)`;
+    return `Move to ${label}`;
+  }
 
   return (
     <button
       className={`list-wireframe ${listKey}${isCurrent ? ' current' : ''}`}
-      aria-label={isCurrent ? `${label} (current list)` : `Move to ${label}`}
-      disabled={isCurrent}
+      aria-label={createAriaLabel()}
+      disabled={isCurrent && !canMoveToTop}
       onClick={() => onMove(listKey)}
     >
       {Array.from({ length: barCount }, (_, index) => (
