@@ -71,10 +71,7 @@ describe('editing a project', () => {
       expect(screen.getByRole('textbox', { name: 'Name' })).toHaveValue(
         'Cardigan',
       );
-      expect(screen.getByRole('button', { name: 'Knitting' })).toHaveAttribute(
-        'aria-pressed',
-        'true',
-      );
+      expect(screen.getByRole('radio', { name: 'Knitting' })).toBeChecked();
       expect(screen.getByRole('button', { name: 'Cardigan' })).toHaveAttribute(
         'aria-pressed',
         'true',
@@ -89,7 +86,7 @@ describe('editing a project', () => {
         1.5,
       );
       expect(
-        screen.getByRole('spinbutton', { name: 'Needle size in mm' }),
+        screen.getByRole('spinbutton', { name: 'Needle (mm)' }),
       ).toHaveValue(4);
     });
   });
@@ -120,14 +117,14 @@ describe('editing a project', () => {
       ).toBeChecked();
     });
 
-    it('clears the craft when it is toggled off', async () => {
+    it('clears the craft when none is chosen', async () => {
       renderHomePage(seed);
       const craftIcon = within(findCard('Cardigan')).getByRole('img', {
         name: 'Knitting',
       });
       await openEditForm('Cardigan');
 
-      await userEvent.click(screen.getByRole('button', { name: 'Knitting' }));
+      await userEvent.click(screen.getByRole('radio', { name: 'None' }));
       await saveChanges();
 
       expect(craftIcon).not.toBeInTheDocument();
@@ -211,7 +208,7 @@ describe('editing a project', () => {
         'Fair Isle tam',
       );
       await userEvent.type(
-        screen.getByRole('spinbutton', { name: 'Needle size in mm' }),
+        screen.getByRole('spinbutton', { name: 'Needle (mm)' }),
         '3.25',
       );
       await saveChanges();

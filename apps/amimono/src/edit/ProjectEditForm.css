@@ -33,6 +33,10 @@
   }
 
   .edit-field {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    min-width: 0;
     display: flex;
     flex-direction: column;
     align-items: flex-start;
@@ -45,32 +49,22 @@
   }
 
   .craft-picker {
-    display: inline-flex;
-    border: 1px solid var(--border-colour);
-    border-radius: 7px;
-    overflow: hidden;
+    --body-colour-light: var(--border-colour);
+    --action-colour: rgb(var(--card-dark));
+    --action-colour-dark: rgb(var(--card-dark));
+    isolation: isolate;
+    background: white;
 
-    button {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      width: 40px;
-      height: 34px;
+    label {
       padding: 0;
-      border: 0;
-      background: white;
-      color: hsl(0 0% 30%);
-      cursor: pointer;
-
-      & + button {
-        border-left: 1px solid var(--border-colour);
-      }
-
-      &[aria-pressed='true'] {
-        background: rgb(var(--card-dark) / 0.25);
-        color: hsl(0 0% 15%);
-      }
     }
+  }
+
+  .craft-option {
+    display: grid;
+    place-items: center;
+    width: 40px;
+    height: 34px;
   }
 
   .type-picker {
@@ -181,15 +175,21 @@
   }
 
   .gauge-fields {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 6px;
-    font-size: 15px;
-    white-space: nowrap;
+    display: grid;
+    grid-template-columns: repeat(3, 80px);
+    column-gap: 8px;
+    row-gap: 4px;
+    margin-top: 6px;
+
+    label {
+      font-size: 12px;
+      color: hsl(0 0% 45%);
+      white-space: nowrap;
+    }
 
     input {
-      width: 52px;
+      width: 100%;
+      box-sizing: border-box;
     }
   }
 
