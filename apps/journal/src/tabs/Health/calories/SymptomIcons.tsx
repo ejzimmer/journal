@@ -1,4 +1,4 @@
-import { SymptomIcon } from './SymptomIcon';
+import { LoggedSymptomIcon } from './LoggedSymptomIcon';
 import { MoreIcon } from './MoreIcon';
 import { LoggedSymptom } from './symptoms';
 import { splitIntoRows } from './symptomRows';
@@ -10,12 +10,14 @@ type SymptomIconsProps = {
   symptoms: LoggedSymptom[];
   iconSize: number;
   maxIcons?: number;
+  hasTooltips?: boolean;
 };
 
 export function SymptomIcons({
   symptoms,
   iconSize,
   maxIcons = Infinity,
+  hasTooltips,
 }: SymptomIconsProps) {
   if (!symptoms.length) {
     return null;
@@ -38,22 +40,12 @@ export function SymptomIcons({
                 iconSize={iconSize}
               />
             ) : (
-              <span
+              <LoggedSymptomIcon
                 key={icon.symptom.id}
-                role="img"
-                aria-label={
-                  icon.symptom.unlevelled
-                    ? icon.symptom.label
-                    : `${icon.symptom.label} ${icon.magnitude}`
-                }
-              >
-                <SymptomIcon
-                  symptom={icon.symptom}
-                  magnitude={icon.magnitude}
-                  width={`${iconSize}px`}
-                  onDot
-                />
-              </span>
+                icon={icon}
+                iconSize={iconSize}
+                hasTooltip={hasTooltips}
+              />
             ),
           )}
         </div>

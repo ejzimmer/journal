@@ -29,7 +29,8 @@
     position: relative;
     text-align: center;
 
-    svg {
+    > [role='img'] {
+      display: flex;
       position: absolute;
       top: 50%;
       right: calc(100% + 2px);
@@ -45,4 +46,8 @@
 .day-circle:hover .day-hover-circle {
   scale: 1;
   opacity: 1;
+
+  [role='img'] {
+    pointer-events: auto;
+  }
 }
