@@ -14,7 +14,7 @@ const GLASS = {
   highlight: 'rgb(255 255 255 / 0.45)',
 };
 
-const TABLE_EDGE = 'rgb(120 145 170 / 0.45)';
+const TABLE_EDGE = 'hsl(200 90% 92%)';
 
 export type Bowl = {
   x: number;
