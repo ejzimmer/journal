@@ -1,4 +1,4 @@
-import { act, screen } from '@testing-library/react';
+import { act, fireEvent, screen } from '@testing-library/react';
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { getDateDaysAgo, getDateDaysAhead, getToday } from 'shared/dates';
@@ -147,7 +147,7 @@ describe('Today tab', () => {
 
   describe("when yesterday's calories haven't been entered", () => {
     describe('and the user enters both and presses Enter', () => {
-      it('saves them against yesterday and hides the inputs', async () => {
+      it('saves them against yesterday and hides the inputs once they power off', async () => {
         const { storage, user } = renderToday({ health: { daily: {} } });
         const caloriesIn = await screen.findByRole('textbox', { name: 'In' });
 
@@ -160,6 +160,7 @@ describe('Today tab', () => {
         expect(
           readValue<DayData>(storage, `${DAILY_PATH}/${getDateDaysAgo(1)}`),
         ).toEqual(expect.objectContaining({ consumed: 1850, expended: 2100 }));
+        fireEvent.animationEnd(caloriesIn);
         expect(caloriesIn).not.toBeInTheDocument();
       });
     });

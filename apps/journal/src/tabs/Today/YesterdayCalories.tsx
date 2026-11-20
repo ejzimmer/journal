@@ -1,4 +1,4 @@
-import { FormEvent } from 'react';
+import { FormEvent, useState } from 'react';
 import { useStorageContext } from 'shared/FirebaseContext';
 import { FormControl } from 'shared/controls/FormControl';
 import { getDateDaysAgo } from 'shared/dates';
@@ -13,12 +13,12 @@ export function YesterdayCalories() {
   const { value: yesterday, synced } = useValue<DayData>(
     `${DAILY_PATH}/${yesterdayId}`,
   );
+  const [isPoweringOff, setIsPoweringOff] = useState(false);
 
-  if (
-    (!synced && !yesterday) ||
-    (typeof yesterday?.consumed === 'number' &&
-      typeof yesterday?.expended === 'number')
-  ) {
+  const isComplete =
+    typeof yesterday?.consumed === 'number' &&
+    typeof yesterday?.expended === 'number';
+  if ((!synced && !yesterday) || (isComplete && !isPoweringOff)) {
     return null;
   }
 
@@ -27,6 +27,8 @@ export function YesterdayCalories() {
     const formData = new FormData(event.currentTarget);
     const consumed = parseCalories(formData.get('consumed'));
     const expended = parseCalories(formData.get('expended'));
+    const consumedSoFar = consumed ?? yesterday?.consumed;
+    const expendedSoFar = expended ?? yesterday?.expended;
 
     updateItem<DayData>(DAILY_PATH, {
       ...yesterday,
@@ -34,10 +36,17 @@ export function YesterdayCalories() {
       ...(consumed !== undefined && { consumed }),
       ...(expended !== undefined && { expended }),
     });
+    setIsPoweringOff(
+      consumedSoFar !== undefined && expendedSoFar !== undefined,
+    );
   };
 
   return (
-    <form className="yesterday-calories" onSubmit={handleSubmit}>
+    <form
+      className={`yesterday-calories ${isPoweringOff ? 'powering-off' : ''}`}
+      onSubmit={handleSubmit}
+      onAnimationEnd={() => setIsPoweringOff(false)}
+    >
       <FormControl
         hideLabel
         label="In"

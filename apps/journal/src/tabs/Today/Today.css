@@ -31,8 +31,12 @@
 }
 
 .yesterday-calories {
-  flex-direction: row;
   gap: 8px;
+
+  &.powering-off {
+    pointer-events: none;
+    animation: crt-power-on 0.45s ease-in reverse forwards;
+  }
 
   input {
     border-radius: 4px;
