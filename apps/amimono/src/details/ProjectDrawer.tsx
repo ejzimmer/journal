@@ -6,7 +6,6 @@ import { PencilIcon } from 'shared/icons/Pencil';
 import { Project } from '../projects/types';
 import { getSockProgress } from '../socks/getSockProgress';
 import { SockTracker } from '../socks/SockTracker';
-import { useRecipientSockNumbers } from '../sockPlanner/useRecipientSockNumbers';
 import { SubtaskList } from '../subtasks/SubtaskList';
 import { hasProjectDetails } from './hasProjectDetails';
 import { ProjectDetails } from './ProjectDetails';
@@ -20,7 +19,6 @@ export function ProjectDrawer({ project, onEdit }: ProjectDrawerProps) {
   const [areDetailsOpen, setAreDetailsOpen] = useState(false);
   const hasDetails = hasProjectDetails(project);
   const socks = getSockProgress(project);
-  const sockNumbers = useRecipientSockNumbers(project);
 
   return (
     <div className="project-drawer">
@@ -45,13 +43,7 @@ export function ProjectDrawer({ project, onEdit }: ProjectDrawerProps) {
         </button>
       </div>
       {hasDetails && areDetailsOpen && <ProjectDetails project={project} />}
-      {socks && (
-        <SockTracker
-          projectId={project.id}
-          socks={socks}
-          numbers={sockNumbers}
-        />
-      )}
+      {socks && <SockTracker project={project} socks={socks} />}
       <SubtaskList
         projectId={project.id}
         subtasks={Object.values(project.subtasks ?? {})}

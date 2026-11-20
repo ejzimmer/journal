@@ -1,11 +1,12 @@
 import { screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { renderWithStorage } from 'shared/storageContextTestUtils';
+import { Project } from '../projects/types';
 import { SockProgress } from './types';
 import { SockTracker } from './SockTracker';
 
-const projectId = 'project-1';
-const socksKey = `projects/${projectId}/socks`;
+const project: Project = { id: 'project-1', name: 'Socks', type: 'socks' };
+const socksKey = `projects/${project.id}/socks`;
 
 const createSocks = (
   first: number,
@@ -18,7 +19,7 @@ const createSocks = (
 
 function renderSockTracker(socks: SockProgress) {
   const setValue = jest.fn();
-  renderWithStorage(<SockTracker projectId={projectId} socks={socks} />, {
+  renderWithStorage(<SockTracker project={project} socks={socks} />, {
     value: { setValue },
   });
 

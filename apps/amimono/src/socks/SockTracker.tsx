@@ -3,25 +3,26 @@ import { SOCKS, Sock, SockProgress } from './types';
 import { DirectionSwitch } from './DirectionSwitch';
 import { SockPicture } from './SockPicture';
 import { clampKnittedCount, getSocksKey } from './sockProgress';
-import { SockNumbers } from '../sockPlanner/types';
+import { Project } from '../projects/types';
+import { useRecipientSockNumbers } from '../sockPlanner/useRecipientSockNumbers';
 import { SockAnnotations } from './SockAnnotations';
 import { ANNOTATED_SOCK_PAIR_VIEWBOX, SOCK_PAIR_VIEWBOX } from './sockShape';
 
 import './SockTracker.css';
 
 type SockTrackerProps = {
-  projectId: string;
+  project: Project;
   socks: SockProgress;
-  numbers?: SockNumbers;
 };
 
-export function SockTracker({ projectId, socks, numbers }: SockTrackerProps) {
+export function SockTracker({ project, socks }: SockTrackerProps) {
+  const numbers = useRecipientSockNumbers(project);
   const isAnnotated = numbers && socks.direction === 'cuff_down';
 
   const { setValue } = useStorageContext();
 
   const saveSocks = (nextSocks: SockProgress) =>
-    setValue<SockProgress>(getSocksKey(projectId), nextSocks);
+    setValue<SockProgress>(getSocksKey(project.id), nextSocks);
 
   const setKnittedCount = (sock: Sock, count: number) =>
     saveSocks({
