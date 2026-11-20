@@ -125,7 +125,7 @@ dialog.progress-update-modal {
   border-radius: 10px;
 
   input[type='number'] {
-    width: 3.6ch;
+    width: calc(4ch + 8px);
     padding-inline: 2px;
     padding-block: 4px;
     border: 0;

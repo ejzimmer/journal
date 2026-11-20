@@ -132,7 +132,7 @@
 }
 
 .count-field input {
-  width: 3.6ch;
+  width: calc(4ch + 8px);
   text-align: center;
   font-variant-numeric: tabular-nums;
   appearance: textfield;
