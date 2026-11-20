@@ -8,7 +8,7 @@ import { DraggableListItem } from 'shared/drag-and-drop/DraggableListItem';
 import { DragPreview } from 'shared/drag-and-drop/DragPreview';
 import { draggableTypeKey } from 'shared/drag-and-drop/types';
 import { getToday } from 'shared/dates';
-import { useTodaySlots } from '../Today/useTodaySlots';
+import { TodayLinkCheckbox } from './TodayLinkCheckbox';
 
 type SubtaskProps = ProjectSubtask & {
   path: string;
@@ -19,9 +19,6 @@ export function Subtask({ path, dragHandle, ...task }: SubtaskProps) {
   const { updateItem, deleteItem } = useStorageContext();
 
   const { linkedTask, updateLinkedTask } = useLinkedTasks(task.linkedId);
-  const { hasFreeSlot, addSubtaskToSlot, isSubtaskInSlot } = useTodaySlots();
-  const subtaskPath = `${path}/${task.id}`;
-  const isLinked = !!linkedTask || isSubtaskInSlot(subtaskPath);
 
   const updateTask = (task: ProjectSubtask) => {
     updateItem<ProjectSubtask>(path, task);
@@ -67,18 +64,10 @@ export function Subtask({ path, dragHandle, ...task }: SubtaskProps) {
         onDelete={() => deleteItem(path, task)}
         style={{ fontSize: '1em' }}
       />
-      {isLinked ? (
-        <>🔗</>
-      ) : (
-        <button
-          className="icon ghost copy-button"
-          aria-label="Add to today"
-          disabled={!hasFreeSlot}
-          onClick={() => addSubtaskToSlot(subtaskPath)}
-        >
-          <span style={{ fontSize: '.7em' }}>🔗</span>
-        </button>
-      )}
+      <TodayLinkCheckbox
+        subtaskPath={`${path}/${task.id}`}
+        hasLegacyLink={!!linkedTask}
+      />
     </DraggableListItem>
   );
 }

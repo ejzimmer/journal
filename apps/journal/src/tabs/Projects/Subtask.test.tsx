@@ -23,6 +23,7 @@ const createSlot = (id: string, position: number): SubtaskSlot => ({
 function renderSubtask(slots: Record<string, SubtaskSlot> = {}) {
   const storage = createMockFirebaseContext({ 今日: { slots } });
   const addItem = jest.spyOn(storage, 'addItem');
+  const setValues = jest.spyOn(storage, 'setValues');
   render(
     <FirebaseContext.Provider value={storage}>
       <ol>
@@ -31,48 +32,62 @@ function renderSubtask(slots: Record<string, SubtaskSlot> = {}) {
     </FirebaseContext.Provider>,
   );
 
-  return { addItem };
+  return { addItem, setValues };
 }
 
 describe('Subtask', () => {
-  describe('when a Today slot is free', () => {
-    describe('and the user clicks the link button', () => {
-      it('puts the subtask in the next Today slot', async () => {
-        const { addItem } = renderSubtask({ a: createSlot('a', 0) });
+  describe('when the subtask is not on today', () => {
+    describe('and a Today slot is free', () => {
+      describe('and the user ticks the link checkbox', () => {
+        it('puts the subtask in the next Today slot', async () => {
+          const { addItem } = renderSubtask({ a: createSlot('a', 0) });
 
-        await userEvent.click(
-          screen.getByRole('button', { name: 'Add to today' }),
-        );
+          await userEvent.click(
+            screen.getByRole('checkbox', { name: 'On today' }),
+          );
 
-        expect(addItem).toHaveBeenCalledWith(TODAY_SLOTS_KEY, {
-          subtaskPath: `${path}/drill`,
-          position: 1,
+          expect(addItem).toHaveBeenCalledWith(TODAY_SLOTS_KEY, {
+            subtaskPath: `${path}/drill`,
+            position: 1,
+          });
+          expect(
+            screen.getByRole('checkbox', { name: 'On today' }),
+          ).toBeChecked();
         });
       });
+    });
 
-      it('swaps the button for the linked marker', async () => {
-        renderSubtask();
-        const button = screen.getByRole('button', { name: 'Add to today' });
+    describe('and every Today slot is full', () => {
+      it('disables the link checkbox', () => {
+        renderSubtask({
+          a: createSlot('a', 0),
+          b: createSlot('b', 1),
+          c: createSlot('c', 2),
+        });
 
-        await userEvent.click(button);
-
-        expect(button).not.toBeInTheDocument();
-        expect(screen.getByText('🔗')).toBeInTheDocument();
+        expect(
+          screen.getByRole('checkbox', { name: 'On today' }),
+        ).toBeDisabled();
       });
     });
   });
 
-  describe('when every Today slot is full', () => {
-    it('disables the link button', () => {
-      renderSubtask({
-        a: createSlot('a', 0),
-        b: createSlot('b', 1),
-        c: createSlot('c', 2),
-      });
+  describe('when the subtask is already in a Today slot', () => {
+    describe('and the user unticks the link checkbox', () => {
+      it('empties that slot', async () => {
+        const { setValues } = renderSubtask({
+          slot: { id: 'slot', position: 0, subtaskPath: `${path}/drill` },
+        });
+        const checkbox = screen.getByRole('checkbox', { name: 'On today' });
+        expect(checkbox).toBeChecked();
 
-      expect(
-        screen.getByRole('button', { name: 'Add to today' }),
-      ).toBeDisabled();
+        await userEvent.click(checkbox);
+
+        expect(setValues).toHaveBeenCalledWith({
+          [`${TODAY_SLOTS_KEY}/slot`]: null,
+        });
+        expect(checkbox).not.toBeChecked();
+      });
     });
   });
 });

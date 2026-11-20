@@ -30,16 +30,25 @@ export function useTodaySlots() {
     addItem(TODAY_SLOTS_KEY, { subtaskPath, position: nextPosition });
   };
 
-  const isSubtaskInSlot = (subtaskPath: string) =>
-    slots.some(
+  const findSubtaskSlot = (subtaskPath: string) =>
+    slots.find(
       (slot) => isSubtaskSlot(slot) && slot.subtaskPath === subtaskPath,
     );
+
+  const removeSubtaskFromSlot = (subtaskPath: string) => {
+    const slot = findSubtaskSlot(subtaskPath);
+    if (slot) setValues({ [`${TODAY_SLOTS_KEY}/${slot.id}`]: null });
+  };
+
+  const isSubtaskInSlot = (subtaskPath: string) =>
+    findSubtaskSlot(subtaskPath) !== undefined;
 
   return {
     slots,
     hasFreeSlot,
     moveTaskToSlot,
     addSubtaskToSlot,
+    removeSubtaskFromSlot,
     isSubtaskInSlot,
   };
 }

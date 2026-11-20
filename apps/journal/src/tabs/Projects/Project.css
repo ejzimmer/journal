@@ -250,7 +250,7 @@
       &:not(:has(:checked)):focus-within .copy-button {
         opacity: 1;
 
-        &:disabled {
+        &:has(:disabled) {
           opacity: 0.3;
         }
       }
@@ -294,9 +294,20 @@
   .copy-button {
     opacity: 0;
     margin-inline-start: 12px;
+    font-size: 0.7em;
+    cursor: pointer;
     transition: all 0.2s;
 
-    &:focus {
+    &:has(:checked) {
+      opacity: 1;
+      font-size: 1em;
+    }
+
+    &:has(:disabled) {
+      cursor: not-allowed;
+    }
+
+    &:has(:focus-visible) {
       outline: 2px solid var(--project-colour);
       outline-offset: 6px;
     }
