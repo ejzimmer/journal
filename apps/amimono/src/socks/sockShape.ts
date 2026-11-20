@@ -45,24 +45,26 @@ export function mapSockPoint(sock: Sock, [x, y]: [number, number]) {
   };
 }
 
-const FOOT_AXIS_START = [66, 300] as const;
-const FOOT_AXIS_DIRECTION = [0.944, 0.331] as const;
-const FOOT_AXIS_OUTWARD = [-0.331, 0.944] as const;
+const SOLE_AXIS_HEEL = [64, 270] as const;
+const SOLE_AXIS_DIRECTION = [0.793, 0.609] as const;
+const SOLE_AXIS_OUTWARD = [-0.609, 0.793] as const;
 
-export const FOOT_TOE_START_DISTANCE = 161.6;
-export const FOOT_TOE_TIP_DISTANCE = 226.7;
-export const FOOT_SOLE_AT_TOE_START_OFFSET = 62;
+export const SOLE_TOE_START_DISTANCE = 192.9;
+export const SOLE_TOE_TIP_DISTANCE = 239.2;
+export const SOLE_TOE_TIP_OFFSET = -13.7;
+export const SOLE_INSTEP_AT_TOE_START_OFFSET = -74;
+export const SOLE_SOLE_OFFSET = 31.4;
 
-export function mapFootPoint(sock: Sock, distance: number, offset: number) {
+export function mapSolePoint(sock: Sock, distance: number, offset: number) {
   return mapSockPoint(sock, [
-    FOOT_AXIS_START[0] +
-      distance * FOOT_AXIS_DIRECTION[0] +
-      offset * FOOT_AXIS_OUTWARD[0],
-    FOOT_AXIS_START[1] +
-      distance * FOOT_AXIS_DIRECTION[1] +
-      offset * FOOT_AXIS_OUTWARD[1],
+    SOLE_AXIS_HEEL[0] +
+      distance * SOLE_AXIS_DIRECTION[0] +
+      offset * SOLE_AXIS_OUTWARD[0],
+    SOLE_AXIS_HEEL[1] +
+      distance * SOLE_AXIS_DIRECTION[1] +
+      offset * SOLE_AXIS_OUTWARD[1],
   ]);
 }
 
-export const FOOT_TEXT_ANGLE =
-  (Math.atan2(-FOOT_AXIS_DIRECTION[1], FOOT_AXIS_DIRECTION[0]) * 180) / Math.PI;
+export const SOLE_TEXT_ANGLE =
+  (Math.atan2(-SOLE_AXIS_DIRECTION[1], SOLE_AXIS_DIRECTION[0]) * 180) / Math.PI;
