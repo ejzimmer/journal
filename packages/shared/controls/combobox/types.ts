@@ -21,6 +21,7 @@ type SingleValueProps<T> = BaseProps<T> & {
   isMultiValue?: false;
   value: T | undefined;
   onChange: (value: T) => void;
+  onClear?: () => void;
 };
 
 export type SingleValueInputProps<T> = {
@@ -28,12 +29,15 @@ export type SingleValueInputProps<T> = {
   searchInputValue: string;
   onChangeSearchTerm: (event: React.ChangeEvent<HTMLInputElement>) => void;
   children: ReactNode;
+  onClear?: () => void;
+  clearLabel: string;
 } & Omit<SearchInputProps, 'value' | 'onChange'>;
 
 type MultiValueProps<T> = BaseProps<T> & {
   isMultiValue: true;
   value: T[];
   onChange: (value: T[]) => void;
+  onClear?: never;
 };
 
 export type MultiValueInputProps<T> = {

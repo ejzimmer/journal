@@ -70,6 +70,7 @@ Object.entries(projectsByList).forEach(([listKey, entries]) => {
 projects['future-1'] = {
   ...projects['future-1'],
   socks: { direction: 'cuff_down', knittedSections: { first: 6, second: 2 } },
+  recipientId: 'recipient-3',
 };
 
 projects['priority-1'] = {

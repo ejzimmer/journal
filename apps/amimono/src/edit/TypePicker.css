@@ -1,32 +1,5 @@
-.type-picker {
-  .combobox-field {
-    gap: 6px;
-  }
-
-  .combobox {
-    width: 100%;
-  }
-
-  .single-value-container {
-    border-radius: 6px;
-  }
-
-  .type-option {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-
-  [role='option'] {
-    padding: 6px 10px;
-
-    &:not(:last-child) {
-      border-bottom: none;
-    }
-
-    &[aria-selected='true'] {
-      background: rgb(var(--card-pastel));
-      color: inherit;
-    }
-  }
+.type-picker .type-option {
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }

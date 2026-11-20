@@ -43,7 +43,7 @@ export function ProjectDrawer({ project, onEdit }: ProjectDrawerProps) {
         </button>
       </div>
       {hasDetails && areDetailsOpen && <ProjectDetails project={project} />}
-      {socks && <SockTracker projectId={project.id} socks={socks} />}
+      {socks && <SockTracker project={project} socks={socks} />}
       <SubtaskList
         projectId={project.id}
         subtasks={Object.values(project.subtasks ?? {})}

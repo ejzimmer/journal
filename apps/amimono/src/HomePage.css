@@ -73,6 +73,27 @@
     border-width: 2px;
   }
 
+  .combobox-field {
+    gap: 6px;
+  }
+
+  .combobox .single-value-container {
+    border-radius: 6px;
+  }
+
+  .combobox [role='option'] {
+    padding: 6px 10px;
+
+    &:not(:last-child) {
+      border-bottom: none;
+    }
+
+    &[aria-selected='true'] {
+      background: rgb(var(--card-pastel));
+      color: inherit;
+    }
+  }
+
   input:not([type='radio'], [role='combobox']):focus-visible,
   select:focus-visible,
   .single-value-container:focus-within,

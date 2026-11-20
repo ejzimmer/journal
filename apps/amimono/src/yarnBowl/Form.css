@@ -40,10 +40,6 @@
       [role='option'] {
         padding: 6px 8px;
 
-        &:not(:last-child) {
-          border-bottom: none;
-        }
-
         &[aria-selected='true'] {
           background: color-mix(in srgb, var(--yarn-colour) 40%, white);
           color: inherit;

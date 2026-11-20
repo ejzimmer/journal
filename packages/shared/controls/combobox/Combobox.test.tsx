@@ -285,6 +285,27 @@ describe('Combobox', () => {
       });
     });
 
+    describe('when it has onClear', () => {
+      describe('and the user clicks the clear button', () => {
+        it('clears the value', async () => {
+          const user = userEvent.setup();
+          const onClear = jest.fn();
+          render(
+            <Combobox
+              {...commonProps}
+              label="Fruit"
+              value={options[0]}
+              onClear={onClear}
+            />,
+          );
+
+          await user.click(screen.getByRole('button', { name: 'Clear fruit' }));
+
+          expect(onClear).toHaveBeenCalled();
+        });
+      });
+    });
+
     describe('when hideSelectedOptions is true', () => {
       it('does not show selected options in the dropdown', async () => {
         const user = userEvent.setup();

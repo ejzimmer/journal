@@ -35,3 +35,30 @@ const SOCK_OFFSETS: Record<Sock, { x: number; y: number }> = {
 
 export const getSockTransform = (sock: Sock) =>
   `translate(${SOCK_OFFSETS[sock].x} ${SOCK_OFFSETS[sock].y}) scale(-0.4 0.4) translate(-290 -90)`;
+
+export const ANNOTATED_SOCK_PAIR_VIEWBOX = '0 0 150 160';
+
+export function mapSockPoint(sock: Sock, [x, y]: [number, number]) {
+  return {
+    x: SOCK_OFFSETS[sock].x - 0.4 * (x - 290),
+    y: SOCK_OFFSETS[sock].y + 0.4 * (y - 90),
+  };
+}
+
+const SOLE_AXIS_HEEL = [64, 270] as const;
+const SOLE_AXIS_DIRECTION = [0.793, 0.609] as const;
+const SOLE_AXIS_OUTWARD = [-0.609, 0.793] as const;
+
+export function mapSolePoint(sock: Sock, distance: number, offset: number) {
+  return mapSockPoint(sock, [
+    SOLE_AXIS_HEEL[0] +
+      distance * SOLE_AXIS_DIRECTION[0] +
+      offset * SOLE_AXIS_OUTWARD[0],
+    SOLE_AXIS_HEEL[1] +
+      distance * SOLE_AXIS_DIRECTION[1] +
+      offset * SOLE_AXIS_OUTWARD[1],
+  ]);
+}
+
+export const SOLE_TEXT_ANGLE =
+  (Math.atan2(-SOLE_AXIS_DIRECTION[1], SOLE_AXIS_DIRECTION[0]) * 180) / Math.PI;
