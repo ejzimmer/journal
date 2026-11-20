@@ -1,12 +1,7 @@
-.recipient-picker .recipient-field {
-  display: flex;
-  align-items: flex-end;
-  gap: 6px;
-  width: 100%;
-  max-width: 260px;
-
+.recipient-picker {
   .combobox-field {
-    flex: 1;
+    width: 100%;
+    max-width: 260px;
     gap: 6px;
   }
 
@@ -29,17 +24,5 @@
       background: rgb(var(--card-pastel));
       color: inherit;
     }
-  }
-
-  .clear-recipient {
-    display: grid;
-    place-items: center;
-    width: 30px;
-    height: 34px;
-    padding: 0;
-    border: 0;
-    background: none;
-    color: hsl(0 0% 45%);
-    cursor: pointer;
   }
 }

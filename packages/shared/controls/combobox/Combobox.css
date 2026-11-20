@@ -78,6 +78,29 @@
       }
     }
 
+    .clear {
+      position: absolute;
+      inset-block: 0;
+      right: 28px;
+      display: grid;
+      place-items: center;
+      width: 20px;
+      padding: 0;
+      border: 0;
+      background: none;
+      color: var(--body-colour-light);
+      cursor: pointer;
+
+      &:hover,
+      &:focus-visible {
+        color: var(--body-colour);
+      }
+    }
+
+    &.clearable input[role='combobox'] {
+      padding-inline-end: 50px;
+    }
+
     &.showing-value input[role='combobox'] {
       color: transparent;
       caret-color: transparent;

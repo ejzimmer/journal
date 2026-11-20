@@ -1,5 +1,4 @@
 import { Combobox } from 'shared/controls/combobox/Combobox';
-import { XIcon } from 'shared/icons/X';
 import { useRecipients } from '../sockPlanner/useRecipients';
 
 import './RecipientPicker.css';
@@ -18,25 +17,13 @@ export function RecipientPicker({
 
   return (
     <div className="edit-field recipient-picker">
-      <div className="recipient-field">
-        <Combobox
-          label="Recipient"
-          value={options.find((option) => option.id === recipientId)}
-          options={options}
-          onChange={(option) => onChange(option.id)}
-        />
-        {recipientId && (
-          <button
-            type="button"
-            className="clear-recipient"
-            aria-label="Clear recipient"
-            title="Clear recipient"
-            onClick={() => onChange(undefined)}
-          >
-            <XIcon width="12" />
-          </button>
-        )}
-      </div>
+      <Combobox
+        label="Recipient"
+        value={options.find((option) => option.id === recipientId)}
+        options={options}
+        onChange={(option) => onChange(option.id)}
+        onClear={() => onChange(undefined)}
+      />
     </div>
   );
 }

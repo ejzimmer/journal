@@ -16,6 +16,7 @@ export function Combobox<T extends OptionType>({
   value,
   options,
   onChange,
+  onClear,
   createOption,
   hideSelectedOptions,
   Option,
@@ -192,6 +193,8 @@ export function Combobox<T extends OptionType>({
             size={inputSize}
             ariaLabel={ariaLabel}
             autoFocus={autoFocus}
+            onClear={onClear}
+            clearLabel={label ? `Clear ${label.toLowerCase()}` : 'Clear'}
           >
             {Value && value ? <Value value={value} /> : null}
           </SingleValueInput>
