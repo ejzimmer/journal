@@ -102,56 +102,6 @@
   }
 }
 
-.todo-task-list.calendar form.add-task-form {
-  grid-template-columns: repeat(3, min-content) 1fr;
-  max-width: 480px;
-
-  @media (width <= 600px) {
-    grid-template-columns: min-content minmax(0, 1fr) min-content;
-
-    .buttons {
-      grid-column: 1 / -1;
-    }
-  }
-
-  .description {
-    grid-column: 1 / -1;
-  }
-
-  .repeats {
-    align-items: center;
-  }
-
-  .repeats .box {
-    position: relative;
-    width: 36px;
-    height: 36px;
-
-    input {
-      --led-colour: var(--led-blue);
-      width: 100%;
-      height: 100%;
-      border-radius: 50%;
-    }
-
-    svg {
-      position: absolute;
-      inset: 8px;
-      pointer-events: none;
-      color: var(--crt-dim);
-      transition:
-        color 0.2s ease,
-        translate 0.1s ease;
-    }
-
-    input:checked + svg {
-      color: white;
-      translate: 0 1px;
-      filter: drop-shadow(0 0 3px var(--led-blue));
-    }
-  }
-}
-
 .todo-task-list.calendar .status-cycle-button {
   --led-colour: var(--led-blue);
   display: grid;

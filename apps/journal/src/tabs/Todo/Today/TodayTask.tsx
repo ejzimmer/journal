@@ -1,16 +1,17 @@
 import { useStorageContext } from 'shared/FirebaseContext';
 
 import './TodayTask.css';
-import { DailyTask, DAILY_KEY, ProjectSubtask } from '../../../types';
+import { DailyTask, ProjectSubtask } from '../../../types';
 import { TodayTaskDescription } from './TodayTaskDescription';
 import { getToday } from 'shared/dates';
 
 type TodayTaskProps = {
   task: DailyTask;
+  listId: string;
   onChange: (task: DailyTask) => void;
 };
 
-export function TodayTask({ task, onChange }: TodayTaskProps) {
+export function TodayTask({ task, listId, onChange }: TodayTaskProps) {
   const { useValue, updateItem, deleteItem } = useStorageContext();
 
   const { value: linkedTask } = useValue<ProjectSubtask>(task?.linkedTask);
@@ -50,7 +51,7 @@ export function TodayTask({ task, onChange }: TodayTaskProps) {
         if ('isChecked' in change) {
           handleStatusChange();
         } else if ('description' in change && change.description === '') {
-          deleteItem<DailyTask>(DAILY_KEY, task);
+          deleteItem<DailyTask>(listId, task);
         } else {
           onChange({ ...task, ...change });
         }

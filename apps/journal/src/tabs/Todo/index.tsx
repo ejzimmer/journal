@@ -1,8 +1,9 @@
 import { createContext } from 'react';
-import { TODO_KEY, TodoTask } from '../../types';
-import { TodayList } from './Today/TodayList';
+import { DAILY_KEY, ONCE_KEY, TODO_KEY, TodoTask } from '../../types';
+import { DailyTaskList } from './Today/DailyTaskList';
 import { ThisWeekList } from './ThisWeek/ThisWeekList';
 import { DueDateList } from './DueDate/DueDateList';
+import { AddTodoForm } from './AddTodoForm';
 
 import './index.css';
 import { useStorageContext } from 'shared/FirebaseContext';
@@ -24,9 +25,17 @@ export function Todo() {
 
   return (
     <CategoriesContext.Provider value={Array.from(categories)}>
-      <div className="today">
-        <div className="today-panel" style={{ gridArea: 'today' }}>
-          <TodayList />
+      <div className="today todo">
+        <div className="today-panel" style={{ gridArea: 'form' }}>
+          <AddTodoForm />
+        </div>
+        <div className="daily-lists" style={{ gridArea: 'lists' }}>
+          <div className="today-panel">
+            <DailyTaskList listId={DAILY_KEY} />
+          </div>
+          <div className="today-panel">
+            <DailyTaskList listId={ONCE_KEY} />
+          </div>
         </div>
         <div
           className="today-panel"

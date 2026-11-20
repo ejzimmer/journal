@@ -1,7 +1,7 @@
 import { useStorageContext } from 'shared/FirebaseContext';
 import {
   Category,
-  DAILY_KEY,
+  ONCE_KEY,
   DailyTask,
   ProjectDetails,
   PROJECTS_KEY,
@@ -20,7 +20,7 @@ export function useLinkedTasks(linkedId?: string) {
   const { useValue, addItem, updateItem } = useStorageContext();
 
   const { value: linkedTask } = useValue<DailyTask>(
-    linkedId && `${DAILY_KEY}/${linkedId}`,
+    linkedId && `${ONCE_KEY}/${linkedId}`,
   );
 
   const createLinkedTask = ({
@@ -32,17 +32,14 @@ export function useLinkedTasks(linkedId?: string) {
     category: Category;
     linkedTaskId: string;
   }) => {
-    const linkedId = addItem<Omit<DailyTask, keyof OrderedListItem>>(
-      DAILY_KEY,
-      {
-        category,
-        description,
-        status: 'ready',
-        type: '一度',
-        lastCompleted: getToday(),
-        linkedTask: linkedTaskId,
-      },
-    );
+    const linkedId = addItem<Omit<DailyTask, keyof OrderedListItem>>(ONCE_KEY, {
+      category,
+      description,
+      status: 'ready',
+      type: '一度',
+      lastCompleted: getToday(),
+      linkedTask: linkedTaskId,
+    });
 
     return linkedId;
   };
@@ -50,7 +47,7 @@ export function useLinkedTasks(linkedId?: string) {
   const updateLinkedTask = (updatedTask: Partial<DailyTask>) => {
     if (!linkedTask) return;
 
-    updateItem<DailyTask>(DAILY_KEY, {
+    updateItem<DailyTask>(ONCE_KEY, {
       ...linkedTask,
       ...updatedTask,
     });

@@ -16,6 +16,9 @@ export type DailyTaskDetails = {
 };
 export type DailyTask = DailyTaskDetails & TodoTask;
 
+export const ONCE_KEY = `${TODO_KEY}/一`;
+export const ONCE_RESET_KEY = `${TODO_KEY}/onceReset`;
+
 export const WEEKLY_KEY = `${TODO_KEY}/週`;
 export const WEEKLY_RESET_KEY = `${TODO_KEY}/weeklyReset`;
 export type WeeklyTaskDetails = {

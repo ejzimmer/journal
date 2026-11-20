@@ -1,4 +1,3 @@
-import { AddThisWeekTaskForm } from './AddThisWeekTaskForm';
 import { ThisWeekTask } from './ThisWeekTask';
 import { WEEKLY_KEY, WeeklyTask } from '../../../types';
 import { useRef } from 'react';
@@ -42,7 +41,6 @@ export function ThisWeekList() {
       ) : (
         <div>No tasks</div>
       )}
-      <AddThisWeekTaskForm />
     </div>
   );
 }

@@ -8,10 +8,13 @@ import {
 import {
   CALENDAR_KEY,
   CalendarTask,
+  DAILY_KEY,
+  DailyTask,
   Category,
   Exercise,
   ExerciseClass,
   HEALTH_PATH,
+  ONCE_KEY,
   ProjectDetails,
   ProjectSubtask,
   PROJECTS_KEY,
@@ -876,6 +879,43 @@ const weeklyTasks = indexById([
   createWeeklyTask('weekly-yoga', 'Yoga', '🧘', 4, [], 4),
 ]);
 
+function createDailyTask(
+  listId: string,
+  id: string,
+  description: string,
+  category: string,
+  type: DailyTask['type'],
+  position: number,
+): DailyTask {
+  return {
+    id,
+    description,
+    category,
+    type,
+    status: 'ready',
+    lastCompleted: getToday(),
+    parentId: listId,
+    position,
+  };
+}
+
+const dailyTasks = indexById([
+  createDailyTask(DAILY_KEY, 'daily-meds', 'Take vitamins', '💊', '毎日', 0),
+  createDailyTask(DAILY_KEY, 'daily-duo', 'Duolingo', '🦉', '毎日', 1),
+]);
+
+const onceTasks = indexById([
+  createDailyTask(ONCE_KEY, 'once-parcel', 'Post the parcel', '📦', '一度', 0),
+  createDailyTask(
+    ONCE_KEY,
+    'once-library',
+    'Return library books',
+    '📚',
+    '一度',
+    1,
+  ),
+]);
+
 function createCalendarTask(
   id: string,
   description: string,
@@ -970,7 +1010,12 @@ export const seedData = {
       },
     },
   },
-  [TODO_KEY]: { 週: weeklyTasks, 暦: calendarTasks },
+  [TODO_KEY]: {
+    日: dailyTasks,
+    一: onceTasks,
+    週: weeklyTasks,
+    暦: calendarTasks,
+  },
   [PROJECTS_KEY]: projects,
   [HEALTH_PATH]: { exercises, classes },
   language_media: { '2026': languageMedia },

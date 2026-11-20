@@ -1,4 +1,4 @@
-import { getDateDaysAgo, getToday } from 'shared/dates';
+import { getDateDaysAgo } from 'shared/dates';
 import {
   createDailyJobsStorage,
   renderDailyJob,
@@ -42,48 +42,6 @@ describe('resetting daily tasks', () => {
       expect(storage.updateList).toHaveBeenCalledWith(DAILY_KEY, [
         expect.objectContaining({ id: 'washing-up', status: 'ready' }),
         expect.objectContaining({ id: 'exercise', status: 'ready' }),
-      ]);
-    });
-  });
-
-  describe('a one-off task finished on an earlier day', () => {
-    it('is removed', async () => {
-      const storage = await resetTasks([
-        createTask('book-flights', { type: '一度', status: 'finished' }),
-        createTask('exercise', { position: 1 }),
-      ]);
-
-      expect(storage.updateList).toHaveBeenCalledWith(DAILY_KEY, [
-        expect.objectContaining({ id: 'exercise' }),
-      ]);
-    });
-
-    it('leaves no gap in the positions behind it', async () => {
-      const storage = await resetTasks([
-        createTask('book-flights', { type: '一度', status: 'finished' }),
-        createTask('exercise', { position: 1 }),
-        createTask('washing-up', { position: 2 }),
-      ]);
-
-      expect(storage.updateList).toHaveBeenCalledWith(DAILY_KEY, [
-        expect.objectContaining({ id: 'exercise', position: 0 }),
-        expect.objectContaining({ id: 'washing-up', position: 1 }),
-      ]);
-    });
-  });
-
-  describe('a one-off task finished today', () => {
-    it('is left alone', async () => {
-      const storage = await resetTasks([
-        createTask('book-flights', {
-          type: '一度',
-          status: 'finished',
-          lastCompleted: getToday(),
-        }),
-      ]);
-
-      expect(storage.updateList).toHaveBeenCalledWith(DAILY_KEY, [
-        expect.objectContaining({ id: 'book-flights', status: 'finished' }),
       ]);
     });
   });
