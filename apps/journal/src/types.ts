@@ -12,6 +12,8 @@ export type DailyTaskDetails = {
   type: '毎日' | '一度';
   status: 'ready' | 'done' | 'finished';
   lastCompleted: string;
+  // Links to a project or subtask written by versions that copied subtasks
+  // into the todo list; only read to migrate them into Today slots.
   linkedTask?: string;
 };
 export type DailyTask = DailyTaskDetails & TodoTask;

@@ -1,14 +1,9 @@
+import { EmojiCheckbox } from 'shared/controls/EmojiCheckbox';
 import { useTodaySlots } from '../Today/useTodaySlots';
 
-type TodayLinkCheckboxProps = {
-  subtaskPath: string;
-  hasLegacyLink: boolean;
-};
+type TodayLinkCheckboxProps = { subtaskPath: string };
 
-export function TodayLinkCheckbox({
-  subtaskPath,
-  hasLegacyLink,
-}: TodayLinkCheckboxProps) {
+export function TodayLinkCheckbox({ subtaskPath }: TodayLinkCheckboxProps) {
   const {
     hasFreeSlot,
     addSubtaskToSlot,
@@ -18,20 +13,16 @@ export function TodayLinkCheckbox({
   const isInSlot = isSubtaskInSlot(subtaskPath);
 
   return (
-    <label className="copy-button">
-      <input
-        type="checkbox"
-        className="hidden"
-        aria-label="On today"
-        checked={isInSlot || hasLegacyLink}
-        disabled={hasLegacyLink || (!isInSlot && !hasFreeSlot)}
-        onChange={(event) =>
-          event.target.checked
-            ? addSubtaskToSlot(subtaskPath)
-            : removeSubtaskFromSlot(subtaskPath)
-        }
-      />
-      <span aria-hidden="true">🔗</span>
-    </label>
+    <EmojiCheckbox
+      emoji="🔗"
+      label="On today"
+      isChecked={isInSlot}
+      disabled={!isInSlot && !hasFreeSlot}
+      onChange={(event) =>
+        event.target.checked
+          ? addSubtaskToSlot(subtaskPath)
+          : removeSubtaskFromSlot(subtaskPath)
+      }
+    />
   );
 }

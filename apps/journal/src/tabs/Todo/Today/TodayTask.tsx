@@ -1,7 +1,7 @@
 import { useStorageContext } from 'shared/FirebaseContext';
 
 import './TodayTask.css';
-import { DailyTask, ProjectSubtask } from '../../../types';
+import { DailyTask } from '../../../types';
 import { TodayTaskDescription } from './TodayTaskDescription';
 import { getToday } from 'shared/dates';
 
@@ -12,9 +12,7 @@ type TodayTaskProps = {
 };
 
 export function TodayTask({ task, listId, onChange }: TodayTaskProps) {
-  const { useValue, updateItem, deleteItem } = useStorageContext();
-
-  const { value: linkedTask } = useValue<ProjectSubtask>(task?.linkedTask);
+  const { deleteItem } = useStorageContext();
 
   const handleStatusChange = () => {
     if (task.status !== 'ready') {
@@ -28,16 +26,6 @@ export function TodayTask({ task, listId, onChange }: TodayTaskProps) {
         ...task,
         status: task.type === '毎日' ? 'done' : 'finished',
         lastCompleted: getToday(),
-      });
-    }
-
-    if (task.linkedTask && linkedTask) {
-      const segments = task.linkedTask.split('/');
-      const path = segments.slice(0, segments.length - 1).join('/');
-
-      updateItem<ProjectSubtask>(path, {
-        ...linkedTask,
-        status: task.status === 'finished' ? 'ready' : 'done',
       });
     }
   };

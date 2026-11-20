@@ -50,7 +50,7 @@
     --card-border-width: 1px;
 
     .project-name,
-    label.emoji-checkbox {
+    .project-main-row label.emoji-checkbox {
       opacity: 0.6;
     }
   }
@@ -68,7 +68,7 @@
       font-weight: 500;
     }
 
-    label.emoji-checkbox {
+    .project-main-row label.emoji-checkbox {
       font-size: 1.35em;
       text-shadow: none;
     }
@@ -246,8 +246,8 @@
     li {
       padding-block: 2px;
 
-      &:not(:has(:checked)):hover .copy-button,
-      &:not(:has(:checked)):focus-within .copy-button {
+      &:not(:has(:checked)):hover .emoji-checkbox,
+      &:not(:has(:checked)):focus-within .emoji-checkbox {
         opacity: 1;
 
         &:has(:disabled) {
@@ -291,16 +291,16 @@
     }
   }
 
-  .copy-button {
+  .subtask .emoji-checkbox {
     opacity: 0;
     margin-inline-start: 12px;
     font-size: 0.7em;
-    cursor: pointer;
     transition: all 0.2s;
 
-    &:has(:checked) {
+    &.done {
       opacity: 1;
       font-size: 1em;
+      filter: none;
     }
 
     &:has(:disabled) {

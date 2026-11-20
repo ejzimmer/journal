@@ -12,11 +12,9 @@ import {
   PROJECTS_KEY,
   ProjectStatus,
 } from '../../types';
-import { useLinkedTasks } from './utils';
 import { ArrowToEndIcon } from 'shared/icons/ArrowToEnd';
 import { ArrowToStartIcon } from 'shared/icons/ArrowToStart';
 import { EditableText } from 'shared/controls/EditableText';
-import { getToday } from 'shared/dates';
 import { updateCompletionDate } from 'shared/years';
 
 type ProjectProps = {
@@ -71,8 +69,6 @@ export function Project({
 
   const { updateItem } = useStorageContext();
 
-  const { updateLinkedTask } = useLinkedTasks(project.linkedTaskId);
-
   const saveStatus = (nextStatus: ProjectStatus) =>
     updateItem(
       PROJECTS_KEY,
@@ -90,11 +86,6 @@ export function Project({
     } else {
       saveStatus('in_progress');
     }
-
-    updateLinkedTask({
-      status: status === 'in_progress' ? 'finished' : 'ready',
-      lastCompleted: getToday(),
-    });
   };
 
   const subtasks = Object.values(project.subtasks ?? {});

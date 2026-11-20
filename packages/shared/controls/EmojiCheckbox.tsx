@@ -8,6 +8,7 @@ type EmojiCheckboxProps = {
   onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
   label: string;
   useTickForDone?: boolean;
+  disabled?: boolean;
   tooltipTriggerProps?: TooltipTriggerProps;
 };
 
@@ -17,6 +18,7 @@ export function EmojiCheckbox({
   onChange,
   label,
   useTickForDone,
+  disabled,
   tooltipTriggerProps,
 }: EmojiCheckboxProps) {
   const checkedClass = isChecked ? (useTickForDone ? 'done-icon' : 'done') : '';
@@ -31,6 +33,7 @@ export function EmojiCheckbox({
         type="checkbox"
         onChange={onChange}
         checked={isChecked}
+        disabled={disabled}
       />
       {isChecked && useTickForDone ? (
         <DoneTick />

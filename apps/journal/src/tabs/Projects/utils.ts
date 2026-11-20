@@ -1,5 +1,4 @@
-import { useStorageContext } from 'shared/FirebaseContext';
-import { ONCE_KEY, DailyTask, ProjectDetails, PROJECTS_KEY } from '../../types';
+import { ProjectDetails, PROJECTS_KEY } from '../../types';
 import { renumberPositions } from 'shared/drag-and-drop/utils';
 
 export const getSubtasksKey = (projectId: string, subtaskId?: string) => {
@@ -7,25 +6,6 @@ export const getSubtasksKey = (projectId: string, subtaskId?: string) => {
 
   return subtaskId ? `${key}/${subtaskId}` : key;
 };
-
-export function useLinkedTasks(linkedId?: string) {
-  const { useValue, updateItem } = useStorageContext();
-
-  const { value: linkedTask } = useValue<DailyTask>(
-    linkedId && `${ONCE_KEY}/${linkedId}`,
-  );
-
-  const updateLinkedTask = (updatedTask: Partial<DailyTask>) => {
-    if (!linkedTask) return;
-
-    updateItem<DailyTask>(ONCE_KEY, {
-      ...linkedTask,
-      ...updatedTask,
-    });
-  };
-
-  return { linkedTask, updateLinkedTask };
-}
 
 export function reorderProjects(
   projects: ProjectDetails[],
