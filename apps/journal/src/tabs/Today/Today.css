@@ -10,16 +10,39 @@
     grid-template-areas: 'health health health' 'lists week dates';
     grid-template-rows: auto 1fr;
   }
+
+  &:has(.today-health:empty) {
+    grid-template-areas: 'lists' 'week' 'dates';
+    grid-template-rows: none;
+
+    @media (width > 880px) {
+      grid-template-areas: 'lists week' 'lists dates';
+      grid-template-rows: auto 1fr;
+    }
+
+    @media (width > 1360px) {
+      grid-template-areas: 'lists week dates';
+      grid-template-rows: none;
+    }
+  }
 }
 
 .today-health {
   display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 24px;
+
+  &:empty {
+    display: none;
+  }
+}
+
+.today-symptoms {
+  display: flex;
+  margin-block-start: 12px;
 
   .symptom-trigger {
+    justify-content: start;
     min-width: 40px;
+    max-width: 100%;
     min-height: 36px;
     color: var(--crt-green);
 

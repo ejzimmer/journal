@@ -73,7 +73,7 @@ body:has(.today) {
 
 .task-screen,
 .today-task-description > [role='button'],
-.today-health .symptom-trigger {
+.today-symptoms .symptom-trigger {
   margin-block: 3px;
   padding: 4px 10px;
   border: 1px solid hsl(0 0% 0%);
