@@ -28,6 +28,35 @@
       outline-offset: 2px;
     }
   }
+
+  .symptom-list[popover] {
+    left: anchor(left);
+    translate: 0 6px;
+    position-try-fallbacks:
+      flip-block,
+      flip-inline,
+      flip-block flip-inline;
+    border: 1px solid var(--crt-dim);
+    border-radius: 4px;
+    background: var(--crt-bg);
+    box-shadow: 0 0 16px hsl(120 100% 50% / 0.15);
+  }
+
+  .symptom-row ~ .symptom-row {
+    border-top-color: var(--crt-rule);
+  }
+
+  .symptom-level:not(:hover, [aria-selected='true']) {
+    opacity: 0.55;
+  }
+
+  .symptom-level[aria-selected='true'] {
+    background: var(--highlight-colour);
+  }
+
+  .symptom-trigger:focus-visible + .symptom-list .symptom-level[data-active] {
+    outline-color: var(--crt-green);
+  }
 }
 
 .yesterday-calories {
