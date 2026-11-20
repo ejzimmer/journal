@@ -33,15 +33,6 @@
     }
   }
 
-  input {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    margin: 0;
-    opacity: 0;
-    clip-path: inset(50%);
-  }
-
   &:focus-within {
     outline: 2px solid var(--body-colour);
   }

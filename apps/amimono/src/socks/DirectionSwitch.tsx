@@ -22,6 +22,7 @@ export function DirectionSwitch({ value, onChange }: DirectionSwitchProps) {
         <label key={direction} title={label}>
           <input
             type="radio"
+            className="hidden"
             name={name}
             value={direction}
             aria-label={label}
