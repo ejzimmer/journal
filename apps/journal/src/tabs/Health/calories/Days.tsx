@@ -72,6 +72,7 @@ export function Days({ days, onSelectDay }: DaysProps) {
               balance={day.balance}
               symptoms={symptoms}
               watchCharged={isWatchCharged(day.trackers)}
+              onSelect={() => onSelectDay(day.id)}
             />
           </li>
         );

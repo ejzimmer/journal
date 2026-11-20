@@ -193,6 +193,55 @@ describe('Days', () => {
     });
   });
 
+  describe('in the opened circle', () => {
+    const showDayWithIcons = (onSelectDay = jest.fn()) => {
+      const days: Balance[] = mockDays.map((day) =>
+        day.day === 5
+          ? { ...day, trackers: ['headache-2', 'watch-charged'] }
+          : day,
+      );
+      render(<Days days={days} onSelectDay={onSelectDay} />);
+    };
+    const getOpenCircleIcon = (name: string, description: string) =>
+      screen.getByRole('img', { name, description, hidden: true });
+
+    describe('when the pointer moves over a symptom', () => {
+      it('shows the symptom in a tooltip', async () => {
+        const user = userEvent.setup();
+        showDayWithIcons();
+        const tooltip = screen.getByText('headache');
+
+        await user.hover(getOpenCircleIcon('headache 2', 'headache'));
+
+        expect(tooltip).toBeVisible();
+      });
+    });
+
+    describe('when the pointer moves over the watch', () => {
+      it('shows the watch in a tooltip', async () => {
+        const user = userEvent.setup();
+        showDayWithIcons();
+        const tooltip = screen.getByText('watch charged');
+
+        await user.hover(getOpenCircleIcon('watch charged', 'watch charged'));
+
+        expect(tooltip).toBeVisible();
+      });
+    });
+
+    describe('when an icon is clicked', () => {
+      it("calls onSelectDay with the day's id", async () => {
+        const user = userEvent.setup();
+        const onSelectDay = jest.fn();
+        showDayWithIcons(onSelectDay);
+
+        await user.click(getOpenCircleIcon('headache 2', 'headache'));
+
+        expect(onSelectDay).toHaveBeenCalledWith('2026-01-05');
+      });
+    });
+  });
+
   describe('dot colours', () => {
     const renderDiffs = (diffs: number[]) => {
       const days = mockDays

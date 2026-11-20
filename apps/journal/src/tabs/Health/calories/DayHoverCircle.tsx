@@ -1,6 +1,6 @@
 import { SymptomIcons } from './SymptomIcons';
 import { LoggedSymptom } from './symptoms';
-import { SymptomIcon } from './SymptomIcon';
+import { LoggedSymptomIcon } from './LoggedSymptomIcon';
 import { WATCH } from './watchCharging';
 import { HOVER_ICON_SIZE } from './hoverSize';
 import './DayHoverCircle.css';
@@ -11,6 +11,7 @@ type DayHoverCircleProps = {
   balance?: number;
   symptoms: LoggedSymptom[];
   watchCharged: boolean;
+  onSelect: () => void;
 };
 
 export function DayHoverCircle({
@@ -19,24 +20,28 @@ export function DayHoverCircle({
   balance,
   symptoms,
   watchCharged,
+  onSelect,
 }: DayHoverCircleProps) {
   return (
-    <div className="day-hover-circle" aria-hidden="true">
+    <div className="day-hover-circle" aria-hidden="true" onClick={onSelect}>
       <div className="day-hover-heading">
         <b>
           {day} {month}
         </b>
         <div>{balance?.toLocaleString()}</div>
         {watchCharged && (
-          <SymptomIcon
-            symptom={WATCH}
-            magnitude={1}
-            width={`${HOVER_ICON_SIZE}px`}
-            onDot
+          <LoggedSymptomIcon
+            icon={{ symptom: WATCH, magnitude: 1 }}
+            iconSize={HOVER_ICON_SIZE}
+            hasTooltip
           />
         )}
       </div>
-      <SymptomIcons symptoms={symptoms} iconSize={HOVER_ICON_SIZE} />
+      <SymptomIcons
+        symptoms={symptoms}
+        iconSize={HOVER_ICON_SIZE}
+        hasTooltips
+      />
     </div>
   );
 }
