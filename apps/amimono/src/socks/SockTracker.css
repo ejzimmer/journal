@@ -13,7 +13,7 @@
     overflow: visible;
 
     &.annotated {
-      max-width: 290px;
+      max-width: 216px;
     }
   }
 
@@ -127,23 +127,6 @@
     text {
       font-size: 7px;
       fill: var(--body-colour);
-    }
-
-    path {
-      fill: none;
-      stroke: rgb(var(--card-dark));
-      stroke-width: 0.7;
-    }
-
-    .halo {
-      stroke: white;
-      stroke-width: 1.8;
-      stroke-linecap: round;
-    }
-
-    .extension-line {
-      stroke-width: 0.5;
-      stroke-dasharray: 1.6 1.2;
     }
   }
 }

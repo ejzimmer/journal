@@ -1,13 +1,6 @@
 import { SockNumbers } from '../sockPlanner/types';
-import { SoleDimension } from './SoleDimension';
-import {
-  SOLE_INSTEP_AT_TOE_START_OFFSET,
-  SOLE_SOLE_OFFSET,
-  SOLE_TOE_START_DISTANCE,
-  SOLE_TOE_TIP_DISTANCE,
-  SOLE_TOE_TIP_OFFSET,
-  mapSockPoint,
-} from './sockShape';
+import { SoleLabel } from './SoleLabel';
+import { mapSockPoint } from './sockShape';
 
 type SockAnnotationsProps = {
   numbers: SockNumbers;
@@ -15,10 +8,6 @@ type SockAnnotationsProps = {
 
 const CUFF_TOP_CENTRE = mapSockPoint('second', [120, 98]);
 const CAST_ON_LABEL_GAP = 3;
-const TOE_START_DIMENSION_OFFSET = -110;
-const TOE_START_LABEL_DISTANCE = 140;
-const LENGTH_DIMENSION_OFFSET = 60;
-const EXTENSION_GAP = 4;
 
 export function SockAnnotations({ numbers }: SockAnnotationsProps) {
   return (
@@ -30,23 +19,12 @@ export function SockAnnotations({ numbers }: SockAnnotationsProps) {
       >
         {numbers.castOnStitches} sts
       </text>
-      <SoleDimension
-        sock="first"
-        endDistance={SOLE_TOE_START_DISTANCE}
-        startExtensionFrom={-EXTENSION_GAP}
-        endExtensionFrom={SOLE_INSTEP_AT_TOE_START_OFFSET - EXTENSION_GAP}
-        offset={TOE_START_DIMENSION_OFFSET}
-        label={`${numbers.startToeAtMm} mm`}
-        labelDistance={TOE_START_LABEL_DISTANCE}
-      />
-      <SoleDimension
-        sock="second"
-        endDistance={SOLE_TOE_TIP_DISTANCE}
-        startExtensionFrom={SOLE_SOLE_OFFSET + EXTENSION_GAP}
-        endExtensionFrom={SOLE_TOE_TIP_OFFSET + EXTENSION_GAP}
-        offset={LENGTH_DIMENSION_OFFSET}
-        label={`${numbers.lengthMm} mm`}
-      />
+      <SoleLabel sock="first" distance={150} offset={-92}>
+        ← {numbers.startToeAtMm}mm
+      </SoleLabel>
+      <SoleLabel sock="second" distance={120} offset={52}>
+        ← {numbers.lengthMm}mm →
+      </SoleLabel>
     </g>
   );
 }

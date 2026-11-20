@@ -28,8 +28,8 @@ describe('sock recipients', () => {
       const card = await expandCard(user);
 
       expect(card.getByText('80 sts')).toBeInTheDocument();
-      expect(card.getByText('273 mm')).toBeInTheDocument();
-      expect(card.getByText('241.7 mm')).toBeInTheDocument();
+      expect(card.getByText('← 273mm →')).toBeInTheDocument();
+      expect(card.getByText('← 241.7mm')).toBeInTheDocument();
     });
 
     describe('at the gauge of the project', () => {

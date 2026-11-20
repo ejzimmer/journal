@@ -36,7 +36,7 @@ const SOCK_OFFSETS: Record<Sock, { x: number; y: number }> = {
 export const getSockTransform = (sock: Sock) =>
   `translate(${SOCK_OFFSETS[sock].x} ${SOCK_OFFSETS[sock].y}) scale(-0.4 0.4) translate(-290 -90)`;
 
-export const ANNOTATED_SOCK_PAIR_VIEWBOX = '0 0 184 180';
+export const ANNOTATED_SOCK_PAIR_VIEWBOX = '0 0 150 160';
 
 export function mapSockPoint(sock: Sock, [x, y]: [number, number]) {
   return {
@@ -48,12 +48,6 @@ export function mapSockPoint(sock: Sock, [x, y]: [number, number]) {
 const SOLE_AXIS_HEEL = [64, 270] as const;
 const SOLE_AXIS_DIRECTION = [0.793, 0.609] as const;
 const SOLE_AXIS_OUTWARD = [-0.609, 0.793] as const;
-
-export const SOLE_TOE_START_DISTANCE = 192.9;
-export const SOLE_TOE_TIP_DISTANCE = 239.2;
-export const SOLE_TOE_TIP_OFFSET = -13.7;
-export const SOLE_INSTEP_AT_TOE_START_OFFSET = -74;
-export const SOLE_SOLE_OFFSET = 31.4;
 
 export function mapSolePoint(sock: Sock, distance: number, offset: number) {
   return mapSockPoint(sock, [
