@@ -60,7 +60,7 @@ const getSubtaskDescriptions = () =>
   screen
     .getAllByRole('listitem')
     .map((item) =>
-      within(item).getByRole('checkbox').getAttribute('aria-label'),
+      within(item).getAllByRole('checkbox')[0].getAttribute('aria-label'),
     );
 
 describe('SubtaskList', () => {

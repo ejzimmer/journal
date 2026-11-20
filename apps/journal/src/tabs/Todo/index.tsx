@@ -1,32 +1,33 @@
 import { createContext } from 'react';
-import { TODO_KEY, TodoTask } from '../../types';
-import { TodayList } from './Today/TodayList';
+import { DAILY_KEY, ONCE_KEY } from '../../types';
+import { DailyTaskList } from './Today/DailyTaskList';
 import { ThisWeekList } from './ThisWeek/ThisWeekList';
 import { DueDateList } from './DueDate/DueDateList';
+import { AddTodoForm } from './AddTodoForm';
+import { MoveToTodayButton } from './Today/MoveToTodayButton';
 
 import './index.css';
-import { useStorageContext } from 'shared/FirebaseContext';
+import { TodoCategoriesProvider } from './TodoCategoriesProvider';
 
 export const CategoriesContext = createContext<string[] | undefined>(undefined);
 
 export function Todo() {
-  const { useValue } = useStorageContext();
-  const { value: lists } =
-    useValue<Record<string, Record<string, TodoTask> | string>>(TODO_KEY);
-  if (!lists) {
-    return null;
-  }
-
-  const tasks = Object.values(lists)
-    .filter((list) => typeof list === 'object')
-    .flatMap((list) => Object.values(list));
-  const categories = new Set(tasks.map((task) => task.category));
-
   return (
-    <CategoriesContext.Provider value={Array.from(categories)}>
-      <div className="today">
-        <div className="today-panel" style={{ gridArea: 'today' }}>
-          <TodayList />
+    <TodoCategoriesProvider>
+      <div className="today todo">
+        <div className="today-panel" style={{ gridArea: 'form' }}>
+          <AddTodoForm />
+        </div>
+        <div className="daily-lists" style={{ gridArea: 'lists' }}>
+          <div className="today-panel">
+            <DailyTaskList listId={DAILY_KEY} />
+          </div>
+          <div className="today-panel">
+            <DailyTaskList
+              listId={ONCE_KEY}
+              renderAction={(task) => <MoveToTodayButton task={task} />}
+            />
+          </div>
         </div>
         <div
           className="today-panel"
@@ -38,6 +39,6 @@ export function Todo() {
           <DueDateList />
         </div>
       </div>
-    </CategoriesContext.Provider>
+    </TodoCategoriesProvider>
   );
 }

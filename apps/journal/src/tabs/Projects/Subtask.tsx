@@ -1,53 +1,28 @@
 import { ReactElement } from 'react';
 import { Checkbox } from 'shared/controls/Checkbox';
 import { useStorageContext } from 'shared/FirebaseContext';
-import { ProjectDetails, ProjectSubtask } from '../../types';
-import { ButtonWithConfirmation } from 'shared/controls/ButtonWithConfirmation';
-import { useLinkedTasks } from './utils';
+import { ProjectSubtask } from '../../types';
 import { EditableText } from 'shared/controls/EditableText';
 import { DraggableListItem } from 'shared/drag-and-drop/DraggableListItem';
 import { DragPreview } from 'shared/drag-and-drop/DragPreview';
 import { draggableTypeKey } from 'shared/drag-and-drop/types';
-import { getToday } from 'shared/dates';
+import { TodayLinkCheckbox } from './TodayLinkCheckbox';
 
 type SubtaskProps = ProjectSubtask & {
-  project: ProjectDetails;
   path: string;
   dragHandle: ReactElement;
 };
 
-export function Subtask({ path, dragHandle, project, ...task }: SubtaskProps) {
+export function Subtask({ path, dragHandle, ...task }: SubtaskProps) {
   const { updateItem, deleteItem } = useStorageContext();
-
-  const {
-    linkedTask,
-    createLinkedTask: createDailyTask,
-    updateLinkedTask,
-  } = useLinkedTasks(task.linkedId);
 
   const updateTask = (task: ProjectSubtask) => {
     updateItem<ProjectSubtask>(path, task);
   };
 
-  const onAddToTodo = () => {
-    const linkedId = createDailyTask({
-      description: `${project.description}: ${task.description}`,
-      category: task.category,
-      linkedTaskId: `${path}/${task.id}`,
-    });
-
-    if (linkedId) updateTask({ ...task, linkedId });
-    return !!linkedId;
-  };
-
   const handleChange = () => {
     const status = task.status === 'done' ? 'ready' : 'done';
     updateTask({ ...task, status });
-
-    updateLinkedTask({
-      status,
-      lastCompleted: getToday(),
-    });
   };
 
   return (
@@ -80,17 +55,7 @@ export function Subtask({ path, dragHandle, project, ...task }: SubtaskProps) {
         onDelete={() => deleteItem(path, task)}
         style={{ fontSize: '1em' }}
       />
-      {!linkedTask ? (
-        <ButtonWithConfirmation
-          className={`icon ghost copy-button ${linkedTask ? 'linked' : ''}`}
-          onClick={onAddToTodo}
-          confirmationMessage="Copied!"
-        >
-          <span style={{ fontSize: '.7em' }}>🔗</span>
-        </ButtonWithConfirmation>
-      ) : (
-        <>🔗</>
-      )}
+      <TodayLinkCheckbox subtaskPath={`${path}/${task.id}`} />
     </DraggableListItem>
   );
 }

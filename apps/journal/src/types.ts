@@ -12,9 +12,14 @@ export type DailyTaskDetails = {
   type: '毎日' | '一度';
   status: 'ready' | 'done' | 'finished';
   lastCompleted: string;
+  // Links to a project or subtask written by versions that copied subtasks
+  // into the todo list; only read to migrate them into Today slots.
   linkedTask?: string;
 };
 export type DailyTask = DailyTaskDetails & TodoTask;
+
+export const ONCE_KEY = `${TODO_KEY}/一`;
+export const ONCE_RESET_KEY = `${TODO_KEY}/onceReset`;
 
 export const WEEKLY_KEY = `${TODO_KEY}/週`;
 export const WEEKLY_RESET_KEY = `${TODO_KEY}/weeklyReset`;
@@ -35,6 +40,16 @@ export type CalendarTaskDetails = {
   repeats?: boolean;
 };
 export type CalendarTask = CalendarTaskDetails & TodoTask;
+
+export const TODAY_TAB_KEY = '今日';
+export const TODAY_SNAPSHOT_KEY = `${TODAY_TAB_KEY}/snapshot`;
+export const TODAY_SNAPSHOT_RESET_KEY = `${TODAY_TAB_KEY}/snapshotReset`;
+export const TODAY_SLOTS_KEY = `${TODAY_TAB_KEY}/slots`;
+export const TODAY_SLOTS_RESET_KEY = `${TODAY_TAB_KEY}/slotsReset`;
+export const TODAY_SLOT_COUNT = 3;
+export type SnapshotEntry = { id: string; listId: string };
+export type SubtaskSlot = { id: string; position: number; subtaskPath: string };
+export type TodaySlot = DailyTask | SubtaskSlot;
 
 export const HEALTH_PATH = 'health';
 

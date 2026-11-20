@@ -1,4 +1,3 @@
-import { AddDueDateTaskForm } from './AddDueDateTaskForm';
 import { DueDateTask } from './DueDateTask';
 
 import './DueDateTask.css';
@@ -25,7 +24,6 @@ export function DueDateList() {
       ) : (
         <div>No tasks</div>
       )}
-      <AddDueDateTaskForm />
     </div>
   );
 }

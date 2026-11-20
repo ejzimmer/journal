@@ -1,0 +1,59 @@
+.today.today-tab {
+  grid-template-areas: 'health' 'lists' 'week' 'dates';
+
+  @media (width > 880px) {
+    grid-template-areas: 'health health' 'lists week' 'lists dates';
+    grid-template-rows: auto auto 1fr;
+  }
+
+  @media (width > 1360px) {
+    grid-template-areas: 'health health health' 'lists week dates';
+    grid-template-rows: auto 1fr;
+  }
+}
+
+.today-health {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 24px;
+
+  .symptom-trigger {
+    min-width: 40px;
+    min-height: 36px;
+    color: var(--crt-green);
+
+    &:focus-visible {
+      outline: 1px solid var(--crt-green);
+      outline-offset: 2px;
+    }
+  }
+}
+
+.yesterday-calories {
+  gap: 8px;
+
+  &.powering-off {
+    pointer-events: none;
+    animation: crt-power-on 0.45s ease-in reverse forwards;
+  }
+
+  input {
+    border-radius: 4px;
+    padding: 8px;
+    font-size: 16px;
+  }
+}
+
+.today-slots {
+  padding-inline-start: 0;
+  margin-block: 0;
+
+  .today-slot.empty {
+    height: 38px;
+    margin-block: 2px;
+    margin-inline-start: 48px;
+    border: 1px dashed var(--crt-rule);
+    border-radius: 4px;
+  }
+}

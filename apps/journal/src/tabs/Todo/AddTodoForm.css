@@ -1,0 +1,85 @@
+.add-todo-form {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: end;
+  gap: 16px;
+
+  [role='radiogroup'].switch.led-switch {
+    align-self: end;
+  }
+
+  input {
+    border-radius: 4px;
+    padding: 8px;
+    font-size: 16px;
+  }
+
+  input[type='number'] {
+    width: 60px;
+  }
+
+  .combobox {
+    input {
+      padding-inline: 16px;
+    }
+    .value {
+      left: 16px;
+      pointer-events: none;
+    }
+  }
+
+  .description {
+    flex: 1 1 200px;
+    min-width: 160px;
+    max-width: 360px;
+
+    input {
+      width: 100%;
+      box-sizing: border-box;
+    }
+  }
+
+  .repeats {
+    align-items: center;
+  }
+
+  .repeats .box {
+    position: relative;
+    width: 36px;
+    height: 36px;
+
+    input {
+      --led-colour: var(--led-blue);
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+    }
+
+    svg {
+      position: absolute;
+      inset: 8px;
+      pointer-events: none;
+      color: var(--crt-dim);
+      transition:
+        color 0.2s ease,
+        translate 0.1s ease;
+    }
+
+    input:checked + svg {
+      color: white;
+      translate: 0 1px;
+      filter: drop-shadow(0 0 3px var(--led-blue));
+    }
+  }
+}
+
+.add-todo-fields {
+  display: flex;
+  flex: 0 1 600px;
+  flex-wrap: wrap;
+  align-items: end;
+  gap: 16px;
+  transform-origin: center;
+  animation: crt-power-on 0.45s ease-out;
+}

@@ -1,7 +1,7 @@
 import { getDaysSince } from 'shared/dates';
 import { SMALL_SCREEN_QUERY, useMediaQuery } from 'shared/useMediaQuery';
 import { WeeklyTask } from '../../../types';
-import { formatWeekday, isTaskDue } from './utils';
+import { formatWeekday, getMostRecentlyDone, isTaskDue } from './utils';
 import { ProgressBar } from './ProgressBar';
 import { ProgressCount } from './ProgressCount';
 
@@ -25,13 +25,7 @@ export function ProgressIndicator({
   const numberDone = completedDates.length;
   const remainder = Math.max(numberDone - frequency, 0);
 
-  const mostRecentlyDone = completedDates.reduce<string | undefined>(
-    (latest, date) =>
-      latest === undefined || Temporal.PlainDate.compare(date, latest) > 0
-        ? date
-        : latest,
-    undefined,
-  );
+  const mostRecentlyDone = getMostRecentlyDone(completedDates);
   const isDue = isTaskDue(mostRecentlyDone, frequency);
   const daysSinceDone = mostRecentlyDone ? getDaysSince(mostRecentlyDone) : 0;
   const fillOpacity =

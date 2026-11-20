@@ -1,8 +1,6 @@
+import { ReactNode, useRef } from 'react';
 import { TodayTask } from './TodayTask';
-
-import { AddTodayTaskForm } from './AddTodayTaskForm';
-import { DailyTask, DAILY_KEY } from '../../../types';
-import { useRef } from 'react';
+import { DailyTask } from '../../../types';
 import { useStorageContext } from 'shared/FirebaseContext';
 import { DraggableListItem } from 'shared/drag-and-drop/DraggableListItem';
 import { draggableTypeKey, SortableItem } from 'shared/drag-and-drop/types';
@@ -12,22 +10,25 @@ import { useDropTarget } from 'shared/drag-and-drop/useDropTarget';
 import { useDraggableList } from 'shared/drag-and-drop/useDraggableList';
 import { isDraggable, sortByPosition } from 'shared/drag-and-drop/utils';
 
-export function TodayList() {
+type DailyTaskListProps = {
+  listId: string;
+  renderAction?: (task: DailyTask) => ReactNode;
+};
+
+export function DailyTaskList({ listId, renderAction }: DailyTaskListProps) {
   const listRef = useRef<HTMLOListElement>(null);
   const { useValue, updateList, updateItem } = useStorageContext();
-  const { value } = useValue<Record<string, DailyTask>>(DAILY_KEY);
+  const { value } = useValue<Record<string, DailyTask>>(listId);
   const tasks = value ? sortByPosition(Object.values(value)) : [];
 
   useDropTarget({
     dropTargetRef: listRef,
     canDrop: ({ source }) => isDraggable(source.data),
-    getData: () => ({ listId: DAILY_KEY }),
+    getData: () => ({ listId }),
   });
   useDraggableList({
-    listId: DAILY_KEY,
-    canDropSourceOnTarget: (source) => {
-      return source[draggableTypeKey] === '日';
-    },
+    listId,
+    canDropSourceOnTarget: (source) => source[draggableTypeKey] === listId,
     getTargetListId: (source) => source.parentId,
     getAxis: () => 'vertical',
   });
@@ -41,36 +42,37 @@ export function TodayList() {
               key={task.id}
               className={`today-task item status-${task.status} type-${task.type}`}
               getData={() => ({
-                [draggableTypeKey]: '日',
+                [draggableTypeKey]: listId,
                 id: task.id,
-                parentId: DAILY_KEY,
+                parentId: listId,
               })}
               dragPreview={<DragPreview>{task.description}</DragPreview>}
-              isDroppable={(data) => data[draggableTypeKey] === '日'}
+              isDroppable={(data) => data[draggableTypeKey] === listId}
               allowedEdges={['bottom', 'top']}
               dragHandle={
                 <DragHandle
                   list={tasks}
                   index={index}
                   onReorder={(tasks: SortableItem[]) => {
-                    updateList(DAILY_KEY, tasks);
+                    updateList(listId, tasks);
                   }}
                 />
               }
             >
               <TodayTask
                 task={task}
+                listId={listId}
                 onChange={(task: DailyTask) => {
-                  updateItem<DailyTask>(DAILY_KEY, task);
+                  updateItem<DailyTask>(listId, task);
                 }}
               />
+              {renderAction?.(task)}
             </DraggableListItem>
           ))}
         </ol>
       ) : (
-        <div>No tasks for today</div>
+        <div>No tasks</div>
       )}
-      <AddTodayTaskForm />
     </div>
   );
 }

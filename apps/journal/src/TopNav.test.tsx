@@ -40,9 +40,10 @@ describe('TopNav', () => {
 
   describe('when every tab fits', () => {
     it('shows every tab in the bar', () => {
-      renderTopNav({ barWidth: TAB_WIDTH * 6 });
+      renderTopNav({ barWidth: TAB_WIDTH * 7 });
 
       expect(getTabNames()).toEqual([
+        'today',
         'todo',
         'health',
         '2026',
@@ -59,7 +60,7 @@ describe('TopNav', () => {
     it('shows as many tabs as fit beside the menu', () => {
       renderTopNav({ barWidth });
 
-      expect(getTabNames()).toEqual(['todo', 'health']);
+      expect(getTabNames()).toEqual(['today', 'todo']);
     });
 
     it('lists the rest in the more tabs menu', async () => {
@@ -69,7 +70,7 @@ describe('TopNav', () => {
 
       expect(
         screen.getAllByRole('menuitem').map((item) => item.textContent),
-      ).toEqual(['2026', 'projects', 'media', 'work']);
+      ).toEqual(['health', '2026', 'projects', 'media', 'work']);
     });
 
     describe('and a tab in the menu is chosen', () => {

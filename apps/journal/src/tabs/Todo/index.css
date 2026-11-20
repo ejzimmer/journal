@@ -43,26 +43,37 @@ body:has(.today) {
   --led-orange: hsl(34 100% 50%);
   display: grid;
   gap: 40px;
-  grid-template-areas: 'today' 'week' 'dates';
   padding-block-start: 20px;
   font-family: ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
 
   @media (width <= 880px) {
     grid-template-columns: minmax(0, 1fr);
   }
+}
+
+.today.todo {
+  grid-template-areas: 'form' 'lists' 'week' 'dates';
 
   @media (width > 880px) {
-    grid-template-areas: 'today week' 'today dates';
-    grid-template-rows: auto 1fr;
+    grid-template-areas: 'form form' 'lists week' 'lists dates';
+    grid-template-rows: auto auto 1fr;
   }
 
   @media (width > 1360px) {
-    grid-template-areas: 'today week dates';
+    grid-template-areas: 'form form form' 'lists week dates';
+    grid-template-rows: auto 1fr;
   }
 }
 
+.daily-lists {
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+}
+
 .task-screen,
-.today-task-description > [role='button'] {
+.today-task-description > [role='button'],
+.today-health .symptom-trigger {
   margin-block: 3px;
   padding: 4px 10px;
   border: 1px solid hsl(0 0% 0%);
@@ -264,58 +275,6 @@ button.category-button,
     }
   }
 
-  button > * {
-    transition: transform 0.2s ease-in;
-  }
-
-  button.form-visible > * {
-    transform: rotate(45deg);
-  }
-
-  form.add-task-form {
-    transition: height 0.2s ease-out;
-    opacity: 0;
-    overflow: hidden;
-    display: grid;
-    grid-template-columns: min-content 1fr 1fr;
-    grid-template-rows: min-content min-content;
-    align-content: start;
-    gap: 16px;
-    padding-inline: 2px;
-    padding-block-end: 12px;
-    max-width: 400px;
-
-    &.visible {
-      opacity: 1;
-    }
-    &:not(.visible) {
-      transition:
-        height 0.2s ease-out,
-        opacity 0.1s 0.2s linear;
-    }
-
-    .description {
-      grid-column: span 3;
-    }
-
-    .combobox {
-      input {
-        padding-inline: 16px;
-      }
-      .value {
-        left: 16px;
-        pointer-events: none;
-      }
-    }
-
-    .buttons {
-      align-self: end;
-      display: flex;
-      justify-content: end;
-      gap: 4px;
-    }
-  }
-
   input {
     border: 1px solid var(--border-colour);
     border-radius: 4px;
@@ -418,5 +377,26 @@ input.led-push-button {
 
   .indicator {
     transition-property: left, box-shadow, border-radius, background;
+  }
+}
+
+@keyframes crt-power-on {
+  0% {
+    transform: scale(1, 0.02);
+    filter: brightness(4);
+    opacity: 0.6;
+  }
+  35% {
+    transform: scale(1, 0.02);
+    filter: brightness(4);
+    opacity: 1;
+  }
+  70% {
+    transform: scale(1, 1.06);
+    filter: brightness(1.6);
+  }
+  100% {
+    transform: none;
+    filter: none;
   }
 }
