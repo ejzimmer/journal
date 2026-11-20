@@ -246,9 +246,13 @@
     li {
       padding-block: 2px;
 
-      &:not(:has(:checked)):hover .copy-button:not(.linked),
-      &:not(:has(:checked)):focus-within .copy-button:not(.linked) {
+      &:not(:has(:checked)):hover .copy-button,
+      &:not(:has(:checked)):focus-within .copy-button {
         opacity: 1;
+
+        &:disabled {
+          opacity: 0.3;
+        }
       }
     }
   }

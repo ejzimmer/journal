@@ -91,7 +91,6 @@ export function SubtaskList({ projectId, isVisible }: SubtasksProps) {
           <Subtask
             key={task.id}
             path={subtasksKey}
-            project={project}
             {...task}
             dragHandle={
               <DragHandle

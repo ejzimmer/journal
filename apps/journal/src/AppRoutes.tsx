@@ -1,5 +1,5 @@
 import { Routes, Route } from 'react-router-dom';
-import { Todo } from './tabs/Todo';
+import { Today } from './tabs/Today';
 import { TABS } from './tabConfig';
 
 export function AppRoutes() {
@@ -8,7 +8,7 @@ export function AppRoutes() {
       {TABS.map(({ path, Element }) => (
         <Route key={path} path={path} element={<Element />} />
       ))}
-      <Route path="/" element={<Todo />} />
+      <Route path="/" element={<Today />} />
     </Routes>
   );
 }

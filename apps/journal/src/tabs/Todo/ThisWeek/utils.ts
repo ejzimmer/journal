@@ -41,3 +41,15 @@ export const isTaskDue = (lastDone: string | undefined, frequency: number) => {
   );
   return getDaysSince(lastDone) >= daysBetweenDones;
 };
+
+export const getMostRecentlyDone = (completed: string[] = []) =>
+  completed.reduce<string | undefined>(
+    (latest, date) =>
+      latest === undefined || Temporal.PlainDate.compare(date, latest) > 0
+        ? date
+        : latest,
+    undefined,
+  );
+
+export const isWeeklyTaskDue = (task: WeeklyTask) =>
+  isTaskDue(getMostRecentlyDone(task.completed), task.frequency);

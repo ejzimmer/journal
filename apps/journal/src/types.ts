@@ -39,6 +39,16 @@ export type CalendarTaskDetails = {
 };
 export type CalendarTask = CalendarTaskDetails & TodoTask;
 
+export const TODAY_TAB_KEY = '今日';
+export const TODAY_SNAPSHOT_KEY = `${TODAY_TAB_KEY}/snapshot`;
+export const TODAY_SNAPSHOT_RESET_KEY = `${TODAY_TAB_KEY}/snapshotReset`;
+export const TODAY_SLOTS_KEY = `${TODAY_TAB_KEY}/slots`;
+export const TODAY_SLOTS_RESET_KEY = `${TODAY_TAB_KEY}/slotsReset`;
+export const TODAY_SLOT_COUNT = 3;
+export type SnapshotEntry = { id: string; listId: string };
+export type SubtaskSlot = { id: string; position: number; subtaskPath: string };
+export type TodaySlot = DailyTask | SubtaskSlot;
+
 export const HEALTH_PATH = 'health';
 
 export const DAILY_PATH = `${HEALTH_PATH}/daily`;
