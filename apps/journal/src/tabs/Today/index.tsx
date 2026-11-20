@@ -27,7 +27,6 @@ export function Today() {
           style={{ gridArea: 'health' }}
         >
           <YesterdayCalories />
-          <TodaySymptoms />
         </div>
         <div className="today-panel" style={{ gridArea: 'lists' }}>
           <div className="todo-task-list">
@@ -68,6 +67,9 @@ export function Today() {
                 </li>
               ))}
             </ol>
+            <div className="today-symptoms">
+              <TodaySymptoms />
+            </div>
           </div>
         </div>
       </div>
