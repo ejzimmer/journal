@@ -119,11 +119,6 @@
         outline-offset: 1px;
       }
     }
-
-    input {
-      position: fixed;
-      top: -100vh;
-    }
   }
 
   .sock-annotations {

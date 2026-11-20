@@ -33,11 +33,6 @@
     }
   }
 
-  input {
-    position: fixed;
-    top: -100vh;
-  }
-
   &:focus-within {
     outline: 2px solid var(--body-colour);
   }

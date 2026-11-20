@@ -66,6 +66,7 @@ export function Switch<T extends string>({
             {Option ? <Option value={option} /> : option}
             <input
               type="radio"
+              className="hidden"
               value={option}
               name={name}
               checked={value === option}
