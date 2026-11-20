@@ -12,13 +12,15 @@
 
   .form-control {
     gap: 2px;
+  }
 
-    label {
-      margin: 0;
-      font-size: 13px;
-      font-weight: normal;
-      color: hsl(0 0% 45%);
-    }
+  .form-control label,
+  .combobox-field .label,
+  .field-label {
+    margin: 0;
+    font-size: 13px;
+    font-weight: normal;
+    color: hsl(0 0% 45%);
   }
 
   .project-card-header .form-control {
@@ -55,14 +57,6 @@
     }
   }
 
-  .type-picker .label,
-  .recipient-picker .label {
-    margin: 0;
-    font-size: 13px;
-    font-weight: normal;
-    color: hsl(0 0% 45%);
-  }
-
   .edit-field {
     margin: 0;
     padding: 0;
@@ -72,11 +66,6 @@
     flex-direction: column;
     align-items: flex-start;
     gap: 6px;
-  }
-
-  .field-label {
-    font-size: 13px;
-    color: hsl(0 0% 45%);
   }
 
   legend.field-label {
