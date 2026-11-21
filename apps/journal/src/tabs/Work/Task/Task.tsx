@@ -19,6 +19,7 @@ import { CopyFeatureGateButton } from './CopyFeatureGateButton';
 
 type TaskProps = {
   task: WorkTask;
+  blockerSource: WorkTask;
   listId: string;
   dragHandle: ReactElement;
   descriptionRef?: Ref<EditableTextHandle>;
@@ -27,6 +28,7 @@ type TaskProps = {
 
 export function Task({
   task,
+  blockerSource,
   listId,
   dragHandle,
   descriptionRef,
@@ -45,12 +47,14 @@ export function Task({
     }
   };
 
+  const isDependent = blockerSource.id !== task.id;
+
   const onChangeBlockedOn = (blocker?: Blocker) => {
-    const { blockedOn, ...taskWithoutBlocked } = task;
+    const { blockedOn, ...sourceWithoutBlocked } = blockerSource;
     if (blocker) {
-      updateTask(listId, { ...task, blockedOn: blocker });
+      updateTask(listId, { ...blockerSource, blockedOn: blocker });
     } else {
-      updateTask(listId, taskWithoutBlocked);
+      updateTask(listId, sourceWithoutBlocked);
     }
   };
 
@@ -64,10 +68,13 @@ export function Task({
       dragPreview={<DragPreview>{task.description}</DragPreview>}
       isDroppable={isTask}
       allowedEdges={['top', 'bottom']}
-      className={`task status-${task.status}`}
+      className={`task status-${task.status} ${isDependent ? 'dependent' : ''}`}
       dragHandle={dragHandle}
     >
-      <BlockedMarker blockedOn={task.blockedOn} onChange={onChangeBlockedOn} />
+      <BlockedMarker
+        blockedOn={blockerSource.blockedOn}
+        onChange={onChangeBlockedOn}
+      />
       <div className="checkbox-container">
         <Checkbox
           isChecked={task.status === 'done'}

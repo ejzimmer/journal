@@ -17,6 +17,7 @@ import { useDropTarget } from 'shared/drag-and-drop/useDropTarget';
 import { sortByPosition } from 'shared/drag-and-drop/utils';
 import { Labels } from './Task/Labels';
 import { LabelsControl } from './LabelsControl';
+import { findBlockerSource } from './dependentTasks';
 
 type PendingFocus = {
   isReady: (tasks: WorkTask[]) => boolean;
@@ -85,12 +86,14 @@ export function TaskList({
     [list?.items],
   );
 
-  const unfinishedTasks = useMemo(
-    () => sortedList.filter((task) => task.status !== 'done'),
+  const blockerSources = useMemo(
+    () => sortedList.map((_, index) => findBlockerSource(sortedList, index)),
     [sortedList],
   );
-  const remainingCount = unfinishedTasks.filter(
-    (task) => !task.blockedOn,
+
+  const unfinishedTasks = sortedList.filter((task) => task.status !== 'done');
+  const remainingCount = sortedList.filter(
+    (task, index) => task.status !== 'done' && !blockerSources[index].blockedOn,
   ).length;
 
   useEffect(() => {
@@ -233,6 +236,7 @@ export function TaskList({
               key={task.id}
               listId={listId}
               task={task}
+              blockerSource={blockerSources[index]}
               descriptionRef={(handle) => {
                 if (handle) {
                   taskDescriptions.current.set(task.id, handle);

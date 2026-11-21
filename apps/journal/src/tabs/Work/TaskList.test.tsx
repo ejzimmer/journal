@@ -107,10 +107,45 @@ const featureGateList: WorkTask = {
   },
 };
 
+const createDependencyTask = (
+  id: string,
+  description: string,
+  position: number,
+  overrides: Partial<WorkTask> = {},
+): WorkTask => ({
+  id,
+  description,
+  status: 'not_started',
+  parentId: 'list-4',
+  lastStatusUpdate: '2026-01-01',
+  position,
+  ...overrides,
+});
+
+const dependencyList: WorkTask = {
+  id: 'list-4',
+  description: 'Rollout',
+  status: 'not_started',
+  parentId: 'work',
+  lastStatusUpdate: '2026-01-01',
+  position: 3,
+  items: {
+    'merge-it': createDependencyTask('merge-it', 'merge it', 0, {
+      blockedOn: 'merge_queue',
+    }),
+    'deploy-it': createDependencyTask('deploy-it', '^^ deploy it', 1, {
+      blockedOn: 'human',
+    }),
+    'announce-it': createDependencyTask('announce-it', '^^ announce it', 2),
+    'tidy-up': createDependencyTask('tidy-up', 'tidy up', 3),
+  },
+};
+
 const lists: Record<string, WorkTask> = {
   [labelledList.id]: labelledList,
   [unlabelledList.id]: unlabelledList,
   [featureGateList.id]: featureGateList,
+  [dependencyList.id]: dependencyList,
 };
 
 const mockLabels: StoredLabel[] = [a11yLabel, urgentLabel];
@@ -236,6 +271,102 @@ describe('TaskList count', () => {
     renderTaskList(labelledList.id, createStorageContext());
 
     expect(screen.queryByLabelText(/tasks remaining/)).not.toBeInTheDocument();
+  });
+});
+
+describe('TaskList dependent tasks', () => {
+  const getTaskItem = (description: string) =>
+    within(screen.getByText(description).closest('li')!);
+
+  const getBlockerButton = (description: string) =>
+    getTaskItem(description).getByRole('button', {
+      name: /^(Blocked on|Mark as blocked)/,
+    });
+
+  describe('a task starting with ^^', () => {
+    it('shows the blocker of the task above it', () => {
+      renderTaskList(dependencyList.id, createStorageContext());
+
+      expect(getBlockerButton('^^ deploy it')).toHaveAccessibleName(
+        'Blocked on merge queue',
+      );
+    });
+
+    it('is styled as dependent', () => {
+      renderTaskList(dependencyList.id, createStorageContext());
+
+      expect(screen.getByText('^^ deploy it').closest('li')).toHaveClass(
+        'dependent',
+      );
+    });
+
+    describe('below another task starting with ^^', () => {
+      it('shows the blocker of the first task above them without ^^', () => {
+        renderTaskList(dependencyList.id, createStorageContext());
+
+        expect(getBlockerButton('^^ announce it')).toHaveAccessibleName(
+          'Blocked on merge queue',
+        );
+      });
+    });
+
+    describe('when its blocker is changed', () => {
+      it('changes the blocker of the task it depends on', async () => {
+        const user = userEvent.setup();
+        const storageContext = createStorageContext();
+        renderTaskList(dependencyList.id, storageContext);
+
+        await user.click(getBlockerButton('^^ announce it'));
+        await user.click(
+          getTaskItem('^^ announce it').getByRole('button', {
+            name: 'Blocked on time',
+            hidden: true,
+          }),
+        );
+
+        expect(storageContext.updateTask).toHaveBeenCalledWith(
+          dependencyList.id,
+          expect.objectContaining({ id: 'merge-it', blockedOn: 'time' }),
+        );
+      });
+    });
+
+    describe('when it is unblocked', () => {
+      it('unblocks the task it depends on', async () => {
+        const user = userEvent.setup();
+        const storageContext = createStorageContext();
+        renderTaskList(dependencyList.id, storageContext);
+
+        await user.click(getBlockerButton('^^ deploy it'));
+        await user.click(
+          getTaskItem('^^ deploy it').getByRole('button', {
+            name: 'Unblock',
+            hidden: true,
+          }),
+        );
+
+        const [, updatedTask] = jest.mocked(storageContext.updateTask).mock
+          .calls[0];
+        expect(updatedTask.id).toBe('merge-it');
+        expect(updatedTask).not.toHaveProperty('blockedOn');
+      });
+    });
+  });
+
+  describe('a task without ^^', () => {
+    it('keeps its own blocker', () => {
+      renderTaskList(dependencyList.id, createStorageContext());
+
+      expect(getBlockerButton('tidy up')).toHaveAccessibleName(
+        'Mark as blocked',
+      );
+    });
+  });
+
+  it('counts dependent tasks as blocked when the task they depend on is', () => {
+    renderTaskList(dependencyList.id, createStorageContext());
+
+    expect(screen.getByLabelText('1 of 4 tasks remaining')).toBeInTheDocument();
   });
 });
 
