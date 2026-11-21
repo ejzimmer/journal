@@ -14,12 +14,12 @@ export type SpineAppearance = {
 
 type SpineProps = SpineAppearance & {
   titleAriaLabel: string;
-  stampAriaLabel: string;
+  statusAriaLabel: string;
   titleRef?: RefObject<HTMLButtonElement | null>;
   onTitleClick: () => void;
-  onStampClick?: () => void;
-  stampPopoverTarget?: string;
-  stampAnchorName?: string;
+  onStatusClick?: () => void;
+  statusPopoverTarget?: string;
+  statusAnchorName?: string;
   onTitleKeyDown?: KeyboardEventHandler<HTMLButtonElement>;
   titleKeyShortcuts?: string;
 };
@@ -33,12 +33,12 @@ export function Spine({
   author,
   glyph,
   titleAriaLabel,
-  stampAriaLabel,
+  statusAriaLabel,
   titleRef,
   onTitleClick,
-  onStampClick,
-  stampPopoverTarget,
-  stampAnchorName,
+  onStatusClick,
+  statusPopoverTarget,
+  statusAnchorName,
   onTitleKeyDown,
   titleKeyShortcuts,
 }: SpineProps) {
@@ -68,11 +68,11 @@ export function Spine({
       </button>
 
       <button
-        className="stamp"
-        aria-label={stampAriaLabel}
-        popoverTarget={stampPopoverTarget}
-        style={{ anchorName: stampAnchorName } as CSSProperties}
-        onClick={onStampClick}
+        className="status"
+        aria-label={statusAriaLabel}
+        popoverTarget={statusPopoverTarget}
+        style={{ anchorName: statusAnchorName } as CSSProperties}
+        onClick={onStatusClick}
       >
         {glyph}
       </button>

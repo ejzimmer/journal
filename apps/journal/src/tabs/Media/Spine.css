@@ -93,7 +93,7 @@
   line-height: 1.1;
 }
 
-.spine .stamp {
+.spine .status {
   position: absolute;
   inset-block-end: 22px;
   inset-inline-start: 50%;
@@ -118,7 +118,7 @@
   }
 }
 
-.spine.todo .stamp {
+.spine.todo .status {
   filter: grayscale(1) contrast(0.5);
   opacity: 0.45;
 
@@ -128,7 +128,7 @@
   }
 }
 
-.spine.done .stamp {
+.spine.done .status {
   color: oklch(35% 0.15 var(--hue));
   font-size: 17px;
   font-weight: 700;

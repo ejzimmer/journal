@@ -77,7 +77,7 @@ export function MediaSpine<T extends MediaDetails, S extends string>({
   const { isFormOpen, triggerRef, openForm, closeForm } = useFormToggle();
   const refocusAfterMoveRef = useRef(false);
   const pickerId = useId();
-  const stampAnchorName = `--stamp-${pickerId.replace(/[^a-zA-Z0-9]/g, '')}`;
+  const statusAnchorName = `--status-${pickerId.replace(/[^a-zA-Z0-9]/g, '')}`;
 
   useEffect(() => {
     if (!refocusAfterMoveRef.current) return;
@@ -118,12 +118,14 @@ export function MediaSpine<T extends MediaDetails, S extends string>({
     <Spine
       {...appearance}
       titleAriaLabel={`${item.title}${author ? `, ${author}` : ''}, ${status}`}
-      stampAriaLabel={`${item.title}: ${status}. Change to ${nextStatuses.join(' or ')}`}
+      statusAriaLabel={`${item.title}: ${status}. Change to ${nextStatuses.join(' or ')}`}
       titleRef={triggerRef}
       onTitleClick={openForm}
-      onStampClick={hasChoice ? undefined : () => updateStatus(nextStatuses[0])}
-      stampPopoverTarget={hasChoice ? pickerId : undefined}
-      stampAnchorName={hasChoice ? stampAnchorName : undefined}
+      onStatusClick={
+        hasChoice ? undefined : () => updateStatus(nextStatuses[0])
+      }
+      statusPopoverTarget={hasChoice ? pickerId : undefined}
+      statusAnchorName={hasChoice ? statusAnchorName : undefined}
       onTitleKeyDown={moveOnArrowKey}
       titleKeyShortcuts={isDraggable ? MOVE_KEYS : undefined}
     />
@@ -134,7 +136,7 @@ export function MediaSpine<T extends MediaDetails, S extends string>({
   const statusPicker = hasChoice && (
     <StatusPicker
       id={pickerId}
-      anchorName={stampAnchorName}
+      anchorName={statusAnchorName}
       options={nextStatuses.map((nextStatus) => ({
         status: nextStatus,
         glyph: config.glyph[nextStatus],

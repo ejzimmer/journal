@@ -13,9 +13,9 @@ export function SpineCopy({ appearance, className }: SpineCopyProps) {
       <Spine
         {...appearance}
         titleAriaLabel={appearance.title}
-        stampAriaLabel={appearance.glyph}
+        statusAriaLabel={appearance.glyph}
         onTitleClick={ignoreClick}
-        onStampClick={ignoreClick}
+        onStatusClick={ignoreClick}
       />
     </div>
   );
