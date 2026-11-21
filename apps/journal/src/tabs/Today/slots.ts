@@ -1,5 +1,5 @@
 import { updateCompletionDate } from 'shared/years';
-import { isSubtaskSlot } from 'shared/todaySlots/types';
+import { AMIMONO_PROJECTS_PATH, isSubtaskSlot } from 'shared/todaySlots/types';
 import {
   DailyTask,
   ProjectDetails,
@@ -17,6 +17,9 @@ const SUBTASKS_SEPARATOR = '/subtasks/';
 
 export const getProjectPath = (subtaskPath: string) =>
   subtaskPath.split(SUBTASKS_SEPARATOR)[0];
+
+export const isAmimonoSubtaskPath = (subtaskPath: string) =>
+  subtaskPath.startsWith(`${AMIMONO_PROJECTS_PATH}/`);
 
 export function findSubtaskStatus(
   projectsByPath: ProjectsByPath,
