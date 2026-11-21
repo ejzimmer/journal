@@ -1,11 +1,11 @@
-import { ComponentType, KeyboardEvent, useEffect, useRef } from 'react';
+import { ComponentType, KeyboardEvent, useEffect, useId, useRef } from 'react';
 import { DraggableListItem } from 'shared/drag-and-drop/DraggableListItem';
 import { Destination, draggableTypeKey } from 'shared/drag-and-drop/types';
 import { MediaDetails } from './types';
 import { useMediaStorage } from './MediaStorageContext';
 import { Spine, SpineAppearance } from './Spine';
 import { SpineCopy } from './SpineCopy';
-import { getNextStatus } from './nextStatus';
+import { StatusPicker } from './StatusPicker';
 import { useFormToggle } from 'shared/controls/useFormToggle';
 
 export type MediaEditFormProps<T extends MediaDetails> = {
@@ -15,7 +15,7 @@ export type MediaEditFormProps<T extends MediaDetails> = {
 };
 
 export type StatusConfig<T extends MediaDetails, S extends string> = {
-  order: readonly S[];
+  nextStatuses: Record<S, readonly [S, ...S[]]>;
   spineStatus: Record<S, 'todo' | 'active' | 'done'>;
   glyph: Record<S, string>;
   getStatus: (item: T) => S;
@@ -76,6 +76,8 @@ export function MediaSpine<T extends MediaDetails, S extends string>({
   const { updateMedia } = useMediaStorage();
   const { isFormOpen, triggerRef, openForm, closeForm } = useFormToggle();
   const refocusAfterMoveRef = useRef(false);
+  const pickerId = useId();
+  const statusAnchorName = `--status-${pickerId.replace(/[^a-zA-Z0-9]/g, '')}`;
 
   useEffect(() => {
     if (!refocusAfterMoveRef.current) return;
@@ -94,10 +96,11 @@ export function MediaSpine<T extends MediaDetails, S extends string>({
   };
 
   const status = config.getStatus(item);
-  const nextStatus = getNextStatus(config.order, status);
+  const nextStatuses = config.nextStatuses[status];
+  const hasChoice = nextStatuses.length > 1;
   const author = config.getAuthor?.(item);
 
-  const updateStatus = () => {
+  const updateStatus = (nextStatus: S) => {
     updateMedia(config.setStatus(item, nextStatus));
   };
 
@@ -115,10 +118,14 @@ export function MediaSpine<T extends MediaDetails, S extends string>({
     <Spine
       {...appearance}
       titleAriaLabel={`${item.title}${author ? `, ${author}` : ''}, ${status}`}
-      stampAriaLabel={`${item.title}: ${status}. Change to ${nextStatus}`}
+      statusAriaLabel={`${item.title}: ${status}. Change to ${nextStatuses.join(' or ')}`}
       titleRef={triggerRef}
       onTitleClick={openForm}
-      onStampClick={updateStatus}
+      onStatusClick={
+        hasChoice ? undefined : () => updateStatus(nextStatuses[0])
+      }
+      statusPopoverTarget={hasChoice ? pickerId : undefined}
+      statusAnchorName={hasChoice ? statusAnchorName : undefined}
       onTitleKeyDown={moveOnArrowKey}
       titleKeyShortcuts={isDraggable ? MOVE_KEYS : undefined}
     />
@@ -126,11 +133,23 @@ export function MediaSpine<T extends MediaDetails, S extends string>({
   const editForm = (
     <EditForm item={item} isOpen={isFormOpen} onCancel={closeForm} />
   );
+  const statusPicker = hasChoice && (
+    <StatusPicker
+      id={pickerId}
+      anchorName={statusAnchorName}
+      options={nextStatuses.map((nextStatus) => ({
+        status: nextStatus,
+        glyph: config.glyph[nextStatus],
+      }))}
+      onSelect={updateStatus}
+    />
+  );
 
   if (!isDraggable || !listId) {
     return (
       <li className="spine-item">
         {spine}
+        {statusPicker}
         {editForm}
       </li>
     );
@@ -161,6 +180,7 @@ export function MediaSpine<T extends MediaDetails, S extends string>({
         />
       )}
     >
+      {statusPicker}
       {editForm}
     </DraggableListItem>
   );

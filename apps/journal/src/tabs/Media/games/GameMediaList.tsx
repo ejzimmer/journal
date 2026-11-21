@@ -1,5 +1,4 @@
 import {
-  GAME_STATUS_ORDER,
   GameDetails,
   GameStatus,
   getGameStatus,
@@ -12,7 +11,11 @@ import { useMediaStorage } from '../MediaStorageContext';
 import { EditGameForm } from './EditGameForm';
 
 const GAME_CONFIG: StatusConfig<GameDetails, GameStatus> = {
-  order: GAME_STATUS_ORDER,
+  nextStatuses: {
+    unplayed: ['playing'],
+    playing: ['played'],
+    played: ['unplayed'],
+  },
   spineStatus: {
     unplayed: 'todo',
     playing: 'active',
