@@ -1,5 +1,3 @@
-// The journal's Today slots show subtasks from both the journal and Amimono,
-// so both apps' projects and subtasks share these fields.
 export type BaseSubtask = {
   id: string;
   description: string;
