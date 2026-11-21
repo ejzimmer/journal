@@ -167,6 +167,44 @@ describe('the daily work update', () => {
     });
   });
 
+  describe('a blocked task', () => {
+    it('is unblocked', async () => {
+      const storage = await updateLists([
+        createList('today', 'Today', 0, [
+          createTask('today', 'fix-the-thing', { blockedOn: 'build' }),
+        ]),
+        createList('done', 'Done', 1),
+      ]);
+
+      const [, [task]] = jest.mocked(storage.updateList).mock.calls[0];
+      expect(task).toMatchObject({ id: 'fix-the-thing' });
+      expect(task).not.toHaveProperty('blockedOn');
+    });
+
+    describe('that moves to the Today list', () => {
+      it('is unblocked', async () => {
+        const storage = await updateLists([
+          createList('today', 'Today', 0),
+          createList('backlog', 'Backlog', 1, [
+            createTask('backlog', 'fix-the-thing', {
+              blockedOn: 'human',
+              dueDate: getToday(),
+            }),
+          ]),
+          createList('done', 'Done', 2),
+        ]);
+
+        const todayItems = jest
+          .mocked(storage.updateList)
+          .mock.calls.find(([key]) => key === `${WORK_KEY}/today/items`)?.[1];
+        expect(todayItems).toEqual([
+          expect.objectContaining({ id: 'fix-the-thing' }),
+        ]);
+        expect(todayItems?.[0]).not.toHaveProperty('blockedOn');
+      });
+    });
+  });
+
   describe("when there's no done list", () => {
     it('cleans up nothing', async () => {
       const storage = await updateLists([

@@ -15,15 +15,23 @@ const isDue = (task: WorkTask) =>
 
 const getItemsKey = (list: WorkTask) => `${WORK_KEY}/${list.id}/items`;
 
-const getSortedItems = (list: WorkTask) =>
-  sortByPosition(Object.values(list.items ?? {}));
+const removeBlocker = ({ blockedOn, ...task }: WorkTask): WorkTask => task;
+
+const getUnblockedItems = (list: WorkTask) =>
+  sortByPosition(Object.values(list.items ?? {})).map(removeBlocker);
 
 const findListByName = (lists: WorkTask[], name: string) =>
   lists.find((list) => list.description === name);
 
 const hasListChanged = (list: WorkTask, items: WorkTask[]) =>
   items.length !== Object.keys(list.items ?? {}).length ||
-  items.some((task) => list.items?.[task.id]?.position !== task.position);
+  items.some((task) => {
+    const storedTask = list.items?.[task.id];
+    return (
+      storedTask?.position !== task.position ||
+      storedTask?.blockedOn !== task.blockedOn
+    );
+  });
 
 export function useWorkDailyUpdate() {
   const { useValue, addItem, updateList } = useStorageContext();
@@ -40,12 +48,12 @@ export function useWorkDailyUpdate() {
 
       const tasksToFinish = doneList
         ? activeLists.flatMap((list) =>
-            getSortedItems(list).filter(finishedBeforeToday),
+            getUnblockedItems(list).filter(finishedBeforeToday),
           )
         : [];
       const dueTasks = todayList
         ? activeLists.flatMap((list) =>
-            getSortedItems(list)
+            getUnblockedItems(list)
               .filter(isDue)
               .map((task) =>
                 list === todayList
@@ -74,7 +82,7 @@ export function useWorkDailyUpdate() {
         [...tasksToFinish, ...dueTasks].map((task) => task.id),
       );
       activeLists.forEach((list) => {
-        const remainingTasks = getSortedItems(list).filter(
+        const remainingTasks = getUnblockedItems(list).filter(
           (task) => !movingTaskIds.has(task.id),
         );
         const items = renumberPositions(
