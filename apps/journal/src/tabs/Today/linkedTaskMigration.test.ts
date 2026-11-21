@@ -24,6 +24,7 @@ const createCopy = (
 const createSubtaskSlot = (id: string, position: number): SubtaskSlot => ({
   id,
   position,
+  projectPath: `${PROJECTS_KEY}/shelves`,
   subtaskPath: subtaskPath(id),
 });
 
@@ -43,6 +44,7 @@ describe('migrating copied subtasks into Today slots', () => {
         [`${TODAY_SLOTS_KEY}/drill`]: {
           id: 'drill',
           position: 1,
+          projectPath: `${PROJECTS_KEY}/shelves`,
           subtaskPath: subtaskPath('drill'),
         },
       });
@@ -104,6 +106,7 @@ describe('migrating copied subtasks into Today slots', () => {
         [`${TODAY_SLOTS_KEY}/drill`]: {
           id: 'drill',
           position: 2,
+          projectPath: `${PROJECTS_KEY}/shelves`,
           subtaskPath: subtaskPath('drill'),
         },
       });

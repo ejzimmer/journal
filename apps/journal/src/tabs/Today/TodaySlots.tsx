@@ -6,7 +6,8 @@ import {
 } from 'shared/todaySlots/types';
 import { useTodaySlots } from 'shared/todaySlots/useTodaySlots';
 import { DailyTask, TodaySlot } from '../../types';
-import { TodayTask } from '../Todo/Today/TodayTask';
+import { toggleDailyTaskStatus } from '../Todo/Today/toggleDailyTaskStatus';
+import { DailyGoal } from './DailyGoal';
 import { SubtaskSlotItem } from './SubtaskSlotItem';
 
 export function TodaySlots() {
@@ -20,16 +21,16 @@ export function TodaySlots() {
         isSubtaskSlot(slot) ? (
           <SubtaskSlotItem key={slot.id} slot={slot} />
         ) : (
-          <li
+          <DailyGoal
             key={slot.id}
-            className={`today-task item today-slot status-${slot.status} type-${slot.type}`}
-          >
-            <TodayTask
-              task={slot}
-              listId={TODAY_SLOTS_KEY}
-              onChange={(task) => updateItem<DailyTask>(TODAY_SLOTS_KEY, task)}
-            />
-          </li>
+            task={slot}
+            onToggle={() =>
+              updateItem<DailyTask>(
+                TODAY_SLOTS_KEY,
+                toggleDailyTaskStatus(slot),
+              )
+            }
+          />
         ),
       )}
       {Array.from({ length: emptySlotCount }, (_, index) => (

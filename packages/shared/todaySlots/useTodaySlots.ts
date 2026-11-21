@@ -10,10 +10,14 @@ export function useTodaySlots<Slot extends SortableItem>() {
   const hasFreeSlot = slots.length < TODAY_SLOT_COUNT;
   const nextPosition = getNextPosition(slots);
 
-  const addSubtaskToSlot = (subtaskPath: string) => {
+  const addSubtaskToSlot = (projectPath: string, subtaskPath: string) => {
     if (!hasFreeSlot) return;
 
-    addItem(TODAY_SLOTS_KEY, { subtaskPath, position: nextPosition });
+    addItem(TODAY_SLOTS_KEY, {
+      projectPath,
+      subtaskPath,
+      position: nextPosition,
+    });
   };
 
   const findSubtaskSlot = (subtaskPath: string) =>

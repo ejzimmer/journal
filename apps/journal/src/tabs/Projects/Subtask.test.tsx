@@ -6,7 +6,8 @@ import { ProjectSubtask } from '../../types';
 import { SubtaskSlot, TODAY_SLOTS_KEY } from 'shared/todaySlots/types';
 import { Subtask } from './Subtask';
 
-const path = 'projects/shelves/subtasks';
+const projectPath = 'projects/shelves';
+const path = `${projectPath}/subtasks`;
 const drill: ProjectSubtask = {
   id: 'drill',
   description: 'Borrow a drill',
@@ -18,6 +19,7 @@ const drill: ProjectSubtask = {
 const createSlot = (id: string, position: number): SubtaskSlot => ({
   id,
   position,
+  projectPath: 'projects/other',
   subtaskPath: `projects/other/subtasks/${id}`,
 });
 
@@ -28,7 +30,12 @@ function renderSubtask(slots: Record<string, SubtaskSlot> = {}) {
   render(
     <FirebaseContext.Provider value={storage}>
       <ol>
-        <Subtask path={path} dragHandle={<span />} {...drill} />
+        <Subtask
+          path={path}
+          projectPath={projectPath}
+          dragHandle={<span />}
+          {...drill}
+        />
       </ol>
     </FirebaseContext.Provider>,
   );
@@ -48,6 +55,7 @@ describe('Subtask', () => {
           );
 
           expect(addItem).toHaveBeenCalledWith(TODAY_SLOTS_KEY, {
+            projectPath,
             subtaskPath: `${path}/drill`,
             position: 1,
           });
@@ -77,7 +85,12 @@ describe('Subtask', () => {
     describe('and the user unticks the link checkbox', () => {
       it('empties that slot', async () => {
         const { setValues } = renderSubtask({
-          slot: { id: 'slot', position: 0, subtaskPath: `${path}/drill` },
+          slot: {
+            id: 'slot',
+            position: 0,
+            projectPath,
+            subtaskPath: `${path}/drill`,
+          },
         });
         const checkbox = screen.getByRole('checkbox', { name: 'On today' });
         expect(checkbox).toBeChecked();

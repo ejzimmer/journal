@@ -6,11 +6,13 @@ import { useDueDateReset } from './tabs/Todo/DueDate/useDueDateReset';
 import { useTodaySnapshot } from './tabs/Today/useTodaySnapshot';
 import { useTodaySlotsReset } from './tabs/Today/useTodaySlotsReset';
 import { useLinkedTaskMigration } from './tabs/Today/useLinkedTaskMigration';
+import { useSlotProjectPathMigration } from './tabs/Today/useSlotProjectPathMigration';
 import { useWorkDailyUpdate } from './tabs/Work/useWorkDailyUpdate';
 
 export function DailyJobs() {
   useOnceListMigration();
   useLinkedTaskMigration();
+  useSlotProjectPathMigration();
   useDailyReset();
   useOnceReset();
   useWeeklyReset();

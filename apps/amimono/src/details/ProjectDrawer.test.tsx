@@ -1,6 +1,6 @@
 import { within } from '@testing-library/react';
 
-import { AMIMONO_PROJECTS_PATH, SubtaskSlot } from 'shared/todaySlots/types';
+import { SubtaskSlot } from 'shared/todaySlots/types';
 import { findCard, renderHomePage } from '../homePageTestUtils';
 
 const seed = {
@@ -126,9 +126,10 @@ describe('the project drawer', () => {
     const createOtherSlot = (id: string, position: number): SubtaskSlot => ({
       id,
       position,
+      projectPath: 'projects/shelves',
       subtaskPath: `projects/shelves/subtasks/${id}`,
     });
-    const sleevesPath = `${AMIMONO_PROJECTS_PATH}/cardigan/subtasks/sleeves`;
+    const cardiganPath = 'amimono/projects/cardigan';
 
     async function expandCardigan(slots: Record<string, SubtaskSlot>) {
       const { user } = renderHomePage(seedWithSlots(slots));
@@ -173,7 +174,12 @@ describe('the project drawer', () => {
     describe('when the subtask is already on today', () => {
       it('takes it off today when the link checkbox is unticked', async () => {
         const { user, sleeves } = await expandCardigan({
-          sleeves: { id: 'sleeves', position: 0, subtaskPath: sleevesPath },
+          sleeves: {
+            id: 'sleeves',
+            position: 0,
+            projectPath: cardiganPath,
+            subtaskPath: `${cardiganPath}/subtasks/sleeves`,
+          },
         });
         const link = sleeves.getByRole('checkbox', { name: 'On today' });
         expect(link).toBeChecked();

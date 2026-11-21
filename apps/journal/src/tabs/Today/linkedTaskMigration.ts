@@ -11,6 +11,7 @@ import {
   TODAY_SLOT_COUNT,
   isSubtaskSlot,
 } from 'shared/todaySlots/types';
+import { findJournalProjectPath } from './slotProjectPathMigration';
 
 const isSubtaskPath = (path: string) => path.split('/')[2] === 'subtasks';
 
@@ -51,7 +52,12 @@ export function createLinkedTaskMigration({
     if (isSubtaskPath(slot.linkedTask)) {
       updates.push([
         `${TODAY_SLOTS_KEY}/${slot.id}`,
-        { id: slot.id, position: slot.position, subtaskPath: slot.linkedTask },
+        {
+          id: slot.id,
+          position: slot.position,
+          projectPath: findJournalProjectPath(slot.linkedTask),
+          subtaskPath: slot.linkedTask,
+        },
       ]);
       subtaskPathsInSlots.add(slot.linkedTask);
     } else {
@@ -73,7 +79,12 @@ export function createLinkedTaskMigration({
         [`${ONCE_KEY}/${task.id}`, null],
         [
           `${TODAY_SLOTS_KEY}/${task.id}`,
-          { id: task.id, position: nextPosition, subtaskPath },
+          {
+            id: task.id,
+            position: nextPosition,
+            projectPath: findJournalProjectPath(subtaskPath),
+            subtaskPath,
+          },
         ],
       );
       subtaskPathsInSlots.add(subtaskPath);

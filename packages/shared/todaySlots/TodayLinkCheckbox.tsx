@@ -1,9 +1,12 @@
 import { EmojiCheckbox } from '../controls/EmojiCheckbox';
 import { useTodaySlots } from './useTodaySlots';
 
-type TodayLinkCheckboxProps = { subtaskPath: string };
+type TodayLinkCheckboxProps = { projectPath: string; subtaskPath: string };
 
-export function TodayLinkCheckbox({ subtaskPath }: TodayLinkCheckboxProps) {
+export function TodayLinkCheckbox({
+  projectPath,
+  subtaskPath,
+}: TodayLinkCheckboxProps) {
   const {
     hasFreeSlot,
     addSubtaskToSlot,
@@ -20,7 +23,7 @@ export function TodayLinkCheckbox({ subtaskPath }: TodayLinkCheckboxProps) {
       disabled={!isInSlot && !hasFreeSlot}
       onChange={(event) =>
         event.target.checked
-          ? addSubtaskToSlot(subtaskPath)
+          ? addSubtaskToSlot(projectPath, subtaskPath)
           : removeSubtaskFromSlot(subtaskPath)
       }
     />
