@@ -1,11 +1,11 @@
 import { useStorageContext } from 'shared/FirebaseContext';
 import { useDailyJob } from 'shared/dailyJobs/DailyJobsContext';
+import { BaseProject } from 'shared/projects/types';
 import {
   AMIMONO_PROJECTS_PATH,
   TODAY_SLOTS_KEY,
 } from 'shared/todaySlots/types';
 import {
-  AmimonoProject,
   ProjectDetails,
   PROJECTS_KEY,
   TODAY_SLOTS_RESET_KEY,
@@ -20,7 +20,7 @@ export function useTodaySlotsReset() {
   const { value: projects, synced: projectsSynced } =
     useValue<Record<string, ProjectDetails>>(PROJECTS_KEY);
   const { value: amimonoProjects, synced: amimonoProjectsSynced } = useValue<
-    Record<string, AmimonoProject>
+    Record<string, BaseProject>
   >(AMIMONO_PROJECTS_PATH);
 
   useDailyJob({

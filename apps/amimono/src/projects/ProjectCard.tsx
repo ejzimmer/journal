@@ -46,7 +46,7 @@ export function ProjectCard({ project, listKey, onMove }: ProjectCardProps) {
           src={projectType.icon}
           alt={projectType.label}
         />
-        <span className="project-name">{project.name}</span>
+        <span className="project-name">{project.description}</span>
         {project.craft && <CraftIcon craft={project.craft} />}
         {onMove && <MoveProjectMenu currentList={listKey} onMove={onMove} />}
         <button

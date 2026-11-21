@@ -91,7 +91,8 @@ describe('clearing the Today slots at the start of the day', () => {
         [PROJECTS_KEY]: projects,
         [AMIMONO_PROJECTS_PATH]: {
           cardigan: {
-            name: 'Cardigan',
+            description: 'Cardigan',
+            category: '🧶',
             subtasks: {
               swatch: { description: 'Swatch', status: 'done' },
               sleeves: { description: 'Sleeves', status: 'ready' },

@@ -4,7 +4,7 @@ import {
   Project,
   ProjectType,
   Subtask,
-  SUBTASK_CATEGORY,
+  PROJECT_CATEGORY,
 } from '../projects/types';
 import { Recipient } from '../sockPlanner/types';
 import { StoredYarn } from '../yarnBowl/types';
@@ -19,7 +19,6 @@ function createSubtasks(doneCount: number, totalCount: number) {
           id,
           description: `Subtask ${index + 1}`,
           status: index < doneCount ? 'done' : 'ready',
-          category: SUBTASK_CATEGORY,
           position: index + 1,
         },
       ];
@@ -62,9 +61,15 @@ const lists: Record<string, Record<string, ProjectPosition>> = {};
 
 Object.entries(projectsByList).forEach(([listKey, entries]) => {
   lists[listKey] = {};
-  entries.forEach(([name, type, subtasks], index) => {
+  entries.forEach(([description, type, subtasks], index) => {
     const id = `${listKey}-${index + 1}`;
-    projects[id] = { id, name, type, ...(subtasks && { subtasks }) };
+    projects[id] = {
+      id,
+      description,
+      category: PROJECT_CATEGORY,
+      type,
+      ...(subtasks && { subtasks }),
+    };
     lists[listKey][id] = { id, position: index + 1 };
   });
 });

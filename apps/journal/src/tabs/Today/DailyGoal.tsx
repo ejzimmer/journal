@@ -1,21 +1,15 @@
 import { EmojiCheckbox } from 'shared/controls/EmojiCheckbox';
-import {
-  AmimonoProject,
-  AmimonoSubtask,
-  ProjectDetails,
-  ProjectSubtask,
-} from '../../types';
+import { BaseProject, BaseSubtask } from 'shared/projects/types';
 import { GlowingEmoji } from '../Todo/Today/GlowingEmoji';
 
 type DailyGoalProps = {
-  task: ProjectSubtask | AmimonoSubtask;
-  project: ProjectDetails | AmimonoProject;
+  task: BaseSubtask;
+  project: BaseProject;
   onToggle: () => void;
 };
 
 export function DailyGoal({ task, project, onToggle }: DailyGoalProps) {
-  const projectName = 'name' in project ? project.name : project.description;
-  const description = `${projectName}: ${task.description}`;
+  const description = `${project.description}: ${task.description}`;
   const isDone = task.status === 'done';
 
   return (
@@ -24,7 +18,7 @@ export function DailyGoal({ task, project, onToggle }: DailyGoalProps) {
     >
       <div className="today-task-description">
         <EmojiCheckbox
-          emoji={<GlowingEmoji emoji={task.category} />}
+          emoji={<GlowingEmoji emoji={project.category} />}
           isChecked={isDone}
           label={`${description} done`}
           onChange={onToggle}

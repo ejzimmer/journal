@@ -194,13 +194,10 @@ describe('Today tab', () => {
         amimono: {
           projects: {
             cardigan: {
-              name: 'Cardigan',
+              description: 'Cardigan',
+              category: '🧶',
               subtasks: {
-                sleeves: {
-                  description: 'Sleeves',
-                  status: 'ready',
-                  category: '🧶',
-                },
+                sleeves: { description: 'Sleeves', status: 'ready' },
               },
             },
           },

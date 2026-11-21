@@ -1,12 +1,7 @@
 import { useStorageContext } from 'shared/FirebaseContext';
 import { SubtaskSlot } from 'shared/todaySlots/types';
-import {
-  AmimonoProject,
-  AmimonoSubtask,
-  ProjectDetails,
-  PROJECTS_KEY,
-  ProjectSubtask,
-} from '../../types';
+import { BaseProject, BaseSubtask } from 'shared/projects/types';
+import { ProjectDetails, PROJECTS_KEY, ProjectSubtask } from '../../types';
 import { DailyGoal } from './DailyGoal';
 import {
   getProjectPath,
@@ -18,10 +13,8 @@ type SubtaskSlotItemProps = { slot: SubtaskSlot };
 
 export function SubtaskSlotItem({ slot }: SubtaskSlotItemProps) {
   const { useValue, updateItem, setValue } = useStorageContext();
-  const { value: task } = useValue<ProjectSubtask | AmimonoSubtask>(
-    slot.subtaskPath,
-  );
-  const { value: project } = useValue<ProjectDetails | AmimonoProject>(
+  const { value: task } = useValue<BaseSubtask>(slot.subtaskPath);
+  const { value: project } = useValue<BaseProject>(
     getProjectPath(slot.subtaskPath),
   );
   if (!task || !project) {

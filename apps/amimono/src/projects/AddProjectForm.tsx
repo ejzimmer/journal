@@ -9,7 +9,7 @@ import { NON_BLANK_PATTERN } from './nonBlankPattern';
 import { Craft, ProjectType } from './types';
 
 type AddProjectFormProps = {
-  onAdd: (name: string, type: ProjectType, craft?: Craft) => void;
+  onAdd: (description: string, type: ProjectType, craft?: Craft) => void;
 };
 
 export function AddProjectForm({ onAdd }: AddProjectFormProps) {

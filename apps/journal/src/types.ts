@@ -1,4 +1,5 @@
 import { OrderedListItem } from 'shared/drag-and-drop/types';
+import { BaseProject, BaseSubtask } from 'shared/projects/types';
 import { SubtaskSlot } from 'shared/todaySlots/types';
 
 export const TODO_KEY = 'today';
@@ -87,13 +88,9 @@ export type ExerciseClass = {
 };
 
 export const PROJECTS_KEY = 'projects';
-export type ProjectSubtask = {
-  id: string;
-  description: string;
-  status: 'ready' | 'done';
+export type ProjectSubtask = BaseSubtask & {
   linkedId?: string;
   category: Category;
-  position: number;
 };
 export const PROJECT_COLOURS = {
   '🛒': 'hsl(197 36% 70% /.5)',
@@ -107,21 +104,12 @@ export const PROJECT_COLOURS = {
 };
 export const categories = Object.keys(PROJECT_COLOURS);
 export type Category = keyof typeof PROJECT_COLOURS;
-// The parts of Amimono's projects and subtasks that Today slots show.
-export type AmimonoProject = {
-  name: string;
-  subtasks?: Record<string, AmimonoSubtask>;
-};
-export type AmimonoSubtask = Pick<
-  ProjectSubtask,
-  'description' | 'status' | 'category'
->;
 export type ProjectStatus = 'ready' | 'in_progress' | 'done';
-export type ProjectDetails = OrderedListItem & {
-  description: string;
-  category: Category;
-  status?: ProjectStatus;
-  subtasks?: Record<string, ProjectSubtask>;
-  linkedTaskId?: string;
-  completedAt?: string;
-};
+export type ProjectDetails = OrderedListItem &
+  BaseProject & {
+    category: Category;
+    status?: ProjectStatus;
+    subtasks?: Record<string, ProjectSubtask>;
+    linkedTaskId?: string;
+    completedAt?: string;
+  };

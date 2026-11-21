@@ -7,7 +7,7 @@ const seed = {
   projects: {
     cardigan: {
       id: 'cardigan',
-      name: 'Cardigan',
+      description: 'Cardigan',
       type: 'cardigan',
       craft: 'knitting',
       pattern: { name: 'Telja Cardigan', url: 'https://example.com/telja' },

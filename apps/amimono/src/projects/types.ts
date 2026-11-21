@@ -1,3 +1,4 @@
+import { BaseProject, BaseSubtask } from 'shared/projects/types';
 import { SockProgress } from '../socks/types';
 
 export const PROJECTS_KEY = 'projects';
@@ -22,16 +23,10 @@ export type ProjectType = (typeof PROJECT_TYPE_KEYS)[number];
 
 export type Craft = 'knitting' | 'crochet' | 'weaving';
 
-// The journal's Today tab shows a subtask's category as its emoji.
-export const SUBTASK_CATEGORY = '🧶';
+// Every Amimono project sits in the journal's yarn category.
+export const PROJECT_CATEGORY = '🧶';
 
-export type Subtask = {
-  id: string;
-  description: string;
-  status: 'ready' | 'done';
-  category: typeof SUBTASK_CATEGORY;
-  position: number;
-};
+export type Subtask = BaseSubtask;
 
 export type Colourway = {
   id: string;
@@ -54,9 +49,8 @@ export type Gauge = {
   needleMm?: number;
 };
 
-export type Project = {
-  id: string;
-  name: string;
+export type Project = BaseProject & {
+  category: typeof PROJECT_CATEGORY;
   type: ProjectType;
   craft?: Craft;
   pattern?: { name?: string; url?: string };

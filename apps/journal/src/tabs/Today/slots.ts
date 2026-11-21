@@ -1,3 +1,4 @@
+import { BaseProject } from 'shared/projects/types';
 import { updateCompletionDate } from 'shared/years';
 import { AMIMONO_PROJECTS_PATH, isSubtaskSlot } from 'shared/todaySlots/types';
 import {
@@ -7,11 +8,10 @@ import {
   TodaySlot,
 } from '../../types';
 
-type ProjectsWithSubtasks = Record<
+export type ProjectsByPath = Record<
   string,
-  { subtasks?: Record<string, Pick<ProjectSubtask, 'status'>> }
+  Record<string, BaseProject> | undefined
 >;
-export type ProjectsByPath = Record<string, ProjectsWithSubtasks | undefined>;
 
 const SUBTASKS_SEPARATOR = '/subtasks/';
 

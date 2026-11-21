@@ -4,10 +4,10 @@ import { findCard, renderHomePage } from './homePageTestUtils';
 
 const seed = {
   projects: {
-    blanket: { id: 'blanket', name: 'Blanket', type: 'blanket' },
-    sleeve: { id: 'sleeve', name: 'Laptop sleeve', type: 'accessory' },
-    cardigan: { id: 'cardigan', name: 'Cardigan', type: 'cardigan' },
-    socks: { id: 'socks', name: 'Socks for Dad', type: 'socks' },
+    blanket: { id: 'blanket', description: 'Blanket', type: 'blanket' },
+    sleeve: { id: 'sleeve', description: 'Laptop sleeve', type: 'accessory' },
+    cardigan: { id: 'cardigan', description: 'Cardigan', type: 'cardigan' },
+    socks: { id: 'socks', description: 'Socks for Dad', type: 'socks' },
   },
   lists: {
     portable: {
@@ -21,12 +21,12 @@ const seed = {
 
 const finishingSeed = {
   projects: {
-    cardigan: { id: 'cardigan', name: 'Cardigan', type: 'cardigan' },
-    scarf: { id: 'scarf', name: 'Scarf', type: 'accessory' },
-    socks: { id: 'socks', name: 'Socks for Dad', type: 'socks' },
+    cardigan: { id: 'cardigan', description: 'Cardigan', type: 'cardigan' },
+    scarf: { id: 'scarf', description: 'Scarf', type: 'accessory' },
+    socks: { id: 'socks', description: 'Socks for Dad', type: 'socks' },
     hat: {
       id: 'hat',
-      name: 'Hat',
+      description: 'Hat',
       type: 'hat',
       subtasks: {
         brim: { id: 'brim', description: 'Brim', status: 'done', position: 1 },
@@ -40,7 +40,7 @@ const finishingSeed = {
     },
     mittens: {
       id: 'mittens',
-      name: 'Mittens',
+      description: 'Mittens',
       type: 'accessory',
       subtasks: {
         thumbs: {
@@ -53,7 +53,7 @@ const finishingSeed = {
     },
     bonnet: {
       id: 'bonnet',
-      name: 'Bonnet',
+      description: 'Bonnet',
       type: 'hat',
       subtasks: {
         ties: { id: 'ties', description: 'Ties', status: 'done', position: 1 },
@@ -61,7 +61,7 @@ const finishingSeed = {
     },
     booties: {
       id: 'booties',
-      name: 'Booties',
+      description: 'Booties',
       type: 'socks',
       subtasks: {
         soles: {
@@ -268,7 +268,7 @@ describe('HomePage', () => {
           const { user } = renderHomePage({
             projects: {
               ...seed.projects,
-              tam: { id: 'tam', name: 'Tam', type: 'hat' },
+              tam: { id: 'tam', description: 'Tam', type: 'hat' },
             },
             lists: {
               ...seed.lists,

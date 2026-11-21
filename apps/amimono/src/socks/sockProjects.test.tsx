@@ -3,7 +3,9 @@ import { screen, within } from '@testing-library/react';
 import { findCard, renderHomePage } from '../homePageTestUtils';
 
 const createSeed = (project: Record<string, unknown>) => ({
-  projects: { socks: { id: 'socks', name: 'Socks for Dad', ...project } },
+  projects: {
+    socks: { id: 'socks', description: 'Socks for Dad', ...project },
+  },
   lists: { portable: { socks: { id: 'socks', position: 1 } } },
 });
 

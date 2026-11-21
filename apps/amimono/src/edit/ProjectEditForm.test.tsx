@@ -7,7 +7,7 @@ const seed = {
   projects: {
     cardigan: {
       id: 'cardigan',
-      name: 'Cardigan',
+      description: 'Cardigan',
       type: 'cardigan',
       craft: 'knitting',
       pattern: {
@@ -40,7 +40,7 @@ const seed = {
         },
       },
     },
-    hat: { id: 'hat', name: 'Hat', type: 'hat' },
+    hat: { id: 'hat', description: 'Hat', type: 'hat' },
   },
   lists: {
     priority: { cardigan: { id: 'cardigan', position: 1 } },

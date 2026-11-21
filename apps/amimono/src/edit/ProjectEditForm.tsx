@@ -58,8 +58,8 @@ export function ProjectEditForm({
             label="Name"
             hideLabel
             inputClass="name-input"
-            value={draft.name}
-            onChange={(name) => updateDraft({ name })}
+            value={draft.description}
+            onChange={(description) => updateDraft({ description })}
             required
             pattern={NON_BLANK_PATTERN}
             autoFocus

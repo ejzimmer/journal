@@ -1,5 +1,5 @@
 import { useStorageContext } from 'shared/FirebaseContext';
-import { PROJECTS_KEY, Subtask, SUBTASK_CATEGORY } from '../projects/types';
+import { PROJECTS_KEY, Subtask } from '../projects/types';
 
 export function useSubtaskActions(projectId: string, subtasks: Subtask[]) {
   const { setValue } = useStorageContext();
@@ -17,7 +17,6 @@ export function useSubtaskActions(projectId: string, subtasks: Subtask[]) {
       id,
       description,
       status: 'ready',
-      category: SUBTASK_CATEGORY,
       position,
     });
   };
