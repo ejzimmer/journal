@@ -12,6 +12,8 @@ import {
   PROJECTS_KEY,
   ProjectDetails,
   TODAY_SLOTS_KEY,
+  WEEKLY_KEY,
+  WeeklyTask,
 } from '../../types';
 import { Today } from '.';
 
@@ -50,6 +52,21 @@ const shelves: ProjectDetails = {
     },
   },
 };
+
+const createWeeklyTask = (
+  id: string,
+  position: number,
+  frequency: number,
+  timesDone: number,
+): WeeklyTask => ({
+  id,
+  description: id,
+  category: '🎹',
+  parentId: WEEKLY_KEY,
+  position,
+  frequency,
+  completed: Array.from({ length: timesDone }, () => getDateDaysAgo(6)),
+});
 
 function renderToday(seed: Record<string, unknown> = {}) {
   const storage = createMockFirebaseContext({
@@ -93,6 +110,29 @@ describe('Today tab', () => {
       );
 
       expect(screen.getByText('Lodge tax return')).toBeInTheDocument();
+    });
+  });
+
+  describe('when several weekly tasks are due', () => {
+    it('lists the ones with the most dones left to go first, whatever their position', async () => {
+      renderToday({
+        today: {
+          暦: { tax },
+          週: {
+            piano: createWeeklyTask('piano', 0, 5, 3),
+            plants: createWeeklyTask('plants', 1, 2, 1),
+            yoga: createWeeklyTask('yoga', 2, 4, 0),
+          },
+        },
+      });
+      await screen.findByText('yoga');
+
+      const weekly = screen.getAllByText(/^(piano|plants|yoga)$/);
+      expect(weekly.map((task) => task.textContent)).toEqual([
+        'yoga',
+        'piano',
+        'plants',
+      ]);
     });
   });
 
