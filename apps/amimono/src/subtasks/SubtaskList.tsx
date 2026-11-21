@@ -1,5 +1,7 @@
 import './SubtaskList.css';
 import { Checkbox } from 'shared/controls/Checkbox';
+import { TodayLinkCheckbox } from 'shared/todaySlots/TodayLinkCheckbox';
+import { AMIMONO_PROJECTS_PATH } from 'shared/todaySlots/types';
 import { Subtask } from '../projects/types';
 import { sortByPosition } from 'shared/drag-and-drop/utils';
 import { AddSubtaskForm } from './AddSubtaskForm';
@@ -32,7 +34,10 @@ export function SubtaskList({ projectId, subtasks }: SubtaskListProps) {
                 onChange={(isDone) => markSubtaskDone(subtask, isDone)}
                 useTickForDone
               />
-              <span>{subtask.description}</span>
+              <span className="subtask-description">{subtask.description}</span>
+              <TodayLinkCheckbox
+                subtaskPath={`${AMIMONO_PROJECTS_PATH}/${projectId}/subtasks/${subtask.id}`}
+              />
             </li>
           ))}
         </ul>

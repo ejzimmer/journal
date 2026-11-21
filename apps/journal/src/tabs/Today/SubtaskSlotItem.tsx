@@ -1,13 +1,8 @@
 import { useStorageContext } from 'shared/FirebaseContext';
-import { EmojiCheckbox } from 'shared/controls/EmojiCheckbox';
-import {
-  ProjectDetails,
-  PROJECTS_KEY,
-  ProjectSubtask,
-  SubtaskSlot,
-} from '../../types';
-import { GlowingEmoji } from '../Todo/Today/GlowingEmoji';
+import { SubtaskSlot } from 'shared/todaySlots/types';
+import { ProjectDetails, PROJECTS_KEY, ProjectSubtask } from '../../types';
 import { getProjectPath, toggleSubtaskInProject } from './slots';
+import { SubtaskSlotContent } from './SubtaskSlotContent';
 
 type SubtaskSlotItemProps = { slot: SubtaskSlot };
 
@@ -21,28 +16,17 @@ export function SubtaskSlotItem({ slot }: SubtaskSlotItemProps) {
     return null;
   }
 
-  const description = `${project.description}: ${subtask.description}`;
-  const isDone = subtask.status === 'done';
-
   return (
-    <li
-      className={`today-task item today-slot status-${isDone ? 'done' : 'ready'}`}
-    >
-      <div className="today-task-description">
-        <EmojiCheckbox
-          emoji={<GlowingEmoji emoji={subtask.category} />}
-          isChecked={isDone}
-          label={`${description} done`}
-          onChange={() =>
-            updateItem<ProjectDetails>(
-              PROJECTS_KEY,
-              toggleSubtaskInProject(project, subtask),
-            )
-          }
-          useTickForDone
-        />
-        <div className="task-screen">{description}</div>
-      </div>
-    </li>
+    <SubtaskSlotContent
+      emoji={subtask.category}
+      description={`${project.description}: ${subtask.description}`}
+      isDone={subtask.status === 'done'}
+      onToggle={() =>
+        updateItem<ProjectDetails>(
+          PROJECTS_KEY,
+          toggleSubtaskInProject(project, subtask),
+        )
+      }
+    />
   );
 }

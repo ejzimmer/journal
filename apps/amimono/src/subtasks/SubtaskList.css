@@ -31,6 +31,10 @@
       }
     }
 
+    .subtask-description {
+      flex: 1;
+    }
+
     &.done span {
       text-decoration: line-through;
       color: hsl(0 0% 50%);

@@ -3,12 +3,8 @@ import userEvent from '@testing-library/user-event';
 import { getToday } from 'shared/dates';
 import { ContextType, FirebaseContext } from 'shared/FirebaseContext';
 import { createMockFirebaseContext } from 'shared/mockFirebase';
-import {
-  DailyTask,
-  ONCE_KEY,
-  TODAY_SLOTS_KEY,
-  TodaySlot,
-} from '../../../types';
+import { DailyTask, ONCE_KEY, TodaySlot } from '../../../types';
+import { TODAY_SLOTS_KEY } from 'shared/todaySlots/types';
 import { MoveToTodayButton } from './MoveToTodayButton';
 
 const createTask = (id: string, position = 0): DailyTask => ({

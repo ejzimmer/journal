@@ -1,4 +1,5 @@
 import { OrderedListItem } from 'shared/drag-and-drop/types';
+import { SubtaskSlot } from 'shared/todaySlots/types';
 
 export const TODO_KEY = 'today';
 export type TodoTask = OrderedListItem & {
@@ -44,11 +45,8 @@ export type CalendarTask = CalendarTaskDetails & TodoTask;
 export const TODAY_TAB_KEY = '今日';
 export const TODAY_SNAPSHOT_KEY = `${TODAY_TAB_KEY}/snapshot`;
 export const TODAY_SNAPSHOT_RESET_KEY = `${TODAY_TAB_KEY}/snapshotReset`;
-export const TODAY_SLOTS_KEY = `${TODAY_TAB_KEY}/slots`;
 export const TODAY_SLOTS_RESET_KEY = `${TODAY_TAB_KEY}/slotsReset`;
-export const TODAY_SLOT_COUNT = 3;
 export type SnapshotEntry = { id: string; listId: string };
-export type SubtaskSlot = { id: string; position: number; subtaskPath: string };
 export type TodaySlot = DailyTask | SubtaskSlot;
 
 export const HEALTH_PATH = 'health';
@@ -109,6 +107,12 @@ export const PROJECT_COLOURS = {
 };
 export const categories = Object.keys(PROJECT_COLOURS);
 export type Category = keyof typeof PROJECT_COLOURS;
+// The parts of Amimono's projects and subtasks that Today slots show.
+export type AmimonoProject = {
+  name: string;
+  subtasks?: Record<string, AmimonoSubtask>;
+};
+export type AmimonoSubtask = Pick<ProjectSubtask, 'description' | 'status'>;
 export type ProjectStatus = 'ready' | 'in_progress' | 'done';
 export type ProjectDetails = OrderedListItem & {
   description: string;

@@ -11,9 +11,19 @@ export type DataShape = {
   ) => Record<string, unknown>;
 };
 
-export function createSubtreeDataShape(subtree: string): DataShape {
+export function createSubtreeDataShape(
+  subtree: string,
+  sharedPaths: string[] = [],
+): DataShape {
+  const isSharedPath = (appPath: string) =>
+    sharedPaths.some(
+      (sharedPath) =>
+        appPath === sharedPath || appPath.startsWith(`${sharedPath}/`),
+    );
   const findPathInSubtree = (appPath: string) =>
-    [V2_ROOT, subtree, appPath].filter(Boolean).join('/');
+    [V2_ROOT, isSharedPath(appPath) ? '' : subtree, appPath]
+      .filter(Boolean)
+      .join('/');
 
   return {
     findStoredPath: findPathInSubtree,

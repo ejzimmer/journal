@@ -1,5 +1,5 @@
-import { EmojiCheckbox } from 'shared/controls/EmojiCheckbox';
-import { useTodaySlots } from '../Today/useTodaySlots';
+import { EmojiCheckbox } from '../controls/EmojiCheckbox';
+import { useTodaySlots } from './useTodaySlots';
 
 type TodayLinkCheckboxProps = { subtaskPath: string };
 

@@ -3,13 +3,12 @@ import {
   createDailyJobsStorage,
   renderDailyJob,
 } from 'shared/dailyJobs/dailyJobsTestUtils';
+import { DailyTask, ProjectDetails, PROJECTS_KEY } from '../../types';
 import {
-  DailyTask,
-  ProjectDetails,
-  PROJECTS_KEY,
+  AMIMONO_PROJECTS_PATH,
   SubtaskSlot,
   TODAY_SLOTS_KEY,
-} from '../../types';
+} from 'shared/todaySlots/types';
 import { useTodaySlotsReset } from './useTodaySlotsReset';
 
 const createTaskSlot = (
@@ -30,6 +29,12 @@ const createSubtaskSlot = (id: string, subtaskId: string): SubtaskSlot => ({
   id,
   position: 1,
   subtaskPath: `${PROJECTS_KEY}/shelves/subtasks/${subtaskId}`,
+});
+
+const createAmimonoSubtaskSlot = (subtaskId: string): SubtaskSlot => ({
+  id: subtaskId,
+  position: 2,
+  subtaskPath: `${AMIMONO_PROJECTS_PATH}/cardigan/subtasks/${subtaskId}`,
 });
 
 const projects: Record<string, ProjectDetails> = {
@@ -76,6 +81,33 @@ describe('clearing the Today slots at the start of the day', () => {
       expect(storage.setValues).toHaveBeenCalledWith({
         [`${TODAY_SLOTS_KEY}/parcel`]: null,
         [`${TODAY_SLOTS_KEY}/drill`]: null,
+      });
+    });
+  });
+
+  describe('when slots hold subtasks from Amimono', () => {
+    it('empties the slots whose subtask is done', async () => {
+      const storage = createDailyJobsStorage({
+        [PROJECTS_KEY]: projects,
+        [AMIMONO_PROJECTS_PATH]: {
+          cardigan: {
+            name: 'Cardigan',
+            subtasks: {
+              swatch: { description: 'Swatch', status: 'done' },
+              sleeves: { description: 'Sleeves', status: 'ready' },
+            },
+          },
+        },
+        [TODAY_SLOTS_KEY]: {
+          swatch: createAmimonoSubtaskSlot('swatch'),
+          sleeves: createAmimonoSubtaskSlot('sleeves'),
+        },
+      });
+
+      await renderDailyJob(useTodaySlotsReset, storage);
+
+      expect(storage.setValues).toHaveBeenCalledWith({
+        [`${TODAY_SLOTS_KEY}/swatch`]: null,
       });
     });
   });

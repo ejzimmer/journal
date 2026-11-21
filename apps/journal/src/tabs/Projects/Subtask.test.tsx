@@ -2,7 +2,8 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { FirebaseContext } from 'shared/FirebaseContext';
 import { createMockFirebaseContext } from 'shared/mockFirebase';
-import { ProjectSubtask, SubtaskSlot, TODAY_SLOTS_KEY } from '../../types';
+import { ProjectSubtask } from '../../types';
+import { SubtaskSlot, TODAY_SLOTS_KEY } from 'shared/todaySlots/types';
 import { Subtask } from './Subtask';
 
 const path = 'projects/shelves/subtasks';
