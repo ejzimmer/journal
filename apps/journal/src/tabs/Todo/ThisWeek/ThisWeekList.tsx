@@ -2,31 +2,14 @@ import { ThisWeekTask } from './ThisWeekTask';
 import { WEEKLY_KEY, WeeklyTask } from '../../../types';
 import { useRef } from 'react';
 import { useStorageContext } from 'shared/FirebaseContext';
-import { compareLastCompleted } from './utils';
+import { useWeeklyPriorityOrder } from './useWeeklyPriorityOrder';
 
 export function ThisWeekList() {
   const listRef = useRef<HTMLOListElement>(null);
   const { useValue } = useStorageContext();
   const { value } = useValue<Record<string, WeeklyTask>>(WEEKLY_KEY);
 
-  const taskOrder = useRef<string[]>([]);
-
-  if (value && taskOrder.current.length !== Object.values(value).length) {
-    taskOrder.current = Object.values(value)
-      .toSorted((a, b) => {
-        const aUrgency = a.frequency - (a.completed?.length ?? 0);
-        const bUrgency = b.frequency - (b.completed?.length ?? 0);
-
-        if (aUrgency === bUrgency) {
-          return compareLastCompleted(a, b);
-        }
-
-        return bUrgency - aUrgency;
-      })
-      .map((task) => task.id);
-  }
-
-  const tasks = value ? taskOrder.current.map((id) => value[id]) : [];
+  const tasks = useWeeklyPriorityOrder(Object.values(value ?? {}));
 
   return (
     <div className="todo-task-list weekly">

@@ -1,6 +1,7 @@
 import { useStorageContext } from 'shared/FirebaseContext';
 import { sortByPosition } from 'shared/drag-and-drop/utils';
 import { SnapshotEntry, TODAY_SNAPSHOT_KEY } from '../../types';
+import { useWeeklyPriorityOrder } from '../Todo/ThisWeek/useWeeklyPriorityOrder';
 import { findEntriesForToday } from './todayEntries';
 import { useTodoLists } from './useTodoLists';
 
@@ -19,10 +20,11 @@ export function useTodayItems() {
     ...Object.keys(snapshot ?? {}),
     ...findEntriesForToday(lists).map((entry) => entry.id),
   ]);
+  const weekly = useWeeklyPriorityOrder(pickTasks(lists.weekly, ids));
 
   return {
     daily: sortByPosition(pickTasks(lists.daily, ids)),
-    weekly: sortByPosition(pickTasks(lists.weekly, ids)),
+    weekly,
     calendar: pickTasks(lists.calendar, ids).toSorted((a, b) =>
       Temporal.PlainDate.compare(a.dueDate, b.dueDate),
     ),
