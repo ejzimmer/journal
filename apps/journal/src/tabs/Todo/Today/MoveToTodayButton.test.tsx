@@ -3,12 +3,8 @@ import userEvent from '@testing-library/user-event';
 import { getToday } from 'shared/dates';
 import { ContextType, FirebaseContext } from 'shared/FirebaseContext';
 import { createMockFirebaseContext } from 'shared/mockFirebase';
-import {
-  DailyTask,
-  ONCE_KEY,
-  TODAY_SLOTS_KEY,
-  TodaySlot,
-} from '../../../types';
+import { DailyTask, ONCE_KEY, DailyGoalItem } from '../../../types';
+import { DAILY_GOALS_KEY } from 'shared/dailyGoals/types';
 import { MoveToTodayButton } from './MoveToTodayButton';
 
 const createTask = (id: string, position = 0): DailyTask => ({
@@ -22,7 +18,7 @@ const createTask = (id: string, position = 0): DailyTask => ({
   lastCompleted: getToday(),
 });
 
-function renderButton(slots: Record<string, TodaySlot> = {}) {
+function renderButton(slots: Record<string, DailyGoalItem> = {}) {
   const parcel = createTask('parcel');
   const storage = createMockFirebaseContext({
     today: { 一: { parcel } },
@@ -62,7 +58,7 @@ describe('MoveToTodayButton', () => {
         );
 
         expect(readValue(storage, ONCE_KEY)).toBeUndefined();
-        expect(readValue(storage, `${TODAY_SLOTS_KEY}/parcel`)).toEqual(
+        expect(readValue(storage, `${DAILY_GOALS_KEY}/parcel`)).toEqual(
           expect.objectContaining({ description: 'parcel', position: 1 }),
         );
       });

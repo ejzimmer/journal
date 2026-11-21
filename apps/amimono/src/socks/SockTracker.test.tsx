@@ -5,7 +5,12 @@ import { Project } from '../projects/types';
 import { SockProgress } from './types';
 import { SockTracker } from './SockTracker';
 
-const project: Project = { id: 'project-1', name: 'Socks', type: 'socks' };
+const project: Project = {
+  id: 'project-1',
+  description: 'Socks',
+  category: '🧶',
+  type: 'socks',
+};
 const socksKey = `projects/${project.id}/socks`;
 
 const createSocks = (

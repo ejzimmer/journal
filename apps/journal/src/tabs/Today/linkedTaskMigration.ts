@@ -4,11 +4,14 @@ import {
   ONCE_KEY,
   ProjectDetails,
   PROJECTS_KEY,
-  TODAY_SLOT_COUNT,
-  TODAY_SLOTS_KEY,
-  TodaySlot,
+  DailyGoalItem,
 } from '../../types';
-import { isSubtaskSlot } from './slots';
+import {
+  DAILY_GOALS_KEY,
+  TODAY_SLOT_COUNT,
+  isSubtaskGoal,
+} from 'shared/dailyGoals/types';
+import { findJournalProjectPath } from './goalProjectPathMigration';
 
 const isSubtaskPath = (path: string) => path.split('/')[2] === 'subtasks';
 
@@ -28,32 +31,37 @@ function findProjectLinkUpdates(projects: Record<string, ProjectDetails>) {
 
 export function createLinkedTaskMigration({
   onceTasks = {},
-  slots = {},
+  goals = {},
   projects = {},
 }: {
   onceTasks?: Record<string, DailyTask>;
-  slots?: Record<string, TodaySlot>;
+  goals?: Record<string, DailyGoalItem>;
   projects?: Record<string, ProjectDetails>;
 }): Record<string, unknown> {
   const updates: [string, unknown][] = [];
-  const slotList = Object.values(slots);
-  const subtaskPathsInSlots = new Set(
-    slotList.filter(isSubtaskSlot).map((slot) => slot.subtaskPath),
+  const goalList = Object.values(goals);
+  const subtaskPathsInGoals = new Set(
+    goalList.filter(isSubtaskGoal).map((goal) => goal.subtaskPath),
   );
-  let slotCount = slotList.length;
-  let nextPosition = getNextPosition(slotList);
+  let goalCount = goalList.length;
+  let nextPosition = getNextPosition(goalList);
 
-  slotList.forEach((slot) => {
-    if (isSubtaskSlot(slot) || !slot.linkedTask) return;
+  goalList.forEach((goal) => {
+    if (isSubtaskGoal(goal) || !goal.linkedTask) return;
 
-    if (isSubtaskPath(slot.linkedTask)) {
+    if (isSubtaskPath(goal.linkedTask)) {
       updates.push([
-        `${TODAY_SLOTS_KEY}/${slot.id}`,
-        { id: slot.id, position: slot.position, subtaskPath: slot.linkedTask },
+        `${DAILY_GOALS_KEY}/${goal.id}`,
+        {
+          id: goal.id,
+          position: goal.position,
+          projectPath: findJournalProjectPath(goal.linkedTask),
+          subtaskPath: goal.linkedTask,
+        },
       ]);
-      subtaskPathsInSlots.add(slot.linkedTask);
+      subtaskPathsInGoals.add(goal.linkedTask);
     } else {
-      updates.push([`${TODAY_SLOTS_KEY}/${slot.id}/linkedTask`, null]);
+      updates.push([`${DAILY_GOALS_KEY}/${goal.id}/linkedTask`, null]);
     }
   });
 
@@ -64,18 +72,23 @@ export function createLinkedTaskMigration({
     const isOpenSubtaskLink =
       isSubtaskPath(subtaskPath) && task.status === 'ready';
 
-    if (isOpenSubtaskLink && subtaskPathsInSlots.has(subtaskPath)) {
+    if (isOpenSubtaskLink && subtaskPathsInGoals.has(subtaskPath)) {
       updates.push([`${ONCE_KEY}/${task.id}`, null]);
-    } else if (isOpenSubtaskLink && slotCount < TODAY_SLOT_COUNT) {
+    } else if (isOpenSubtaskLink && goalCount < TODAY_SLOT_COUNT) {
       updates.push(
         [`${ONCE_KEY}/${task.id}`, null],
         [
-          `${TODAY_SLOTS_KEY}/${task.id}`,
-          { id: task.id, position: nextPosition, subtaskPath },
+          `${DAILY_GOALS_KEY}/${task.id}`,
+          {
+            id: task.id,
+            position: nextPosition,
+            projectPath: findJournalProjectPath(subtaskPath),
+            subtaskPath,
+          },
         ],
       );
-      subtaskPathsInSlots.add(subtaskPath);
-      slotCount += 1;
+      subtaskPathsInGoals.add(subtaskPath);
+      goalCount += 1;
       nextPosition += 1;
     } else {
       updates.push([`${ONCE_KEY}/${task.id}/linkedTask`, null]);

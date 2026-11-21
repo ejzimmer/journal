@@ -6,7 +6,7 @@ import { ThisWeekTask } from '../Todo/ThisWeek/ThisWeekTask';
 import { DueDateTask } from '../Todo/DueDate/DueDateTask';
 import { YesterdayCalories } from './YesterdayCalories';
 import { TodaySymptoms } from './TodaySymptoms';
-import { TodaySlots } from './TodaySlots';
+import { DailyGoals } from './DailyGoals';
 import { useTodayItems } from './useTodayItems';
 
 import '../Todo/index.css';
@@ -44,7 +44,7 @@ export function Today() {
                 </li>
               ))}
             </ol>
-            <TodaySlots />
+            <DailyGoals />
           </div>
         </div>
         <div className="today-panel" style={{ gridArea: 'week' }}>

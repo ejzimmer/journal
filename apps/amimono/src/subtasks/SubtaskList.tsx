@@ -1,6 +1,8 @@
 import './SubtaskList.css';
 import { Checkbox } from 'shared/controls/Checkbox';
-import { Subtask } from '../projects/types';
+import { TodayLinkCheckbox } from 'shared/dailyGoals/TodayLinkCheckbox';
+import { createJournalPath } from '../localFirst/amimonoDataShape';
+import { PROJECTS_KEY, Subtask } from '../projects/types';
 import { sortByPosition } from 'shared/drag-and-drop/utils';
 import { AddSubtaskForm } from './AddSubtaskForm';
 import { useSubtaskActions } from './useSubtaskActions';
@@ -16,6 +18,7 @@ export function SubtaskList({ projectId, subtasks }: SubtaskListProps) {
     subtasks,
   );
   const orderedSubtasks = sortByPosition(subtasks);
+  const journalProjectPath = createJournalPath(`${PROJECTS_KEY}/${projectId}`);
 
   return (
     <div className="subtask-list">
@@ -32,7 +35,11 @@ export function SubtaskList({ projectId, subtasks }: SubtaskListProps) {
                 onChange={(isDone) => markSubtaskDone(subtask, isDone)}
                 useTickForDone
               />
-              <span>{subtask.description}</span>
+              <span className="subtask-description">{subtask.description}</span>
+              <TodayLinkCheckbox
+                projectPath={journalProjectPath}
+                subtaskPath={`${journalProjectPath}/subtasks/${subtask.id}`}
+              />
             </li>
           ))}
         </ul>

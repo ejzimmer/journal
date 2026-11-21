@@ -1,4 +1,6 @@
 import { OrderedListItem } from 'shared/drag-and-drop/types';
+import { BaseProject, BaseSubtask } from 'shared/projects/types';
+import { SubtaskGoal } from 'shared/dailyGoals/types';
 
 export const TODO_KEY = 'today';
 export type TodoTask = OrderedListItem & {
@@ -13,7 +15,7 @@ export type DailyTaskDetails = {
   status: 'ready' | 'done' | 'finished';
   lastCompleted: string;
   // Links to a project or subtask written by versions that copied subtasks
-  // into the todo list; only read to migrate them into Today slots.
+  // into the todo list; only read to migrate them into daily goals.
   linkedTask?: string;
 };
 export type DailyTask = DailyTaskDetails & TodoTask;
@@ -44,12 +46,9 @@ export type CalendarTask = CalendarTaskDetails & TodoTask;
 export const TODAY_TAB_KEY = '今日';
 export const TODAY_SNAPSHOT_KEY = `${TODAY_TAB_KEY}/snapshot`;
 export const TODAY_SNAPSHOT_RESET_KEY = `${TODAY_TAB_KEY}/snapshotReset`;
-export const TODAY_SLOTS_KEY = `${TODAY_TAB_KEY}/slots`;
-export const TODAY_SLOTS_RESET_KEY = `${TODAY_TAB_KEY}/slotsReset`;
-export const TODAY_SLOT_COUNT = 3;
+export const DAILY_GOALS_RESET_KEY = `${TODAY_TAB_KEY}/slotsReset`;
 export type SnapshotEntry = { id: string; listId: string };
-export type SubtaskSlot = { id: string; position: number; subtaskPath: string };
-export type TodaySlot = DailyTask | SubtaskSlot;
+export type DailyGoalItem = DailyTask | SubtaskGoal;
 
 export const HEALTH_PATH = 'health';
 
@@ -89,13 +88,9 @@ export type ExerciseClass = {
 };
 
 export const PROJECTS_KEY = 'projects';
-export type ProjectSubtask = {
-  id: string;
-  description: string;
-  status: 'ready' | 'done';
+export type ProjectSubtask = BaseSubtask & {
   linkedId?: string;
   category: Category;
-  position: number;
 };
 export const PROJECT_COLOURS = {
   '🛒': 'hsl(197 36% 70% /.5)',
@@ -110,11 +105,11 @@ export const PROJECT_COLOURS = {
 export const categories = Object.keys(PROJECT_COLOURS);
 export type Category = keyof typeof PROJECT_COLOURS;
 export type ProjectStatus = 'ready' | 'in_progress' | 'done';
-export type ProjectDetails = OrderedListItem & {
-  description: string;
-  category: Category;
-  status?: ProjectStatus;
-  subtasks?: Record<string, ProjectSubtask>;
-  linkedTaskId?: string;
-  completedAt?: string;
-};
+export type ProjectDetails = OrderedListItem &
+  BaseProject & {
+    category: Category;
+    status?: ProjectStatus;
+    subtasks?: Record<string, ProjectSubtask>;
+    linkedTaskId?: string;
+    completedAt?: string;
+  };

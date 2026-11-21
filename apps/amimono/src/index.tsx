@@ -7,6 +7,7 @@ import { getDatabase } from 'firebase/database';
 import './index.css';
 import { App } from './App';
 import { AMIMONO_DATA_SHAPE } from './localFirst/amimonoDataShape';
+import { convertProjectsToSharedShape } from './migration/convertProjectsToSharedShape';
 import { convertPortablePositions } from './migration/convertPortablePositions';
 import { ConflictBanner } from 'shared/ConflictBanner';
 import { FirebaseContext } from 'shared/FirebaseContext';
@@ -30,7 +31,9 @@ const {
 );
 
 onAuthStateChanged(getAuth(firebaseApp), (user) => {
-  if (user) void convertPortablePositions(database);
+  if (!user) return;
+  void convertPortablePositions(database);
+  void convertProjectsToSharedShape(database);
 });
 
 serviceWorkerRegistration.register({ onUpdate: setWaitingRegistration });

@@ -6,6 +6,7 @@ import {
   ListKey,
   LISTS_KEY,
   ProjectType,
+  PROJECT_CATEGORY,
   PROJECTS_KEY,
   StoredLists,
 } from './types';
@@ -28,10 +29,20 @@ export function useProjectActions() {
   const isSwappingQueues = (from: ListKey, to: ListKey) =>
     from !== 'future' && to !== 'future';
 
-  const addProject = (name: string, type: ProjectType, craft?: Craft) => {
+  const addProject = (
+    description: string,
+    type: ProjectType,
+    craft?: Craft,
+  ) => {
     const id = crypto.randomUUID();
     setValues({
-      [`${PROJECTS_KEY}/${id}`]: { id, name, type, ...(craft && { craft }) },
+      [`${PROJECTS_KEY}/${id}`]: {
+        id,
+        description,
+        category: PROJECT_CATEGORY,
+        type,
+        ...(craft && { craft }),
+      },
       [`${LISTS_KEY}/future/${id}`]: {
         id,
         position: findPositionAtEndOf('future'),

@@ -6,14 +6,20 @@ import { EditableText } from 'shared/controls/EditableText';
 import { DraggableListItem } from 'shared/drag-and-drop/DraggableListItem';
 import { DragPreview } from 'shared/drag-and-drop/DragPreview';
 import { draggableTypeKey } from 'shared/drag-and-drop/types';
-import { TodayLinkCheckbox } from './TodayLinkCheckbox';
+import { TodayLinkCheckbox } from 'shared/dailyGoals/TodayLinkCheckbox';
 
 type SubtaskProps = ProjectSubtask & {
   path: string;
+  projectPath: string;
   dragHandle: ReactElement;
 };
 
-export function Subtask({ path, dragHandle, ...task }: SubtaskProps) {
+export function Subtask({
+  path,
+  projectPath,
+  dragHandle,
+  ...task
+}: SubtaskProps) {
   const { updateItem, deleteItem } = useStorageContext();
 
   const updateTask = (task: ProjectSubtask) => {
@@ -55,7 +61,10 @@ export function Subtask({ path, dragHandle, ...task }: SubtaskProps) {
         onDelete={() => deleteItem(path, task)}
         style={{ fontSize: '1em' }}
       />
-      <TodayLinkCheckbox subtaskPath={`${path}/${task.id}`} />
+      <TodayLinkCheckbox
+        projectPath={projectPath}
+        subtaskPath={`${path}/${task.id}`}
+      />
     </DraggableListItem>
   );
 }

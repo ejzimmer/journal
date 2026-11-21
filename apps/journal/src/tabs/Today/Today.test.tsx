@@ -7,14 +7,15 @@ import { createMockFirebaseContext } from 'shared/mockFirebase';
 import {
   CALENDAR_KEY,
   CalendarTask,
+  DailyTask,
   DAILY_PATH,
   DayData,
   PROJECTS_KEY,
   ProjectDetails,
-  TODAY_SLOTS_KEY,
   WEEKLY_KEY,
   WeeklyTask,
 } from '../../types';
+import { DAILY_GOALS_KEY } from 'shared/dailyGoals/types';
 import { Today } from '.';
 
 const tax: CalendarTask = {
@@ -149,15 +150,16 @@ describe('Today tab', () => {
     });
   });
 
-  describe('when a slot holds the last open subtask of a project', () => {
+  describe('when a daily goal is a journal subtask', () => {
     describe('and the user ticks it off', () => {
-      it('marks the subtask and the project done', async () => {
+      it('marks the subtask done', async () => {
         const { storage, user } = renderToday({
           今日: {
             slots: {
-              slot: {
-                id: 'slot',
+              goal: {
+                id: 'goal',
                 position: 0,
+                projectPath: `${PROJECTS_KEY}/shelves`,
                 subtaskPath: `${PROJECTS_KEY}/shelves/subtasks/drill`,
               },
             },
@@ -171,16 +173,60 @@ describe('Today tab', () => {
         );
 
         expect(
-          readValue<ProjectDetails>(storage, `${PROJECTS_KEY}/shelves`),
-        ).toEqual(
-          expect.objectContaining({
-            status: 'done',
-            completedAt: getToday(),
-            subtasks: expect.objectContaining({
-              drill: expect.objectContaining({ status: 'done' }),
-            }),
+          readValue(storage, `${PROJECTS_KEY}/shelves/subtasks/drill/status`),
+        ).toBe('done');
+      });
+    });
+  });
+
+  describe('when a daily goal is a subtask from Amimono', () => {
+    const amimonoProjectPath = 'amimono/projects/cardigan';
+    const renderTodayWithAmimonoGoal = () =>
+      renderToday({
+        amimono: {
+          projects: {
+            cardigan: {
+              description: 'Cardigan',
+              category: '🧶',
+              subtasks: {
+                sleeves: { description: 'Sleeves', status: 'ready' },
+              },
+            },
+          },
+        },
+        今日: {
+          slots: {
+            goal: {
+              id: 'goal',
+              position: 0,
+              projectPath: amimonoProjectPath,
+              subtaskPath: `${amimonoProjectPath}/subtasks/sleeves`,
+            },
+          },
+        },
+      });
+
+    it('shows the project name with the subtask', async () => {
+      renderTodayWithAmimonoGoal();
+
+      expect(
+        await screen.findByRole('checkbox', { name: 'Cardigan: Sleeves done' }),
+      ).toBeInTheDocument();
+    });
+
+    describe('and the user ticks it off', () => {
+      it('marks the subtask done in Amimono', async () => {
+        const { storage, user } = renderTodayWithAmimonoGoal();
+
+        await user.click(
+          await screen.findByRole('checkbox', {
+            name: 'Cardigan: Sleeves done',
           }),
         );
+
+        expect(
+          readValue(storage, `${amimonoProjectPath}/subtasks/sleeves/status`),
+        ).toBe('done');
       });
     });
   });
@@ -206,24 +252,20 @@ describe('Today tab', () => {
     });
   });
 
-  describe('when a slot holds a one-off task', () => {
+  describe('when a daily goal is a one-off task', () => {
+    const parcel: DailyTask = {
+      id: 'parcel',
+      parentId: DAILY_GOALS_KEY,
+      description: 'Post the parcel',
+      category: '📦',
+      position: 0,
+      type: '一度',
+      status: 'ready',
+      lastCompleted: getDateDaysAgo(1),
+    };
+
     it('shows it in the slot, with the remaining slots empty', async () => {
-      renderToday({
-        今日: {
-          slots: {
-            parcel: {
-              id: 'parcel',
-              parentId: TODAY_SLOTS_KEY,
-              description: 'Post the parcel',
-              category: '📦',
-              position: 0,
-              type: '一度',
-              status: 'ready',
-              lastCompleted: getToday(),
-            },
-          },
-        },
-      });
+      renderToday({ 今日: { slots: { parcel } } });
 
       expect(await screen.findByText('Post the parcel')).toBeInTheDocument();
       expect(
@@ -231,6 +273,25 @@ describe('Today tab', () => {
           .getAllByRole('listitem')
           .filter((item) => item.classList.contains('empty')),
       ).toHaveLength(2);
+    });
+
+    describe('and the user ticks it off', () => {
+      it('finishes the task', async () => {
+        const { storage, user } = renderToday({ 今日: { slots: { parcel } } });
+
+        await user.click(
+          await screen.findByRole('checkbox', { name: 'Post the parcel done' }),
+        );
+
+        expect(
+          readValue<DailyTask>(storage, `${DAILY_GOALS_KEY}/parcel`),
+        ).toEqual(
+          expect.objectContaining({
+            status: 'finished',
+            lastCompleted: getToday(),
+          }),
+        );
+      });
     });
   });
 });

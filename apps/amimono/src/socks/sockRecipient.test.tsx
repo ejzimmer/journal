@@ -5,7 +5,12 @@ import { findCard, renderHomePage } from '../homePageTestUtils';
 
 const createSeed = (project: Record<string, unknown>) => ({
   projects: {
-    socks: { id: 'socks', name: 'Socks for Dad', type: 'socks', ...project },
+    socks: {
+      id: 'socks',
+      description: 'Socks for Dad',
+      type: 'socks',
+      ...project,
+    },
   },
   lists: { portable: { socks: { id: 'socks', position: 1 } } },
   socks: {

@@ -1,12 +1,6 @@
 import { getToday } from 'shared/dates';
-import {
-  DailyTask,
-  ONCE_KEY,
-  ProjectDetails,
-  PROJECTS_KEY,
-  SubtaskSlot,
-  TODAY_SLOTS_KEY,
-} from '../../types';
+import { DailyTask, ONCE_KEY, ProjectDetails, PROJECTS_KEY } from '../../types';
+import { SubtaskGoal, DAILY_GOALS_KEY } from 'shared/dailyGoals/types';
 import { createLinkedTaskMigration } from './linkedTaskMigration';
 
 const subtaskPath = (id: string) => `${PROJECTS_KEY}/shelves/subtasks/${id}`;
@@ -27,28 +21,30 @@ const createCopy = (
   linkedTask,
 });
 
-const createSubtaskSlot = (id: string, position: number): SubtaskSlot => ({
+const createSubtaskGoal = (id: string, position: number): SubtaskGoal => ({
   id,
   position,
+  projectPath: `${PROJECTS_KEY}/shelves`,
   subtaskPath: subtaskPath(id),
 });
 
 const indexById = <T extends { id: string }>(items: T[]) =>
   Object.fromEntries(items.map((item) => [item.id, item]));
 
-describe('migrating copied subtasks into Today slots', () => {
+describe('migrating copied subtasks into daily goals', () => {
   describe('when an open copy links to a subtask and a slot is free', () => {
     it('deletes the copy and puts the subtask in the next slot', () => {
       expect(
         createLinkedTaskMigration({
           onceTasks: indexById([createCopy('drill', subtaskPath('drill'))]),
-          slots: indexById([createSubtaskSlot('paint', 0)]),
+          goals: indexById([createSubtaskGoal('paint', 0)]),
         }),
       ).toEqual({
         [`${ONCE_KEY}/drill`]: null,
-        [`${TODAY_SLOTS_KEY}/drill`]: {
+        [`${DAILY_GOALS_KEY}/drill`]: {
           id: 'drill',
           position: 1,
+          projectPath: `${PROJECTS_KEY}/shelves`,
           subtaskPath: subtaskPath('drill'),
         },
       });
@@ -62,26 +58,26 @@ describe('migrating copied subtasks into Today slots', () => {
           createCopy('drill', subtaskPath('drill')),
           createCopy('screws', subtaskPath('screws')),
         ]),
-        slots: indexById([
-          createSubtaskSlot('paint', 0),
-          createSubtaskSlot('sand', 1),
+        goals: indexById([
+          createSubtaskGoal('paint', 0),
+          createSubtaskGoal('sand', 1),
         ]),
       });
 
       expect(updates).toEqual({
         [`${ONCE_KEY}/drill`]: null,
-        [`${TODAY_SLOTS_KEY}/drill`]: expect.objectContaining({ position: 2 }),
+        [`${DAILY_GOALS_KEY}/drill`]: expect.objectContaining({ position: 2 }),
         [`${ONCE_KEY}/screws/linkedTask`]: null,
       });
     });
   });
 
-  describe('when the linked subtask is already in a slot', () => {
+  describe('when the linked subtask is already a daily goal', () => {
     it('deletes the copy', () => {
       expect(
         createLinkedTaskMigration({
           onceTasks: indexById([createCopy('copy', subtaskPath('paint'))]),
-          slots: indexById([createSubtaskSlot('paint', 0)]),
+          goals: indexById([createSubtaskGoal('paint', 0)]),
         }),
       ).toEqual({ [`${ONCE_KEY}/copy`]: null });
     });
@@ -99,17 +95,18 @@ describe('migrating copied subtasks into Today slots', () => {
     });
   });
 
-  describe('when a copy that was moved into a slot links to a subtask', () => {
-    it('turns the slot into a link to that subtask', () => {
+  describe('when a copy that was made a daily goal links to a subtask', () => {
+    it('turns the goal into a link to that subtask', () => {
       const copy = {
         ...createCopy('drill', subtaskPath('drill')),
         position: 2,
       };
 
-      expect(createLinkedTaskMigration({ slots: { drill: copy } })).toEqual({
-        [`${TODAY_SLOTS_KEY}/drill`]: {
+      expect(createLinkedTaskMigration({ goals: { drill: copy } })).toEqual({
+        [`${DAILY_GOALS_KEY}/drill`]: {
           id: 'drill',
           position: 2,
+          projectPath: `${PROJECTS_KEY}/shelves`,
           subtaskPath: subtaskPath('drill'),
         },
       });
@@ -159,7 +156,7 @@ describe('migrating copied subtasks into Today slots', () => {
       expect(
         createLinkedTaskMigration({
           onceTasks: indexById([createCopy('parcel', undefined)]),
-          slots: indexById([createSubtaskSlot('paint', 0)]),
+          goals: indexById([createSubtaskGoal('paint', 0)]),
         }),
       ).toEqual({});
     });

@@ -28,7 +28,7 @@ export type ProjectDraft = Omit<Project, 'pattern' | 'yarns' | 'gauge'> & {
 // user cleared has to be sent as null rather than left out.
 type Removable<T> = { [K in keyof T]-?: T[K] | null };
 
-export type ProjectFields = Pick<Project, 'name' | 'type'> &
+export type ProjectFields = Pick<Project, 'description' | 'type'> &
   Removable<
     Pick<Project, 'craft' | 'pattern' | 'yarns' | 'gauge' | 'recipientId'>
   >;
@@ -69,7 +69,7 @@ export function createProjectDraft(project: Project): ProjectDraft {
 
 export function convertDraftToFields(draft: ProjectDraft): ProjectFields {
   return {
-    name: draft.name.trim(),
+    description: draft.description.trim(),
     type: draft.type,
     craft: draft.craft ?? null,
     pattern: convertPattern(draft.pattern),

@@ -1,12 +1,13 @@
 import { within } from '@testing-library/react';
 
+import { SubtaskGoal } from 'shared/dailyGoals/types';
 import { findCard, renderHomePage } from '../homePageTestUtils';
 
 const seed = {
   projects: {
     cardigan: {
       id: 'cardigan',
-      name: 'Cardigan',
+      description: 'Cardigan',
       type: 'cardigan',
       craft: 'knitting',
       pattern: { name: 'Telja Cardigan', url: 'https://example.com/telja' },
@@ -60,7 +61,11 @@ describe('the project drawer', () => {
       expect(
         within(card.getByRole('list', { name: 'Subtasks' }))
           .getAllByRole('listitem')
-          .map((subtask) => subtask.textContent),
+          .map((subtask) =>
+            within(subtask)
+              .getAllByRole('checkbox')[0]
+              .getAttribute('aria-label'),
+          ),
       ).toEqual(['Swatch', 'Sleeves']);
     });
 
@@ -113,6 +118,79 @@ describe('the project drawer', () => {
     });
   });
 
+  describe('putting a subtask on today', () => {
+    const seedWithGoals = (slots: Record<string, SubtaskGoal>) => ({
+      ...seed,
+      今日: { slots },
+    });
+    const createOtherGoal = (id: string, position: number): SubtaskGoal => ({
+      id,
+      position,
+      projectPath: 'projects/shelves',
+      subtaskPath: `projects/shelves/subtasks/${id}`,
+    });
+    const cardiganPath = 'amimono/projects/cardigan';
+
+    async function expandCardigan(slots: Record<string, SubtaskGoal>) {
+      const { user } = renderHomePage(seedWithGoals(slots));
+      const card = within(findCard('Cardigan'));
+      await user.click(card.getByRole('button', { name: 'Expand project' }));
+      const sleevesItem = within(card.getByRole('list', { name: 'Subtasks' }))
+        .getAllByRole('listitem')
+        .find((subtask) =>
+          within(subtask).queryByRole('checkbox', { name: 'Sleeves' }),
+        )!;
+      const sleeves = within(sleevesItem);
+      return { user, sleeves };
+    }
+
+    describe('when a Today slot is free', () => {
+      it('ticks the link checkbox once the subtask is on today', async () => {
+        const { user, sleeves } = await expandCardigan({
+          paint: createOtherGoal('paint', 0),
+        });
+        const link = sleeves.getByRole('checkbox', { name: 'On today' });
+
+        await user.click(link);
+
+        expect(link).toBeChecked();
+      });
+    });
+
+    describe('when every Today slot is full', () => {
+      it('disables the link checkbox', async () => {
+        const { sleeves } = await expandCardigan({
+          paint: createOtherGoal('paint', 0),
+          sand: createOtherGoal('sand', 1),
+          drill: createOtherGoal('drill', 2),
+        });
+
+        expect(
+          sleeves.getByRole('checkbox', { name: 'On today' }),
+        ).toBeDisabled();
+      });
+    });
+
+    describe('when the subtask is already on today', () => {
+      it('takes it off today when the link checkbox is unticked', async () => {
+        const { user, sleeves } = await expandCardigan({
+          sleeves: {
+            id: 'sleeves',
+            position: 0,
+            projectPath: cardiganPath,
+            subtaskPath: `${cardiganPath}/subtasks/sleeves`,
+          },
+        });
+        const link = sleeves.getByRole('checkbox', { name: 'On today' });
+        expect(link).toBeChecked();
+
+        await user.click(link);
+
+        expect(link).not.toBeChecked();
+      });
+    });
+  });
+
   describe('adding a subtask', () => {
     it('adds it to the end of the subtasks', async () => {
       const { user } = renderHomePage(seed);
@@ -127,7 +205,11 @@ describe('the project drawer', () => {
       expect(
         within(card.getByRole('list', { name: 'Subtasks' }))
           .getAllByRole('listitem')
-          .map((subtask) => subtask.textContent),
+          .map((subtask) =>
+            within(subtask)
+              .getAllByRole('checkbox')[0]
+              .getAttribute('aria-label'),
+          ),
       ).toEqual(['Swatch', 'Sleeves', 'Button band']);
     });
   });
