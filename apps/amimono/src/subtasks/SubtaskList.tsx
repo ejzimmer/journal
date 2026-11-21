@@ -1,7 +1,7 @@
 import './SubtaskList.css';
 import { Checkbox } from 'shared/controls/Checkbox';
 import { TodayLinkCheckbox } from 'shared/todaySlots/TodayLinkCheckbox';
-import { AMIMONO_SUBTREE } from '../localFirst/amimonoDataShape';
+import { createJournalPath } from '../localFirst/amimonoDataShape';
 import { PROJECTS_KEY, Subtask } from '../projects/types';
 import { sortByPosition } from 'shared/drag-and-drop/utils';
 import { AddSubtaskForm } from './AddSubtaskForm';
@@ -18,9 +18,7 @@ export function SubtaskList({ projectId, subtasks }: SubtaskListProps) {
     subtasks,
   );
   const orderedSubtasks = sortByPosition(subtasks);
-  // Today slots hold paths as the journal reads them, which include the
-  // subtree Amimono stores its data under.
-  const journalProjectPath = `${AMIMONO_SUBTREE}/${PROJECTS_KEY}/${projectId}`;
+  const journalProjectPath = createJournalPath(`${PROJECTS_KEY}/${projectId}`);
 
   return (
     <div className="subtask-list">
