@@ -264,6 +264,10 @@ button.category-button,
         svg {
           width: 18px;
         }
+
+        &:hover {
+          background: var(--card-colour, var(--border-colour));
+        }
       }
 
       &:hover,
