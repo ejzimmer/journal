@@ -5,9 +5,9 @@ import {
   ONCE_KEY,
   ProjectDetails,
   PROJECTS_KEY,
-  TODAY_SLOTS_KEY,
   TodaySlot,
 } from '../../types';
+import { TODAY_SLOTS_KEY } from 'shared/todaySlots/types';
 import { createLinkedTaskMigration } from './linkedTaskMigration';
 
 export function useLinkedTaskMigration() {

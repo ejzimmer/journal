@@ -1,28 +1,14 @@
-import { useStorageContext } from 'shared/FirebaseContext';
-import { getNextPosition, sortByPosition } from 'shared/drag-and-drop/utils';
-import {
-  DailyTask,
-  TODAY_SLOT_COUNT,
-  TODAY_SLOTS_KEY,
-  TodaySlot,
-} from '../../types';
-import { isSubtaskSlot } from './slots';
+import { useStorageContext } from '../FirebaseContext';
+import { SortableItem } from '../drag-and-drop/types';
+import { getNextPosition, sortByPosition } from '../drag-and-drop/utils';
+import { isSubtaskSlot, TODAY_SLOT_COUNT, TODAY_SLOTS_KEY } from './types';
 
-export function useTodaySlots() {
+export function useTodaySlots<Slot extends SortableItem>() {
   const { useValue, addItem, setValues } = useStorageContext();
-  const { value } = useValue<Record<string, TodaySlot>>(TODAY_SLOTS_KEY);
+  const { value } = useValue<Record<string, Slot>>(TODAY_SLOTS_KEY);
   const slots = sortByPosition(Object.values(value ?? {}));
   const hasFreeSlot = slots.length < TODAY_SLOT_COUNT;
   const nextPosition = getNextPosition(slots);
-
-  const moveTaskToSlot = (task: DailyTask, sourceListId: string) => {
-    if (!hasFreeSlot) return;
-
-    setValues({
-      [`${TODAY_SLOTS_KEY}/${task.id}`]: { ...task, position: nextPosition },
-      [`${sourceListId}/${task.id}`]: null,
-    });
-  };
 
   const addSubtaskToSlot = (subtaskPath: string) => {
     if (!hasFreeSlot) return;
@@ -46,7 +32,7 @@ export function useTodaySlots() {
   return {
     slots,
     hasFreeSlot,
-    moveTaskToSlot,
+    nextPosition,
     addSubtaskToSlot,
     removeSubtaskFromSlot,
     isSubtaskInSlot,

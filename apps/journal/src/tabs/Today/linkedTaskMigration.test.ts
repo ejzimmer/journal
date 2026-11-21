@@ -1,12 +1,6 @@
 import { getToday } from 'shared/dates';
-import {
-  DailyTask,
-  ONCE_KEY,
-  ProjectDetails,
-  PROJECTS_KEY,
-  SubtaskSlot,
-  TODAY_SLOTS_KEY,
-} from '../../types';
+import { DailyTask, ONCE_KEY, ProjectDetails, PROJECTS_KEY } from '../../types';
+import { SubtaskSlot, TODAY_SLOTS_KEY } from 'shared/todaySlots/types';
 import { createLinkedTaskMigration } from './linkedTaskMigration';
 
 const subtaskPath = (id: string) => `${PROJECTS_KEY}/shelves/subtasks/${id}`;

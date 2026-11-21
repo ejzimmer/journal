@@ -11,10 +11,13 @@ import {
   DayData,
   PROJECTS_KEY,
   ProjectDetails,
-  TODAY_SLOTS_KEY,
   WEEKLY_KEY,
   WeeklyTask,
 } from '../../types';
+import {
+  AMIMONO_PROJECTS_PATH,
+  TODAY_SLOTS_KEY,
+} from 'shared/todaySlots/types';
 import { Today } from '.';
 
 const tax: CalendarTask = {
@@ -181,6 +184,58 @@ describe('Today tab', () => {
             }),
           }),
         );
+      });
+    });
+  });
+
+  describe('when a slot holds a subtask from Amimono', () => {
+    const renderTodayWithAmimonoSlot = () =>
+      renderToday({
+        amimono: {
+          projects: {
+            cardigan: {
+              name: 'Cardigan',
+              subtasks: {
+                sleeves: { description: 'Sleeves', status: 'ready' },
+              },
+            },
+          },
+        },
+        今日: {
+          slots: {
+            slot: {
+              id: 'slot',
+              position: 0,
+              subtaskPath: `${AMIMONO_PROJECTS_PATH}/cardigan/subtasks/sleeves`,
+            },
+          },
+        },
+      });
+
+    it('shows the project name with the subtask', async () => {
+      renderTodayWithAmimonoSlot();
+
+      expect(
+        await screen.findByRole('checkbox', { name: 'Cardigan: Sleeves done' }),
+      ).toBeInTheDocument();
+    });
+
+    describe('and the user ticks it off', () => {
+      it('marks the subtask done in Amimono', async () => {
+        const { storage, user } = renderTodayWithAmimonoSlot();
+
+        await user.click(
+          await screen.findByRole('checkbox', {
+            name: 'Cardigan: Sleeves done',
+          }),
+        );
+
+        expect(
+          readValue(
+            storage,
+            `${AMIMONO_PROJECTS_PATH}/cardigan/subtasks/sleeves/status`,
+          ),
+        ).toBe('done');
       });
     });
   });

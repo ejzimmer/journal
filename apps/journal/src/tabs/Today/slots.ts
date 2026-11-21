@@ -1,32 +1,39 @@
 import { updateCompletionDate } from 'shared/years';
+import { isSubtaskSlot } from 'shared/todaySlots/types';
 import {
   DailyTask,
   ProjectDetails,
   ProjectSubtask,
-  SubtaskSlot,
   TodaySlot,
 } from '../../types';
 
-export const isSubtaskSlot = (slot: TodaySlot): slot is SubtaskSlot =>
-  'subtaskPath' in slot;
+type ProjectsWithSubtasks = Record<
+  string,
+  { subtasks?: Record<string, Pick<ProjectSubtask, 'status'>> }
+>;
+export type ProjectsByPath = Record<string, ProjectsWithSubtasks | undefined>;
+
+const SUBTASKS_SEPARATOR = '/subtasks/';
 
 export const getProjectPath = (subtaskPath: string) =>
-  subtaskPath.split('/').slice(0, 2).join('/');
+  subtaskPath.split(SUBTASKS_SEPARATOR)[0];
 
-export function findSubtask(
-  projects: Record<string, ProjectDetails> | undefined,
+export function findSubtaskStatus(
+  projectsByPath: ProjectsByPath,
   subtaskPath: string,
-): ProjectSubtask | undefined {
-  const [, projectId, , subtaskId] = subtaskPath.split('/');
-  return projects?.[projectId]?.subtasks?.[subtaskId];
+): ProjectSubtask['status'] | undefined {
+  const [projectPath, subtaskId] = subtaskPath.split(SUBTASKS_SEPARATOR);
+  const projectIdStart = projectPath.lastIndexOf('/');
+  const projectsPath = projectPath.slice(0, projectIdStart);
+  const projectId = projectPath.slice(projectIdStart + 1);
+
+  return projectsByPath[projectsPath]?.[projectId]?.subtasks?.[subtaskId]
+    ?.status;
 }
 
-export function isSlotDone(
-  slot: TodaySlot,
-  projects: Record<string, ProjectDetails> | undefined,
-) {
+export function isSlotDone(slot: TodaySlot, projectsByPath: ProjectsByPath) {
   if (isSubtaskSlot(slot)) {
-    return findSubtask(projects, slot.subtaskPath)?.status !== 'ready';
+    return findSubtaskStatus(projectsByPath, slot.subtaskPath) !== 'ready';
   }
 
   return (slot as DailyTask).status !== 'ready';

@@ -4,11 +4,13 @@ import {
   ONCE_KEY,
   ProjectDetails,
   PROJECTS_KEY,
-  TODAY_SLOT_COUNT,
-  TODAY_SLOTS_KEY,
   TodaySlot,
 } from '../../types';
-import { isSubtaskSlot } from './slots';
+import {
+  TODAY_SLOTS_KEY,
+  TODAY_SLOT_COUNT,
+  isSubtaskSlot,
+} from 'shared/todaySlots/types';
 
 const isSubtaskPath = (path: string) => path.split('/')[2] === 'subtasks';
 
