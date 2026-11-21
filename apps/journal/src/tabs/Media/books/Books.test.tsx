@@ -164,6 +164,73 @@ describe('Books', () => {
     });
   });
 
+  describe('changing status', () => {
+    function renderSingleBook(book: BookDetails) {
+      return renderWithMediaStorage(<Books />, { books: [book] });
+    }
+
+    describe('when the book is unread', () => {
+      it.each(['reading', 'listening'] as const)(
+        'lets you choose %s',
+        async (status) => {
+          const user = userEvent.setup();
+          const { storageContext } = renderSingleBook(guardsGuards);
+
+          await user.click(
+            screen.getByRole('button', { name: /^Guards! Guards!: unread/ }),
+          );
+          await user.click(screen.getByRole('button', { name: status }));
+
+          expect(storageContext.updateMedia).toHaveBeenCalledWith({
+            ...guardsGuards,
+            status,
+          });
+        },
+      );
+    });
+
+    describe.each(['reading', 'listening'] as const)(
+      'when the book is %s',
+      (status) => {
+        it('marks it read', async () => {
+          const user = userEvent.setup();
+          const book: BookDetails = { ...guardsGuards, status };
+          const { storageContext } = renderSingleBook(book);
+
+          await user.click(
+            screen.getByRole('button', {
+              name: `Guards! Guards!: ${status}. Change to read`,
+            }),
+          );
+
+          expect(storageContext.updateMedia).toHaveBeenCalledWith({
+            ...book,
+            status: 'read',
+          });
+        });
+      },
+    );
+
+    describe('when the book is read', () => {
+      it('marks it unread', async () => {
+        const user = userEvent.setup();
+        const book: BookDetails = { ...guardsGuards, status: 'read' };
+        const { storageContext } = renderSingleBook(book);
+
+        await user.click(
+          screen.getByRole('button', {
+            name: 'Guards! Guards!: read. Change to unread',
+          }),
+        );
+
+        expect(storageContext.updateMedia).toHaveBeenCalledWith({
+          ...book,
+          status: 'unread',
+        });
+      });
+    });
+  });
+
   describe('years', () => {
     beforeEach(() => {
       jest.useFakeTimers({ advanceTimers: true });

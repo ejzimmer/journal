@@ -1,5 +1,4 @@
 import {
-  BOOK_STATUS_ORDER,
   BookDetails,
   BookStatus,
   getBookStatus,
@@ -13,7 +12,12 @@ import { useMediaStorage } from '../MediaStorageContext';
 import { EditBookForm } from './EditBookForm';
 
 const BOOK_CONFIG: StatusConfig<BookDetails, BookStatus> = {
-  order: BOOK_STATUS_ORDER,
+  nextStatuses: {
+    unread: ['reading', 'listening'],
+    reading: ['read'],
+    listening: ['read'],
+    read: ['unread'],
+  },
   spineStatus: {
     unread: 'todo',
     reading: 'active',

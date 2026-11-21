@@ -1,0 +1,53 @@
+.status-picker[popover] {
+  --paper: #fbf8f0;
+  --edge: hsl(34 40% 78%);
+  inset: unset;
+  position: absolute;
+  top: anchor(bottom);
+  left: anchor(center);
+  translate: -50% 8px;
+  margin: 0;
+  overflow: visible;
+  padding: 4px;
+  gap: 2px;
+  background: var(--paper);
+  border: 1.5px solid var(--edge);
+  border-radius: 8px;
+  box-shadow: 0 3px 8px hsl(30 50% 15% / 0.25);
+
+  &:popover-open {
+    display: flex;
+  }
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: -6px;
+    left: 50%;
+    width: 10px;
+    height: 10px;
+    background: var(--paper);
+    border-inline-start: 1.5px solid var(--edge);
+    border-block-start: 1.5px solid var(--edge);
+    translate: -50% 0;
+    rotate: 45deg;
+  }
+
+  button {
+    display: grid;
+    place-items: center;
+    width: 30px;
+    height: 30px;
+    padding: 0;
+    border: 0;
+    border-radius: 6px;
+    background: none;
+    font-size: 16px;
+    line-height: 1;
+
+    &:hover,
+    &:focus-visible {
+      background: hsl(30 40% 88%);
+    }
+  }
+}
