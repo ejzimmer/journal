@@ -1,6 +1,6 @@
 import { within } from '@testing-library/react';
 
-import { SubtaskSlot } from 'shared/todaySlots/types';
+import { SubtaskGoal } from 'shared/dailyGoals/types';
 import { findCard, renderHomePage } from '../homePageTestUtils';
 
 const seed = {
@@ -119,11 +119,11 @@ describe('the project drawer', () => {
   });
 
   describe('putting a subtask on today', () => {
-    const seedWithSlots = (slots: Record<string, SubtaskSlot>) => ({
+    const seedWithGoals = (slots: Record<string, SubtaskGoal>) => ({
       ...seed,
       今日: { slots },
     });
-    const createOtherSlot = (id: string, position: number): SubtaskSlot => ({
+    const createOtherGoal = (id: string, position: number): SubtaskGoal => ({
       id,
       position,
       projectPath: 'projects/shelves',
@@ -131,8 +131,8 @@ describe('the project drawer', () => {
     });
     const cardiganPath = 'amimono/projects/cardigan';
 
-    async function expandCardigan(slots: Record<string, SubtaskSlot>) {
-      const { user } = renderHomePage(seedWithSlots(slots));
+    async function expandCardigan(slots: Record<string, SubtaskGoal>) {
+      const { user } = renderHomePage(seedWithGoals(slots));
       const card = within(findCard('Cardigan'));
       await user.click(card.getByRole('button', { name: 'Expand project' }));
       const sleevesItem = within(card.getByRole('list', { name: 'Subtasks' }))
@@ -147,7 +147,7 @@ describe('the project drawer', () => {
     describe('when a Today slot is free', () => {
       it('ticks the link checkbox once the subtask is on today', async () => {
         const { user, sleeves } = await expandCardigan({
-          paint: createOtherSlot('paint', 0),
+          paint: createOtherGoal('paint', 0),
         });
         const link = sleeves.getByRole('checkbox', { name: 'On today' });
 
@@ -160,9 +160,9 @@ describe('the project drawer', () => {
     describe('when every Today slot is full', () => {
       it('disables the link checkbox', async () => {
         const { sleeves } = await expandCardigan({
-          paint: createOtherSlot('paint', 0),
-          sand: createOtherSlot('sand', 1),
-          drill: createOtherSlot('drill', 2),
+          paint: createOtherGoal('paint', 0),
+          sand: createOtherGoal('sand', 1),
+          drill: createOtherGoal('drill', 2),
         });
 
         expect(

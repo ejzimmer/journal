@@ -1,6 +1,6 @@
 import { OrderedListItem } from 'shared/drag-and-drop/types';
 import { BaseProject, BaseSubtask } from 'shared/projects/types';
-import { SubtaskSlot } from 'shared/todaySlots/types';
+import { SubtaskGoal } from 'shared/dailyGoals/types';
 
 export const TODO_KEY = 'today';
 export type TodoTask = OrderedListItem & {
@@ -15,7 +15,7 @@ export type DailyTaskDetails = {
   status: 'ready' | 'done' | 'finished';
   lastCompleted: string;
   // Links to a project or subtask written by versions that copied subtasks
-  // into the todo list; only read to migrate them into Today slots.
+  // into the todo list; only read to migrate them into daily goals.
   linkedTask?: string;
 };
 export type DailyTask = DailyTaskDetails & TodoTask;
@@ -46,9 +46,9 @@ export type CalendarTask = CalendarTaskDetails & TodoTask;
 export const TODAY_TAB_KEY = '今日';
 export const TODAY_SNAPSHOT_KEY = `${TODAY_TAB_KEY}/snapshot`;
 export const TODAY_SNAPSHOT_RESET_KEY = `${TODAY_TAB_KEY}/snapshotReset`;
-export const TODAY_SLOTS_RESET_KEY = `${TODAY_TAB_KEY}/slotsReset`;
+export const DAILY_GOALS_RESET_KEY = `${TODAY_TAB_KEY}/slotsReset`;
 export type SnapshotEntry = { id: string; listId: string };
-export type TodaySlot = DailyTask | SubtaskSlot;
+export type DailyGoalItem = DailyTask | SubtaskGoal;
 
 export const HEALTH_PATH = 'health';
 

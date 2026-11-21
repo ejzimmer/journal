@@ -6,7 +6,7 @@ import { EditableText } from 'shared/controls/EditableText';
 import { DraggableListItem } from 'shared/drag-and-drop/DraggableListItem';
 import { DragPreview } from 'shared/drag-and-drop/DragPreview';
 import { draggableTypeKey } from 'shared/drag-and-drop/types';
-import { TodayLinkCheckbox } from 'shared/todaySlots/TodayLinkCheckbox';
+import { TodayLinkCheckbox } from 'shared/dailyGoals/TodayLinkCheckbox';
 
 type SubtaskProps = ProjectSubtask & {
   path: string;

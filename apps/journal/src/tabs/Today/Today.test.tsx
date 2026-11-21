@@ -15,7 +15,7 @@ import {
   WEEKLY_KEY,
   WeeklyTask,
 } from '../../types';
-import { TODAY_SLOTS_KEY } from 'shared/todaySlots/types';
+import { DAILY_GOALS_KEY } from 'shared/dailyGoals/types';
 import { Today } from '.';
 
 const tax: CalendarTask = {
@@ -150,14 +150,14 @@ describe('Today tab', () => {
     });
   });
 
-  describe('when a slot holds a journal subtask', () => {
+  describe('when a daily goal is a journal subtask', () => {
     describe('and the user ticks it off', () => {
       it('marks the subtask done', async () => {
         const { storage, user } = renderToday({
           今日: {
             slots: {
-              slot: {
-                id: 'slot',
+              goal: {
+                id: 'goal',
                 position: 0,
                 projectPath: `${PROJECTS_KEY}/shelves`,
                 subtaskPath: `${PROJECTS_KEY}/shelves/subtasks/drill`,
@@ -179,9 +179,9 @@ describe('Today tab', () => {
     });
   });
 
-  describe('when a slot holds a subtask from Amimono', () => {
+  describe('when a daily goal is a subtask from Amimono', () => {
     const amimonoProjectPath = 'amimono/projects/cardigan';
-    const renderTodayWithAmimonoSlot = () =>
+    const renderTodayWithAmimonoGoal = () =>
       renderToday({
         amimono: {
           projects: {
@@ -196,8 +196,8 @@ describe('Today tab', () => {
         },
         今日: {
           slots: {
-            slot: {
-              id: 'slot',
+            goal: {
+              id: 'goal',
               position: 0,
               projectPath: amimonoProjectPath,
               subtaskPath: `${amimonoProjectPath}/subtasks/sleeves`,
@@ -207,7 +207,7 @@ describe('Today tab', () => {
       });
 
     it('shows the project name with the subtask', async () => {
-      renderTodayWithAmimonoSlot();
+      renderTodayWithAmimonoGoal();
 
       expect(
         await screen.findByRole('checkbox', { name: 'Cardigan: Sleeves done' }),
@@ -216,7 +216,7 @@ describe('Today tab', () => {
 
     describe('and the user ticks it off', () => {
       it('marks the subtask done in Amimono', async () => {
-        const { storage, user } = renderTodayWithAmimonoSlot();
+        const { storage, user } = renderTodayWithAmimonoGoal();
 
         await user.click(
           await screen.findByRole('checkbox', {
@@ -252,10 +252,10 @@ describe('Today tab', () => {
     });
   });
 
-  describe('when a slot holds a one-off task', () => {
+  describe('when a daily goal is a one-off task', () => {
     const parcel: DailyTask = {
       id: 'parcel',
-      parentId: TODAY_SLOTS_KEY,
+      parentId: DAILY_GOALS_KEY,
       description: 'Post the parcel',
       category: '📦',
       position: 0,
@@ -284,7 +284,7 @@ describe('Today tab', () => {
         );
 
         expect(
-          readValue<DailyTask>(storage, `${TODAY_SLOTS_KEY}/parcel`),
+          readValue<DailyTask>(storage, `${DAILY_GOALS_KEY}/parcel`),
         ).toEqual(
           expect.objectContaining({
             status: 'finished',

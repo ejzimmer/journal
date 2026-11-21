@@ -5,26 +5,26 @@ import {
   ONCE_KEY,
   ProjectDetails,
   PROJECTS_KEY,
-  TodaySlot,
+  DailyGoalItem,
 } from '../../types';
-import { TODAY_SLOTS_KEY } from 'shared/todaySlots/types';
+import { DAILY_GOALS_KEY } from 'shared/dailyGoals/types';
 import { createLinkedTaskMigration } from './linkedTaskMigration';
 
 export function useLinkedTaskMigration() {
   const { useValue, setValues } = useStorageContext();
   const once = useValue<Record<string, DailyTask>>(ONCE_KEY);
-  const slots = useValue<Record<string, TodaySlot>>(TODAY_SLOTS_KEY);
+  const goals = useValue<Record<string, DailyGoalItem>>(DAILY_GOALS_KEY);
   const projects = useValue<Record<string, ProjectDetails>>(PROJECTS_KEY);
-  const synced = once.synced && slots.synced && projects.synced;
+  const synced = once.synced && goals.synced && projects.synced;
 
   useEffect(() => {
     if (!synced) return;
 
     const updates = createLinkedTaskMigration({
       onceTasks: once.value,
-      slots: slots.value,
+      goals: goals.value,
       projects: projects.value,
     });
     if (Object.keys(updates).length > 0) setValues(updates);
-  }, [once.value, slots.value, projects.value, synced, setValues]);
+  }, [once.value, goals.value, projects.value, synced, setValues]);
 }

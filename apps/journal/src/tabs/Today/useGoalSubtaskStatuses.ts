@@ -1,6 +1,6 @@
 import { useStorageContext } from 'shared/FirebaseContext';
 import { BaseSubtask } from 'shared/projects/types';
-import { SubtaskSlot } from 'shared/todaySlots/types';
+import { SubtaskGoal } from 'shared/dailyGoals/types';
 
 function useSubtaskStatus(subtaskPath?: string) {
   const { useValue } = useStorageContext();
@@ -10,16 +10,16 @@ function useSubtaskStatus(subtaskPath?: string) {
 }
 
 // Hooks have to be called the same number of times on every render, so this
-// reads one subtask for each of Today's three slots.
-export function useSlotSubtaskStatuses(slots: SubtaskSlot[]) {
+// reads one subtask for each of the three daily goals.
+export function useGoalSubtaskStatuses(goals: SubtaskGoal[]) {
   const reads = [
-    useSubtaskStatus(slots[0]?.subtaskPath),
-    useSubtaskStatus(slots[1]?.subtaskPath),
-    useSubtaskStatus(slots[2]?.subtaskPath),
+    useSubtaskStatus(goals[0]?.subtaskPath),
+    useSubtaskStatus(goals[1]?.subtaskPath),
+    useSubtaskStatus(goals[2]?.subtaskPath),
   ];
 
   return {
     synced: reads.every((read) => read.synced),
-    findStatus: (slot: SubtaskSlot) => reads[slots.indexOf(slot)]?.status,
+    findStatus: (goal: SubtaskGoal) => reads[goals.indexOf(goal)]?.status,
   };
 }

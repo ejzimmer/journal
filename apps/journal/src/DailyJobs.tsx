@@ -4,21 +4,21 @@ import { useOnceListMigration } from './tabs/Todo/Today/useOnceListMigration';
 import { useWeeklyReset } from './tabs/Todo/ThisWeek/useWeeklyReset';
 import { useDueDateReset } from './tabs/Todo/DueDate/useDueDateReset';
 import { useTodaySnapshot } from './tabs/Today/useTodaySnapshot';
-import { useTodaySlotsReset } from './tabs/Today/useTodaySlotsReset';
+import { useDailyGoalReset } from './tabs/Today/useDailyGoalReset';
 import { useLinkedTaskMigration } from './tabs/Today/useLinkedTaskMigration';
-import { useSlotProjectPathMigration } from './tabs/Today/useSlotProjectPathMigration';
+import { useGoalProjectPathMigration } from './tabs/Today/useGoalProjectPathMigration';
 import { useWorkDailyUpdate } from './tabs/Work/useWorkDailyUpdate';
 
 export function DailyJobs() {
   useOnceListMigration();
   useLinkedTaskMigration();
-  useSlotProjectPathMigration();
+  useGoalProjectPathMigration();
   useDailyReset();
   useOnceReset();
   useWeeklyReset();
   useDueDateReset();
   useTodaySnapshot();
-  useTodaySlotsReset();
+  useDailyGoalReset();
   useWorkDailyUpdate();
 
   return null;

@@ -1,10 +1,10 @@
 import { createSubtreeDataShape } from 'shared/localFirst/dataShape';
-import { TODAY_SLOTS_KEY } from 'shared/todaySlots/types';
+import { DAILY_GOALS_KEY } from 'shared/dailyGoals/types';
 
 export const AMIMONO_SUBTREE = 'amimono';
 
 export const AMIMONO_DATA_SHAPE = createSubtreeDataShape(AMIMONO_SUBTREE, [
-  TODAY_SLOTS_KEY,
+  DAILY_GOALS_KEY,
 ]);
 
 export const createJournalPath = (amimonoPath: string) =>

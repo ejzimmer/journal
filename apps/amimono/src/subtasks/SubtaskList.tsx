@@ -1,6 +1,6 @@
 import './SubtaskList.css';
 import { Checkbox } from 'shared/controls/Checkbox';
-import { TodayLinkCheckbox } from 'shared/todaySlots/TodayLinkCheckbox';
+import { TodayLinkCheckbox } from 'shared/dailyGoals/TodayLinkCheckbox';
 import { createJournalPath } from '../localFirst/amimonoDataShape';
 import { PROJECTS_KEY, Subtask } from '../projects/types';
 import { sortByPosition } from 'shared/drag-and-drop/utils';
