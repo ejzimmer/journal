@@ -13,12 +13,9 @@ type DailyGoalProps = {
   onToggle: () => void;
 };
 
-const AMIMONO_EMOJI = '🧶';
-
 export function DailyGoal({ task, project, onToggle }: DailyGoalProps) {
   const projectName = 'name' in project ? project.name : project.description;
   const description = `${projectName}: ${task.description}`;
-  const emoji = 'category' in task ? task.category : AMIMONO_EMOJI;
   const isDone = task.status === 'done';
 
   return (
@@ -27,7 +24,7 @@ export function DailyGoal({ task, project, onToggle }: DailyGoalProps) {
     >
       <div className="today-task-description">
         <EmojiCheckbox
-          emoji={<GlowingEmoji emoji={emoji} />}
+          emoji={<GlowingEmoji emoji={task.category} />}
           isChecked={isDone}
           label={`${description} done`}
           onChange={onToggle}

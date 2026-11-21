@@ -22,10 +22,14 @@ export type ProjectType = (typeof PROJECT_TYPE_KEYS)[number];
 
 export type Craft = 'knitting' | 'crochet' | 'weaving';
 
+// The journal's Today tab shows a subtask's category as its emoji.
+export const SUBTASK_CATEGORY = '🧶';
+
 export type Subtask = {
   id: string;
   description: string;
   status: 'ready' | 'done';
+  category: typeof SUBTASK_CATEGORY;
   position: number;
 };
 

@@ -4,6 +4,7 @@ import {
   Project,
   ProjectType,
   Subtask,
+  SUBTASK_CATEGORY,
 } from '../projects/types';
 import { Recipient } from '../sockPlanner/types';
 import { StoredYarn } from '../yarnBowl/types';
@@ -18,6 +19,7 @@ function createSubtasks(doneCount: number, totalCount: number) {
           id,
           description: `Subtask ${index + 1}`,
           status: index < doneCount ? 'done' : 'ready',
+          category: SUBTASK_CATEGORY,
           position: index + 1,
         },
       ];

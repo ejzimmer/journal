@@ -112,7 +112,10 @@ export type AmimonoProject = {
   name: string;
   subtasks?: Record<string, AmimonoSubtask>;
 };
-export type AmimonoSubtask = Pick<ProjectSubtask, 'description' | 'status'>;
+export type AmimonoSubtask = Pick<
+  ProjectSubtask,
+  'description' | 'status' | 'category'
+>;
 export type ProjectStatus = 'ready' | 'in_progress' | 'done';
 export type ProjectDetails = OrderedListItem & {
   description: string;

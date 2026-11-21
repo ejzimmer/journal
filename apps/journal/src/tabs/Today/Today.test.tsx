@@ -196,7 +196,11 @@ describe('Today tab', () => {
             cardigan: {
               name: 'Cardigan',
               subtasks: {
-                sleeves: { description: 'Sleeves', status: 'ready' },
+                sleeves: {
+                  description: 'Sleeves',
+                  status: 'ready',
+                  category: '🧶',
+                },
               },
             },
           },
