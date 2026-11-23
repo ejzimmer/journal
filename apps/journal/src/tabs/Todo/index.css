@@ -150,7 +150,7 @@ button.category-button,
 }
 
 .today-panel {
-  input:not(.led-push-button),
+  input:not([type='checkbox']),
   textarea.editable-text,
   .single-value-container {
     background: var(--crt-bg);
