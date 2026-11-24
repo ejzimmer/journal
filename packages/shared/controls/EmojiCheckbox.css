@@ -15,15 +15,4 @@
     text-shadow: none;
     filter: grayscale(60%);
   }
-
-  input {
-    width: 0;
-    height: 0;
-    overflow: hidden;
-    position: fixed;
-
-    :focus {
-      outline: none;
-    }
-  }
 }

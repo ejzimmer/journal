@@ -31,6 +31,7 @@ export function EmojiCheckbox({
       <input
         aria-label={label}
         type="checkbox"
+        className="hidden"
         onChange={onChange}
         checked={isChecked}
         disabled={disabled}
