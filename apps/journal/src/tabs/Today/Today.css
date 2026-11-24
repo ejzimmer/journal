@@ -91,6 +91,8 @@
   }
 
   input {
+    box-sizing: content-box;
+    width: calc(4ch + 6px);
     border-radius: 4px;
     padding: 8px;
     font-size: 16px;
