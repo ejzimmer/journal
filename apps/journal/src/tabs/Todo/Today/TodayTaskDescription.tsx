@@ -3,6 +3,8 @@ import { EmojiCheckbox } from 'shared/controls/EmojiCheckbox';
 import { CategoryCombobox } from '../CategoryCombobox';
 import { GlowingEmoji } from './GlowingEmoji';
 import { useFormToggle } from 'shared/controls/useFormToggle';
+import { ReorderControls } from './ReorderControls';
+import { ReorderableGroup } from './ReorderableGroup';
 
 type Change =
   { isChecked: boolean } | { category: string } | { description: string };
@@ -12,6 +14,7 @@ type TodayTaskDescriptionProps = {
   description: string;
   isChecked: boolean;
   onChange: (change: Change) => void;
+  reorder?: ReorderControls;
 };
 
 export function TodayTaskDescription({
@@ -19,6 +22,7 @@ export function TodayTaskDescription({
   description,
   isChecked,
   onChange,
+  reorder,
 }: TodayTaskDescriptionProps) {
   const inputRef = useRef<HTMLInputElement>(null);
   const {
@@ -74,8 +78,8 @@ export function TodayTaskDescription({
     );
   }
 
-  return (
-    <div className="today-task-description">
+  const viewControls = (
+    <>
       <EmojiCheckbox
         emoji={<GlowingEmoji emoji={category} />}
         isChecked={isChecked}
@@ -90,6 +94,18 @@ export function TodayTaskDescription({
       >
         {description}
       </button>
-    </div>
+    </>
+  );
+
+  return reorder ? (
+    <ReorderableGroup
+      className="today-task-description"
+      label={description}
+      reorder={reorder}
+    >
+      {viewControls}
+    </ReorderableGroup>
+  ) : (
+    <div className="today-task-description">{viewControls}</div>
   );
 }

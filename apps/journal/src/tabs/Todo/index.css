@@ -257,25 +257,6 @@ button.category-button,
         align-items: center;
         font-size: 18px;
       }
-      .drag-handle {
-        opacity: 0;
-        margin-inline-end: -8px;
-
-        svg {
-          width: 18px;
-        }
-
-        &:hover {
-          background: var(--card-colour, var(--border-colour));
-        }
-      }
-
-      &:hover,
-      &:focus-within {
-        .drag-handle {
-          opacity: 1;
-        }
-      }
     }
   }
 
