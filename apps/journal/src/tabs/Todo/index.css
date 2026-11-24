@@ -72,7 +72,7 @@ body:has(.today) {
 }
 
 .task-screen,
-.today-task-description > [role='button'],
+.today-task-description > .description-button,
 .today-symptoms .symptom-trigger {
   margin-block: 3px;
   padding: 4px 10px;

@@ -26,8 +26,7 @@ export function TodayTaskDescription({
     triggerRef: displayRef,
     openForm: startEditing,
     closeForm: stopEditing,
-    openFormOnEnterOrSpace,
-  } = useFormToggle<HTMLDivElement>();
+  } = useFormToggle();
   const [inputValue, setInputValue] = useState(description);
 
   useEffect(() => {
@@ -40,12 +39,18 @@ export function TodayTaskDescription({
     return (
       <div
         className="today-task-description"
-        onKeyDown={({ key }) => {
-          if (key === 'Enter' && inputValue !== description) {
+        onKeyDown={(event) => {
+          if (event.key === 'Enter') {
+            // stopEditing focuses the description button during this keydown,
+            // so Enter's default action would click it and reopen edit mode.
+            event.preventDefault();
+          }
+
+          if (event.key === 'Enter' && inputValue !== description) {
             onChange({ description: inputValue });
           }
 
-          if (['Enter', 'Escape'].includes(key)) {
+          if (['Enter', 'Escape'].includes(event.key)) {
             stopEditing();
           }
         }}
@@ -78,16 +83,13 @@ export function TodayTaskDescription({
         onChange={() => onChange({ isChecked: !isChecked })}
         useTickForDone
       />
-      <div
+      <button
         ref={displayRef}
-        role="button"
-        tabIndex={0}
-        aria-label={description}
+        className="description-button"
         onClick={startEditing}
-        onKeyDown={openFormOnEnterOrSpace}
       >
         {description}
-      </div>
+      </button>
     </div>
   );
 }
