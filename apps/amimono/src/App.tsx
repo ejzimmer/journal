@@ -1,10 +1,10 @@
 import { AuthGate } from 'shared/AuthGate';
 import { HomePage } from './HomePage';
-import { YarnLoading } from './YarnLoading';
+import { Loading } from 'shared/loading';
 
 export function App() {
   return (
-    <AuthGate loadingIndicator={<YarnLoading />}>
+    <AuthGate loadingIndicator={<Loading stroke="white" />}>
       <HomePage />
     </AuthGate>
   );

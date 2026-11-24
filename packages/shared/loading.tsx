@@ -1,12 +1,11 @@
-import { ReactNode, useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { AnimatedPath } from './AnimatedPath';
 
 type LoadingProps = {
   stroke?: string;
-  defs?: ReactNode;
 };
 
-export function Loading({ stroke = 'currentColor', defs }: LoadingProps) {
+export function Loading({ stroke = 'currentColor' }: LoadingProps) {
   const [transitions, setTransitions] = useState<boolean[]>([]);
 
   const noLettersDrawn = transitions.every((t) => t === false);
@@ -48,7 +47,6 @@ export function Loading({ stroke = 'currentColor', defs }: LoadingProps) {
       strokeLinejoin="round"
       fill="none"
     >
-      {defs && <defs>{defs}</defs>}
       {/* l */}
       <AnimatedPath
         draw={transitions[0]}
