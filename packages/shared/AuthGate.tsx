@@ -11,9 +11,13 @@ import './AuthGate.css';
 
 type AuthGateProps = {
   children: ReactNode;
+  loadingIndicator?: ReactNode;
 };
 
-export function AuthGate({ children }: AuthGateProps) {
+export function AuthGate({
+  children,
+  loadingIndicator = <Loading />,
+}: AuthGateProps) {
   const [isLoading, setIsLoading] = useState(true);
   const [isLoggedIn, setLoggedIn] = useState(false);
   const auth = getAuth();
@@ -32,11 +36,7 @@ export function AuthGate({ children }: AuthGateProps) {
   };
 
   if (isLoading) {
-    return (
-      <div className="auth-gate-loading">
-        <Loading />
-      </div>
-    );
+    return <div className="auth-gate-loading">{loadingIndicator}</div>;
   }
 
   if (!isLoggedIn) {

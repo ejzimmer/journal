@@ -56,6 +56,22 @@ describe('AuthGate', () => {
     });
   });
 
+  describe('while auth is pending', () => {
+    it('shows the loading indicator it was given', () => {
+      mockOnAuthStateChanged.mockImplementation(() => jest.fn());
+
+      render(
+        <AuthGate loadingIndicator={<progress aria-label="Waiting" />}>
+          <main />
+        </AuthGate>,
+      );
+
+      expect(
+        screen.getByRole('progressbar', { name: 'Waiting' }),
+      ).toBeInTheDocument();
+    });
+  });
+
   describe('when auth reports no user', () => {
     it('offers a login button', () => {
       const { reportUser } = renderGatedApp();

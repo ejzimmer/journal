@@ -1,7 +1,12 @@
-import { useCallback, useEffect, useState } from 'react';
+import { ReactNode, useCallback, useEffect, useState } from 'react';
 import { AnimatedPath } from './AnimatedPath';
 
-export function Loading() {
+type LoadingProps = {
+  stroke?: string;
+  defs?: ReactNode;
+};
+
+export function Loading({ stroke = 'currentColor', defs }: LoadingProps) {
   const [transitions, setTransitions] = useState<boolean[]>([]);
 
   const noLettersDrawn = transitions.every((t) => t === false);
@@ -37,12 +42,13 @@ export function Loading() {
       height="173"
       role="img"
       aria-label="loading"
-      stroke="currentColor"
+      stroke={stroke}
       strokeWidth="5"
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
     >
+      {defs && <defs>{defs}</defs>}
       {/* l */}
       <AnimatedPath
         draw={transitions[0]}
