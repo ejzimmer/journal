@@ -8,7 +8,7 @@ import {
 import { TodoCategoriesProvider } from '../Todo/TodoCategoriesProvider';
 import { DAILY_KEY, ONCE_KEY } from '../../types';
 import { TaskPillList } from './TaskPills/TaskPillList';
-import { MoveToTodaySwitch } from './TaskPills/MoveToTodaySwitch';
+import { OnTodaySwitch } from './TaskPills/OnTodaySwitch';
 
 import './ThisYear.css';
 
@@ -20,7 +20,7 @@ export function ThisYear() {
           <TaskPillList listId={DAILY_KEY} />
           <TaskPillList
             listId={ONCE_KEY}
-            renderAction={(task) => <MoveToTodaySwitch task={task} />}
+            renderAction={(task) => <OnTodaySwitch task={task} />}
           />
         </div>
       </TodoCategoriesProvider>

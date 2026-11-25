@@ -1,6 +1,6 @@
 import { OrderedListItem } from 'shared/drag-and-drop/types';
 import { BaseProject, BaseSubtask } from 'shared/projects/types';
-import { SubtaskGoal } from 'shared/dailyGoals/types';
+import { SubtaskGoal, TaskGoal } from 'shared/dailyGoals/types';
 
 export const TODO_KEY = 'today';
 export type TodoTask = OrderedListItem & {
@@ -48,7 +48,7 @@ export const TODAY_SNAPSHOT_KEY = `${TODAY_TAB_KEY}/snapshot`;
 export const TODAY_SNAPSHOT_RESET_KEY = `${TODAY_TAB_KEY}/snapshotReset`;
 export const DAILY_GOALS_RESET_KEY = `${TODAY_TAB_KEY}/slotsReset`;
 export type SnapshotEntry = { id: string; listId: string };
-export type DailyGoalItem = DailyTask | SubtaskGoal;
+export type DailyGoalItem = DailyTask | SubtaskGoal | TaskGoal;
 
 export const HEALTH_PATH = 'health';
 

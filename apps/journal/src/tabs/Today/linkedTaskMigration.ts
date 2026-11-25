@@ -10,6 +10,7 @@ import {
   DAILY_GOALS_KEY,
   TODAY_SLOT_COUNT,
   isSubtaskGoal,
+  isLinkedGoal,
 } from 'shared/dailyGoals/types';
 import { findJournalProjectPath } from './goalProjectPathMigration';
 
@@ -47,7 +48,7 @@ export function createLinkedTaskMigration({
   let nextPosition = getNextPosition(goalList);
 
   goalList.forEach((goal) => {
-    if (isSubtaskGoal(goal) || !goal.linkedTask) return;
+    if (isLinkedGoal(goal) || !goal.linkedTask) return;
 
     if (isSubtaskPath(goal.linkedTask)) {
       updates.push([

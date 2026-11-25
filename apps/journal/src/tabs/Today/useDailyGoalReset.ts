@@ -1,26 +1,24 @@
 import { useStorageContext } from 'shared/FirebaseContext';
 import { useDailyJob } from 'shared/dailyJobs/DailyJobsContext';
-import { isSubtaskGoal, DAILY_GOALS_KEY } from 'shared/dailyGoals/types';
+import { isLinkedGoal, DAILY_GOALS_KEY } from 'shared/dailyGoals/types';
 import { DAILY_GOALS_RESET_KEY, DailyGoalItem } from '../../types';
-import { useGoalSubtaskStatuses } from './useGoalSubtaskStatuses';
+import { useLinkedGoalStatuses } from './useLinkedGoalStatuses';
 
 export function useDailyGoalReset() {
   const { useValue, setValues } = useStorageContext();
   const { value: goals, synced: goalsSynced } =
     useValue<Record<string, DailyGoalItem>>(DAILY_GOALS_KEY);
   const goalList = Object.values(goals ?? {});
-  const subtaskStatuses = useGoalSubtaskStatuses(
-    goalList.filter(isSubtaskGoal),
-  );
+  const linkedStatuses = useLinkedGoalStatuses(goalList.filter(isLinkedGoal));
 
   useDailyJob({
     lastRunKey: DAILY_GOALS_RESET_KEY,
-    isReady: goalsSynced && subtaskStatuses.synced,
+    isReady: goalsSynced && linkedStatuses.synced,
     run: () => {
       const finishedGoals = goalList.filter(
         (goal) =>
-          (isSubtaskGoal(goal)
-            ? subtaskStatuses.findStatus(goal)
+          (isLinkedGoal(goal)
+            ? linkedStatuses.findStatus(goal)
             : goal.status) !== 'ready',
       );
       if (finishedGoals.length === 0) return;

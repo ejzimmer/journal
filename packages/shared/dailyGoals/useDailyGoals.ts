@@ -1,7 +1,12 @@
 import { useStorageContext } from '../FirebaseContext';
 import { SortableItem } from '../drag-and-drop/types';
 import { getNextPosition, sortByPosition } from '../drag-and-drop/utils';
-import { isSubtaskGoal, TODAY_SLOT_COUNT, DAILY_GOALS_KEY } from './types';
+import {
+  isSubtaskGoal,
+  isTaskGoal,
+  TODAY_SLOT_COUNT,
+  DAILY_GOALS_KEY,
+} from './types';
 
 export function useDailyGoals<Goal extends SortableItem>() {
   const { useValue, addItem, setValues } = useStorageContext();
@@ -25,13 +30,30 @@ export function useDailyGoals<Goal extends SortableItem>() {
       (goal) => isSubtaskGoal(goal) && goal.subtaskPath === subtaskPath,
     );
 
-  const removeSubtaskGoal = (subtaskPath: string) => {
-    const goal = findSubtaskGoal(subtaskPath);
+  const removeGoal = (goal?: Goal) => {
     if (goal) setValues({ [`${DAILY_GOALS_KEY}/${goal.id}`]: null });
   };
 
+  const removeSubtaskGoal = (subtaskPath: string) =>
+    removeGoal(findSubtaskGoal(subtaskPath));
+
   const hasSubtaskGoal = (subtaskPath: string) =>
     findSubtaskGoal(subtaskPath) !== undefined;
+
+  const addTaskGoal = (taskPath: string) => {
+    if (!hasFreeSlot) return;
+
+    addItem(DAILY_GOALS_KEY, { taskPath, position: nextPosition });
+  };
+
+  const findTaskGoal = (taskPath: string) =>
+    goals.find((goal) => isTaskGoal(goal) && goal.taskPath === taskPath);
+
+  const removeTaskGoal = (taskPath: string) =>
+    removeGoal(findTaskGoal(taskPath));
+
+  const hasTaskGoal = (taskPath: string) =>
+    findTaskGoal(taskPath) !== undefined;
 
   return {
     goals,
@@ -40,5 +62,8 @@ export function useDailyGoals<Goal extends SortableItem>() {
     addSubtaskGoal,
     removeSubtaskGoal,
     hasSubtaskGoal,
+    addTaskGoal,
+    removeTaskGoal,
+    hasTaskGoal,
   };
 }
