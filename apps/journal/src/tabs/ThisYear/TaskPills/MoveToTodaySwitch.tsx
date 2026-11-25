@@ -1,14 +1,16 @@
+import { useState } from 'react';
 import { useStorageContext } from 'shared/FirebaseContext';
 import { ArrowRightIcon } from 'shared/icons/ArrowRight';
 import { DAILY_GOALS_KEY } from 'shared/dailyGoals/types';
 import { useDailyGoals } from 'shared/dailyGoals/useDailyGoals';
 import { DailyTask, ONCE_KEY, DailyGoalItem } from '../../../types';
 
-type MoveToTodayButtonProps = { task: DailyTask };
+type MoveToTodaySwitchProps = { task: DailyTask };
 
-export function MoveToTodayButton({ task }: MoveToTodayButtonProps) {
+export function MoveToTodaySwitch({ task }: MoveToTodaySwitchProps) {
   const { setValues } = useStorageContext();
   const { hasFreeSlot, nextPosition } = useDailyGoals<DailyGoalItem>();
+  const [isOn, setIsOn] = useState(false);
 
   const moveTaskToToday = () =>
     setValues({
@@ -18,12 +20,14 @@ export function MoveToTodayButton({ task }: MoveToTodayButtonProps) {
 
   return (
     <button
-      className="icon ghost move-to-today"
+      className={isOn ? 'move-to-today on' : 'move-to-today'}
       aria-label={`Move ${task.description} to today`}
       disabled={!hasFreeSlot}
-      onClick={moveTaskToToday}
+      onClick={() => setIsOn(true)}
+      // The knob sliding across is the only transition TaskPillList.css gives this button.
+      onTransitionEnd={moveTaskToToday}
     >
-      <ArrowRightIcon width="16px" />
+      <ArrowRightIcon width="14px" />
     </button>
   );
 }

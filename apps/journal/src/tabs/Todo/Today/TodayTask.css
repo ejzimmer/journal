@@ -37,14 +37,3 @@
     font-style: italic;
   }
 }
-
-.move-to-today {
-  color: var(--crt-green);
-  filter: drop-shadow(0 0 4px var(--crt-glow));
-
-  &:disabled {
-    color: var(--crt-unlit);
-    filter: none;
-    cursor: not-allowed;
-  }
-}

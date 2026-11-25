@@ -1,11 +1,11 @@
-import { render, screen } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { getToday } from 'shared/dates';
 import { ContextType, FirebaseContext } from 'shared/FirebaseContext';
 import { createMockFirebaseContext } from 'shared/mockFirebase';
 import { DailyTask, ONCE_KEY, DailyGoalItem } from '../../../types';
 import { DAILY_GOALS_KEY } from 'shared/dailyGoals/types';
-import { MoveToTodayButton } from './MoveToTodayButton';
+import { MoveToTodaySwitch } from './MoveToTodaySwitch';
 
 const createTask = (id: string, position = 0): DailyTask => ({
   id,
@@ -18,7 +18,7 @@ const createTask = (id: string, position = 0): DailyTask => ({
   lastCompleted: getToday(),
 });
 
-function renderButton(slots: Record<string, DailyGoalItem> = {}) {
+function renderSwitch(slots: Record<string, DailyGoalItem> = {}) {
   const parcel = createTask('parcel');
   const storage = createMockFirebaseContext({
     today: { 一: { parcel } },
@@ -26,7 +26,7 @@ function renderButton(slots: Record<string, DailyGoalItem> = {}) {
   });
   render(
     <FirebaseContext.Provider value={storage}>
-      <MoveToTodayButton task={parcel} />
+      <MoveToTodaySwitch task={parcel} />
     </FirebaseContext.Provider>,
   );
 
@@ -47,27 +47,44 @@ function readValue<T>(storage: ContextType, key: string) {
   return value;
 }
 
-describe('MoveToTodayButton', () => {
+describe('MoveToTodaySwitch', () => {
   describe('when a Today slot is free', () => {
-    describe('and the user clicks the arrow', () => {
-      it('moves the task out of the one-off list into the next slot', async () => {
-        const { storage } = renderButton({ library: createTask('library', 0) });
+    describe('and the user clicks it', () => {
+      it('switches on', async () => {
+        renderSwitch();
+        const toggle = screen.getByRole('button', {
+          name: 'Move parcel to today',
+        });
 
-        await userEvent.click(
-          screen.getByRole('button', { name: 'Move parcel to today' }),
-        );
+        await userEvent.click(toggle);
 
-        expect(readValue(storage, ONCE_KEY)).toBeUndefined();
-        expect(readValue(storage, `${DAILY_GOALS_KEY}/parcel`)).toEqual(
-          expect.objectContaining({ description: 'parcel', position: 1 }),
-        );
+        expect(toggle).toHaveClass('on');
+      });
+
+      describe('and the knob finishes sliding across', () => {
+        it('moves the task out of the one-off list into the next slot', async () => {
+          const { storage } = renderSwitch({
+            library: createTask('library', 0),
+          });
+          const toggle = screen.getByRole('button', {
+            name: 'Move parcel to today',
+          });
+
+          await userEvent.click(toggle);
+          fireEvent.transitionEnd(toggle);
+
+          expect(readValue(storage, ONCE_KEY)).toBeUndefined();
+          expect(readValue(storage, `${DAILY_GOALS_KEY}/parcel`)).toEqual(
+            expect.objectContaining({ description: 'parcel', position: 1 }),
+          );
+        });
       });
     });
   });
 
   describe('when every Today slot is full', () => {
     it('is disabled', () => {
-      renderButton({
+      renderSwitch({
         a: createTask('a', 0),
         b: createTask('b', 1),
         c: createTask('c', 2),

@@ -6,7 +6,9 @@ import {
   StationRunning,
 } from './StationRunning/StationRunning';
 import { TodoCategoriesProvider } from '../Todo/TodoCategoriesProvider';
-import { EveryDayTaskList } from './EveryDayTasks/EveryDayTaskList';
+import { DAILY_KEY, ONCE_KEY } from '../../types';
+import { TaskPillList } from './TaskPills/TaskPillList';
+import { MoveToTodaySwitch } from './TaskPills/MoveToTodaySwitch';
 
 import './ThisYear.css';
 
@@ -14,7 +16,13 @@ export function ThisYear() {
   return (
     <div className="this-year">
       <TodoCategoriesProvider>
-        <EveryDayTaskList />
+        <div className="task-pill-lists">
+          <TaskPillList listId={DAILY_KEY} />
+          <TaskPillList
+            listId={ONCE_KEY}
+            renderAction={(task) => <MoveToTodaySwitch task={task} />}
+          />
+        </div>
       </TodoCategoriesProvider>
       <Bikes />
       <Adventures />

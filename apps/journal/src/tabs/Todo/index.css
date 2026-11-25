@@ -52,23 +52,12 @@ body:has(.today) {
 }
 
 .today.todo {
-  grid-template-areas: 'form' 'lists' 'week' 'dates';
+  grid-template-areas: 'form' 'week' 'dates';
 
   @media (width > 880px) {
-    grid-template-areas: 'form form' 'lists week' 'lists dates';
-    grid-template-rows: auto auto 1fr;
-  }
-
-  @media (width > 1360px) {
-    grid-template-areas: 'form form form' 'lists week dates';
+    grid-template-areas: 'form form' 'week dates';
     grid-template-rows: auto 1fr;
   }
-}
-
-.daily-lists {
-  display: flex;
-  flex-direction: column;
-  gap: 40px;
 }
 
 .task-screen,
