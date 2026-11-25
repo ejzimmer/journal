@@ -1,5 +1,7 @@
 import { ArrowRightIcon } from 'shared/icons/ArrowRight';
 
+import './ArrowSwitch.css';
+
 type ArrowSwitchProps = {
   label: string;
   isOn: boolean;

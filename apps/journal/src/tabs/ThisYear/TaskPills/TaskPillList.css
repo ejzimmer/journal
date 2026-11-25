@@ -274,94 +274,10 @@
     }
 
     .arrow-switch {
-      --switch-hue: 205;
-      --switch-lightness: 58%;
-
       position: absolute;
       top: 50%;
       right: 14px;
       translate: 0 -50%;
-      width: 60px;
-      height: 30px;
-      padding: 0;
-      border: 0;
-      border-radius: 999px;
-      color: hsl(219 10% 62%);
-      background: hsl(216 15% 91%);
-      box-shadow:
-        inset 2px 2px 4px hsl(218 10% 76%),
-        inset -2px -2px 4px hsl(0 0% 100%);
-      transition:
-        background 0.2s,
-        box-shadow 0.2s,
-        color 0.2s;
-
-      &::before {
-        content: '';
-        position: absolute;
-        top: 3px;
-        left: 3px;
-        width: 24px;
-        height: 24px;
-        border-radius: 50%;
-        background: hsl(216 20% 97%);
-        box-shadow: 0 0 0 1px hsl(0 0% 0% / 0.07);
-        transition: left 0.2s;
-      }
-
-      svg {
-        position: absolute;
-        top: 50%;
-        right: 9px;
-        translate: 0 -50%;
-      }
-
-      &:disabled {
-        opacity: 1;
-        color: hsl(219 10% 82%);
-        background: hsl(216 15% 92%);
-        box-shadow:
-          inset 1px 1px 3px hsl(218 10% 80%),
-          inset -1px -1px 3px hsl(0 0% 100%);
-        cursor: default;
-
-        &::before {
-          background: hsl(216 12% 90%);
-          box-shadow: 0 0 0 1px hsl(0 0% 0% / 0.06);
-        }
-      }
-
-      &[aria-checked='true'] {
-        color: hsl(var(--switch-hue) 95% var(--switch-lightness));
-        background: hsl(var(--switch-hue) 45% 92%);
-        box-shadow:
-          inset 2px 2px 4px hsl(var(--switch-hue) 60% 30% / 0.35),
-          inset -2px -2px 4px hsl(var(--switch-hue) 90% 88%),
-          inset 0 0 6px 3px
-            hsl(var(--switch-hue) 100% var(--switch-lightness) / 0.95),
-          0 0 14px 2px
-            hsl(var(--switch-hue) 100% var(--switch-lightness) / 0.65);
-
-        &::before {
-          left: 33px;
-          box-shadow:
-            0 0 0 1px hsl(var(--switch-hue) 60% 40% / 0.3),
-            0 0 5px 1px
-              hsl(var(--switch-hue) 100% var(--switch-lightness) / 0.7);
-        }
-
-        svg {
-          right: auto;
-          left: 9px;
-          filter: drop-shadow(
-              0 -0.5px 0.5px hsl(var(--switch-hue) 60% 18% / 0.55)
-            )
-            drop-shadow(0 0 0.5px hsl(var(--switch-hue) 60% 18% / 0.35))
-            drop-shadow(
-              0 0 4px hsl(var(--switch-hue) 100% var(--switch-lightness) / 0.8)
-            );
-        }
-      }
     }
 
     &:not(.status-ready) .arrow-switch {
