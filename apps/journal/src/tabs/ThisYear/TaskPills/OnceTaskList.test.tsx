@@ -5,7 +5,7 @@ import { ContextType, FirebaseContext } from 'shared/FirebaseContext';
 import { createMockFirebaseContext } from 'shared/mockFirebase';
 import { DAILY_GOALS_KEY, TaskGoal } from 'shared/dailyGoals/types';
 import { DailyTask, ONCE_KEY, DailyGoalItem } from '../../../types';
-import { DoTodaySwitch } from './DoTodaySwitch';
+import { OnceTaskList } from './OnceTaskList';
 
 const parcel: DailyTask = {
   id: 'parcel',
@@ -31,7 +31,7 @@ function renderSwitch(slots: Record<string, DailyGoalItem> = {}) {
   });
   render(
     <FirebaseContext.Provider value={storage}>
-      <DoTodaySwitch task={parcel} />
+      <OnceTaskList />
     </FirebaseContext.Provider>,
   );
 
@@ -55,9 +55,9 @@ function readValue<T>(storage: ContextType, key: string) {
   return value;
 }
 
-describe('DoTodaySwitch', () => {
-  describe('when the task is not in a Today slot', () => {
-    it('is off', () => {
+describe('OnceTaskList', () => {
+  describe("when a task isn't in a Today slot", () => {
+    it('shows its switch off', () => {
       const { toggle } = renderSwitch();
 
       expect(toggle).not.toBeChecked();
@@ -85,7 +85,7 @@ describe('DoTodaySwitch', () => {
     });
 
     describe('and every slot is full', () => {
-      it('is disabled', () => {
+      it('disables its switch', () => {
         const { toggle } = renderSwitch({
           a: createGoal('a', 0),
           b: createGoal('b', 1),
@@ -97,21 +97,21 @@ describe('DoTodaySwitch', () => {
     });
   });
 
-  describe('when the task is in a Today slot', () => {
+  describe('when a task is in a Today slot', () => {
     const slots = {
       a: createGoal('a', 0),
       b: createGoal('b', 1),
       parcel: createGoal('parcel', 2),
     };
 
-    it('is on', () => {
+    it('shows its switch on', () => {
       const { toggle } = renderSwitch(slots);
 
       expect(toggle).toBeChecked();
     });
 
     describe('and the other slots are full', () => {
-      it('can still be switched off', () => {
+      it('keeps its switch enabled', () => {
         const { toggle } = renderSwitch(slots);
 
         expect(toggle).toBeEnabled();

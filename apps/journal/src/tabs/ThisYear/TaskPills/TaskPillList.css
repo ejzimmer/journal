@@ -269,11 +269,11 @@
       }
     }
 
-    &:has(.do-today-switch) .today-task-description {
+    &:has(.arrow-switch) .today-task-description {
       padding-right: 84px;
     }
 
-    .do-today-switch {
+    .arrow-switch {
       --switch-hue: 205;
       --switch-lightness: 58%;
 
@@ -364,7 +364,7 @@
       }
     }
 
-    &:not(.status-ready) .do-today-switch {
+    &:not(.status-ready) .arrow-switch {
       --switch-hue: 108;
       --switch-lightness: 52%;
     }
