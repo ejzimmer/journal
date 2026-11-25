@@ -1,7 +1,3 @@
-body:has(.every-day-tasks) {
-  background: hsl(216 15% 94%);
-}
-
 .every-day-tasks {
   --pill-bg: hsl(216 15% 94%);
   --pill-shade: hsl(218 10% 79%);
