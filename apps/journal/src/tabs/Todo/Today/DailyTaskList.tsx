@@ -1,9 +1,7 @@
 import { ReactNode } from 'react';
 import { TodayTask } from './TodayTask';
 import { DailyTask } from '../../../types';
-import { useStorageContext } from 'shared/FirebaseContext';
-import { Destination, SortableItem } from 'shared/drag-and-drop/types';
-import { onChangePosition, sortByPosition } from 'shared/drag-and-drop/utils';
+import { useDailyTaskList } from './useDailyTaskList';
 
 type DailyTaskListProps = {
   listId: string;
@@ -11,14 +9,7 @@ type DailyTaskListProps = {
 };
 
 export function DailyTaskList({ listId, renderAction }: DailyTaskListProps) {
-  const { useValue, updateList, updateItem } = useStorageContext();
-  const { value } = useValue<Record<string, DailyTask>>(listId);
-  const tasks = value ? sortByPosition(Object.values(value)) : [];
-
-  const moveTask = (index: number, destination: Destination) =>
-    onChangePosition(tasks, index, destination, (tasks: SortableItem[]) =>
-      updateList(listId, tasks),
-    );
+  const { tasks, getReorderControls, updateTask } = useDailyTaskList(listId);
 
   return (
     <div className="todo-task-list">
@@ -32,14 +23,8 @@ export function DailyTaskList({ listId, renderAction }: DailyTaskListProps) {
               <TodayTask
                 task={task}
                 listId={listId}
-                onChange={(task: DailyTask) => {
-                  updateItem<DailyTask>(listId, task);
-                }}
-                reorder={{
-                  isFirst: index === 0,
-                  isLast: index === tasks.length - 1,
-                  move: (destination) => moveTask(index, destination),
-                }}
+                onChange={updateTask}
+                reorder={getReorderControls(index)}
               />
               {renderAction?.(task)}
             </li>

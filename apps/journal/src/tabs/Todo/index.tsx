@@ -1,5 +1,5 @@
 import { createContext } from 'react';
-import { DAILY_KEY, ONCE_KEY } from '../../types';
+import { ONCE_KEY } from '../../types';
 import { DailyTaskList } from './Today/DailyTaskList';
 import { ThisWeekList } from './ThisWeek/ThisWeekList';
 import { DueDateList } from './DueDate/DueDateList';
@@ -19,9 +19,6 @@ export function Todo() {
           <AddTodoForm />
         </div>
         <div className="daily-lists" style={{ gridArea: 'lists' }}>
-          <div className="today-panel">
-            <DailyTaskList listId={DAILY_KEY} />
-          </div>
           <div className="today-panel">
             <DailyTaskList
               listId={ONCE_KEY}
