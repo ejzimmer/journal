@@ -24,7 +24,7 @@ const createGoal = (id: string, position: number): TaskGoal => ({
   taskPath: `${ONCE_KEY}/${id}`,
 });
 
-function renderSwitch(slots: Record<string, DailyGoalItem> = {}) {
+function renderOnceTaskList(slots: Record<string, DailyGoalItem> = {}) {
   const storage = createMockFirebaseContext({
     today: { 一: { parcel } },
     今日: { slots },
@@ -58,14 +58,14 @@ function readValue<T>(storage: ContextType, key: string) {
 describe('OnceTaskList', () => {
   describe("when a task isn't in a Today slot", () => {
     it('shows its switch off', () => {
-      const { toggle } = renderSwitch();
+      const { toggle } = renderOnceTaskList();
 
       expect(toggle).not.toBeChecked();
     });
 
     describe('and the user switches it on', () => {
       it('puts the task in the next slot and keeps it in the one-off list', async () => {
-        const { storage, toggle } = renderSwitch({
+        const { storage, toggle } = renderOnceTaskList({
           library: createGoal('library', 0),
         });
 
@@ -86,7 +86,7 @@ describe('OnceTaskList', () => {
 
     describe('and every slot is full', () => {
       it('disables its switch', () => {
-        const { toggle } = renderSwitch({
+        const { toggle } = renderOnceTaskList({
           a: createGoal('a', 0),
           b: createGoal('b', 1),
           c: createGoal('c', 2),
@@ -105,14 +105,14 @@ describe('OnceTaskList', () => {
     };
 
     it('shows its switch on', () => {
-      const { toggle } = renderSwitch(slots);
+      const { toggle } = renderOnceTaskList(slots);
 
       expect(toggle).toBeChecked();
     });
 
     describe('and the other slots are full', () => {
       it('keeps its switch enabled', () => {
-        const { toggle } = renderSwitch(slots);
+        const { toggle } = renderOnceTaskList(slots);
 
         expect(toggle).toBeEnabled();
       });
@@ -120,7 +120,7 @@ describe('OnceTaskList', () => {
 
     describe('and the user switches it off', () => {
       it('frees its slot and keeps it in the one-off list', async () => {
-        const { storage, toggle } = renderSwitch(slots);
+        const { storage, toggle } = renderOnceTaskList(slots);
 
         await userEvent.click(toggle);
 
