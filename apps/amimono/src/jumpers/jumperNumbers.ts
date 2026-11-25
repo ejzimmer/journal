@@ -33,11 +33,11 @@ export type JumperNumbers = {
   frontNeckDecreasesEverySecondRow: number;
 };
 
-function addEase({ cm, source, easeCm = 0 }: EasedMeasurement) {
+export function addEase({ cm, source, easeCm = 0 }: EasedMeasurement) {
   return source === 'body' ? cm + easeCm : cm;
 }
 
-function roundToNearestMultiple(value: number, multiple: number) {
+export function roundToNearestMultiple(value: number, multiple: number) {
   return Math.round(value / multiple) * multiple;
 }
 

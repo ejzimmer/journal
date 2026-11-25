@@ -2,10 +2,16 @@ export const JUMPER_PATTERNS_KEY = 'jumpers';
 
 export type MeasurementSource = 'body' | 'garment';
 
-export type EasedMeasurementKey = 'bust' | 'waist' | 'hips';
+export type EasedMeasurementKey =
+  'bust' | 'waist' | 'hips' | 'biceps' | 'wrist';
 
 export type FixedMeasurementKey =
-  'neckWidth' | 'crossChest' | 'armholeDepth' | 'hemToArmhole' | 'waistToHip';
+  | 'neckWidth'
+  | 'crossChest'
+  | 'armholeDepth'
+  | 'hemToArmhole'
+  | 'waistToHip'
+  | 'wristToUnderarm';
 
 export type EasedMeasurement = {
   cm: number;
@@ -23,6 +29,8 @@ export type JumperGauge = {
 export type JumperInputs = Record<FixedMeasurementKey, number> &
   Record<EasedMeasurementKey, EasedMeasurement> & {
     gauge: JumperGauge;
+    sleeveGauge: JumperGauge;
+    capTopPercent: number;
   };
 
 export type PatternPiece = {

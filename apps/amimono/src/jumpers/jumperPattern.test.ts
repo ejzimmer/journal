@@ -10,7 +10,12 @@ const EXAMPLE_INPUTS: JumperInputs = {
   bust: { cm: 101.5, source: 'body', easeCm: 5 },
   waist: { cm: 86, source: 'body', easeCm: 12.5 },
   hips: { cm: 105, source: 'body', easeCm: 10 },
+  biceps: { cm: 29, source: 'body', easeCm: 5 },
+  wrist: { cm: 16, source: 'body', easeCm: 7.5 },
+  wristToUnderarm: 50,
   gauge: { stitches: 22, rows: 29, needleMm: 4.5, yarn: 'grey' },
+  sleeveGauge: { stitches: 24, rows: 31, needleMm: 4 },
+  capTopPercent: 30,
 };
 
 function findSteps(inputs: JumperInputs, pieceName: string) {
@@ -52,6 +57,18 @@ describe('writeJumperPattern', () => {
         'Decrease 1 st at the neck edge every row 7 times, then every 2nd row 4 times (24 sts).',
         'Knit straight until the front measures 64cm.',
         'Short row across the 12 sts on the neck side, then bind off all 24 shoulder sts.',
+      ]);
+    });
+
+    it('writes the sleeves in the sleeve gauge', () => {
+      expect(findSteps(EXAMPLE_INPUTS, 'Sleeves (make 2)')).toEqual([
+        'With smaller needles, cast on 56 sts.',
+        'Work 5cm of ribbing.',
+        'Change to 4mm needles. Increase 2 sts every 11th row 10 times, then every 10th row 3 times (82 sts).',
+        'Bind off 10 sts at the start of the next 2 rows (62 sts).',
+        'Decrease 1 st at each end of every right side row 17 times (28 sts).',
+        'Decrease 1 st at each end of every 3rd right side row 2 times (24 sts).',
+        'Bind off the remaining 24 sts.',
       ]);
     });
   });

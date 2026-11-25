@@ -1,5 +1,6 @@
 import { calculateJumperNumbers, RIBBING_CM } from './jumperNumbers';
 import { ShapingRate } from './shaping';
+import { calculateSleeveNumbers, SLEEVE_RIBBING_CM } from './sleeveNumbers';
 import { JumperInputs, PatternPiece } from './types';
 
 const ORDINAL_SUFFIXES: Record<Intl.LDMLPluralRule, string> = {
@@ -124,9 +125,42 @@ function writeFrontSteps(inputs: JumperInputs) {
   return steps;
 }
 
+function writeSleeveSteps(inputs: JumperInputs) {
+  const numbers = calculateSleeveNumbers(
+    inputs,
+    calculateJumperNumbers(inputs),
+  );
+  const { sleeveGauge } = inputs;
+  const yarn = sleeveGauge.yarn ? ` and the ${sleeveGauge.yarn} yarn` : '';
+  const afterRightSideDecreases =
+    numbers.capStitches - 2 * numbers.capDecreasesEveryRightSideRow;
+
+  const steps = [
+    `With smaller needles${yarn}, cast on ${numbers.castOnStitches} sts.`,
+    `Work ${SLEEVE_RIBBING_CM}cm of ribbing.`,
+    numbers.increases.length > 0
+      ? `Change to ${sleeveGauge.needleMm}mm needles. Increase 2 sts ${describeShapingRates(numbers.increases)} (${numbers.bicepsStitches} sts).`
+      : `Change to ${sleeveGauge.needleMm}mm needles and knit straight for ${numbers.increaseRows} rows.`,
+    `Bind off ${numbers.underarmBindOff} sts at the start of the next 2 rows (${numbers.capStitches} sts).`,
+  ];
+  if (numbers.capDecreasesEveryRightSideRow > 0) {
+    steps.push(
+      `Decrease 1 st at each end of every right side row ${formatTimes(numbers.capDecreasesEveryRightSideRow)} (${afterRightSideDecreases} sts).`,
+    );
+  }
+  if (numbers.capDecreasesEveryThirdRightSideRow > 0) {
+    steps.push(
+      `Decrease 1 st at each end of every 3rd right side row ${formatTimes(numbers.capDecreasesEveryThirdRightSideRow)} (${numbers.capTopStitches} sts).`,
+    );
+  }
+  steps.push(`Bind off the remaining ${numbers.capTopStitches} sts.`);
+  return steps;
+}
+
 export function writeJumperPattern(inputs: JumperInputs): PatternPiece[] {
   return [
     { name: 'Back', steps: writeBackSteps(inputs) },
     { name: 'Fronts (make 2)', steps: writeFrontSteps(inputs) },
+    { name: 'Sleeves (make 2)', steps: writeSleeveSteps(inputs) },
   ];
 }
