@@ -5,14 +5,29 @@
     gap: 10px;
     align-items: center;
 
-    > [role='button'] {
+    &:focus-visible {
+      outline: 1px solid var(--crt-green);
+      outline-offset: 2px;
+      border-radius: 8px;
+    }
+
+    > .description-button {
       flex-grow: 1;
+      height: auto;
+      font: inherit;
+      color: inherit;
+      text-align: start;
+
+      &:focus-visible {
+        outline: revert;
+        outline-offset: 0;
+      }
     }
   }
 
   &.status-done,
   &.status-finished {
-    .today-task-description > div {
+    .today-task-description > :last-child {
       color: var(--crt-unlit);
       text-shadow: none;
     }

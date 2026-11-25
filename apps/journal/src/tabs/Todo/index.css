@@ -72,7 +72,7 @@ body:has(.today) {
 }
 
 .task-screen,
-.today-task-description > [role='button'],
+.today-task-description > .description-button,
 .today-symptoms .symptom-trigger {
   margin-block: 3px;
   padding: 4px 10px;
@@ -256,25 +256,6 @@ button.category-button,
         gap: 10px;
         align-items: center;
         font-size: 18px;
-      }
-      .drag-handle {
-        opacity: 0;
-        margin-inline-end: -8px;
-
-        svg {
-          width: 18px;
-        }
-
-        &:hover {
-          background: var(--card-colour, var(--border-colour));
-        }
-      }
-
-      &:hover,
-      &:focus-within {
-        .drag-handle {
-          opacity: 1;
-        }
       }
     }
   }

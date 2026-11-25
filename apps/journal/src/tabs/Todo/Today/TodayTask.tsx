@@ -1,33 +1,68 @@
 import { useStorageContext } from 'shared/FirebaseContext';
+import { useFormToggle } from 'shared/controls/useFormToggle';
+import { DailyTask } from '../../../types';
+import { ReorderControls } from '../todoTypes';
+import { toggleDailyTaskStatus } from './toggleDailyTaskStatus';
+import { ReorderableItem } from './ReorderableItem';
+import { TodayTaskEditor } from './TodayTaskEditor';
+import { TodayTaskView } from './TodayTaskView';
 
 import './TodayTask.css';
-import { DailyTask } from '../../../types';
-import { TodayTaskDescription } from './TodayTaskDescription';
-import { toggleDailyTaskStatus } from './toggleDailyTaskStatus';
 
 type TodayTaskProps = {
   task: DailyTask;
   listId: string;
   onChange: (task: DailyTask) => void;
+  reorder?: ReorderControls;
 };
 
-export function TodayTask({ task, listId, onChange }: TodayTaskProps) {
+export function TodayTask({ task, listId, onChange, reorder }: TodayTaskProps) {
   const { deleteItem } = useStorageContext();
+  const {
+    isFormOpen: isEditing,
+    triggerRef: descriptionRef,
+    openForm: startEditing,
+    closeForm: stopEditing,
+  } = useFormToggle();
 
-  return (
-    <TodayTaskDescription
+  if (isEditing) {
+    return (
+      <TodayTaskEditor
+        category={task.category}
+        description={task.description}
+        onChangeCategory={(category) => onChange({ ...task, category })}
+        onChangeDescription={(description) => {
+          if (description === '') {
+            deleteItem<DailyTask>(listId, task);
+          } else {
+            onChange({ ...task, description });
+          }
+        }}
+        onClose={stopEditing}
+      />
+    );
+  }
+
+  const view = (
+    <TodayTaskView
       category={task.category}
       description={task.description}
       isChecked={task.status !== 'ready'}
-      onChange={(change) => {
-        if ('isChecked' in change) {
-          onChange(toggleDailyTaskStatus(task));
-        } else if ('description' in change && change.description === '') {
-          deleteItem<DailyTask>(listId, task);
-        } else {
-          onChange({ ...task, ...change });
-        }
-      }}
+      descriptionRef={descriptionRef}
+      onToggle={() => onChange(toggleDailyTaskStatus(task))}
+      onEdit={startEditing}
     />
+  );
+
+  return reorder ? (
+    <ReorderableItem
+      className="today-task-description"
+      label={task.description}
+      reorder={reorder}
+    >
+      {view}
+    </ReorderableItem>
+  ) : (
+    <div className="today-task-description">{view}</div>
   );
 }
