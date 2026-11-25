@@ -45,8 +45,8 @@ export function TodayTaskDescription({
         className="today-task-description"
         onKeyDown={(event) => {
           if (event.key === 'Enter') {
-            // stopEditing focuses the description button during this keydown,
-            // so Enter's default action would click it and reopen edit mode.
+            // stopEditing flushes the render that swaps the input for the
+            // description button and focuses it, so Enter would then click it.
             event.preventDefault();
           }
 
