@@ -22,6 +22,7 @@ export function SearchInput({
       value={value}
       onChange={onChange}
       onClick={onClick}
+      onFocus={(event) => event.target.select()}
       autoComplete="off"
       autoFocus={autoFocus}
       size={size}
