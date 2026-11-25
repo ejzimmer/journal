@@ -18,6 +18,13 @@ const parcel: DailyTask = {
   lastCompleted: getToday(),
 };
 
+const socks: DailyTask = {
+  ...parcel,
+  id: 'socks',
+  description: 'socks',
+  position: 1,
+};
+
 const createGoal = (id: string, position: number): TaskGoal => ({
   id,
   position,
@@ -26,7 +33,7 @@ const createGoal = (id: string, position: number): TaskGoal => ({
 
 function renderOnceTaskList(slots: Record<string, DailyGoalItem> = {}) {
   const storage = createMockFirebaseContext({
-    today: { 一: { parcel } },
+    today: { 一: { parcel, socks } },
     今日: { slots },
   });
   render(
@@ -129,6 +136,18 @@ describe('OnceTaskList', () => {
         ).toEqual(['a', 'b']);
         expect(readValue(storage, `${ONCE_KEY}/parcel`)).toEqual(parcel);
         expect(toggle).not.toBeChecked();
+      });
+
+      it("enables the switches of tasks that aren't in a slot", async () => {
+        const { toggle } = renderOnceTaskList(slots);
+        const socksToggle = screen.getByRole('switch', {
+          name: 'Do socks today',
+        });
+        expect(socksToggle).toBeDisabled();
+
+        await userEvent.click(toggle);
+
+        expect(socksToggle).toBeEnabled();
       });
     });
   });
