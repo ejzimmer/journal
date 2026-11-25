@@ -5,7 +5,7 @@ import { ContextType, FirebaseContext } from 'shared/FirebaseContext';
 import { createMockFirebaseContext } from 'shared/mockFirebase';
 import { DAILY_GOALS_KEY, TaskGoal } from 'shared/dailyGoals/types';
 import { DailyTask, ONCE_KEY, DailyGoalItem } from '../../../types';
-import { OnTodaySwitch } from './OnTodaySwitch';
+import { DoTodaySwitch } from './DoTodaySwitch';
 
 const parcel: DailyTask = {
   id: 'parcel',
@@ -31,7 +31,7 @@ function renderSwitch(slots: Record<string, DailyGoalItem> = {}) {
   });
   render(
     <FirebaseContext.Provider value={storage}>
-      <OnTodaySwitch task={parcel} />
+      <DoTodaySwitch task={parcel} />
     </FirebaseContext.Provider>,
   );
 
@@ -57,10 +57,10 @@ const readGoals = (storage: ContextType) =>
     readValue<Record<string, DailyGoalItem>>(storage, DAILY_GOALS_KEY) ?? {},
   );
 
-const getSwitch = () => screen.getByRole('switch', { name: 'parcel on today' });
+const getSwitch = () => screen.getByRole('switch', { name: 'Do parcel today' });
 
-describe('OnTodaySwitch', () => {
-  describe('when the task is not on today', () => {
+describe('DoTodaySwitch', () => {
+  describe('when the task is not in a Today slot', () => {
     it('is off', () => {
       renderSwitch();
 
@@ -97,7 +97,7 @@ describe('OnTodaySwitch', () => {
     });
   });
 
-  describe('when the task is on today', () => {
+  describe('when the task is in a Today slot', () => {
     const slots = {
       a: createGoal('a', 0),
       b: createGoal('b', 1),

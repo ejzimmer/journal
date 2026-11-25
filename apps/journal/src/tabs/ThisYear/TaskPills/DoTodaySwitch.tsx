@@ -2,23 +2,23 @@ import { ArrowRightIcon } from 'shared/icons/ArrowRight';
 import { useDailyGoals } from 'shared/dailyGoals/useDailyGoals';
 import { DailyTask, ONCE_KEY } from '../../../types';
 
-type OnTodaySwitchProps = { task: DailyTask };
+type DoTodaySwitchProps = { task: DailyTask };
 
-export function OnTodaySwitch({ task }: OnTodaySwitchProps) {
+export function DoTodaySwitch({ task }: DoTodaySwitchProps) {
   const { hasFreeSlot, addTaskGoal, removeTaskGoal, hasTaskGoal } =
     useDailyGoals();
   const taskPath = `${ONCE_KEY}/${task.id}`;
-  const isOnToday = hasTaskGoal(taskPath);
+  const isDoingToday = hasTaskGoal(taskPath);
 
   return (
     <button
       role="switch"
-      className="on-today-switch"
-      aria-label={`${task.description} on today`}
-      aria-checked={isOnToday}
-      disabled={!isOnToday && !hasFreeSlot}
+      className="do-today-switch"
+      aria-label={`Do ${task.description} today`}
+      aria-checked={isDoingToday}
+      disabled={!isDoingToday && !hasFreeSlot}
       onClick={() =>
-        isOnToday ? removeTaskGoal(taskPath) : addTaskGoal(taskPath)
+        isDoingToday ? removeTaskGoal(taskPath) : addTaskGoal(taskPath)
       }
     >
       <ArrowRightIcon width="14px" />
