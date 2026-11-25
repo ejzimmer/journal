@@ -104,11 +104,18 @@ describe('DoTodaySwitch', () => {
       parcel: createGoal('parcel', 2),
     };
 
-    it('is on, even with every slot full', () => {
+    it('is on', () => {
       const { toggle } = renderSwitch(slots);
 
       expect(toggle).toBeChecked();
-      expect(toggle).toBeEnabled();
+    });
+
+    describe('and the other slots are full', () => {
+      it('can still be switched off', () => {
+        const { toggle } = renderSwitch(slots);
+
+        expect(toggle).toBeEnabled();
+      });
     });
 
     describe('and the user switches it off', () => {
