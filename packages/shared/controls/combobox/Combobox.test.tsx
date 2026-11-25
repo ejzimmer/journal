@@ -123,13 +123,61 @@ describe('Combobox', () => {
       const value = options[2];
       render(<Combobox {...commonProps} value={value} />);
 
-      // One for the value & one in the options
-      expect(screen.getAllByText(value.label)).toHaveLength(2);
+      expect(screen.getByRole('combobox')).toHaveValue(value.label);
 
       options.forEach((option) => {
         expect(
           screen.getByRole('option', { name: option.label, hidden: true }),
         ).toHaveAttribute('aria-selected', option === value ? 'true' : 'false');
+      });
+    });
+
+    describe('when it has a value', () => {
+      describe('and the user clicks the input to open the popover', () => {
+        it('keeps the label in the input and lists every option, with the selected one highlighted', async () => {
+          const user = userEvent.setup();
+          render(<Combobox {...commonProps} value={options[2]} />);
+          const input = screen.getByRole('combobox');
+
+          await user.click(input);
+
+          expect(input).toHaveValue('grape');
+          expect(
+            screen.getAllByRole('option').map((option) => option.textContent),
+          ).toEqual(['apple', 'orange', 'grape', 'grapefruit']);
+          expect(screen.getByRole('option', { name: 'grape' })).toHaveClass(
+            'highlighted',
+          );
+        });
+
+        describe('then types', () => {
+          it('replaces the label with the typed text and filters the options by it', async () => {
+            const user = userEvent.setup();
+            render(<Combobox {...commonProps} value={options[2]} />);
+            const input = screen.getByRole('combobox');
+
+            await user.click(input);
+            await user.keyboard('o');
+
+            expect(input).toHaveValue('o');
+            expect(
+              screen.getAllByRole('option').map((option) => option.textContent),
+            ).toEqual(['orange']);
+          });
+        });
+
+        describe('then types and presses Escape', () => {
+          it('puts the selected label back in the input', async () => {
+            const user = userEvent.setup();
+            render(<Combobox {...commonProps} value={options[2]} />);
+            const input = screen.getByRole('combobox');
+
+            await user.click(input);
+            await user.keyboard('o{Escape}');
+
+            expect(input).toHaveValue('grape');
+          });
+        });
       });
     });
 

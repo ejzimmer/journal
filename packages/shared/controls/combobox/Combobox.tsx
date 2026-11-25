@@ -42,8 +42,8 @@ export function Combobox<T extends OptionType>({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const [searchTerm, setSearchTerm] = useState('');
-  const search = searchTerm.trimStart().toLowerCase();
+  const [searchTerm, setSearchTerm] = useState<string>();
+  const search = searchTerm?.trimStart().toLowerCase();
   const displayedOptions = (
     search
       ? options.filter((o) => o.label.toLowerCase().startsWith(search))
@@ -71,7 +71,7 @@ export function Combobox<T extends OptionType>({
   const reset = useCallback(
     (alwayClosePopover?: boolean) => {
       if (!isMultiValue || alwayClosePopover) hidePopover();
-      setSearchTerm('');
+      setSearchTerm(undefined);
     },
     [hidePopover, isMultiValue],
   );
@@ -156,7 +156,7 @@ export function Combobox<T extends OptionType>({
             value={value}
             onRemoveValue={(v) => updateValue(v)}
             onRemoveAll={() => onChange([])}
-            searchInputValue={searchTerm}
+            searchInputValue={searchTerm ?? ''}
             onChangeSearchTerm={(event) => {
               const value = event.target.value ?? '';
               setSearchTerm(value);
@@ -174,7 +174,7 @@ export function Combobox<T extends OptionType>({
         ) : (
           <SingleValueInput
             value={value}
-            searchInputValue={searchTerm}
+            searchInputValue={searchTerm ?? value?.label ?? ''}
             onChangeSearchTerm={(
               event: React.ChangeEvent<HTMLInputElement>,
             ) => {
