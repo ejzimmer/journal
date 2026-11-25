@@ -1,0 +1,270 @@
+@scope (.every-day-tasks) {
+  :scope {
+    --pill-bg: hsl(216 15% 94%);
+    --pill-shade: hsl(218 10% 79%);
+    --pill-ink: hsl(219 10% 27%);
+    --pill-font: 17px system-ui, sans-serif;
+    --button-raised:
+      inset 0 2px 3px hsl(0 0% 100% / 0.95),
+      inset 0 -3px 5px hsl(0 0% 0% / 0.18), 0 0 0 1px hsl(0 0% 0% / 0.12),
+      0 3px 6px hsl(0 0% 0% / 0.25);
+
+    display: flex;
+    flex-direction: column;
+    width: fit-content;
+    margin: 0 auto;
+    padding: 0;
+    list-style: none;
+  }
+
+  .every-day-task {
+    --light-hue: 108;
+    --light-saturation: 95%;
+    --light-lightness: 50%;
+
+    width: 100%;
+    margin-block: 14px;
+
+    .today-task-description {
+      position: relative;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      width: 100%;
+      min-width: 260px;
+      box-sizing: border-box;
+      padding: 9px 30px 9px 9px;
+      border-radius: 999px;
+      background: var(--pill-bg);
+      box-shadow:
+        inset 3px 3px 5px var(--pill-shade),
+        inset -3px -3px 5px hsl(0 0% 100%);
+
+      &::before {
+        content: '';
+        position: absolute;
+        inset: 5px;
+        border-radius: inherit;
+        pointer-events: none;
+        box-shadow:
+          2px 2px 4px var(--pill-shade),
+          -2px -2px 4px hsl(0 0% 100%);
+      }
+    }
+
+    .today-task-description > .description-button {
+      flex-grow: 1;
+      height: auto;
+      margin: 0;
+      padding: 0;
+      border: 0;
+      border-radius: 0;
+      background: none;
+      box-shadow: none;
+      font: var(--pill-font);
+      color: var(--pill-ink);
+      text-align: start;
+      text-shadow: none;
+      white-space: nowrap;
+
+      &:focus-visible {
+        outline: none;
+      }
+    }
+
+    .emoji-checkbox {
+      position: relative;
+      display: grid;
+      place-items: center;
+      flex-shrink: 0;
+      overflow: hidden;
+      width: 44px;
+      height: 44px;
+      padding: 0;
+      border-radius: 50%;
+      font-size: 20px;
+      text-shadow: none;
+      background: radial-gradient(
+        circle at 50% 30%,
+        hsl(240 14% 99%),
+        hsl(217 10% 84%) 80%
+      );
+      box-shadow: var(--button-raised);
+
+      .glowing-emoji > * {
+        filter: none;
+      }
+
+      .glow {
+        display: none;
+      }
+    }
+
+    .done-tick {
+      background: none;
+      color: hsl(108 70% 94%);
+      filter: drop-shadow(0 0 3px hsl(108 100% 85% / 0.9));
+
+      svg {
+        width: 55%;
+      }
+    }
+
+    &:not(.status-ready) {
+      .emoji-checkbox {
+        background: radial-gradient(
+          circle at 50% 78%,
+          hsl(108 90% 66%),
+          hsl(108 81% 40%) 62%,
+          hsl(108 80% 27%)
+        );
+        box-shadow:
+          inset 0 2px 4px hsl(0 0% 0% / 0.3),
+          0 0 0 1px hsl(0 0% 0% / 0.15),
+          0 0 12px hsl(108 90% 50% / 0.55);
+      }
+
+      .today-task-description > .description-button {
+        color: hsl(108 90% 60%);
+        text-shadow:
+          0 -0.5px 0.5px hsl(108 60% 18% / 0.55),
+          0 0 0.5px hsl(108 60% 18% / 0.35),
+          0 0 6px hsl(108 95% 50% / 0.6);
+      }
+    }
+
+    &:not(.status-ready) .today-task-description,
+    .today-task-description:is(:focus-visible, :has(:focus-visible)),
+    .today-task-description:has(input.subtle) {
+      outline: none;
+      box-shadow:
+        inset 2px 2px 4px hsl(var(--light-hue) 60% 30% / 0.35),
+        inset -2px -2px 4px hsl(var(--light-hue) 90% 85%),
+        inset 0 0 6px 3px
+          hsl(
+            var(--light-hue) var(--light-saturation) var(--light-lightness) /
+              0.95
+          ),
+        0 0 14px 2px
+          hsl(
+            var(--light-hue) var(--light-saturation) var(--light-lightness) /
+              0.6
+          );
+
+      &::before {
+        box-shadow:
+          0 0 5px 2px
+            hsl(
+              var(--light-hue) var(--light-saturation) var(--light-lightness) /
+                0.75
+            ),
+          2px 2px 4px hsl(var(--light-hue) 30% 55% / 0.4),
+          -2px -2px 4px hsl(0 0% 100%);
+      }
+    }
+
+    &:not(:has(input.subtle)):has(
+        .today-task-description:is(:focus-visible, :has(:focus-visible))
+      ) {
+      --light-hue: 205;
+      --light-lightness: 55%;
+    }
+
+    &:has(input.subtle) {
+      --light-hue: 30;
+      --light-saturation: 100%;
+      --light-lightness: 55%;
+    }
+
+    input.subtle {
+      flex: 1;
+      field-sizing: content;
+      min-width: 0;
+      margin: 0;
+      padding: 0;
+      border: 0;
+      background: none;
+      outline: none;
+      font: var(--pill-font);
+      color: var(--pill-ink);
+    }
+
+    .combobox .single-value-container {
+      display: grid;
+      place-items: center;
+      width: 44px;
+      height: 44px;
+      border: 0;
+      border-radius: 50%;
+      font-size: 20px;
+      background: radial-gradient(
+        circle at 50% 30%,
+        hsl(240 14% 99%),
+        hsl(217 10% 84%) 80%
+      );
+      box-shadow: var(--button-raised);
+
+      > * {
+        grid-area: 1 / 1;
+      }
+
+      input[role='combobox'] {
+        width: 100%;
+        height: 100%;
+        padding: 0;
+        text-align: center;
+        font: inherit;
+      }
+
+      .value {
+        position: static;
+        transform: none;
+      }
+
+      .arrow {
+        display: none;
+      }
+
+      &:has(input:focus) {
+        box-shadow:
+          inset 0 2px 3px hsl(0 0% 100% / 0.95),
+          inset 0 -3px 5px hsl(205 60% 40% / 0.22),
+          0 0 0 2px hsl(205 95% 55%),
+          0 0 10px 1px hsl(205 95% 55% / 0.6),
+          0 3px 6px hsl(205 60% 30% / 0.3);
+      }
+    }
+
+    .combobox [popover] {
+      margin-top: 8px;
+      padding: 6px;
+      border-radius: 16px;
+      background: var(--pill-bg);
+      box-shadow:
+        6px 6px 14px var(--pill-shade),
+        -6px -6px 14px hsl(0 0% 100%);
+    }
+
+    .combobox ul.options li {
+      display: grid;
+      place-items: center;
+      width: 40px;
+      height: 40px;
+      padding: 0;
+      border: 0;
+      border-radius: 50%;
+      background: none;
+      color: inherit;
+      font-size: 20px;
+      cursor: pointer;
+
+      &.highlighted {
+        background: none;
+        box-shadow:
+          inset 2px 2px 5px var(--pill-shade),
+          inset -2px -2px 5px hsl(0 0% 100%),
+          0 0 0 2px hsl(205 95% 55% / 0.8);
+      }
+    }
+  }
+}
