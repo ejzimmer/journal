@@ -14,6 +14,7 @@ export function createStorageContext(
     setValues: jest.fn(),
     claimDailyRun: jest.fn().mockResolvedValue(true),
     useValue: () => ({ value: undefined, loading: false, synced: true }),
+    useValues: (keys) => ({ values: keys.map(() => undefined), synced: true }),
     moveItemBetweenLists: jest.fn(),
     ...overrides,
   };

@@ -1,5 +1,5 @@
 import 'fake-indexeddb/auto';
-import { renderHook, waitFor } from '@testing-library/react';
+import { act, renderHook, waitFor } from '@testing-library/react';
 import { createLocalFirstContext } from './createLocalFirstContext';
 import {
   fireRemoteSnapshot,
@@ -213,6 +213,73 @@ describe('createLocalFirstContext', () => {
       expect(result.current.value).toEqual({
         task1: item,
         task2: { id: 'task2', description: 'Added elsewhere' },
+      });
+    });
+  });
+
+  describe('reading several paths with useValues', () => {
+    it("returns each path's value in the order asked for", async () => {
+      const context = await setUpContext();
+      context.setValue('work/a', { id: 'a' });
+      context.setValue('work/b', { id: 'b' });
+
+      const { result } = renderHook(() =>
+        context.useValues(['work/b', 'work/a', 'work/c']),
+      );
+
+      expect(result.current.values).toEqual([
+        { id: 'b' },
+        { id: 'a' },
+        undefined,
+      ]);
+    });
+
+    describe('when one of the values changes', () => {
+      it('returns the new value', async () => {
+        const context = await setUpContext();
+        context.setValue('work/a', { id: 'a', status: 'ready' });
+        const { result } = renderHook(() =>
+          context.useValues(['work/a', 'work/b']),
+        );
+
+        act(() => context.setValue('work/a/status', 'done'));
+
+        expect(result.current.values[0]).toEqual({ id: 'a', status: 'done' });
+      });
+    });
+
+    describe('when only some paths have had a remote snapshot', () => {
+      it('is not synced', async () => {
+        const context = await setUpContext();
+        const { result } = renderHook(() =>
+          context.useValues(['work', 'health']),
+        );
+        const { result: work } = renderHook(() => context.useValue('work'));
+        await waitFor(() =>
+          expect(mockOnValueCallbacks.has('v2/work')).toBe(true),
+        );
+
+        fireRemoteSnapshot('v2/work', {});
+        await waitFor(() => expect(work.current.synced).toBe(true));
+
+        expect(result.current.synced).toBe(false);
+      });
+    });
+
+    describe('when every path has had a remote snapshot', () => {
+      it('is synced', async () => {
+        const context = await setUpContext();
+        const { result } = renderHook(() =>
+          context.useValues(['work', 'health']),
+        );
+        await waitFor(() =>
+          expect(mockOnValueCallbacks.has('v2/health')).toBe(true),
+        );
+
+        fireRemoteSnapshot('v2/work', {});
+        fireRemoteSnapshot('v2/health', {});
+
+        await waitFor(() => expect(result.current.synced).toBe(true));
       });
     });
   });

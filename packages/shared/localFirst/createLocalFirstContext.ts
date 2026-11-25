@@ -1,5 +1,5 @@
 import { Database, get, onValue, ref, runTransaction } from 'firebase/database';
-import { useEffect, useMemo, useSyncExternalStore } from 'react';
+import { useEffect, useMemo, useRef, useSyncExternalStore } from 'react';
 import { ContextType } from '../FirebaseContext';
 import { createConflictStore } from './conflictStore';
 import {
@@ -299,6 +299,59 @@ export function createLocalFirstContext(
       );
 
       return { value, loading: false, synced };
+    },
+    useValues: <T>(keys: string[]) => {
+      const keyList = keys.join('\n');
+      // Callers pass a new array on every render, so the list only changes
+      // when its contents do.
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+      const stableKeys = useMemo(() => keys, [keyList]);
+      const sourceKeys = useMemo(
+        () => stableKeys.map((key) => dataShape.findStoredPath(key)),
+        [stableKeys],
+      );
+      const lastSourceValues = useRef<unknown[]>([]);
+
+      useEffect(() => {
+        sourceKeys.forEach(registerRemoteListener);
+      }, [sourceKeys]);
+
+      // useSyncExternalStore needs the same array back while nothing has
+      // changed, or it re-renders forever.
+      const sourceValues = useSyncExternalStore(
+        (onChange) => {
+          const unsubscribes = sourceKeys.map((sourceKey) =>
+            localStore.subscribe(sourceKey, onChange),
+          );
+          return () => unsubscribes.forEach((unsubscribe) => unsubscribe());
+        },
+        () => {
+          const latest = sourceKeys.map((sourceKey) =>
+            localStore.readPath(sourceKey),
+          );
+          const previous = lastSourceValues.current;
+          if (
+            latest.length === previous.length &&
+            latest.every((value, index) => value === previous[index])
+          ) {
+            return previous;
+          }
+          lastSourceValues.current = latest;
+          return latest;
+        },
+      );
+      const values = useMemo(
+        () =>
+          stableKeys.map((key, index) =>
+            dataShape.convertStoredValue(key, sourceValues[index]),
+          ),
+        [stableKeys, sourceValues],
+      ) as (T | undefined)[];
+      const synced = useSyncExternalStore(subscribeToSync, () =>
+        sourceKeys.every(isSynced),
+      );
+
+      return { values, synced };
     },
   };
 
