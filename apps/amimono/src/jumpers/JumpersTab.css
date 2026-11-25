@@ -1,0 +1,208 @@
+.jumpers-tab {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  max-width: 960px;
+
+  .jumper-drafter {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    gap: 32px;
+  }
+
+  .jumper-measurements {
+    flex: 1 1 440px;
+    max-width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    color: white;
+  }
+
+  fieldset {
+    margin: 0;
+    padding: 0;
+    border: 0;
+  }
+
+  .fixed-measurements,
+  .jumper-gauge {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 12px 16px;
+  }
+
+  .jumper-gauge legend {
+    padding: 0;
+    margin-bottom: 8px;
+    font-size: 14px;
+  }
+
+  .eased-measurement {
+    display: flex;
+    align-items: flex-end;
+    gap: 12px 16px;
+
+    @media (width < 600px) {
+      flex-wrap: wrap;
+    }
+  }
+
+  .number-field,
+  .text-field {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    font-size: 14px;
+  }
+
+  .number-input {
+    display: flex;
+    align-items: baseline;
+    gap: 4px;
+  }
+
+  input {
+    font: inherit;
+    font-size: 16px;
+    padding: 4px 6px;
+    border: 0;
+    border-bottom: 2px solid white;
+    background: transparent;
+    color: white;
+    outline: none;
+
+    &:focus {
+      color: var(--body-colour);
+    }
+  }
+
+  input[type='number'] {
+    width: 72px;
+    appearance: textfield;
+
+    &::-webkit-inner-spin-button {
+      appearance: none;
+    }
+  }
+
+  .text-field input {
+    width: 140px;
+  }
+
+  .hint {
+    font-size: 12px;
+    opacity: 0.85;
+  }
+
+  [role='radiogroup'].switch.source-switch {
+    isolation: isolate;
+    border: 2px solid white;
+    border-radius: 999px;
+    padding: 1px;
+    margin-bottom: 2px;
+
+    label {
+      padding: 4px 12px;
+      border-radius: 999px;
+      font-size: 14px;
+      color: white;
+
+      &:not(:last-of-type) {
+        border-inline-end: none;
+      }
+
+      &:has(input:not(:checked)) {
+        box-shadow: none;
+      }
+
+      &:has(input:checked) {
+        color: var(--body-colour);
+        font-weight: normal;
+      }
+
+      &:has(input:focus-visible) {
+        outline: 2px solid white;
+      }
+    }
+
+    &:focus-within {
+      outline: none;
+    }
+
+    .indicator {
+      top: 1px;
+      height: calc(100% - 2px);
+      border-radius: 999px;
+      background: white;
+      box-shadow: none;
+    }
+  }
+
+  .generated-pattern {
+    flex: 1 1 400px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .pattern-pieces {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 16px 20px;
+    border-radius: 12px;
+    background: rgb(255 255 255 / 0.85);
+    line-height: 1.5;
+
+    h3 {
+      margin: 0 0 4px;
+      font-size: 17px;
+    }
+
+    ol {
+      margin: 0;
+      padding-inline-start: 24px;
+    }
+  }
+
+  .save-pattern-form {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    input {
+      flex: 1 1 auto;
+      min-width: 0;
+    }
+
+    .form-action.primary {
+      border-color: white;
+    }
+  }
+
+  .saved-patterns {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+
+    &:empty {
+      display: none;
+    }
+  }
+
+  .saved-pattern {
+    summary {
+      width: fit-content;
+      padding: 4px 0;
+      color: white;
+      font-size: 17px;
+      cursor: pointer;
+    }
+
+    .pattern-pieces {
+      margin-top: 8px;
+    }
+  }
+}

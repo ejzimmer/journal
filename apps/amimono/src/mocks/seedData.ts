@@ -6,6 +6,8 @@ import {
   Subtask,
   PROJECT_CATEGORY,
 } from '../projects/types';
+import { writeJumperPattern } from '../jumpers/jumperPattern';
+import { JumperInputs, JumperPattern } from '../jumpers/types';
 import { Recipient } from '../sockPlanner/types';
 import { StoredYarn } from '../yarnBowl/types';
 
@@ -174,9 +176,31 @@ const socks = Object.fromEntries(
   ),
 );
 
+const exampleJumperInputs: JumperInputs = {
+  neckWidth: 21,
+  crossChest: 43,
+  armholeDepth: 23,
+  hemToArmhole: 41,
+  waistToHip: 28,
+  bust: { cm: 101.5, source: 'body', easeCm: 5 },
+  waist: { cm: 86, source: 'body', easeCm: 12.5 },
+  hips: { cm: 105, source: 'body', easeCm: 10 },
+  gauge: { stitches: 22, rows: 29, needleMm: 4.5, yarn: 'grey' },
+};
+
+const jumpers: Record<string, JumperPattern> = {
+  'hooded-cardigan': {
+    id: 'hooded-cardigan',
+    name: 'Hooded cardigan',
+    inputs: exampleJumperInputs,
+    pieces: writeJumperPattern(exampleJumperInputs),
+  },
+};
+
 export const seedData: Record<string, unknown> = {
   projects,
   socks,
+  jumpers,
   lists,
   yarn: { '2026': yarn },
 };
