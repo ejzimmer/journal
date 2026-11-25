@@ -5,6 +5,7 @@ import { ContextType, FirebaseContext } from 'shared/FirebaseContext';
 import { createMockFirebaseContext } from 'shared/mockFirebase';
 import { DAILY_GOALS_KEY, TaskGoal } from 'shared/dailyGoals/types';
 import { DailyTask, ONCE_KEY, DailyGoalItem } from '../../../types';
+import { CategoriesContext } from '../../Todo';
 import { OnceTaskList } from './OnceTaskList';
 
 const parcel: DailyTask = {
@@ -41,7 +42,9 @@ function renderOnceTaskList(
   });
   render(
     <FirebaseContext.Provider value={storage}>
-      <OnceTaskList />
+      <CategoriesContext.Provider value={['📦']}>
+        <OnceTaskList />
+      </CategoriesContext.Provider>
     </FirebaseContext.Provider>,
   );
 
@@ -163,6 +166,23 @@ describe('OnceTaskList', () => {
       );
 
       expect(toggle).toHaveClass('done-task-switch');
+    });
+  });
+
+  describe('when the user renames a task', () => {
+    it('saves the new description', async () => {
+      const user = userEvent.setup();
+      const { storage } = renderOnceTaskList();
+
+      await user.click(screen.getByRole('button', { name: 'parcel' }));
+      const input = screen.getByRole('textbox', { name: 'Description' });
+      await user.clear(input);
+      await user.type(input, 'post parcel{Enter}');
+
+      expect(readValue(storage, `${ONCE_KEY}/parcel`)).toEqual({
+        ...parcel,
+        description: 'post parcel',
+      });
     });
   });
 });

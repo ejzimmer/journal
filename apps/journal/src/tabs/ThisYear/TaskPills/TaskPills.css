@@ -268,7 +268,7 @@
       }
     }
 
-    .today-task-description.has-action {
+    .today-task-description.once-task-pill {
       padding-right: 14px;
     }
   }

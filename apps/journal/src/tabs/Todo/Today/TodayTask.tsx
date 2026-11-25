@@ -1,11 +1,9 @@
-import { ReactNode } from 'react';
-import { useStorageContext } from 'shared/FirebaseContext';
 import { useFormToggle } from 'shared/controls/useFormToggle';
 import { DailyTask } from '../../../types';
 import { ReorderControls } from '../todoTypes';
 import { toggleDailyTaskStatus } from './toggleDailyTaskStatus';
+import { DailyTaskEditor } from './DailyTaskEditor';
 import { ReorderableItem } from './ReorderableItem';
-import { TodayTaskEditor } from './TodayTaskEditor';
 import { TodayTaskView } from './TodayTaskView';
 
 import './TodayTask.css';
@@ -15,17 +13,9 @@ type TodayTaskProps = {
   listId: string;
   onChange: (task: DailyTask) => void;
   reorder?: ReorderControls;
-  action?: ReactNode;
 };
 
-export function TodayTask({
-  task,
-  listId,
-  onChange,
-  reorder,
-  action,
-}: TodayTaskProps) {
-  const { deleteItem } = useStorageContext();
+export function TodayTask({ task, listId, onChange, reorder }: TodayTaskProps) {
   const {
     isFormOpen: isEditing,
     triggerRef: descriptionRef,
@@ -35,49 +25,35 @@ export function TodayTask({
 
   if (isEditing) {
     return (
-      <TodayTaskEditor
-        category={task.category}
-        description={task.description}
-        onChangeCategory={(category) => onChange({ ...task, category })}
-        onChangeDescription={(description) => {
-          if (description === '') {
-            deleteItem<DailyTask>(listId, task);
-          } else {
-            onChange({ ...task, description });
-          }
-        }}
+      <DailyTaskEditor
+        task={task}
+        listId={listId}
+        onChange={onChange}
         onClose={stopEditing}
       />
     );
   }
 
   const view = (
-    <>
-      <TodayTaskView
-        category={task.category}
-        description={task.description}
-        isChecked={task.status !== 'ready'}
-        descriptionRef={descriptionRef}
-        onToggle={() => onChange(toggleDailyTaskStatus(task))}
-        onEdit={startEditing}
-      />
-      {action}
-    </>
+    <TodayTaskView
+      category={task.category}
+      description={task.description}
+      isChecked={task.status !== 'ready'}
+      descriptionRef={descriptionRef}
+      onToggle={() => onChange(toggleDailyTaskStatus(task))}
+      onEdit={startEditing}
+    />
   );
-
-  const className = action
-    ? 'today-task-description has-action'
-    : 'today-task-description';
 
   return reorder ? (
     <ReorderableItem
-      className={className}
+      className="today-task-description"
       label={task.description}
       reorder={reorder}
     >
       {view}
     </ReorderableItem>
   ) : (
-    <div className={className}>{view}</div>
+    <div className="today-task-description">{view}</div>
   );
 }

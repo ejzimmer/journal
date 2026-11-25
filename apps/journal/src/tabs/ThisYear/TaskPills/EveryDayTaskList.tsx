@@ -1,17 +1,11 @@
-import { ReactNode } from 'react';
-import { DailyTask } from '../../../types';
+import { DAILY_KEY } from '../../../types';
 import { TodayTask } from '../../Todo/Today/TodayTask';
 import { useDailyTaskList } from '../../Todo/Today/useDailyTaskList';
 
-import './TaskPillList.css';
+import './TaskPills.css';
 
-type TaskPillListProps = {
-  listId: string;
-  renderAction?: (task: DailyTask) => ReactNode;
-};
-
-export function TaskPillList({ listId, renderAction }: TaskPillListProps) {
-  const { tasks, getReorderControls, updateTask } = useDailyTaskList(listId);
+export function EveryDayTaskList() {
+  const { tasks, getReorderControls, updateTask } = useDailyTaskList(DAILY_KEY);
 
   return (
     <ol className="task-pills">
@@ -19,10 +13,9 @@ export function TaskPillList({ listId, renderAction }: TaskPillListProps) {
         <li key={task.id} className={`task-pill status-${task.status}`}>
           <TodayTask
             task={task}
-            listId={listId}
+            listId={DAILY_KEY}
             onChange={updateTask}
             reorder={getReorderControls(index)}
-            action={renderAction?.(task)}
           />
         </li>
       ))}

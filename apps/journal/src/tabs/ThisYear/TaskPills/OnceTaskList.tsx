@@ -1,30 +1,36 @@
 import { useDailyGoals } from 'shared/dailyGoals/useDailyGoals';
-import { DailyTask, ONCE_KEY } from '../../../types';
-import { ArrowSwitch } from './ArrowSwitch';
-import { TaskPillList } from './TaskPillList';
+import { ONCE_KEY } from '../../../types';
+import { useDailyTaskList } from '../../Todo/Today/useDailyTaskList';
+import { OnceTaskPill } from './OnceTaskPill';
 
-import './OnceTaskList.css';
+import './TaskPills.css';
 
 export function OnceTaskList() {
+  const { tasks, getReorderControls, updateTask } = useDailyTaskList(ONCE_KEY);
   const { hasFreeSlot, addTaskGoal, removeTaskGoal, hasTaskGoal } =
     useDailyGoals();
 
-  const renderDoTodaySwitch = (task: DailyTask) => {
-    const taskPath = `${ONCE_KEY}/${task.id}`;
-    const isInSlot = hasTaskGoal(taskPath);
+  return (
+    <ol className="task-pills">
+      {tasks.map((task, index) => {
+        const taskPath = `${ONCE_KEY}/${task.id}`;
+        const isInSlot = hasTaskGoal(taskPath);
 
-    return (
-      <ArrowSwitch
-        label={`Do ${task.description} today`}
-        isOn={isInSlot}
-        isDisabled={!isInSlot && !hasFreeSlot}
-        className={task.status === 'ready' ? undefined : 'done-task-switch'}
-        onClick={() =>
-          isInSlot ? removeTaskGoal(taskPath) : addTaskGoal(taskPath)
-        }
-      />
-    );
-  };
-
-  return <TaskPillList listId={ONCE_KEY} renderAction={renderDoTodaySwitch} />;
+        return (
+          <li key={task.id} className={`task-pill status-${task.status}`}>
+            <OnceTaskPill
+              task={task}
+              onChange={updateTask}
+              reorder={getReorderControls(index)}
+              isInSlot={isInSlot}
+              canAddToSlot={hasFreeSlot}
+              onToggleSlot={() =>
+                isInSlot ? removeTaskGoal(taskPath) : addTaskGoal(taskPath)
+              }
+            />
+          </li>
+        );
+      })}
+    </ol>
+  );
 }

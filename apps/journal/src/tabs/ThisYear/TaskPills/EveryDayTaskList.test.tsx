@@ -3,7 +3,7 @@ import userEvent from '@testing-library/user-event';
 import { FirebaseContext } from 'shared/FirebaseContext';
 import { createMockFirebaseContext } from 'shared/mockFirebase';
 import { DAILY_KEY, DailyTask } from '../../../types';
-import { TaskPillList } from './TaskPillList';
+import { EveryDayTaskList } from './EveryDayTaskList';
 
 const createTask = (description: string, position: number): DailyTask => ({
   id: description,
@@ -18,20 +18,13 @@ const createTask = (description: string, position: number): DailyTask => ({
 
 const tasks = ['Brush teeth', 'Floss', 'Stretch', 'Read'].map(createTask);
 
-function renderList({ withAction = false } = {}) {
+function renderList() {
   const storage = createMockFirebaseContext({
     today: { 日: Object.fromEntries(tasks.map((task) => [task.id, task])) },
   });
   render(
     <FirebaseContext.Provider value={storage}>
-      <TaskPillList
-        listId={DAILY_KEY}
-        renderAction={
-          withAction
-            ? (task) => <button>{`Action for ${task.description}`}</button>
-            : undefined
-        }
-      />
+      <EveryDayTaskList />
     </FirebaseContext.Provider>,
   );
 }
@@ -41,22 +34,11 @@ const getTaskOrder = () =>
     .getAllByRole('listitem')
     .map((item) => within(item).getByRole('group').getAttribute('aria-label'));
 
-describe('TaskPillList', () => {
+describe('EveryDayTaskList', () => {
   it('lists the tasks in position order', () => {
     renderList();
 
     expect(getTaskOrder()).toEqual(['Brush teeth', 'Floss', 'Stretch', 'Read']);
-  });
-
-  describe('when given an action', () => {
-    it('renders it in each task', () => {
-      renderList({ withAction: true });
-
-      const floss = screen.getAllByRole('listitem')[1];
-      expect(
-        within(floss).getByRole('button', { name: 'Action for Floss' }),
-      ).toBeInTheDocument();
-    });
   });
 
   describe('when the user ticks a task off', () => {

@@ -6,8 +6,7 @@ import {
   StationRunning,
 } from './StationRunning/StationRunning';
 import { TodoCategoriesProvider } from '../Todo/TodoCategoriesProvider';
-import { DAILY_KEY } from '../../types';
-import { TaskPillList } from './TaskPills/TaskPillList';
+import { EveryDayTaskList } from './TaskPills/EveryDayTaskList';
 import { OnceTaskList } from './TaskPills/OnceTaskList';
 
 import './ThisYear.css';
@@ -17,7 +16,7 @@ export function ThisYear() {
     <div className="this-year">
       <TodoCategoriesProvider>
         <div className="task-pill-lists">
-          <TaskPillList listId={DAILY_KEY} />
+          <EveryDayTaskList />
           <OnceTaskList />
         </div>
       </TodoCategoriesProvider>
