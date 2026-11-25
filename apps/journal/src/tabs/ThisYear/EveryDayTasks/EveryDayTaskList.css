@@ -126,7 +126,6 @@
 
       .today-task-description > .description-button {
         color: hsl(108 90% 60%);
-        /* A faint dark rim makes the text read as a window with the light behind it. */
         text-shadow:
           0 -0.5px 0.5px hsl(108 60% 18% / 0.55),
           0 0 0.5px hsl(108 60% 18% / 0.35),
