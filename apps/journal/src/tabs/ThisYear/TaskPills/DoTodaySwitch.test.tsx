@@ -35,7 +35,10 @@ function renderSwitch(slots: Record<string, DailyGoalItem> = {}) {
     </FirebaseContext.Provider>,
   );
 
-  return { storage };
+  return {
+    storage,
+    toggle: screen.getByRole('switch', { name: 'Do parcel today' }),
+  };
 }
 
 function readValue<T>(storage: ContextType, key: string) {
@@ -52,47 +55,44 @@ function readValue<T>(storage: ContextType, key: string) {
   return value;
 }
 
-const readGoals = (storage: ContextType) =>
-  Object.values(
-    readValue<Record<string, DailyGoalItem>>(storage, DAILY_GOALS_KEY) ?? {},
-  );
-
-const getSwitch = () => screen.getByRole('switch', { name: 'Do parcel today' });
-
 describe('DoTodaySwitch', () => {
   describe('when the task is not in a Today slot', () => {
     it('is off', () => {
-      renderSwitch();
+      const { toggle } = renderSwitch();
 
-      expect(getSwitch()).not.toBeChecked();
+      expect(toggle).not.toBeChecked();
     });
 
     describe('and the user switches it on', () => {
       it('puts the task in the next slot and keeps it in the one-off list', async () => {
-        const { storage } = renderSwitch({ library: createGoal('library', 0) });
+        const { storage, toggle } = renderSwitch({
+          library: createGoal('library', 0),
+        });
 
-        await userEvent.click(getSwitch());
+        await userEvent.click(toggle);
 
-        expect(readGoals(storage)).toContainEqual(
+        expect(
+          Object.values(readValue<object>(storage, DAILY_GOALS_KEY) ?? {}),
+        ).toContainEqual(
           expect.objectContaining({
             taskPath: `${ONCE_KEY}/parcel`,
             position: 1,
           }),
         );
         expect(readValue(storage, `${ONCE_KEY}/parcel`)).toEqual(parcel);
-        expect(getSwitch()).toBeChecked();
+        expect(toggle).toBeChecked();
       });
     });
 
     describe('and every slot is full', () => {
       it('is disabled', () => {
-        renderSwitch({
+        const { toggle } = renderSwitch({
           a: createGoal('a', 0),
           b: createGoal('b', 1),
           c: createGoal('c', 2),
         });
 
-        expect(getSwitch()).toBeDisabled();
+        expect(toggle).toBeDisabled();
       });
     });
   });
@@ -105,21 +105,23 @@ describe('DoTodaySwitch', () => {
     };
 
     it('is on, even with every slot full', () => {
-      renderSwitch(slots);
+      const { toggle } = renderSwitch(slots);
 
-      expect(getSwitch()).toBeChecked();
-      expect(getSwitch()).toBeEnabled();
+      expect(toggle).toBeChecked();
+      expect(toggle).toBeEnabled();
     });
 
     describe('and the user switches it off', () => {
       it('frees its slot and keeps it in the one-off list', async () => {
-        const { storage } = renderSwitch(slots);
+        const { storage, toggle } = renderSwitch(slots);
 
-        await userEvent.click(getSwitch());
+        await userEvent.click(toggle);
 
-        expect(readGoals(storage).map((goal) => goal.id)).toEqual(['a', 'b']);
+        expect(
+          Object.keys(readValue<object>(storage, DAILY_GOALS_KEY) ?? {}),
+        ).toEqual(['a', 'b']);
         expect(readValue(storage, `${ONCE_KEY}/parcel`)).toEqual(parcel);
-        expect(getSwitch()).not.toBeChecked();
+        expect(toggle).not.toBeChecked();
       });
     });
   });
