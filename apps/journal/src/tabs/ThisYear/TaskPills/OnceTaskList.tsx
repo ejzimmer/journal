@@ -7,14 +7,13 @@ import './TaskPills.css';
 
 export function OnceTaskList() {
   const { tasks, getReorderControls, updateTask } = useDailyTaskList(ONCE_KEY);
-  const { hasFreeSlot, addTaskGoal, removeTaskGoal, hasTaskGoal } =
-    useDailyGoals();
+  const { hasFreeSlot, addGoal, removeGoal, hasGoal } = useDailyGoals();
 
   return (
     <ol className="task-pills">
       {tasks.map((task, index) => {
         const taskPath = `${ONCE_KEY}/${task.id}`;
-        const isInSlot = hasTaskGoal(taskPath);
+        const isInSlot = hasGoal(taskPath);
 
         return (
           <li key={task.id} className={`task-pill status-${task.status}`}>
@@ -25,7 +24,7 @@ export function OnceTaskList() {
               isInSlot={isInSlot}
               canAddToSlot={hasFreeSlot}
               onToggleSlot={() =>
-                isInSlot ? removeTaskGoal(taskPath) : addTaskGoal(taskPath)
+                isInSlot ? removeGoal(taskPath) : addGoal({ taskPath })
               }
             />
           </li>
