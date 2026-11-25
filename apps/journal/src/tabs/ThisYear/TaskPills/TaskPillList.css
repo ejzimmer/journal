@@ -268,17 +268,8 @@
       }
     }
 
-    .today-task-description:has(.arrow-switch) {
+    .today-task-description.has-action {
       padding-right: 14px;
-    }
-
-    .arrow-switch {
-      flex-shrink: 0;
-    }
-
-    &:not(.status-ready) .arrow-switch {
-      --switch-hue: 108;
-      --switch-lightness: 52%;
     }
   }
 }

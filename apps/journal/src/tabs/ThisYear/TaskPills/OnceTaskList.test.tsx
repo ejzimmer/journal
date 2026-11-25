@@ -31,9 +31,12 @@ const createGoal = (id: string, position: number): TaskGoal => ({
   taskPath: `${ONCE_KEY}/${id}`,
 });
 
-function renderOnceTaskList(slots: Record<string, DailyGoalItem> = {}) {
+function renderOnceTaskList(
+  slots: Record<string, DailyGoalItem> = {},
+  tasks: Record<string, DailyTask> = { parcel, socks },
+) {
   const storage = createMockFirebaseContext({
-    today: { 一: { parcel, socks } },
+    today: { 一: tasks },
     今日: { slots },
   });
   render(
@@ -149,6 +152,17 @@ describe('OnceTaskList', () => {
 
         expect(socksToggle).toBeEnabled();
       });
+    });
+  });
+
+  describe('when a task is done', () => {
+    it('gives its switch the done colour', () => {
+      const { toggle } = renderOnceTaskList(
+        {},
+        { parcel: { ...parcel, status: 'finished' } },
+      );
+
+      expect(toggle).toHaveClass('done-task-switch');
     });
   });
 });

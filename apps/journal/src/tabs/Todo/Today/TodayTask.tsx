@@ -65,15 +65,19 @@ export function TodayTask({
     </>
   );
 
+  const className = action
+    ? 'today-task-description has-action'
+    : 'today-task-description';
+
   return reorder ? (
     <ReorderableItem
-      className="today-task-description"
+      className={className}
       label={task.description}
       reorder={reorder}
     >
       {view}
     </ReorderableItem>
   ) : (
-    <div className="today-task-description">{view}</div>
+    <div className={className}>{view}</div>
   );
 }

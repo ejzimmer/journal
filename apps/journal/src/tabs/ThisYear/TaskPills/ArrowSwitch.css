@@ -3,6 +3,7 @@
   --switch-lightness: 58%;
 
   position: relative;
+  flex-shrink: 0;
   width: 60px;
   height: 30px;
   padding: 0;

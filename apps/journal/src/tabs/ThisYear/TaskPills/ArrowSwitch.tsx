@@ -7,6 +7,7 @@ type ArrowSwitchProps = {
   isOn: boolean;
   isDisabled?: boolean;
   onClick: () => void;
+  className?: string;
 };
 
 export function ArrowSwitch({
@@ -14,11 +15,12 @@ export function ArrowSwitch({
   isOn,
   isDisabled,
   onClick,
+  className,
 }: ArrowSwitchProps) {
   return (
     <button
       role="switch"
-      className="arrow-switch"
+      className={className ? `arrow-switch ${className}` : 'arrow-switch'}
       aria-label={label}
       aria-checked={isOn}
       disabled={isDisabled}
