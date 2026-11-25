@@ -2,15 +2,15 @@ import { DAILY_KEY } from '../../../types';
 import { TodayTask } from '../../Todo/Today/TodayTask';
 import { useDailyTaskList } from '../../Todo/Today/useDailyTaskList';
 
-import './EverydayTaskList.css';
+import './EveryDayTaskList.css';
 
-export function EverydayTaskList() {
+export function EveryDayTaskList() {
   const { tasks, getReorderControls, updateTask } = useDailyTaskList(DAILY_KEY);
 
   return (
-    <ol className="everyday-tasks">
+    <ol className="every-day-tasks">
       {tasks.map((task, index) => (
-        <li key={task.id} className={`everyday-task status-${task.status}`}>
+        <li key={task.id} className={`every-day-task status-${task.status}`}>
           <TodayTask
             task={task}
             listId={DAILY_KEY}

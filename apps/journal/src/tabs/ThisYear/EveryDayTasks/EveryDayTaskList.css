@@ -1,8 +1,8 @@
-body:has(.everyday-tasks) {
+body:has(.every-day-tasks) {
   background: #eceef1;
 }
 
-.everyday-tasks {
+.every-day-tasks {
   --pill-bg: #eceef1;
   --pill-shade: #c3c7ce;
   --pill-ink: #3f444d;
@@ -19,7 +19,7 @@ body:has(.everyday-tasks) {
   list-style: none;
 }
 
-.everyday-tasks .everyday-task {
+.every-day-tasks .every-day-task {
   --light-hue: 108;
   --light-saturation: 95%;
   --light-lightness: 50%;

@@ -3,7 +3,7 @@ import userEvent from '@testing-library/user-event';
 import { FirebaseContext } from 'shared/FirebaseContext';
 import { createMockFirebaseContext } from 'shared/mockFirebase';
 import { DAILY_KEY, DailyTask } from '../../../types';
-import { EverydayTaskList } from './EverydayTaskList';
+import { EveryDayTaskList } from './EveryDayTaskList';
 
 const createTask = (description: string, position: number): DailyTask => ({
   id: description,
@@ -24,7 +24,7 @@ function renderList() {
   });
   render(
     <FirebaseContext.Provider value={storage}>
-      <EverydayTaskList />
+      <EveryDayTaskList />
     </FirebaseContext.Provider>,
   );
 }
@@ -34,7 +34,7 @@ const getTaskOrder = () =>
     .getAllByRole('listitem')
     .map((item) => within(item).getByRole('group').getAttribute('aria-label'));
 
-describe('EverydayTaskList', () => {
+describe('EveryDayTaskList', () => {
   describe('when there are every day tasks', () => {
     it('lists them in position order', () => {
       renderList();
