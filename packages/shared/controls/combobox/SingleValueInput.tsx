@@ -12,7 +12,7 @@ export function SingleValueInput<T extends OptionType>({
   clearLabel,
   ...searchInputProps
 }: SingleValueInputProps<T>) {
-  const isShowingValue = !isPopoverOpen && !!(children || value);
+  const isShowingValue = !isPopoverOpen && !!children;
 
   return (
     <div
@@ -41,9 +41,7 @@ export function SingleValueInput<T extends OptionType>({
           <XIcon width="12" />
         </button>
       )}
-      {isShowingValue && (
-        <div className="value">{children ?? value?.label}</div>
-      )}
+      {isShowingValue && <div className="value">{children}</div>}
     </div>
   );
 }

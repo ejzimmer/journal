@@ -375,12 +375,12 @@ describe('EditMediaForm', () => {
     expect(screen.getByRole('textbox', { name: 'Item title' })).toHaveValue(
       'Guards! Guards!',
     );
-    expect(
-      screen.getByText('Terry Pratchett', { selector: '.value' }),
-    ).toBeInTheDocument();
-    expect(
-      screen.getByText('Discworld', { selector: '.value' }),
-    ).toBeInTheDocument();
+    expect(screen.getByRole('combobox', { name: 'Author name' })).toHaveValue(
+      'Terry Pratchett',
+    );
+    expect(screen.getByRole('combobox', { name: 'Series name' })).toHaveValue(
+      'Discworld',
+    );
   });
 
   it('saves a changed title without touching the series', async () => {
