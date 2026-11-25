@@ -1,7 +1,17 @@
 import { useStorageContext } from '../FirebaseContext';
 import { SortableItem } from '../drag-and-drop/types';
 import { getNextPosition, sortByPosition } from '../drag-and-drop/utils';
-import { isSubtaskGoal, TODAY_SLOT_COUNT, DAILY_GOALS_KEY } from './types';
+import {
+  getLinkedPath,
+  isLinkedGoal,
+  SubtaskGoal,
+  TaskGoal,
+  TODAY_SLOT_COUNT,
+  DAILY_GOALS_KEY,
+} from './types';
+
+type GoalLink =
+  Omit<SubtaskGoal, keyof SortableItem> | Omit<TaskGoal, keyof SortableItem>;
 
 export function useDailyGoals<Goal extends SortableItem>() {
   const { useValue, addItem, setValues } = useStorageContext();
@@ -10,35 +20,23 @@ export function useDailyGoals<Goal extends SortableItem>() {
   const hasFreeSlot = goals.length < TODAY_SLOT_COUNT;
   const nextPosition = getNextPosition(goals);
 
-  const addSubtaskGoal = (projectPath: string, subtaskPath: string) => {
+  const addGoal = (link: GoalLink) => {
     if (!hasFreeSlot) return;
 
-    addItem(DAILY_GOALS_KEY, {
-      projectPath,
-      subtaskPath,
-      position: nextPosition,
-    });
+    addItem(DAILY_GOALS_KEY, { ...link, position: nextPosition });
   };
 
-  const findSubtaskGoal = (subtaskPath: string) =>
+  const findGoal = (linkedPath: string) =>
     goals.find(
-      (goal) => isSubtaskGoal(goal) && goal.subtaskPath === subtaskPath,
+      (goal) => isLinkedGoal(goal) && getLinkedPath(goal) === linkedPath,
     );
 
-  const removeSubtaskGoal = (subtaskPath: string) => {
-    const goal = findSubtaskGoal(subtaskPath);
+  const removeGoal = (linkedPath: string) => {
+    const goal = findGoal(linkedPath);
     if (goal) setValues({ [`${DAILY_GOALS_KEY}/${goal.id}`]: null });
   };
 
-  const hasSubtaskGoal = (subtaskPath: string) =>
-    findSubtaskGoal(subtaskPath) !== undefined;
+  const hasGoal = (linkedPath: string) => findGoal(linkedPath) !== undefined;
 
-  return {
-    goals,
-    hasFreeSlot,
-    nextPosition,
-    addSubtaskGoal,
-    removeSubtaskGoal,
-    hasSubtaskGoal,
-  };
+  return { goals, hasFreeSlot, nextPosition, addGoal, removeGoal, hasGoal };
 }

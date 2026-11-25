@@ -7,9 +7,8 @@ export function TodayLinkCheckbox({
   projectPath,
   subtaskPath,
 }: TodayLinkCheckboxProps) {
-  const { hasFreeSlot, addSubtaskGoal, removeSubtaskGoal, hasSubtaskGoal } =
-    useDailyGoals();
-  const isGoal = hasSubtaskGoal(subtaskPath);
+  const { hasFreeSlot, addGoal, removeGoal, hasGoal } = useDailyGoals();
+  const isGoal = hasGoal(subtaskPath);
 
   return (
     <EmojiCheckbox
@@ -19,8 +18,8 @@ export function TodayLinkCheckbox({
       disabled={!isGoal && !hasFreeSlot}
       onChange={(event) =>
         event.target.checked
-          ? addSubtaskGoal(projectPath, subtaskPath)
-          : removeSubtaskGoal(subtaskPath)
+          ? addGoal({ projectPath, subtaskPath })
+          : removeGoal(subtaskPath)
       }
     />
   );

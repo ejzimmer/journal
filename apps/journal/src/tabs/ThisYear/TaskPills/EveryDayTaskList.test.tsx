@@ -3,7 +3,7 @@ import userEvent from '@testing-library/user-event';
 import { FirebaseContext } from 'shared/FirebaseContext';
 import { createMockFirebaseContext } from 'shared/mockFirebase';
 import { DAILY_KEY, DailyTask } from '../../../types';
-import { DailyTaskList } from './DailyTaskList';
+import { EveryDayTaskList } from './EveryDayTaskList';
 
 const createTask = (description: string, position: number): DailyTask => ({
   id: description,
@@ -24,7 +24,7 @@ function renderList() {
   });
   render(
     <FirebaseContext.Provider value={storage}>
-      <DailyTaskList listId={DAILY_KEY} />
+      <EveryDayTaskList />
     </FirebaseContext.Provider>,
   );
 }
@@ -34,7 +34,25 @@ const getTaskOrder = () =>
     .getAllByRole('listitem')
     .map((item) => within(item).getByRole('group').getAttribute('aria-label'));
 
-describe('DailyTaskList', () => {
+describe('EveryDayTaskList', () => {
+  it('lists the tasks in position order', () => {
+    renderList();
+
+    expect(getTaskOrder()).toEqual(['Brush teeth', 'Floss', 'Stretch', 'Read']);
+  });
+
+  describe('when the user ticks a task off', () => {
+    it('ticks it and lights it up as done', async () => {
+      const user = userEvent.setup();
+      renderList();
+
+      await user.click(screen.getByLabelText('Floss done'));
+
+      expect(screen.getByLabelText('Floss done')).toBeChecked();
+      expect(screen.getAllByRole('listitem')[1]).toHaveClass('status-done');
+    });
+  });
+
   describe('when a task has focus', () => {
     describe('and the user presses ArrowDown', () => {
       it('moves the task down one place and keeps it focused', async () => {

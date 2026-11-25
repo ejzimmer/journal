@@ -10,12 +10,12 @@ import {
   DailyTask,
   DAILY_PATH,
   DayData,
+  ONCE_KEY,
   PROJECTS_KEY,
   ProjectDetails,
   WEEKLY_KEY,
   WeeklyTask,
 } from '../../types';
-import { DAILY_GOALS_KEY } from 'shared/dailyGoals/types';
 import { Today } from '.';
 
 const tax: CalendarTask = {
@@ -255,7 +255,7 @@ describe('Today tab', () => {
   describe('when a daily goal is a one-off task', () => {
     const parcel: DailyTask = {
       id: 'parcel',
-      parentId: DAILY_GOALS_KEY,
+      parentId: ONCE_KEY,
       description: 'Post the parcel',
       category: '📦',
       position: 0,
@@ -263,9 +263,17 @@ describe('Today tab', () => {
       status: 'ready',
       lastCompleted: getDateDaysAgo(1),
     };
+    const data = {
+      today: { 一: { parcel } },
+      今日: {
+        slots: {
+          parcel: { id: 'parcel', position: 0, taskPath: `${ONCE_KEY}/parcel` },
+        },
+      },
+    };
 
     it('shows it in the slot, with the remaining slots empty', async () => {
-      renderToday({ 今日: { slots: { parcel } } });
+      renderToday(data);
 
       expect(await screen.findByText('Post the parcel')).toBeInTheDocument();
       expect(
@@ -276,16 +284,14 @@ describe('Today tab', () => {
     });
 
     describe('and the user ticks it off', () => {
-      it('finishes the task', async () => {
-        const { storage, user } = renderToday({ 今日: { slots: { parcel } } });
+      it('finishes the one-off task', async () => {
+        const { storage, user } = renderToday(data);
 
         await user.click(
           await screen.findByRole('checkbox', { name: 'Post the parcel done' }),
         );
 
-        expect(
-          readValue<DailyTask>(storage, `${DAILY_GOALS_KEY}/parcel`),
-        ).toEqual(
+        expect(readValue<DailyTask>(storage, `${ONCE_KEY}/parcel`)).toEqual(
           expect.objectContaining({
             status: 'finished',
             lastCompleted: getToday(),

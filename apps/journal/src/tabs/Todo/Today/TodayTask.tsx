@@ -1,10 +1,9 @@
-import { useStorageContext } from 'shared/FirebaseContext';
 import { useFormToggle } from 'shared/controls/useFormToggle';
 import { DailyTask } from '../../../types';
 import { ReorderControls } from '../todoTypes';
 import { toggleDailyTaskStatus } from './toggleDailyTaskStatus';
+import { DailyTaskEditor } from './DailyTaskEditor';
 import { ReorderableItem } from './ReorderableItem';
-import { TodayTaskEditor } from './TodayTaskEditor';
 import { TodayTaskView } from './TodayTaskView';
 
 import './TodayTask.css';
@@ -17,7 +16,6 @@ type TodayTaskProps = {
 };
 
 export function TodayTask({ task, listId, onChange, reorder }: TodayTaskProps) {
-  const { deleteItem } = useStorageContext();
   const {
     isFormOpen: isEditing,
     triggerRef: descriptionRef,
@@ -27,17 +25,10 @@ export function TodayTask({ task, listId, onChange, reorder }: TodayTaskProps) {
 
   if (isEditing) {
     return (
-      <TodayTaskEditor
-        category={task.category}
-        description={task.description}
-        onChangeCategory={(category) => onChange({ ...task, category })}
-        onChangeDescription={(description) => {
-          if (description === '') {
-            deleteItem<DailyTask>(listId, task);
-          } else {
-            onChange({ ...task, description });
-          }
-        }}
+      <DailyTaskEditor
+        task={task}
+        listId={listId}
+        onChange={onChange}
         onClose={stopEditing}
       />
     );

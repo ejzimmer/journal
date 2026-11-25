@@ -219,5 +219,33 @@ export function createMockFirebaseContext(
 
       return result;
     },
+    useValues<T>(keys: string[]) {
+      const keyList = keys.join('\n');
+      const [result, setResult] = useState<{
+        values: (T | undefined)[];
+        synced: boolean;
+      }>({ values: keys.map(() => undefined), synced: false });
+
+      useEffect(() => {
+        const paths = keyList ? keyList.split('\n') : [];
+        let lastJson: string | undefined;
+
+        const read = () => {
+          const values = paths.map(
+            (path) => (getAtPath(data, path) ?? undefined) as T | undefined,
+          );
+          const json = JSON.stringify(values);
+          if (json === lastJson) return;
+          lastJson = json;
+          setResult({ values, synced: true });
+        };
+
+        read();
+        const unsubscribes = paths.map((path) => subscribe(path, read));
+        return () => unsubscribes.forEach((unsubscribe) => unsubscribe());
+      }, [keyList]);
+
+      return result;
+    },
   } satisfies ContextType;
 }

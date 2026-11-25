@@ -15,6 +15,10 @@ export function createDailyJobsStorage(
       loading: false,
       synced: true,
     }),
+    useValues: <T,>(keys: string[]) => ({
+      values: keys.map((key) => storedValues[key] as T | undefined),
+      synced: true,
+    }),
     claimDailyRun: jest.fn(async (lastRunKey: string, day: string) => {
       const lastRun = storedValues[lastRunKey];
       if (hasAlreadyRun(lastRun, day)) {

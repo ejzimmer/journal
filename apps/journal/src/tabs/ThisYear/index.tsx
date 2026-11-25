@@ -6,7 +6,8 @@ import {
   StationRunning,
 } from './StationRunning/StationRunning';
 import { TodoCategoriesProvider } from '../Todo/TodoCategoriesProvider';
-import { EveryDayTaskList } from './EveryDayTasks/EveryDayTaskList';
+import { EveryDayTaskList } from './TaskPills/EveryDayTaskList';
+import { OnceTaskList } from './TaskPills/OnceTaskList';
 
 import './ThisYear.css';
 
@@ -14,7 +15,10 @@ export function ThisYear() {
   return (
     <div className="this-year">
       <TodoCategoriesProvider>
-        <EveryDayTaskList />
+        <div className="task-pill-lists">
+          <EveryDayTaskList />
+          <OnceTaskList />
+        </div>
       </TodoCategoriesProvider>
       <Bikes />
       <Adventures />

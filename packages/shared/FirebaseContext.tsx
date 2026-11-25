@@ -20,6 +20,10 @@ export interface ContextType {
     loading: boolean;
     synced: boolean;
   };
+  useValues: <T>(keys: string[]) => {
+    values: (T | undefined)[];
+    synced: boolean;
+  };
   moveItemBetweenLists: <T extends { id: string; position: number }>(args: {
     movedItem: T;
     sourceListId: string;

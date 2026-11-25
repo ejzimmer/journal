@@ -4,26 +4,36 @@ import {
   renderDailyJob,
 } from 'shared/dailyJobs/dailyJobsTestUtils';
 import { BaseSubtask } from 'shared/projects/types';
-import { SubtaskGoal, DAILY_GOALS_KEY } from 'shared/dailyGoals/types';
-import { DailyTask } from '../../types';
+import {
+  SubtaskGoal,
+  TaskGoal,
+  DAILY_GOALS_KEY,
+} from 'shared/dailyGoals/types';
+import { DailyTask, ONCE_KEY } from '../../types';
 import { useDailyGoalReset } from './useDailyGoalReset';
 
 const projectPath = 'amimono/projects/cardigan';
 const findSubtaskPath = (subtaskId: string) =>
   `${projectPath}/subtasks/${subtaskId}`;
 
-const createTaskGoal = (
+const createOnceTask = (
   id: string,
   status: DailyTask['status'],
 ): DailyTask => ({
   id,
   description: id,
   category: '📦',
-  parentId: DAILY_GOALS_KEY,
+  parentId: ONCE_KEY,
   position: 0,
   type: '一度',
   status,
   lastCompleted: getDateDaysAgo(1),
+});
+
+const createTaskGoal = (taskId: string): TaskGoal => ({
+  id: taskId,
+  position: 0,
+  taskPath: `${ONCE_KEY}/${taskId}`,
 });
 
 const createSubtaskGoal = (subtaskId: string): SubtaskGoal => ({
@@ -43,13 +53,13 @@ describe('clearing finished daily goals at the start of the day', () => {
     it('removes those goals and keeps the rest', async () => {
       const storage = createDailyJobsStorage({
         [DAILY_GOALS_KEY]: {
-          parcel: createTaskGoal('parcel', 'finished'),
-          library: createTaskGoal('library', 'ready'),
+          parcel: createTaskGoal('parcel'),
+          library: createTaskGoal('library'),
           swatch: createSubtaskGoal('swatch'),
-          sleeves: createSubtaskGoal('sleeves'),
         },
+        [`${ONCE_KEY}/parcel`]: createOnceTask('parcel', 'finished'),
+        [`${ONCE_KEY}/library`]: createOnceTask('library', 'ready'),
         [findSubtaskPath('swatch')]: createSubtask('swatch', 'done'),
-        [findSubtaskPath('sleeves')]: createSubtask('sleeves', 'ready'),
       });
 
       await renderDailyJob(useDailyGoalReset, storage);
@@ -57,6 +67,20 @@ describe('clearing finished daily goals at the start of the day', () => {
       expect(storage.setValues).toHaveBeenCalledWith({
         [`${DAILY_GOALS_KEY}/parcel`]: null,
         [`${DAILY_GOALS_KEY}/swatch`]: null,
+      });
+    });
+  });
+
+  describe("when a goal's one-off task has been deleted", () => {
+    it('removes the goal', async () => {
+      const storage = createDailyJobsStorage({
+        [DAILY_GOALS_KEY]: { gone: createTaskGoal('gone') },
+      });
+
+      await renderDailyJob(useDailyGoalReset, storage);
+
+      expect(storage.setValues).toHaveBeenCalledWith({
+        [`${DAILY_GOALS_KEY}/gone`]: null,
       });
     });
   });
