@@ -2,7 +2,7 @@ import { useStorageContext } from 'shared/FirebaseContext';
 import { Destination, SortableItem } from 'shared/drag-and-drop/types';
 import { onChangePosition, sortByPosition } from 'shared/drag-and-drop/utils';
 import { DailyTask } from '../../../types';
-import { ReorderControls } from './ReorderControls';
+import { ReorderControls } from '../todoTypes';
 
 export function useDailyTaskList(listId: string) {
   const { useValue, updateList, updateItem } = useStorageContext();
