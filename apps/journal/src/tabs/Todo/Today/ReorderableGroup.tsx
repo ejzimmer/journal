@@ -15,8 +15,9 @@ export function ReorderableGroup({
   children,
 }: ReorderableGroupProps) {
   const groupRef = useRef<HTMLDivElement>(null);
-  // React keeps this instance across a reorder because the list is keyed by
-  // task id, but moving the element in the DOM drops its focus.
+  // Moving this element to a new place in the DOM blurs it, so it refocuses
+  // itself after a move. The ref survives the move only if the parent list
+  // keys this component by something stable, like the item's id.
   const shouldRestoreFocusRef = useRef(false);
 
   useEffect(() => {
