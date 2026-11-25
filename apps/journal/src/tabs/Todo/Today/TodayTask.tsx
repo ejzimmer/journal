@@ -4,7 +4,7 @@ import './TodayTask.css';
 import { DailyTask } from '../../../types';
 import { TodayTaskDescription } from './TodayTaskDescription';
 import { toggleDailyTaskStatus } from './toggleDailyTaskStatus';
-import { ReorderControls } from './ReorderControls';
+import { ReorderControls } from '../todoTypes';
 
 type TodayTaskProps = {
   task: DailyTask;

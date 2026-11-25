@@ -1,8 +1,15 @@
 import { getToday } from 'shared/dates';
+import { Destination } from 'shared/drag-and-drop/types';
 import { CALENDAR_KEY, DAILY_KEY, ONCE_KEY, WEEKLY_KEY } from '../../types';
 
 export const TODO_TYPES = ['毎日', '一度', '毎週', '期日'] as const;
 export type TodoType = (typeof TODO_TYPES)[number];
+
+export type ReorderControls = {
+  isFirst: boolean;
+  isLast: boolean;
+  move: (destination: Destination) => void;
+};
 
 export type TypeFieldValues = {
   frequency: string;

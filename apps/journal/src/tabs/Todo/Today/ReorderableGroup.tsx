@@ -1,5 +1,5 @@
 import { ReactNode, useEffect, useRef } from 'react';
-import { ReorderControls } from './ReorderControls';
+import { ReorderControls } from '../todoTypes';
 
 type ReorderableGroupProps = {
   className: string;

@@ -3,7 +3,7 @@ import { EmojiCheckbox } from 'shared/controls/EmojiCheckbox';
 import { CategoryCombobox } from '../CategoryCombobox';
 import { GlowingEmoji } from './GlowingEmoji';
 import { useFormToggle } from 'shared/controls/useFormToggle';
-import { ReorderControls } from './ReorderControls';
+import { ReorderControls } from '../todoTypes';
 import { ReorderableGroup } from './ReorderableGroup';
 
 type Change =
