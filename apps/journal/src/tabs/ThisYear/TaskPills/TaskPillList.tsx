@@ -22,8 +22,8 @@ export function TaskPillList({ listId, renderAction }: TaskPillListProps) {
             listId={listId}
             onChange={updateTask}
             reorder={getReorderControls(index)}
+            action={renderAction?.(task)}
           />
-          {renderAction?.(task)}
         </li>
       ))}
     </ol>

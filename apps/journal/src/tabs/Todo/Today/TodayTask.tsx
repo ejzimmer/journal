@@ -1,3 +1,4 @@
+import { ReactNode } from 'react';
 import { useStorageContext } from 'shared/FirebaseContext';
 import { useFormToggle } from 'shared/controls/useFormToggle';
 import { DailyTask } from '../../../types';
@@ -14,9 +15,16 @@ type TodayTaskProps = {
   listId: string;
   onChange: (task: DailyTask) => void;
   reorder?: ReorderControls;
+  action?: ReactNode;
 };
 
-export function TodayTask({ task, listId, onChange, reorder }: TodayTaskProps) {
+export function TodayTask({
+  task,
+  listId,
+  onChange,
+  reorder,
+  action,
+}: TodayTaskProps) {
   const { deleteItem } = useStorageContext();
   const {
     isFormOpen: isEditing,
@@ -44,14 +52,17 @@ export function TodayTask({ task, listId, onChange, reorder }: TodayTaskProps) {
   }
 
   const view = (
-    <TodayTaskView
-      category={task.category}
-      description={task.description}
-      isChecked={task.status !== 'ready'}
-      descriptionRef={descriptionRef}
-      onToggle={() => onChange(toggleDailyTaskStatus(task))}
-      onEdit={startEditing}
-    />
+    <>
+      <TodayTaskView
+        category={task.category}
+        description={task.description}
+        isChecked={task.status !== 'ready'}
+        descriptionRef={descriptionRef}
+        onToggle={() => onChange(toggleDailyTaskStatus(task))}
+        onEdit={startEditing}
+      />
+      {action}
+    </>
   );
 
   return reorder ? (

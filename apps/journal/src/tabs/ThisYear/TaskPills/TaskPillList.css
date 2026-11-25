@@ -23,7 +23,6 @@
     --light-saturation: 95%;
     --light-lightness: 50%;
 
-    position: relative;
     width: 100%;
     margin-block: 14px;
 
@@ -269,15 +268,12 @@
       }
     }
 
-    &:has(.arrow-switch) .today-task-description {
-      padding-right: 84px;
+    .today-task-description:has(.arrow-switch) {
+      padding-right: 14px;
     }
 
     .arrow-switch {
-      position: absolute;
-      top: 50%;
-      right: 14px;
-      translate: 0 -50%;
+      flex-shrink: 0;
     }
 
     &:not(.status-ready) .arrow-switch {
