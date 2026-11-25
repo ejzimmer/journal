@@ -1,29 +1,28 @@
 import { ReactNode, useEffect, useRef } from 'react';
 import { ReorderControls } from '../todoTypes';
 
-type ReorderableGroupProps = {
+type ReorderableItemProps = {
   className: string;
   label: string;
   reorder: ReorderControls;
   children: ReactNode;
 };
 
-export function ReorderableGroup({
+export function ReorderableItem({
   className,
   label,
   reorder,
   children,
-}: ReorderableGroupProps) {
-  const groupRef = useRef<HTMLDivElement>(null);
-  // Moving this element to a new place in the DOM blurs it, so it refocuses
-  // itself after a move. The ref survives the move only if the parent list
-  // keys this component by something stable, like the item's id.
+}: ReorderableItemProps) {
+  const itemRef = useRef<HTMLDivElement>(null);
   const shouldRestoreFocusRef = useRef(false);
 
+  // The browser blurs an element when React moves its DOM node to reorder
+  // the list.
   useEffect(() => {
     if (!shouldRestoreFocusRef.current) return;
     shouldRestoreFocusRef.current = false;
-    groupRef.current?.focus();
+    itemRef.current?.focus();
   });
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
@@ -48,7 +47,7 @@ export function ReorderableGroup({
 
   return (
     <div
-      ref={groupRef}
+      ref={itemRef}
       className={className}
       role="group"
       aria-label={label}

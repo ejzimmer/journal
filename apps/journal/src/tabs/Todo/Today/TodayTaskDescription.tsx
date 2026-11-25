@@ -4,7 +4,7 @@ import { CategoryCombobox } from '../CategoryCombobox';
 import { GlowingEmoji } from './GlowingEmoji';
 import { useFormToggle } from 'shared/controls/useFormToggle';
 import { ReorderControls } from '../todoTypes';
-import { ReorderableGroup } from './ReorderableGroup';
+import { ReorderableItem } from './ReorderableItem';
 
 type Change =
   { isChecked: boolean } | { category: string } | { description: string };
@@ -44,17 +44,14 @@ export function TodayTaskDescription({
       <div
         className="today-task-description"
         onKeyDown={(event) => {
-          if (event.key === 'Enter') {
-            // stopEditing flushes the render that swaps the input for the
-            // description button and focuses it, so Enter would then click it.
-            event.preventDefault();
-          }
-
           if (event.key === 'Enter' && inputValue !== description) {
             onChange({ description: inputValue });
           }
 
           if (['Enter', 'Escape'].includes(event.key)) {
+            // stopEditing flushes the render that swaps the input for the
+            // description button and focuses it, so Enter would then click it.
+            event.preventDefault();
             stopEditing();
           }
         }}
@@ -98,13 +95,13 @@ export function TodayTaskDescription({
   );
 
   return reorder ? (
-    <ReorderableGroup
+    <ReorderableItem
       className="today-task-description"
       label={description}
       reorder={reorder}
     >
       {viewControls}
-    </ReorderableGroup>
+    </ReorderableItem>
   ) : (
     <div className="today-task-description">{viewControls}</div>
   );
