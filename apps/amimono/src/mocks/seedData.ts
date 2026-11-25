@@ -185,7 +185,12 @@ const exampleJumperInputs: JumperInputs = {
   bust: { cm: 101.5, source: 'body', easeCm: 5 },
   waist: { cm: 86, source: 'body', easeCm: 12.5 },
   hips: { cm: 105, source: 'body', easeCm: 10 },
+  biceps: { cm: 29, source: 'body', easeCm: 5 },
+  wrist: { cm: 16, source: 'body', easeCm: 7.5 },
+  wristToUnderarm: 50,
   gauge: { stitches: 22, rows: 29, needleMm: 4.5, yarn: 'grey' },
+  sleeveGauge: { stitches: 24, rows: 31, needleMm: 4 },
+  capTopPercent: 30,
 };
 
 const jumpers: Record<string, JumperPattern> = {

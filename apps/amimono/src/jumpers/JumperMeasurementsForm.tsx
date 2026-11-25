@@ -1,6 +1,7 @@
 import { EasedMeasurementFields } from './EasedMeasurementFields';
 import { JumperGaugeFields } from './JumperGaugeFields';
 import {
+  CAP_TOP_GUIDE,
   EASED_MEASUREMENTS,
   FIXED_MEASUREMENTS,
   JumperDraft,
@@ -48,8 +49,21 @@ export function JumperMeasurementsForm({
         />
       ))}
       <JumperGaugeFields
+        legend="Body gauge per 10cm"
         gauge={draft.gauge}
         onChange={(gauge) => onChange({ ...draft, gauge })}
+      />
+      <JumperGaugeFields
+        legend="Sleeve gauge per 10cm"
+        gauge={draft.sleeveGauge}
+        onChange={(sleeveGauge) => onChange({ ...draft, sleeveGauge })}
+      />
+      <NumberField
+        label="Sleeve cap top"
+        unit="% of biceps"
+        value={draft.capTopPercent}
+        onChange={(capTopPercent) => onChange({ ...draft, capTopPercent })}
+        hint={CAP_TOP_GUIDE}
       />
     </div>
   );

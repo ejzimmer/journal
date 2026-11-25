@@ -21,6 +21,8 @@ export type GaugeDraft = {
 export type JumperDraft = Record<FixedMeasurementKey, string> &
   Record<EasedMeasurementKey, EasedMeasurementDraft> & {
     gauge: GaugeDraft;
+    sleeveGauge: GaugeDraft;
+    capTopPercent: string;
   };
 
 export const FIXED_MEASUREMENTS: Record<FixedMeasurementKey, string> = {
@@ -29,6 +31,7 @@ export const FIXED_MEASUREMENTS: Record<FixedMeasurementKey, string> = {
   armholeDepth: 'Armhole depth',
   hemToArmhole: 'Hem to armhole',
   waistToHip: 'Waist to hip',
+  wristToUnderarm: 'Wrist to underarm',
 };
 
 export const EASED_MEASUREMENTS: Record<
@@ -38,12 +41,23 @@ export const EASED_MEASUREMENTS: Record<
   bust: { label: 'Bust', easeGuide: '−5cm+, 0–5cm average' },
   waist: { label: 'Waist', easeGuide: '7.5cm+, 10–15cm average' },
   hips: { label: 'Hips', easeGuide: '5cm+' },
+  biceps: { label: 'Biceps', easeGuide: '2.5cm+' },
+  wrist: { label: 'Wrist', easeGuide: '5–10cm' },
 };
+
+export const CAP_TOP_GUIDE = '25–40%';
 
 const EMPTY_EASED_MEASUREMENT: EasedMeasurementDraft = {
   cm: '',
   source: 'body',
   easeCm: '',
+};
+
+const EMPTY_GAUGE: GaugeDraft = {
+  stitches: '',
+  rows: '',
+  needleMm: '',
+  yarn: '',
 };
 
 export const EMPTY_JUMPER_DRAFT: JumperDraft = {
@@ -52,10 +66,15 @@ export const EMPTY_JUMPER_DRAFT: JumperDraft = {
   armholeDepth: '',
   hemToArmhole: '',
   waistToHip: '',
+  wristToUnderarm: '',
   bust: EMPTY_EASED_MEASUREMENT,
   waist: EMPTY_EASED_MEASUREMENT,
   hips: EMPTY_EASED_MEASUREMENT,
-  gauge: { stitches: '', rows: '', needleMm: '', yarn: '' },
+  biceps: EMPTY_EASED_MEASUREMENT,
+  wrist: EMPTY_EASED_MEASUREMENT,
+  gauge: EMPTY_GAUGE,
+  sleeveGauge: EMPTY_GAUGE,
+  capTopPercent: '',
 };
 
 function parsePositiveNumber(value: string) {
@@ -81,6 +100,19 @@ function convertEasedMeasurement({
   return { cm: parsedCm, source, easeCm: parsedEase };
 }
 
+function convertGauge({ stitches, rows, needleMm, yarn }: GaugeDraft) {
+  const parsed = {
+    stitches: parsePositiveNumber(stitches),
+    rows: parsePositiveNumber(rows),
+    needleMm: parsePositiveNumber(needleMm),
+  };
+  if (Object.values(parsed).some((value) => value === undefined)) {
+    return undefined;
+  }
+  const trimmedYarn = yarn.trim();
+  return { ...parsed, ...(trimmedYarn && { yarn: trimmedYarn }) };
+}
+
 export function convertDraftToInputs(
   draft: JumperDraft,
 ): JumperInputs | undefined {
@@ -96,22 +128,23 @@ export function convertDraftToInputs(
       convertEasedMeasurement(draft[key as EasedMeasurementKey]),
     ]),
   );
-  const gauge = {
-    stitches: parsePositiveNumber(draft.gauge.stitches),
-    rows: parsePositiveNumber(draft.gauge.rows),
-    needleMm: parsePositiveNumber(draft.gauge.needleMm),
-  };
+  const gauge = convertGauge(draft.gauge);
+  const sleeveGauge = convertGauge(draft.sleeveGauge);
+  const capTopPercent = parsePositiveNumber(draft.capTopPercent);
   const values = [
     ...Object.values(fixed),
     ...Object.values(eased),
-    ...Object.values(gauge),
+    gauge,
+    sleeveGauge,
+    capTopPercent,
   ];
   if (values.some((value) => value === undefined)) return undefined;
 
-  const yarn = draft.gauge.yarn.trim();
   return {
     ...fixed,
     ...eased,
-    gauge: { ...gauge, ...(yarn && { yarn }) },
+    gauge,
+    sleeveGauge,
+    capTopPercent,
   } as JumperInputs;
 }

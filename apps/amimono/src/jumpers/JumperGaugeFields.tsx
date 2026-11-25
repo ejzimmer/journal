@@ -3,16 +3,21 @@ import { GaugeDraft } from './jumperDraft';
 import { NumberField } from './NumberField';
 
 type JumperGaugeFieldsProps = {
+  legend: string;
   gauge: GaugeDraft;
   onChange: (gauge: GaugeDraft) => void;
 };
 
-export function JumperGaugeFields({ gauge, onChange }: JumperGaugeFieldsProps) {
+export function JumperGaugeFields({
+  legend,
+  gauge,
+  onChange,
+}: JumperGaugeFieldsProps) {
   const yarnId = useId();
 
   return (
     <fieldset className="jumper-gauge">
-      <legend>Gauge per 10cm</legend>
+      <legend>{legend}</legend>
       <NumberField
         label="Stitches"
         value={gauge.stitches}
