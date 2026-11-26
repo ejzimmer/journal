@@ -30,6 +30,7 @@ export function Today() {
         </div>
         <div className="today-panel" style={{ gridArea: 'lists' }}>
           <div className="todo-task-list">
+            <DailyGoals />
             <ol>
               {daily.map((task) => (
                 <li
@@ -44,7 +45,6 @@ export function Today() {
                 </li>
               ))}
             </ol>
-            <DailyGoals />
           </div>
         </div>
         <div className="today-panel" style={{ gridArea: 'week' }}>

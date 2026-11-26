@@ -235,7 +235,7 @@ button.category-button,
     margin-block-start: 0;
   }
 
-  & > ol:first-child {
+  & > ol {
     padding-inline-start: 0;
     margin-block-end: 0;
 
