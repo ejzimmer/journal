@@ -8,6 +8,7 @@ import {
   CALENDAR_KEY,
   CalendarTask,
   DailyTask,
+  DAILY_KEY,
   DAILY_PATH,
   DayData,
   ONCE_KEY,
@@ -52,6 +53,17 @@ const shelves: ProjectDetails = {
       status: 'ready',
     },
   },
+};
+
+const vitamins: DailyTask = {
+  id: 'vitamins',
+  parentId: DAILY_KEY,
+  description: 'Take vitamins',
+  category: '💊',
+  position: 0,
+  type: '毎日',
+  status: 'ready',
+  lastCompleted: getDateDaysAgo(1),
 };
 
 const createWeeklyTask = (
@@ -99,6 +111,58 @@ function readValue<T>(storage: ContextType, key: string) {
 }
 
 describe('Today tab', () => {
+  describe('a daily task', () => {
+    const renderWithDailyTask = () =>
+      renderToday({ today: { 暦: { tax }, 日: { vitamins } } });
+
+    describe('when the user ticks it off', () => {
+      it('marks it done', async () => {
+        const { storage, user } = renderWithDailyTask();
+
+        await user.click(
+          await screen.findByRole('checkbox', { name: 'Take vitamins done' }),
+        );
+
+        expect(
+          readValue<DailyTask>(storage, `${DAILY_KEY}/vitamins`)?.status,
+        ).toBe('done');
+      });
+    });
+  });
+
+  describe('a weekly task that is due', () => {
+    const piano = createWeeklyTask('piano', 0, 3, 1);
+    const renderWithWeeklyTask = () =>
+      renderToday({ today: { 暦: { tax }, 週: { piano } } });
+
+    describe('when the user marks it done', () => {
+      it('adds a done for today', async () => {
+        const { storage, user } = renderWithWeeklyTask();
+        await screen.findByText('piano');
+
+        await user.click(screen.getByRole('button', { name: 'Mark done' }));
+
+        expect(
+          readValue<WeeklyTask>(storage, `${WEEKLY_KEY}/piano`)?.completed,
+        ).toEqual([...piano.completed!, getToday()]);
+      });
+    });
+  });
+
+  describe('a due date task', () => {
+    describe('when the user finishes it', () => {
+      it('saves the new status', async () => {
+        const { storage, user } = renderToday();
+        await screen.findByText('Lodge tax return');
+
+        await user.click(screen.getByDisplayValue('finished'));
+
+        expect(
+          readValue<CalendarTask>(storage, `${CALENDAR_KEY}/tax`)?.status,
+        ).toBe('finished');
+      });
+    });
+  });
   describe('when a due date task in the snapshot is finished during the day', () => {
     it('stays on the tab', async () => {
       const { storage } = renderToday({

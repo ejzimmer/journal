@@ -11,11 +11,11 @@
     align-items: center;
     font-size: 18px;
 
-    &.status-paused .description [role='button'] {
+    &.status-paused .description .task-screen {
       font-style: italic;
     }
 
-    &.status-finished .description [role='button'] {
+    &.status-finished .description .task-screen {
       color: var(--crt-unlit);
       text-shadow: none;
     }
@@ -124,5 +124,19 @@
 
   svg {
     filter: drop-shadow(0 0 3px var(--led-edge));
+  }
+}
+
+.todo-task-list.calendar .due-date-status {
+  @media (width > 600px) {
+    .status-cycle-button {
+      display: none;
+    }
+  }
+
+  @media (width <= 600px) {
+    .led-switch {
+      display: none;
+    }
   }
 }
