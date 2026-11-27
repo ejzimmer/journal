@@ -1,5 +1,8 @@
 import { EmojiCheckbox } from '../controls/EmojiCheckbox';
+import { ArrowRightIcon } from '../icons/ArrowRight';
 import { useDailyGoals } from './useDailyGoals';
+
+import './TodayLinkCheckbox.css';
 
 type TodayLinkCheckboxProps = { projectPath: string; subtaskPath: string };
 
@@ -12,7 +15,8 @@ export function TodayLinkCheckbox({
 
   return (
     <EmojiCheckbox
-      emoji="🔗"
+      className="today-link-checkbox"
+      emoji={<ArrowRightIcon width="14px" />}
       label="On today"
       isChecked={isGoal}
       disabled={!isGoal && !hasFreeSlot}
