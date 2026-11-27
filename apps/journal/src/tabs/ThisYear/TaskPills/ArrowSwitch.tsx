@@ -1,5 +1,6 @@
 import { ArrowRightIcon } from 'shared/icons/ArrowRight';
 
+import 'shared/controls/litIcon.css';
 import './ArrowSwitch.css';
 
 type ArrowSwitchProps = {
@@ -26,7 +27,7 @@ export function ArrowSwitch({
       disabled={isDisabled}
       onClick={onClick}
     >
-      <ArrowRightIcon width="14px" />
+      <ArrowRightIcon width="14px" className={isOn ? 'lit-icon' : undefined} />
     </button>
   );
 }

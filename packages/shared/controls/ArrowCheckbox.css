@@ -1,0 +1,15 @@
+.arrow-checkbox {
+  display: inline-flex;
+  flex-shrink: 0;
+  color: hsl(219 10% 62%);
+  cursor: pointer;
+
+  svg {
+    transition: color 0.2s;
+  }
+
+  &:has(:disabled) {
+    color: hsl(219 10% 82%);
+    cursor: not-allowed;
+  }
+}

@@ -35,19 +35,12 @@
       flex: 1;
     }
 
-    .emoji-checkbox {
+    .arrow-checkbox {
       opacity: 0;
-      font-size: 0.7em;
-      transition: all 0.2s;
+      transition: opacity 0.2s;
 
-      &.done {
+      &:has(:checked) {
         opacity: 1;
-        font-size: 1em;
-        filter: none;
-      }
-
-      &:has(:disabled) {
-        cursor: not-allowed;
       }
 
       &:has(:focus-visible) {
@@ -56,13 +49,9 @@
       }
     }
 
-    &:not(:has(:checked)):hover .emoji-checkbox,
-    &:not(:has(:checked)):focus-within .emoji-checkbox {
+    &:not(:has(:checked)):hover .arrow-checkbox,
+    &:not(:has(:checked)):focus-within .arrow-checkbox {
       opacity: 1;
-
-      &:has(:disabled) {
-        opacity: 0.3;
-      }
     }
 
     &.done span {
