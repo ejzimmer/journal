@@ -1,9 +1,5 @@
 import { ComponentType } from 'react';
 
-export const LIGHT_FLOW = '🟤';
-export const HEAVY_FLOW = '🔴';
-export const OVARY_PAIN = '🥚';
-
 export type Magnitude = 1 | 2 | 3;
 
 export type Symptom = {
@@ -91,17 +87,11 @@ export const SYMPTOMS: Symptom[] = [
   },
 ];
 
-const LEGACY_TRACKERS: Record<string, string> = {
-  [LIGHT_FLOW]: 'flow-1',
-  [HEAVY_FLOW]: 'flow-2',
-  [OVARY_PAIN]: 'cramps-2',
-};
-
 export function parseSymptoms(trackers: string[] = []): LoggedSymptom[] {
   return SYMPTOMS.flatMap((symptom) => {
-    const tracker = trackers
-      .map((tracker) => LEGACY_TRACKERS[tracker] ?? tracker)
-      .find((tracker) => tracker.startsWith(`${symptom.id}-`));
+    const tracker = trackers.find((tracker) =>
+      tracker.startsWith(`${symptom.id}-`),
+    );
     if (!tracker) return [];
     const magnitude = Number(tracker.split('-')[1]) as Magnitude;
     return [{ symptom, magnitude }];
@@ -113,8 +103,8 @@ export function setSymptomMagnitude(
   symptom: Symptom,
   magnitude: Magnitude | undefined,
 ) {
-  const others = trackers
-    .map((tracker) => LEGACY_TRACKERS[tracker] ?? tracker)
-    .filter((tracker) => !tracker.startsWith(`${symptom.id}-`));
+  const others = trackers.filter(
+    (tracker) => !tracker.startsWith(`${symptom.id}-`),
+  );
   return magnitude ? [...others, `${symptom.id}-${magnitude}`] : others;
 }
