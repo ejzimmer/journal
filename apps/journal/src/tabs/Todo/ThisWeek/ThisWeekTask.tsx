@@ -114,7 +114,11 @@ export function ThisWeekTask({ task }: ThisWeekTaskProps) {
   return (
     <>
       {!isSmallScreen && (
-        <AddDoneMenu category={task.category} onAdd={addDone} />
+        <AddDoneMenu
+          category={task.category}
+          className="category-button"
+          onAdd={addDone}
+        />
       )}
       <div className="task-screen">
         <div

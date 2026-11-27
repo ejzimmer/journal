@@ -8,14 +8,15 @@ const OLDEST_TRACKED_DAYS_AGO = 6;
 
 type AddDoneMenuProps = {
   category: string;
+  className: string;
   onAdd: (date: string) => void;
 };
 
-export function AddDoneMenu({ category, onAdd }: AddDoneMenuProps) {
+export function AddDoneMenu({ category, className, onAdd }: AddDoneMenuProps) {
   return (
     <Menu
       trigger={(props) => (
-        <button {...props} className="category-button">
+        <button {...props} className={className}>
           {category}
         </button>
       )}
