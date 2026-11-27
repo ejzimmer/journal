@@ -1,0 +1,111 @@
+.today-task-description.weekly-task-pill {
+  .weekly-add-done {
+    display: grid;
+    place-items: center;
+    flex-shrink: 0;
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    font-size: 20px;
+    cursor: pointer;
+    background: var(--button-face);
+    box-shadow: var(--button-raised);
+
+    &:focus-visible {
+      outline: none;
+    }
+  }
+
+  .menu:popover-open {
+    padding: 6px;
+    border-radius: 16px;
+    background: var(--pill-bg);
+    box-shadow:
+      6px 6px 14px var(--pill-shade),
+      -6px -6px 14px hsl(0 0% 100%);
+
+    [role='menuitem'] {
+      padding: 8px 12px;
+      border-radius: 10px;
+      background: none;
+      color: var(--pill-ink);
+      font: var(--pill-font);
+      cursor: pointer;
+
+      &:is(:hover, :focus-visible) {
+        background: none;
+        box-shadow:
+          inset 2px 2px 5px var(--pill-shade),
+          inset -2px -2px 5px hsl(0 0% 100%);
+      }
+    }
+
+    .add-done-on-date {
+      font: var(--pill-font);
+      color: var(--pill-ink);
+    }
+  }
+
+  .weekly-progress {
+    position: relative;
+  }
+
+  .not-due {
+    --meter-hue: 205;
+    --meter-lightness: 58%;
+  }
+
+  .remainder {
+    position: absolute;
+    top: 0;
+    right: 0;
+    translate: 50% -50%;
+    font:
+      600 12px system-ui,
+      sans-serif;
+    color: var(--pill-ink);
+  }
+
+  .dates-popover {
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    z-index: 1;
+    width: max-content;
+    margin: 0;
+    padding: 8px 12px;
+    border-radius: 12px;
+    list-style: none;
+    font:
+      14px system-ui,
+      sans-serif;
+    color: var(--pill-ink);
+    background: var(--pill-bg);
+    box-shadow:
+      6px 6px 14px var(--pill-shade),
+      -6px -6px 14px hsl(0 0% 100%);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.4s;
+  }
+
+  .bubble-meter:hover ~ .dates-popover {
+    opacity: 1;
+  }
+
+  input.weekly-frequency {
+    flex: none;
+    width: auto;
+    min-width: 1ch;
+    appearance: textfield;
+    text-align: end;
+
+    &::-webkit-inner-spin-button,
+    &::-webkit-outer-spin-button {
+      appearance: none;
+      margin: 0;
+    }
+  }
+}

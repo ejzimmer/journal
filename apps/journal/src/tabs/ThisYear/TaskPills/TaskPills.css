@@ -4,6 +4,11 @@
     --pill-shade: hsl(218 10% 79%);
     --pill-ink: hsl(219 10% 27%);
     --pill-font: 17px system-ui, sans-serif;
+    --button-face: radial-gradient(
+      circle at 50% 30%,
+      hsl(240 14% 99%),
+      hsl(217 10% 84%) 80%
+    );
     --button-raised:
       inset 0 2px 3px hsl(0 0% 100% / 0.95),
       inset 0 -3px 5px hsl(0 0% 0% / 0.18), 0 0 0 1px hsl(0 0% 0% / 0.12),
@@ -85,11 +90,7 @@
       border-radius: 50%;
       font-size: 20px;
       text-shadow: none;
-      background: radial-gradient(
-        circle at 50% 30%,
-        hsl(240 14% 99%),
-        hsl(217 10% 84%) 80%
-      );
+      background: var(--button-face);
       box-shadow: var(--button-raised);
 
       .glowing-emoji > * {
@@ -111,7 +112,7 @@
       }
     }
 
-    &:not(.status-ready) {
+    &:is(.status-done, .status-finished) {
       .emoji-checkbox {
         background: radial-gradient(
           circle at 50% 78%,
@@ -134,7 +135,7 @@
       }
     }
 
-    &:not(.status-ready) .today-task-description,
+    &:is(.status-done, .status-finished) .today-task-description,
     .today-task-description:is(:focus-visible, :has(:focus-visible)),
     .today-task-description:has(input.subtle) {
       outline: none;
@@ -165,7 +166,8 @@
     }
 
     &:not(:has(input.subtle)):has(
-        .today-task-description:is(:focus-visible, :has(:focus-visible))
+        .today-task-description:focus-visible,
+        .today-task-description :focus-visible
       ) {
       --light-hue: 205;
       --light-lightness: 55%;
@@ -198,11 +200,7 @@
       border: 0;
       border-radius: 50%;
       font-size: 20px;
-      background: radial-gradient(
-        circle at 50% 30%,
-        hsl(240 14% 99%),
-        hsl(217 10% 84%) 80%
-      );
+      background: var(--button-face);
       box-shadow: var(--button-raised);
 
       > * {
@@ -268,7 +266,7 @@
       }
     }
 
-    .today-task-description.once-task-pill {
+    .today-task-description.has-end-control {
       padding-right: 14px;
     }
   }
