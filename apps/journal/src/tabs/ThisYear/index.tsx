@@ -8,6 +8,7 @@ import {
 import { TodoCategoriesProvider } from '../Todo/TodoCategoriesProvider';
 import { EveryDayTaskList } from './TaskPills/EveryDayTaskList';
 import { OnceTaskList } from './TaskPills/OnceTaskList';
+import { WeeklyTaskList } from './TaskPills/WeeklyTaskList';
 
 import './ThisYear.css';
 
@@ -17,6 +18,7 @@ export function ThisYear() {
       <TodoCategoriesProvider>
         <div className="task-pill-lists">
           <EveryDayTaskList />
+          <WeeklyTaskList />
           <OnceTaskList />
         </div>
       </TodoCategoriesProvider>

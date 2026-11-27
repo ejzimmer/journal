@@ -1,5 +1,4 @@
 import { createContext } from 'react';
-import { ThisWeekList } from './ThisWeek/ThisWeekList';
 import { DueDateList } from './DueDate/DueDateList';
 import { AddTodoForm } from './AddTodoForm';
 
@@ -14,12 +13,6 @@ export function Todo() {
       <div className="today todo">
         <div className="today-panel" style={{ gridArea: 'form' }}>
           <AddTodoForm />
-        </div>
-        <div
-          className="today-panel"
-          style={{ gridArea: 'week', marginInlineEnd: '30px' }}
-        >
-          <ThisWeekList />
         </div>
         <div className="today-panel" style={{ gridArea: 'dates' }}>
           <DueDateList />

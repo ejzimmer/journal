@@ -46,7 +46,7 @@ export function OnceTaskPill({
 
   return (
     <ReorderableItem
-      className="today-task-description once-task-pill"
+      className="today-task-description has-end-control"
       label={task.description}
       reorder={reorder}
     >

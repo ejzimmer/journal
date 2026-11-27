@@ -52,12 +52,8 @@ body:has(.today) {
 }
 
 .today.todo {
-  grid-template-areas: 'form' 'week' 'dates';
-
-  @media (width > 880px) {
-    grid-template-areas: 'form form' 'week dates';
-    grid-template-rows: auto 1fr;
-  }
+  grid-template-areas: 'form' 'dates';
+  grid-template-rows: auto 1fr;
 }
 
 .task-screen,

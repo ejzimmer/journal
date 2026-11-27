@@ -1,7 +1,7 @@
-import { getDaysSince } from 'shared/dates';
 import { SMALL_SCREEN_QUERY, useMediaQuery } from 'shared/useMediaQuery';
 import { WeeklyTask } from '../../../types';
-import { formatWeekday, getMostRecentlyDone, isTaskDue } from './utils';
+import { getWeeklyProgress } from './weeklyProgress';
+import { CompletedDates } from './CompletedDates';
 import { ProgressBar } from './ProgressBar';
 import { ProgressCount } from './ProgressCount';
 
@@ -22,14 +22,10 @@ export function ProgressIndicator({
 }: ProgressIndicatorProps) {
   const isSmallScreen = useMediaQuery(SMALL_SCREEN_QUERY);
   const completedDates = completed ?? [];
-  const numberDone = completedDates.length;
-  const remainder = Math.max(numberDone - frequency, 0);
-
-  const mostRecentlyDone = getMostRecentlyDone(completedDates);
-  const isDue = isTaskDue(mostRecentlyDone, frequency);
-  const daysSinceDone = mostRecentlyDone ? getDaysSince(mostRecentlyDone) : 0;
-  const fillOpacity =
-    daysSinceDone > 2 ? Math.max(0, 1 - 0.2 * (daysSinceDone - 2)) : 1;
+  const { numberDone, remainder, isDue, fillOpacity } = getWeeklyProgress(
+    completedDates,
+    frequency,
+  );
 
   const progressProps = {
     numberDone,
@@ -51,13 +47,7 @@ export function ProgressIndicator({
           {remainder > 0 && <span className="remainder">+{remainder}</span>}
         </>
       )}
-      {numberDone > 0 && (
-        <ol className="dates-popover">
-          {completedDates.map((date) => (
-            <li key={date}>{formatWeekday(date)}</li>
-          ))}
-        </ol>
-      )}
+      {numberDone > 0 && <CompletedDates dates={completedDates} />}
     </div>
   );
 }
