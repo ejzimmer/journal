@@ -1,8 +1,5 @@
-import { useStorageContext } from 'shared/FirebaseContext';
-import { DAILY_KEY, DailyTask } from '../../types';
 import { TodoCategoriesProvider } from '../Todo/TodoCategoriesProvider';
-import { toggleDailyTaskStatus } from '../Todo/Today/toggleDailyTaskStatus';
-import { CheckableTask } from './CheckableTask';
+import { TodayDailyTask } from './TodayDailyTask';
 import { TodayWeeklyTask } from './TodayWeeklyTask';
 import { TodayDueDateTask } from './TodayDueDateTask';
 import { YesterdayCalories } from './YesterdayCalories';
@@ -17,7 +14,6 @@ import '../Todo/DueDate/DueDateTask.css';
 import './Today.css';
 
 export function Today() {
-  const { updateItem } = useStorageContext();
   const { daily, weekly, calendar } = useTodayItems();
 
   return (
@@ -38,17 +34,7 @@ export function Today() {
                   key={task.id}
                   className={`today-task item status-${task.status} type-${task.type}`}
                 >
-                  <CheckableTask
-                    category={task.category}
-                    description={task.description}
-                    isChecked={task.status !== 'ready'}
-                    onToggle={() =>
-                      updateItem<DailyTask>(
-                        DAILY_KEY,
-                        toggleDailyTaskStatus(task),
-                      )
-                    }
-                  />
+                  <TodayDailyTask task={task} />
                 </li>
               ))}
             </ol>
