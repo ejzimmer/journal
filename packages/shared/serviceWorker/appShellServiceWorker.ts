@@ -5,6 +5,7 @@ import { ExpirationPlugin } from 'workbox-expiration';
 import { createHandlerBoundToURL, precacheAndRoute } from 'workbox-precaching';
 import { registerRoute } from 'workbox-routing';
 import { CacheFirst, StaleWhileRevalidate } from 'workbox-strategies';
+import { fetchTimeoutPlugin } from './fetchTimeoutPlugin';
 
 declare const self: ServiceWorkerGlobalScope;
 
@@ -31,13 +32,16 @@ registerRoute(
     /\.(png|jpe?g|webp|gif|svg)$/.test(url.pathname),
   new StaleWhileRevalidate({
     cacheName: 'images',
-    plugins: [new ExpirationPlugin({ maxEntries: 50 })],
+    plugins: [fetchTimeoutPlugin, new ExpirationPlugin({ maxEntries: 50 })],
   }),
 );
 
 registerRoute(
   ({ url }) => url.origin === 'https://fonts.googleapis.com',
-  new StaleWhileRevalidate({ cacheName: 'google-fonts-stylesheets' }),
+  new StaleWhileRevalidate({
+    cacheName: 'google-fonts-stylesheets',
+    plugins: [fetchTimeoutPlugin],
+  }),
 );
 
 registerRoute(
@@ -45,6 +49,7 @@ registerRoute(
   new CacheFirst({
     cacheName: 'google-fonts-webfonts',
     plugins: [
+      fetchTimeoutPlugin,
       new ExpirationPlugin({
         maxEntries: 30,
         maxAgeSeconds: 60 * 60 * 24 * 365,
