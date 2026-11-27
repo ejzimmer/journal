@@ -1,0 +1,7 @@
+.today-link-checkbox {
+  color: hsl(219 10% 62%);
+
+  &.done {
+    color: hsl(205 95% 58%);
+  }
+}

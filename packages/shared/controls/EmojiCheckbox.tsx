@@ -10,6 +10,7 @@ type EmojiCheckboxProps = {
   useTickForDone?: boolean;
   disabled?: boolean;
   tooltipTriggerProps?: TooltipTriggerProps;
+  className?: string;
 };
 
 export function EmojiCheckbox({
@@ -20,13 +21,14 @@ export function EmojiCheckbox({
   useTickForDone,
   disabled,
   tooltipTriggerProps,
+  className,
 }: EmojiCheckboxProps) {
   const checkedClass = isChecked ? (useTickForDone ? 'done-icon' : 'done') : '';
 
   return (
     <label
       {...tooltipTriggerProps}
-      className={`emoji-checkbox ${checkedClass}`}
+      className={`emoji-checkbox ${checkedClass} ${className ?? ''}`}
     >
       <input
         aria-label={label}

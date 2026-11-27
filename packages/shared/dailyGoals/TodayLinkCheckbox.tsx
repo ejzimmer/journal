@@ -1,5 +1,8 @@
-import { ArrowCheckbox } from '../controls/ArrowCheckbox';
+import { EmojiCheckbox } from '../controls/EmojiCheckbox';
+import { ArrowRightIcon } from '../icons/ArrowRight';
 import { useDailyGoals } from './useDailyGoals';
+
+import './TodayLinkCheckbox.css';
 
 type TodayLinkCheckboxProps = { projectPath: string; subtaskPath: string };
 
@@ -11,12 +14,14 @@ export function TodayLinkCheckbox({
   const isGoal = hasGoal(subtaskPath);
 
   return (
-    <ArrowCheckbox
+    <EmojiCheckbox
+      className="today-link-checkbox"
+      emoji={<ArrowRightIcon width="14px" />}
       label="On today"
       isChecked={isGoal}
-      isDisabled={!isGoal && !hasFreeSlot}
-      onChange={(isChecked) =>
-        isChecked
+      disabled={!isGoal && !hasFreeSlot}
+      onChange={(event) =>
+        event.target.checked
           ? addGoal({ projectPath, subtaskPath })
           : removeGoal(subtaskPath)
       }
