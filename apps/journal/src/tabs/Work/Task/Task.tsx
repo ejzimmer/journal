@@ -20,6 +20,7 @@ import { CopyFeatureGateButton } from './CopyFeatureGateButton';
 type TaskProps = {
   task: WorkTask;
   blockerSource: WorkTask;
+  dependentTasks: WorkTask[];
   listId: string;
   dragHandle: ReactElement;
   descriptionRef?: Ref<EditableTextHandle>;
@@ -29,6 +30,7 @@ type TaskProps = {
 export function Task({
   task,
   blockerSource,
+  dependentTasks,
   listId,
   dragHandle,
   descriptionRef,
@@ -65,7 +67,18 @@ export function Task({
         id: task.id,
         parentId: `${WORK_KEY}/${listId}/items`,
       })}
-      dragPreview={<DragPreview>{task.description}</DragPreview>}
+      dragPreview={
+        <DragPreview>
+          {task.description}
+          {dependentTasks.length > 0 && (
+            <ol className="dependent-tasks">
+              {dependentTasks.map((dependent) => (
+                <li key={dependent.id}>{dependent.description}</li>
+              ))}
+            </ol>
+          )}
+        </DragPreview>
+      }
       isDroppable={isTask}
       allowedEdges={['top', 'bottom']}
       className={`task status-${task.status} ${isDependent ? 'dependent' : ''}`}

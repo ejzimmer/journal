@@ -101,6 +101,9 @@ export function TaskList({
     [sortedList],
   );
   const groupHeads = taskGroups.map((group) => group[0]);
+  const dependentTasksByHeadId = new Map(
+    taskGroups.map(([head, ...dependents]) => [head.id, dependents]),
+  );
 
   const getReorderProps = (task: WorkTask, index: number) =>
     index > 0 && isDependentTask(task)
@@ -266,6 +269,7 @@ export function TaskList({
               listId={listId}
               task={task}
               blockerSource={blockerSources[index]}
+              dependentTasks={dependentTasksByHeadId.get(task.id) ?? []}
               descriptionRef={(handle) => {
                 if (handle) {
                   taskDescriptions.current.set(task.id, handle);
