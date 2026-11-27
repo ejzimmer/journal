@@ -36,8 +36,8 @@ function createFirebaseContext(
     updateItem: jest.fn(),
     deleteItem: jest.fn(),
     updateList: jest.fn(),
-    moveItemBetweenLists: jest.fn(),
     setValue: jest.fn(),
+    setValues: jest.fn(),
     useValue: <T,>(key?: string) => {
       if (key === LABELS_KEY) {
         return {
@@ -928,17 +928,14 @@ describe('WorkStorageContext labels', () => {
         targetListId: 'work/list-2/items',
       });
 
-      expect(firebaseContext.moveItemBetweenLists).toHaveBeenCalledWith(
-        expect.objectContaining({
-          movedItem: expect.objectContaining({
-            id: task.id,
-            position: 1,
-            parentId: 'work/list-2/items',
-          }),
-          sourceListId: 'work/list-1/items',
-          targetListId: 'work/list-2/items',
-        }),
-      );
+      expect(firebaseContext.setValues).toHaveBeenCalledWith({
+        'work/list-1/items/task-1': null,
+        'work/list-2/items/task-1': {
+          ...task,
+          position: 0,
+          parentId: 'work/list-2/items',
+        },
+      });
     });
 
     it("adds the source list's label to the moved item", () => {
@@ -961,11 +958,160 @@ describe('WorkStorageContext labels', () => {
         targetListId: 'work/list-2/items',
       });
 
-      expect(firebaseContext.moveItemBetweenLists).toHaveBeenCalledWith(
+      expect(firebaseContext.setValues).toHaveBeenCalledWith(
         expect.objectContaining({
-          movedItem: expect.objectContaining({ labelIds: [a11yLabel.id] }),
+          'work/list-2/items/task-1': expect.objectContaining({
+            labelIds: [a11yLabel.id],
+          }),
         }),
       );
+    });
+
+    describe('when the task has dependent tasks', () => {
+      const parent = makeTask('list-1', { id: 'merge-it', position: 0 });
+      const dependents = [
+        makeTask('list-1', {
+          id: 'deploy-it',
+          description: '^^ deploy it',
+          position: 1,
+        }),
+        makeTask('list-1', {
+          id: 'announce-it',
+          description: '^^ announce it',
+          position: 2,
+        }),
+      ];
+      const unrelated = makeTask('list-1', { id: 'tidy-up', position: 3 });
+      const sourceList = makeList('list-1', {
+        items: Object.fromEntries(
+          [parent, ...dependents, unrelated].map((t) => [t.id, t]),
+        ),
+      });
+
+      const moveParent = (
+        targetTasks: WorkTask[],
+        movedItem: Partial<WorkTask>,
+        targetListItems?: WorkTask[],
+      ) => {
+        const targetList = makeList('list-2', {
+          items: Object.fromEntries(targetTasks.map((t) => [t.id, t])),
+        });
+        const firebaseContext = createFirebaseContext(
+          { [sourceList.id]: sourceList, [targetList.id]: targetList },
+          storedLabels,
+        );
+        getWorkStorage(firebaseContext)?.moveTask({
+          task: parent,
+          movedItem: { ...parent, ...movedItem },
+          sourceListId: 'work/list-1/items',
+          targetListId: 'work/list-2/items',
+          targetListItems,
+        });
+        return jest.mocked(firebaseContext.setValues).mock.calls[0][0];
+      };
+
+      const targetTask = (id: string, position: number, description = id) =>
+        makeTask('list-2', { id, description, position });
+
+      describe('and it is added to the end of the list', () => {
+        it('moves the dependent tasks directly after it', () => {
+          const updates = moveParent([targetTask('existing', 0)], {
+            position: 1,
+            lastStatusUpdate: '2026-11-27',
+          });
+
+          expect(updates).toEqual({
+            'work/list-2/items/existing/position': 0,
+            'work/list-1/items/merge-it': null,
+            'work/list-2/items/merge-it': expect.objectContaining({
+              position: 1,
+              lastStatusUpdate: '2026-11-27',
+              parentId: 'work/list-2/items',
+            }),
+            'work/list-1/items/deploy-it': null,
+            'work/list-2/items/deploy-it': expect.objectContaining({
+              position: 2,
+              lastStatusUpdate: '2026-11-27',
+              parentId: 'work/list-2/items',
+            }),
+            'work/list-1/items/announce-it': null,
+            'work/list-2/items/announce-it': expect.objectContaining({
+              position: 3,
+              lastStatusUpdate: '2026-11-27',
+              parentId: 'work/list-2/items',
+            }),
+          });
+        });
+      });
+
+      describe('and it is dropped in the middle of the list', () => {
+        it('makes room for its dependent tasks', () => {
+          const targetTasks = [targetTask('first', 0), targetTask('last', 1)];
+          const updates = moveParent(targetTasks, { position: 1 }, targetTasks);
+
+          expect(updates).toMatchObject({
+            'work/list-2/items/first/position': 0,
+            'work/list-2/items/merge-it': { position: 1 },
+            'work/list-2/items/deploy-it': { position: 2 },
+            'work/list-2/items/announce-it': { position: 3 },
+            'work/list-2/items/last/position': 4,
+          });
+        });
+      });
+
+      describe('and it is dropped between a task and its dependent task', () => {
+        it('lands after that dependent task', () => {
+          const targetTasks = [
+            targetTask('review-it', 0),
+            targetTask('approve-it', 1, '^^ approve it'),
+          ];
+          const updates = moveParent(targetTasks, { position: 1 }, targetTasks);
+
+          expect(updates).toMatchObject({
+            'work/list-2/items/review-it/position': 0,
+            'work/list-2/items/approve-it/position': 1,
+            'work/list-2/items/merge-it': { position: 2 },
+            'work/list-2/items/deploy-it': { position: 3 },
+            'work/list-2/items/announce-it': { position: 4 },
+          });
+        });
+      });
+    });
+
+    describe('when the task is itself a dependent task', () => {
+      it('moves only that task', () => {
+        const dependent = makeTask('list-1', {
+          id: 'deploy-it',
+          description: '^^ deploy it',
+          position: 1,
+        });
+        const following = makeTask('list-1', {
+          id: 'announce-it',
+          description: '^^ announce it',
+          position: 2,
+        });
+        const list = makeList('list-1', {
+          items: { [dependent.id]: dependent, [following.id]: following },
+        });
+        const firebaseContext = createFirebaseContext(
+          { [list.id]: list, 'list-2': makeList('list-2') },
+          storedLabels,
+        );
+
+        getWorkStorage(firebaseContext)?.moveTask({
+          task: dependent,
+          movedItem: dependent,
+          sourceListId: 'work/list-1/items',
+          targetListId: 'work/list-2/items',
+        });
+
+        expect(firebaseContext.setValues).toHaveBeenCalledWith({
+          'work/list-1/items/deploy-it': null,
+          'work/list-2/items/deploy-it': expect.objectContaining({
+            position: 0,
+          }),
+        });
+      });
     });
 
     it("marks the original task's labels unused once nothing else references them", () => {

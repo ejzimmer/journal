@@ -17,7 +17,12 @@ import { useDropTarget } from 'shared/drag-and-drop/useDropTarget';
 import { sortByPosition } from 'shared/drag-and-drop/utils';
 import { Labels } from './Task/Labels';
 import { LabelsControl } from './LabelsControl';
-import { findBlockerSource } from './dependentTasks';
+import {
+  findBlockerSource,
+  flattenReorderedGroups,
+  groupTasksWithDependents,
+  isDependentTask,
+} from './dependentTasks';
 
 type PendingFocus = {
   isReady: (tasks: WorkTask[]) => boolean;
@@ -90,6 +95,33 @@ export function TaskList({
     () => sortedList.map((_, index) => findBlockerSource(sortedList, index)),
     [sortedList],
   );
+
+  const taskGroups = useMemo(
+    () => groupTasksWithDependents(sortedList),
+    [sortedList],
+  );
+  const groupHeads = taskGroups.map((group) => group[0]);
+  const dependentTasksByHeadId = new Map(
+    taskGroups.map(([head, ...dependents]) => [head.id, dependents]),
+  );
+
+  const getReorderProps = (task: WorkTask, index: number) =>
+    index > 0 && isDependentTask(task)
+      ? {
+          list: sortedList,
+          index,
+          onReorder: (reorderedList: { id: string }[]) =>
+            reorderTasks(listId, reorderedList),
+        }
+      : {
+          list: groupHeads,
+          index: groupHeads.indexOf(task),
+          onReorder: (reorderedHeads: { id: string }[]) =>
+            reorderTasks(
+              listId,
+              flattenReorderedGroups(taskGroups, reorderedHeads),
+            ),
+        };
 
   const unfinishedTasks = sortedList.filter((task) => task.status !== 'done');
   const remainingCount = sortedList.filter(
@@ -237,6 +269,7 @@ export function TaskList({
               listId={listId}
               task={task}
               blockerSource={blockerSources[index]}
+              dependentTasks={dependentTasksByHeadId.get(task.id) ?? []}
               descriptionRef={(handle) => {
                 if (handle) {
                   taskDescriptions.current.set(task.id, handle);
@@ -247,11 +280,7 @@ export function TaskList({
               onDeleted={() => focusPreviousTaskOnceDeleted(task)}
               dragHandle={
                 <DragHandle
-                  list={sortedList}
-                  index={index}
-                  onReorder={(reorderedList) =>
-                    reorderTasks(listId, reorderedList)
-                  }
+                  {...getReorderProps(task, index)}
                   actions={{
                     menuItems: additionalMoveDestinations(task),
                     onKeyDown: onMoveTaskToList
