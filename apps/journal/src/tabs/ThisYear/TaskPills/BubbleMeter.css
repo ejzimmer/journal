@@ -65,4 +65,25 @@
   .bubble-meter-empty {
     flex-grow: 1;
   }
+
+  .bubble-meter-extra {
+    --size: calc(12px - mod(var(--index), 2) * 3px);
+
+    position: absolute;
+    right: calc(10px + mod(var(--index), 3) * 17px);
+    bottom: calc(
+      100% + 3px + round(down, var(--index) / 3) * 10px + mod(var(--index), 2) *
+        4px
+    );
+    width: var(--size);
+    height: var(--size);
+    border-radius: 50%;
+    pointer-events: none;
+    opacity: var(--meter-opacity, 1);
+    background: hsl(var(--meter-hue) 45% 92%);
+    box-shadow:
+      inset 0 0 3px 1.5px
+        hsl(var(--meter-hue) 100% var(--meter-lightness) / 0.95),
+      0 0 5px hsl(var(--meter-hue) 100% var(--meter-lightness) / 0.55);
+  }
 }

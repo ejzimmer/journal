@@ -44,13 +44,17 @@ describe('WeeklyTaskPill', () => {
     });
 
     describe('when the task has been done more times than needed', () => {
-      it('shows the overflow', () => {
+      it('counts every done, not just the ones needed', () => {
         renderPill({
           ...task,
           completed: [...task.completed!, getDateDaysAgo(1), getToday()],
         });
 
-        expect(screen.getByText('+1')).toBeInTheDocument();
+        expect(
+          screen.getByRole('group', {
+            name: 'Strength training: 4 of 3 done',
+          }),
+        ).toBeInTheDocument();
       });
     });
 

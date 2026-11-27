@@ -57,17 +57,6 @@
     --meter-lightness: 58%;
   }
 
-  .remainder {
-    position: absolute;
-    top: 0;
-    right: 0;
-    translate: 50% -50%;
-    font:
-      600 12px system-ui,
-      sans-serif;
-    color: var(--pill-ink);
-  }
-
   .dates-popover {
     position: absolute;
     top: calc(100% + 8px);

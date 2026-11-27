@@ -20,6 +20,7 @@ export function BubbleMeter({
   className,
 }: BubbleMeterProps) {
   const filledSegments = Math.min(filledCount, segmentCount);
+  const extraCount = Math.max(filledCount - segmentCount, 0);
 
   return (
     <div
@@ -43,6 +44,13 @@ export function BubbleMeter({
           onClick={onAdd}
         />
       )}
+      {Array.from({ length: extraCount }, (_, index) => (
+        <span
+          key={index}
+          className="bubble-meter-extra"
+          style={{ '--index': index } as CSSProperties}
+        />
+      ))}
     </div>
   );
 }

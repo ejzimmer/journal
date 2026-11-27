@@ -58,7 +58,7 @@ export function WeeklyTaskEditor({
 
   return (
     <div
-      className="today-task-description has-end-control weekly-task-pill"
+      className="today-task-description weekly-task-pill"
       onKeyDown={handleKeyDown}
     >
       <CategoryCombobox

@@ -38,7 +38,7 @@ export function WeeklyTaskPill({ task }: WeeklyTaskPillProps) {
   }
 
   const completedDates = task.completed ?? [];
-  const { numberDone, remainder, isDue, fillOpacity } = getWeeklyProgress(
+  const { numberDone, isDue, fillOpacity } = getWeeklyProgress(
     completedDates,
     task.frequency,
   );
@@ -75,7 +75,6 @@ export function WeeklyTaskPill({ task }: WeeklyTaskPillProps) {
           onRemove={removeLastDone}
           className={isDue ? undefined : 'not-due'}
         />
-        {remainder > 0 && <span className="remainder">+{remainder}</span>}
         {numberDone > 0 && <CompletedDates dates={completedDates} />}
       </div>
     </div>
