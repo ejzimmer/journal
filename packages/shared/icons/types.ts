@@ -3,6 +3,5 @@ export type IconProps = {
   colour?: string;
   strokeWidth?: string;
   role?: string;
-  className?: string;
   'aria-label'?: string;
 };

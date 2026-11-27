@@ -1,8 +1,0 @@
-.lit-icon {
-  color: hsl(var(--lit-hue, 205) 95% var(--lit-lightness, 58%));
-  filter: drop-shadow(0 -0.5px 0.5px hsl(var(--lit-hue, 205) 60% 18% / 0.55))
-    drop-shadow(0 0 0.5px hsl(var(--lit-hue, 205) 60% 18% / 0.35))
-    drop-shadow(
-      0 0 4px hsl(var(--lit-hue, 205) 100% var(--lit-lightness, 58%) / 0.8)
-    );
-}

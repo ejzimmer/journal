@@ -1,6 +1,6 @@
 .arrow-switch {
-  --lit-hue: 205;
-  --lit-lightness: 58%;
+  --switch-hue: 205;
+  --switch-lightness: 58%;
 
   position: relative;
   flex-shrink: 0;
@@ -37,7 +37,6 @@
     top: 50%;
     right: 9px;
     translate: 0 -50%;
-    transition: color 0.2s;
   }
 
   &:disabled {
@@ -56,23 +55,30 @@
   }
 
   &[aria-checked='true'] {
-    background: hsl(var(--lit-hue) 45% 92%);
+    color: hsl(var(--switch-hue) 95% var(--switch-lightness));
+    background: hsl(var(--switch-hue) 45% 92%);
     box-shadow:
-      inset 2px 2px 4px hsl(var(--lit-hue) 60% 30% / 0.35),
-      inset -2px -2px 4px hsl(var(--lit-hue) 90% 88%),
-      inset 0 0 6px 3px hsl(var(--lit-hue) 100% var(--lit-lightness) / 0.95),
-      0 0 14px 2px hsl(var(--lit-hue) 100% var(--lit-lightness) / 0.65);
+      inset 2px 2px 4px hsl(var(--switch-hue) 60% 30% / 0.35),
+      inset -2px -2px 4px hsl(var(--switch-hue) 90% 88%),
+      inset 0 0 6px 3px
+        hsl(var(--switch-hue) 100% var(--switch-lightness) / 0.95),
+      0 0 14px 2px hsl(var(--switch-hue) 100% var(--switch-lightness) / 0.65);
 
     &::before {
       left: 33px;
       box-shadow:
-        0 0 0 1px hsl(var(--lit-hue) 60% 40% / 0.3),
-        0 0 5px 1px hsl(var(--lit-hue) 100% var(--lit-lightness) / 0.7);
+        0 0 0 1px hsl(var(--switch-hue) 60% 40% / 0.3),
+        0 0 5px 1px hsl(var(--switch-hue) 100% var(--switch-lightness) / 0.7);
     }
 
     svg {
       right: auto;
       left: 9px;
+      filter: drop-shadow(0 -0.5px 0.5px hsl(var(--switch-hue) 60% 18% / 0.55))
+        drop-shadow(0 0 0.5px hsl(var(--switch-hue) 60% 18% / 0.35))
+        drop-shadow(
+          0 0 4px hsl(var(--switch-hue) 100% var(--switch-lightness) / 0.8)
+        );
     }
   }
 }

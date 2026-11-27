@@ -1,7 +1,6 @@
 import { ArrowRightIcon } from '../icons/ArrowRight';
 
 import './ArrowCheckbox.css';
-import './litIcon.css';
 
 type ArrowCheckboxProps = {
   label: string;
@@ -26,10 +25,7 @@ export function ArrowCheckbox({
         disabled={isDisabled}
         onChange={(event) => onChange(event.target.checked)}
       />
-      <ArrowRightIcon
-        width="14px"
-        className={isChecked ? 'lit-icon' : undefined}
-      />
+      <ArrowRightIcon width="14px" />
     </label>
   );
 }
