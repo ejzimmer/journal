@@ -1,8 +1,3 @@
-import {
-  HEAVY_FLOW,
-  LIGHT_FLOW,
-  OVARY_PAIN,
-} from '../tabs/Health/calories/symptoms';
 import { WORK_KEY } from '../tabs/Work/types';
 import { CLASSES_PATH, DAILY_PATH, WEEKLY_KEY } from '../types';
 import { getAtPath, isPlainTree, Tree } from 'shared/localFirst/pathTree';
@@ -16,12 +11,6 @@ type Reshape = {
 };
 
 type Direction = 'toV2' | 'toV1';
-
-const PERIOD_FIELDS: Record<string, string> = {
-  [LIGHT_FLOW]: 'lightFlow',
-  [HEAVY_FLOW]: 'heavyFlow',
-  [OVARY_PAIN]: 'ovaryPain',
-};
 
 const RESHAPES: Reshape[] = [
   {
@@ -225,26 +214,14 @@ function convertTicksToV1(value: unknown): unknown {
 
 function convertTrackersToPeriod(value: unknown): unknown {
   return createMapOrNothing(
-    getEntries(value).map((tracker) => [
-      PERIOD_FIELDS[String(tracker)] ?? String(tracker),
-      true,
-    ]),
+    getEntries(value).map((tracker) => [String(tracker), true]),
   );
 }
 
 function convertPeriodToTrackers(value: unknown): unknown {
   if (!isPlainTree(value)) return undefined;
-  const trackersByField = Object.fromEntries(
-    Object.entries(PERIOD_FIELDS).map(([tracker, field]) => [field, tracker]),
-  );
-  const fields = [
-    ...Object.values(PERIOD_FIELDS),
-    ...Object.keys(value).filter((field) => !(field in trackersByField)),
-  ];
   return createListOrNothing(
-    fields
-      .filter((field) => value[field] === true)
-      .map((field) => trackersByField[field] ?? field),
+    Object.keys(value).filter((tracker) => value[tracker] === true),
   );
 }
 

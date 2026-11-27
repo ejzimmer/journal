@@ -8,6 +8,7 @@ import { useDailyGoalReset } from './tabs/Today/useDailyGoalReset';
 import { useLinkedTaskMigration } from './tabs/Today/useLinkedTaskMigration';
 import { useGoalProjectPathMigration } from './tabs/Today/useGoalProjectPathMigration';
 import { useOnceGoalMigration } from './tabs/Today/useOnceGoalMigration';
+import { useLegacyTrackerMigration } from './tabs/Health/calories/useLegacyTrackerMigration';
 import { useWorkDailyUpdate } from './tabs/Work/useWorkDailyUpdate';
 
 export function DailyJobs() {
@@ -15,6 +16,7 @@ export function DailyJobs() {
   useLinkedTaskMigration();
   useGoalProjectPathMigration();
   useOnceGoalMigration();
+  useLegacyTrackerMigration();
   useDailyReset();
   useOnceReset();
   useWeeklyReset();

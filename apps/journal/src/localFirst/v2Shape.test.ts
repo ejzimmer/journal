@@ -23,7 +23,7 @@ const v1Tree = {
       '2026-10-07': {
         id: '2026-10-07',
         consumed: 1800,
-        trackers: ['🥚', '🟤'],
+        trackers: ['cramps-2', 'flow-1'],
       },
     },
     classes: {
@@ -67,7 +67,7 @@ const v2Tree = {
       '2026-10-07': {
         id: '2026-10-07',
         consumed: 1800,
-        period: { ovaryPain: true, lightFlow: true },
+        period: { 'cramps-2': true, 'flow-1': true },
       },
     },
     classes: {
@@ -148,11 +148,14 @@ describe('v2Shape', () => {
       });
     });
 
-    describe('given a tracker that is not period data', () => {
-      it('keeps it under its own key', () => {
+    describe("given a day's trackers", () => {
+      it('keeps each one under its own key', () => {
         expect(
-          convertTreeToV2('health/daily/2026-10-07/trackers', ['🔴', '💧']),
-        ).toEqual({ heavyFlow: true, '💧': true });
+          convertTreeToV2('health/daily/2026-10-07/trackers', [
+            'flow-2',
+            'watch-charged',
+          ]),
+        ).toEqual({ 'flow-2': true, 'watch-charged': true });
       });
     });
   });
@@ -160,18 +163,7 @@ describe('v2Shape', () => {
   describe('convertTreeToV1', () => {
     describe('given the whole v2 database', () => {
       it('reads every map back as the list it came from', () => {
-        expect(convertTreeToV1('', v2Tree)).toEqual({
-          ...v1Tree,
-          health: {
-            ...v1Tree.health,
-            daily: {
-              '2026-10-07': {
-                ...v1Tree.health.daily['2026-10-07'],
-                trackers: ['🟤', '🥚'],
-              },
-            },
-          },
-        });
+        expect(convertTreeToV1('', v2Tree)).toEqual(v1Tree);
       });
     });
 
@@ -279,7 +271,9 @@ describe('v2Shape', () => {
       });
 
       it('returns the entry from the converted list', () => {
-        expect(convertReadValueToV1(key, { ovaryPain: true })).toBe('🥚');
+        expect(convertReadValueToV1(key, { 'cramps-2': true })).toBe(
+          'cramps-2',
+        );
       });
     });
   });

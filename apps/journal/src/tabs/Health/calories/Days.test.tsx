@@ -58,22 +58,6 @@ describe('Days', () => {
       });
     });
 
-    describe('given a day logged with the old period trackers', () => {
-      it('shows them as period flow and cramps levels', () => {
-        const days: Balance[] = mockDays.map((day) =>
-          day.day === 5 ? { ...day, trackers: ['🔴', '🥚'] } : day,
-        );
-        render(<Days days={days} onSelectDay={jest.fn()} />);
-
-        expect(
-          screen.getByRole('img', { name: 'period flow 2' }),
-        ).toBeInTheDocument();
-        expect(
-          screen.getByRole('img', { name: 'cramps 2' }),
-        ).toBeInTheDocument();
-      });
-    });
-
     describe('given five symptoms on one day', () => {
       it('shows all of them', () => {
         const days: Balance[] = mockDays.map((day) =>

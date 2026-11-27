@@ -52,7 +52,7 @@ describe('Calories', () => {
     it("shows the form when yesterday has an entry but calories haven't been recorded yet", () => {
       renderWithHealthStorage(<Calories />, {
         days: {
-          '2026-01-06': { id: '2026-01-06', trackers: ['🔴'] },
+          '2026-01-06': { id: '2026-01-06', trackers: ['flow-2'] },
         },
       });
 
@@ -197,7 +197,7 @@ describe('Calories', () => {
             id: '2026-01-03',
             consumed: 1500,
             expended: 2000,
-            trackers: ['🔴'],
+            trackers: ['flow-2'],
           },
         });
 
@@ -207,7 +207,7 @@ describe('Calories', () => {
 
         expect(updateDay).toHaveBeenCalledWith({
           id: '2026-01-03',
-          trackers: ['🔴'],
+          trackers: ['flow-2'],
         });
       });
     });
