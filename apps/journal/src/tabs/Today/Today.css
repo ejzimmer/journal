@@ -127,3 +127,7 @@
   height: 38px;
   font-size: 20px;
 }
+
+.today-tab .todo-task-list.calendar ol:first-child .description {
+  gap: 4px;
+}
