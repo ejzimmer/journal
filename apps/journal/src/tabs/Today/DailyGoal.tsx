@@ -1,7 +1,6 @@
-import { EmojiCheckbox } from 'shared/controls/EmojiCheckbox';
 import { BaseProject, BaseSubtask } from 'shared/projects/types';
 import { DailyTask } from '../../types';
-import { GlowingEmoji } from '../Todo/Today/GlowingEmoji';
+import { CheckableTask } from './CheckableTask';
 
 type DailyGoalProps = { onToggle: () => void } & (
   | { task: DailyTask; project?: undefined }
@@ -20,16 +19,12 @@ export function DailyGoal(props: DailyGoalProps) {
     <li
       className={`today-task item today-slot status-${task.status} ${typeClass}`}
     >
-      <div className="today-task-description">
-        <EmojiCheckbox
-          emoji={<GlowingEmoji emoji={category} />}
-          isChecked={task.status !== 'ready'}
-          label={`${description} done`}
-          onChange={onToggle}
-          useTickForDone
-        />
-        <div className="task-screen">{description}</div>
-      </div>
+      <CheckableTask
+        category={category}
+        description={description}
+        isChecked={task.status !== 'ready'}
+        onToggle={onToggle}
+      />
     </li>
   );
 }

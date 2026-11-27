@@ -1,4 +1,4 @@
-import { act, fireEvent, screen } from '@testing-library/react';
+import { act, fireEvent, screen, within } from '@testing-library/react';
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { getDateDaysAgo, getDateDaysAhead, getToday } from 'shared/dates';
@@ -8,6 +8,7 @@ import {
   CALENDAR_KEY,
   CalendarTask,
   DailyTask,
+  DAILY_KEY,
   DAILY_PATH,
   DayData,
   ONCE_KEY,
@@ -54,6 +55,38 @@ const shelves: ProjectDetails = {
   },
 };
 
+const vitamins: DailyTask = {
+  id: 'vitamins',
+  parentId: DAILY_KEY,
+  description: 'Take vitamins',
+  category: '💊',
+  position: 0,
+  type: '毎日',
+  status: 'ready',
+  lastCompleted: getDateDaysAgo(1),
+};
+
+const CONTROL_ROLES = [
+  'button',
+  'checkbox',
+  'radio',
+  'textbox',
+  'spinbutton',
+  'combobox',
+] as const;
+
+const getControlRoles = (row: HTMLElement) =>
+  CONTROL_ROLES.flatMap((role) =>
+    within(row)
+      .queryAllByRole(role)
+      .map(() => role),
+  );
+
+const getRow = (text: string) =>
+  screen
+    .getAllByRole('listitem')
+    .find((item) => within(item).queryByText(text))!;
+
 const createWeeklyTask = (
   id: string,
   position: number,
@@ -99,6 +132,94 @@ function readValue<T>(storage: ContextType, key: string) {
 }
 
 describe('Today tab', () => {
+  describe('a daily task', () => {
+    const renderWithDailyTask = () =>
+      renderToday({ today: { 暦: { tax }, 日: { vitamins } } });
+
+    it('can only be ticked off', async () => {
+      renderWithDailyTask();
+      await screen.findByText('Take vitamins');
+
+      expect(getControlRoles(getRow('Take vitamins'))).toEqual(['checkbox']);
+    });
+
+    describe('when the user ticks it off', () => {
+      it('marks it done', async () => {
+        const { storage, user } = renderWithDailyTask();
+
+        await user.click(
+          await screen.findByRole('checkbox', { name: 'Take vitamins done' }),
+        );
+
+        expect(
+          readValue<DailyTask>(storage, `${DAILY_KEY}/vitamins`)?.status,
+        ).toBe('done');
+      });
+    });
+  });
+
+  describe('a weekly task that is due', () => {
+    const piano = createWeeklyTask('piano', 0, 3, 1);
+    const renderWithWeeklyTask = () =>
+      renderToday({ today: { 暦: { tax }, 週: { piano } } });
+
+    it('only has controls for adding and undoing dones', async () => {
+      renderWithWeeklyTask();
+      await screen.findByText('piano');
+
+      const row = getRow('piano');
+      expect(
+        within(row)
+          .getAllByRole('button')
+          .map(
+            (button) => button.getAttribute('aria-label') ?? button.textContent,
+          ),
+      ).toEqual(['🎹', 'Undo', 'Mark done']);
+      expect(getControlRoles(row)).toEqual(['button', 'button', 'button']);
+    });
+
+    describe('when the user marks it done', () => {
+      it('adds a done for today', async () => {
+        const { storage, user } = renderWithWeeklyTask();
+        await screen.findByText('piano');
+
+        await user.click(
+          within(getRow('piano')).getByRole('button', { name: 'Mark done' }),
+        );
+
+        expect(
+          readValue<WeeklyTask>(storage, `${WEEKLY_KEY}/piano`)?.completed,
+        ).toEqual([...piano.completed!, getToday()]);
+      });
+    });
+  });
+
+  describe('a due date task', () => {
+    it('can only have its status changed', async () => {
+      renderToday();
+      await screen.findByText('Lodge tax return');
+
+      expect(getControlRoles(getRow('Lodge tax return'))).toEqual([
+        'radio',
+        'radio',
+        'radio',
+      ]);
+    });
+
+    describe('when the user finishes it', () => {
+      it('saves the new status', async () => {
+        const { storage, user } = renderToday();
+        await screen.findByText('Lodge tax return');
+
+        const radios = within(getRow('Lodge tax return')).getAllByRole('radio');
+        await user.click(radios[radios.length - 1]);
+
+        expect(
+          readValue<CalendarTask>(storage, `${CALENDAR_KEY}/tax`)?.status,
+        ).toBe('finished');
+      });
+    });
+  });
   describe('when a due date task in the snapshot is finished during the day', () => {
     it('stays on the tab', async () => {
       const { storage } = renderToday({

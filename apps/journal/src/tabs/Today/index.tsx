@@ -1,9 +1,10 @@
 import { useStorageContext } from 'shared/FirebaseContext';
 import { DAILY_KEY, DailyTask } from '../../types';
 import { TodoCategoriesProvider } from '../Todo/TodoCategoriesProvider';
-import { TodayTask } from '../Todo/Today/TodayTask';
-import { ThisWeekTask } from '../Todo/ThisWeek/ThisWeekTask';
-import { DueDateTask } from '../Todo/DueDate/DueDateTask';
+import { toggleDailyTaskStatus } from '../Todo/Today/toggleDailyTaskStatus';
+import { CheckableTask } from './CheckableTask';
+import { TodayWeeklyTask } from './TodayWeeklyTask';
+import { TodayDueDateTask } from './TodayDueDateTask';
 import { YesterdayCalories } from './YesterdayCalories';
 import { TodaySymptoms } from './TodaySymptoms';
 import { DailyGoals } from './DailyGoals';
@@ -37,10 +38,16 @@ export function Today() {
                   key={task.id}
                   className={`today-task item status-${task.status} type-${task.type}`}
                 >
-                  <TodayTask
-                    task={task}
-                    listId={DAILY_KEY}
-                    onChange={(task) => updateItem<DailyTask>(DAILY_KEY, task)}
+                  <CheckableTask
+                    category={task.category}
+                    description={task.description}
+                    isChecked={task.status !== 'ready'}
+                    onToggle={() =>
+                      updateItem<DailyTask>(
+                        DAILY_KEY,
+                        toggleDailyTaskStatus(task),
+                      )
+                    }
                   />
                 </li>
               ))}
@@ -52,7 +59,7 @@ export function Today() {
             <ol>
               {weekly.map((task) => (
                 <li key={task.id} className="item">
-                  <ThisWeekTask task={task} />
+                  <TodayWeeklyTask task={task} />
                 </li>
               ))}
             </ol>
@@ -63,7 +70,7 @@ export function Today() {
             <ol>
               {calendar.map((task) => (
                 <li key={task.id} className={`status-${task.status}`}>
-                  <DueDateTask task={task} />
+                  <TodayDueDateTask task={task} />
                 </li>
               ))}
             </ol>
