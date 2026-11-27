@@ -14,9 +14,6 @@ export type DailyTaskDetails = {
   type: '毎日' | '一度';
   status: 'ready' | 'done' | 'finished';
   lastCompleted: string;
-  // Links to a project or subtask written by versions that copied subtasks
-  // into the todo list; only read to migrate them into daily goals.
-  linkedTask?: string;
 };
 export type DailyTask = DailyTaskDetails & TodoTask;
 
@@ -48,7 +45,7 @@ export const TODAY_SNAPSHOT_KEY = `${TODAY_TAB_KEY}/snapshot`;
 export const TODAY_SNAPSHOT_RESET_KEY = `${TODAY_TAB_KEY}/snapshotReset`;
 export const DAILY_GOALS_RESET_KEY = `${TODAY_TAB_KEY}/slotsReset`;
 export type SnapshotEntry = { id: string; listId: string };
-export type DailyGoalItem = DailyTask | SubtaskGoal | TaskGoal;
+export type DailyGoalItem = SubtaskGoal | TaskGoal;
 
 export const HEALTH_PATH = 'health';
 
@@ -89,7 +86,6 @@ export type ExerciseClass = {
 
 export const PROJECTS_KEY = 'projects';
 export type ProjectSubtask = BaseSubtask & {
-  linkedId?: string;
   category: Category;
 };
 export const PROJECT_COLOURS = {
@@ -110,6 +106,5 @@ export type ProjectDetails = OrderedListItem &
     category: Category;
     status?: ProjectStatus;
     subtasks?: Record<string, ProjectSubtask>;
-    linkedTaskId?: string;
     completedAt?: string;
   };
