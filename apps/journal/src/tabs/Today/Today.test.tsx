@@ -1,4 +1,4 @@
-import { act, fireEvent, screen, within } from '@testing-library/react';
+import { act, fireEvent, screen } from '@testing-library/react';
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { getDateDaysAgo, getDateDaysAhead, getToday } from 'shared/dates';
@@ -65,11 +65,6 @@ const vitamins: DailyTask = {
   status: 'ready',
   lastCompleted: getDateDaysAgo(1),
 };
-
-const getRow = (text: string) =>
-  screen
-    .getAllByRole('listitem')
-    .find((item) => within(item).queryByText(text))!;
 
 const createWeeklyTask = (
   id: string,
@@ -145,9 +140,7 @@ describe('Today tab', () => {
         const { storage, user } = renderWithWeeklyTask();
         await screen.findByText('piano');
 
-        await user.click(
-          within(getRow('piano')).getByRole('button', { name: 'Mark done' }),
-        );
+        await user.click(screen.getByRole('button', { name: 'Mark done' }));
 
         expect(
           readValue<WeeklyTask>(storage, `${WEEKLY_KEY}/piano`)?.completed,
@@ -162,8 +155,7 @@ describe('Today tab', () => {
         const { storage, user } = renderToday();
         await screen.findByText('Lodge tax return');
 
-        const radios = within(getRow('Lodge tax return')).getAllByRole('radio');
-        await user.click(radios[radios.length - 1]);
+        await user.click(screen.getByDisplayValue('finished'));
 
         expect(
           readValue<CalendarTask>(storage, `${CALENDAR_KEY}/tax`)?.status,
