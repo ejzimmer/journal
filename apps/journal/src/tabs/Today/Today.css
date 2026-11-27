@@ -135,3 +135,11 @@
 .today-tab .todo-task-list.calendar ol:first-child .description {
   gap: 4px;
 }
+
+.today-tab .weekly-add-done {
+  display: contents;
+
+  @media (width <= 600px) {
+    display: none;
+  }
+}
