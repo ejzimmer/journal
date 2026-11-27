@@ -363,6 +363,56 @@ describe('TaskList dependent tasks', () => {
     });
   });
 
+  describe('when a task is moved with the keyboard', () => {
+    const moveTask = async (description: string, key: string) => {
+      const user = userEvent.setup();
+      const storageContext = createStorageContext();
+      renderTaskList(dependencyList.id, storageContext);
+
+      getTaskItem(description)
+        .getByRole('button', { name: 'drag menu' })
+        .focus();
+      await user.keyboard(key);
+
+      const [, reorderedTasks] = jest.mocked(storageContext.reorderTasks).mock
+        .calls[0];
+      return reorderedTasks.map(({ id }) => id);
+    };
+
+    describe('and it has dependent tasks', () => {
+      it('moves its dependent tasks along with it', async () => {
+        expect(await moveTask('merge it', '{ArrowDown}')).toEqual([
+          'tidy-up',
+          'merge-it',
+          'deploy-it',
+          'announce-it',
+        ]);
+      });
+    });
+
+    describe('past a task with dependent tasks', () => {
+      it('moves past those dependent tasks too', async () => {
+        expect(await moveTask('tidy up', '{ArrowUp}')).toEqual([
+          'tidy-up',
+          'merge-it',
+          'deploy-it',
+          'announce-it',
+        ]);
+      });
+    });
+
+    describe('and it is a dependent task', () => {
+      it('moves only that task', async () => {
+        expect(await moveTask('^^ announce it', '{ArrowUp}')).toEqual([
+          'merge-it',
+          'announce-it',
+          'deploy-it',
+          'tidy-up',
+        ]);
+      });
+    });
+  });
+
   it('counts dependent tasks as blocked when the task they depend on is', () => {
     renderTaskList(dependencyList.id, createStorageContext());
 

@@ -13,6 +13,18 @@ import { getAppendPosition } from './taskPosition';
 import { ListDestination, getDestinationListIndex } from './listDestination';
 import { getToday } from 'shared/dates';
 import { useUndoSubtaskDeleteShortcut } from './useUndoSubtaskDeleteShortcut';
+import { reorderWithEdge } from '@atlaskit/pragmatic-drag-and-drop-hitbox/util/reorder-with-edge';
+import { Draggable } from 'shared/drag-and-drop/types';
+import { reorderTaskWithDependents } from './dependentTasks';
+
+function reorderDraggedItems(
+  source: Draggable,
+  args: Parameters<typeof reorderWithEdge<WorkTask>>[0],
+) {
+  return source[draggableTypeKey] === 'task'
+    ? reorderTaskWithDependents(args)
+    : reorderWithEdge(args);
+}
 
 export function WorkContent() {
   const dropTargetRef = useRef<HTMLOListElement>(null);
@@ -111,6 +123,7 @@ export function WorkContent() {
     getAxis: (source) => {
       return source[draggableTypeKey] === 'task' ? 'vertical' : 'horizontal';
     },
+    reorderItems: reorderDraggedItems,
     moveItemBetweenLists: ({
       item,
       movedItem,

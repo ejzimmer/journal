@@ -9,6 +9,8 @@ import {
 import { useStorageContext } from 'shared/FirebaseContext';
 import { addSourceListLabel } from './labelUtils';
 import { getAppendPosition } from './taskPosition';
+import { findTaskWithDependents, insertTasks } from './dependentTasks';
+import { sortByPosition } from 'shared/drag-and-drop/utils';
 import {
   Colour,
   Label,
@@ -82,7 +84,7 @@ export function WorkStorageProvider({ children }: WorkStorageProviderProps) {
     updateItem,
     deleteItem,
     updateList: updateItemsList,
-    moveItemBetweenLists,
+    setValues,
     useValue,
   } = useStorageContext();
 
@@ -264,17 +266,46 @@ export function WorkStorageProvider({ children }: WorkStorageProviderProps) {
       targetListItems,
     }) => {
       const [, sourceListKey] = sourceListId.split('/');
+      const [, targetListKey] = targetListId.split('/');
       const sourceList = sourceListKey ? lists?.[sourceListKey] : undefined;
-      const labelledItem = sourceList
-        ? addSourceListLabel(movedItem, sourceList)
-        : movedItem;
-
-      moveItemBetweenLists({
-        movedItem: { ...labelledItem, parentId: targetListId },
-        sourceListId,
-        targetListId,
-        targetListItems,
+      const sourceTasks = sortByPosition(
+        Object.values(sourceList?.items ?? {}),
+      );
+      const [, ...dependents] = findTaskWithDependents(sourceTasks, task.id);
+      const movedTasks = [movedItem, ...dependents].map((moved) => {
+        const labelled = sourceList
+          ? addSourceListLabel(moved, sourceList)
+          : moved;
+        return {
+          ...labelled,
+          ...(movedItem.lastStatusUpdate !== task.lastStatusUpdate && {
+            lastStatusUpdate: movedItem.lastStatusUpdate,
+          }),
+          parentId: targetListId,
+        };
       });
+
+      const existingTasks = sortByPosition(
+        targetListItems ?? Object.values(lists?.[targetListKey]?.items ?? {}),
+      );
+      const insertAt = targetListItems
+        ? movedItem.position
+        : existingTasks.length;
+      const reorderedTasks = insertTasks(existingTasks, insertAt, movedTasks);
+
+      const updates: Record<string, unknown> = {};
+      reorderedTasks.forEach((reordered, position) => {
+        if (movedTasks.includes(reordered)) {
+          updates[`${sourceListId}/${reordered.id}`] = null;
+          updates[`${targetListId}/${reordered.id}`] = {
+            ...reordered,
+            position,
+          };
+        } else {
+          updates[`${targetListId}/${reordered.id}/position`] = position;
+        }
+      });
+      setValues(updates);
       task.labelIds?.forEach((id) => markUnusedLabel(id));
     },
     reorderTasks: (listId, tasks) => {

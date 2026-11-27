@@ -25,6 +25,10 @@ type UseDraggableArgs<T> = {
   }) => void;
   useValue?: <U>(key?: string) => { value?: U };
   updateList?: <U extends { id: string }>(listName: string, list: U[]) => void;
+  reorderItems?: (
+    source: Draggable,
+    args: Parameters<typeof reorderWithEdge<T>>[0],
+  ) => T[];
 };
 
 export function useDraggableList<
@@ -37,6 +41,7 @@ export function useDraggableList<
   moveItemBetweenLists,
   useValue: useValueProp,
   updateList: updateListProp,
+  reorderItems,
 }: UseDraggableArgs<T>) {
   const storageContext = useStorageContext();
   const useValue = useValueProp ?? storageContext.useValue;
@@ -83,12 +88,12 @@ export function useDraggableList<
     ({
       listId,
       dropTargetData,
-      sourceId,
+      source,
       axis,
     }: {
       listId: string;
       dropTargetData: DropTarget;
-      sourceId: string;
+      source: Draggable;
       axis: 'horizontal' | 'vertical';
     }) => {
       if (!isDraggable(dropTargetData) || !value) {
@@ -97,7 +102,7 @@ export function useDraggableList<
 
       const list = getItemByPath(listId, value) as Record<string, T>;
       const sortedList = sortByPosition(Object.values(list));
-      const startIndex = sortedList.findIndex((item) => item.id === sourceId);
+      const startIndex = sortedList.findIndex((item) => item.id === source.id);
       const indexOfTarget = sortedList.findIndex(
         (item) => item.id === dropTargetData.id,
       );
@@ -105,19 +110,22 @@ export function useDraggableList<
         return;
       }
 
+      const reorderArgs = {
+        list: sortedList,
+        startIndex,
+        indexOfTarget,
+        closestEdgeOfTarget: extractClosestEdge(dropTargetData),
+        axis,
+      };
       const reorderedList = renumberPositions(
-        reorderWithEdge({
-          list: sortedList,
-          startIndex,
-          indexOfTarget,
-          closestEdgeOfTarget: extractClosestEdge(dropTargetData),
-          axis,
-        }),
+        reorderItems
+          ? reorderItems(source, reorderArgs)
+          : reorderWithEdge(reorderArgs),
       );
 
       updateList(listId, reorderedList);
     },
-    [updateList, value, getItemByPath],
+    [updateList, value, getItemByPath, reorderItems],
   );
 
   useEffect(() => {
@@ -147,7 +155,7 @@ export function useDraggableList<
           updatePosition({
             listId: targetListId,
             dropTargetData,
-            sourceId: sourceData.id,
+            source: sourceData,
             axis: getAxis(sourceData),
           });
         } else if (
