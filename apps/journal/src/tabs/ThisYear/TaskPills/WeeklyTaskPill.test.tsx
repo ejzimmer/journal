@@ -87,7 +87,7 @@ describe('WeeklyTaskPill', () => {
     });
 
     describe('when the task has been done enough times', () => {
-      it('only lets the user undo from the meter', () => {
+      it('leaves undo as the only thing the meter can do', () => {
         renderPill({ ...task, completed: [...task.completed!, getToday()] });
 
         const meter = screen.getByRole('group', {
@@ -102,7 +102,7 @@ describe('WeeklyTaskPill', () => {
     });
 
     describe('when the task has never been done', () => {
-      it('only lets the user mark it done from the meter', () => {
+      it('leaves marking done as the only thing the meter can do', () => {
         renderPill({ ...task, completed: [] });
 
         const meter = screen.getByRole('group', {
