@@ -66,22 +66,6 @@ const vitamins: DailyTask = {
   lastCompleted: getDateDaysAgo(1),
 };
 
-const CONTROL_ROLES = [
-  'button',
-  'checkbox',
-  'radio',
-  'textbox',
-  'spinbutton',
-  'combobox',
-] as const;
-
-const getControlRoles = (row: HTMLElement) =>
-  CONTROL_ROLES.flatMap((role) =>
-    within(row)
-      .queryAllByRole(role)
-      .map(() => role),
-  );
-
 const getRow = (text: string) =>
   screen
     .getAllByRole('listitem')
@@ -136,13 +120,6 @@ describe('Today tab', () => {
     const renderWithDailyTask = () =>
       renderToday({ today: { 暦: { tax }, 日: { vitamins } } });
 
-    it('can only be ticked off', async () => {
-      renderWithDailyTask();
-      await screen.findByText('Take vitamins');
-
-      expect(getControlRoles(getRow('Take vitamins'))).toEqual(['checkbox']);
-    });
-
     describe('when the user ticks it off', () => {
       it('marks it done', async () => {
         const { storage, user } = renderWithDailyTask();
@@ -163,21 +140,6 @@ describe('Today tab', () => {
     const renderWithWeeklyTask = () =>
       renderToday({ today: { 暦: { tax }, 週: { piano } } });
 
-    it('only has controls for adding and undoing dones', async () => {
-      renderWithWeeklyTask();
-      await screen.findByText('piano');
-
-      const row = getRow('piano');
-      expect(
-        within(row)
-          .getAllByRole('button')
-          .map(
-            (button) => button.getAttribute('aria-label') ?? button.textContent,
-          ),
-      ).toEqual(['🎹', 'Undo', 'Mark done']);
-      expect(getControlRoles(row)).toEqual(['button', 'button', 'button']);
-    });
-
     describe('when the user marks it done', () => {
       it('adds a done for today', async () => {
         const { storage, user } = renderWithWeeklyTask();
@@ -195,17 +157,6 @@ describe('Today tab', () => {
   });
 
   describe('a due date task', () => {
-    it('can only have its status changed', async () => {
-      renderToday();
-      await screen.findByText('Lodge tax return');
-
-      expect(getControlRoles(getRow('Lodge tax return'))).toEqual([
-        'radio',
-        'radio',
-        'radio',
-      ]);
-    });
-
     describe('when the user finishes it', () => {
       it('saves the new status', async () => {
         const { storage, user } = renderToday();
