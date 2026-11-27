@@ -1,4 +1,5 @@
-import { KeyboardEvent, useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { InlineEditor } from 'shared/controls/InlineEditor';
 import { WeeklyTask } from '../../../types';
 import { CategoryCombobox } from '../../Todo/CategoryCombobox';
 
@@ -43,23 +44,11 @@ export function WeeklyTaskEditor({
     }
   };
 
-  const handleKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
-    if (event.key === 'Enter') {
-      saveChanges();
-    }
-
-    if (['Enter', 'Escape'].includes(event.key)) {
-      // onClose swaps this editor for the description button and focuses
-      // it before this keydown ends, so Enter would then click the button.
-      event.preventDefault();
-      onClose();
-    }
-  };
-
   return (
-    <div
+    <InlineEditor
       className="today-task-description weekly-task-pill"
-      onKeyDown={handleKeyDown}
+      onSave={saveChanges}
+      onClose={onClose}
     >
       <CategoryCombobox
         value={task.category}
@@ -84,6 +73,6 @@ export function WeeklyTaskEditor({
         value={frequency}
         onChange={(event) => setFrequency(event.target.value)}
       />
-    </div>
+    </InlineEditor>
   );
 }

@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { InlineEditor } from 'shared/controls/InlineEditor';
 import { CategoryCombobox } from '../CategoryCombobox';
 
 type TodayTaskEditorProps = {
@@ -24,20 +25,14 @@ export function TodayTaskEditor({
   }, []);
 
   return (
-    <div
+    <InlineEditor
       className="today-task-description"
-      onKeyDown={(event) => {
-        if (event.key === 'Enter' && inputValue !== description) {
+      onSave={() => {
+        if (inputValue !== description) {
           onChangeDescription(inputValue);
         }
-
-        if (['Enter', 'Escape'].includes(event.key)) {
-          // onClose swaps this editor for the description button and focuses
-          // it before this keydown ends, so Enter would then click the button.
-          event.preventDefault();
-          onClose();
-        }
       }}
+      onClose={onClose}
     >
       <CategoryCombobox
         value={category}
@@ -54,6 +49,6 @@ export function TodayTaskEditor({
         onChange={(event) => setInputValue(event.target.value)}
         size={inputValue.length}
       />
-    </div>
+    </InlineEditor>
   );
 }
