@@ -29,6 +29,7 @@
 
 .today-health {
   display: flex;
+  justify-content: center;
 
   &:empty {
     display: none;
@@ -83,6 +84,7 @@
 }
 
 .yesterday-calories {
+  flex-direction: row;
   gap: 8px;
 
   &.powering-off {
