@@ -18,7 +18,11 @@ export function TodayWeeklyTask({ task }: TodayWeeklyTaskProps) {
   return (
     <>
       <div className="weekly-add-done">
-        <AddDoneMenu category={task.category} onAdd={addDone} />
+        <AddDoneMenu
+          category={task.category}
+          className="category-button"
+          onAdd={addDone}
+        />
       </div>
       <div className="task-screen">{task.description}</div>
       <ProgressIndicator
