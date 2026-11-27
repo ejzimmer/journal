@@ -99,6 +99,25 @@ describe('WeeklyTaskPill', () => {
             .map((button) => button.getAttribute('aria-label')),
         ).toEqual(['Undo']);
       });
+
+      describe('and the user opens the emoji menu and picks add today', () => {
+        it('adds another done for today on top of the full meter', async () => {
+          const user = userEvent.setup();
+          const fullTask = {
+            ...task,
+            completed: [...task.completed!, getDateDaysAgo(1)],
+          };
+          const { updateItem } = renderPill(fullTask);
+
+          await user.click(screen.getByRole('button', { name: '💪' }));
+          await user.click(screen.getByRole('menuitem', { name: 'Add today' }));
+
+          expect(updateItem).toHaveBeenCalledWith(WEEKLY_KEY, {
+            ...fullTask,
+            completed: [...fullTask.completed, getToday()],
+          });
+        });
+      });
     });
 
     describe('when the task has never been done', () => {
