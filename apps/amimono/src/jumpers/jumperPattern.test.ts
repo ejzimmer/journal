@@ -48,21 +48,40 @@ describe('writeJumperPattern', () => {
       ]);
     });
 
-    it('writes the fronts', () => {
-      expect(findSteps(EXAMPLE_INPUTS, 'Fronts (make 2)')).toEqual([
+    describe('writes the fronts', () => {
+      const shapingBeforeArmhole = [
         'With smaller needles and the grey yarn, cast on 64 sts.',
         'Work 5cm of ribbing.',
         'Change to 4.5mm needles and knit straight for 7cm.',
         'Decrease 1 st every 5th row 9 times (55 sts).',
         'Increase 1 st every 10th row 2 times, then every 9th row 2 times (59 sts).',
-        'At the armhole edge, bind off 6 sts, then 3 sts (50 sts).',
-        'Decrease 1 st at the armhole edge every right side row 3 times (47 sts).',
-        'Knit until the front measures 56cm.',
-        'At the neck edge, bind off 12 sts (35 sts).',
-        'Decrease 1 st at the neck edge every row 7 times, then every 2nd row 4 times (24 sts).',
-        'Knit straight until the front measures 64cm.',
-        'Short row across the 12 sts on the neck side, then bind off all 24 shoulder sts.',
-      ]);
+      ];
+
+      it('shapes the right front armhole on wrong side rows and its neck on a right side row', () => {
+        expect(findSteps(EXAMPLE_INPUTS, 'Right front')).toEqual([
+          ...shapingBeforeArmhole,
+          'Bind off 6 sts, then 3 sts at the start of the next 2 wrong side rows (50 sts).',
+          'Decrease 1 st at the armhole edge every right side row 3 times (47 sts).',
+          'Knit until the front measures 56cm.',
+          'Bind off 12 sts at the start of the next right side row (35 sts).',
+          'Decrease 1 st at the neck edge every row 7 times, then every 2nd row 4 times (24 sts).',
+          'Knit straight until the front measures 64cm.',
+          'Short row across the 12 sts on the neck side, then bind off all 24 shoulder sts.',
+        ]);
+      });
+
+      it('shapes the left front armhole on right side rows and its neck on a wrong side row', () => {
+        expect(findSteps(EXAMPLE_INPUTS, 'Left front')).toEqual([
+          ...shapingBeforeArmhole,
+          'Bind off 6 sts, then 3 sts at the start of the next 2 right side rows (50 sts).',
+          'Decrease 1 st at the armhole edge every right side row 3 times (47 sts).',
+          'Knit until the front measures 56cm.',
+          'Bind off 12 sts at the start of the next wrong side row (35 sts).',
+          'Decrease 1 st at the neck edge every row 7 times, then every 2nd row 4 times (24 sts).',
+          'Knit straight until the front measures 64cm.',
+          'Short row across the 12 sts on the neck side, then bind off all 24 shoulder sts.',
+        ]);
+      });
     });
 
     it('writes the sleeves in the sleeve gauge', () => {

@@ -97,7 +97,23 @@ function writeBackSteps(inputs: JumperInputs) {
   return steps;
 }
 
-function writeFrontSteps(inputs: JumperInputs) {
+type RowSide = 'right side' | 'wrong side';
+
+type FrontSide = { armholeRows: RowSide; neckRows: RowSide };
+
+const RIGHT_FRONT: FrontSide = {
+  armholeRows: 'wrong side',
+  neckRows: 'right side',
+};
+const LEFT_FRONT: FrontSide = {
+  armholeRows: 'right side',
+  neckRows: 'wrong side',
+};
+
+function writeFrontSteps(
+  inputs: JumperInputs,
+  { armholeRows, neckRows }: FrontSide,
+) {
   const { numbers, steps } = writeBodySteps(inputs, FRONT);
   const [firstBindOff, secondBindOff] = numbers.armholeBindOffs;
   const afterBindOffs = numbers.bustStitches / 2 - firstBindOff - secondBindOff;
@@ -105,7 +121,7 @@ function writeFrontSteps(inputs: JumperInputs) {
   const afterNeckBindOff = afterArmhole - numbers.frontNeckBindOff;
 
   steps.push(
-    `At the armhole edge, bind off ${firstBindOff} sts, then ${secondBindOff} sts (${afterBindOffs} sts).`,
+    `Bind off ${firstBindOff} sts, then ${secondBindOff} sts at the start of the next 2 ${armholeRows} rows (${afterBindOffs} sts).`,
   );
   if (numbers.armholeDecreaseRows > 0) {
     steps.push(
@@ -114,7 +130,7 @@ function writeFrontSteps(inputs: JumperInputs) {
   }
   steps.push(
     `Knit until the front measures ${numbers.frontNeckStartCm}cm.`,
-    `At the neck edge, bind off ${numbers.frontNeckBindOff} sts (${afterNeckBindOff} sts).`,
+    `Bind off ${numbers.frontNeckBindOff} sts at the start of the next ${neckRows} row (${afterNeckBindOff} sts).`,
     `Decrease 1 st at the neck edge ${describeShapingRates(
       [
         { interval: 1, count: numbers.frontNeckDecreasesEveryRow },
@@ -187,7 +203,8 @@ function writeHoodSteps(inputs: JumperInputs) {
 export function writeJumperPattern(inputs: JumperInputs): PatternPiece[] {
   return [
     { name: 'Back', steps: writeBackSteps(inputs) },
-    { name: 'Fronts (make 2)', steps: writeFrontSteps(inputs) },
+    { name: 'Right front', steps: writeFrontSteps(inputs, RIGHT_FRONT) },
+    { name: 'Left front', steps: writeFrontSteps(inputs, LEFT_FRONT) },
     { name: 'Sleeves (make 2)', steps: writeSleeveSteps(inputs) },
     { name: 'Hood', steps: writeHoodSteps(inputs) },
   ];
