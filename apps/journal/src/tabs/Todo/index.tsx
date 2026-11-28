@@ -1,5 +1,4 @@
 import { createContext } from 'react';
-import { DueDateList } from './DueDate/DueDateList';
 import { AddTodoForm } from './AddTodoForm';
 
 import './index.css';
@@ -11,11 +10,8 @@ export function Todo() {
   return (
     <TodoCategoriesProvider>
       <div className="today todo">
-        <div className="today-panel" style={{ gridArea: 'form' }}>
+        <div className="today-panel">
           <AddTodoForm />
-        </div>
-        <div className="today-panel" style={{ gridArea: 'dates' }}>
-          <DueDateList />
         </div>
       </div>
     </TodoCategoriesProvider>

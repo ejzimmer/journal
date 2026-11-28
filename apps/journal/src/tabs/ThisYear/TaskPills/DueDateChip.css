@@ -1,0 +1,40 @@
+.due-date-chip {
+  --chip-ink: hsl(219 10% 55%);
+
+  flex-shrink: 0;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font:
+    600 13px system-ui,
+    sans-serif;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  color: var(--chip-ink);
+  background: hsl(216 15% 92%);
+  box-shadow:
+    inset 1px 1px 3px hsl(218 10% 76%),
+    inset -1px -1px 3px hsl(0 0% 100%);
+
+  &:is(.overdue, .due-today, .this-week) {
+    text-shadow:
+      0 -0.5px 0.5px hsl(0 0% 10% / 0.4),
+      0 0 6px color-mix(in hsl, var(--chip-ink) 60%, transparent);
+  }
+
+  &.overdue {
+    --chip-ink: hsl(0 90% 58%);
+  }
+
+  &.due-today {
+    --chip-ink: hsl(108 90% 42%);
+  }
+
+  &.this-week {
+    --chip-ink: hsl(205 90% 52%);
+  }
+
+  &.finished {
+    --chip-ink: hsl(219 10% 70%);
+    text-shadow: none;
+  }
+}
