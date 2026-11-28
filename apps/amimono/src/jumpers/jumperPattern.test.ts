@@ -37,42 +37,63 @@ describe('writeJumperPattern', () => {
         'With smaller needles and the grey yarn, cast on 128 sts.',
         'Work 5cm of ribbing.',
         'Change to 4.5mm needles and knit straight for 7cm.',
-        'Decrease 2 sts every 5th row 9 times (110 sts).',
-        'Increase 2 sts every 10th row 2 times, then every 9th row 2 times (118 sts).',
+        'Work a left-leaning decrease 1 st in from the right edge and a right-leaning decrease 1 st in from the left edge every 5th row 9 times (110 sts).',
+        'Work a right-leaning increase 1 st in from the right edge and a left-leaning increase 1 st in from the left edge every 10th row 2 times, then every 9th row 2 times (118 sts).',
         'Bind off 6 sts at the start of the next 2 rows (106 sts).',
         'Bind off 3 sts at the start of the next 2 rows (100 sts).',
-        'Decrease 2 sts every right side row 3 times (94 sts).',
+        'Work a left-leaning decrease 1 st in from the right edge and a right-leaning decrease 1 st in from the left edge every right side row 3 times (94 sts).',
         'Knit until the back measures 64cm.',
         'On each side, short row across the 12 sts on the neck side, then bind off all 24 shoulder sts.',
         'Leave the 46 back neck sts live for the hood.',
       ]);
     });
 
-    it('writes the fronts', () => {
-      expect(findSteps(EXAMPLE_INPUTS, 'Fronts (make 2)')).toEqual([
+    describe('writes the fronts', () => {
+      const stepsBeforeShaping = [
         'With smaller needles and the grey yarn, cast on 64 sts.',
         'Work 5cm of ribbing.',
         'Change to 4.5mm needles and knit straight for 7cm.',
-        'Decrease 1 st every 5th row 9 times (55 sts).',
-        'Increase 1 st every 10th row 2 times, then every 9th row 2 times (59 sts).',
-        'At the armhole edge, bind off 6 sts, then 3 sts (50 sts).',
-        'Decrease 1 st at the armhole edge every right side row 3 times (47 sts).',
-        'Knit until the front measures 56cm.',
-        'At the neck edge, bind off 12 sts (35 sts).',
-        'Decrease 1 st at the neck edge every row 7 times, then every 2nd row 4 times (24 sts).',
-        'Knit straight until the front measures 64cm.',
-        'Short row across the 12 sts on the neck side, then bind off all 24 shoulder sts.',
-      ]);
+      ];
+
+      it('shapes the right front with its side on the left edge and its neck on the right edge', () => {
+        expect(findSteps(EXAMPLE_INPUTS, 'Right front')).toEqual([
+          ...stepsBeforeShaping,
+          'Work a right-leaning decrease 1 st in from the left edge every 5th row 9 times (55 sts).',
+          'Work a left-leaning increase 1 st in from the left edge every 10th row 2 times, then every 9th row 2 times (59 sts).',
+          'Bind off 6 sts, then 3 sts at the start of the next 2 wrong side rows (50 sts).',
+          'Work a right-leaning decrease 1 st in from the left edge every right side row 3 times (47 sts).',
+          'Knit until the front measures 56cm.',
+          'Bind off 12 sts at the start of the next right side row (35 sts).',
+          'Work a left-leaning decrease 1 st in from the right edge every row 7 times, then every 2nd row 4 times (24 sts).',
+          'Knit straight until the front measures 64cm.',
+          'Short row across the 12 sts on the neck side, then bind off all 24 shoulder sts.',
+        ]);
+      });
+
+      it('shapes the left front with its side on the right edge and its neck on the left edge', () => {
+        expect(findSteps(EXAMPLE_INPUTS, 'Left front')).toEqual([
+          ...stepsBeforeShaping,
+          'Work a left-leaning decrease 1 st in from the right edge every 5th row 9 times (55 sts).',
+          'Work a right-leaning increase 1 st in from the right edge every 10th row 2 times, then every 9th row 2 times (59 sts).',
+          'Bind off 6 sts, then 3 sts at the start of the next 2 right side rows (50 sts).',
+          'Work a left-leaning decrease 1 st in from the right edge every right side row 3 times (47 sts).',
+          'Knit until the front measures 56cm.',
+          'Bind off 12 sts at the start of the next wrong side row (35 sts).',
+          'Work a right-leaning decrease 1 st in from the left edge every row 7 times, then every 2nd row 4 times (24 sts).',
+          'Knit straight until the front measures 64cm.',
+          'Short row across the 12 sts on the neck side, then bind off all 24 shoulder sts.',
+        ]);
+      });
     });
 
     it('writes the sleeves in the sleeve gauge', () => {
       expect(findSteps(EXAMPLE_INPUTS, 'Sleeves (make 2)')).toEqual([
         'With smaller needles, cast on 56 sts.',
         'Work 5cm of ribbing.',
-        'Change to 4mm needles. Increase 2 sts every 11th row 10 times, then every 10th row 3 times (82 sts).',
+        'Change to 4mm needles. Work a right-leaning increase 1 st in from the right edge and a left-leaning increase 1 st in from the left edge every 11th row 10 times, then every 10th row 3 times (82 sts).',
         'Bind off 10 sts at the start of the next 2 rows (62 sts).',
-        'Decrease 1 st at each end of every right side row 17 times (28 sts).',
-        'Decrease 1 st at each end of every 3rd right side row 2 times (24 sts).',
+        'Work a left-leaning decrease 1 st in from the right edge and a right-leaning decrease 1 st in from the left edge every right side row 17 times (28 sts).',
+        'Work a left-leaning decrease 1 st in from the right edge and a right-leaning decrease 1 st in from the left edge every 3rd right side row 2 times (24 sts).',
         'Bind off the remaining 24 sts.',
       ]);
     });
