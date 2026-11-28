@@ -39,6 +39,7 @@ export function YarnFields({ yarn, onChange }: YarnFieldsProps) {
                 : yarn.colourways.map((colourway) => ({
                     ...colourway,
                     photoUrl: undefined,
+                    colour: undefined,
                   })),
           })
         }

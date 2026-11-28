@@ -21,7 +21,7 @@ const seed = {
               name: 'Mineral',
               skeins: 1.5,
               dyeLot: '0917',
-              photoUrl: 'https://images.example/mineral.jpg',
+              colour: '#5d7f8c',
               position: 1,
             },
           },
@@ -85,7 +85,7 @@ describe('the project drawer', () => {
   });
 
   describe('opening the details', () => {
-    it('shows the pattern, yarn with colourway photos, and gauge', async () => {
+    it('shows the pattern, yarn in its colourway colours, and gauge', async () => {
       const { user } = renderHomePage(seed);
       const card = within(findCard('Cardigan'));
       await user.click(card.getByRole('button', { name: 'Expand project' }));
@@ -97,12 +97,9 @@ describe('the project drawer', () => {
       ).toHaveAttribute('href', 'https://example.com/telja');
       const mineral = card.getByTitle('Dye lot 0917');
       expect(mineral).toHaveTextContent('Mineral');
-      expect(
-        within(mineral)
-          .getAllByRole('presentation')
-          .map((image) => image.getAttribute('src')),
-      ).toContain('https://images.example/mineral.jpg');
-      expect(card.getByRole('img', { name: '1.5 skeins' })).toBeInTheDocument();
+      expect(card.getByRole('img', { name: '1.5 skeins' })).toContainHTML(
+        'fill="#5d7f8c"',
+      );
       expect(
         card.getByRole('img', {
           name: 'Gauge: 22 stitches and 30 rows per 10 cm',

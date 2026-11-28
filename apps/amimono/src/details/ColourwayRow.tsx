@@ -11,13 +11,8 @@ export function ColourwayRow({ colourway }: ColourwayRowProps) {
       className="colourway-row"
       title={colourway.dyeLot ? `Dye lot ${colourway.dyeLot}` : undefined}
     >
-      <span className="colourway-name">
-        {colourway.photoUrl && (
-          <img src={colourway.photoUrl} alt="" width="20" height="20" />
-        )}
-        {colourway.name}
-      </span>
-      <SkeinBalls skeins={colourway.skeins} />
+      <span>{colourway.name}</span>
+      <SkeinBalls skeins={colourway.skeins} colour={colourway.colour} />
     </div>
   );
 }

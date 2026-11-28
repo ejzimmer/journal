@@ -1,4 +1,4 @@
-import { render, screen, within } from '@testing-library/react';
+import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
 import { YarnDraft } from './projectDraft';
@@ -26,8 +26,10 @@ function createYarn(ravelryId?: number): YarnDraft {
 function mockRavelryColourways() {
   return jest
     .spyOn(global, 'fetch')
-    .mockResolvedValue(
-      new Response(JSON.stringify({ colourways: RAVELRY_COLOURWAYS })),
+    .mockImplementation(async (url) =>
+      String(url).startsWith('/api/ravelry/colourway-colour')
+        ? new Response(JSON.stringify({ colour: '#8a7a5c' }))
+        : new Response(JSON.stringify({ colourways: RAVELRY_COLOURWAYS })),
     );
 }
 
@@ -99,6 +101,37 @@ describe('YarnFields', () => {
       });
     });
 
+    describe('and a colourway has a Ravelry photo but no colour yet', () => {
+      it('finds the main colour of the photo', async () => {
+        const fetchMock = mockRavelryColourways();
+        const onChange = jest.fn();
+        const yarn = createYarn(42);
+        yarn.colourways[0] = {
+          ...yarn.colourways[0],
+          name: 'Ancient',
+          photoUrl: 'https://images.example/ancient.jpg',
+        };
+        render(<YarnFields yarn={yarn} onChange={onChange} />);
+
+        await waitFor(() =>
+          expect(onChange).toHaveBeenLastCalledWith(
+            expect.objectContaining({
+              colourways: [
+                expect.objectContaining({
+                  name: 'Ancient',
+                  colour: '#8a7a5c',
+                }),
+              ],
+            }),
+          ),
+        );
+        expect(fetchMock).toHaveBeenCalledWith(
+          '/api/ravelry/colourway-colour?photoUrl=https%3A%2F%2Fimages.example%2Fancient.jpg',
+          expect.anything(),
+        );
+      });
+    });
+
     describe('and the user types a colourway Ravelry doesn’t list', () => {
       it('keeps the typed name', async () => {
         const user = userEvent.setup();
@@ -139,7 +172,11 @@ describe('YarnFields', () => {
 
       const [{ colourways }] = onChange.mock.lastCall;
       expect(colourways[0]).toEqual(
-        expect.objectContaining({ name: 'Ancient', photoUrl: undefined }),
+        expect.objectContaining({
+          name: 'Ancient',
+          photoUrl: undefined,
+          colour: undefined,
+        }),
       );
     });
   });
