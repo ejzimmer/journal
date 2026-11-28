@@ -480,6 +480,16 @@ const calendarTasks = indexById([
     'paused',
     1,
   ),
+  createCalendarTask('calendar-bins', 'Clean the bins', '🏠', -2, 'ready', 3),
+  createCalendarTask('calendar-plants', 'Repot the fern', '🌿', 1, 'ready', 4),
+  createCalendarTask(
+    'calendar-passport',
+    'Renew passport',
+    '🛂',
+    24,
+    'ready',
+    5,
+  ),
   createCalendarTask(
     'calendar-rego',
     'Renew car rego',

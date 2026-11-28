@@ -51,11 +51,6 @@ body:has(.today) {
   }
 }
 
-.today.todo {
-  grid-template-areas: 'form' 'dates';
-  grid-template-rows: auto 1fr;
-}
-
 .task-screen,
 .today-task-description > .description-button,
 .today-symptoms .symptom-trigger {

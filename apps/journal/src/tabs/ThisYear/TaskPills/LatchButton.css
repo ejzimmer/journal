@@ -1,0 +1,45 @@
+.latch-button {
+  --latch-hue: 30;
+
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  color: hsl(219 10% 58%);
+  background: hsl(216 15% 95%);
+  box-shadow:
+    2px 2px 4px hsl(218 10% 78%),
+    -2px -2px 4px hsl(0 0% 100%);
+  cursor: pointer;
+  transition:
+    background 0.15s,
+    box-shadow 0.15s,
+    color 0.15s;
+
+  &:focus-visible {
+    outline: none;
+    box-shadow:
+      2px 2px 4px hsl(218 10% 78%),
+      -2px -2px 4px hsl(0 0% 100%),
+      0 0 0 2px hsl(205 95% 55%);
+  }
+
+  &[aria-pressed='true'] {
+    color: hsl(var(--latch-hue) 100% 58%);
+    background: hsl(var(--latch-hue) 50% 92%);
+    box-shadow:
+      inset 2px 2px 4px hsl(var(--latch-hue) 50% 40% / 0.35),
+      inset -2px -2px 4px hsl(var(--latch-hue) 90% 97%),
+      inset 0 0 6px 1px hsl(var(--latch-hue) 100% 58% / 0.7),
+      0 0 8px hsl(var(--latch-hue) 100% 58% / 0.45);
+
+    svg {
+      filter: drop-shadow(0 -0.5px 0.5px hsl(var(--latch-hue) 60% 18% / 0.55))
+        drop-shadow(0 0 4px hsl(var(--latch-hue) 100% 55% / 0.8));
+    }
+  }
+}

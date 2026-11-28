@@ -1,0 +1,12 @@
+.today-task-description.due-date-task-pill.is-paused > .description-button {
+  font-style: italic;
+  color: hsl(219 10% 50%);
+}
+
+.today-task-description.due-date-task-pill input.due-date-input {
+  flex: none;
+  font:
+    600 13px system-ui,
+    sans-serif;
+  color: hsl(219 10% 45%);
+}

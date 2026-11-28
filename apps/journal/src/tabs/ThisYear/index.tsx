@@ -6,6 +6,7 @@ import {
   StationRunning,
 } from './StationRunning/StationRunning';
 import { TodoCategoriesProvider } from '../Todo/TodoCategoriesProvider';
+import { DueDateTaskList } from './TaskPills/DueDateTaskList';
 import { EveryDayTaskList } from './TaskPills/EveryDayTaskList';
 import { OnceTaskList } from './TaskPills/OnceTaskList';
 import { WeeklyTaskList } from './TaskPills/WeeklyTaskList';
@@ -18,7 +19,10 @@ export function ThisYear() {
       <TodoCategoriesProvider>
         <div className="task-pill-lists">
           <EveryDayTaskList />
-          <WeeklyTaskList />
+          <div className="task-pill-column">
+            <WeeklyTaskList />
+            <DueDateTaskList />
+          </div>
           <OnceTaskList />
         </div>
       </TodoCategoriesProvider>

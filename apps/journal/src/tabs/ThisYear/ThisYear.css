@@ -16,3 +16,9 @@ body:has(.this-year) {
   align-items: start;
   gap: 0 48px;
 }
+
+.task-pill-column {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
