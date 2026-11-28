@@ -1,4 +1,4 @@
-import { RAVELRY_YARN_SEARCH_PATH, RavelryYarn } from '../../src/ravelry/types';
+import { RavelryYarn } from '../../src/ravelry/types';
 
 const RAVELRY_YARN_SEARCH_URL = 'https://api.ravelry.com/yarns/search.json';
 const RESULT_COUNT = '10';
@@ -41,4 +41,6 @@ function encodeCredentials() {
   return btoa(`${username}:${password}`);
 }
 
-export const config = { path: RAVELRY_YARN_SEARCH_PATH };
+// Netlify reads this statically at deploy time, so the path has to be a
+// literal rather than an imported constant.
+export const config = { path: '/api/ravelry/yarns' };
