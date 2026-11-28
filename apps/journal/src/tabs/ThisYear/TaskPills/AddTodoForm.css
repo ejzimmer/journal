@@ -7,6 +7,7 @@
   .today-task-description.add-todo-form {
     flex-direction: row;
     padding-inline-end: 9px;
+    transition: box-shadow 0.3s ease-out;
   }
 
   [role='radiogroup'].todo-type-switch {

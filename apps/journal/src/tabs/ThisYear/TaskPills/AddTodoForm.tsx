@@ -1,4 +1,4 @@
-import { useContext, useMemo, useRef, useState } from 'react';
+import { useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { TickIcon } from 'shared/icons/Tick';
 import { RestartArrowIcon } from 'shared/icons/RestartArrow';
 import { useStorageContext } from 'shared/FirebaseContext';
@@ -20,6 +20,8 @@ import {
 import { LatchButton } from './LatchButton';
 
 import './AddTodoForm.css';
+
+const CREATED_FLASH_MS = 1000;
 
 const INITIAL_TYPE_FIELDS: TypeFieldValues = {
   frequency: '1',
@@ -50,6 +52,15 @@ export function AddTodoForm() {
   const [category, setCategory] = useState<OptionType>(categoryOptions[0]);
   const [typeFields, setTypeFields] = useState(INITIAL_TYPE_FIELDS);
   const descriptionRef = useRef<HTMLInputElement>(null);
+  const [isJustCreated, setIsJustCreated] = useState(false);
+
+  useEffect(() => {
+    if (!isJustCreated) {
+      return;
+    }
+    const timeout = setTimeout(() => setIsJustCreated(false), CREATED_FLASH_MS);
+    return () => clearTimeout(timeout);
+  }, [isJustCreated]);
 
   const changeTypeFields = (change: Partial<TypeFieldValues>) =>
     setTypeFields((fields) => ({ ...fields, ...change }));
@@ -71,6 +82,7 @@ export function AddTodoForm() {
 
     setDescription('');
     setTypeFields(INITIAL_TYPE_FIELDS);
+    setIsJustCreated(true);
     descriptionRef.current?.focus();
   };
 
@@ -78,7 +90,8 @@ export function AddTodoForm() {
     <ol className="task-pills add-todo">
       <li className="task-pill">
         <form
-          className="today-task-description add-todo-form"
+          aria-label="Add task"
+          className={`today-task-description add-todo-form${isJustCreated ? ' just-created' : ''}`}
           onSubmit={handleSubmit}
         >
           <Switch

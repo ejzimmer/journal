@@ -137,7 +137,7 @@
     &:is(.status-done, .status-finished) .today-task-description,
     .today-task-description:is(:focus-visible, :has(:focus-visible)),
     .today-task-description:has(input.subtle),
-    .add-todo-form:focus-within {
+    .add-todo-form:is(:focus-within, .just-created) {
       outline: none;
       box-shadow:
         inset 2px 2px 4px hsl(var(--light-hue) 60% 30% / 0.35),
@@ -177,6 +177,12 @@
       --light-hue: 30;
       --light-saturation: 100%;
       --light-lightness: 55%;
+    }
+
+    &:has(.add-todo-form.just-created) {
+      --light-hue: 108;
+      --light-saturation: 95%;
+      --light-lightness: 50%;
     }
 
     input.subtle {
