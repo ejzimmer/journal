@@ -32,17 +32,21 @@ export const FIXED_MEASUREMENTS: Record<FixedMeasurementKey, string> = {
   hemToArmhole: 'Hem to armhole',
   waistToHip: 'Waist to hip',
   wristToUnderarm: 'Wrist to underarm',
+  neckToBackOfHead: 'Neck to back of head',
+  hoodWidth: 'Hood width',
 };
 
 export const EASED_MEASUREMENTS: Record<
   EasedMeasurementKey,
-  { label: string; easeGuide: string }
+  { label: string; easeGuide?: string }
 > = {
   bust: { label: 'Bust', easeGuide: '−5cm+, 0–5cm average' },
   waist: { label: 'Waist', easeGuide: '7.5cm+, 10–15cm average' },
   hips: { label: 'Hips', easeGuide: '5cm+' },
   biceps: { label: 'Biceps', easeGuide: '2.5cm+' },
   wrist: { label: 'Wrist', easeGuide: '5–10cm' },
+  hoodHeight: { label: 'Hood height' },
+  hoodDepth: { label: 'Hood depth' },
 };
 
 export const CAP_TOP_GUIDE = '25–40%';
@@ -67,11 +71,15 @@ export const EMPTY_JUMPER_DRAFT: JumperDraft = {
   hemToArmhole: '',
   waistToHip: '',
   wristToUnderarm: '',
+  neckToBackOfHead: '',
+  hoodWidth: '',
   bust: EMPTY_EASED_MEASUREMENT,
   waist: EMPTY_EASED_MEASUREMENT,
   hips: EMPTY_EASED_MEASUREMENT,
   biceps: EMPTY_EASED_MEASUREMENT,
   wrist: EMPTY_EASED_MEASUREMENT,
+  hoodHeight: EMPTY_EASED_MEASUREMENT,
+  hoodDepth: EMPTY_EASED_MEASUREMENT,
   gauge: EMPTY_GAUGE,
   sleeveGauge: EMPTY_GAUGE,
   capTopPercent: '',

@@ -13,6 +13,10 @@ const EXAMPLE_INPUTS: JumperInputs = {
   biceps: { cm: 29, source: 'body', easeCm: 5 },
   wrist: { cm: 16, source: 'body', easeCm: 7.5 },
   wristToUnderarm: 50,
+  neckToBackOfHead: 7,
+  hoodWidth: 33,
+  hoodHeight: { cm: 32, source: 'body', easeCm: 5 },
+  hoodDepth: { cm: 47, source: 'body', easeCm: 10 },
   gauge: { stitches: 22, rows: 29, needleMm: 4.5, yarn: 'grey' },
   sleeveGauge: { stitches: 24, rows: 31, needleMm: 4 },
   capTopPercent: 30,
@@ -40,6 +44,7 @@ describe('writeJumperPattern', () => {
         'Decrease 2 sts every right side row 3 times (94 sts).',
         'Knit until the back measures 64cm.',
         'On each side, short row across the 12 sts on the neck side, then bind off all 24 shoulder sts.',
+        'Leave the 46 back neck sts live for the hood.',
       ]);
     });
 
@@ -69,6 +74,15 @@ describe('writeJumperPattern', () => {
         'Decrease 1 st at each end of every right side row 17 times (28 sts).',
         'Decrease 1 st at each end of every 3rd right side row 2 times (24 sts).',
         'Bind off the remaining 24 sts.',
+      ]);
+    });
+
+    it('writes the hood', () => {
+      expect(findSteps(EXAMPLE_INPUTS, 'Hood')).toEqual([
+        'With the right side facing, pick up and knit 36 sts along the right front neck edge, knit across the 46 live back neck sts, then pick up and knit 36 sts along the left front neck edge (118 sts). Place a marker either side of the back sts.',
+        'Increase 1 st outside each marker every 2nd row 6 times, then every row 8 times (146 sts).',
+        'Over the 46 centre sts, work 44 pairs of short rows around the back of the head.',
+        'Decrease 1 st outside each marker every 2nd row 7 times, then every row 43 times (46 sts).',
       ]);
     });
   });
