@@ -16,9 +16,10 @@ type BaseProps<T> = {
   ariaLabel?: string;
   autoFocus?: boolean;
   onDismiss?: () => void;
-  // When set, the caller searches and `options` already holds the matches,
-  // so the combobox shows them without filtering them again.
   onSearch?: (searchTerm: string) => void;
+  // false when the caller does the searching and `options` already holds
+  // the matches.
+  filterOptions?: boolean;
 };
 type SingleValueProps<T> = BaseProps<T> & {
   isMultiValue?: false;

@@ -1,4 +1,5 @@
 import { PlusIcon } from 'shared/icons/Plus';
+import { useRavelryColourways } from '../ravelry/useRavelryColourways';
 import { ColourwayFields } from './ColourwayFields';
 import { YarnNamePicker } from './YarnNamePicker';
 import {
@@ -13,6 +14,7 @@ type YarnFieldsProps = {
 };
 
 export function YarnFields({ yarn, onChange }: YarnFieldsProps) {
+  const ravelryColourways = useRavelryColourways(yarn.ravelryId);
   const updateColourway = (updatedColourway: ColourwayDraft) =>
     onChange({
       ...yarn,
@@ -43,6 +45,7 @@ export function YarnFields({ yarn, onChange }: YarnFieldsProps) {
             <ColourwayFields
               key={colourway.id}
               colourway={colourway}
+              ravelryColourways={yarn.ravelryId ? ravelryColourways : undefined}
               onChange={updateColourway}
             />
           ))}

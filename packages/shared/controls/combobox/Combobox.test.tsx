@@ -300,7 +300,13 @@ describe('Combobox', () => {
         it('passes on the search text and shows the options unfiltered', async () => {
           const user = userEvent.setup();
           const onSearch = jest.fn();
-          render(<Combobox {...commonProps} onSearch={onSearch} />);
+          render(
+            <Combobox
+              {...commonProps}
+              onSearch={onSearch}
+              filterOptions={false}
+            />,
+          );
 
           await user.type(screen.getByRole('combobox'), 'gr');
 

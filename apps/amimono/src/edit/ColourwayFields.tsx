@@ -1,22 +1,39 @@
 import { FormControl } from 'shared/controls/FormControl';
 
+import { RavelryColourway } from '../ravelry/types';
+import { ColourwayPicker } from './ColourwayPicker';
 import { ColourwayDraft } from './projectDraft';
 
 type ColourwayFieldsProps = {
   colourway: ColourwayDraft;
+  ravelryColourways?: RavelryColourway[];
   onChange: (colourway: ColourwayDraft) => void;
 };
 
-export function ColourwayFields({ colourway, onChange }: ColourwayFieldsProps) {
+export function ColourwayFields({
+  colourway,
+  ravelryColourways,
+  onChange,
+}: ColourwayFieldsProps) {
+  const updateName = (name: string) => onChange({ ...colourway, name });
+
   return (
     <tr>
       <td>
-        <FormControl
-          label="Colourway"
-          hideLabel
-          value={colourway.name}
-          onChange={(name) => onChange({ ...colourway, name })}
-        />
+        {ravelryColourways ? (
+          <ColourwayPicker
+            name={colourway.name}
+            ravelryColourways={ravelryColourways}
+            onChange={updateName}
+          />
+        ) : (
+          <FormControl
+            label="Colourway"
+            hideLabel
+            value={colourway.name}
+            onChange={updateName}
+          />
+        )}
       </td>
       <td>
         <FormControl

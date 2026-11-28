@@ -27,6 +27,7 @@ export function Combobox<T extends OptionType>({
   autoFocus,
   onDismiss,
   onSearch,
+  filterOptions = true,
 }: ComboboxProps<T>) {
   const inputId = useId();
   const containerRef = useRef<HTMLDivElement>(null);
@@ -50,7 +51,7 @@ export function Combobox<T extends OptionType>({
   };
   const search = searchTerm?.trimStart().toLowerCase();
   const displayedOptions = (
-    search && !onSearch
+    search && filterOptions
       ? options.filter((o) => o.label.toLowerCase().startsWith(search))
       : options
   ).filter((option) => !hideSelectedOptions || !isSelected({ value, option }));

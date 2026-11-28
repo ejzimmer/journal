@@ -1,4 +1,5 @@
 import { RavelryYarn } from '../../src/ravelry/types';
+import { createRavelryAuthHeader } from '../ravelryCredentials';
 
 const RAVELRY_YARN_SEARCH_URL = 'https://api.ravelry.com/yarns/search.json';
 const RESULT_COUNT = '10';
@@ -18,7 +19,7 @@ export default async function searchRavelryYarns(
   searchUrl.searchParams.set('page_size', RESULT_COUNT);
 
   const ravelryResponse = await fetch(searchUrl, {
-    headers: { Authorization: `Basic ${encodeCredentials()}` },
+    headers: createRavelryAuthHeader(),
   });
   if (!ravelryResponse.ok) {
     return new Response(null, { status: 502 });
@@ -33,12 +34,6 @@ export default async function searchRavelryYarns(
     { yarns: results },
     { headers: { 'Cache-Control': 'public, max-age=86400' } },
   );
-}
-
-function encodeCredentials() {
-  const username = process.env.RAVELRY_READ_ONLY_USERNAME;
-  const password = process.env.RAVELRY_READ_ONLY_PASSWORD;
-  return btoa(`${username}:${password}`);
 }
 
 // Netlify reads this statically at deploy time, so the path has to be a

@@ -36,6 +36,7 @@ export function YarnNamePicker({
         searchYarns(searchTerm);
         if (!searchTerm.trim()) onChange({ name: '' });
       }}
+      filterOptions={false}
       createOption={(label) => ({ id: TYPED_YARN_ID, label })}
       onChange={(option) =>
         onChange(
