@@ -2,7 +2,7 @@ import { getToday } from 'shared/dates';
 import { useStorageContext } from 'shared/FirebaseContext';
 import { useDailyJob } from 'shared/dailyJobs/DailyJobsContext';
 import { sortByPosition } from 'shared/drag-and-drop/utils';
-import { DAILY_KEY, DAILY_RESET_KEY, DailyTask } from '../../../types';
+import { DAILY_KEY, DAILY_RESET_KEY, DailyTask } from '../../types';
 
 const readyForToday = (task: DailyTask) =>
   task.status === 'done'

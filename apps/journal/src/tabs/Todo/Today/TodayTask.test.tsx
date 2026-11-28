@@ -4,7 +4,7 @@ import { ReactNode } from 'react';
 import { FirebaseContext } from 'shared/FirebaseContext';
 import { createMockFirebaseContext } from 'shared/mockFirebase';
 import { DAILY_KEY, DailyTask } from '../../../types';
-import { CategoriesContext } from '..';
+import { CategoriesContext } from '../TodoCategoriesProvider';
 import { TodayTask } from './TodayTask';
 
 const task: DailyTask = {

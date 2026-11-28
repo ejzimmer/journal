@@ -1,5 +1,5 @@
 import { getDateDaysAgo } from 'shared/dates';
-import { WeeklyTask } from '../../../types';
+import { WeeklyTask } from '../../types';
 import { refreshTasks } from './useWeeklyReset';
 
 const mockTask: WeeklyTask = {

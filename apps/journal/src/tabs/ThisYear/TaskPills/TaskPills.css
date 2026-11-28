@@ -28,7 +28,7 @@
     --light-lightness: 50%;
 
     width: 100%;
-    margin-block: 14px;
+    margin-block: 7px;
 
     .today-task-description {
       position: relative;
@@ -136,7 +136,8 @@
 
     &:is(.status-done, .status-finished) .today-task-description,
     .today-task-description:is(:focus-visible, :has(:focus-visible)),
-    .today-task-description:has(input.subtle) {
+    .today-task-description:has(input.subtle),
+    .add-todo-form:focus-within {
       outline: none;
       box-shadow:
         inset 2px 2px 4px hsl(var(--light-hue) 60% 30% / 0.35),
@@ -164,7 +165,7 @@
       }
     }
 
-    &:not(:has(input.subtle)):has(
+    &:not(:has(input.subtle, .add-todo-form)):has(
         .today-task-description:focus-visible,
         .today-task-description :focus-visible
       ) {
@@ -172,7 +173,7 @@
       --light-lightness: 55%;
     }
 
-    &:has(input.subtle) {
+    &:has(input.subtle, .add-todo-form) {
       --light-hue: 30;
       --light-saturation: 100%;
       --light-lightness: 55%;

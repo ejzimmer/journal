@@ -1,5 +1,4 @@
 import { Today } from './tabs/Today';
-import { Todo } from './tabs/Todo';
 import { Projects } from './tabs/Projects';
 import { Work } from './tabs/Work';
 import { Media } from './tabs/Media';
@@ -8,9 +7,8 @@ import { Health } from './tabs/Health';
 
 export const TABS = [
   { path: 'today', Element: Today },
-  { path: 'todo', Element: Todo },
+  { path: 'todo', Element: ThisYear },
   { path: 'health', Element: Health },
-  { path: '2026', Element: ThisYear },
   { path: 'projects', Element: Projects },
   { path: 'media', Element: Media },
   { path: 'work', Element: Work },

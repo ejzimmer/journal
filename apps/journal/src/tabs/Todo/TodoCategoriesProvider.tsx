@@ -1,7 +1,8 @@
-import { ReactNode } from 'react';
+import { createContext, ReactNode } from 'react';
 import { useStorageContext } from 'shared/FirebaseContext';
 import { TODO_KEY, TodoTask } from '../../types';
-import { CategoriesContext } from '.';
+
+export const CategoriesContext = createContext<string[] | undefined>(undefined);
 
 type TodoCategoriesProviderProps = { children: ReactNode };
 

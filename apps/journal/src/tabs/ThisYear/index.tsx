@@ -6,6 +6,7 @@ import {
   StationRunning,
 } from './StationRunning/StationRunning';
 import { TodoCategoriesProvider } from '../Todo/TodoCategoriesProvider';
+import { AddTodoForm } from './TaskPills/AddTodoForm';
 import { DueDateTaskList } from './TaskPills/DueDateTaskList';
 import { EveryDayTaskList } from './TaskPills/EveryDayTaskList';
 import { OnceTaskList } from './TaskPills/OnceTaskList';
@@ -17,6 +18,7 @@ export function ThisYear() {
   return (
     <div className="this-year">
       <TodoCategoriesProvider>
+        <AddTodoForm />
         <div className="task-pill-lists">
           <EveryDayTaskList />
           <div className="task-pill-column">

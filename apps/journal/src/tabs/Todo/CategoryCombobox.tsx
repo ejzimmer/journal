@@ -1,5 +1,5 @@
 import { useContext, useMemo } from 'react';
-import { CategoriesContext } from '.';
+import { CategoriesContext } from './TodoCategoriesProvider';
 import { Combobox } from 'shared/controls/combobox/Combobox';
 
 type CategoryComboboxProps = {
