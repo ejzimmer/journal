@@ -23,10 +23,6 @@ function formatTimes(count: number) {
   return count === 1 ? 'once' : `${count} times`;
 }
 
-function formatStitches(count: number) {
-  return count === 1 ? '1 st' : `${count} sts`;
-}
-
 function describeShapingRates(rates: ShapingRate[]) {
   return rates
     .map(
@@ -36,21 +32,38 @@ function describeShapingRates(rates: ShapingRate[]) {
     .join(', then ');
 }
 
+type Edge = 'right' | 'left';
+type Shaping = 'increase' | 'decrease';
+
+const LEANS: Record<Shaping, Record<Edge, string>> = {
+  decrease: { right: 'left-leaning', left: 'right-leaning' },
+  increase: { right: 'right-leaning', left: 'left-leaning' },
+};
+
+const BOTH_EDGES: Edge[] = ['right', 'left'];
+
+function describeEdgeShaping(shaping: Shaping, edges: Edge[]) {
+  return edges
+    .map(
+      (edge) =>
+        `a ${LEANS[shaping][edge]} ${shaping} 1 st in from the ${edge} edge`,
+    )
+    .join(' and ');
+}
+
 type PieceShape = {
-  stitchesPerShaping: number;
+  sideEdges: Edge[];
   divide: (stitches: number) => number;
 };
 
-const BACK: PieceShape = { stitchesPerShaping: 2, divide: (sts) => sts };
-const FRONT: PieceShape = { stitchesPerShaping: 1, divide: (sts) => sts / 2 };
+const BACK: PieceShape = { sideEdges: BOTH_EDGES, divide: (sts) => sts };
 
 function writeBodySteps(
   inputs: JumperInputs,
-  { stitchesPerShaping, divide }: PieceShape,
+  { sideEdges, divide }: PieceShape,
 ) {
   const numbers = calculateJumperNumbers(inputs);
   const { gauge } = inputs;
-  const shaped = formatStitches(stitchesPerShaping);
   const yarn = gauge.yarn ? ` and the ${gauge.yarn} yarn` : '';
 
   const steps = [
@@ -61,13 +74,13 @@ function writeBodySteps(
 
   if (numbers.waistShaping) {
     steps.push(
-      `Decrease ${shaped} ${describeShapingRates([numbers.waistShaping.rate])} (${divide(numbers.waistStitches)} sts).`,
+      `Work ${describeEdgeShaping('decrease', sideEdges)} ${describeShapingRates([numbers.waistShaping.rate])} (${divide(numbers.waistStitches)} sts).`,
     );
   }
 
   steps.push(
     numbers.bustShaping.length > 0
-      ? `Increase ${shaped} ${describeShapingRates(numbers.bustShaping)} (${divide(numbers.bustStitches)} sts).`
+      ? `Work ${describeEdgeShaping('increase', sideEdges)} ${describeShapingRates(numbers.bustShaping)} (${divide(numbers.bustStitches)} sts).`
       : `Knit straight for ${numbers.bustRows} rows.`,
   );
 
@@ -86,7 +99,7 @@ function writeBackSteps(inputs: JumperInputs) {
   );
   if (numbers.armholeDecreaseRows > 0) {
     steps.push(
-      `Decrease 2 sts every right side row ${formatTimes(numbers.armholeDecreaseRows)} (${afterSecondBindOff - 2 * numbers.armholeDecreaseRows} sts).`,
+      `Work ${describeEdgeShaping('decrease', BOTH_EDGES)} every right side row ${formatTimes(numbers.armholeDecreaseRows)} (${afterSecondBindOff - 2 * numbers.armholeDecreaseRows} sts).`,
     );
   }
   steps.push(
@@ -97,41 +110,40 @@ function writeBackSteps(inputs: JumperInputs) {
   return steps;
 }
 
-type RowSide = 'right side' | 'wrong side';
+type FrontSide = { sideEdge: Edge; neckEdge: Edge };
 
-type FrontSide = { armholeRows: RowSide; neckRows: RowSide };
+const RIGHT_FRONT: FrontSide = { sideEdge: 'left', neckEdge: 'right' };
+const LEFT_FRONT: FrontSide = { sideEdge: 'right', neckEdge: 'left' };
 
-const RIGHT_FRONT: FrontSide = {
-  armholeRows: 'wrong side',
-  neckRows: 'right side',
-};
-const LEFT_FRONT: FrontSide = {
-  armholeRows: 'right side',
-  neckRows: 'wrong side',
-};
+function findRowsStartingAt(edge: Edge) {
+  return edge === 'right' ? 'right side' : 'wrong side';
+}
 
 function writeFrontSteps(
   inputs: JumperInputs,
-  { armholeRows, neckRows }: FrontSide,
+  { sideEdge, neckEdge }: FrontSide,
 ) {
-  const { numbers, steps } = writeBodySteps(inputs, FRONT);
+  const { numbers, steps } = writeBodySteps(inputs, {
+    sideEdges: [sideEdge],
+    divide: (sts) => sts / 2,
+  });
   const [firstBindOff, secondBindOff] = numbers.armholeBindOffs;
   const afterBindOffs = numbers.bustStitches / 2 - firstBindOff - secondBindOff;
   const afterArmhole = afterBindOffs - numbers.armholeDecreaseRows;
   const afterNeckBindOff = afterArmhole - numbers.frontNeckBindOff;
 
   steps.push(
-    `Bind off ${firstBindOff} sts, then ${secondBindOff} sts at the start of the next 2 ${armholeRows} rows (${afterBindOffs} sts).`,
+    `Bind off ${firstBindOff} sts, then ${secondBindOff} sts at the start of the next 2 ${findRowsStartingAt(sideEdge)} rows (${afterBindOffs} sts).`,
   );
   if (numbers.armholeDecreaseRows > 0) {
     steps.push(
-      `Decrease 1 st at the armhole edge every right side row ${formatTimes(numbers.armholeDecreaseRows)} (${afterArmhole} sts).`,
+      `Work ${describeEdgeShaping('decrease', [sideEdge])} every right side row ${formatTimes(numbers.armholeDecreaseRows)} (${afterArmhole} sts).`,
     );
   }
   steps.push(
     `Knit until the front measures ${numbers.frontNeckStartCm}cm.`,
-    `Bind off ${numbers.frontNeckBindOff} sts at the start of the next ${neckRows} row (${afterNeckBindOff} sts).`,
-    `Decrease 1 st at the neck edge ${describeShapingRates(
+    `Bind off ${numbers.frontNeckBindOff} sts at the start of the next ${findRowsStartingAt(neckEdge)} row (${afterNeckBindOff} sts).`,
+    `Work ${describeEdgeShaping('decrease', [neckEdge])} ${describeShapingRates(
       [
         { interval: 1, count: numbers.frontNeckDecreasesEveryRow },
         { interval: 2, count: numbers.frontNeckDecreasesEverySecondRow },
@@ -157,18 +169,18 @@ function writeSleeveSteps(inputs: JumperInputs) {
     `With smaller needles${yarn}, cast on ${numbers.castOnStitches} sts.`,
     `Work ${SLEEVE_RIBBING_CM}cm of ribbing.`,
     numbers.increases.length > 0
-      ? `Change to ${sleeveGauge.needleMm}mm needles. Increase 2 sts ${describeShapingRates(numbers.increases)} (${numbers.bicepsStitches} sts).`
+      ? `Change to ${sleeveGauge.needleMm}mm needles. Work ${describeEdgeShaping('increase', BOTH_EDGES)} ${describeShapingRates(numbers.increases)} (${numbers.bicepsStitches} sts).`
       : `Change to ${sleeveGauge.needleMm}mm needles and knit straight for ${numbers.increaseRows} rows.`,
     `Bind off ${numbers.underarmBindOff} sts at the start of the next 2 rows (${numbers.capStitches} sts).`,
   ];
   if (numbers.capDecreasesEveryRightSideRow > 0) {
     steps.push(
-      `Decrease 1 st at each end of every right side row ${formatTimes(numbers.capDecreasesEveryRightSideRow)} (${afterRightSideDecreases} sts).`,
+      `Work ${describeEdgeShaping('decrease', BOTH_EDGES)} every right side row ${formatTimes(numbers.capDecreasesEveryRightSideRow)} (${afterRightSideDecreases} sts).`,
     );
   }
   if (numbers.capDecreasesEveryThirdRightSideRow > 0) {
     steps.push(
-      `Decrease 1 st at each end of every 3rd right side row ${formatTimes(numbers.capDecreasesEveryThirdRightSideRow)} (${numbers.capTopStitches} sts).`,
+      `Work ${describeEdgeShaping('decrease', BOTH_EDGES)} every 3rd right side row ${formatTimes(numbers.capDecreasesEveryThirdRightSideRow)} (${numbers.capTopStitches} sts).`,
     );
   }
   steps.push(`Bind off the remaining ${numbers.capTopStitches} sts.`);
