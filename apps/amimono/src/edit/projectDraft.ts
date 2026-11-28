@@ -33,6 +33,14 @@ export type ProjectFields = Pick<Project, 'description' | 'type'> &
     Pick<Project, 'craft' | 'pattern' | 'yarns' | 'gauge' | 'recipientId'>
   >;
 
+export function removeRavelryPhoto({
+  photoUrl,
+  colour,
+  ...colourway
+}: ColourwayDraft): ColourwayDraft {
+  return colourway;
+}
+
 export function createColourwayDraft(): ColourwayDraft {
   return { id: crypto.randomUUID(), name: '', skeins: '', dyeLot: '' };
 }
@@ -93,6 +101,7 @@ function convertYarns(yarnDrafts: YarnDraft[]) {
     .map((yarnDraft) => ({
       name: yarnDraft.name.trim(),
       id: yarnDraft.id,
+      ...(yarnDraft.ravelryId && { ravelryId: yarnDraft.ravelryId }),
       colourways: yarnDraft.colourways
         .map(convertColourway)
         .filter((colourway) => colourway !== null),
@@ -132,6 +141,8 @@ function convertColourway(
     name,
     skeins: skeins ?? 0,
     ...(dyeLot && { dyeLot }),
+    ...(draft.photoUrl && { photoUrl: draft.photoUrl }),
+    ...(draft.colour && { colour: draft.colour }),
   };
 }
 

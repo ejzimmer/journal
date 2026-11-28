@@ -17,6 +17,7 @@ export function Combobox<T extends OptionType>({
   options,
   onChange,
   onClear,
+  hasClearButton,
   createOption,
   hideSelectedOptions,
   Option,
@@ -26,6 +27,8 @@ export function Combobox<T extends OptionType>({
   ariaLabel,
   autoFocus,
   onDismiss,
+  onSearch,
+  filterOptions = true,
 }: ComboboxProps<T>) {
   const inputId = useId();
   const containerRef = useRef<HTMLDivElement>(null);
@@ -43,9 +46,13 @@ export function Combobox<T extends OptionType>({
   }, []);
 
   const [searchTerm, setSearchTerm] = useState<string>();
+  const updateSearchTerm = (term: string) => {
+    setSearchTerm(term);
+    onSearch?.(term);
+  };
   const search = searchTerm?.trimStart().toLowerCase();
   const displayedOptions = (
-    search
+    search && filterOptions
       ? options.filter((o) => o.label.toLowerCase().startsWith(search))
       : options
   ).filter((option) => !hideSelectedOptions || !isSelected({ value, option }));
@@ -159,7 +166,7 @@ export function Combobox<T extends OptionType>({
             searchInputValue={searchTerm ?? ''}
             onChangeSearchTerm={(event) => {
               const value = event.target.value ?? '';
-              setSearchTerm(value);
+              updateSearchTerm(value);
             }}
             id={inputId}
             popoverId={popoverId}
@@ -179,10 +186,12 @@ export function Combobox<T extends OptionType>({
               event: React.ChangeEvent<HTMLInputElement>,
             ) => {
               const value = event.target.value ?? '';
-              setSearchTerm(value);
+              updateSearchTerm(value);
 
               if (value.trim()) {
                 addOption(value);
+              } else {
+                onClear?.();
               }
             }}
             id={inputId}
@@ -193,7 +202,7 @@ export function Combobox<T extends OptionType>({
             size={inputSize}
             ariaLabel={ariaLabel}
             autoFocus={autoFocus}
-            onClear={onClear}
+            onClear={hasClearButton ? onClear : undefined}
             clearLabel={label ? `Clear ${label.toLowerCase()}` : 'Clear'}
           >
             {Value && value ? <Value value={value} /> : null}

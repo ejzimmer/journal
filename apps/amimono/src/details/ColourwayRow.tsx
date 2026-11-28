@@ -12,7 +12,7 @@ export function ColourwayRow({ colourway }: ColourwayRowProps) {
       title={colourway.dyeLot ? `Dye lot ${colourway.dyeLot}` : undefined}
     >
       <span>{colourway.name}</span>
-      <SkeinBalls skeins={colourway.skeins} />
+      <SkeinBalls skeins={colourway.skeins} colour={colourway.colour} />
     </div>
   );
 }

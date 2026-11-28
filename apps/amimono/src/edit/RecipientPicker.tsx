@@ -23,6 +23,7 @@ export function RecipientPicker({
         options={options}
         onChange={(option) => onChange(option.id)}
         onClear={() => onChange(undefined)}
+        hasClearButton
       />
     </div>
   );

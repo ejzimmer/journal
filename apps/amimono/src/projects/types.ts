@@ -33,12 +33,15 @@ export type Colourway = {
   name: string;
   skeins: number;
   dyeLot?: string;
+  photoUrl?: string;
+  colour?: string;
   position: number;
 };
 
 export type Yarn = {
   id: string;
   name: string;
+  ravelryId?: number;
   colourways?: Record<string, Colourway>;
   position: number;
 };

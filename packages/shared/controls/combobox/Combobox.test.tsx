@@ -296,6 +296,27 @@ describe('Combobox', () => {
         });
       });
 
+      describe('and the caller does the searching', () => {
+        it('passes on the search text and shows the options unfiltered', async () => {
+          const user = userEvent.setup();
+          const onSearch = jest.fn();
+          render(
+            <Combobox
+              {...commonProps}
+              onSearch={onSearch}
+              filterOptions={false}
+            />,
+          );
+
+          await user.type(screen.getByRole('combobox'), 'gr');
+
+          expect(onSearch).toHaveBeenLastCalledWith('gr');
+          expect(
+            screen.getAllByRole('option').map((option) => option.textContent),
+          ).toEqual(['apple', 'orange', 'grape', 'grapefruit']);
+        });
+      });
+
       describe('and there is no createOption', () => {
         it("doesn't make up an option from the text", async () => {
           const user = userEvent.setup();
@@ -334,6 +355,20 @@ describe('Combobox', () => {
     });
 
     describe('when it has onClear', () => {
+      describe('and the user empties the input', () => {
+        it('clears the value', async () => {
+          const user = userEvent.setup();
+          const onClear = jest.fn();
+          render(
+            <Combobox {...commonProps} value={options[0]} onClear={onClear} />,
+          );
+
+          await user.clear(screen.getByRole('combobox'));
+
+          expect(onClear).toHaveBeenCalled();
+        });
+      });
+
       describe('and the user clicks the clear button', () => {
         it('clears the value', async () => {
           const user = userEvent.setup();
@@ -344,6 +379,7 @@ describe('Combobox', () => {
               label="Fruit"
               value={options[0]}
               onClear={onClear}
+              hasClearButton
             />,
           );
 

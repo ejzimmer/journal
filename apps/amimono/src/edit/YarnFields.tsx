@@ -1,9 +1,11 @@
-import { FormControl } from 'shared/controls/FormControl';
 import { PlusIcon } from 'shared/icons/Plus';
+import { useRavelryColourways } from '../ravelry/useRavelryColourways';
 import { ColourwayFields } from './ColourwayFields';
+import { YarnName, YarnNamePicker } from './YarnNamePicker';
 import {
   ColourwayDraft,
   createColourwayDraft,
+  removeRavelryPhoto,
   YarnDraft,
 } from './projectDraft';
 
@@ -13,6 +15,7 @@ type YarnFieldsProps = {
 };
 
 export function YarnFields({ yarn, onChange }: YarnFieldsProps) {
+  const ravelryColourways = useRavelryColourways(yarn.ravelryId);
   const updateColourway = (updatedColourway: ColourwayDraft) =>
     onChange({
       ...yarn,
@@ -21,13 +24,24 @@ export function YarnFields({ yarn, onChange }: YarnFieldsProps) {
       ),
     });
 
+  const changeYarnName = ({ name, ravelryId }: YarnName) => {
+    const isSameRavelryYarn = ravelryId === yarn.ravelryId;
+    onChange({
+      ...yarn,
+      name,
+      ravelryId,
+      colourways: isSameRavelryYarn
+        ? yarn.colourways
+        : yarn.colourways.map(removeRavelryPhoto),
+    });
+  };
+
   return (
     <div className="yarn-fields">
-      <FormControl
-        label="Yarn name"
-        hideLabel
-        value={yarn.name}
-        onChange={(name) => onChange({ ...yarn, name })}
+      <YarnNamePicker
+        name={yarn.name}
+        ravelryId={yarn.ravelryId}
+        onChange={changeYarnName}
       />
       <table className="colourway-table">
         <thead>
@@ -42,6 +56,7 @@ export function YarnFields({ yarn, onChange }: YarnFieldsProps) {
             <ColourwayFields
               key={colourway.id}
               colourway={colourway}
+              ravelryColourways={yarn.ravelryId ? ravelryColourways : undefined}
               onChange={updateColourway}
             />
           ))}

@@ -4,6 +4,7 @@
   "private": true,
   "dependencies": {
     "firebase": "^12.17.1",
+    "jpeg-js": "0.4.4",
     "planck": "^1.5.0",
     "react": "^19.1.0",
     "react-dom": "19",

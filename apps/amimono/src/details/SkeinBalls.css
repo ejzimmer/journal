@@ -4,7 +4,7 @@
   justify-content: flex-end;
   gap: 1px;
 
-  img {
+  svg {
     width: 18px;
     height: 18px;
   }
