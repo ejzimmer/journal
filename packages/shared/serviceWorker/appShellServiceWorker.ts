@@ -14,12 +14,14 @@ clientsClaim();
 precacheAndRoute(self.__WB_MANIFEST);
 
 // Serve the app shell for any same-origin navigation that isn't a request
-// for a build asset, so client-side routes resolve while offline.
+// for a build asset or a Netlify function, so client-side routes resolve
+// while offline.
 const fileExtensionRegexp = /\/[^/?]+\.[^/]+$/;
 registerRoute(
   ({ request, url }) => {
     if (request.mode !== 'navigate') return false;
     if (url.pathname.startsWith('/_')) return false;
+    if (url.pathname.startsWith('/api/')) return false;
     if (url.pathname.match(fileExtensionRegexp)) return false;
     return true;
   },
