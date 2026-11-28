@@ -2,7 +2,7 @@ import { isBeforeToday } from 'shared/dates';
 import { useStorageContext } from 'shared/FirebaseContext';
 import { useDailyJob } from 'shared/dailyJobs/DailyJobsContext';
 import { renumberPositions, sortByPosition } from 'shared/drag-and-drop/utils';
-import { ONCE_KEY, ONCE_RESET_KEY, DailyTask } from '../../../types';
+import { ONCE_KEY, ONCE_RESET_KEY, DailyTask } from '../../types';
 
 export const isFinishedBeforeToday = (task: DailyTask) =>
   task.status === 'finished' && isBeforeToday(task.lastCompleted);

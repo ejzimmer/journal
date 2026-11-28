@@ -1,12 +1,15 @@
-import { screen } from '@testing-library/react';
+import { act, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { getToday } from 'shared/dates';
 import { renderWithStorage } from 'shared/storageContextTestUtils';
-import { CategoriesContext } from '.';
+import { CategoriesContext } from '../../Todo/TodoCategoriesProvider';
 import { AddTodoForm } from './AddTodoForm';
-import { CALENDAR_KEY, DAILY_KEY, ONCE_KEY, WEEKLY_KEY } from '../../types';
+import { CALENDAR_KEY, DAILY_KEY, ONCE_KEY, WEEKLY_KEY } from '../../../types';
 
-function renderForm(lists: Record<string, unknown> = {}) {
+function renderForm(
+  lists: Record<string, unknown> = {},
+  userOptions: Parameters<typeof userEvent.setup>[0] = {},
+) {
   const addItem = jest.fn();
   renderWithStorage(
     <CategoriesContext.Provider value={['🛒']}>
@@ -24,7 +27,7 @@ function renderForm(lists: Record<string, unknown> = {}) {
     },
   );
 
-  return { addItem, user: userEvent.setup() };
+  return { addItem, user: userEvent.setup(userOptions) };
 }
 
 describe('AddTodoForm', () => {
@@ -56,6 +59,33 @@ describe('AddTodoForm', () => {
       await user.type(description, 'Post the parcel{Enter}');
 
       expect(description).toHaveValue('');
+    });
+  });
+
+  describe('when a task has just been created', () => {
+    beforeEach(() => {
+      jest.useFakeTimers();
+    });
+
+    afterEach(() => {
+      jest.useRealTimers();
+    });
+
+    it('lights the form green for a second', async () => {
+      const { user } = renderForm(
+        {},
+        { advanceTimers: jest.advanceTimersByTime },
+      );
+      const form = screen.getByRole('form', { name: 'Add task' });
+
+      await user.type(
+        screen.getByRole('textbox', { name: 'Description' }),
+        'Post the parcel{Enter}',
+      );
+      expect(form).toHaveClass('just-created');
+
+      act(() => jest.advanceTimersByTime(1000));
+      expect(form).not.toHaveClass('just-created');
     });
   });
 
@@ -137,12 +167,12 @@ describe('AddTodoForm', () => {
       );
     };
 
-    describe('and ticks Repeats before adding a task', () => {
+    describe('and presses Repeats before adding a task', () => {
       it('adds a repeating task to the due date list', async () => {
         const { addItem, user } = renderForm();
 
         await fillInDueDateTask(user);
-        await user.click(screen.getByRole('checkbox', { name: 'Repeats' }));
+        await user.click(screen.getByRole('button', { name: 'Repeats' }));
         await user.click(screen.getByRole('button', { name: 'Create' }));
 
         expect(addItem).toHaveBeenCalledWith(
@@ -156,7 +186,7 @@ describe('AddTodoForm', () => {
       });
     });
 
-    describe('and leaves Repeats unticked', () => {
+    describe('and leaves Repeats unpressed', () => {
       it('adds a task that only happens once', async () => {
         const { addItem, user } = renderForm();
 

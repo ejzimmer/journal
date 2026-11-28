@@ -1,7 +1,7 @@
 import { isBeforeToday, isToday } from 'shared/dates';
 import { useStorageContext } from 'shared/FirebaseContext';
 import { useDailyJob } from 'shared/dailyJobs/DailyJobsContext';
-import { CALENDAR_KEY, CALENDAR_RESET_KEY, CalendarTask } from '../../../types';
+import { CALENDAR_KEY, CALENDAR_RESET_KEY, CalendarTask } from '../../types';
 
 const readyToDelete = (task: CalendarTask) =>
   task.status === 'finished' &&

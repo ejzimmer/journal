@@ -1,7 +1,7 @@
 import { getDaysSince } from 'shared/dates';
 import { useStorageContext } from 'shared/FirebaseContext';
 import { useDailyJob } from 'shared/dailyJobs/DailyJobsContext';
-import { WEEKLY_KEY, WEEKLY_RESET_KEY, WeeklyTask } from '../../../types';
+import { WEEKLY_KEY, WEEKLY_RESET_KEY, WeeklyTask } from '../../types';
 
 export function refreshTasks(
   tasks: WeeklyTask[],

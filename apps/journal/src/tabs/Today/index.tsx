@@ -7,7 +7,7 @@ import { TodaySymptoms } from './TodaySymptoms';
 import { DailyGoals } from './DailyGoals';
 import { useTodayItems } from './useTodayItems';
 
-import '../Todo/index.css';
+import './crt.css';
 import '../Todo/Today/TodayTask.css';
 import '../Todo/ThisWeek/ThisWeekTask.css';
 import '../Todo/DueDate/DueDateTask.css';

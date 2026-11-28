@@ -3,7 +3,7 @@ import userEvent from '@testing-library/user-event';
 import { getToday } from 'shared/dates';
 import { renderWithStorage } from 'shared/storageContextTestUtils';
 import { CalendarTask, CALENDAR_KEY } from '../../../types';
-import { CategoriesContext } from '../../Todo';
+import { CategoriesContext } from '../../Todo/TodoCategoriesProvider';
 import { DueDateTaskPill } from './DueDateTaskPill';
 
 const task: CalendarTask = {

@@ -3,7 +3,7 @@ import {
   createDailyJobsStorage,
   renderDailyJob,
 } from 'shared/dailyJobs/dailyJobsTestUtils';
-import { CALENDAR_KEY, CalendarTask } from '../../../types';
+import { CALENDAR_KEY, CalendarTask } from '../../types';
 import { useDueDateReset } from './useDueDateReset';
 
 const createTask = (

@@ -17,6 +17,7 @@ export function LatchButton({
 }: LatchButtonProps) {
   return (
     <button
+      type="button"
       className="latch-button"
       aria-label={label}
       aria-pressed={isPressed}

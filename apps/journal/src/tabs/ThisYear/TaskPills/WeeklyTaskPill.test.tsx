@@ -4,7 +4,7 @@ import { getDateDaysAgo, getToday } from 'shared/dates';
 import { ContextType } from 'shared/FirebaseContext';
 import { renderWithStorage } from 'shared/storageContextTestUtils';
 import { WEEKLY_KEY, WeeklyTask } from '../../../types';
-import { CategoriesContext } from '../../Todo';
+import { CategoriesContext } from '../../Todo/TodoCategoriesProvider';
 import { WeeklyTaskPill } from './WeeklyTaskPill';
 
 const task: WeeklyTask = {

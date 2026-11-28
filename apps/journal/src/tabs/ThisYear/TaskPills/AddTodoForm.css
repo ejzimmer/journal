@@ -1,0 +1,102 @@
+.task-pills.add-todo {
+  justify-self: center;
+  width: min(100%, 760px);
+  max-width: none;
+  margin-block-start: 16px;
+
+  .today-task-description.add-todo-form {
+    flex-direction: row;
+    padding-inline-end: 9px;
+    transition: box-shadow 0.3s ease-out;
+  }
+
+  [role='radiogroup'].todo-type-switch {
+    flex-shrink: 0;
+    padding: 3px;
+    border: 0;
+    border-radius: 999px;
+    background: var(--pill-bg);
+    box-shadow:
+      inset 2px 2px 4px var(--pill-shade),
+      inset -2px -2px 4px hsl(0 0% 100%);
+
+    &:focus-within {
+      outline: none;
+    }
+
+    label {
+      padding: 6px 10px;
+      border: 0;
+      border-radius: 999px;
+      font:
+        15px system-ui,
+        sans-serif;
+      color: hsl(219 10% 40%);
+      box-shadow: none;
+    }
+
+    label:has(input:checked) {
+      font-weight: 600;
+      color: hsl(30 100% 42%);
+      background: var(--button-face);
+      box-shadow: var(--button-raised);
+    }
+
+    label:has(input:focus-visible) {
+      outline: 2px solid hsl(205 95% 55%);
+    }
+
+    .indicator {
+      display: none;
+    }
+  }
+
+  .add-todo-input {
+    min-width: 0;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: none;
+    outline: none;
+    font: var(--pill-font);
+    color: var(--pill-ink);
+  }
+
+  .add-todo-description {
+    flex: 1;
+  }
+
+  .add-todo-frequency {
+    flex: none;
+    width: 4ch;
+    text-align: end;
+  }
+
+  .add-todo-due-date {
+    flex: none;
+    font:
+      600 13px system-ui,
+      sans-serif;
+    color: hsl(219 10% 45%);
+  }
+
+  .add-todo-submit {
+    display: grid;
+    place-items: center;
+    flex-shrink: 0;
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    color: hsl(108 70% 35%);
+    background: var(--button-face);
+    box-shadow: var(--button-raised);
+    cursor: pointer;
+
+    &:focus-visible {
+      outline: 2px solid hsl(205 95% 55%);
+      outline-offset: 2px;
+    }
+  }
+}

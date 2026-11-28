@@ -5,7 +5,7 @@ import { ContextType, FirebaseContext } from 'shared/FirebaseContext';
 import { createMockFirebaseContext } from 'shared/mockFirebase';
 import { DAILY_GOALS_KEY, TaskGoal } from 'shared/dailyGoals/types';
 import { DailyTask, ONCE_KEY, DailyGoalItem } from '../../../types';
-import { CategoriesContext } from '../../Todo';
+import { CategoriesContext } from '../../Todo/TodoCategoriesProvider';
 import { OnceTaskList } from './OnceTaskList';
 
 const parcel: DailyTask = {
