@@ -29,7 +29,18 @@ export function YarnFields({ yarn, onChange }: YarnFieldsProps) {
         name={yarn.name}
         ravelryId={yarn.ravelryId}
         onChange={({ name, ravelryId }) =>
-          onChange({ ...yarn, name, ravelryId })
+          onChange({
+            ...yarn,
+            name,
+            ravelryId,
+            colourways:
+              ravelryId === yarn.ravelryId
+                ? yarn.colourways
+                : yarn.colourways.map((colourway) => ({
+                    ...colourway,
+                    photoUrl: undefined,
+                  })),
+          })
         }
       />
       <table className="colourway-table">

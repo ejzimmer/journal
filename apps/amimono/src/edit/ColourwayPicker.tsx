@@ -8,14 +8,19 @@ import './ColourwayPicker.css';
 
 const TYPED_COLOURWAY_ID = 'typed';
 
-type ColourwayPickerProps = {
+export type ColourwayChoice = {
   name: string;
+  photoUrl?: string;
+};
+
+type ColourwayPickerProps = ColourwayChoice & {
   ravelryColourways: RavelryColourway[];
-  onChange: (name: string) => void;
+  onChange: (choice: ColourwayChoice) => void;
 };
 
 export function ColourwayPicker({
   name,
+  photoUrl,
   ravelryColourways,
   onChange,
 }: ColourwayPickerProps) {
@@ -29,6 +34,7 @@ export function ColourwayPicker({
     ? (options.find((option) => option.label === name) ?? {
         id: TYPED_COLOURWAY_ID,
         label: name,
+        photoUrl,
       })
     : undefined;
 
@@ -38,11 +44,16 @@ export function ColourwayPicker({
         ariaLabel="Colourway"
         value={value}
         options={options}
-        createOption={(label) => ({ id: TYPED_COLOURWAY_ID, label })}
+        createOption={(label): ColourwayOption => ({
+          id: TYPED_COLOURWAY_ID,
+          label,
+        })}
         onSearch={(searchTerm) => {
-          if (!searchTerm.trim()) onChange('');
+          if (!searchTerm.trim()) onChange({ name: '' });
         }}
-        onChange={(option) => onChange(option.label)}
+        onChange={(option) =>
+          onChange({ name: option.label, photoUrl: option.photoUrl })
+        }
         Option={ColourwayOptionLabel}
         Value={ColourwayValueLabel}
       />

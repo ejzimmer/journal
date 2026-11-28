@@ -21,6 +21,7 @@ const seed = {
               name: 'Mineral',
               skeins: 1.5,
               dyeLot: '0917',
+              photoUrl: 'https://images.example/mineral.jpg',
               position: 1,
             },
           },
@@ -84,7 +85,7 @@ describe('the project drawer', () => {
   });
 
   describe('opening the details', () => {
-    it('shows the pattern, yarn and gauge', async () => {
+    it('shows the pattern, yarn with colourway photos, and gauge', async () => {
       const { user } = renderHomePage(seed);
       const card = within(findCard('Cardigan'));
       await user.click(card.getByRole('button', { name: 'Expand project' }));
@@ -94,7 +95,13 @@ describe('the project drawer', () => {
       expect(
         card.getByRole('link', { name: 'Telja Cardigan' }),
       ).toHaveAttribute('href', 'https://example.com/telja');
-      expect(card.getByTitle('Dye lot 0917')).toHaveTextContent('Mineral');
+      const mineral = card.getByTitle('Dye lot 0917');
+      expect(mineral).toHaveTextContent('Mineral');
+      expect(
+        within(mineral)
+          .getAllByRole('presentation')
+          .map((image) => image.getAttribute('src')),
+      ).toContain('https://images.example/mineral.jpg');
       expect(card.getByRole('img', { name: '1.5 skeins' })).toBeInTheDocument();
       expect(
         card.getByRole('img', {

@@ -72,7 +72,7 @@ describe('YarnFields', () => {
       });
 
       describe('then picks one', () => {
-        it('sets the colourway name', async () => {
+        it('sets the colourway name and photo', async () => {
           const user = userEvent.setup();
           mockRavelryColourways();
           const onChange = jest.fn();
@@ -82,12 +82,17 @@ describe('YarnFields', () => {
             await screen.findByRole('combobox', { name: 'Colourway' }),
           );
           await user.click(
-            await screen.findByRole('option', { name: 'Mineral' }),
+            await screen.findByRole('option', { name: 'Ancient 172' }),
           );
 
           expect(onChange).toHaveBeenLastCalledWith(
             expect.objectContaining({
-              colourways: [expect.objectContaining({ name: 'Mineral' })],
+              colourways: [
+                expect.objectContaining({
+                  name: 'Ancient',
+                  photoUrl: 'https://images.example/ancient.jpg',
+                }),
+              ],
             }),
           );
         });
@@ -112,6 +117,30 @@ describe('YarnFields', () => {
           }),
         );
       });
+    });
+  });
+
+  describe('when the user changes the yarn', () => {
+    it('drops the colourway photos from the old yarn', async () => {
+      const user = userEvent.setup();
+      jest
+        .spyOn(global, 'fetch')
+        .mockResolvedValue(new Response(JSON.stringify({ colourways: [] })));
+      const onChange = jest.fn();
+      const yarn = createYarn(42);
+      yarn.colourways[0] = {
+        ...yarn.colourways[0],
+        name: 'Ancient',
+        photoUrl: 'https://images.example/ancient.jpg',
+      };
+      render(<YarnFields yarn={yarn} onChange={onChange} />);
+
+      await user.type(screen.getByRole('combobox', { name: 'Yarn name' }), 's');
+
+      const [{ colourways }] = onChange.mock.lastCall;
+      expect(colourways[0]).toEqual(
+        expect.objectContaining({ name: 'Ancient', photoUrl: undefined }),
+      );
     });
   });
 

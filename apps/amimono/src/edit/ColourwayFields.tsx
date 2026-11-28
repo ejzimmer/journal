@@ -15,23 +15,26 @@ export function ColourwayFields({
   ravelryColourways,
   onChange,
 }: ColourwayFieldsProps) {
-  const updateName = (name: string) => onChange({ ...colourway, name });
-
   return (
     <tr>
       <td>
         {ravelryColourways ? (
           <ColourwayPicker
             name={colourway.name}
+            photoUrl={colourway.photoUrl}
             ravelryColourways={ravelryColourways}
-            onChange={updateName}
+            onChange={({ name, photoUrl }) =>
+              onChange({ ...colourway, name, photoUrl })
+            }
           />
         ) : (
           <FormControl
             label="Colourway"
             hideLabel
             value={colourway.name}
-            onChange={updateName}
+            onChange={(name) =>
+              onChange({ ...colourway, name, photoUrl: undefined })
+            }
           />
         )}
       </td>

@@ -33,6 +33,7 @@ export type Colourway = {
   name: string;
   skeins: number;
   dyeLot?: string;
+  photoUrl?: string;
   position: number;
 };
 

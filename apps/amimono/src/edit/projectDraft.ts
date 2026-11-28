@@ -133,6 +133,7 @@ function convertColourway(
     name,
     skeins: skeins ?? 0,
     ...(dyeLot && { dyeLot }),
+    ...(draft.photoUrl && { photoUrl: draft.photoUrl }),
   };
 }
 
