@@ -26,6 +26,7 @@ export function Combobox<T extends OptionType>({
   ariaLabel,
   autoFocus,
   onDismiss,
+  onSearch,
 }: ComboboxProps<T>) {
   const inputId = useId();
   const containerRef = useRef<HTMLDivElement>(null);
@@ -43,9 +44,13 @@ export function Combobox<T extends OptionType>({
   }, []);
 
   const [searchTerm, setSearchTerm] = useState<string>();
+  const updateSearchTerm = (term: string) => {
+    setSearchTerm(term);
+    onSearch?.(term);
+  };
   const search = searchTerm?.trimStart().toLowerCase();
   const displayedOptions = (
-    search
+    search && !onSearch
       ? options.filter((o) => o.label.toLowerCase().startsWith(search))
       : options
   ).filter((option) => !hideSelectedOptions || !isSelected({ value, option }));
@@ -159,7 +164,7 @@ export function Combobox<T extends OptionType>({
             searchInputValue={searchTerm ?? ''}
             onChangeSearchTerm={(event) => {
               const value = event.target.value ?? '';
-              setSearchTerm(value);
+              updateSearchTerm(value);
             }}
             id={inputId}
             popoverId={popoverId}
@@ -179,7 +184,7 @@ export function Combobox<T extends OptionType>({
               event: React.ChangeEvent<HTMLInputElement>,
             ) => {
               const value = event.target.value ?? '';
-              setSearchTerm(value);
+              updateSearchTerm(value);
 
               if (value.trim()) {
                 addOption(value);

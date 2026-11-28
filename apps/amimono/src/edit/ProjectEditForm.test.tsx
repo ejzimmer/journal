@@ -85,7 +85,7 @@ describe('editing a project', () => {
       expect(screen.getByRole('textbox', { name: 'Pattern' })).toHaveValue(
         'https://www.ravelry.com/patterns/library/telja-cardigan',
       );
-      expect(screen.getByRole('textbox', { name: 'Yarn name' })).toHaveValue(
+      expect(screen.getByRole('combobox', { name: 'Yarn name' })).toHaveValue(
         'Felted Tweed',
       );
       expect(screen.getByRole('spinbutton', { name: 'Skeins' })).toHaveValue(
@@ -138,7 +138,7 @@ describe('editing a project', () => {
 
       await user.click(screen.getByRole('button', { name: 'Add yarn' }));
       await user.type(
-        screen.getAllByRole('textbox', { name: 'Yarn name' })[1],
+        screen.getAllByRole('combobox', { name: 'Yarn name' })[1],
         'Kid-Silk',
       );
       await user.type(
@@ -185,7 +185,7 @@ describe('editing a project', () => {
       const { user } = renderHomePage(seed);
       await openEditForm(user, 'Cardigan');
 
-      await user.clear(screen.getByRole('textbox', { name: 'Yarn name' }));
+      await user.clear(screen.getByRole('combobox', { name: 'Yarn name' }));
       await user.clear(screen.getByRole('textbox', { name: 'Colourway' }));
       await user.clear(screen.getByRole('spinbutton', { name: 'Skeins' }));
       await user.clear(screen.getByRole('textbox', { name: 'Dye lot' }));

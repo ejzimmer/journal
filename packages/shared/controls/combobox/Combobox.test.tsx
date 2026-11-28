@@ -296,6 +296,21 @@ describe('Combobox', () => {
         });
       });
 
+      describe('and the caller does the searching', () => {
+        it('passes on the search text and shows the options unfiltered', async () => {
+          const user = userEvent.setup();
+          const onSearch = jest.fn();
+          render(<Combobox {...commonProps} onSearch={onSearch} />);
+
+          await user.type(screen.getByRole('combobox'), 'gr');
+
+          expect(onSearch).toHaveBeenLastCalledWith('gr');
+          expect(
+            screen.getAllByRole('option').map((option) => option.textContent),
+          ).toEqual(['apple', 'orange', 'grape', 'grapefruit']);
+        });
+      });
+
       describe('and there is no createOption', () => {
         it("doesn't make up an option from the text", async () => {
           const user = userEvent.setup();

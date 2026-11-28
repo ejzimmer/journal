@@ -1,6 +1,6 @@
-import { FormControl } from 'shared/controls/FormControl';
 import { PlusIcon } from 'shared/icons/Plus';
 import { ColourwayFields } from './ColourwayFields';
+import { YarnNamePicker } from './YarnNamePicker';
 import {
   ColourwayDraft,
   createColourwayDraft,
@@ -23,11 +23,12 @@ export function YarnFields({ yarn, onChange }: YarnFieldsProps) {
 
   return (
     <div className="yarn-fields">
-      <FormControl
-        label="Yarn name"
-        hideLabel
-        value={yarn.name}
-        onChange={(name) => onChange({ ...yarn, name })}
+      <YarnNamePicker
+        name={yarn.name}
+        ravelryId={yarn.ravelryId}
+        onChange={({ name, ravelryId }) =>
+          onChange({ ...yarn, name, ravelryId })
+        }
       />
       <table className="colourway-table">
         <thead>

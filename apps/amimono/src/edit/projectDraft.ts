@@ -93,6 +93,7 @@ function convertYarns(yarnDrafts: YarnDraft[]) {
     .map((yarnDraft) => ({
       name: yarnDraft.name.trim(),
       id: yarnDraft.id,
+      ...(yarnDraft.ravelryId && { ravelryId: yarnDraft.ravelryId }),
       colourways: yarnDraft.colourways
         .map(convertColourway)
         .filter((colourway) => colourway !== null),

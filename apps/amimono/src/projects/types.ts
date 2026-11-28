@@ -39,6 +39,7 @@ export type Colourway = {
 export type Yarn = {
   id: string;
   name: string;
+  ravelryId?: number;
   colourways?: Record<string, Colourway>;
   position: number;
 };
