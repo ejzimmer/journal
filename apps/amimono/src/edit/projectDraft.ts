@@ -33,6 +33,14 @@ export type ProjectFields = Pick<Project, 'description' | 'type'> &
     Pick<Project, 'craft' | 'pattern' | 'yarns' | 'gauge' | 'recipientId'>
   >;
 
+export function removeRavelryPhoto({
+  photoUrl,
+  colour,
+  ...colourway
+}: ColourwayDraft): ColourwayDraft {
+  return colourway;
+}
+
 export function createColourwayDraft(): ColourwayDraft {
   return { id: crypto.randomUUID(), name: '', skeins: '', dyeLot: '' };
 }

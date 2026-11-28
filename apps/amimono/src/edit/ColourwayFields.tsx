@@ -2,7 +2,7 @@ import { FormControl } from 'shared/controls/FormControl';
 
 import { RavelryColourway } from '../ravelry/types';
 import { ColourwayPicker } from './ColourwayPicker';
-import { ColourwayDraft } from './projectDraft';
+import { ColourwayDraft, removeRavelryPhoto } from './projectDraft';
 import { useColourwayColour } from './useColourwayColour';
 
 type ColourwayFieldsProps = {
@@ -26,8 +26,8 @@ export function ColourwayFields({
             name={colourway.name}
             photoUrl={colourway.photoUrl}
             ravelryColourways={ravelryColourways}
-            onChange={({ name, photoUrl }) =>
-              onChange({ ...colourway, name, photoUrl, colour: undefined })
+            onChange={(choice) =>
+              onChange({ ...removeRavelryPhoto(colourway), ...choice })
             }
           />
         ) : (
@@ -35,14 +35,7 @@ export function ColourwayFields({
             label="Colourway"
             hideLabel
             value={colourway.name}
-            onChange={(name) =>
-              onChange({
-                ...colourway,
-                name,
-                photoUrl: undefined,
-                colour: undefined,
-              })
-            }
+            onChange={(name) => onChange({ ...colourway, name })}
           />
         )}
       </td>

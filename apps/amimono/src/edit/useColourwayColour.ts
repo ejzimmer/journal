@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useEffectEvent } from 'react';
 
 import { fetchColourwayColour } from '../ravelry/fetchColourwayColour';
 import { ColourwayDraft } from './projectDraft';
@@ -7,24 +7,18 @@ export function useColourwayColour(
   colourway: ColourwayDraft,
   onChange: (colourway: ColourwayDraft) => void,
 ) {
-  const latest = useRef({ colourway, onChange });
-  useEffect(() => {
-    latest.current = { colourway, onChange };
-  });
-
   const { photoUrl, colour } = colourway;
+
+  const saveColour = useEffectEvent((foundColour: string) =>
+    onChange({ ...colourway, colour: foundColour }),
+  );
+
   useEffect(() => {
     if (!photoUrl || colour) return;
 
     const controller = new AbortController();
     fetchColourwayColour(photoUrl, controller.signal)
-      .then((foundColour) => {
-        const { colourway: current, onChange: updateColourway } =
-          latest.current;
-        if (current.photoUrl === photoUrl) {
-          updateColourway({ ...current, colour: foundColour });
-        }
-      })
+      .then(saveColour)
       .catch(() => {});
 
     return () => controller.abort();

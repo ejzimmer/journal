@@ -355,6 +355,20 @@ describe('Combobox', () => {
     });
 
     describe('when it has onClear', () => {
+      describe('and the user empties the input', () => {
+        it('clears the value', async () => {
+          const user = userEvent.setup();
+          const onClear = jest.fn();
+          render(
+            <Combobox {...commonProps} value={options[0]} onClear={onClear} />,
+          );
+
+          await user.clear(screen.getByRole('combobox'));
+
+          expect(onClear).toHaveBeenCalled();
+        });
+      });
+
       describe('and the user clicks the clear button', () => {
         it('clears the value', async () => {
           const user = userEvent.setup();
@@ -365,6 +379,7 @@ describe('Combobox', () => {
               label="Fruit"
               value={options[0]}
               onClear={onClear}
+              hasClearButton
             />,
           );
 

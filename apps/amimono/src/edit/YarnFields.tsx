@@ -1,10 +1,11 @@
 import { PlusIcon } from 'shared/icons/Plus';
 import { useRavelryColourways } from '../ravelry/useRavelryColourways';
 import { ColourwayFields } from './ColourwayFields';
-import { YarnNamePicker } from './YarnNamePicker';
+import { YarnName, YarnNamePicker } from './YarnNamePicker';
 import {
   ColourwayDraft,
   createColourwayDraft,
+  removeRavelryPhoto,
   YarnDraft,
 } from './projectDraft';
 
@@ -23,26 +24,24 @@ export function YarnFields({ yarn, onChange }: YarnFieldsProps) {
       ),
     });
 
+  const changeYarnName = ({ name, ravelryId }: YarnName) => {
+    const isSameRavelryYarn = ravelryId === yarn.ravelryId;
+    onChange({
+      ...yarn,
+      name,
+      ravelryId,
+      colourways: isSameRavelryYarn
+        ? yarn.colourways
+        : yarn.colourways.map(removeRavelryPhoto),
+    });
+  };
+
   return (
     <div className="yarn-fields">
       <YarnNamePicker
         name={yarn.name}
         ravelryId={yarn.ravelryId}
-        onChange={({ name, ravelryId }) =>
-          onChange({
-            ...yarn,
-            name,
-            ravelryId,
-            colourways:
-              ravelryId === yarn.ravelryId
-                ? yarn.colourways
-                : yarn.colourways.map((colourway) => ({
-                    ...colourway,
-                    photoUrl: undefined,
-                    colour: undefined,
-                  })),
-          })
-        }
+        onChange={changeYarnName}
       />
       <table className="colourway-table">
         <thead>

@@ -154,7 +154,7 @@ describe('YarnFields', () => {
   });
 
   describe('when the user changes the yarn', () => {
-    it('drops the colourway photos from the old yarn', async () => {
+    it('drops the colourway photos and colours from the old yarn', async () => {
       const user = userEvent.setup();
       jest
         .spyOn(global, 'fetch')
@@ -165,19 +165,19 @@ describe('YarnFields', () => {
         ...yarn.colourways[0],
         name: 'Ancient',
         photoUrl: 'https://images.example/ancient.jpg',
+        colour: '#8a7a5c',
       };
       render(<YarnFields yarn={yarn} onChange={onChange} />);
 
       await user.type(screen.getByRole('combobox', { name: 'Yarn name' }), 's');
 
       const [{ colourways }] = onChange.mock.lastCall;
-      expect(colourways[0]).toEqual(
-        expect.objectContaining({
-          name: 'Ancient',
-          photoUrl: undefined,
-          colour: undefined,
-        }),
-      );
+      expect(colourways[0]).toEqual({
+        id: 'first',
+        name: 'Ancient',
+        skeins: '',
+        dyeLot: '',
+      });
     });
   });
 

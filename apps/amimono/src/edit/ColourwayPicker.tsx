@@ -4,8 +4,6 @@ import { RavelryColourway } from '../ravelry/types';
 import { ColourwayOption, ColourwayOptionLabel } from './ColourwayOptionLabel';
 import { ColourwayValueLabel } from './ColourwayValueLabel';
 
-import './ColourwayPicker.css';
-
 const TYPED_COLOURWAY_ID = 'typed';
 
 export type ColourwayChoice = {
@@ -39,24 +37,20 @@ export function ColourwayPicker({
     : undefined;
 
   return (
-    <div className="colourway-picker">
-      <Combobox
-        ariaLabel="Colourway"
-        value={value}
-        options={options}
-        createOption={(label): ColourwayOption => ({
-          id: TYPED_COLOURWAY_ID,
-          label,
-        })}
-        onSearch={(searchTerm) => {
-          if (!searchTerm.trim()) onChange({ name: '' });
-        }}
-        onChange={(option) =>
-          onChange({ name: option.label, photoUrl: option.photoUrl })
-        }
-        Option={ColourwayOptionLabel}
-        Value={ColourwayValueLabel}
-      />
-    </div>
+    <Combobox
+      ariaLabel="Colourway"
+      value={value}
+      options={options}
+      createOption={(label): ColourwayOption => ({
+        id: TYPED_COLOURWAY_ID,
+        label,
+      })}
+      onClear={() => onChange({ name: '' })}
+      onChange={(option) =>
+        onChange({ name: option.label, photoUrl: option.photoUrl })
+      }
+      Option={ColourwayOptionLabel}
+      Value={ColourwayValueLabel}
+    />
   );
 }

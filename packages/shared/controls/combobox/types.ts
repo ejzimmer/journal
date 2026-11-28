@@ -25,7 +25,10 @@ type SingleValueProps<T> = BaseProps<T> & {
   isMultiValue?: false;
   value: T | undefined;
   onChange: (value: T) => void;
+  // Called when the user removes the value, by emptying the input or with
+  // the clear button.
   onClear?: () => void;
+  hasClearButton?: boolean;
 };
 
 export type SingleValueInputProps<T> = {
@@ -42,6 +45,7 @@ type MultiValueProps<T> = BaseProps<T> & {
   value: T[];
   onChange: (value: T[]) => void;
   onClear?: never;
+  hasClearButton?: never;
 };
 
 export type MultiValueInputProps<T> = {

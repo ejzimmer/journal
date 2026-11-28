@@ -9,6 +9,12 @@ export type YarnName = {
   ravelryId?: number;
 };
 
+type YarnOption = {
+  id: string;
+  label: string;
+  ravelryId?: number;
+};
+
 type YarnNamePickerProps = YarnName & {
   onChange: (yarnName: YarnName) => void;
 };
@@ -19,12 +25,17 @@ export function YarnNamePicker({
   onChange,
 }: YarnNamePickerProps) {
   const { yarns, searchYarns } = useRavelryYarnSearch();
-  const options = yarns.map((yarn) => ({
+  const options: YarnOption[] = yarns.map((yarn) => ({
     id: String(yarn.id),
     label: yarn.name,
+    ravelryId: yarn.id,
   }));
-  const value = name
-    ? { id: ravelryId ? String(ravelryId) : TYPED_YARN_ID, label: name }
+  const value: YarnOption | undefined = name
+    ? {
+        id: ravelryId ? String(ravelryId) : TYPED_YARN_ID,
+        label: name,
+        ravelryId,
+      }
     : undefined;
 
   return (
@@ -32,18 +43,12 @@ export function YarnNamePicker({
       ariaLabel="Yarn name"
       value={value}
       options={options}
-      onSearch={(searchTerm) => {
-        searchYarns(searchTerm);
-        if (!searchTerm.trim()) onChange({ name: '' });
-      }}
+      onSearch={searchYarns}
+      onClear={() => onChange({ name: '' })}
       filterOptions={false}
-      createOption={(label) => ({ id: TYPED_YARN_ID, label })}
+      createOption={(label): YarnOption => ({ id: TYPED_YARN_ID, label })}
       onChange={(option) =>
-        onChange(
-          option.id === TYPED_YARN_ID
-            ? { name: option.label }
-            : { name: option.label, ravelryId: Number(option.id) },
-        )
+        onChange({ name: option.label, ravelryId: option.ravelryId })
       }
     />
   );
