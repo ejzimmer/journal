@@ -12,7 +12,7 @@ const SOURCE_LABELS: Record<MeasurementSource, string> = {
 
 type EasedMeasurementFieldsProps = {
   label: string;
-  easeGuide: string;
+  easeGuide?: string;
   measurement: EasedMeasurementDraft;
   onChange: (measurement: EasedMeasurementDraft) => void;
 };

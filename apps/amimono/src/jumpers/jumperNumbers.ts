@@ -27,6 +27,7 @@ export type JumperNumbers = {
   lengthToShouldersCm: number;
   shoulderStitches: number;
   shoulderShortRowStitches: number;
+  neckStitches: number;
   frontNeckStartCm: number;
   frontNeckBindOff: number;
   frontNeckDecreasesEveryRow: number;
@@ -121,6 +122,7 @@ export function calculateJumperNumbers(inputs: JumperInputs): JumperNumbers {
     lengthToShouldersCm: Math.round(lengthToShouldersCm),
     shoulderStitches,
     shoulderShortRowStitches: Math.round(shoulderStitches / 2),
+    neckStitches,
     frontNeckStartCm: Math.round(totalLengthCm - FRONT_NECK_DEPTH_CM),
     frontNeckBindOff,
     frontNeckDecreasesEveryRow,

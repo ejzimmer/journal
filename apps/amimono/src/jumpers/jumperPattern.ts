@@ -1,3 +1,4 @@
+import { calculateHoodNumbers } from './hoodNumbers';
 import { calculateJumperNumbers, RIBBING_CM } from './jumperNumbers';
 import { ShapingRate } from './shaping';
 import { calculateSleeveNumbers, SLEEVE_RIBBING_CM } from './sleeveNumbers';
@@ -91,6 +92,7 @@ function writeBackSteps(inputs: JumperInputs) {
   steps.push(
     `Knit until the back measures ${numbers.lengthToShouldersCm}cm.`,
     `On each side, short row across the ${numbers.shoulderShortRowStitches} sts on the neck side, then bind off all ${numbers.shoulderStitches} shoulder sts.`,
+    `Leave the ${numbers.neckStitches} back neck sts live for the hood.`,
   );
   return steps;
 }
@@ -157,10 +159,36 @@ function writeSleeveSteps(inputs: JumperInputs) {
   return steps;
 }
 
+function writeHoodSteps(inputs: JumperInputs) {
+  const numbers = calculateHoodNumbers(inputs, calculateJumperNumbers(inputs));
+  const { pickUpStitchesPerSide, centreStitches, sideStitchesAtBackOfHead } =
+    numbers;
+  const pickedUpStitches = 2 * pickUpStitchesPerSide + centreStitches;
+
+  const steps = [
+    `With the right side facing, pick up and knit ${pickUpStitchesPerSide} sts along the right front neck edge, knit across the ${centreStitches} live back neck sts, then pick up and knit ${pickUpStitchesPerSide} sts along the left front neck edge (${pickedUpStitches} sts). Place a marker either side of the back sts.`,
+    numbers.increases.length > 0
+      ? `Increase 1 st outside each marker ${describeShapingRates(numbers.increases)} (${2 * sideStitchesAtBackOfHead + centreStitches} sts).`
+      : `Knit ${numbers.increaseRows} rows.`,
+  ];
+  if (numbers.shortRowPairs > 0) {
+    steps.push(
+      `Over the ${centreStitches} centre sts, work ${numbers.shortRowPairs} pairs of short rows around the back of the head.`,
+    );
+  }
+  if (numbers.decreases.length > 0) {
+    steps.push(
+      `Decrease 1 st outside each marker ${describeShapingRates(numbers.decreases)} (${centreStitches} sts).`,
+    );
+  }
+  return steps;
+}
+
 export function writeJumperPattern(inputs: JumperInputs): PatternPiece[] {
   return [
     { name: 'Back', steps: writeBackSteps(inputs) },
     { name: 'Fronts (make 2)', steps: writeFrontSteps(inputs) },
     { name: 'Sleeves (make 2)', steps: writeSleeveSteps(inputs) },
+    { name: 'Hood', steps: writeHoodSteps(inputs) },
   ];
 }

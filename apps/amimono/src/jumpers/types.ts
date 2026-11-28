@@ -3,7 +3,7 @@ export const JUMPER_PATTERNS_KEY = 'jumpers';
 export type MeasurementSource = 'body' | 'garment';
 
 export type EasedMeasurementKey =
-  'bust' | 'waist' | 'hips' | 'biceps' | 'wrist';
+  'bust' | 'waist' | 'hips' | 'biceps' | 'wrist' | 'hoodHeight' | 'hoodDepth';
 
 export type FixedMeasurementKey =
   | 'neckWidth'
@@ -11,7 +11,9 @@ export type FixedMeasurementKey =
   | 'armholeDepth'
   | 'hemToArmhole'
   | 'waistToHip'
-  | 'wristToUnderarm';
+  | 'wristToUnderarm'
+  | 'neckToBackOfHead'
+  | 'hoodWidth';
 
 export type EasedMeasurement = {
   cm: number;

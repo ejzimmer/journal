@@ -57,11 +57,15 @@ async function enterExampleMeasurements(user: UserEvent) {
   await typeNumber(user, form, 'Hem to armhole', '41');
   await typeNumber(user, form, 'Waist to hip', '28');
   await typeNumber(user, form, 'Wrist to underarm', '50');
+  await typeNumber(user, form, 'Neck to back of head', '7');
+  await typeNumber(user, form, 'Hood width', '33');
   await enterEasedMeasurement(user, 'Bust', '101.5', '5');
   await enterEasedMeasurement(user, 'Waist', '86', '12.5');
   await enterEasedMeasurement(user, 'Hips', '105', '10');
   await enterEasedMeasurement(user, 'Biceps', '29', '5');
   await enterEasedMeasurement(user, 'Wrist', '16', '7.5');
+  await enterEasedMeasurement(user, 'Hood height', '32', '5');
+  await enterEasedMeasurement(user, 'Hood depth', '47', '10');
   await enterGauge(user, 'Body gauge per 10cm', ['22', '29', '4.5']);
   await user.type(
     within(
@@ -87,6 +91,10 @@ describe('JumpersTab', () => {
       const sleeves = screen.getByRole('region', { name: 'Sleeves (make 2)' });
       expect(within(sleeves).getAllByRole('listitem')[0]).toHaveTextContent(
         'With smaller needles, cast on 56 sts.',
+      );
+      const hood = screen.getByRole('region', { name: 'Hood' });
+      expect(within(hood).getAllByRole('listitem')[0]).toHaveTextContent(
+        'pick up and knit 36 sts along the right front neck edge',
       );
     });
 
